@@ -1,0 +1,18 @@
+# POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
+
+## 1. Business Philosophy (The "Why")
+- **Target Audience:** US Residents (미국 현지인). 절대 한국인의 직구 관점으로 배송/서비스를 해석하지 마라.
+- **Transparency:** API가 주는 정보(도착일, 배송비)는 100% 투명하게 공개한다.
+- **First Impression:** 사용자에게 두 번째 기회는 없다. 첫 16개 상품 리스트와 UI에서 압도적인 편의성을 제공해야 한다.
+- **Clean UI:** 반복되는 툴팁(Tooltip)은 시각적 공해다. 개별 툴팁을 제거하고 상단 'Unified Shipping Guide'를 사용한다.
+
+## 2. Anti-Amnesia (Do Not Forget / Zombie Ideas)
+- **Mall Classification:** eBay와 iHerb는 미국인에게 **Domestic(내수)** 쇼핑몰이다. 절대 Global 탭에 넣지 마라.
+- **Show More Button:** 'Show More' 버튼은 필수다. 삭제 제안 금지 (무한 스크롤 구현).
+- **Mobile Layout:** 모바일 검색 결과는 무조건 **1열(grid-cols-1)**이다. 2열로 축소하지 마라.
+- **Price Tag:** 배송비가 'Free'인 경우, 가격 옆에 `+ Shipping` 텍스트를 절대 중복 표기하지 마라.
+- **Data Driven:** 필터 생성 시 LLM 추론을 사용하지 마라. API 응답 데이터 기반으로 생성한다.
+
+## 3. Coding Standards
+- **Grid System:** PC(Large Screen)에서는 **3열(grid-cols-3)**을 최대로 유지하여 상품 이미지 시인성을 확보한다.
+- **Ranking Logic:** Domestic/Global 탭 내부에서는 사이트별 1등 상품을 **교차(Zipper)** 배치하여 공정성을 보장한다.

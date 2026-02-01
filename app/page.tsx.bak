@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { useSupabase } from './context/SupabaseProvider';
-import { useUserPreferences } from './hooks/useUserPreferences';
+import { useUserPreference } from './context/UserPreferenceContext';
 import type { Product } from './types/product';
 import { Header } from './components/Header';
 import { ProductCard } from './components/ProductCard';
@@ -11,8 +11,6 @@ import { BottomNav } from './components/BottomNav';
 import { CategoryScreen } from './components/CategoryScreen';
 import { FilterBar } from './components/FilterBar';
 import { SearchOverlay } from './components/SearchOverlay';
-import { SearchInsight } from './components/search/SearchInsight';
-import { ShippingGuideModal } from './components/ShippingGuideModal';
 
 export type { Product } from './types/product';
 
@@ -35,28 +33,6 @@ type Recommendation = Product & {
 
 const MOCK_RECOMMENDATION_IMAGE =
   'https://placehold.co/400x400/indigo/white?text=POTAL+Item';
-
-/** 검색어 → 관심 카테고리 추론 (addCategory용) */
-function inferCategoriesFromQuery(query: string): string[] {
-  const q = (query || '').toLowerCase().trim();
-  if (!q) return [];
-  const out: string[] = [];
-  const terms: { keys: string[]; category: string }[] = [
-    { keys: ['audio', 'headphone', 'earbud', 'sony', 'bose', 'airpod', 'speaker'], category: 'Audio' },
-    { keys: ['lego', 'toy', 'game', 'razor', 'crest'], category: 'Toys' },
-    { keys: ['ipad', 'laptop', 'macbook', 'phone', 'samsung', 'galaxy', 'electronics'], category: 'Electronics' },
-    { keys: ['camping', 'tent', 'sleeping', 'outdoor', 'naturehike', 'coleman'], category: 'Outdoor' },
-    { keys: ['gaming', 'keyboard', 'mouse', 'monitor', 'gpu', 'rtx', 'deathadder', 'keychron'], category: 'Gaming' },
-    { keys: ['fashion', 'nike', 'adidas', 'shoes', 'dress', 'jacket', 'hoodie'], category: 'Fashion' },
-    { keys: ['home', 'kitchen', 'lamp', 'desk', 'wayfair'], category: 'Home' },
-    { keys: ['beauty', 'skin', 'cosmetic'], category: 'Beauty' },
-  ];
-  for (const { keys, category } of terms) {
-    if (keys.some((k) => q.includes(k))) out.push(category);
-  }
-  if (out.length === 0) out.push('General');
-  return out;
-}
 
 const MOCK_RECOMMENDATIONS: Recommendation[] = [
   {
@@ -751,18 +727,7 @@ function getRecentSearchesKey(hasSession: boolean): string {
 
 export default function Home() {
   const { supabase, session } = useSupabase();
-  const { addSearchTerm, addCategory, interestedCategories } = useUserPreferences();
-
-  /** 상품 클릭 시 관심 카테고리 반영 (My Picks 정렬에 사용) */
-  const handleProductClick = useCallback(
-    (product: Product & { keywords?: string[] }) => {
-      const keywords = product.keywords && product.keywords.length > 0
-        ? product.keywords
-        : inferCategoriesFromQuery(product.name);
-      keywords.forEach((c) => addCategory(c));
-    },
-    [addCategory],
-  );
+  const { addRecentSearch, addInterestFromQuery, interestedCategories } = useUserPreference();
 
   const [query, setQuery] = useState('');
   const [mainCategory, setMainCategory] = useState<MainCategory>(null);
@@ -776,9 +741,6 @@ export default function Home() {
   const [international, setInternational] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [searchPage, setSearchPage] = useState(1);
-  const [lastSearchQuery, setLastSearchQuery] = useState('');
-  const [hasMorePages, setHasMorePages] = useState(true);
   const [metadata, setMetadata] = useState<{ domesticCount: number; internationalCount: number } | null>(null);
   const [personalization, setPersonalization] = useState<{ greeting?: string; message?: string } | null>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -808,6 +770,7 @@ export default function Home() {
   const [showLimitModal, setShowLimitModal] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [homeProfile, setHomeProfile] = useState<{ nickname?: string; interest_keywords?: string[] } | null>(null);
+  const [aiPicks, setAiPicks] = useState<Recommendation[]>([]);
   const [selectedAiFilters, setSelectedAiFilters] = useState<Set<string>>(new Set());
   const [aiFilterOptions, setAiFilterOptions] = useState<Record<string, string[]>>({});
   const [aiFiltersLoading, setAiFiltersLoading] = useState(false);
@@ -816,7 +779,6 @@ export default function Home() {
   const [mobileTab, setMobileTab] = useState<'all' | 'domestic' | 'global'>('all');
   const [mobileTabLoading, setMobileTabLoading] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [showShippingGuide, setShowShippingGuide] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const recentDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -843,11 +805,25 @@ export default function Home() {
             nickname: data.nickname ?? undefined,
             interest_keywords: interestKeywords.length ? interestKeywords : undefined,
           });
+
+          if (interestKeywords.length) {
+            const interestSet = new Set(
+              interestKeywords.map((k) => k.toLowerCase().trim()).filter(Boolean),
+            );
+            const matched = MOCK_RECOMMENDATIONS.filter((rec) =>
+              rec.keywords.some((kw) => interestSet.has(kw.toLowerCase().trim())),
+            );
+            setAiPicks(matched);
+          } else {
+            setAiPicks([]);
+          }
         } else {
           setHomeProfile(null);
+          setAiPicks([]);
         }
       } catch {
         setHomeProfile(null);
+        setAiPicks([]);
       }
     })();
   }, [session?.user?.id, supabase]);
@@ -1096,24 +1072,11 @@ export default function Home() {
     return () => clearTimeout(t);
   }, [query]);
 
-  // 인트로 스플래시: PC는 미노출, 모바일은 세션당 1회만 (sessionStorage)
+  // 인트로 스플래시: ~1.5초 후 페이드아웃 후 제거
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    if (isDesktop) {
-      setShowSplash(false);
-      return;
-    }
-    if (sessionStorage.getItem('potal_intro_shown') === '1') {
-      setShowSplash(false);
-      return;
-    }
     const t1 = setTimeout(() => setSplashOpacity(1), 50);
     const t2 = setTimeout(() => setSplashOpacity(0), 1200);
-    const t3 = setTimeout(() => {
-      sessionStorage.setItem('potal_intro_shown', '1');
-      setShowSplash(false);
-    }, 1500);
+    const t3 = setTimeout(() => setShowSplash(false), 1500);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
@@ -1134,10 +1097,10 @@ export default function Home() {
       }
     }
 
-    // Save to recent searches & 관심 카테고리 반영 (My Picks 정렬에 사용)
+    // Save to recent searches
     saveToRecentSearches(trimmed);
-    addSearchTerm(trimmed);
-    inferCategoriesFromQuery(trimmed).forEach((c) => addCategory(c));
+    addRecentSearch(trimmed);
+    addInterestFromQuery(trimmed);
     setShowRecentDropdown(false);
 
     setLoading(true);
@@ -1146,9 +1109,6 @@ export default function Home() {
     setDomestic([]);
     setInternational([]);
     setVisibleCount(20);
-    setSearchPage(1);
-    setLastSearchQuery(trimmed);
-    setHasMorePages(true);
 
     try {
       const res = await fetch(
@@ -1388,33 +1348,13 @@ export default function Home() {
     }
   };
 
-  const loadMoreResults = async () => {
-    if (loadingMore || !lastSearchQuery.trim()) return;
-    const nextPage = searchPage + 1;
+  const showMoreResults = () => {
+    if (loadingMore) return;
     setLoadingMore(true);
-    try {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(lastSearchQuery.trim())}&page=${nextPage}`
-      );
-      const data: SearchResponse = await res.json();
-      const allResults = data.results || [];
-      const newDomestic = allResults.filter((p: Product) => {
-        const val = (p.shipping || (p as { category?: string }).category || '').toString().toLowerCase();
-        return val.includes('domestic');
-      });
-      const newInternational = allResults.filter((p: Product) => {
-        const val = (p.shipping || (p as { category?: string }).category || '').toString().toLowerCase();
-        return val.includes('international');
-      });
-      setDomestic((prev) => [...prev, ...newDomestic]);
-      setInternational((prev) => [...prev, ...newInternational]);
-      setSearchPage(nextPage);
-      if (newDomestic.length === 0 && newInternational.length === 0) setHasMorePages(false);
-    } catch (err) {
-      console.error('Load more failed:', err);
-    } finally {
-      setLoadingMore(false);
-    }
+    requestAnimationFrame(() => {
+      setVisibleCount((prev) => prev + 20);
+      setTimeout(() => setLoadingMore(false), 300);
+    });
   };
 
   // 홈 트렌딩: 무한 더보기용 (리스트 반복으로 끝없이 표시)
@@ -1467,10 +1407,14 @@ export default function Home() {
     ? sortProducts(filteredInternational)
     : [];
 
-  // 데이터 제한 해제: API가 가져온 전체 리스트 표시 (최대 200건씩 캡)
-  const DISPLAY_CAP = 200;
-  const displayedDomestic = sortedDomestic.slice(0, DISPLAY_CAP);
-  const displayedInternational = sortedInternational.slice(0, DISPLAY_CAP);
+  // Strict Zipper: PC·모바일 공통 — 좌우 동일 개수(commonCount)까지만 표시
+  const commonCount = Math.min(
+    sortedDomestic.length,
+    sortedInternational.length,
+    visibleCount
+  );
+  const displayedDomestic = sortedDomestic.slice(0, commonCount);
+  const displayedInternational = sortedInternational.slice(0, commonCount);
 
   // 모바일 탭용: All / Domestic / Global 필터 리스트 (홈·검색 공통)
   // All 탭(검색 결과, 모바일): 1:1 인터리브 [Dom1, Glo1, Dom2, Glo2...] → grid-cols-2에서 왼쪽=Domestic, 오른쪽=Global
@@ -1493,22 +1437,24 @@ export default function Home() {
     if (mobileTab === 'all') {
       const dom = displayedDomestic;
       const glo = displayedInternational;
-      return [
-        ...dom.map((p) => ({ product: p, type: 'domestic' as const })),
-        ...glo.map((p) => ({ product: p, type: 'international' as const })),
-      ];
+      const minLen = Math.min(dom.length, glo.length);
+      const result: { product: Product | Recommendation; type: 'domestic' | 'international' }[] = [];
+      for (let i = 0; i < minLen; i++) {
+        result.push({ product: dom[i], type: 'domestic' as const });
+        result.push({ product: glo[i], type: 'international' as const });
+      }
+      return result;
     }
     const d = displayedDomestic;
     const i = displayedInternational;
     if (mobileTab === 'domestic') return d.map((p) => ({ product: p, type: 'domestic' as const }));
     return i.map((p) => ({ product: p, type: 'international' as const }));
-  }, [searched, mobileTab, displayedTrendingDomestic, displayedTrendingInternational, displayedDomestic, displayedInternational]);
+  }, [searched, mobileTab, displayedTrendingDomestic, displayedTrendingInternational, displayedDomestic, displayedInternational, visibleCount]);
 
+  // 더 보기 버튼 노출: 둘 중 하나라도 visibleCount보다 많으면 표시
   const hasMoreResults =
     searched &&
-    hasMorePages &&
-    !loadingMore &&
-    (domestic.length > 0 || international.length > 0);
+    (sortedDomestic.length > visibleCount || sortedInternational.length > visibleCount);
 
   // Debug logs - display state
   if (searched && !loading) {
@@ -1537,14 +1483,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* 인트로 스플래시: 모바일만, 세션당 1회. PC는 md:hidden으로 미렌더 + JS에서 즉시 숨김 */}
+      {/* 인트로 스플래시: POTAL 로고 Fade-in/out ~1.5초 */}
       {showSplash && (
         <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center bg-white md:hidden"
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-white"
           style={{ opacity: splashOpacity, transition: 'opacity 0.45s ease-in-out', transform: `scale(${0.96 + splashOpacity * 0.04})` }}
           aria-hidden="true"
         >
-          <span className="text-5xl font-bold text-indigo-600 tracking-tight">POTAL</span>
+          <span className="text-5xl md:text-6xl font-bold text-indigo-600 tracking-tight">POTAL</span>
         </div>
       )}
 
@@ -1574,7 +1520,7 @@ export default function Home() {
               type="button"
               onClick={() => setIsSearchOverlayOpen(true)}
               className="relative w-full h-10 rounded-full bg-slate-100 border-2 border-purple-400 shadow-sm overflow-hidden flex items-center text-left cursor-pointer hover:border-purple-500 transition-colors"
-              aria-label="Search (tap to open search)"
+              aria-label="검색 (탭하여 검색 화면 열기)"
             >
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none">
                 <SearchIcon className="w-full h-full" />
@@ -1722,7 +1668,7 @@ export default function Home() {
                       searchInputRef.current?.focus();
                     }}
                     className="md:hidden absolute right-[50px] top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 z-10 p-3 min-h-[44px] min-w-[44px] flex items-center justify-center rounded touch-manipulation"
-                    aria-label="Clear search"
+                    aria-label="검색어 지우기"
                   >
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
@@ -1855,16 +1801,15 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className={`grid gap-3 w-full ${searched ? 'grid-cols-1 px-2' : 'grid-cols-2 gap-1.5'}`}>
+                <div className="grid grid-cols-2 gap-1.5">
                   {mobileDisplayedList.map(({ product, type }) => (
                     <div key={product.id} className="min-w-0">
                       <ProductCard
                         product={product}
                         type={type}
-                        compact={!searched}
-                        dense={false}
+                        compact
+                        dense
                         onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")}
-                        onProductClick={handleProductClick}
                       />
                     </div>
                   ))}
@@ -1874,7 +1819,7 @@ export default function Home() {
               <div className="mt-4 pb-4 flex justify-center px-2">
                 <button
                   type="button"
-                  onClick={loadMoreResults}
+                  onClick={showMoreResults}
                   disabled={loadingMore}
                   className="w-full py-3 rounded-full bg-white border border-purple-200 text-purple-700 font-semibold shadow-sm hover:bg-purple-50 hover:shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 >
@@ -1887,7 +1832,7 @@ export default function Home() {
                       Loading...
                     </span>
                   ) : (
-                    '👇 Show More Results'
+                    'Show More Results (+20)'
                   )}
                 </button>
               </div>
@@ -1908,7 +1853,7 @@ export default function Home() {
                   <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
                     <span aria-hidden>✨</span> AI Smart Filters
                   </h2>
-                  <p className="mt-0.5 text-xs text-slate-600 mb-2">Refine with AI-Recommended Filters</p>
+                  <p className="mt-0.5 text-xs text-slate-600 mb-2">AI가 추천하는 조건으로 좁혀보세요.</p>
                   {aiFiltersLoading ? (
                     <div className="space-y-2 text-xs text-slate-500 animate-pulse">
                       <div className="h-4 bg-purple-200/60 rounded w-full" />
@@ -2056,7 +2001,6 @@ export default function Home() {
                         type="domestic"
                         compact
                         onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")}
-                        onProductClick={handleProductClick}
                       />
                     ))}
                   </div>
@@ -2080,7 +2024,6 @@ export default function Home() {
                         type="international"
                         compact
                         onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")}
-                        onProductClick={handleProductClick}
                       />
                     ))}
                   </div>
@@ -2095,7 +2038,7 @@ export default function Home() {
                   }}
                   className="rounded-xl border-2 border-indigo-200 bg-white px-6 py-3 text-sm font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors"
                 >
-                  👇 Show More Results
+                  Show More Results
                 </button>
               </div>
             </section>
@@ -2179,20 +2122,12 @@ export default function Home() {
           {/* 4. 일반 시민: 검색 결과 그리드 - z-0으로 최하단 */}
               {searched && (
               <>
-              {/* 규칙 기반 AI 브리핑: 최저가·플랫폼 비교·결과 수 (로딩 완료 후만 표시) */}
-              <SearchInsight domestic={domestic} international={international} loading={loading} />
-              {/* 모바일: Filter + Shipping Guide 버튼 (공간 절약) */}
-              <div className="lg:hidden flex justify-end gap-2 mt-2 mb-2">
-                <button
-                  type="button"
-                  onClick={() => setShowShippingGuide(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 shadow-sm"
-                  aria-label="Shipping Guide"
-                >
-                  <span aria-hidden>📦</span>
-                  <span className="sm:hidden">Guide</span>
-                  <span className="hidden sm:inline">Shipping Guide</span>
-                </button>
+              {/* AI 가드 - Domestic/Global 헤더 바로 위, w-full 시스템 알림 바 */}
+              <div className="relative z-0 w-full mb-0 rounded-t-lg border border-slate-200 bg-slate-100/80 px-4 py-2.5 text-center text-xs font-medium text-slate-700">
+                🛡️ POTAL AI removed deceptive option-bait items for you.
+              </div>
+              {/* 모바일 전용 Filter 버튼 - lg 미만에서만 표시 */}
+              <div className="lg:hidden flex justify-end mt-2 mb-2">
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(true)}
@@ -2215,31 +2150,22 @@ export default function Home() {
                       <span className="text-sm text-slate-500 font-normal shrink-0">({metadata?.domesticCount ?? domestic.length} items)</span>
                     </h2>
                   </div>
-                  <div className="flex items-center justify-between w-full px-4 pb-3 pt-1 box-border flex-wrap gap-2">
+                  <div className="flex items-center justify-between w-full px-4 pb-3 pt-1 box-border">
                     <p className="text-xs text-slate-500">US Stock • Fast Delivery</p>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowShippingGuide(true)}
-                        className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-indigo-600 border border-slate-200 rounded-md px-2 py-1 bg-white hover:bg-slate-50"
+                    <label className="flex items-center gap-1 text-xs text-slate-700">
+                      <span>Sort by</span>
+                      <select
+                        value={sortBy}
+                        onChange={(e) =>
+                          setSortBy(e.target.value as 'relevance' | 'price_asc' | 'price_desc')
+                        }
+                        className="border border-slate-200 rounded-md text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
                       >
-                        <span aria-hidden>📦</span> Shipping Guide
-                      </button>
-                      <label className="flex items-center gap-1 text-xs text-slate-700">
-                        <span>Sort by</span>
-                        <select
-                          value={sortBy}
-                          onChange={(e) =>
-                            setSortBy(e.target.value as 'relevance' | 'price_asc' | 'price_desc')
-                          }
-                          className="border border-slate-200 rounded-md text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        >
-                          <option value="relevance">Best Match</option>
-                          <option value="price_asc">Price: Low to High</option>
-                          <option value="price_desc">Price: High to Low</option>
-                        </select>
-                      </label>
-                    </div>
+                        <option value="relevance">Best Match</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                      </select>
+                    </label>
                   </div>
                 </div>
 
@@ -2274,7 +2200,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-3 w-full">
                       {displayedDomestic.map((item) => (
                         <div key={item.id} className="min-w-0 w-full">
-                          <ProductCard product={item} type="domestic" onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")} onProductClick={handleProductClick} />
+                          <ProductCard product={item} type="domestic" onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")} />
                         </div>
                       ))}
                     </div>
@@ -2342,7 +2268,7 @@ export default function Home() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-3 w-full">
                       {displayedInternational.map((item) => (
                         <div key={item.id} className="min-w-0 w-full">
-                          <ProductCard product={item} type="international" onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")} onProductClick={handleProductClick} />
+                          <ProductCard product={item} type="international" onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")} />
                         </div>
                       ))}
                     </div>
@@ -2356,7 +2282,7 @@ export default function Home() {
                 <div className="mt-6 pb-4 flex justify-center">
                   <button
                     type="button"
-                    onClick={loadMoreResults}
+                    onClick={showMoreResults}
                     disabled={loadingMore}
                     className="w-[300px] py-3 rounded-full bg-white border border-purple-200 text-purple-700 font-semibold shadow-sm hover:bg-purple-50 hover:shadow-md transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                   >
@@ -2369,7 +2295,7 @@ export default function Home() {
                         Loading...
                       </span>
                     ) : (
-                      '👇 Show More Results'
+                      'Show More Results (+20)'
                     )}
                   </button>
                 </div>
@@ -2400,7 +2326,6 @@ export default function Home() {
       />
 
       {/* Mobile Filter Overlay: 풀스크린 흰색 모달, 헤더 Filter + X, 푸터 View Results (쿠팡 스타일) */}
-      <ShippingGuideModal open={showShippingGuide} onClose={() => setShowShippingGuide(false)} />
       {isMobileFilterOpen && searched && (
         <div className="fixed inset-0 z-[10000] flex flex-col bg-white lg:hidden" aria-modal="true" role="dialog">
           <header className="flex items-center justify-between px-4 py-3 border-b border-slate-200 shrink-0">

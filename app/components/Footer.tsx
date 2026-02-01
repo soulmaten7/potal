@@ -1,12 +1,12 @@
 export default function Footer() {
   return (
-    <footer className="mt-12 bg-gray-900 text-gray-300">
+    <footer className="mt-12 bg-slate-950 text-slate-300">
       <div className="max-w-6xl mx-auto px-4 py-10 grid gap-8 md:grid-cols-4">
         {/* Brand */}
         <div>
           <h2 className="text-xl font-black tracking-tight text-white">POTAL</h2>
-          <p className="mt-2 text-sm text-gray-400">
-            US Fast vs Global Cheap
+          <p className="mt-2 text-sm text-slate-400">
+            Local Fast Delivery vs Global Best Price
           </p>
         </div>
 
@@ -27,8 +27,8 @@ export default function Footer() {
               </a>
             </li>
             <li>
-              <a href="/" className="hover:text-white transition-colors">
-                Deals
+              <a href="#" className="hover:text-white transition-colors">
+                About AI
               </a>
             </li>
           </ul>
@@ -65,7 +65,6 @@ export default function Footer() {
           </h3>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              Email:{" "}
               <a
                 href="mailto:support@potal.com"
                 className="hover:text-white transition-colors"
@@ -73,25 +72,28 @@ export default function Footer() {
                 support@potal.com
               </a>
             </li>
-            <li>Phone: +1 (000) 000-0000</li>
           </ul>
         </div>
       </div>
 
-      {/* Affiliate Disclosure */}
-      <div className="border-t border-gray-800">
+      {/* Comprehensive Affiliate Disclaimer */}
+      <div className="border-t border-slate-800">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <p className="text-[11px] leading-snug text-gray-400">
-            POTAL is a participant in the Amazon Services LLC Associates Program, an affiliate
-            advertising program designed to provide a means for sites to earn advertising fees by
-            advertising and linking to Amazon.com.
+          <p className="text-xs leading-snug text-slate-500">
+            POTAL participates in various affiliate marketing programs, which means we may get paid
+            commissions on products purchased through our links to retailer sites. As an Amazon
+            Associate, we earn from qualifying purchases.
           </p>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-2 text-xs text-slate-500">
             © 2026 POTAL. All rights reserved.
+          </p>
+          <p className="mt-2 text-xs text-slate-500">
+            <a href="#" className="hover:text-slate-300 transition-colors">Mobile Version</a>
+            <span className="mx-1.5 text-slate-600">|</span>
+            <a href="#" className="hover:text-slate-300 transition-colors">PC Version</a>
           </p>
         </div>
       </div>
     </footer>
   );
 }
-
