@@ -48,38 +48,6 @@ function classifyQueryIntent(query: string): QueryIntent {
   return "Default";
 }
 
-/** 대명사/상품명 → 브랜드 추론 (Product Name → Brand) */
-const PRODUCT_TO_BRAND: Array<{ pattern: RegExp; brand: string }> = [
-  { pattern: /airpods?|air\s*pods?|apple\s*watch|ipad|iphone|macbook|imac|homepod/i, brand: "Apple" },
-  { pattern: /galaxy|samsung\s*phone|samsung\s*tab|buds|galaxy\s*watch/i, brand: "Samsung" },
-  { pattern: /playstation|ps5|ps4|ps\s*5|ps\s*4|dualsense|sony\s*headphones|wh-1000|wf-1000/i, brand: "Sony" },
-  { pattern: /xbox|surface|windows\s*phone/i, brand: "Microsoft" },
-  { pattern: /kindle|fire\s*tv|echo|alexa/i, brand: "Amazon" },
-  { pattern: /pixel|nest|google\s*home/i, brand: "Google" },
-  { pattern: /nintendo|switch|ds|3ds|gameboy/i, brand: "Nintendo" },
-  { pattern: /bose|quietcomfort|soundsport/i, brand: "Bose" },
-  { pattern: /jbl|flip|charge|clip/i, brand: "JBL" },
-  { pattern: /razer|deathadder|blackwidow|kraken/i, brand: "Razer" },
-  { pattern: /logitech|g\s*pro|mx\s*master/i, brand: "Logitech" },
-  { pattern: /lego|legos/i, brand: "LEGO" },
-  { pattern: /dyson|v\d+|airwrap/i, brand: "Dyson" },
-  { pattern: /ninja|nutribullet|blend/i, brand: "Ninja" },
-  { pattern: /instant\s*pot|instantpot/i, brand: "Instant Pot" },
-  { pattern: /fitbit|sense|versa|charge/i, brand: "Fitbit" },
-  { pattern: /garmin|fenix|forerunner|vivoactive/i, brand: "Garmin" },
-  { pattern: /anker|eufy|nebula|soundcore/i, brand: "Anker" },
-];
-
-function inferBrandsFromQuery(query: string): string[] {
-  const q = query.toLowerCase().trim();
-  if (!q) return [];
-  const brands: string[] = [];
-  for (const { pattern, brand } of PRODUCT_TO_BRAND) {
-    if (pattern.test(q) && !brands.includes(brand)) brands.push(brand);
-  }
-  return brands;
-}
-
 /** 카테고리별 필터 그룹 정의 (그룹명 -> 옵션 배열) */
 const FILTER_BY_INTENT: Record<QueryIntent, Record<string, string[]>> = {
   Fashion: {
@@ -112,8 +80,9 @@ const FILTER_BY_INTENT: Record<QueryIntent, Record<string, string[]>> = {
  * POST /api/generate-filters
  * Body: { query: string }
  * Response: { filters: { "Group Name": ["Option1", "Option2", ...], ... } }
- * - 검색어 의도에 따라 Fashion/Electronics/Beauty/Home/Default 중 하나로 분류
- * - 해당 카테고리의 그룹별 필터 옵션 반환 (프론트에서 그룹별 섹션 렌더링)
+ *
+ * 참고: 필터 값은 프론트에서 extractFromProducts(현재 로드된 상품)로 Real Data Only 생성.
+ * 이 API는 의도별 그룹 구조 폴백용. DB 저장 없음.
  */
 export async function POST(request: NextRequest) {
   try {
@@ -128,14 +97,7 @@ export async function POST(request: NextRequest) {
 
     const intent = classifyQueryIntent(query);
     const filters = { ...FILTER_BY_INTENT[intent] };
-
-    // 브랜드 추론: 상품명만으로 Brands 필터에 브랜드 자동 추가 (AirPods → Apple, Galaxy → Samsung 등)
-    const inferredBrands = inferBrandsFromQuery(query);
-    if (inferredBrands.length > 0) {
-      filters["Brands"] = [...(filters["Brands"] ?? []), ...inferredBrands].filter(
-        (v, i, a) => a.indexOf(v) === i
-      );
-    }
+    // Brands는 API 추론 없음. 프론트에서 extractBrandsFromProducts(현재 로드된 상품)로 동적 생성.
 
     return NextResponse.json({ filters });
   } catch (err) {

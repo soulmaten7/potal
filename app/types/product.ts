@@ -22,4 +22,9 @@ export interface Product {
   variants?: ProductVariant[];
   bestPrice?: string;
   bestPriceSite?: string;
+  /** API에서 내려올 수 있음. true면 노출하지 않음 (광고/스폰서 필터링) */
+  is_sponsored?: boolean;
+  is_ad?: boolean;
+  /** 브랜드명. 동적 필터(Brands) 추출용 */
+  brand?: string;
 }

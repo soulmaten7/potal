@@ -113,6 +113,7 @@ export function ProductCard({ product, type, compact, dense, onWishlistChange, o
       <div className="group relative h-full flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         {/* Image area - vertical card: image on top, 고정 높이 */}
         <div className={`relative w-full flex-shrink-0 ${imageHeightClass} bg-slate-50`}>
+          {/* API에서 이미지가 오면 무조건 사용; 없거나 로드 실패 시에만 회색 placeholder */}
           <img
             src={imageError ? POTAL_PLACEHOLDER : (product.image || POTAL_PLACEHOLDER)}
             alt={product.name || "Product"}
