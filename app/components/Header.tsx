@@ -138,24 +138,12 @@ export function Header({
               )}
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await supabase.auth.signInWithOAuth({
-                    provider: "google",
-                    options: {
-                      redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/auth/callback`,
-                    },
-                  });
-                } catch (error) {
-                  console.error("Login failed:", error);
-                }
-              }}
+            <Link
+              href="/auth/signin"
               className="inline-flex items-center rounded-full border border-indigo-500 bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors shadow-sm"
             >
-              Login
-            </button>
+              Sign In
+            </Link>
           )}
         </div>
       </div>

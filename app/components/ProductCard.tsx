@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import type { Product } from "../types/product";
 import { useWishlist } from "../context/WishlistContext";
 import { normalizeDeliveryInfo } from "../lib/utils/DeliveryStandard";
+import { trackAffiliateClick } from "../utils/analytics";
 import { DeliveryBadge } from "./DeliveryBadge";
 
 const POTAL_PLACEHOLDER = "https://placehold.co/400x400/6366f1/white?text=POTAL";
@@ -58,6 +59,13 @@ export function ProductCard({ product, type, compact, dense, onWishlistChange, o
     onProductClick?.(product);
     const url = product.link || "#";
     if (!url || url === "#") return;
+    const priceNum = parseFloat(String(product.price).replace(/[^0-9.-]/g, "")) || 0;
+    trackAffiliateClick({
+      productName: product.name || "Unknown",
+      price: priceNum,
+      vendor: product.site || "Unknown",
+      url,
+    });
     setRedirectingSite(product.site);
     setTimeout(() => {
       window.open(url, "_blank", "noopener,noreferrer");
@@ -88,7 +96,7 @@ export function ProductCard({ product, type, compact, dense, onWishlistChange, o
       ? product.price
       : `$${product.price}`;
 
-  const imageHeightClass = dense ? "h-36" : compact ? "h-48" : "h-52";
+  const imageHeightClass = dense ? "h-40" : compact ? "h-48" : "h-52";
 
   // 리다이렉팅 오버레이: Portal로 body에 렌더링해 전체 화면 덮음 (카드 overflow/transform 영향 없음)
   const redirectOverlay =
@@ -152,8 +160,8 @@ export function ProductCard({ product, type, compact, dense, onWishlistChange, o
             )}
           </div>
 
-          {/* Store & delivery - 표준화 배지 + 툴팁 */}
-          <div className={`flex items-center gap-1 mb-1 flex-wrap flex-shrink-0 ${dense ? "text-[10px]" : ""}`}>
+          {/* Store & delivery - 표준화 배지 + 툴팁 (모바일 dense 시 줄바꿈 방지) */}
+          <div className={`flex items-center gap-1 mb-1 flex-shrink-0 min-w-0 overflow-hidden ${dense ? "text-[10px] flex-nowrap" : "flex-wrap"}`}>
             <span
               className={`px-1.5 py-0.5 rounded font-medium ${
                 isDomestic
@@ -179,7 +187,7 @@ export function ProductCard({ product, type, compact, dense, onWishlistChange, o
 
           {/* 가격·배송·CTA: mt-auto로 카드 바닥에 고정 */}
           <div className="mt-auto flex-shrink-0">
-            <p className={dense ? "text-base font-bold text-indigo-600" : "text-xl font-bold text-indigo-600"}>{priceStr}</p>
+            <p className={dense ? "text-sm font-bold text-indigo-600" : "text-xl font-bold text-indigo-600"}>{priceStr}</p>
             {(() => {
               const deliveryInfo = normalizeDeliveryInfo({
                 deliveryDays: product.deliveryDays,

@@ -6,26 +6,9 @@ import { GlobalMockProvider } from './providers/GlobalMockProvider';
 const amazonProvider = new AmazonProvider();
 const globalMockProvider = new GlobalMockProvider();
 
-/** 정직한 폴백: Amazon 실패 시 단 1개의 Search Link 카드만 반환 (가짜 상품 없음) */
-function buildAmazonSearchLinkCard(query: string): Product {
-  const encoded = encodeURIComponent((query || '').trim() || 'search');
-  return {
-    id: 'fallback-amazon',
-    name: `View all results for '${(query || '').trim() || 'search'}' on Amazon`,
-    price: '',
-    image: 'https://placehold.co/400x400?text=Amazon',
-    site: 'Amazon',
-    shipping: 'Domestic',
-    category: 'domestic',
-    link: `https://www.amazon.com/s?k=${encoded}&tag=potal-20`,
-    deliveryDays: 'Check Site',
-  };
-}
-
 /**
  * 검색 서비스: Domestic(Amazon) + Global(Direct Search 카드) 병렬 호출 후 합침
- * - Amazon 성공: 실제 상품 | 실패/0건: Search Link 카드 1개만 (정직한 폴백)
- * - Global: 사이트별 Direct Search 카드만 (가짜 상품 없음)
+ * - 0건이면 빈 배열만 반환. 가짜/플레이스홀더 카드 없음. 클라이언트 Smart Fallback이 대체 검색 수행.
  */
 export class SearchService {
   async search(query: string, page: number = 1): Promise<SearchResult> {
@@ -34,11 +17,13 @@ export class SearchService {
       return { results: [], total: 0, metadata: { domesticCount: 0, internationalCount: 0 } };
     }
 
-    const [domesticProducts, globalProducts] = await Promise.all([
-      this.fetchDomestic(trimmed, page),
-      globalMockProvider.search(trimmed, page),
-    ]);
+    const domesticProducts = await this.fetchDomestic(trimmed, page);
 
+    if (domesticProducts.length === 0) {
+      return { results: [], total: 0, metadata: { domesticCount: 0, internationalCount: 0 } };
+    }
+
+    const globalProducts = await globalMockProvider.search(trimmed, page);
     const results: Product[] = [...domesticProducts, ...globalProducts];
     const domesticCount = domesticProducts.length;
     const internationalCount = globalProducts.length;
@@ -50,16 +35,14 @@ export class SearchService {
     };
   }
 
-  /** Domestic: Amazon 호출, 실패/0건 시 Search Link 카드 1개만 반환 (Mock 미사용) */
+  /** Domestic: Amazon 호출. 실패/0건 시 빈 배열 반환 (가짜 카드 없음) */
   private async fetchDomestic(query: string, page: number): Promise<Product[]> {
     try {
       const list = await amazonProvider.search(query, page);
-      if (list.length > 0) return list;
-      console.warn('⚠️ SearchService: Amazon returned empty, showing honest fallback card.');
-      return [buildAmazonSearchLinkCard(query)];
+      return list ?? [];
     } catch (err) {
-      console.error('❌ SearchService: Amazon error, showing honest fallback card:', err);
-      return [buildAmazonSearchLinkCard(query)];
+      console.error('❌ SearchService: Amazon error, returning empty.', err);
+      return [];
     }
   }
 }

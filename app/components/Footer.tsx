@@ -41,12 +41,12 @@ export default function Footer() {
           </h3>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="/terms" className="hover:text-white transition-colors">
                 Terms of Service
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-white transition-colors">
+              <a href="/privacy" className="hover:text-white transition-colors">
                 Privacy Policy
               </a>
             </li>

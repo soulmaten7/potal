@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
+import { filterSuggestions, MOCK_SUGGESTIONS } from "@/app/lib/suggestions";
 
 interface SearchOverlayProps {
   isOpen: boolean;
@@ -11,6 +12,10 @@ interface SearchOverlayProps {
   recentSearches: string[];
   onRemoveItem: (term: string) => void;
   onClearAll: () => void;
+  /** 2자 이상 입력 시 표시할 연관 검색어 (PC와 동일 Mock 필터 결과). 미전달 시 내부 MOCK_SUGGESTIONS 필터 사용 */
+  suggestions?: string[];
+  /** 연관 검색어 클릭 시: 검색 실행 후 오버레이 닫기 */
+  onSuggestionSelect?: (term: string) => void;
 }
 
 export function SearchOverlay({
@@ -22,8 +27,20 @@ export function SearchOverlay({
   recentSearches,
   onRemoveItem,
   onClearAll,
+  suggestions: suggestionsFromParent,
+  onSuggestionSelect,
 }: SearchOverlayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  /** PC와 동일한 Mock 필터: 2자 이상 입력 시 MOCK_SUGGESTIONS에서 includes 필터 */
+  const displaySuggestions = useMemo(() => {
+    const input = query.trim();
+    if (input.length < 2) return [];
+    return filterSuggestions(input, MOCK_SUGGESTIONS);
+  }, [query]);
+
+  const suggestions = suggestionsFromParent != null && suggestionsFromParent.length > 0 ? suggestionsFromParent : displaySuggestions;
+  const showSuggestions = query.trim().length >= 2 && suggestions.length > 0;
 
   useEffect(() => {
     if (isOpen) {
@@ -43,6 +60,15 @@ export function SearchOverlay({
   const handleRecentClick = (term: string) => {
     onSearch(term);
     onClose();
+  };
+
+  const handleSuggestionClick = (term: string) => {
+    if (onSuggestionSelect) {
+      onSuggestionSelect(term);
+    } else {
+      onSearch(term);
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
@@ -96,8 +122,28 @@ export function SearchOverlay({
         </form>
       </header>
 
+      {/* 연관 검색어: 2자 이상 입력 시 입력창 바로 아래 */}
+      {showSuggestions && (
+        <div className="shrink-0 w-full bg-white border-b border-slate-200 px-3 py-2">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2 px-1">Suggestions</p>
+          <ul className="space-y-0 max-h-48 overflow-y-auto overscroll-contain">
+            {suggestions.map((term, idx) => (
+              <li key={`${term}-${idx}`}>
+                <button
+                  type="button"
+                  onClick={() => handleSuggestionClick(term)}
+                  className="w-full text-left px-3 py-2.5 text-sm text-slate-800 hover:bg-indigo-50 hover:text-indigo-700 active:bg-indigo-100 rounded-lg transition-colors"
+                >
+                  {term}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* 바디: 최근 검색어 */}
-      <div className="flex-1 overflow-y-auto px-4 py-3">
+      <div className="flex-1 overflow-y-auto px-4 py-3 min-h-0">
         <h3 className="text-sm font-bold text-slate-800 mb-2">Recent searches</h3>
         {recentSearches.length === 0 ? (
           <p className="text-xs text-slate-500 py-2">No recent searches.</p>

@@ -25,7 +25,7 @@ export function DeliveryBadge({ info, compact }: DeliveryBadgeProps) {
   const textClass = compact ? "text-[10px]" : "text-xs";
   const markClass = info.colorClass ?? BRAND_FALLBACK[info.brandId] ?? "font-medium text-slate-600";
   return (
-    <span className={`inline-flex items-center gap-0.5 flex-wrap ${textClass}`}>
+    <span className={`inline-flex items-center gap-0.5 min-w-0 overflow-hidden ${compact ? "flex-nowrap truncate" : "flex-wrap"} ${textClass}`}>
       {info.originalMark && (
         <span className={markClass}>{info.originalMark}</span>
       )}

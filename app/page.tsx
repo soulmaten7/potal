@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { useSupabase } from './context/SupabaseProvider';
 import { useUserPreferences } from './hooks/useUserPreferences';
+import { useProductSearch, inferCategoriesFromQuery, HOME_INIT_SEARCH_KEYWORD } from './hooks/useProductSearch';
 import type { Product } from './types/product';
 import { Header } from './components/Header';
 import { ProductCard } from './components/ProductCard';
@@ -13,108 +14,15 @@ import { FilterBar } from './components/FilterBar';
 import { SearchOverlay } from './components/SearchOverlay';
 import { SearchInsight } from './components/search/SearchInsight';
 import { ShippingGuideModal } from './components/ShippingGuideModal';
+import { EmptyState } from './components/EmptyState';
+import { interleaveDomesticInternational } from './lib/product-utils';
+import { filterSuggestions, MOCK_SUGGESTIONS } from './lib/suggestions';
 
 export type { Product } from './types/product';
-
-interface SearchResponse {
-  results: Product[];
-  total: number;
-  metadata?: {
-    domesticCount: number;
-    internationalCount: number;
-  };
-  personalization?: {
-    greeting?: string;
-    message?: string;
-  } | null;
-}
 
 type Recommendation = Product & {
   keywords: string[];
 };
-
-/** 홈 초기 진입 시 1회 자동 검색 키워드 (Real Data, Mock 제거) */
-const HOME_INIT_SEARCH_KEYWORD = 'Trending Tech';
-
-/** 브랜드 불용어: 필터에 절대 넣지 않음 (대소문자 무관) */
-const BRAND_BLACKLIST = new Set(
-  ['Search', 'Generic', 'Brand', 'N/A', 'General', 'Music', 'Audio', 'Wireless'].map((s) => s.toLowerCase())
-);
-
-/** 현재 로드된 상품 리스트에서 상위 10개 브랜드 추출 (Real Data, LLM 미사용). Blacklist 적용. */
-function extractBrandsFromProducts(products: Product[]): string[] {
-  const count = new Map<string, number>();
-  for (const p of products) {
-    const title = (p.name || '').trim();
-    if (title.toLowerCase().startsWith('search')) continue;
-    let brand = (p as { brand?: string }).brand;
-    if (typeof brand === 'string' && brand.trim()) {
-      brand = brand.trim();
-    } else {
-      const firstWord = title.split(/\s+/)[0];
-      if (firstWord) brand = firstWord;
-      else continue;
-    }
-    const key = brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase();
-    if (!key || BRAND_BLACKLIST.has(key.toLowerCase())) continue;
-    count.set(key, (count.get(key) ?? 0) + 1);
-  }
-  return Array.from(count.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([b]) => b);
-}
-
-/**
- * 실시간 메모리 분석: 현재 로드된 상품 Title만 스캔하여 필터 옵션 추출.
- * DB 저장 없음. Real Data Only (등장한 키워드만 필터에 노출).
- */
-function extractFilterOptionsFromProducts(products: Product[]): Record<string, string[]> {
-  const titles = products.map((p) => (p.name || '').toLowerCase()).filter(Boolean);
-  const out: Record<string, string[]> = {};
-  for (const [group, candidates] of Object.entries(FILTER_KEYWORD_CANDIDATES)) {
-    const matched = candidates.filter((kw) =>
-      titles.some((t) => t.includes(kw.toLowerCase()))
-    );
-    if (matched.length > 0) out[group] = matched;
-  }
-  const brands = extractBrandsFromProducts(products);
-  if (brands.length > 0) out['Brands'] = brands;
-  return out;
-}
-
-/** 필터 키워드 후보군: 상품 Title에 등장한 것만 필터 옵션으로 활성화 (Real Data Only) */
-const FILTER_KEYWORD_CANDIDATES: Record<string, string[]> = {
-  Specs: [
-    '256GB', '512GB', '1TB', '2TB', '8GB', '16GB RAM', '32GB RAM', '64GB',
-    'Noise Cancelling', 'Wireless', 'Bluetooth', 'USB-C', 'Touch', 'Retina',
-  ],
-  Condition: ['New', 'Refurbished', 'Renewed', 'Open Box', 'Like New', 'Used'],
-  'Model/Series': ['Pro', 'Max', 'Air', 'Ultra', 'Plus'],
-};
-
-/** 검색어 → 관심 카테고리 추론 (addCategory용) */
-function inferCategoriesFromQuery(query: string): string[] {
-  const q = (query || '').toLowerCase().trim();
-  if (!q) return [];
-  const out: string[] = [];
-  const terms: { keys: string[]; category: string }[] = [
-    { keys: ['audio', 'headphone', 'earbud', 'sony', 'bose', 'airpod', 'speaker'], category: 'Audio' },
-    { keys: ['lego', 'toy', 'game', 'razor', 'crest'], category: 'Toys' },
-    { keys: ['ipad', 'laptop', 'macbook', 'phone', 'samsung', 'galaxy', 'electronics'], category: 'Electronics' },
-    { keys: ['camping', 'tent', 'sleeping', 'outdoor', 'naturehike', 'coleman'], category: 'Outdoor' },
-    { keys: ['gaming', 'keyboard', 'mouse', 'monitor', 'gpu', 'rtx', 'deathadder', 'keychron'], category: 'Gaming' },
-    { keys: ['fashion', 'nike', 'adidas', 'shoes', 'dress', 'jacket', 'hoodie'], category: 'Fashion' },
-    { keys: ['home', 'kitchen', 'lamp', 'desk', 'wayfair'], category: 'Home' },
-    { keys: ['beauty', 'skin', 'cosmetic'], category: 'Beauty' },
-  ];
-  for (const { keys, category } of terms) {
-    if (keys.some((k) => q.includes(k))) out.push(category);
-  }
-  if (out.length === 0) out.push('General');
-  return out;
-}
-
 
 // Search icon for hero search button
 function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -667,25 +575,52 @@ const SHIPPING_SPEED_OPTIONS = [
   'Economy (7+ days)',
 ] as const;
 
-// Session persistence keys
-const STORAGE_KEY = 'potal_search_state';
-const SESSION_SCROLL_KEY = 'potal_session_scroll_y';
-const MAX_FREE_SEARCHES = 5;
-const FREE_SEARCH_KEY = 'potal_free_search_count';
-const LAST_SEARCH_DATE_KEY = 'potal_free_search_date';
-
-// 검색 기록 저장 키: 로그인/게스트 분리
-const RECENT_SEARCHES_KEY_USER = 'potal_recent_searches_user';
-const RECENT_SEARCHES_KEY_GUEST = 'potal_recent_searches_guest';
-function getRecentSearchesKey(hasSession: boolean): string {
-  return hasSession ? RECENT_SEARCHES_KEY_USER : RECENT_SEARCHES_KEY_GUEST;
-}
-
-// AI Smart Filters: API에서 받아온 데이터 사용 (getAiFilterOptions Mock 제거)
-
 export default function Home() {
   const { supabase, session } = useSupabase();
-  const { addSearchTerm, addCategory, interestedCategories } = useUserPreferences();
+  const { addCategory, interestedCategories } = useUserPreferences();
+  const search = useProductSearch();
+  const {
+    query,
+    setQuery,
+    domestic,
+    international,
+    loading,
+    searched,
+    metadata,
+    personalization,
+    visibleCount,
+    setVisibleCount,
+    loadingMore,
+    isHomeMode,
+    setIsHomeMode,
+    isFallbackMode,
+    homeSearchKeyword,
+    homeProfile,
+    searchCount,
+    showLimitModal,
+    setShowLimitModal,
+    recentSearches,
+    showRecentDropdown,
+    setShowRecentDropdown,
+    recentSearchesEnabled,
+    setRecentSearchesEnabled,
+    aiFilterOptions,
+    selectedAiFilters,
+    setSelectedAiFilters,
+    aiFiltersLoading,
+    sortBy,
+    setSortBy,
+    priceRange,
+    setPriceRange,
+    hasMorePages,
+    lastSearchQuery,
+    executeSearch,
+    loadMoreResults,
+    clearRecentSearches,
+    removeRecentSearch,
+    turnOffRecentSearches,
+    turnOnRecentSearches,
+  } = search;
 
   /** 상품 클릭 시 관심 카테고리 반영 (My Picks 정렬에 사용) */
   const handleProductClick = useCallback(
@@ -698,7 +633,6 @@ export default function Home() {
     [addCategory],
   );
 
-  const [query, setQuery] = useState('');
   const [mainCategory, setMainCategory] = useState<MainCategory>(null);
   const [subCategory, setSubCategory] = useState<string | null>(null);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
@@ -706,219 +640,28 @@ export default function Home() {
   const [activeSub, setActiveSub] = useState<string | null>(null);
   const [directOnly, setDirectOnly] = useState(false);
   const [usedOnly, setUsedOnly] = useState(false);
-  const [domestic, setDomestic] = useState<Product[]>([]);
-  const [international, setInternational] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [searchPage, setSearchPage] = useState(1);
-  const [lastSearchQuery, setLastSearchQuery] = useState('');
-  const [hasMorePages, setHasMorePages] = useState(true);
-  const [metadata, setMetadata] = useState<{ domesticCount: number; internationalCount: number } | null>(null);
-  const [personalization, setPersonalization] = useState<{ greeting?: string; message?: string } | null>(null);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [showRecentDropdown, setShowRecentDropdown] = useState(false);
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [splashOpacity, setSplashOpacity] = useState(0);
-  const [recentSearchesEnabled, setRecentSearchesEnabled] = useState(true);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [suggestionHighlightIndex, setSuggestionHighlightIndex] = useState(-1);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
-  // Committed filter state (applied to list)
-  const [priceRange, setPriceRange] = useState(1000); // 0 ~ 1000 (1000+)
   const [selectedSites, setSelectedSites] = useState<string[]>([]);
   const [selectedSpeeds, setSelectedSpeeds] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc'>('relevance');
-  // Temporary filter state (edited via UI before applying)
   const [tempPriceRange, setTempPriceRange] = useState(1000);
   const [tempSelectedSites, setTempSelectedSites] = useState<string[]>([]);
   const [tempSelectedSpeeds, setTempSelectedSpeeds] = useState<string[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileActiveMain, setMobileActiveMain] = useState<MainCategoryId | null>(null);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [searchCount, setSearchCount] = useState(0);
-  const [showLimitModal, setShowLimitModal] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [homeProfile, setHomeProfile] = useState<{ nickname?: string; interest_keywords?: string[] } | null>(null);
-  const [homeSearchKeyword, setHomeSearchKeyword] = useState<string>('');
-  const [isHomeMode, setIsHomeMode] = useState(true);
-  const [selectedAiFilters, setSelectedAiFilters] = useState<Set<string>>(new Set());
-  const [aiFilterOptions, setAiFilterOptions] = useState<Record<string, string[]>>({});
-  const [aiFiltersLoading, setAiFiltersLoading] = useState(false);
   const [mobileTab, setMobileTab] = useState<'all' | 'domestic' | 'global'>('all');
   const [mobileTabLoading, setMobileTabLoading] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [showShippingGuide, setShowShippingGuide] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const recentDropdownRef = useRef<HTMLDivElement>(null);
-
-  // Display count for "Show more" functionality
-  const [visibleCount, setVisibleCount] = useState(16);
-  const [loadingMore, setLoadingMore] = useState(false);
-
-  // Fetch profile for AI banner (logged-in only)
-  useEffect(() => {
-    if (!session?.user?.id || !supabase) return;
-    (async () => {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('nickname, interest_keywords')
-          .eq('id', session.user.id)
-          .maybeSingle();
-        if (!error && data) {
-          const interestKeywords = Array.isArray(data.interest_keywords)
-            ? (data.interest_keywords as string[])
-            : [];
-
-          setHomeProfile({
-            nickname: data.nickname ?? undefined,
-            interest_keywords: interestKeywords.length ? interestKeywords : undefined,
-          });
-        } else {
-          setHomeProfile(null);
-        }
-      } catch {
-        setHomeProfile(null);
-      }
-    })();
-  }, [session?.user?.id, supabase]);
-
-  // 홈 초기 진입: 저장소 비우고 initQuery로 검색 (로그인+관심키워드 있으면 첫 키워드, 아니면 Trending Tech). 2초 Safety Timeout 유지.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    try {
-      window.sessionStorage.clear();
-    } catch {
-      // ignore
-    }
-
-    const forceStopLoading = () => {
-      setSearched(true);
-      setLoading(false);
-    };
-
-    const safetyTimer = setTimeout(() => {
-      console.warn('⚠️ Force stopping loading due to timeout');
-      forceStopLoading();
-    }, 2000);
-
-    const kw = homeProfile?.interest_keywords;
-    const initQuery =
-      session && kw?.length
-        ? kw[Math.floor(Math.random() * kw.length)]
-        : HOME_INIT_SEARCH_KEYWORD;
-
-    setHomeSearchKeyword(initQuery);
-
-    const runInitSearch = async () => {
-      try {
-        await executeSearch(initQuery, null, null);
-      } catch (e) {
-        console.error('Init search failed', e);
-      } finally {
-        clearTimeout(safetyTimer);
-        forceStopLoading();
-      }
-    };
-
-    requestAnimationFrame(() => {
-      runInitSearch();
-    });
-
-    return () => clearTimeout(safetyTimer);
-  }, [session, homeProfile]);
-
-  // Persist search state to sessionStorage whenever key state changes
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    // Only persist when a search has actually been performed
-    if (!searched) return;
-    try {
-      const payload = JSON.stringify({
-        query,
-        domestic,
-        international,
-        searched,
-        metadata,
-        personalization,
-        sortBy,
-        priceRange,
-      });
-      window.sessionStorage.setItem(STORAGE_KEY, payload);
-    } catch (e) {
-      console.error('Failed to persist session search state:', e);
-    }
-  }, [query, domestic, international, searched, metadata, personalization, sortBy, priceRange]);
-
-  // Persist scroll position while the user browses
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const handleScroll = () => {
-      try {
-        window.sessionStorage.setItem(SESSION_SCROLL_KEY, String(window.scrollY));
-      } catch {
-        // ignore
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Load recent searches enabled state from localStorage on mount (공통)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const enabled = window.localStorage.getItem('potal_recent_searches_enabled');
-    if (enabled !== null) {
-      try {
-        setRecentSearchesEnabled(JSON.parse(enabled));
-      } catch {
-        // ignore
-      }
-    }
-  }, []);
-
-  // 로그인/로그아웃 시 해당 사용자 저장소에서 검색 기록 갈아끼우기
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const key = getRecentSearchesKey(!!session);
-    const stored = window.localStorage.getItem(key);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setRecentSearches(Array.isArray(parsed) ? parsed : []);
-      } catch (e) {
-        console.error('Failed to parse recent searches:', e);
-        setRecentSearches([]);
-      }
-    } else {
-      setRecentSearches([]);
-    }
-  }, [session]);
-
-  // Initialize daily free search counter from localStorage
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-      const storedDate = window.localStorage.getItem(LAST_SEARCH_DATE_KEY);
-      const storedCount = window.localStorage.getItem(FREE_SEARCH_KEY);
-
-      if (storedDate === today && storedCount !== null) {
-        const parsed = Number(storedCount);
-        setSearchCount(Number.isNaN(parsed) ? 0 : parsed);
-      } else {
-        window.localStorage.setItem(LAST_SEARCH_DATE_KEY, today);
-        window.localStorage.setItem(FREE_SEARCH_KEY, '0');
-        setSearchCount(0);
-      }
-    } catch (e) {
-      console.error('Failed to initialize free search counter:', e);
-    }
-  }, []);
 
   // Keep temp filter state in sync with committed state (e.g. after reset)
   useEffect(() => {
@@ -930,58 +673,7 @@ export default function Home() {
   // 필터 적용 시 리스트가 바뀌므로 visibleCount를 16으로 초기화
   useEffect(() => {
     setVisibleCount(16);
-  }, [selectedAiFilters, priceRange, selectedSites, selectedSpeeds]);
-
-  // Save search query to recent searches (현재 로그인/게스트 키에 저장)
-  const saveToRecentSearches = (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
-    const key = getRecentSearchesKey(!!session);
-    setRecentSearches((prev) => {
-      const filtered = prev.filter((item) => item.toLowerCase() !== searchQuery.toLowerCase());
-      const updated = [searchQuery, ...filtered].slice(0, 10);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(key, JSON.stringify(updated));
-      }
-      return updated;
-    });
-  };
-
-  // Clear all recent searches (현재 사용자 키만 삭제)
-  const clearRecentSearches = () => {
-    setRecentSearches([]);
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(getRecentSearchesKey(!!session));
-    }
-  };
-
-  // Remove single recent search item
-  const removeRecentSearch = (term: string) => {
-    setRecentSearches((prev) => {
-      const updated = prev.filter((item) => item !== term);
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(getRecentSearchesKey(!!session), JSON.stringify(updated));
-      }
-      return updated;
-    });
-  };
-
-  // Turn off recent searches feature
-  const turnOffRecentSearches = () => {
-    setRecentSearchesEnabled(false);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('potal_recent_searches_enabled', JSON.stringify(false));
-    }
-    // Keep dropdown open to show "Turn on" option
-  };
-
-  // Turn on recent searches feature
-  const turnOnRecentSearches = () => {
-    setRecentSearchesEnabled(true);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('potal_recent_searches_enabled', JSON.stringify(true));
-    }
-    // Dropdown will automatically show list if there are recent searches
-  };
+  }, [selectedAiFilters, priceRange, selectedSites, selectedSpeeds, setVisibleCount]);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -1004,7 +696,7 @@ export default function Home() {
     }
   }, [showRecentDropdown]);
 
-  // Autocomplete: 2자 이상 입력 시 /api/autocomplete 호출
+  // Autocomplete: 2자 이상 입력 시 Mock 데이터 필터링 (PC/모바일 공통, 즉시 반영)
   useEffect(() => {
     const trimmed = query.trim();
     if (trimmed.length < 2) {
@@ -1012,33 +704,20 @@ export default function Home() {
       setSuggestionHighlightIndex(-1);
       return;
     }
-    const t = setTimeout(async () => {
-      setSuggestionsLoading(true);
-      try {
-        const res = await fetch(`/api/autocomplete?q=${encodeURIComponent(trimmed)}`);
-        const data = await res.json();
-        const list = Array.isArray(data.suggestions) ? data.suggestions : [];
-        setSuggestions(list);
-        setSuggestionHighlightIndex(list.length > 0 ? 0 : -1);
-      } catch {
-        setSuggestions([]);
-        setSuggestionHighlightIndex(-1);
-      } finally {
-        setSuggestionsLoading(false);
-      }
-    }, 200);
-    return () => clearTimeout(t);
+    const list = filterSuggestions(trimmed, MOCK_SUGGESTIONS);
+    setSuggestions(list);
+    setSuggestionHighlightIndex(list.length > 0 ? 0 : -1);
   }, [query]);
 
-  // 인트로 스플래시: PC는 미노출, 모바일은 세션당 1회만 (sessionStorage)
-  useEffect(() => {
+  // 인트로 스플래시: useLayoutEffect 최상단에서 sessionStorage 체크 → Hydration 불일치 방지 및 깜빡임 최소화
+  useLayoutEffect(() => {
     if (typeof window === 'undefined') return;
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    if (isDesktop) {
+    if (sessionStorage.getItem('potal_intro_shown') === '1') {
       setShowSplash(false);
       return;
     }
-    if (sessionStorage.getItem('potal_intro_shown') === '1') {
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    if (isDesktop) {
       setShowSplash(false);
       return;
     }
@@ -1051,133 +730,13 @@ export default function Home() {
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
 
-  // Extracted search execution logic - can be called from anywhere
-  const executeSearch = async (
-    searchQuery: string,
-    mainCat: MainCategory | null,
-    subCat: string | null,
-  ) => {
-    const trimmed = searchQuery.trim();
-    if (!trimmed) return;
-
-    // Free search limit for guests
-    if (!session) {
-      if (searchCount >= MAX_FREE_SEARCHES) {
-        setShowLimitModal(true);
-        return;
-      }
-    }
-
-    // Save to recent searches & 관심 카테고리 반영 (My Picks 정렬에 사용)
-    saveToRecentSearches(trimmed);
-    addSearchTerm(trimmed);
-    inferCategoriesFromQuery(trimmed).forEach((c) => addCategory(c));
-    setShowRecentDropdown(false);
-
-    setLoading(true);
-    setMobileTab("all");
-    setSearched(true);
-    setDomestic([]);
-    setInternational([]);
-    setVisibleCount(20);
-    setSearchPage(1);
-    setLastSearchQuery(trimmed);
-    setHasMorePages(true);
-
-    try {
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(trimmed)}&page=1`
-      );
-      const data: SearchResponse = await res.json();
-      const rawResults = data.results || [];
-      // Quality Control: 광고/스폰서 상품 노출 제거 (진짜 베스트만 표시)
-      const allResults = rawResults.filter(
-        (p: { is_sponsored?: boolean; is_ad?: boolean }) => !p.is_sponsored && !p.is_ad
-      );
-
-      // 1. Filtering logic (domestic vs. international)
-      //    Search all relevant fields for 'domestic' / 'international' strings (case-insensitive)
-      const domesticResults = allResults.filter((p: any) => {
-        const val = (p.shipping || (p as any).category || '').toString().toLowerCase();
-        return val.includes('domestic');
-      });
-
-      const internationalResults = allResults.filter((p: any) => {
-        const val = (p.shipping || (p as any).category || '').toString().toLowerCase();
-        return val.includes('international');
-      });
-      
-      console.log('📊 Results:', {
-        total: allResults.length,
-        domestic: domesticResults.length,
-        international: internationalResults.length,
-        internationalDetails: {
-          total: internationalResults.length,
-          allIds: internationalResults.map(p => p.id),
-          sample: internationalResults.slice(0, 10).map(p => ({
-            id: p.id,
-            name: p.name.substring(0, 40),
-            shipping: p.shipping,
-            category: (p as any).category
-          }))
-        }
-      });
-      
-      // Set results and reset display counts simultaneously - EXACT SAME LOGIC FOR BOTH
-      setDomestic(domesticResults);
-      setInternational(internationalResults);
-      setVisibleCount(16);
-      setMetadata(data.metadata || null);
-      setPersonalization(data.personalization ?? null);
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0, behavior: 'auto' });
-      }
-
-      // Real Data Only: extractFromProducts — 실시간 메모리 분석, DB 저장 없음
-      setAiFiltersLoading(true);
-      const allProducts = [...domesticResults, ...internationalResults];
-      const filterOptions = extractFilterOptionsFromProducts(allProducts);
-      setAiFilterOptions(filterOptions);
-      setSelectedAiFilters(new Set());
-      setAiFiltersLoading(false);
-      
-      console.log('✅ State Updated:', {
-        domesticCount: domesticResults.length,
-        internationalCount: internationalResults.length,
-        visibleCount: 16
-      });
-    } catch (err) {
-      console.error('Search failed:', err);
-      setDomestic([]);
-      setInternational([]);
-      setMetadata(null);
-      setPersonalization(null);
-    } finally {
-      setLoading(false);
-      // Increment free search counter only for guests when a search completes
-      if (!session) {
-        try {
-          const next = searchCount + 1;
-          setSearchCount(next);
-          if (typeof window !== 'undefined') {
-            const today = new Date().toISOString().slice(0, 10);
-            window.localStorage.setItem(FREE_SEARCH_KEY, String(next));
-            window.localStorage.setItem(LAST_SEARCH_DATE_KEY, today);
-          }
-        } catch (e) {
-          console.error('Failed to persist free search counter:', e);
-        }
-      }
-    }
-  };
-
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    // 검색 버튼은 항상 활성 상태로 보이지만
-    // 실제 실행은 query가 비어 있으면 막는다.
-    if (loading || !query.trim()) return;
+    const trimmed = query.trim();
+    if (loading || !trimmed) return;
     setIsHomeMode(false);
-    await executeSearch(query, mainCategory, subCategory);
+    setMobileTab('all');
+    await executeSearch(trimmed, mainCategory, subCategory);
   };
 
   // --- Filtering helpers for sidebar filters ---
@@ -1263,41 +822,13 @@ export default function Home() {
   };
 
   const resetToHome = () => {
-    if (typeof window !== 'undefined') window.location.href = '/';
-  };
-
-  const loadMoreResults = async () => {
-    if (loadingMore || !lastSearchQuery.trim()) return;
-    setLoadingMore(true);
-    let nextPage = 0;
-    try {
-      nextPage = searchPage + 1;
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(lastSearchQuery.trim())}&page=${nextPage}`
-      );
-      const data: SearchResponse = await res.json();
-      const rawResults = data.results || [];
-      const allResults = rawResults.filter(
-        (p: Product) => !p.is_sponsored && !p.is_ad
-      );
-      const newDomestic = allResults.filter((p: Product) => {
-        const val = (p.shipping || (p as { category?: string }).category || '').toString().toLowerCase();
-        return val.includes('domestic');
-      });
-      const newInternational = allResults.filter((p: Product) => {
-        const val = (p.shipping || (p as { category?: string }).category || '').toString().toLowerCase();
-        return val.includes('international');
-      });
-      setDomestic((prev) => [...prev, ...newDomestic]);
-      setInternational((prev) => [...prev, ...newInternational]);
-      setSearchPage(nextPage);
-      if (newDomestic.length === 0 && newInternational.length === 0) setHasMorePages(false);
-      setVisibleCount((prev) => prev + 16);
-    } catch (err) {
-      console.error('Load more failed:', err);
-      setHasMorePages(false);
-    } finally {
-      setLoadingMore(false);
+    if (typeof window !== 'undefined') {
+      try {
+        window.sessionStorage.clear();
+      } catch {
+        // ignore
+      }
+      window.location.href = '/';
     }
   };
 
@@ -1340,14 +871,12 @@ export default function Home() {
   const displayedDomestic = sortedDomestic.slice(0, visibleCount);
   const displayedInternational = sortedInternational.slice(0, visibleCount);
 
-  // 모바일 탭용: All / Domestic / Global 필터 리스트 (Real Data만, !searched 시 초기 로딩 중이면 빈 배열)
-  const mobileDisplayedList = useMemo((): { product: Product; type: 'domestic' | 'international' }[] => {
+  // 모바일·PC 공통: 강제 지퍼 [Dom[0], Intl[0], Dom[1], Intl[1], ...]. 부족한 쪽은 null(빈 슬롯), 반대쪽 열 침범 방지
+  const mobileDisplayedList = useMemo((): { product: Product | null; type: 'domestic' | 'international' }[] => {
     if (!searched) return [];
     if (mobileTab === 'all') {
-      return [
-        ...displayedDomestic.map((p) => ({ product: p, type: 'domestic' as const })),
-        ...displayedInternational.map((p) => ({ product: p, type: 'international' as const })),
-      ];
+      const zipper = interleaveDomesticInternational(displayedDomestic, displayedInternational, { fillNull: true });
+      return zipper.map((slot) => ({ product: slot.item, type: slot.type }));
     }
     if (mobileTab === 'domestic') return displayedDomestic.map((p) => ({ product: p, type: 'domestic' as const }));
     return displayedInternational.map((p) => ({ product: p, type: 'international' as const }));
@@ -1360,6 +889,14 @@ export default function Home() {
     (visibleCount < sortedDomestic.length ||
       visibleCount < sortedInternational.length ||
       hasMorePages);
+
+  const showEmptyState =
+    searched &&
+    !loading &&
+    !isHomeMode &&
+    domestic.length === 0 &&
+    international.length === 0 &&
+    !isFallbackMode;
 
   // Debug logs - display state
   if (searched && !loading) {
@@ -1391,11 +928,25 @@ export default function Home() {
       : 'For You'
     : '';
   const homeBadgeDisplayText = homeBadgeLabel;
+  const homeHeaderText =
+    homeBadgeLabel === 'For You'
+      ? '✨ Personalized Picks for You'
+      : homeBadgeLabel === 'Trending'
+        ? '🔥 Global Trending Picks'
+        : '';
+
+  /** 홈 모드 서브헤더: Domestic/Global 동일. 로그인 → 관심사 기반, 게스트 → 트렌딩 (POTAL 비교 본질) */
+  const getHomeSubtitle = (): string => {
+    if (!isHomeMode) return '';
+    return session ? '🎯 Based on your interests' : '🔥 Trending Now';
+  };
+  const getDomesticSubtitle = getHomeSubtitle;
+  const getGlobalSubtitle = getHomeSubtitle;
 
   return (
     <div className="min-h-screen bg-slate-50">
 
-      {/* 인트로 스플래시: 모바일만, 세션당 1회. PC는 md:hidden으로 미렌더 + JS에서 즉시 숨김 */}
+      {/* 인트로 스플래시: 모바일만, 세션당 1회. 클라이언트에서 이미 표시된 경우 렌더 원천 차단(좀비 스플래시 방지) */}
       {showSplash && (
         <div
           className="fixed inset-0 z-[99999] flex items-center justify-center bg-white md:hidden"
@@ -1406,45 +957,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* 모바일 전용: 슬림 헤더 (검색 결과 시 뒤로가기, 아니면 로고 + 검색) */}
-      <div className="md:hidden sticky top-0 z-[9999] border-b border-gray-200/80 bg-white/95 backdrop-blur-sm">
-        <div className="flex items-center gap-2 px-2 py-1.5 min-h-[52px]">
-          {searched ? (
-            <button
-              type="button"
-              onClick={resetToHome}
-              className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors"
-              aria-label="Back to home"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={resetToHome}
-              className="shrink-0 inline-flex items-center gap-1 cursor-pointer hover:opacity-90"
-            >
-              <span className="text-xl font-bold text-indigo-600 tracking-tight">POTAL</span>
-            </button>
-          )}
-          <div className="flex-1 min-w-0">
-            <button
-              type="button"
-              onClick={() => setIsSearchOverlayOpen(true)}
-              className="relative w-full h-10 rounded-full bg-slate-100 border-2 border-purple-400 shadow-sm overflow-hidden flex items-center text-left cursor-pointer hover:border-purple-500 transition-colors"
-              aria-label="Search (tap to open search)"
-            >
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none">
-                <SearchIcon className="w-full h-full" />
-              </span>
-              <span className={`pl-9 pr-3 text-sm truncate block w-full ${query ? 'text-slate-800' : 'text-slate-500'}`}>
-                {query || 'Search for products...'}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* PC 헤더: md 이상에서만 표시 */}
       <div className="hidden md:block">
         <Header
@@ -1454,8 +966,8 @@ export default function Home() {
         />
       </div>
 
-      {/* Main Content: 모바일 gap 최소화, 하단 네비 여백 */}
-      <main className="w-full max-w-[1800px] mx-auto px-0 sm:px-6 py-0 md:py-8 pb-16 md:pb-8">
+      {/* Main Content: 모바일 gap 최소화(검색창–FilterBar 밀착), 하단 네비 여백 */}
+      <main className="w-full px-0 sm:px-6 py-0 md:py-8 pb-16 md:pb-8 mt-0">
         <div className="bg-white md:rounded-2xl md:shadow-sm md:border border-gray-200 px-0 sm:px-6 py-0 md:py-6 sm:py-8 overflow-visible">
           {/* 검색 행: PC에서만 표시 (모바일은 상단 슬림 검색 사용) */}
           <div className="relative hidden md:flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2 mb-4 overflow-visible">
@@ -1568,7 +1080,7 @@ export default function Home() {
                       }
                     }
                   }}
-                  placeholder="Search for products (e.g., LEGO, AirPods, Headphones)..."
+                  placeholder="Search for products..."
                   className="h-full w-full px-5 pl-12 pr-[75px] md:pr-[130px] text-base text-slate-800 placeholder:text-slate-500 focus:outline-none border-0 bg-transparent"
                 />
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none w-5 h-5">
@@ -1608,9 +1120,7 @@ export default function Home() {
                         <span className="text-xs font-semibold text-slate-800">Suggestions</span>
                       </div>
                       <div className="max-h-64 overflow-y-auto">
-                        {suggestionsLoading ? (
-                          <div className="px-4 py-3 text-xs text-slate-500">Loading...</div>
-                        ) : suggestions.length === 0 ? (
+                        {suggestions.length === 0 ? (
                           <div className="px-4 py-3 text-xs text-slate-500">No suggestions.</div>
                         ) : (
                           suggestions.map((s, idx) => (
@@ -1668,38 +1178,102 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 모바일 전용: 초기 로딩 시 1열 스켈레톤, 검색 결과 시 FilterBar 또는 홈 헤더 + 1열 리스트 */}
+          {/* 모바일 전용: 슈퍼 스티키(검색창+FilterBar+헤더) + 콘텐츠 */}
           <div className="md:hidden">
-            {searched ? (
-              !isHomeMode ? (
-                <FilterBar
-                  mobileTab={mobileTab}
-                  onTabChange={handleMobileTabChange}
-                  onFilterClick={() => setIsMobileFilterOpen(true)}
-                />
-              ) : (
-                <h2 className="font-bold text-lg mb-0 pt-2 pb-1 px-2 text-slate-800">{homeBadgeLabel === 'For You' ? `✨ ${homeBadgeDisplayText}` : '🔥 Trending Now'}</h2>
-              )
-            ) : (
-              <h2 className="font-bold text-lg mb-0 pt-2 pb-1 px-2 text-slate-800">Loading real products...</h2>
-            )}
-            {searched && mobileTab === 'all' && !isHomeMode && (
-              <div className="grid grid-cols-2 gap-2 px-2 py-2 bg-slate-50/95 backdrop-blur border-b border-slate-200 sticky top-[98px] z-[90]">
-                <div className="text-center text-xs font-bold text-slate-700">🇺🇸 Domestic (Fast)</div>
-                <div className="text-center text-xs font-bold text-slate-700">🌏 Global (Cheap)</div>
+            {/* 단일 스티키 컨테이너: 배경 비침 방지 */}
+            <div className="sticky top-0 z-[1000] bg-white border-b border-slate-200 shadow-md flex flex-col gap-0">
+              {/* 1. 검색 영역 */}
+              <div className="p-3">
+                <div className="flex items-center gap-4 min-h-[44px]">
+                  {searched && !isHomeMode ? (
+                    <button
+                      type="button"
+                      onClick={resetToHome}
+                      className="shrink-0 flex items-center justify-center w-10 h-10 rounded-full text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors"
+                      aria-label="Back to home"
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={resetToHome}
+                      className="shrink-0 inline-flex items-center gap-1 cursor-pointer hover:opacity-90 min-w-0"
+                      aria-label="POTAL Home"
+                    >
+                      <span className="shrink-0 text-xl font-bold text-indigo-600 tracking-tight">POTAL</span>
+                    </button>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <button
+                      type="button"
+                      onClick={() => setIsSearchOverlayOpen(true)}
+                      className="relative w-full h-10 rounded-xl bg-white border-2 border-indigo-500 shadow-sm overflow-hidden flex items-center text-left cursor-pointer hover:border-indigo-600 transition-colors"
+                      aria-label="Search (tap to open search)"
+                    >
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4 pointer-events-none">
+                        <SearchIcon className="w-full h-full" />
+                      </span>
+                      <span className={`pl-9 pr-3 text-sm truncate block w-full ${query ? 'text-slate-800' : 'text-slate-500'}`}>
+                        {query || 'Search for products...'}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {/* 2. FilterBar (검색 결과 있고 !isHomeMode 일 때만) */}
+              {searched && !isHomeMode && (
+                <div className="mt-0">
+                  <FilterBar
+                    mobileTab={mobileTab}
+                    onTabChange={handleMobileTabChange}
+                    onFilterClick={() => setIsMobileFilterOpen(true)}
+                    onShippingGuideClick={() => setShowShippingGuide(true)}
+                  />
+                </div>
+              )}
+              {/* 3. Domestic/Global 헤더 (검색 결과 있을 때만) */}
+              {searched && (isHomeMode ? (
+                <>
+                  <div className="grid grid-cols-2 gap-2 px-2 py-2 bg-slate-50 border-b border-slate-200">
+                    <div className="text-center text-xs font-bold text-slate-700">🇺🇸 Domestic (Fast)</div>
+                    <div className="text-center text-xs font-bold text-slate-700">🌏 Global (Cheap)</div>
+                  </div>
+                  <div className="px-2 py-0.5 border-b border-slate-100/80">
+                    <p className="text-sm text-slate-500 text-center whitespace-nowrap">
+                      {getHomeSubtitle()}
+                    </p>
+                  </div>
+                </>
+              ) : mobileTab === 'all' ? (
+                <div className="grid grid-cols-2 gap-2 px-2 py-2 bg-slate-50 border-b border-slate-200">
+                  <div className="text-center text-xs font-bold text-slate-700">🇺🇸 Domestic (Fast)</div>
+                  <div className="text-center text-xs font-bold text-slate-700">🌏 Global (Cheap)</div>
+                </div>
+              ) : null)}
+            </div>
+
+            {/* 스티키 밖: fallback 배너, 로딩, 그리드 */}
+            {searched && !isHomeMode && isFallbackMode && (
+              <div className="mx-2 mt-2 rounded-xl border border-amber-200 bg-amber-50/90 px-3 py-3 flex gap-2">
+                <span className="shrink-0 text-lg" aria-hidden>💡</span>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">No results for &quot;{query}&quot;.</p>
+                  <p className="text-xs text-slate-600 mt-0.5">Showing {session ? 'Personalized' : 'Trending'} picks instead.</p>
+                </div>
               </div>
             )}
-            {searched && mobileTab === 'all' && isHomeMode && (
-              <div className="px-2 py-2 border-b border-slate-200 bg-slate-50/95">
-                <p className="text-xs text-slate-600">Domestic & Global picks</p>
+            {!searched && (
+              <div className="flex items-center gap-2 px-2 pt-0 pb-0.5 border-b border-slate-100 min-h-0">
+                <span className="font-bold text-sm text-slate-800">Loading real products...</span>
               </div>
             )}
-            <div className="pt-1 pb-2 px-1">
+            <div className="pt-0 pb-1 px-2">
               {mobileTabLoading || !searched ? (
-                <div className="grid grid-cols-1 gap-3 w-full px-2">
+                <div className="grid grid-cols-2 gap-2 w-full">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div key={i} className="rounded-xl border border-slate-100 overflow-hidden bg-slate-50 animate-pulse">
-                      <div className="aspect-square bg-slate-200" />
+                      <div className="h-40 bg-slate-200" />
                       <div className="p-2 space-y-1.5">
                         <div className="h-3 bg-slate-200 rounded w-full" />
                         <div className="h-3 bg-slate-200 rounded w-4/5" />
@@ -1708,27 +1282,42 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-              ) : mobileDisplayedList.length === 0 && !loading ? (
-                <div className="text-center py-8 px-4 bg-slate-50 rounded-xl border border-slate-200 mx-2">
-                  <p className="text-slate-600 font-medium">No trending items found.</p>
-                  <p className="text-sm text-slate-500 mt-1">Try another search above.</p>
-                </div>
-              ) : (
-                <div className="grid gap-3 w-full grid-cols-1 px-2">
-                  {mobileDisplayedList.map(({ product, type }, index) => (
-                    <div key={`${product.id}-${index}`} className="min-w-0">
-                      <ProductCard
-                        product={product}
-                        type={type}
-                        compact={false}
-                        dense={false}
-                        onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")}
-                        onProductClick={handleProductClick}
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
+              ) : (() => {
+                const hasAnyProduct = mobileDisplayedList.some(({ product }) => product != null);
+                if (!hasAnyProduct && !loading) {
+                  return (
+                    <EmptyState
+                      query={query}
+                      onKeywordClick={(kw) => executeSearch(kw, mainCategory, subCategory)}
+                    />
+                  );
+                }
+                return (
+                  <div className={`grid grid-cols-2 w-full ${mobileTab === 'all' ? 'gap-x-0 gap-y-2' : 'gap-2'}`}>
+                    {mobileDisplayedList.map(({ product, type }, index) => (
+                      <div
+                        key={mobileTab === 'all' ? `slot-${type}-${index}` : `${product?.id ?? 'n'}-${index}`}
+                        className={`min-w-0 ${mobileTab === 'all' ? (index % 2 === 0 ? 'border-r border-slate-200/60 pr-1' : 'pl-1 bg-slate-50/40') : ''}`}
+                      >
+                        {product ? (
+                          <ProductCard
+                            product={product}
+                            type={type}
+                            compact={false}
+                            dense
+                            onWishlistChange={(added) => showToastMessage(added ? "Saved to your list" : "Removed from saved")}
+                            onProductClick={handleProductClick}
+                          />
+                        ) : (
+                          <div className="min-h-[200px] rounded-xl border border-dashed border-slate-200/60 bg-slate-50/30 flex items-center justify-center" aria-hidden>
+                            <span className="text-[10px] text-slate-400">{type === 'domestic' ? '🇺🇸' : '🌏'} —</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             {searched && hasMoreResults && (
               <div className="mt-4 pb-4 flex justify-center px-2">
                 <button
@@ -2017,27 +1606,50 @@ export default function Home() {
           {/* 4. 일반 시민: 검색 결과 그리드 - z-0으로 최하단 */}
               {searched && (
               <>
-              {/* 규칙 기반 AI 브리핑: 최저가·플랫폼 비교·결과 수 (로딩 완료 후만 표시) */}
-              <SearchInsight domestic={domestic} international={international} loading={loading} />
-              {searched && !loading && domestic.length === 0 && international.length === 0 && (
-                <div className="text-center py-8 px-4 bg-slate-50 rounded-xl border border-slate-200">
-                  <p className="text-slate-600 font-medium">No trending items found.</p>
-                  <p className="text-sm text-slate-500 mt-1">Try another search above.</p>
+              {/* 검색 결과 0건: Empty State (PC·모바일 동일) */}
+              {showEmptyState ? (
+                <EmptyState
+                  query={query}
+                  onKeywordClick={(kw) => executeSearch(kw, mainCategory, subCategory)}
+                />
+              ) : (
+              <>
+              {/* Fallback 모드: 0건 검색 후 대체 검색으로 채운 경우 — 배너로 명시 */}
+              {isFallbackMode && (
+                <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-4 flex flex-col sm:flex-row sm:items-start gap-3">
+                  <span className="shrink-0 text-2xl" aria-hidden>💡</span>
+                  <div>
+                    <p className="font-semibold text-slate-800">
+                      No results found for &quot;{query}&quot;.
+                    </p>
+                    <p className="mt-1 text-sm text-slate-600">
+                      We couldn&apos;t find exact matches, but we picked these {session ? 'Personalized' : 'Trending'} items for you!
+                    </p>
+                  </div>
                 </div>
               )}
-              {/* 모바일/태블릿: Filter + Shipping Guide 버튼 (홈 뷰에서는 숨김) */}
+              {/* 규칙 기반 AI 브리핑: 검색 모드에서만 표시. PC: 요약 박스 우측에 Shipping Guide 버튼 통합 */}
+              {!isHomeMode && !isFallbackMode && (
+              <SearchInsight
+                domestic={domestic}
+                international={international}
+                loading={loading}
+                rightAction={
+                  <button
+                    type="button"
+                    onClick={() => setShowShippingGuide(true)}
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs font-medium text-slate-700 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50/80 transition-colors"
+                    aria-label="Shipping Guide"
+                  >
+                    <span aria-hidden>📦</span>
+                    Shipping Guide
+                  </button>
+                }
+              />
+              )}
+              {/* 모바일/태블릿: Filter 버튼만 (Shipping Guide는 FilterBar 칩으로 이동) */}
               {!isHomeMode && (
               <div className="lg:hidden flex justify-end gap-2 mt-2 mb-2">
-                <button
-                  type="button"
-                  onClick={() => setShowShippingGuide(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 shadow-sm"
-                  aria-label="Shipping Guide"
-                >
-                  <span aria-hidden>📦</span>
-                  <span className="sm:hidden">Guide</span>
-                  <span className="hidden sm:inline">Shipping Guide</span>
-                </button>
                 <button
                   type="button"
                   onClick={() => setIsMobileFilterOpen(true)}
@@ -2058,34 +1670,37 @@ export default function Home() {
                     <span className="text-xl flex-shrink-0">🇺🇸</span>
                     <h2 className="text-lg font-bold text-slate-800 min-w-0 flex items-baseline gap-2 flex-wrap">
                       <span className="truncate">Domestic (Fast){homeBadgeDisplayText ? ` · ${homeBadgeDisplayText}` : ''}</span>
+                      {!isHomeMode && !isFallbackMode && (
                       <span className="text-sm text-slate-500 font-normal shrink-0">({metadata?.domesticCount ?? domestic.length} items)</span>
+                      )}
                     </h2>
                   </div>
-                  <div className="flex items-center justify-between w-full px-4 pb-3 pt-1 box-border flex-wrap gap-2">
-                    <p className="text-xs text-slate-500">{homeBadgeLabel === 'Trending' ? '🔥 Trending Now' : homeBadgeLabel === 'For You' ? `✨ ${homeBadgeDisplayText}` : 'US Stock • Fast Delivery'}</p>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowShippingGuide(true)}
-                        className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-indigo-600 border border-slate-200 rounded-md px-2 py-1 bg-white hover:bg-slate-50"
-                      >
-                        <span aria-hidden>📦</span> Shipping Guide
-                      </button>
-                      <label className="flex items-center gap-1 text-xs text-slate-700">
-                        <span>Sort by</span>
-                        <select
-                          value={sortBy}
-                          onChange={(e) =>
-                            setSortBy(e.target.value as 'relevance' | 'price_asc' | 'price_desc')
-                          }
-                          className="border border-slate-200 rounded-md text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        >
-                          <option value="relevance">Best Match</option>
-                          <option value="price_asc">Price: Low to High</option>
-                          <option value="price_desc">Price: High to Low</option>
-                        </select>
-                      </label>
-                    </div>
+                  <div className="flex items-center justify-between w-full px-4 pb-3 pt-1 box-border flex-wrap gap-2 min-h-[24px]">
+                    {isHomeMode ? (
+                      <p className="text-sm text-slate-500">{getDomesticSubtitle()}</p>
+                    ) : (
+                      <>
+                        <div className="min-h-[24px] flex items-center min-w-0">
+                          <p className="text-xs text-slate-500">{homeHeaderText || 'US Stock • Fast Delivery'}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <label className="flex items-center gap-1 text-xs text-slate-700">
+                            <span>Sort by</span>
+                            <select
+                              value={sortBy}
+                              onChange={(e) =>
+                                setSortBy(e.target.value as 'relevance' | 'price_asc' | 'price_desc')
+                              }
+                              className="border border-slate-200 rounded-md text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            >
+                              <option value="relevance">Best Match</option>
+                              <option value="price_asc">Price: Low to High</option>
+                              <option value="price_desc">Price: High to Low</option>
+                            </select>
+                          </label>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -2094,7 +1709,9 @@ export default function Home() {
                   {loading ? (
                     <div className="space-y-4">
                       <div className="text-center text-sm text-slate-700 mb-2">
-                        AI is analyzing the best prices in the US...
+                        {isHomeMode
+                          ? (session ? 'Loading picks for you...' : 'Loading trending...')
+                          : 'Comparing prices...'}
                       </div>
                       {[1, 2, 3, 4].map((i) => (
                         <div
@@ -2135,25 +1752,35 @@ export default function Home() {
                     <span className="text-xl flex-shrink-0">🌏</span>
                     <h2 className="text-lg font-bold text-slate-800 min-w-0 flex items-baseline gap-2 flex-wrap">
                       <span className="truncate">Global (Cheap){homeBadgeDisplayText ? ` · ${homeBadgeDisplayText}` : ''}</span>
+                      {!isHomeMode && !isFallbackMode && (
                       <span className="text-sm text-slate-500 font-normal shrink-0">({metadata?.internationalCount ?? international.length} items)</span>
+                    )}
                     </h2>
                   </div>
-                  <div className="flex items-center justify-between w-full px-4 pb-3 pt-1 box-border">
-                    <p className="text-xs text-slate-500">{homeBadgeLabel === 'Trending' ? '🔥 Trending Now' : homeBadgeLabel === 'For You' ? `✨ ${homeBadgeDisplayText}` : 'Global Direct • Lowest Price'}</p>
-                    <label className="flex items-center gap-1 text-xs text-slate-700">
-                      <span>Sort by</span>
-                      <select
-                        value={sortBy}
-                        onChange={(e) =>
-                          setSortBy(e.target.value as 'relevance' | 'price_asc' | 'price_desc')
-                        }
-                        className="border border-slate-200 rounded-md text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                      >
-                        <option value="relevance">Best Match</option>
-                        <option value="price_asc">Price: Low to High</option>
-                        <option value="price_desc">Price: High to Low</option>
-                      </select>
-                    </label>
+                  <div className="flex items-center justify-between w-full px-4 pb-3 pt-1 box-border min-h-[24px]">
+                    {isHomeMode ? (
+                      <p className="text-sm text-slate-500">{getGlobalSubtitle()}</p>
+                    ) : (
+                      <>
+                        <div className="min-h-[24px] flex items-center min-w-0">
+                          <p className="text-xs text-slate-500">{homeHeaderText || 'Global Direct • Lowest Price'}</p>
+                        </div>
+                        <label className="flex items-center gap-1 text-xs text-slate-700 shrink-0">
+                          <span>Sort by</span>
+                          <select
+                            value={sortBy}
+                            onChange={(e) =>
+                              setSortBy(e.target.value as 'relevance' | 'price_asc' | 'price_desc')
+                            }
+                            className="border border-slate-200 rounded-md text-xs px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          >
+                            <option value="relevance">Best Match</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                          </select>
+                        </label>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -2162,7 +1789,9 @@ export default function Home() {
                   {loading ? (
                     <div className="space-y-4">
                       <div className="text-center text-sm text-slate-700 mb-2">
-                        Comparing global prices across Amazon, Temu, and others...
+                        {isHomeMode
+                          ? (session ? 'Loading picks for you...' : 'Loading trending...')
+                          : 'Comparing prices...'}
                       </div>
                       {[1, 2, 3, 4].map((i) => (
                         <div
@@ -2220,6 +1849,8 @@ export default function Home() {
                   </button>
                 </div>
               )}
+              </>
+              )}
             </>
           )}
 
@@ -2229,7 +1860,18 @@ export default function Home() {
         </div>
       </main>
 
-      <BottomNav onCategoriesClick={() => setIsCategoryOpen(true)} />
+      <BottomNav
+        activeTab={isHomeMode ? 'home' : 'search'}
+        session={session}
+        onCategoriesClick={() => setIsCategoryOpen(true)}
+        onSearchClick={() => {
+          if (typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) {
+            setIsSearchOverlayOpen(true);
+          } else {
+            searchInputRef.current?.focus();
+          }
+        }}
+      />
 
       <CategoryScreen
         isOpen={isCategoryOpen}
@@ -2261,12 +1903,13 @@ export default function Home() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </header>
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-            {/* [섹션 1] ✨ AI Smart Filters - AI의 제안, 보라 톤 강조 */}
-            <section className="bg-purple-50/80 border border-purple-200 rounded-xl p-3">
-              <h3 className="font-bold text-slate-800 mb-2 text-sm flex items-center gap-1.5">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-3 pb-24 space-y-4">
+            {/* [섹션 1] ✨ AI Smart Filters - PC와 동일 구조 */}
+            <section className="bg-purple-50/80 border border-purple-200 rounded-xl p-4">
+              <h3 className="font-semibold text-slate-800 uppercase tracking-wide text-sm flex items-center gap-1.5 mb-0.5">
                 <span aria-hidden>✨</span> AI Smart Filters
               </h3>
+              <p className="text-xs text-slate-600 mb-3">Refine with AI-Recommended Filters</p>
               {aiFiltersLoading ? (
                 <div className="flex flex-wrap gap-2">
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -2311,57 +1954,67 @@ export default function Home() {
               )}
             </section>
 
-            {/* [섹션 2] 🌐 Sites - Hub, 한 줄에 3~4개 짧고 굵은 칩 */}
-            <section>
-              <h3 className="font-bold text-slate-800 mb-2 text-sm flex items-center gap-1"><span aria-hidden>🌐</span> Sites</h3>
-              <div className="flex flex-wrap gap-2">
-                {[...SITE_OPTIONS.domestic, ...SITE_OPTIONS.international].map((site: { name: string }) => {
-                  const checked = tempSelectedSites.includes(site.name);
-                  return (
-                    <button
-                      key={site.name}
-                      type="button"
-                      onClick={() => {
-                        setTempSelectedSites((p) =>
-                          checked ? p.filter((s) => s !== site.name) : [...p, site.name]
-                        );
-                      }}
-                      className={`py-2 px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border ${
-                        checked ? "bg-indigo-600 border-transparent text-white font-bold shadow-md" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      {site.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* [섹션 3] ⚡ Speed & Price - 표준 회색 라인 칩 */}
-            <section>
-              <h3 className="font-bold text-slate-800 mb-2 text-sm flex items-center gap-1"><span aria-hidden>⚡</span> Speed & Price</h3>
-              <p className="text-xs text-slate-600 mb-1">Max: {tempPriceRange >= 1000 ? '$1000+' : `$${tempPriceRange}`}</p>
-              <input type="range" min={0} max={1000} value={tempPriceRange} onChange={(e) => setTempPriceRange(Number(e.target.value))} className="w-full h-3 accent-indigo-600 mb-3" />
-              <div className="flex flex-wrap gap-2">
-                {SHIPPING_SPEED_OPTIONS.map((label) => {
-                  const checked = tempSelectedSpeeds.includes(label);
-                  return (
-                    <button
-                      key={label}
-                      type="button"
-                      onClick={() => {
-                        setTempSelectedSpeeds((p) =>
-                          checked ? p.filter((s) => s !== label) : [...p, label]
-                        );
-                      }}
-                      className={`py-2 px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border ${
-                        checked ? "bg-indigo-600 border-transparent text-white font-bold shadow-md" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
+            {/* [섹션 2] Filters - PC와 동일: Price → Sites → Shipping Speed */}
+            <section className="bg-slate-50/80 border border-slate-200 rounded-xl p-4">
+              <h3 className="font-semibold text-slate-800 uppercase tracking-wide text-sm mb-0.5">Filters</h3>
+              <p className="text-xs text-slate-500 mb-3">Fine-tune your results by price, site and speed.</p>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-800 uppercase tracking-wide mb-2 flex items-center gap-1"><span aria-hidden>⚡</span> Price Range (USD)</h4>
+                  <div className="flex items-center justify-between text-[11px] text-black mb-1">
+                    <span>$0</span>
+                    <span className="font-semibold">{tempPriceRange >= 1000 ? 'Max: $1000+' : `Max: $${tempPriceRange}`}</span>
+                  </div>
+                  <input type="range" min={0} max={1000} value={tempPriceRange} onChange={(e) => setTempPriceRange(Number(e.target.value))} className="w-full h-3 accent-indigo-600 mb-2" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-800 uppercase tracking-wide mb-2 flex items-center gap-1"><span aria-hidden>🌐</span> Sites</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {[...SITE_OPTIONS.domestic, ...SITE_OPTIONS.international].map((site: { name: string }) => {
+                      const checked = tempSelectedSites.includes(site.name);
+                      return (
+                        <button
+                          key={site.name}
+                          type="button"
+                          onClick={() => {
+                            setTempSelectedSites((p) =>
+                              checked ? p.filter((s) => s !== site.name) : [...p, site.name]
+                            );
+                          }}
+                          className={`py-2 px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border ${
+                            checked ? "bg-indigo-600 border-transparent text-white font-bold shadow-md" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                          }`}
+                        >
+                          {site.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-800 uppercase tracking-wide mb-2 flex items-center gap-1"><span aria-hidden>⚡</span> Shipping Speed</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {SHIPPING_SPEED_OPTIONS.map((label) => {
+                      const checked = tempSelectedSpeeds.includes(label);
+                      return (
+                        <button
+                          key={label}
+                          type="button"
+                          onClick={() => {
+                            setTempSelectedSpeeds((p) =>
+                              checked ? p.filter((s) => s !== label) : [...p, label]
+                            );
+                          }}
+                          className={`py-2 px-3 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border ${
+                            checked ? "bg-indigo-600 border-transparent text-white font-bold shadow-md" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </section>
           </div>
@@ -2382,7 +2035,7 @@ export default function Home() {
         isOpen={isSearchOverlayOpen}
         onClose={() => setIsSearchOverlayOpen(false)}
         query={query}
-        setQuery={setQuery}
+        setQuery={(q) => setQuery(q)}
         onSearch={(q) => {
           setQuery(q);
           setIsHomeMode(false);
@@ -2392,6 +2045,13 @@ export default function Home() {
         recentSearches={recentSearches}
         onRemoveItem={removeRecentSearch}
         onClearAll={clearRecentSearches}
+        suggestions={suggestions}
+        onSuggestionSelect={(term) => {
+          setQuery(term);
+          setIsHomeMode(false);
+          executeSearch(term, mainCategory, subCategory);
+          setIsSearchOverlayOpen(false);
+        }}
       />
       {/* 토스트 알림: 찜 추가/제거 피드백 */}
       {toastMessage && (

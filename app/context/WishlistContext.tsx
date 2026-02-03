@@ -2,6 +2,7 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -55,24 +56,26 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }
   }, [wishlist]);
 
-  const addToWishlist = (product: WishlistItem) => {
+  const addToWishlist = useCallback((product: WishlistItem) => {
     setWishlist((prev) => {
       if (!product || !product.id) return prev;
       if (prev.some((p) => p.id === product.id)) return prev;
       return [...prev, product];
     });
-  };
+  }, []);
 
-  const removeFromWishlist = (productId: string) => {
+  const removeFromWishlist = useCallback((productId: string) => {
     setWishlist((prev) => prev.filter((p) => p.id !== productId));
-  };
+  }, []);
 
-  const clearWishlist = () => {
+  const clearWishlist = useCallback(() => {
     setWishlist([]);
-  };
+  }, []);
 
-  const isInWishlist = (productId: string) =>
-    wishlist.some((p) => p.id === productId);
+  const isInWishlist = useCallback(
+    (productId: string) => wishlist.some((p) => p.id === productId),
+    [wishlist],
+  );
 
   return (
     <WishlistContext.Provider

@@ -16,13 +16,15 @@ export interface SearchInsightProps {
   international: Product[];
   /** 로딩 중이면 브리핑 숨김 */
   loading: boolean;
+  /** 박스 우측에 배치할 액션 (예: Shipping Guide 버튼) */
+  rightAction?: React.ReactNode;
 }
 
 /**
  * 규칙 기반 AI 브리핑: 검색 결과를 한 줄 인사이트로 요약.
  * LLM 없이 최저가·플랫폼 비교·결과 수만 빠르게 표시.
  */
-export function SearchInsight({ domestic, international, loading }: SearchInsightProps) {
+export function SearchInsight({ domestic, international, loading, rightAction }: SearchInsightProps) {
   if (loading) return null;
   const totalCount = domestic.length + international.length;
   if (totalCount === 0) return null;
@@ -49,8 +51,8 @@ export function SearchInsight({ domestic, international, loading }: SearchInsigh
   lines.push(`Found ${totalCount} item${totalCount === 1 ? "" : "s"} matching your search.`);
 
   return (
-    <div className="relative z-0 w-full mb-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
-      <div className="flex items-start gap-2">
+    <div className="relative z-0 w-full mb-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 flex justify-between items-center gap-3">
+      <div className="flex items-start gap-2 min-w-0 flex-1">
         <span className="flex-shrink-0 text-base" aria-hidden>
           🤖
         </span>
@@ -58,6 +60,7 @@ export function SearchInsight({ domestic, international, loading }: SearchInsigh
           {lines.join(" ")}
         </p>
       </div>
+      {rightAction != null ? <div className="flex-shrink-0">{rightAction}</div> : null}
     </div>
   );
 }

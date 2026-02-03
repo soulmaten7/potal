@@ -4,11 +4,22 @@ import Link from "next/link";
 import { useSupabase } from "../context/SupabaseProvider";
 import { useWishlist } from "../context/WishlistContext";
 
+export type BottomNavTab = "home" | "search" | "saved" | "mypotal";
+
 function HomeIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
       <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
       <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  );
+}
+
+function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
     </svg>
   );
 }
@@ -31,7 +42,7 @@ function BookmarkIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function UserIcon(props: React.SVGProps<SVGSVGElement>) {
+function UserOutlineIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -40,23 +51,33 @@ function UserIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function UserSolidIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+    </svg>
+  );
+}
+
 type BottomNavProps = {
+  /** 현재 활성 탭 (Home / Search / Saved / My Potal). 해당 탭만 Indigo-600 강조 */
+  activeTab?: BottomNavTab;
+  /** 로그인 상태. 전달 시 부모와 동기화(로그아웃 시 즉시 'Log In' 표시·Saved 뱃지 숨김) */
+  session?: { user?: { user_metadata?: { avatar_url?: string } } } | null;
   onCategoriesClick: () => void;
+  /** Search 탭 클릭 시: 모바일은 검색 오버레이, PC는 검색창 포커스 (부모에서 처리) */
+  onSearchClick?: () => void;
 };
 
-export function BottomNav({ onCategoriesClick }: BottomNavProps) {
-  const { supabase, session } = useSupabase();
+const tabClass = (active: boolean) =>
+  `flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 transition-colors min-w-[64px] ${active ? "text-indigo-600 font-semibold" : "text-slate-600 hover:text-indigo-600"}`;
+
+export function BottomNav({ activeTab = "home", session: sessionProp, onCategoriesClick, onSearchClick }: BottomNavProps) {
+  const { session: contextSession } = useSupabase();
+  const session = sessionProp !== undefined ? sessionProp : contextSession;
   const { wishlist } = useWishlist();
 
-  const handleMyPotal = (e: React.MouseEvent) => {
-    if (!session) {
-      e.preventDefault();
-      supabase?.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : "" },
-      });
-    }
-  };
+  const avatarUrl = session?.user?.user_metadata?.avatar_url as string | undefined;
 
   return (
     <nav
@@ -66,7 +87,7 @@ export function BottomNav({ onCategoriesClick }: BottomNavProps) {
       <div className="flex items-center justify-around h-14 px-2">
         <Link
           href="/"
-          className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 text-slate-600 hover:text-indigo-600 transition-colors min-w-[64px]"
+          className={tabClass(activeTab === "home")}
         >
           <HomeIcon className="w-5 h-5 shrink-0" />
           <span className="text-[10px] font-medium">Home</span>
@@ -74,30 +95,46 @@ export function BottomNav({ onCategoriesClick }: BottomNavProps) {
         <button
           type="button"
           onClick={onCategoriesClick}
-          className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 text-slate-600 hover:text-indigo-600 transition-colors min-w-[64px]"
+          className={tabClass(false)}
         >
           <MenuIcon className="w-5 h-5 shrink-0" />
           <span className="text-[10px] font-medium">Categories</span>
         </button>
+        <button
+          type="button"
+          onClick={onSearchClick}
+          className={tabClass(activeTab === "search")}
+          aria-label="Search"
+        >
+          <SearchIcon className="w-5 h-5 shrink-0" />
+          <span className="text-[10px] font-medium">Search</span>
+        </button>
         <Link
           href="/saved"
-          className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 text-slate-600 hover:text-indigo-600 transition-colors min-w-[64px] relative"
+          className={`${tabClass(activeTab === "saved")} relative`}
         >
           <BookmarkIcon className="w-5 h-5 shrink-0" />
           <span className="text-[10px] font-medium">Saved</span>
-          {wishlist.length > 0 && (
+          {session && wishlist.length > 0 && (
             <span className="absolute top-0 right-1 min-w-[14px] h-[14px] rounded-full bg-indigo-600 text-white text-[9px] font-bold flex items-center justify-center px-0.5">
               {wishlist.length > 99 ? "99+" : wishlist.length}
             </span>
           )}
         </Link>
         <Link
-          href={session ? "/settings" : "#"}
-          onClick={handleMyPotal}
-          className="flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 text-slate-600 hover:text-indigo-600 transition-colors min-w-[64px]"
+          href={session ? "/settings" : "/auth/signin"}
+          className={tabClass(activeTab === "mypotal")}
         >
-          <UserIcon className="w-5 h-5 shrink-0" />
-          <span className="text-[10px] font-medium">My Potal</span>
+          {session ? (
+            avatarUrl ? (
+              <img src={avatarUrl} alt="" className="w-5 h-5 shrink-0 rounded-full object-cover" />
+            ) : (
+              <UserSolidIcon className="w-5 h-5 shrink-0" />
+            )
+          ) : (
+            <UserOutlineIcon className="w-5 h-5 shrink-0" />
+          )}
+          <span className="text-[10px] font-medium">{session ? "My Potal" : "Log In"}</span>
         </Link>
       </div>
     </nav>
