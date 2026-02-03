@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useSupabase } from './context/SupabaseProvider';
 import { useUserPreferences } from './hooks/useUserPreferences';
@@ -575,7 +575,7 @@ const SHIPPING_SPEED_OPTIONS = [
   'Economy (7+ days)',
 ] as const;
 
-export default function Home() {
+function HomeContent() {
   const { supabase, session } = useSupabase();
   const { addCategory, interestedCategories } = useUserPreferences();
   const search = useProductSearch();
@@ -2109,3 +2109,16 @@ export default function Home() {
   );
 }
 
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div>Loading...</div>
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
+  );
+}
