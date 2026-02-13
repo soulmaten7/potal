@@ -8,6 +8,7 @@ import type { SearchProvider } from '../types';
  */
 export class MockProvider implements SearchProvider {
   readonly name = 'Mock';
+  readonly type = 'domestic' as const;
 
   async search(_query: string, _page?: number): Promise<Product[]> {
     return [];

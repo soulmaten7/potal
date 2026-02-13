@@ -33,10 +33,26 @@ export function inferCategoriesFromQuery(query: string): string[] {
   return out;
 }
 
+/** Tab summary from ScoringEngine */
+interface TabSummaryData {
+  best: { price: string; days: string } | null;
+  cheapest: { price: string; days: string } | null;
+  fastest: { price: string; days: string } | null;
+}
+
 interface SearchResponse {
   results: Product[];
   total: number;
-  metadata?: { domesticCount: number; internationalCount: number };
+  metadata?: {
+    domesticCount: number;
+    internationalCount: number;
+    tabSummary?: TabSummaryData;
+    fraudStats?: {
+      removed: number;
+      flagged: number;
+      removeReasons: Record<string, number>;
+    };
+  };
   personalization?: { greeting?: string; message?: string } | null;
 }
 
@@ -66,6 +82,8 @@ export function useProductSearch() {
   const isMountedRef = useRef(true);
 
   const [query, setQuery] = useState('');
+  const [zipcode, setZipcode] = useState('');
+  const [market, setMarket] = useState<'all' | 'domestic' | 'global'>('all');
   const [domestic, setDomestic] = useState<Product[]>([]);
   const [international, setInternational] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -74,6 +92,7 @@ export function useProductSearch() {
   const [lastSearchQuery, setLastSearchQuery] = useState('');
   const [hasMorePages, setHasMorePages] = useState(true);
   const [metadata, setMetadata] = useState<{ domesticCount: number; internationalCount: number } | null>(null);
+  const [tabSummary, setTabSummary] = useState<TabSummaryData | null>(null);
   const [personalization, setPersonalization] = useState<{ greeting?: string; message?: string } | null>(null);
   const [visibleCount, setVisibleCount] = useState(16);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -89,11 +108,13 @@ export function useProductSearch() {
   const [aiFilterOptions, setAiFilterOptions] = useState<Record<string, string[]>>({});
   const [selectedAiFilters, setSelectedAiFilters] = useState<Set<string>>(new Set());
   const [aiFiltersLoading, setAiFiltersLoading] = useState(false);
-  const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc'>('relevance');
+  const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc' | 'delivery'>('relevance');
   const [priceRange, setPriceRange] = useState(1000);
 
   const prevAuthIdRef = useRef<string | null | undefined>(undefined);
   const prevQRef = useRef<string | null>(null);
+  /** URL q와 동기화된 마지막 값. 타이핑 중에는 URL→query 덮어쓰기 방지 */
+  const lastSyncedParamRef = useRef<string | null>(null);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -145,18 +166,19 @@ export function useProductSearch() {
       if (!effectiveQuery) return;
 
       const isSilent = overrideQuery != null && overrideQuery !== '';
+      if (!session && searchCount >= MAX_FREE_SEARCHES) {
+        setShowLimitModal(true);
+        return;
+      }
+
+      setDomestic([]);
+      setInternational([]);
+      setLoading(true);
       if (!isSilent) {
-        setIsHomeMode(false);
         setSearched(true);
+        setIsHomeMode(false);
       }
       setIsFallbackMode(false);
-
-      if (!session) {
-        if (searchCount >= MAX_FREE_SEARCHES) {
-          setShowLimitModal(true);
-          return;
-        }
-      }
 
       if (!isSilent) {
         saveToRecentSearches(effectiveQuery);
@@ -165,19 +187,19 @@ export function useProductSearch() {
       }
       setShowRecentDropdown(false);
 
-      setLoading(true);
-      if (!isSilent) setSearched(true);
-      setDomestic([]);
-      setInternational([]);
       setVisibleCount(20);
       setSearchPage(1);
       setLastSearchQuery(effectiveQuery);
       setHasMorePages(true);
 
-      try {
-        const res = await fetch(
-          `/api/search?q=${encodeURIComponent(effectiveQuery)}&page=1`,
-        );
+      const params = new URLSearchParams({
+          q: effectiveQuery,
+          page: '1',
+        });
+        if (zipcode.trim()) params.set('zipcode', zipcode.trim());
+        if (market !== 'all') params.set('market', market);
+        try {
+        const res = await fetch(`/api/search?${params.toString()}`);
         if (!isMountedRef.current || (typeof window !== 'undefined' && pathname !== '/')) {
           return;
         }
@@ -202,6 +224,7 @@ export function useProductSearch() {
         setInternational(internationalResults);
         setVisibleCount(16);
         setMetadata(data.metadata || null);
+        setTabSummary(data.metadata?.tabSummary || null);
         setPersonalization(data.personalization ?? null);
         if (typeof window !== 'undefined') {
           window.scrollTo({ top: 0, behavior: 'auto' });
@@ -222,7 +245,10 @@ export function useProductSearch() {
           setLoading(true);
           const fallbackKeyword = getFallbackKeyword();
           try {
-            const resF = await fetch(`/api/search?q=${encodeURIComponent(fallbackKeyword)}&page=1`);
+            const fallbackParams = new URLSearchParams({ q: fallbackKeyword, page: '1' });
+            if (zipcode.trim()) fallbackParams.set('zipcode', zipcode.trim());
+            if (market !== 'all') fallbackParams.set('market', market);
+            const resF = await fetch(`/api/search?${fallbackParams.toString()}`);
             const dataF: SearchResponse = await resF.json();
             const rawF = (dataF.results || []).filter(
               (p: { is_sponsored?: boolean; is_ad?: boolean }) => !p.is_sponsored && !p.is_ad,
@@ -239,6 +265,7 @@ export function useProductSearch() {
               setDomestic(domF);
               setInternational(intlF);
               setMetadata(dataF.metadata || null);
+              setTabSummary(dataF.metadata?.tabSummary || null);
               setPersonalization(dataF.personalization ?? null);
               setAiFilterOptions(extractFilterOptionsFromProducts([...domF, ...intlF]));
               setSelectedAiFilters(new Set());
@@ -285,6 +312,8 @@ export function useProductSearch() {
       saveToRecentSearches,
       router,
       pathname,
+      zipcode,
+      market,
     ],
   );
 
@@ -324,9 +353,13 @@ export function useProductSearch() {
     setLoadingMore(true);
     try {
       const nextPage = searchPage + 1;
-      const res = await fetch(
-        `/api/search?q=${encodeURIComponent(lastSearchQuery.trim())}&page=${nextPage}`,
-      );
+      const loadParams = new URLSearchParams({
+        q: lastSearchQuery.trim(),
+        page: String(nextPage),
+      });
+      if (zipcode.trim()) loadParams.set('zipcode', zipcode.trim());
+      if (market !== 'all') loadParams.set('market', market);
+      const res = await fetch(`/api/search?${loadParams.toString()}`);
       const data: SearchResponse = await res.json();
       const rawResults = data.results || [];
       const allResults = rawResults.filter(
@@ -351,14 +384,15 @@ export function useProductSearch() {
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, lastSearchQuery, searchPage]);
+  }, [loadingMore, lastSearchQuery, searchPage, zipcode, market]);
 
-  // URL 기반 모드 동기화 (무한 루프 방지 + 입력 증발 방지 + Back to Search 유지)
-  // q 없음: 타이핑 중이면 query 보존. My Potal 등에서 Back 시 캐시된 검색 결과가 있으면 홈으로 초기화하지 않고 검색 결과 유지.
+  // URL 기반 모드 동기화. 타이핑 중에는 URL→query 덮어쓰지 않음 (Input Lock 방지).
+  // URL의 q가 바뀐 경우에만(초기 로드·폼 제출·외부 네비) setQuery + 검색 실행.
   useEffect(() => {
     const paramQuery = searchParams.get('q');
     const isEmpty = paramQuery == null || String(paramQuery).trim() === '';
     if (isEmpty) {
+      lastSyncedParamRef.current = null;
       const hasCachedResults = domestic.length > 0 || international.length > 0;
       const isExplicitHome = prevQRef.current != null && prevQRef.current !== '';
       const userIsTyping = query.trim() !== '';
@@ -374,22 +408,19 @@ export function useProductSearch() {
       }
       if (!userIsTyping) setQuery('');
       setIsHomeMode(true);
-      if (isExplicitHome) {
-        executeSearch('', null, null, getInitQuery());
-      }
       prevQRef.current = paramQuery ?? '';
       return;
     }
     const trimmed = String(paramQuery).trim();
-    if (trimmed === query.trim() && (domestic.length > 0 || international.length > 0)) {
-      prevQRef.current = paramQuery;
+    if (trimmed === lastSyncedParamRef.current) {
       return;
     }
+    lastSyncedParamRef.current = trimmed;
     setQuery(trimmed);
     setIsHomeMode(false);
     prevQRef.current = paramQuery;
     executeSearch(trimmed, null, null);
-  }, [searchParams, query, domestic.length, international.length, lastSearchQuery, executeSearch, getInitQuery]);
+  }, [searchParams, domestic.length, international.length, lastSearchQuery, executeSearch, getInitQuery]);
 
   // Fetch profile for home personalization
   useEffect(() => {
@@ -471,48 +502,17 @@ export function useProductSearch() {
     }
   }, [session?.user?.id, session, clearWishlist, searchParams]);
 
-  // 홈 초기 진입: 검색창 비우고 init 키워드로 API만 호출
+  // POTAL 2.0: 홈 초기 진입 시 추천 검색 비활성화(Zero Noise). q 없으면 Hero만 노출.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const q = searchParams.get('q');
     if (q != null && String(q).trim() !== '') return;
 
-    try {
-      window.sessionStorage.clear();
-    } catch {
-      // ignore
-    }
-
-    const forceStopLoading = () => {
-      setSearched(true);
-      setLoading(false);
-    };
-
-    const safetyTimer = setTimeout(() => {
-      forceStopLoading();
-    }, 2000);
-
-    const initKw = getInitQuery();
     setQuery('');
-    setHomeSearchKeyword(initKw);
-
-    const runInitSearch = async () => {
-      try {
-        await executeSearch('', null, null, initKw);
-      } catch (e) {
-        console.error('Init search failed', e);
-      } finally {
-        clearTimeout(safetyTimer);
-        forceStopLoading();
-      }
-    };
-
-    requestAnimationFrame(() => {
-      runInitSearch();
-    });
-
-    return () => clearTimeout(safetyTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- init only when session/homeProfile/URL change; omit executeSearch/getInitQuery to avoid re-run on their identity change
+    setSearched(false);
+    setLoading(false);
+    // Init search 비활성화: 사용자가 "Scan Markets" 전까지 상품 리스트 노출 안 함
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, homeProfile, searchParams]);
 
   // Session persistence
@@ -608,6 +608,7 @@ export function useProductSearch() {
     loading,
     searched,
     metadata,
+    tabSummary,
     personalization,
     visibleCount,
     setVisibleCount,
@@ -638,6 +639,10 @@ export function useProductSearch() {
     lastSearchQuery,
     executeSearch,
     loadMoreResults,
+    zipcode,
+    setZipcode,
+    market,
+    setMarket,
     getInitQuery,
     getFallbackKeyword,
     saveToRecentSearches,

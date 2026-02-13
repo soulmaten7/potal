@@ -10,6 +10,31 @@ function normalizePrice(raw: unknown): string {
   return `$${n.toFixed(2)}`;
 }
 
+/** Parse price string to number for totalPrice calculation */
+function parsePriceToNum(priceStr: string): number {
+  const s = String(priceStr).replace(/[^0-9.-]/g, '');
+  const n = parseFloat(s);
+  return Number.isNaN(n) ? 0 : n;
+}
+
+/**
+ * Extract shipping cost from API. "Free" / empty → 0.
+ * Tries common keys: shipping_cost, shippingCost, delivery_fee, shipping_fee, shipping.
+ */
+function parseShippingPrice(item: Record<string, unknown>): number {
+  const raw =
+    item.shipping_cost ??
+    item.shippingCost ??
+    item.delivery_fee ??
+    item.shipping_fee ??
+    item.shipping;
+  if (raw == null || raw === '') return 0;
+  const s = String(raw).trim().toLowerCase();
+  if (s.includes('free') || s === '0' || s === '$0' || s === '$0.00') return 0;
+  const n = parseFloat(s.replace(/[^0-9.]/g, ''));
+  return Number.isNaN(n) ? 0 : n;
+}
+
 function normalizeImage(item: Record<string, unknown>): string {
   const keys = [
     'product_photo',
@@ -79,6 +104,10 @@ function mapItemToProduct(
   const price = normalizePrice(
     item.product_price ?? item.price ?? item.current_price ?? item.product_minimum_offer_price ?? 0
   );
+  const priceNum = parsePriceToNum(price);
+  const shippingPrice = parseShippingPrice(item);
+  const totalPrice = priceNum + shippingPrice;
+
   const name = (item.product_title ?? item.title ?? item.name ?? 'Unknown Product').toString().trim();
   const asin = (item.asin ?? item.product_id ?? `item_${index}`).toString();
 
@@ -105,12 +134,15 @@ function mapItemToProduct(
     category: 'domestic' as const,
     link,
     deliveryDays: 'Free Prime Delivery (US)',
+    shippingPrice,
+    totalPrice,
     trustScore,
   };
 }
 
 export class AmazonProvider implements SearchProvider {
   readonly name = 'Amazon';
+  readonly type = 'domestic' as const;
 
   async search(query: string, page: number = 1): Promise<Product[]> {
     // [디버깅] 환경 변수 확인

@@ -28,6 +28,7 @@ const GLOBAL_SITES: { site: string }[] = [
 
 export class GlobalMockProvider implements SearchProvider {
   readonly name = 'GlobalMock';
+  readonly type = 'global' as const;
 
   async search(query: string, _page?: number): Promise<Product[]> {
     const q = (query || '').trim() || 'search';
@@ -42,6 +43,8 @@ export class GlobalMockProvider implements SearchProvider {
       category: 'international' as const,
       link: buildSearchLink(site, q),
       deliveryDays: 'Check Site',
+      shippingPrice: 0,
+      totalPrice: 0,
     }));
   }
 }
