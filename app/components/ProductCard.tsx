@@ -4,8 +4,10 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 // [경로] 아이콘 경로가 확실하지 않다면 @/components/icons를 시도합니다.
 // 에러나면 '../../../components/icons' 로 바꿔보세요.
-import { Icons } from '@/components/icons'; 
+import { Icons } from '@/components/icons';
 import { useWishlist } from '../context/WishlistContext';
+import { normalizeDeliveryInfo } from '../lib/utils/DeliveryStandard';
+import { DeliveryBadge } from './DeliveryBadge';
 
 // [중요] page.tsx나 ResultsGrid에서 넘겨주는 모든 props를 받아줄 준비를 해야 에러가 안 납니다.
 interface ProductCardProps {
@@ -47,6 +49,25 @@ function getScoreBadge(score?: number): { color: string; bg: string; label: stri
   if (score >= 60) return { color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200', label: 'Good' };
   if (score >= 40) return { color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200', label: 'Fair' };
   return { color: 'text-red-700', bg: 'bg-red-50 border-red-200', label: 'Low' };
+}
+
+/** 플랫폼별 브랜드 컬러 & 아이콘 */
+const PLATFORM_STYLES: Record<string, { color: string; bg: string; short: string }> = {
+  amazon:     { color: 'text-[#FF9900]', bg: 'bg-[#FF9900]/10', short: 'AMZ' },
+  walmart:    { color: 'text-[#0071ce]', bg: 'bg-[#0071ce]/10', short: 'WMT' },
+  target:     { color: 'text-[#CC0000]', bg: 'bg-[#CC0000]/10', short: 'TGT' },
+  'best buy': { color: 'text-[#003b64]', bg: 'bg-[#003b64]/10', short: 'BBY' },
+  bestbuy:    { color: 'text-[#003b64]', bg: 'bg-[#003b64]/10', short: 'BBY' },
+  ebay:       { color: 'text-[#e53238]', bg: 'bg-[#e53238]/10', short: 'BAY' },
+  aliexpress: { color: 'text-[#FF4747]', bg: 'bg-[#FF4747]/10', short: 'ALI' },
+  temu:       { color: 'text-[#FB7701]', bg: 'bg-[#FB7701]/10', short: 'TMU' },
+  shein:      { color: 'text-[#000]',    bg: 'bg-black/5',      short: 'SHN' },
+  iherb:      { color: 'text-[#458500]', bg: 'bg-[#458500]/10', short: 'IHB' },
+};
+
+function getPlatformStyle(seller: string) {
+  const key = seller.toLowerCase().trim();
+  return PLATFORM_STYLES[key] || null;
 }
 
 /** Trust Score → 아이콘/색상 */
@@ -128,9 +149,17 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
   const displayPrice = typeof product.price === 'string' ? product.price : `$${product.price}`;
   const priceNum = parseFloat(String(displayPrice).replace(/[^0-9.-]/g, ""));
 
-  // Score & Trust
+  // Score & Trust & Platform
   const scoreBadge = getScoreBadge(product.bestScore);
   const trustSignal = getTrustSignal(product.trustScore);
+  const platformStyle = getPlatformStyle(displaySeller);
+  const deliveryInfo = normalizeDeliveryInfo({
+    deliveryDays: product.deliveryDays || product.arrives,
+    is_prime: product.is_prime,
+    site: product.site || product.seller,
+    shipping: product.shipping,
+    delivery: product.delivery,
+  });
 
   // 하트 토글
   const handleToggleSave = (e: React.MouseEvent) => {
@@ -211,9 +240,16 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
           <div className="flex-1 p-5 flex flex-col justify-start border-r border-slate-100 min-w-0">
              <div className="flex justify-between items-start mb-2">
                  <div className="flex items-start gap-2 min-w-0">
-                     <span className="text-[13px] font-extrabold text-[#02122c] uppercase tracking-wide mt-[2px] truncate">
-                        {displaySeller}
-                     </span>
+                     <div className="flex items-center gap-1.5 mt-[2px]">
+                       {platformStyle && (
+                         <span className={`text-[9px] font-black ${platformStyle.color} ${platformStyle.bg} rounded px-1 py-[1px] tracking-wider shrink-0`}>
+                           {platformStyle.short}
+                         </span>
+                       )}
+                       <span className="text-[13px] font-extrabold text-[#02122c] uppercase tracking-wide truncate">
+                          {displaySeller}
+                       </span>
+                     </div>
                      {/* Trust Signal */}
                      {trustSignal && (
                        <span className={`text-[11px] font-bold ${trustSignal.color} mt-[3px] shrink-0`} title={`Trust: ${product.trustScore}/100`}>
@@ -253,16 +289,16 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
 
           {/* 3. 우측 정보 (회색 배경) */}
           <div className="w-[170px] flex flex-col bg-slate-50/30 min-w-[170px]">
-             {/* 배송비 */}
+             {/* 배송 — DeliveryBadge 통합 */}
              <div className="w-full p-3 border-b border-slate-200 flex flex-col items-end justify-center h-[55px]">
-                <div className="flex items-center justify-end w-full">
-                    <span className="text-[12px] font-extrabold text-[#02122c] truncate">
-                        {product.delivery || product.shipping || "Free Shipping"}
-                    </span>
-                </div>
-                {product.shippingContext && (
+                <DeliveryBadge
+                  info={deliveryInfo}
+                  compact
+                  deliveryVariant={type === "domestic" ? "domestic" : "international"}
+                />
+                {deliveryInfo.cost && deliveryInfo.cost !== "Check Site" && (
                     <span className="text-[11px] font-bold text-slate-500 mt-0.5 truncate max-w-full">
-                        {product.shippingContext}
+                        {deliveryInfo.cost}
                     </span>
                 )}
              </div>
@@ -273,9 +309,9 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
              </div>
              
              {/* 도착 예정 */}
-             <div className="w-full px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
+             <div className="w-full px-3 h-[32px] border-b border-slate-200 flex items-center justify-end" title={deliveryInfo.tooltip}>
                 <span className="text-[12px] font-extrabold text-green-700 leading-tight truncate">
-                    Arrives {product.arrives || (product.deliveryDays ? `${product.deliveryDays} Days` : "Soon")}
+                    {deliveryInfo.label}
                 </span>
              </div>
              
