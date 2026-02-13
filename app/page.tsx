@@ -501,16 +501,99 @@ function HomeContent() {
                     {searched && !isHomeMode && (
                         <div className="hidden lg:block w-64 flex-shrink-0 overflow-visible min-w-0 relative z-[1000]">
                             <aside className="w-64 flex-shrink-0 overflow-visible">
-                                <div className="sticky top-24 space-y-4 text-sm overflow-visible">
-                                    {/* AI Smart Filters & Basic Filters */}
-                                    <div className="w-full bg-purple-50/90 border border-purple-200 rounded-xl shadow-sm px-4 py-4">
-                                      {/* ... AI Filter UI ... */}
-                                      <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide flex items-center gap-1.5"><span aria-hidden>✨</span> AI Smart Filters</h2>
-                                      {/* ... content ... */}
+                                <div className="sticky top-24 space-y-3 text-sm overflow-visible">
+                                    {/* ── Price Filter ── */}
+                                    <div className="w-full bg-white border border-slate-200 rounded-xl shadow-sm px-4 py-4">
+                                      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Max Price</h3>
+                                      <div className="flex items-center gap-3">
+                                        <input
+                                          type="range"
+                                          min={10}
+                                          max={1000}
+                                          step={10}
+                                          value={tempPriceRange}
+                                          onChange={(e) => setTempPriceRange(Number(e.target.value))}
+                                          className="flex-1 h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-[#02122c]"
+                                        />
+                                        <span className="text-sm font-bold text-[#02122c] min-w-[60px] text-right">
+                                          {tempPriceRange >= 1000 ? 'Any' : `$${tempPriceRange}`}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div className="w-full bg-slate-50/80 border border-slate-200 rounded-xl shadow-sm px-4 py-4">
-                                        <h2 className="text-sm font-semibold text-slate-800 uppercase tracking-wide">Filters</h2>
-                                        <div className="pt-3"><button type="button" onClick={() => { setPriceRange(tempPriceRange); setSelectedSites(tempSelectedSites); setSelectedSpeeds(tempSelectedSpeeds); }} className="mt-2 w-full rounded-lg bg-indigo-600 text-white text-xs font-semibold py-2 hover:bg-indigo-700 transition-colors">Apply Filters</button></div>
+
+                                    {/* ── Platform Filter ── */}
+                                    <div className="w-full bg-white border border-slate-200 rounded-xl shadow-sm px-4 py-4">
+                                      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Platform</h3>
+                                      <div className="space-y-2">
+                                        {['Amazon', 'AliExpress', 'Temu', 'Shein'].map((site) => {
+                                          const isSelected = tempSelectedSites.includes(site);
+                                          return (
+                                            <label key={site} className="flex items-center gap-2 cursor-pointer group">
+                                              <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={() => {
+                                                  setTempSelectedSites((prev) =>
+                                                    isSelected ? prev.filter((s) => s !== site) : [...prev, site]
+                                                  );
+                                                }}
+                                                className="w-4 h-4 rounded border-slate-300 text-[#02122c] focus:ring-[#02122c] accent-[#02122c]"
+                                              />
+                                              <span className="text-sm text-slate-700 group-hover:text-[#02122c] font-medium">{site}</span>
+                                            </label>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+
+                                    {/* ── Delivery Speed Filter ── */}
+                                    <div className="w-full bg-white border border-slate-200 rounded-xl shadow-sm px-4 py-4">
+                                      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Delivery Speed</h3>
+                                      <div className="space-y-2">
+                                        {['Express (1-3 days)', 'Standard (3-7 days)', 'Economy (7+ days)'].map((speed) => {
+                                          const isSelected = tempSelectedSpeeds.includes(speed);
+                                          return (
+                                            <label key={speed} className="flex items-center gap-2 cursor-pointer group">
+                                              <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={() => {
+                                                  setTempSelectedSpeeds((prev) =>
+                                                    isSelected ? prev.filter((s) => s !== speed) : [...prev, speed]
+                                                  );
+                                                }}
+                                                className="w-4 h-4 rounded border-slate-300 text-[#02122c] focus:ring-[#02122c] accent-[#02122c]"
+                                              />
+                                              <span className="text-sm text-slate-700 group-hover:text-[#02122c] font-medium">{speed}</span>
+                                            </label>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+
+                                    {/* ── Apply / Reset ── */}
+                                    <div className="flex gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => { setPriceRange(tempPriceRange); setSelectedSites(tempSelectedSites); setSelectedSpeeds(tempSelectedSpeeds); }}
+                                        className="flex-1 rounded-lg bg-[#02122c] text-white text-xs font-bold py-2.5 hover:bg-[#F59E0B] transition-colors"
+                                      >
+                                        Apply Filters
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setTempPriceRange(1000);
+                                          setTempSelectedSites([]);
+                                          setTempSelectedSpeeds([]);
+                                          setPriceRange(1000);
+                                          setSelectedSites([]);
+                                          setSelectedSpeeds([]);
+                                        }}
+                                        className="rounded-lg border border-slate-300 text-slate-600 text-xs font-bold px-3 py-2.5 hover:bg-slate-100 transition-colors"
+                                      >
+                                        Reset
+                                      </button>
                                     </div>
                                 </div>
                             </aside>
