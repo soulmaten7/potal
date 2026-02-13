@@ -1,220 +1,232 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import type { Product } from "../types/product";
-import { useWishlist } from "../context/WishlistContext";
-import { normalizeDeliveryInfo } from "../lib/utils/DeliveryStandard";
-import { trackAffiliateClick } from "../utils/analytics";
-import { DeliveryBadge } from "./DeliveryBadge";
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+// [경로] 아이콘 경로가 확실하지 않다면 @/components/icons를 시도합니다.
+// 에러나면 '../../../components/icons' 로 바꿔보세요.
+import { Icons } from '@/components/icons'; 
+import { useWishlist } from '../context/WishlistContext';
 
-const POTAL_PLACEHOLDER = "https://placehold.co/400x400/6366f1/white?text=POTAL";
-
-function BookmarkIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-    </svg>
-  );
+// [중요] page.tsx나 ResultsGrid에서 넘겨주는 모든 props를 받아줄 준비를 해야 에러가 안 납니다.
+interface ProductCardProps {
+  product: {
+    id: string;
+    title?: string;
+    name?: string;
+    price: string | number;
+    image?: string;
+    thumb?: string;
+    seller?: string;
+    site?: string;
+    rating?: number;
+    reviewCount?: number;
+    badges?: string[];
+    is_prime?: boolean;
+    shipping?: string;
+    delivery?: string;
+    shippingContext?: string;
+    arrives?: string;
+    deliveryDays?: string;
+    link?: string;
+    type?: string; // domestic, global 등
+    trustScore?: number;
+    [key: string]: any; // 유연성을 위해 추가
+  };
+  // [중요] 부모(page.tsx)에서 type을 내려주므로 받아야 함
+  type?: "domestic" | "international" | "global" | string;
+  compact?: boolean;
+  dense?: boolean;
+  onWishlistChange?: (added: boolean) => void;
+  onProductClick?: (product: any) => void;
 }
 
-type ProductCardProps = {
-  product: Product;
-  type: "domestic" | "international";
-  /** 홈 고밀도 그리드용: 이미지 h-48 */
-  compact?: boolean;
-  /** 모바일 네이티브 앱 스타일: 작은 폰트, 2열 그리드용 */
-  dense?: boolean;
-  /** 찜 추가/제거 시 토스트용 콜백 (added: true = 저장, false = 제거) */
-  onWishlistChange?: (added: boolean) => void;
-  /** 상품 클릭(딜 보기) 시 관심 카테고리 반영용 */
-  onProductClick?: (product: Product) => void;
-};
+/** Best Score → 색상/라벨 */
+function getScoreBadge(score?: number): { color: string; bg: string; label: string } | null {
+  if (score == null || score <= 0) return null;
+  if (score >= 80) return { color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', label: 'Excellent' };
+  if (score >= 60) return { color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200', label: 'Good' };
+  if (score >= 40) return { color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200', label: 'Fair' };
+  return { color: 'text-red-700', bg: 'bg-red-50 border-red-200', label: 'Low' };
+}
 
-export function ProductCard({ product, type, compact, dense, onWishlistChange, onProductClick }: ProductCardProps) {
+/** Trust Score → 아이콘/색상 */
+function getTrustSignal(score?: number): { icon: string; color: string; label: string } | null {
+  if (score == null) return null;
+  if (score >= 70) return { icon: '🛡️', color: 'text-emerald-600', label: 'Trusted' };
+  if (score >= 40) return { icon: '⚠️', color: 'text-amber-600', label: 'Caution' };
+  return { icon: '🚩', color: 'text-red-500', label: 'Risky' };
+}
+
+export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-  const [redirectingSite, setRedirectingSite] = useState<string | null>(null);
-  /** 이미지 로드 실패(404 등) 시 플레이스홀더로 교체 */
-  const [imageError, setImageError] = useState(false);
-  useEffect(() => {
-    setImageError(false);
-  }, [product.id, product.image]);
-  const isDomestic = type === "domestic";
-  const hasVariants = product.variants && product.variants.length > 0;
-  const isChinaLikeInternational =
-    !isDomestic && ["Temu", "AliExpress", "Coupang"].includes(product.site);
+  const isSaved = isInWishlist(product.id);
+  const [redirecting, setRedirecting] = useState(false);
 
-  const inWishlist = isInWishlist(product.id);
+  // 데이터 정규화
+  const displayTitle = product.title || product.name || "Untitled Product";
+  const displayImage = product.thumb || product.image || "";
+  const displaySeller = product.seller || product.site || "Unknown Seller";
+  const displayPrice = typeof product.price === 'string' ? product.price : `$${product.price}`;
+  const priceNum = parseFloat(String(displayPrice).replace(/[^0-9.-]/g, ""));
 
-  const handleViewDeal = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onProductClick?.(product);
-    const url = product.link || "#";
-    if (!url || url === "#") return;
-    const priceNum = parseFloat(String(product.price).replace(/[^0-9.-]/g, "")) || 0;
-    trackAffiliateClick({
-      productName: product.name || "Unknown",
-      price: priceNum,
-      vendor: product.site || "Unknown",
-      url,
-    });
-    setRedirectingSite(product.site);
-    setTimeout(() => {
-      window.open(url, "_blank", "noopener,noreferrer");
-      setRedirectingSite(null);
-    }, 900);
-  };
+  // Score & Trust
+  const scoreBadge = getScoreBadge(product.bestScore);
+  const trustSignal = getTrustSignal(product.trustScore);
 
-  const ctaLabel = isDomestic
-    ? "🇺🇸 View Deal"
-    : isChinaLikeInternational
-      ? "🇨🇳 View Deal"
-      : "🌏 View Deal";
-
-  const handleWishlistToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+  // 하트 토글
+  const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (inWishlist) {
-      removeFromWishlist(product.id);
-      onWishlistChange?.(false);
-    } else {
-      addToWishlist(product);
-      onWishlistChange?.(true);
-    }
+    if (isSaved) removeFromWishlist(product.id);
+    else addToWishlist(product);
   };
 
-  const priceStr =
-    typeof product.price === "string" && product.price.startsWith("$")
-      ? product.price
-      : `$${product.price}`;
+  // 딜 클릭
+  const handleViewDeal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url = product.link || "#";
+    if (!url || url === "#") return;
 
-  const imageHeightClass = dense ? "h-40" : compact ? "h-48" : "h-52";
+    setRedirecting(true);
+    setTimeout(() => {
+      window.open(url, "_blank", "noopener,noreferrer");
+      setRedirecting(false);
+    }, 800);
+  };
 
-  // 리다이렉팅 오버레이: Portal로 body에 렌더링해 전체 화면 덮음 (카드 overflow/transform 영향 없음)
-  const redirectOverlay =
-    redirectingSite &&
-    typeof document !== "undefined" &&
-    createPortal(
-      <div
-        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm"
-        aria-live="polite"
-        aria-busy="true"
-      >
-        <div className="bg-white rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-4 min-w-[200px]">
-          <div className="w-10 h-10 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-medium text-slate-800">Connecting to {redirectingSite}...</p>
-        </div>
-      </div>,
-      document.body
-    );
+  // 세금/배송 텍스트 로직
+  let taxSection = null;
+  // type이 global이거나 international이면 세금 계산 로직 적용
+  if (type === "global" || type === "international" || product.type === "global") {
+     const isFree = (priceNum || 0) < 800;
+     const text = isFree ? "No Import Tax" : "+ Est. Tax";
+     taxSection = (
+         <div className="flex items-center justify-end"><span className="text-[12px] font-extrabold text-[#02122c]">{text}</span></div>
+     );
+  } else {
+     taxSection = (
+         <div className="flex items-center justify-end gap-1"><span className="text-[12px] font-extrabold text-[#02122c]">+ Tax</span></div>
+     );
+  }
 
+  const redirectOverlay = redirecting && typeof document !== "undefined" && createPortal(
+    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-xl px-8 py-6 flex flex-col items-center gap-4">
+        <div className="w-10 h-10 border-2 border-[#02122c] border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm font-bold text-[#02122c]">Connecting to {displaySeller}...</p>
+      </div>
+    </div>,
+    document.body
+  );
+
+  // [디자인 100% 복원] 가로형 레이아웃
   return (
     <>
-      <div className="group relative h-full flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
-        {/* Image area - vertical card: image on top, 고정 높이 */}
-        <div className={`relative w-full flex-shrink-0 ${imageHeightClass} bg-slate-50`}>
-          {/* API에서 이미지가 오면 무조건 사용; 없거나 로드 실패 시에만 회색 placeholder */}
-          <img
-            src={imageError ? POTAL_PLACEHOLDER : (product.image || POTAL_PLACEHOLDER)}
-            alt={product.name || "Product"}
-            className="w-full h-full object-contain p-2"
-            onError={() => setImageError(true)}
-          />
-          {/* Wishlist - top right, 터치 영역 44px 이상 */}
-          <button
-            type="button"
-            onClick={handleWishlistToggle}
-            className="absolute right-2 top-2 z-10 inline-flex items-center justify-center rounded-full border border-gray-200 bg-white/90 min-w-[44px] min-h-[44px] p-2.5 shadow-sm hover:bg-slate-50 active:bg-slate-100 transition-colors touch-manipulation"
-            aria-label={inWishlist ? "Remove from saved" : "Save item"}
-          >
-            <BookmarkIcon
-              className={
-                inWishlist
-                  ? "w-4 h-4 text-indigo-600 fill-indigo-600"
-                  : "w-4 h-4 text-slate-400"
-              }
-              strokeWidth={2}
-            />
-          </button>
-        </div>
-
-        {/* Content - below image, flex-1 + min-h-0으로 그리드 높이 채움 */}
-        <div className={`flex flex-col flex-1 min-h-0 min-w-0 ${dense ? "p-2" : "p-3"}`}>
-          {/* 제목: 2줄 자르기 고정, 레이아웃 밀림 방지 */}
-          <div className="flex items-start justify-between gap-1 mb-0.5 flex-shrink-0 min-w-0 overflow-hidden">
-            <h3 className={`font-semibold text-slate-800 flex-1 min-w-0 overflow-hidden line-clamp-2 leading-snug ${dense ? "text-xs min-h-[2.25rem]" : "text-sm min-h-[3rem]"}`}>
-              {product.name}
-            </h3>
-            {hasVariants && !dense && (
-              <span className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-medium whitespace-nowrap">
-                More prices
-              </span>
-            )}
+       <div className="bg-white border border-[#e0e3eb] rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 flex h-[220px] group relative z-0 overflow-hidden">
+          
+          {/* 1. 좌측 이미지 (w-140px) */}
+          <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-white relative p-4 flex items-center justify-center">
+             <button
+                onClick={handleToggleSave}
+                className="absolute top-2 left-2 z-10 transition-transform active:scale-90"
+             >
+                 {isSaved ?
+                   <Icons.HeartFilled className="w-5 h-5 text-red-500" /> :
+                   <Icons.Heart className="w-5 h-5 text-slate-300 hover:text-red-400" />
+                 }
+             </button>
+             {/* Best Score 배지 */}
+             {scoreBadge && (
+               <div className={`absolute top-2 right-2 z-10 ${scoreBadge.bg} border rounded-md px-1.5 py-0.5 flex items-center gap-1`}>
+                 <span className={`text-[11px] font-extrabold ${scoreBadge.color}`}>{product.bestScore}</span>
+               </div>
+             )}
+             <img
+                src={displayImage}
+                alt={displayTitle}
+                className="w-full h-full object-contain mix-blend-multiply"
+             />
           </div>
 
-          {/* Store & delivery - 표준화 배지 + 툴팁 (모바일 dense 시 줄바꿈 방지) */}
-          <div className={`flex items-center gap-1 mb-1 flex-shrink-0 min-w-0 overflow-hidden ${dense ? "text-[10px] flex-nowrap" : "flex-wrap"}`}>
-            <span
-              className={`px-1.5 py-0.5 rounded font-medium ${
-                isDomestic
-                  ? "bg-blue-100 text-blue-800"
-                  : "bg-orange-100 text-orange-800"
-              }`}
-            >
-              {product.site}
-            </span>
-            <DeliveryBadge
-              info={normalizeDeliveryInfo({
-                deliveryDays: product.deliveryDays,
-                site: product.site,
-                delivery: (product as { delivery?: string }).delivery,
-                is_prime: (product as { is_prime?: boolean }).is_prime,
-              })}
-              compact={dense}
-            />
-            {product.trustScore !== undefined && (
-              <span className="text-slate-500">⭐ {product.trustScore}</span>
-            )}
+          {/* 2. 중앙 정보 */}
+          <div className="flex-1 p-5 flex flex-col justify-start border-r border-slate-100 min-w-0">
+             <div className="flex justify-between items-start mb-2">
+                 <div className="flex items-start gap-2 min-w-0">
+                     <span className="text-[13px] font-extrabold text-[#02122c] uppercase tracking-wide mt-[2px] truncate">
+                        {displaySeller}
+                     </span>
+                     {/* Trust Signal */}
+                     {trustSignal && (
+                       <span className={`text-[11px] font-bold ${trustSignal.color} mt-[3px] shrink-0`} title={`Trust: ${product.trustScore}/100`}>
+                         {trustSignal.icon}
+                       </span>
+                     )}
+                     <div className="flex flex-col items-start leading-none">
+                        <div className="flex items-center gap-1">
+                            <Icons.Star className="w-3.5 h-3.5 text-[#F59E0B]" />
+                            <span className="text-[13px] font-bold text-slate-900">{product.rating || 0}</span>
+                        </div>
+                        <span className="text-[11px] font-bold text-slate-400 mt-1">({product.reviewCount || 0})</span>
+                     </div>
+                 </div>
+                 {/* 뱃지 복원 */}
+                 <div className="flex gap-1 flex-wrap justify-end">
+                     {(product.is_prime || product.badges?.includes("Prime")) && <span className="bg-[#00A8E1] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">Prime</span>}
+                     {product.badges?.includes("Choice") && <span className="bg-[#FF9900] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">Choice</span>}
+                 </div>
+             </div>
+             <h3 className="text-[15px] font-medium text-[#02122c] leading-snug line-clamp-3 group-hover:text-[#F59E0B] transition-colors">
+                {displayTitle}
+             </h3>
           </div>
 
-          {/* 가격·배송·CTA: mt-auto로 카드 바닥에 고정 */}
-          <div className="mt-auto flex-shrink-0">
-            <p className={dense ? "text-sm font-bold text-indigo-600" : "text-xl font-bold text-indigo-600"}>{priceStr}</p>
-            {(() => {
-              const deliveryInfo = normalizeDeliveryInfo({
-                deliveryDays: product.deliveryDays,
-                site: product.site,
-                delivery: (product as { delivery?: string }).delivery,
-                is_prime: (product as { is_prime?: boolean }).is_prime,
-              });
-              if (deliveryInfo.cost === "Free") return null;
-              return (
-                <p className={dense ? "text-[10px] text-slate-500 mt-0.5 mb-1.5" : "text-xs text-slate-500 mt-0.5 mb-3"}>
-                  {(product as { shippingCost?: string }).shippingCost ?? "+ Shipping"}
-                </p>
-              );
-            })()}
-            <button
-              type="button"
-              onClick={handleViewDeal}
-              className={`block w-full text-center rounded-lg font-bold text-white transition-colors min-h-[44px] flex items-center justify-center touch-manipulation ${
-                dense ? "px-3 py-2.5 text-[10px]" : "px-4 py-3 rounded-lg text-xs"
-              } ${isDomestic ? "bg-blue-600 hover:bg-blue-700 active:bg-blue-800" : "bg-orange-500 hover:bg-orange-600 active:bg-orange-700"}`}
-            >
-              {ctaLabel}
-            </button>
+          {/* 3. 우측 정보 (회색 배경) */}
+          <div className="w-[170px] flex flex-col bg-slate-50/30 min-w-[170px]">
+             {/* 배송비 */}
+             <div className="w-full p-3 border-b border-slate-200 flex flex-col items-end justify-center h-[55px]">
+                <div className="flex items-center justify-end w-full">
+                    <span className="text-[12px] font-extrabold text-[#02122c] truncate">
+                        {product.delivery || product.shipping || "Free Shipping"}
+                    </span>
+                </div>
+                {product.shippingContext && (
+                    <span className="text-[11px] font-bold text-slate-500 mt-0.5 truncate max-w-full">
+                        {product.shippingContext}
+                    </span>
+                )}
+             </div>
+             
+             {/* 세금 */}
+             <div className="w-full px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
+                {taxSection}
+             </div>
+             
+             {/* 도착 예정 */}
+             <div className="w-full px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
+                <span className="text-[12px] font-extrabold text-green-700 leading-tight truncate">
+                    Arrives {product.arrives || (product.deliveryDays ? `${product.deliveryDays} Days` : "Soon")}
+                </span>
+             </div>
+             
+             {/* 가격 & 버튼 */}
+             <div className="w-full flex-1 p-3 flex flex-col items-end justify-center gap-1">
+                 <div className="text-[22px] font-extrabold text-[#02122c] leading-none">
+                    {displayPrice}
+                 </div>
+                 {/* Total Landed Cost (원가와 다를 때만 표시) */}
+                 {product.totalPrice != null && product.totalPrice > 0 && product.totalPrice !== priceNum && (
+                   <span className="text-[11px] font-bold text-slate-400">Total: ${product.totalPrice.toFixed(2)}</span>
+                 )}
+                 <button
+                    onClick={handleViewDeal}
+                    className="w-full h-[30px] bg-[#02122c] hover:bg-[#F59E0B] text-white text-[13px] font-extrabold rounded-[4px] flex items-center justify-center gap-1 transition-colors shadow-sm"
+                 >
+                    Select <Icons.ArrowRight className="w-3 h-3" />
+                 </button>
+             </div>
           </div>
-        </div>
-      </div>
-      {redirectOverlay}
+       </div>
+       {redirectOverlay}
     </>
   );
 }
