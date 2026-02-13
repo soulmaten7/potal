@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "./components/Footer";
+
+// [핵심 수정 1] 헤더를 이제 layout 폴더에서 가져옵니다.
+import { Header } from "@/components/layout/Header";
+
+// [핵심 수정 2] 푸터도 layout 폴더에서 가져옵니다.
+import { Footer } from "@/components/layout/Footer";
+
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { WishlistProvider } from "./context/WishlistContext";
 import { UserPreferenceProvider } from "./context/UserPreferenceContext";
@@ -19,26 +25,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://www.potal.com";
-
 export const metadata: Metadata = {
   title: "POTAL - Global Best Price vs Local Fast Delivery",
-  description:
-    "Compare prices across Amazon, AliExpress, Temu, and more. Find the best deals on Lego, Tech, and Camping gear with real-time shipping analysis.",
-  keywords: [
-    "price comparison",
-    "global shipping",
-    "amazon vs aliexpress",
-    "cheap deals",
-    "potal",
-  ],
-  openGraph: {
-    type: "website",
-    title: "POTAL - Global Best Price vs Local Fast Delivery",
-    description:
-      "Compare prices across Amazon, AliExpress, Temu, and more. Find the best deals on Lego, Tech, and Camping gear with real-time shipping analysis.",
-    url: siteUrl,
-  },
+  description: "AI Search Agent for Smart Shopping",
 };
 
 export default function RootLayout({
@@ -48,18 +37,29 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-800`}
-      >
+      <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900 bg-slate-50`}>
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+        
         <SupabaseProvider>
           <UserPreferenceProvider>
-            <div className="flex flex-col min-h-screen">
-              <WishlistProvider>
-                {children}
+            <WishlistProvider>
+              
+              <div className="flex flex-col min-h-screen relative">
+                
+                {/* 헤더 */}
+                <Header />
+                
+                {/* 메인 컨텐츠 */}
+                <main className="flex-grow w-full">
+                  {children}
+                </main>
+                
+                {/* 푸터 */}
                 <Footer />
-              </WishlistProvider>
-            </div>
+                
+              </div>
+              
+            </WishlistProvider>
           </UserPreferenceProvider>
         </SupabaseProvider>
       </body>

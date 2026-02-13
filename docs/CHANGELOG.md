@@ -1,5 +1,41 @@
 # POTAL Development Changelog
 
+## [2026-02-04] POTAL 2.0 Home Page Finalization & Strategy Shift
+
+### ⏱️ Timeline & Action Log (1-min granularity)
+- **19:50** | **UI/UX Hotfix**: 검색 버튼 컬러 수정. 기존 `#C5A028`(Muddy Gold) 폐기하고 `#F59E0B`(Vivid Amber) + `drop-shadow-md` 적용. 텍스트는 `text-white` 유지하되 `font-extrabold`로 가독성 강화.
+- **20:05** | **Content Overhaul**: 가치 제안(Value Props) 텍스트 전면 교체. "Global Comparison", "Total Landed Cost" 개념 명확화.
+- **20:10** | **Button Logic**: 검색 버튼 'Always On' 결정. 입력값(`!query`) 여부와 관계없이 시각적으로 항상 활성화 상태 유지 (사용자 유도).
+- **20:25** | **Feature Integ**: Shipping Guide FAQ 섹션에 실제 배송 데이터(Amazon Prime, Ali Choice 등)를 2단 그리드(`grid-cols-2`)로 통합. 텍스트 컬러는 `#02122c`(Navy)로 통일하여 이질감 제거.
+- **20:30** | **Branding Pivot**: 서비스 주체 변경. "AI"라는 단어를 "POTAL" 또는 "POTAL Agent"로 교체하여 서비스 자체를 의인화/브랜딩화. (Slogan: "POTAL Verified. No Hidden Costs.")
+- **20:55** | **UX Decision**: Zipcode 입력 방식 변경. '주소 검색/자동완성' 기능 폐기(MVP 단계 리스크 제거)하고, '정직한 숫자 5자리 입력' 방식으로 회귀.
+- **21:05** | **UI Polish**: Market Scope 드롭다운 디자인 변경. 컬러 이모지 제거하고 'Lucide Monochrome Icons' 적용. "Only" 텍스트 삭제로 미니멀리즘 구현.
+- **21:15** | **No Fake Policy**: 검색어 추천 기능(Related Suggestions)의 가짜 데이터 로직 전면 삭제. '최근 검색어(Recent Searches)'만 `localStorage` 기반으로 리얼 구현 결정.
+- **21:40** | **Privacy Logic**: 검색 기록 저장소 분리. 로그인(`potal_user_recents`)과 비로그인(`potal_guest_recents`) 키값 분리하여 프라이버시 보호 로직 추가.
+- **22:00** | **Phase 2 Plan**: 검색 결과 페이지(`/search`) 뼈대 및 Sticky Header 설계 시작.
+- **22:20** | **Dev Strategy**: **"PC First"** 원칙 확정. 모바일 반응형(Responsive) 작업을 병행하지 않고, PC 버전(1200px 기준)을 기능적으로 완벽히 끝낸 후 모바일 CSS를 일괄 작업하기로 합의.
+
+### 🧬 Technical Specs (Code & Logic)
+- **Color System**:
+  - Primary Action (Search Button): `bg-[#F59E0B]` (Tailwind Amber-500).
+  - Text Body: `text-[#02122c]` (Deep Navy) & `text-slate-600`.
+- **Search Logic**:
+  - **Recent History**: Uses `localStorage`.
+    - Key (Guest): `potal_guest_recents`
+    - Key (User): `potal_user_recents`
+  - **Routing**: `router.push("/search?q=...&zip=...&market=...")` via query params.
+- **UI Components**:
+  - **Market Dropdown**: Custom `div` based dropdown (removed `<select>`). Icons: `Globe`, `Flag`, `Plane` (Slate-500).
+  - **Zip Input**: `input[type="text"]`, `maxLength={5}`, numeric only. No auto-complete.
+- **Shipping Data (Hardcoded for MVP)**:
+  - **Domestic**: Amazon (Prime 2-day), Walmart (W+), Target, Best Buy, iHerb(Expedited).
+  - **Global**: AliExpress (Choice 5-7d), Temu (Std 7-15d).
+
+### 🧠 Philosophy & Principles
+- **No Fake Data**: MVP라도 '그럴싸한 가짜'는 허용하지 않는다. 기능이 적더라도 100% 리얼 데이터/로직만 보여준다.
+- **POTAL is the Agent**: "AI가 했다"고 하지 않고 "POTAL이 검증했다"고 표현하여 브랜드 신뢰도를 높인다.
+- **PC First**: 완성도 높은 로직 검증을 위해 PC 버전을 우선 완성하고, 모바일 UX는 후순위로 미룬다. (동시 작업 시 효율 저하 방지).
+
 **⚠️ Development Principle:** All functional updates (Logic, UI features) must be applied to **BOTH PC and Mobile** environments simultaneously. *(One Logic, Multi-Device).*
 
 ---
@@ -14,67 +50,37 @@
 
 ---
 
-## [2026-02-03] Search UX Stabilization, Logic Parity & Layout Finalization
+## [2026-02-04] The "Skyscanner" Pivot (POTAL 2.0)
 
-### 1. Detailed Timeline & Fixes (상세 작업 내역)
+### 🚨 Strategic Pivot: From Marketplace to Search Engine
+- **Context:** 기존 홈 화면의 '추천 상품(Trending)' 나열 방식은 사용자의 검색 목적을 방해하고, 단순 쇼핑몰(Marketplace)로 오인하게 만듦.
+- **Decision:** **"Change Everything."** (이건희 회장 인용). 마누라와 자식(핵심 데이터) 빼고 다 바꾼다.
+- **New Philosophy:**
+  1.  **Zero Noise:** 홈 화면에서 모든 추천 상품 삭제. 오직 '검색창'과 '설정'만 남긴다. (Google/Skyscanner Style)
+  2.  **Context-Aware:** [검색어] + [도착지(Zipcode)] + [필터] 3요소만 받는다.
+  3.  **Agent Detail:** 클릭 시 바로 이동하지 않고, '가격 변동', '배송 시뮬레이션'을 보여주는 상세 리포트 페이지를 거친다.
 
-#### A. Search Logic & Fallback (검색 로직 및 폴백)
-- **Issue:** 검색 결과 0건 시 'Found 4 items'라며 가짜(Fake) Amazon/Temu 카드를 생성하거나, 빈 화면이 방치됨.
-- **Fix:**
-  - `Smart Fallback` 도입: 결과 0건 시 자동으로 `isFallbackMode=true` 전환.
-  - 백그라운드에서 `Trending` 또는 `Interest` 키워드로 재검색(API)하여 **실제 상품**을 노출.
-  - UI 상단에 **Yellow Banner ("No results found... but we picked these for you")** 표시.
-  - **가짜 데이터 생성 함수(`generateFallbackProducts`) 영구 삭제.**
-- **Spec:** 0건이면 0건으로 두고, 별도 fallback API 호출로 실제 상품만 채움. 가짜 카드 생성 금지.
-
-#### B. Home & Search Mode Separation (홈/검색 모드 분리)
-- **Issue 1 (Input Lock):** 홈 화면에서 타이핑 시 입력값이 초기화되거나, 엔터 전 화면이 전환되는 문제.
-- **Fix 1:**
-  - 검색 입력의 `value`는 항상 `query` 상태만 반영 (`isHomeMode` 조건 제거).
-  - `onChange`에서는 `setQuery`만 수행하고, 화면 전환(`setIsHomeMode(false)`)은 오직 **엔터/클릭 시**에만 수행.
-- **Issue 2 (Initial Text):** 앱 초기 진입 시 검색창에 'Trending Tech' 글자가 박혀있는 문제.
-- **Fix 2 (Silent Search Pattern):**
-  - **UI와 Data의 분리:** 초기화 시 `setQuery('')`(빈값)를 유지하되, `executeSearch('Trending Tech')`와 같이 인자로 키워드를 넘겨 데이터만 로드함.
-- **Spec:** 홈 진입 시 검색창은 비워두고, API만 호출. `overrideQuery` 사용 시 UI(`setQuery`) 갱신 금지.
-
-#### C. Mobile Parity & Navigation (모바일 동기화)
-- **Issue:**
-  - 모바일 하단 'Home' 탭 클릭 시 URL 파라미터만 변하고 화면이 리셋되지 않음.
-  - 모바일 코드에 "Global Trending Picks" 텍스트가 하드코딩되어 PC 로직과 불일치.
-- **Fix:**
-  - **URL Driven Reset:** `page.tsx`에서 `searchParams.get('q')`가 없을 때 강제로 `setIsHomeMode(true)` 및 `setQuery('')` 실행.
-  - **One Logic:** 모바일 뷰(`md:hidden`)의 하드코딩 텍스트를 삭제하고, PC와 동일한 `getHomeSubtitle()` 함수 사용.
-- **Spec:** PC와 모바일은 데이터/로직/표시 텍스트 100% 동일. 모바일 전용 하드코딩 금지.
-
-#### D. Content Strategy (텍스트 전략)
-- **Decision:** 구체적 키워드(예: "Camping")나 긴 문장("Popular items delivered fast...")은 모바일에서 잘리고 본질을 흐림.
-- **Spec:**
-  - **로그인 유저:** `🎯 Based on your interests` (취향 기반 비교 유도)
-  - **비로그인 유저:** `🔥 Trending Now` (트렌드 비교 유도)
-  - 위 문구를 PC/모바일, Domestic/Global 섹션에 **동일하게 적용**하여 '비교 플랫폼'의 정체성 강조.
-
-#### E. Layout & Design Polish (레이아웃 최적화)
-- **Shipping Guide:**
-  - PC: 검색 결과 요약 박스(`SearchInsight`) 우측 하단으로 이동하여 헤더 정돈.
-  - Mobile: Filter Bar의 `Global` 칩 우측에 `[📦 Guide]` 칩 추가.
-- **Wide View Restoration:**
-  - `max-w-screen-2xl` 제한을 해제하고 `w-full`로 복구하여, 와이드 모니터에서 아마존/쿠팡처럼 **꽉 찬 화면(Full Width)** 제공.
-  - 태블릿 대응은 Container 폭 제한이 아닌, Grid의 Responsive 속성(`grid-cols-*`)으로 처리.
-- **Autocomplete (자동완성):**
-  - PC(인라인 검색창)와 모바일(`SearchOverlay`) 양쪽에 검색어 제안(Suggestion) 드롭다운 기능 동시 복구. (데이터 연결 이슈는 To-Do로 이월)
+### 🛠️ Planned Spec (v2.0 Blueprint)
+1.  **Home:**
+    - Search Box Only.
+    - Destination Input (Shipping Calculation Key).
+    - Scope Selector (All / Domestic / Global).
+2.  **Mobile Nav:** [Search] - [Wishlist] - [Profile] (Simple 3-Tab). No 'Categories'.
+3.  **Search Result:**
+    - Sticky Filter Bar (Filter, Sort, Scope).
+    - Sort Tabs: Recommended / Fastest / Cheapest.
+4.  **Product Detail:**
+    - Internal Agent Page before external link.
+    - "Export Wishlist" feature added.
 
 ---
 
-### 2. Immutable Rules (불변의 법칙 — 절대 수정 금지)
-1. **Mobile Parity:** PC와 모바일은 UI 형태(Grid/List)만 다를 뿐, **데이터 로직, 표시 텍스트, 기능(자동완성 등)은 100% 동일**해야 한다. (모바일용 별도 하드코딩 절대 금지)
-2. **No Fake Data:** 검색 결과가 없으면 없다고 말하고(배너), 다른 걸(추천) 보여준다. 가짜 데이터를 생성해서 채우지 않는다.
-3. **Silent Init:** 홈 화면 진입 시 검색창은 비워두고(`""`), 데이터는 채운다(`API Call`).
-
----
-
-### 3. Next Steps
-- **Urgent:** 자동완성 Mock 데이터 연결 정상화 (PC/Mobile 공통).
-- **Data Analytics:** Google Analytics 4 (GA4) 연동 작업.
+## [2026-02-03] (Previous) MVP v1.0 Stabilization
+### 1. ⚡️ Performance & UX Fixes
+- **AI Timeout:** `gpt-4o-mini` 호출 시 2초(2000ms) 타임아웃 적용. 초과 시 원본 반환하여 무한 로딩 방지.
+- **Input Sync:** `useRef`를 도입하여 타이핑 중 URL 동기화로 인한 입력 끊김(Input Lock) 현상 해결.
+- **Stale Data:** 검색 실행 시 `setList([])`를 선행하여 이전 검색 결과(잔상)가 남는 버그 수정.
+- **Visual Distinction:** 모바일 리스트에서 International 상품에 오렌지색 테두리(`border-l-amber-400`) 적용.
 
 ---
 

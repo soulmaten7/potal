@@ -83,6 +83,7 @@ function HomeContent() {
   /** Best/Cheapest/Fastest 정렬 탭 */
   const [activeTab, setActiveTab] = useState<'best' | 'cheapest' | 'fastest'>('best');
   const [showBestTooltip, setShowBestTooltip] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   
   const [recentZips, setRecentZips] = useState<string[]>([]);
   const [heroRecents, setHeroRecents] = useState<string[]>([]);
@@ -442,6 +443,19 @@ function HomeContent() {
                     <span className="text-sm text-slate-600">
                       <strong className="text-[#02122c]">{sortedDomestic.length + sortedInternational.length}</strong> results sorted by <strong className="text-[#02122c]">{activeTab === 'best' ? 'Best' : activeTab === 'cheapest' ? 'Cheapest' : 'Fastest'}</strong>
                     </span>
+                    {/* 모바일 필터 버튼 */}
+                    <button
+                      onClick={() => setShowMobileFilters(true)}
+                      className="lg:hidden ml-auto flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#02122c] bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                    >
+                      <Icons.Filter className="w-3.5 h-3.5" />
+                      Filters
+                      {(selectedSites.length > 0 || selectedSpeeds.length > 0 || priceRange < 1000) && (
+                        <span className="w-4 h-4 rounded-full bg-[#F59E0B] text-white text-[10px] font-bold flex items-center justify-center">
+                          {selectedSites.length + selectedSpeeds.length + (priceRange < 1000 ? 1 : 0)}
+                        </span>
+                      )}
+                    </button>
                     {/* "What is Best?" tooltip */}
                     <div className="relative">
                       <button onClick={() => setShowBestTooltip(!showBestTooltip)} className="focus:outline-none">
@@ -693,6 +707,86 @@ function HomeContent() {
         )}
       </div>
       
+      {/* ── Mobile Filter Bottom Sheet ── */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-[9999] lg:hidden">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowMobileFilters(false)} />
+          {/* Sheet */}
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[75vh] overflow-y-auto animate-slide-up">
+            <div className="sticky top-0 bg-white z-10 px-5 pt-4 pb-2 border-b border-slate-200 flex items-center justify-between">
+              <h2 className="text-base font-bold text-[#02122c]">Filters</h2>
+              <button onClick={() => setShowMobileFilters(false)} className="p-1">
+                <Icons.X className="w-5 h-5 text-slate-500" />
+              </button>
+            </div>
+            <div className="px-5 py-4 space-y-5">
+              {/* Price */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Max Price</h3>
+                <div className="flex items-center gap-3">
+                  <input type="range" min={10} max={1000} step={10} value={tempPriceRange}
+                    onChange={(e) => setTempPriceRange(Number(e.target.value))}
+                    className="flex-1 h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-[#02122c]"
+                  />
+                  <span className="text-sm font-bold text-[#02122c] min-w-[60px] text-right">
+                    {tempPriceRange >= 1000 ? 'Any' : `$${tempPriceRange}`}
+                  </span>
+                </div>
+              </div>
+              {/* Platform */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Platform</h3>
+                <div className="flex flex-wrap gap-2">
+                  {['Amazon', 'AliExpress', 'Temu', 'Shein'].map((site) => {
+                    const sel = tempSelectedSites.includes(site);
+                    return (
+                      <button key={site} onClick={() => setTempSelectedSites(prev => sel ? prev.filter(s => s !== site) : [...prev, site])}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-full border transition-colors ${sel ? 'bg-[#02122c] text-white border-[#02122c]' : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400'}`}
+                      >
+                        {site}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* Speed */}
+              <div>
+                <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-3">Delivery Speed</h3>
+                <div className="flex flex-wrap gap-2">
+                  {['Express (1-3 days)', 'Standard (3-7 days)', 'Economy (7+ days)'].map((speed) => {
+                    const sel = tempSelectedSpeeds.includes(speed);
+                    return (
+                      <button key={speed} onClick={() => setTempSelectedSpeeds(prev => sel ? prev.filter(s => s !== speed) : [...prev, speed])}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-full border transition-colors ${sel ? 'bg-[#02122c] text-white border-[#02122c]' : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400'}`}
+                      >
+                        {speed}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            {/* Bottom actions */}
+            <div className="sticky bottom-0 bg-white border-t border-slate-200 px-5 py-4 flex gap-3">
+              <button onClick={() => {
+                setTempPriceRange(1000); setTempSelectedSites([]); setTempSelectedSpeeds([]);
+                setPriceRange(1000); setSelectedSites([]); setSelectedSpeeds([]);
+                setShowMobileFilters(false);
+              }} className="flex-1 py-3 rounded-xl border border-slate-300 text-slate-600 text-sm font-bold hover:bg-slate-100 transition-colors">
+                Reset
+              </button>
+              <button onClick={() => {
+                setPriceRange(tempPriceRange); setSelectedSites(tempSelectedSites); setSelectedSpeeds(tempSelectedSpeeds);
+                setShowMobileFilters(false);
+              }} className="flex-1 py-3 rounded-xl bg-[#02122c] text-white text-sm font-bold hover:bg-[#F59E0B] transition-colors">
+                Apply ({tempSelectedSites.length + tempSelectedSpeeds.length + (tempPriceRange < 1000 ? 1 : 0)})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Back to Top Button */}
       <button 
         onClick={scrollToTop} 
