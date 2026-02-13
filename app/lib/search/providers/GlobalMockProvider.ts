@@ -67,8 +67,11 @@ export class GlobalMockProvider implements SearchProvider {
       parsedDeliveryDays: config.parsedDeliveryDays,
       shippingPrice: 0,
       totalPrice: 0,
+      parsedPrice: 0,
       trustScore: config.trustScore,
       bestScore: 0, // Search cards don't get scored
+      rating: 0,
+      reviewCount: 0,
     }));
   }
 }

@@ -122,21 +122,40 @@ function mapItemToProduct(
   const rating = parseFloat(String(item.product_star_rating ?? item.rating ?? 0)) || 0;
   const reviews = parseInt(String(item.product_num_ratings ?? item.reviews_count ?? 0), 10) || 0;
   const trustScore = Math.min(100, Math.round(rating * 20 + (reviews > 1000 ? 10 : 0)));
-  const shipping = assignShipping(item);
+
+  // Prime 감지: is_prime 플래그 또는 delivery 텍스트에서 추론
+  const isPrime = !!(
+    item.is_prime === true ||
+    item.is_amazon_choice === true ||
+    String(item.delivery ?? '').toLowerCase().includes('prime') ||
+    String(item.product_title ?? '').toLowerCase().includes('prime')
+  );
+
+  // 배송 일수: Prime → 2일, 일반 → 3~5일
+  const parsedDeliveryDays = isPrime ? 2 : 4;
+
+  // 브랜드 추출
+  const brand = String(item.product_brand ?? item.brand ?? '').trim() || undefined;
 
   return {
     id: `amazon_${asin}`,
     name,
     price,
+    parsedPrice: priceNum,
     image: normalizeImage(item),
     site: 'Amazon',
     shipping: 'Domestic' as const,
     category: 'domestic' as const,
     link,
-    deliveryDays: 'Free Prime Delivery (US)',
+    deliveryDays: isPrime ? 'Free Prime 2-Day' : '3-5 Business Days',
+    parsedDeliveryDays,
     shippingPrice,
     totalPrice,
     trustScore,
+    is_prime: isPrime,
+    rating,
+    reviewCount: reviews,
+    brand,
   };
 }
 

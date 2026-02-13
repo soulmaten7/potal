@@ -164,9 +164,10 @@ export class Coordinator {
         });
         // 재스코어링 결과 사용
         const reResults = reScoringResult.bestSorted as Product[];
-        const reDomesticCount = reResults.filter(p =>
-          (p.shipping || '').toLowerCase().includes('domestic'),
-        ).length;
+        const reDomesticCount = reResults.filter(p => {
+          if (p.category) return p.category === 'domestic';
+          return (p.shipping || '').toLowerCase() === 'domestic';
+        }).length;
         const pipeline = this.buildPipelineResult();
         console.log(`\n✅ [Coordinator] Done (with refinement) in ${pipeline.totalDuration}ms | ${reResults.length} products`);
         return {
@@ -184,12 +185,15 @@ export class Coordinator {
 
     // ── Step 8: 결과 조립 ──
     const results = scoringResult.bestSorted as Product[];
-    const domesticCount = results.filter(p =>
-      (p.shipping || '').toLowerCase().includes('domestic'),
-    ).length;
+    const domesticCount = results.filter(p => {
+      if (p.category) return p.category === 'domestic';
+      return (p.shipping || '').toLowerCase() === 'domestic';
+    }).length;
 
     const pipeline = this.buildPipelineResult();
-    console.log(`\n✅ [Coordinator] Done in ${pipeline.totalDuration}ms | ${results.length} products | ${pipeline.steps.length} steps | ~$${pipeline.estimatedCost.toFixed(4)} cost`);
+    const aiSteps = pipeline.steps.filter(s => s.type === 'ai');
+    const toolSteps = pipeline.steps.filter(s => s.type === 'deterministic');
+    console.log(`\n✅ [Coordinator] Done in ${pipeline.totalDuration}ms | ${results.length} products (🇺🇸${domesticCount} + 🌏${results.length - domesticCount}) | AI:${aiSteps.length} Tool:${toolSteps.length} | ~$${pipeline.estimatedCost.toFixed(4)}`);
 
     return {
       results,
