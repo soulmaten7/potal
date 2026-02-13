@@ -286,12 +286,19 @@ export function scoreProducts(
     const matchScore = p.rawMatch;
     const returnScore = p.rawReturn;
 
-    const bestScore =
+    let bestScore =
       priceScore * weights.price +
       speedScore * weights.speed +
       trustScore * weights.trust +
       matchScore * weights.match +
       returnScore * weights.returnPolicy;
+
+    // FraudFilter 패널티: fraudFlags가 있으면 점수 차감
+    const flags = p.product.fraudFlags;
+    if (flags && flags.length > 0) {
+      const penalty = Math.min(flags.length * 8, 25); // 플래그당 -8점, 최대 -25점
+      bestScore = Math.max(0, bestScore - penalty);
+    }
 
     return {
       ...p.product,

@@ -41,4 +41,12 @@ export interface Product {
   parsedPrice?: number;
   /** 파싱된 배송일 (숫자, 일 단위). 문자열 재파싱 없이 정렬에 사용 */
   parsedDeliveryDays?: number;
+
+  // ── FraudFilter에서 추가되는 필드 ──
+  /** FraudFilter가 의심 플래그를 단 경우. 사유 배열 (예: ['price_too_low', 'low_seller_trust']) */
+  fraudFlags?: string[];
+  /** rating (Amazon API 등에서 내려옴) */
+  rating?: number;
+  /** 리뷰 수 */
+  reviewCount?: number;
 }

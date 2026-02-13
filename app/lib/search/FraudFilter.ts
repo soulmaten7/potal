@@ -255,11 +255,11 @@ export function filterFraudulentProducts(
     }
 
     if (isFlagged) {
-      // Attach trust flags to the product for UI rendering
-      const flaggedProduct = {
+      // Attach fraud flags to the product for UI rendering
+      const flaggedProduct: Product = {
         ...product,
-        _trustFlags: productFlags,
-      } as Product & { _trustFlags: string[] };
+        fraudFlags: productFlags,
+      };
       flagged.push(flaggedProduct);
     } else {
       clean.push(product);

@@ -178,6 +178,18 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
              <h3 className="text-[15px] font-medium text-[#02122c] leading-snug line-clamp-3 group-hover:text-[#F59E0B] transition-colors">
                 {displayTitle}
              </h3>
+             {/* Fraud Warning Banner */}
+             {product.fraudFlags && product.fraudFlags.length > 0 && (
+               <div className="mt-auto pt-2 flex items-center gap-1.5">
+                 <span className="text-[11px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5">
+                   {product.fraudFlags.includes('price_too_low') && '⚠ Unusually low price'}
+                   {product.fraudFlags.includes('low_seller_trust') && '⚠ Low seller trust'}
+                   {product.fraudFlags.includes('brand_typo_suspected') && '⚠ Possible knockoff'}
+                   {product.fraudFlags.includes('aliexpress_material_risk') && '⚠ Material risk'}
+                   {!product.fraudFlags.some((f: string) => ['price_too_low', 'low_seller_trust', 'brand_typo_suspected', 'aliexpress_material_risk'].includes(f)) && '⚠ Flagged'}
+                 </span>
+               </div>
+             )}
           </div>
 
           {/* 3. 우측 정보 (회색 배경) */}
