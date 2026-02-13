@@ -338,31 +338,26 @@ function HomeContent() {
 
   const sortProducts = (products: Product[]): Product[] => {
     const arr = [...products];
-    // activeTab 기반 정렬 (Best/Cheapest/Fastest 탭)
-    if (activeTab === 'cheapest') {
+
+    if (activeTab === 'best') {
+      // ScoringEngine의 bestScore 사용 (높을수록 좋음) → 내림차순
+      arr.sort((a, b) => (b.bestScore ?? 0) - (a.bestScore ?? 0));
+    } else if (activeTab === 'cheapest') {
+      // ScoringEngine의 parsedPrice 사용, 없으면 문자열 파싱 fallback
       arr.sort((a, b) => {
-        const pa = parsePrice(a.price) ?? Number.POSITIVE_INFINITY;
-        const pb = parsePrice(b.price) ?? Number.POSITIVE_INFINITY;
+        const pa = a.parsedPrice ?? parsePrice(a.price) ?? Number.POSITIVE_INFINITY;
+        const pb = b.parsedPrice ?? parsePrice(b.price) ?? Number.POSITIVE_INFINITY;
         return pa - pb;
       });
     } else if (activeTab === 'fastest') {
+      // ScoringEngine의 parsedDeliveryDays 사용, 없으면 문자열 파싱 fallback
       arr.sort((a, b) => {
-        const da = parseDeliveryDays(a.deliveryDays);
-        const db = parseDeliveryDays(b.deliveryDays);
+        const da = a.parsedDeliveryDays ?? parseDeliveryDays(a.deliveryDays);
+        const db = b.parsedDeliveryDays ?? parseDeliveryDays(b.deliveryDays);
         return da - db;
       });
     }
-    // 'best' = API 기본 순서 (Coordinator의 bestSorted)
 
-    // 추가: sidebar sortBy가 price_asc/price_desc면 그걸 우선
-    if (sortBy === 'price_asc' || sortBy === 'price_desc') {
-      arr.sort((a, b) => {
-        const pa = parsePrice(a.price) ?? Number.POSITIVE_INFINITY;
-        const pb = parsePrice(b.price) ?? Number.POSITIVE_INFINITY;
-        if (pa === pb) return 0;
-        return sortBy === 'price_asc' ? pa - pb : pb - pa;
-      });
-    }
     return arr;
   };
 

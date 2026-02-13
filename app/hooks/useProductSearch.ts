@@ -209,13 +209,13 @@ export function useProductSearch() {
           (p: { is_sponsored?: boolean; is_ad?: boolean }) => !p.is_sponsored && !p.is_ad,
         );
 
-        const domesticResults = allResults.filter((p: Product & { category?: string }) => {
-          const val = (p.shipping || p.category || '').toString().toLowerCase();
-          return val.includes('domestic');
+        const domesticResults = allResults.filter((p: Product) => {
+          if (p.category) return p.category === 'domestic';
+          return (p.shipping || '').toLowerCase() === 'domestic';
         });
-        const internationalResults = allResults.filter((p: Product & { category?: string }) => {
-          const val = (p.shipping || p.category || '').toString().toLowerCase();
-          return val.includes('international');
+        const internationalResults = allResults.filter((p: Product) => {
+          if (p.category) return p.category === 'international';
+          return (p.shipping || '').toLowerCase() === 'international';
         });
 
         if (!isMountedRef.current || (typeof window !== 'undefined' && pathname !== '/')) return;
@@ -253,13 +253,13 @@ export function useProductSearch() {
             const rawF = (dataF.results || []).filter(
               (p: { is_sponsored?: boolean; is_ad?: boolean }) => !p.is_sponsored && !p.is_ad,
             );
-            const domF = rawF.filter((p: Product & { category?: string }) => {
-              const val = (p.shipping || p.category || '').toString().toLowerCase();
-              return val.includes('domestic');
+            const domF = rawF.filter((p: Product) => {
+              if (p.category) return p.category === 'domestic';
+              return (p.shipping || '').toLowerCase() === 'domestic';
             });
-            const intlF = rawF.filter((p: Product & { category?: string }) => {
-              const val = (p.shipping || p.category || '').toString().toLowerCase();
-              return val.includes('international');
+            const intlF = rawF.filter((p: Product) => {
+              if (p.category) return p.category === 'international';
+              return (p.shipping || '').toLowerCase() === 'international';
             });
             if (isMountedRef.current && (typeof window === 'undefined' || pathname === '/')) {
               setDomestic(domF);
@@ -365,13 +365,13 @@ export function useProductSearch() {
       const allResults = rawResults.filter(
         (p: Product) => !p.is_sponsored && !p.is_ad,
       );
-      const newDomestic = allResults.filter((p: Product & { category?: string }) => {
-        const val = (p.shipping || p.category || '').toString().toLowerCase();
-        return val.includes('domestic');
+      const newDomestic = allResults.filter((p: Product) => {
+        if (p.category) return p.category === 'domestic';
+        return (p.shipping || '').toLowerCase() === 'domestic';
       });
-      const newInternational = allResults.filter((p: Product & { category?: string }) => {
-        const val = (p.shipping || p.category || '').toString().toLowerCase();
-        return val.includes('international');
+      const newInternational = allResults.filter((p: Product) => {
+        if (p.category) return p.category === 'international';
+        return (p.shipping || '').toLowerCase() === 'international';
       });
       setDomestic((prev) => [...prev, ...newDomestic]);
       setInternational((prev) => [...prev, ...newInternational]);

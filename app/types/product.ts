@@ -33,4 +33,12 @@ export interface Product {
   is_ad?: boolean;
   /** 브랜드명. 동적 필터(Brands) 추출용 */
   brand?: string;
+
+  // ── ScoringEngine에서 추가되는 필드 (API 응답에 포함) ──
+  /** Best Score (0-100). ScoringEngine이 계산. 높을수록 좋은 상품 */
+  bestScore?: number;
+  /** 파싱된 가격 (숫자). 문자열 재파싱 없이 정렬에 사용 */
+  parsedPrice?: number;
+  /** 파싱된 배송일 (숫자, 일 단위). 문자열 재파싱 없이 정렬에 사용 */
+  parsedDeliveryDays?: number;
 }
