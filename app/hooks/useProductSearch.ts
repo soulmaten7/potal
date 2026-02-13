@@ -54,6 +54,9 @@ interface SearchResponse {
     };
   };
   personalization?: { greeting?: string; message?: string } | null;
+  /** 서버 에러 메시지 (timeout 등) */
+  error?: string;
+  errorType?: 'timeout' | 'unknown';
 }
 
 const STORAGE_KEY = 'potal_search_state';
@@ -88,6 +91,7 @@ export function useProductSearch() {
   const [international, setInternational] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [searchPage, setSearchPage] = useState(1);
   const [lastSearchQuery, setLastSearchQuery] = useState('');
   const [hasMorePages, setHasMorePages] = useState(true);
@@ -174,6 +178,7 @@ export function useProductSearch() {
       setDomestic([]);
       setInternational([]);
       setLoading(true);
+      setSearchError(null);
       if (!isSilent) {
         setSearched(true);
         setIsHomeMode(false);
@@ -204,6 +209,13 @@ export function useProductSearch() {
           return;
         }
         const data: SearchResponse = await res.json();
+
+        // 서버 에러 감지 (timeout 등)
+        if (data.error) {
+          setSearchError(data.error);
+          console.warn(`⚠️ [Search] Server error: ${data.errorType} — ${data.error}`);
+        }
+
         const rawResults = data.results || [];
         const allResults = rawResults.filter(
           (p: { is_sponsored?: boolean; is_ad?: boolean }) => !p.is_sponsored && !p.is_ad,
@@ -607,6 +619,7 @@ export function useProductSearch() {
     international,
     loading,
     searched,
+    searchError,
     metadata,
     tabSummary,
     personalization,

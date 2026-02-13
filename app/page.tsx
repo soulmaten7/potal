@@ -43,7 +43,7 @@ function HomeContent() {
   const search = useProductSearch();
   
   const {
-    query, setQuery, domestic, international, loading, searched,
+    query, setQuery, domestic, international, loading, searched, searchError,
     visibleCount, setVisibleCount, loadingMore, isHomeMode, setIsHomeMode, isFallbackMode,
     homeSearchKeyword, recentSearches, showRecentDropdown, setShowRecentDropdown,
     aiFilterOptions, selectedAiFilters, setSelectedAiFilters, aiFiltersLoading,
@@ -546,6 +546,21 @@ function HomeContent() {
                         {/* Results Grid Display */}
                         {searched && !loading && (
                             <>
+                                {/* 서버 에러 배너 */}
+                                {searchError && (
+                                  <div className="mb-4 rounded-xl border border-red-200 bg-red-50/90 px-4 py-4 flex items-start gap-3">
+                                    <span className="shrink-0 text-2xl" aria-hidden>⚠️</span>
+                                    <div>
+                                      <p className="font-semibold text-red-800">{searchError}</p>
+                                      <button
+                                        onClick={() => executeSearch(query, null, null)}
+                                        className="mt-2 text-sm font-bold text-red-700 underline hover:text-red-900"
+                                      >
+                                        Retry Search
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
                                 {isFallbackMode && (
                                   <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-4 flex flex-col sm:flex-row sm:items-start gap-3">
                                     <span className="shrink-0 text-2xl" aria-hidden>💡</span>
