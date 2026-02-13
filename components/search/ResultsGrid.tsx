@@ -23,6 +23,10 @@ export interface Product {
   shippingPrice?: number;
   is_prime?: boolean;
   trustScore?: number;
+  bestScore?: number;
+  parsedPrice?: number;
+  parsedDeliveryDays?: number;
+  fraudFlags?: string[];
 }
 
 /** Tab summary from ScoringEngine */

@@ -119,6 +119,10 @@ function SearchContent() {
               shippingPrice: item.shippingPrice,
               is_prime: item.is_prime,
               trustScore: item.trustScore,
+              bestScore: item.bestScore,
+              parsedPrice: item.parsedPrice,
+              parsedDeliveryDays: item.parsedDeliveryDays,
+              fraudFlags: item.fraudFlags,
             };
           });
           setProducts(mappedProducts);

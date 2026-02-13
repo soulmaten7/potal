@@ -57,6 +57,65 @@ function getTrustSignal(score?: number): { icon: string; color: string; label: s
   return { icon: '🚩', color: 'text-red-500', label: 'Risky' };
 }
 
+/** Skeleton placeholder for loading state */
+export function ProductCardSkeleton() {
+  return (
+    <div className="bg-white border border-[#e0e3eb] rounded-lg shadow-sm flex h-[220px] overflow-hidden animate-pulse">
+      {/* 이미지 영역 */}
+      <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-slate-100" />
+      {/* 중앙 정보 */}
+      <div className="flex-1 p-5 flex flex-col justify-start border-r border-slate-100 gap-3">
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-20 bg-slate-200 rounded" />
+          <div className="h-4 w-12 bg-slate-200 rounded" />
+        </div>
+        <div className="h-4 w-full bg-slate-200 rounded" />
+        <div className="h-4 w-3/4 bg-slate-200 rounded" />
+        <div className="h-4 w-1/2 bg-slate-200 rounded mt-auto" />
+      </div>
+      {/* 우측 정보 */}
+      <div className="w-[170px] flex flex-col bg-slate-50/30 min-w-[170px]">
+        <div className="p-3 border-b border-slate-200 h-[55px] flex items-center justify-end">
+          <div className="h-3 w-24 bg-slate-200 rounded" />
+        </div>
+        <div className="px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
+          <div className="h-3 w-16 bg-slate-200 rounded" />
+        </div>
+        <div className="px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
+          <div className="h-3 w-20 bg-slate-200 rounded" />
+        </div>
+        <div className="flex-1 p-3 flex flex-col items-end justify-center gap-2">
+          <div className="h-6 w-16 bg-slate-200 rounded" />
+          <div className="h-[30px] w-full bg-slate-200 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Empty state when no results found */
+export function EmptySearchState({ query, onRetry }: { query: string; onRetry?: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-8 text-center">
+      <div className="text-5xl mb-4">🔍</div>
+      <h3 className="text-lg font-bold text-[#02122c] mb-2">
+        No results for &ldquo;{query}&rdquo;
+      </h3>
+      <p className="text-sm text-slate-500 mb-6 max-w-md">
+        Try different keywords or check the spelling. You can also browse by category below.
+      </p>
+      {onRetry && (
+        <button
+          onClick={onRetry}
+          className="px-6 py-2.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-sm font-bold rounded-lg transition-colors"
+        >
+          Clear & Try Again
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const isSaved = isInWishlist(product.id);

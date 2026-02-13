@@ -7,7 +7,7 @@ import { useSupabase } from './context/SupabaseProvider';
 import { useUserPreferences } from './hooks/useUserPreferences';
 import { useProductSearch, inferCategoriesFromQuery } from './hooks/useProductSearch';
 import type { Product } from './types/product';
-import { ProductCard } from './components/ProductCard';
+import { ProductCard, ProductCardSkeleton, EmptySearchState } from './components/ProductCard';
 import { interleaveDomesticInternational } from './lib/product-utils';
 
 import { HeroVisuals } from '../components/home/HeroVisuals';
@@ -518,14 +518,43 @@ function HomeContent() {
                     )}
                     
                     <div className="min-w-0 overflow-visible">
+                        {/* Loading Skeleton */}
+                        {loading && searched && (
+                          <div className="relative z-0 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-4">
+                            <section className="flex flex-col min-w-0 w-full">
+                              <div className="w-full border-b border-slate-200 bg-white flex-shrink-0 box-border sticky top-20 z-[40]">
+                                <div className="flex items-center gap-2 w-full px-4 pt-3 pb-1 min-w-0 box-border"><span className="text-xl flex-shrink-0">🇺🇸</span><h2 className="text-lg font-bold text-slate-800">Domestic (Fast)</h2></div>
+                              </div>
+                              <div className="px-4 py-3 w-full min-w-0 box-border">
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 w-full">
+                                  {[1, 2, 3].map(i => <div key={i} className="min-w-0 w-full"><ProductCardSkeleton /></div>)}
+                                </div>
+                              </div>
+                            </section>
+                            <section className="flex flex-col min-w-0 w-full">
+                              <div className="w-full border-b border-slate-200 bg-white flex-shrink-0 box-border sticky top-20 z-[40]">
+                                <div className="flex items-center gap-2 w-full px-4 pt-3 pb-1 min-w-0 box-border"><span className="text-xl flex-shrink-0">🌏</span><h2 className="text-lg font-bold text-slate-800">Global (Cheap)</h2></div>
+                              </div>
+                              <div className="px-4 py-3 w-full min-w-0 box-border">
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 w-full">
+                                  {[1, 2, 3].map(i => <div key={i} className="min-w-0 w-full"><ProductCardSkeleton /></div>)}
+                                </div>
+                              </div>
+                            </section>
+                          </div>
+                        )}
                         {/* Results Grid Display */}
-                        {searched && (
+                        {searched && !loading && (
                             <>
                                 {isFallbackMode && (
                                   <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-4 flex flex-col sm:flex-row sm:items-start gap-3">
                                     <span className="shrink-0 text-2xl" aria-hidden>💡</span>
                                     <div><p className="font-semibold text-slate-800">No results found for &quot;{query}&quot;.</p></div>
                                   </div>
+                                )}
+                                {/* 결과가 0개일 때 EmptyState */}
+                                {!isFallbackMode && sortedDomestic.length === 0 && sortedInternational.length === 0 && (
+                                  <EmptySearchState query={query} onRetry={() => { search.setQuery(''); router.push('/'); }} />
                                 )}
                                 <div className="relative z-0 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-4">
                                     <section className="flex flex-col min-w-0 w-full">
