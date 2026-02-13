@@ -18,10 +18,16 @@ export interface Product {
   category?: 'domestic' | 'international';
   deliveryDays?: string;
   link?: string;
+  /** 배송비 (없거나 무료면 0). Total Landed Cost 계산용 */
+  shippingPrice?: number;
+  /** 물건값 + 배송비. 최종 지불 가격 */
+  totalPrice?: number;
   trustScore?: number;
   variants?: ProductVariant[];
   bestPrice?: string;
   bestPriceSite?: string;
+  /** Amazon Prime 여부. 배송 속도 추정에 사용 */
+  is_prime?: boolean;
   /** API에서 내려올 수 있음. true면 노출하지 않음 (광고/스폰서 필터링) */
   is_sponsored?: boolean;
   is_ad?: boolean;

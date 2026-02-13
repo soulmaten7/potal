@@ -1,11 +1,19 @@
 import { NextResponse } from 'next/server';
-import { getSearchService } from '../../lib/search/SearchService';
+import { getCoordinator } from '../../lib/agent/Coordinator';
 
 /**
  * POTAL Search API — /api/search
  *
- * Uses SearchService pipeline:
- * Provider → FraudFilter → AI Filter → CostEngine → ScoringEngine
+ * Agent Orchestration 기반:
+ * Coordinator가 상황에 따라 AI Agent와 Tool을 선택적으로 호출.
+ *
+ *   [Coordinator]
+ *     ├── QueryAnalysis (현재: deterministic → 향후: AI Agent)
+ *     ├── ProviderAPIs  (Tool: Amazon, Walmart, etc.)
+ *     ├── FraudFilter   (Tool: 규칙 기반, $0)
+ *     ├── AIFilter      (AI Agent: 관련성 판단, 비용 발생)
+ *     ├── CostEngine    (Tool: 세금/관세 계산, $0)
+ *     └── ScoringEngine (Tool: Best/Fastest/Cheapest, $0)
  *
  * Query params:
  *   q        - search query (required)
@@ -28,24 +36,18 @@ export async function GET(request: Request) {
     });
   }
 
-  console.log(`🔍 [POTAL API] Search: "${q}" | page=${page} | zip=${zipcode || 'N/A'} | market=${market}`);
-
   try {
-    const searchService = getSearchService();
-    const result = await searchService.search(q, page, {
+    const coordinator = getCoordinator();
+    const result = await coordinator.search({
+      originalQuery: q,
+      page,
       zipcode: zipcode || undefined,
       market,
     });
 
-    console.log(`✅ [POTAL API] Results: ${result.total} products (${result.metadata.domesticCount} domestic, ${result.metadata.internationalCount} global)`);
-
-    if (result.metadata.fraudStats) {
-      console.log(`🛡️ [POTAL API] Fraud: ${result.metadata.fraudStats.removed} removed, ${result.metadata.fraudStats.flagged} flagged`);
-    }
-
     return NextResponse.json(result);
   } catch (error) {
-    console.error('❌ [POTAL API] Search error:', error);
+    console.error('❌ [POTAL API] Coordinator error:', error);
     return NextResponse.json({
       results: [],
       total: 0,
