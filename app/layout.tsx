@@ -27,7 +27,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "POTAL - Global Best Price vs Local Fast Delivery",
-  description: "AI Search Agent for Smart Shopping",
+  description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu. AI-powered shopping agent finds the best deal instantly.",
+  keywords: ["price comparison", "shopping agent", "best price", "AI shopping", "Amazon", "Walmart", "eBay", "AliExpress", "Temu"],
+  openGraph: {
+    type: "website",
+    siteName: "POTAL",
+    title: "POTAL - Global Best Price vs Local Fast Delivery",
+    description: "Compare prices across 7 major retailers. AI-powered shopping agent finds the best deal instantly.",
+    url: "https://potal.app",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "POTAL - AI Shopping Agent",
+    description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu in one search.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

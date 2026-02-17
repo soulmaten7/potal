@@ -39,7 +39,16 @@ import { scoreProducts } from '../search/ScoringEngine';
 
 // Provider imports
 import { AmazonProvider } from '../search/providers/AmazonProvider';
-import { GlobalMockProvider } from '../search/providers/GlobalMockProvider';
+import { WalmartProvider } from '../search/providers/WalmartProvider';
+import { BestBuyProvider } from '../search/providers/BestBuyProvider';
+import { AliExpressProvider } from '../search/providers/AliExpressProvider';
+import { TemuProvider } from '../search/providers/TemuProvider';
+// CostcoProvider 비활성화: Deals API만 제공 (전체 상품 검색 불가, 시장점유율 1.5%)
+// import { CostcoProvider } from '../search/providers/CostcoProvider';
+// SheinProvider 비활성화: API 서버 다운 (환불 요청 중)
+// import { SheinProvider } from '../search/providers/SheinProvider';
+import { EbayProvider } from '../search/providers/EbayProvider';
+import { TargetProvider } from '../search/providers/TargetProvider';
 
 // AI Agent imports (costs money, but makes decisions)
 import { filterProducts } from '../search/AIFilterService';
@@ -54,8 +63,32 @@ import {
   shouldRunProductAnalysis,
 } from './AnalysisAgent';
 
+// ── Prompt Module imports (modular AI system) ──
+import { classifyIntent } from '../ai/prompts/intent-router';
+import { judgeProducts } from '../ai/prompts/product-judge';
+import type { IntentRouterOutput } from '../ai/types';
+
 const amazonProvider = new AmazonProvider();
-const globalMockProvider = new GlobalMockProvider();
+const walmartProvider = new WalmartProvider();
+const bestBuyProvider = new BestBuyProvider();
+const aliExpressProvider = new AliExpressProvider();
+const temuProvider = new TemuProvider();
+// const costcoProvider = new CostcoProvider(); // 비활성화: Deals API 한정
+const ebayProvider = new EbayProvider();
+const targetProvider = new TargetProvider();
+// const sheinProvider = new SheinProvider(); // 비활성화: API 서버 다운
+
+/** Provider별 개별 타임아웃 (12초, eBay/Target 등 느린 Provider 대응) */
+const PROVIDER_TIMEOUT = 12_000;
+
+/** AI Agent 타임아웃 (6초 — 실패 시 분석 없이 진행) */
+const AI_AGENT_TIMEOUT = 6_000;
+function withTimeout<T>(p: Promise<T>, name: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`[${name}] timeout`)), PROVIDER_TIMEOUT);
+    p.then(r => { clearTimeout(t); resolve(r); }).catch(e => { clearTimeout(t); reject(e); });
+  });
+}
 
 /**
  * Coordinator — POTAL의 지휘자
@@ -92,6 +125,21 @@ export class Coordinator {
     // ── Step 1: Query Analysis ──
     // 현재는 간단한 분석. 향후 QueryAgent(AI)로 교체.
     const queryAnalysis = await this.analyzeQuery(trimmed);
+
+    // ── Step 1.5: 질문형 쿼리 → 조기 반환 (API 호출 없이 suggestedProducts만) ──
+    if (queryAnalysis.isQuestionQuery && queryAnalysis.suggestedProducts && queryAnalysis.suggestedProducts.length > 0) {
+      console.log(`❓ [Coordinator] Question query detected → returning ${queryAnalysis.suggestedProducts.length} suggested products (no API calls)`);
+      return {
+        results: [],
+        total: 0,
+        metadata: {
+          domesticCount: 0,
+          internationalCount: 0,
+          isQuestionQuery: true,
+          suggestedProducts: queryAnalysis.suggestedProducts,
+        },
+      };
+    }
 
     // ── Step 2: Fetch from Providers ──
     const rawProducts = await this.fetchFromProviders(queryAnalysis, page, market);
@@ -130,13 +178,16 @@ export class Coordinator {
     const landedCosts = await this.runCostEngine(filteredProducts, zipcode);
 
     // Enrich products with landed cost
-    const enrichedProducts = filteredProducts.map(product => {
+    let enrichedProducts = filteredProducts.map(product => {
       const lc = landedCosts.get(product.id);
       if (lc) {
         return { ...product, totalPrice: lc.totalLandedCost, shippingPrice: lc.shippingCost };
       }
       return product;
     });
+
+    // Step 5.3 제거: 가짜 config 기반 배송 토글 삭제 → API 실제 데이터만 표시
+    // Temu는 이제 실제 Provider로 fetchFromProviders에서 호출됨 (GlobalMockProvider 제거)
 
     // ── Step 6: ScoringEngine (Tool — deterministic, $0) ──
     const scoringResult = await this.runScoringEngine(
@@ -210,26 +261,109 @@ export class Coordinator {
   // ─── Step Implementations ─────────────────────────
 
   /**
-   * Step 1: Query Analysis — Coordinator가 AI vs deterministic 판단
+   * Step 1: Query Analysis — Intent Router + QueryAgent
    *
-   * 간단한 쿼리 ("airpods") → deterministic (무료, 2ms)
-   * 복잡한 쿼리 ("lightweight laptop under 800 for travel") → AI ($0.0003, 500ms)
+   * 1단계: Intent Router (빠르고 저렴, ~$0.00005) — 의도 분류
+   * 2단계: 의도에 따라 분기
+   *   - QUESTION → suggestedCategories로 조기 반환 (API 호출 없음)
+   *   - PRODUCT_SPECIFIC → deterministic 분석 (충분히 명확)
+   *   - 나머지 → 기존 QueryAgent 로직
    */
   private async analyzeQuery(query: string): Promise<QueryAnalysis> {
     const stepStart = Date.now();
-    const useAI = shouldUseAIAnalysis(query);
 
+    // ── Phase 1: Intent Router (항상 실행, 빠르고 저렴) ──
+    let intent: IntentRouterOutput | null = null;
+    try {
+      const intentResult = await classifyIntent({ query });
+      intent = intentResult.data;
+      const tokensUsed = (intentResult.meta.tokensUsed?.input ?? 0) + (intentResult.meta.tokensUsed?.output ?? 0);
+      this.totalTokens += tokensUsed;
+      this.recordStep('intent_router', 'IntentRouter', 'ai', query,
+        { intent: intent.intent, confidence: intent.confidence, searchQuery: intent.searchQuery },
+        stepStart, tokensUsed);
+      console.log(`🧠 [IntentRouter] ${intent.intent} (${(intent.confidence * 100).toFixed(0)}%) → "${intent.searchQuery}"`);
+    } catch (err) {
+      console.warn('⚠️ [Coordinator] Intent Router failed, continuing with QueryAgent:', err);
+    }
+
+    // ── Phase 2: 의도별 분기 ──
+
+    // QUESTION → 바로 suggestedCategories 반환 (API 호출 불필요)
+    if (intent?.intent === 'QUESTION' && intent.suggestedCategories && intent.suggestedCategories.length > 0) {
+      const analysis: QueryAnalysis = {
+        original: query,
+        category: 'General',
+        platformQueries: { amazon: intent.searchQuery || query },
+        attributes: {},
+        strategy: 'broad',
+        confidence: intent.confidence,
+        isQuestionQuery: true,
+        suggestedProducts: intent.suggestedCategories,
+      };
+      this.recordStep('analyze_query', 'IntentRouter→Question', 'ai', query, analysis, stepStart);
+      return analysis;
+    }
+
+    // PRODUCT_SPECIFIC → deterministic으로 충분 (모델번호/정확한 상품명)
+    if (intent?.intent === 'PRODUCT_SPECIFIC' && intent.confidence >= 0.85) {
+      const cleanQuery = intent.searchQuery || query;
+      const analysis = analyzeQueryDeterministic(cleanQuery);
+      analysis.strategy = 'specific';
+      analysis.confidence = intent.confidence;
+      if (intent.attributes?.length) {
+        for (const attr of intent.attributes) {
+          analysis.attributes[attr] = attr;
+        }
+      }
+      this.recordStep('analyze_query', 'IntentRouter→Specific', 'deterministic', query, analysis, stepStart);
+      return analysis;
+    }
+
+    // PRICE_HUNT → priceSignal 정보 활용
+    if (intent?.intent === 'PRICE_HUNT' && intent.priceSignal) {
+      const cleanQuery = intent.searchQuery || query;
+      const useAI = shouldUseAIAnalysis(cleanQuery);
+      let analysis: QueryAnalysis;
+
+      if (useAI) {
+        analysis = await analyzeQueryWithAI(cleanQuery);
+        this.totalTokens += 300;
+        this.recordStep('analyze_query', 'IntentRouter→PriceHunt+AI', 'ai', query, analysis, stepStart, 300);
+      } else {
+        analysis = analyzeQueryDeterministic(cleanQuery);
+        this.recordStep('analyze_query', 'IntentRouter→PriceHunt', 'deterministic', query, analysis, stepStart);
+      }
+
+      // Intent Router의 priceSignal로 보강
+      if (intent.priceSignal.maxPrice) {
+        analysis.priceIntent = { max: intent.priceSignal.maxPrice, currency: 'USD' };
+      }
+      return analysis;
+    }
+
+    // COMPARISON → comparisonTargets 활용
+    if (intent?.intent === 'COMPARISON' && intent.comparisonTargets && intent.comparisonTargets.length > 0) {
+      const cleanQuery = intent.searchQuery || query;
+      const analysis = analyzeQueryDeterministic(cleanQuery);
+      analysis.strategy = 'comparison';
+      analysis.confidence = intent.confidence;
+      this.recordStep('analyze_query', 'IntentRouter→Comparison', 'deterministic', query, analysis, stepStart);
+      return analysis;
+    }
+
+    // PRODUCT_CATEGORY 또는 Intent Router 실패 → 기존 QueryAgent 로직
+    const effectiveQuery = intent?.searchQuery || query;
+    const useAI = shouldUseAIAnalysis(effectiveQuery);
     let analysis: QueryAnalysis;
 
     if (useAI) {
-      // AI Agent 호출 — 비용 발생하지만 정확
-      analysis = await analyzeQueryWithAI(query);
-      const tokensUsed = 300; // approximate
+      analysis = await analyzeQueryWithAI(effectiveQuery);
+      const tokensUsed = 300;
       this.totalTokens += tokensUsed;
       this.recordStep('analyze_query', 'QueryAgent', 'ai', query, analysis, stepStart, tokensUsed);
     } else {
-      // Deterministic — 무료, 빠름
-      analysis = analyzeQueryDeterministic(query);
+      analysis = analyzeQueryDeterministic(effectiveQuery);
       this.recordStep('analyze_query', 'QueryAnalysis', 'deterministic', query, analysis, stepStart);
     }
 
@@ -238,6 +372,8 @@ export class Coordinator {
 
   /**
    * Step 2: Fetch from Providers (Tool)
+   * Amazon + Walmart + BestBuy (Domestic) | AliExpress + Temu + Shein (Global)
+   * 모두 병렬, 각 10초 개별 타임아웃
    */
   private async fetchFromProviders(
     analysis: QueryAnalysis,
@@ -248,29 +384,65 @@ export class Coordinator {
 
     const fetchDomestic = market !== 'global';
     const fetchGlobal = market !== 'domestic';
+    const q = analysis.platformQueries?.amazon || analysis.original;
 
-    const [domesticResults, globalResults] = await Promise.all([
-      fetchDomestic
-        ? amazonProvider.search(analysis.platformQueries.amazon, page).catch(err => {
-            console.error('❌ [Coordinator] Amazon error:', err);
-            return [] as Product[];
-          })
-        : Promise.resolve([] as Product[]),
-      fetchGlobal
-        ? globalMockProvider.search(analysis.original, page).catch(err => {
-            console.error('❌ [Coordinator] Global error:', err);
-            return [] as Product[];
-          })
-        : Promise.resolve([] as Product[]),
-    ]);
+    // Domestic: Amazon + Walmart + BestBuy 병렬
+    const domesticPromises = fetchDomestic
+      ? Promise.allSettled([
+          withTimeout(amazonProvider.search(q, page), 'Amazon'),
+          withTimeout(walmartProvider.search(q, page), 'Walmart'),
+          withTimeout(bestBuyProvider.search(q, page), 'BestBuy'),
+          withTimeout(ebayProvider.search(q, page), 'eBay'),
+          withTimeout(targetProvider.search(q, page), 'Target'),
+          // withTimeout(costcoProvider.search(q, page), 'Costco'), // 비활성화
+        ])
+      : Promise.resolve([]);
+
+    // Global: AliExpress + Temu 병렬
+    const globalQuery = analysis.platformQueries?.aliexpress || analysis.platformQueries?.amazon || analysis.original;
+    const globalPromises = fetchGlobal
+      ? Promise.allSettled([
+          withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
+          temuProvider.search(globalQuery, page), // Temu는 자체 30초 타임아웃 (Apify Actor 7-15초)
+        ])
+      : Promise.resolve([]);
+
+    const [domesticSettled, globalSettled] = await Promise.all([domesticPromises, globalPromises]);
+
+    // Collect results (ignore rejected)
+    const domesticResults: Product[] = [];
+    const globalResults: Product[] = [];
+
+    if (Array.isArray(domesticSettled)) {
+      for (const r of domesticSettled) {
+        if (r.status === 'fulfilled') domesticResults.push(...(r.value ?? []));
+        else console.error('❌ [Coordinator] Domestic provider error:', r.reason?.message);
+      }
+    }
+
+    if (Array.isArray(globalSettled)) {
+      for (const r of globalSettled) {
+        if (r.status === 'fulfilled') globalResults.push(...(r.value ?? []));
+        else console.error('❌ [Coordinator] Global provider error:', r.reason?.message);
+      }
+    }
+
+    // NOTE: Shein mock cards are injected AFTER FraudFilter in search()
+    // because their price='Compare' ($0) would trigger price_zero removal.
 
     const allProducts = [...domesticResults, ...globalResults];
+    const providerNames = [
+      ...(fetchDomestic ? ['Amazon', 'Walmart', 'BestBuy', 'eBay', 'Target'] : []),
+      ...(fetchGlobal ? ['AliExpress', 'Temu'] : []),
+    ];
+
+    console.log(`🛒 [Coordinator] Domestic: ${domesticResults.length} | Global: ${globalResults.length} | Total: ${allProducts.length}`);
 
     this.recordStep(
       'fetch_providers',
       'ProviderAPIs',
       'deterministic',
-      { query: analysis.original, providers: ['Amazon', 'GlobalMock'] },
+      { query: analysis.original, providers: providerNames },
       { domestic: domesticResults.length, global: globalResults.length, total: allProducts.length },
       stepStart,
     );
@@ -286,6 +458,18 @@ export class Coordinator {
 
     const fraudResult = filterFraudulentProducts(products);
     const cleaned = [...fraudResult.clean, ...fraudResult.flagged];
+
+    // Debug: AliExpress 아이템이 FraudFilter에서 얼마나 제거되는지 확인
+    const globalBefore = products.filter(p => p.category === 'international' || p.shipping === 'International').length;
+    const globalAfter = cleaned.filter(p => p.category === 'international' || p.shipping === 'International').length;
+    if (globalBefore > 0) {
+      console.log(`🛡️ [FraudFilter] Global items: ${globalBefore} → ${globalAfter} (removed ${globalBefore - globalAfter})`);
+      if (fraudResult.removed.length > 0) {
+        const sample = fraudResult.removed.slice(0, 3).map(p => `${p.site}: "${(p.name || '').slice(0, 30)}" price=${p.price}`);
+        console.log(`🛡️ [FraudFilter] Removed samples:`, sample);
+        console.log(`🛡️ [FraudFilter] Remove reasons:`, fraudResult.stats.removeReasons);
+      }
+    }
 
     this.fraudStats = {
       removed: fraudResult.stats.removed,
@@ -316,31 +500,60 @@ export class Coordinator {
   }
 
   /**
-   * Step 4: AI Relevance Filter (AI Agent — costs money)
+   * Step 4: AI Relevance Filter — Product Judge 모듈 사용
+   *
+   * 기존 AIFilterService 대신 프롬프트 모듈 시스템의 Product Judge를 사용.
+   * 장점: 모듈화, few-shot 예시, 자동 fallback, 비용 추적
    */
   private async runAIFilter(query: string, products: Product[]): Promise<Product[]> {
     const stepStart = Date.now();
 
     try {
-      const filtered = await filterProducts(query, products);
-      // 대략적인 토큰 추정 (입력 + 출력)
-      const estimatedTokens = products.length * 50 + 200;
-      this.totalTokens += estimatedTokens;
+      // Product Judge 모듈 호출
+      const judgeInput = {
+        query,
+        products: products.map(p => ({
+          id: p.id,
+          name: p.name || '',
+          price: p.price || '',
+          site: p.site || '',
+        })),
+      };
+
+      const result = await judgeProducts(judgeInput);
+      const { relevantIds, removedReasons } = result.data;
+
+      // relevantIds로 필터링
+      const relevantSet = new Set(relevantIds);
+      const filtered = products.filter(p => relevantSet.has(p.id));
+
+      const tokensUsed = (result.meta.tokensUsed?.input ?? 0) + (result.meta.tokensUsed?.output ?? 0);
+      this.totalTokens += tokensUsed;
+
+      if (removedReasons.length > 0) {
+        console.log(`⚖️ [ProductJudge] Kept ${filtered.length}/${products.length} | Removed: ${removedReasons.map(r => r.reason).join(', ')}`);
+      }
 
       this.recordStep(
         'ai_filter',
-        'AnalysisAgent',
+        'ProductJudge',
         'ai',
         { query, productCount: products.length },
-        { filtered: filtered.length, removed: products.length - filtered.length },
+        { filtered: filtered.length, removed: removedReasons.length, usedFallback: result.meta.usedFallback },
         stepStart,
-        estimatedTokens,
+        tokensUsed,
       );
+
+      // Product Judge가 모든 상품을 제거한 경우 → 원본 반환 (안전장치)
+      if (filtered.length === 0 && products.length > 0) {
+        console.warn('⚠️ [ProductJudge] Removed all products, reverting to unfiltered');
+        return products;
+      }
 
       return filtered;
     } catch (err) {
-      console.warn('⚠️ [Coordinator] AI Filter failed, using unfiltered:', err);
-      this.recordStep('ai_filter', 'AnalysisAgent', 'ai', { query }, { error: 'failed, skipped' }, stepStart);
+      console.warn('⚠️ [Coordinator] Product Judge failed, using unfiltered:', err);
+      this.recordStep('ai_filter', 'ProductJudge', 'ai', { query }, { error: 'failed, skipped' }, stepStart);
       return products;
     }
   }
@@ -412,7 +625,13 @@ export class Coordinator {
     const stepStart = Date.now();
 
     try {
-      const analyses = await analyzeProductsBatch(queryAnalysis, products);
+      // AI Agent에 타임아웃 적용 — 실패 시 분석 없이 진행
+      const analyses = await Promise.race([
+        analyzeProductsBatch(queryAnalysis, products),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('AnalysisAgent timeout')), AI_AGENT_TIMEOUT)
+        ),
+      ]);
       const result = applyAnalysisResults(products, analyses);
 
       const estimatedTokens = Math.min(products.length, 20) * 80 + 300;
@@ -462,18 +681,28 @@ export class Coordinator {
 
     try {
       console.log(`🔄 [Coordinator] Refined search with: "${altQuery}"`);
-      const results = await amazonProvider.search(altQuery, page);
+      const settled = await Promise.allSettled([
+        withTimeout(amazonProvider.search(altQuery, page), 'Amazon-refine'),
+        withTimeout(walmartProvider.search(altQuery, page), 'Walmart-refine'),
+        withTimeout(bestBuyProvider.search(altQuery, page), 'BestBuy-refine'),
+        withTimeout(ebayProvider.search(altQuery, page), 'eBay-refine'),
+        withTimeout(targetProvider.search(altQuery, page), 'Target-refine'),
+      ]);
+      const results: Product[] = [];
+      for (const r of settled) {
+        if (r.status === 'fulfilled') results.push(...(r.value ?? []));
+      }
 
       this.recordStep(
         'refined_search',
         'ProviderAPIs',
         'deterministic',
         { altQuery },
-        { results: results?.length || 0 },
+        { results: results.length },
         stepStart,
       );
 
-      return results || [];
+      return results;
     } catch (err) {
       console.warn('⚠️ [Coordinator] Refined search failed:', err);
       return [];

@@ -108,7 +108,16 @@ function mapItemToProduct(
   const shippingPrice = parseShippingPrice(item);
   const totalPrice = priceNum + shippingPrice;
 
-  const name = (item.product_title ?? item.title ?? item.name ?? 'Unknown Product').toString().trim();
+  const rawName = (item.product_title ?? item.title ?? item.name ?? 'Unknown Product').toString().trim();
+  // HTML 엔티티 디코딩 (&#38; → &, &#x27; → ', &amp; → &, &quot; → " 등)
+  const name = rawName
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec, 10)))
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&apos;/g, "'");
   const asin = (item.asin ?? item.product_id ?? `item_${index}`).toString();
 
   const rawUrl = item.product_url ?? item.url ?? item.link;
@@ -164,14 +173,10 @@ export class AmazonProvider implements SearchProvider {
   readonly type = 'domestic' as const;
 
   async search(query: string, page: number = 1): Promise<Product[]> {
-    // [디버깅] 환경 변수 확인
-    console.log('[AmazonProvider] API Key Check:', process.env.RAPIDAPI_KEY ? 'Loaded' : 'Missing');
     const host = process.env.RAPIDAPI_HOST_AMAZON ?? 'real-time-amazon-data.p.rapidapi.com';
-    console.log('[AmazonProvider] RAPIDAPI_HOST_AMAZON:', host);
-
     const apiKey = process.env.RAPIDAPI_KEY;
     if (!apiKey?.trim()) {
-      console.error('[AmazonProvider] 검색 실패: RAPIDAPI_KEY 없음 → Fallback 모드 전환');
+      console.warn('⚠️ [Amazon] RAPIDAPI_KEY not set');
       return [];
     }
 
@@ -196,30 +201,14 @@ export class AmazonProvider implements SearchProvider {
         },
       });
 
-      // [디버깅] API 응답 상태
-      console.log('[AmazonProvider] Response status:', res.status, res.statusText);
-      const data = (await res.json()) as Record<string, unknown>;
-      const items = (data.data as Record<string, unknown>)?.products ?? data.products ?? data.results;
-      const list = Array.isArray(items) ? items : [];
-      console.log('[AmazonProvider] Response data (keys):', Object.keys(data));
-      console.log('[AmazonProvider] Items count:', list.length, typeof items);
-
       if (!res.ok) {
-        console.error('[AmazonProvider] 검색 실패: API HTTP 에러 → Fallback 모드 전환', {
-          status: res.status,
-          statusText: res.statusText,
-          dataKeys: Object.keys(data),
-          dataSample: JSON.stringify(data).slice(0, 500),
-        });
+        console.error(`❌ [Amazon] HTTP ${res.status}`);
         return [];
       }
 
-      if (list.length === 0) {
-        console.warn('[AmazonProvider] 검색 실패: API 빈 배열 반환 → Fallback 모드 전환', {
-          query: queryForApi,
-          dataKeys: Object.keys(data),
-        });
-      }
+      const data = (await res.json()) as Record<string, unknown>;
+      const items = (data.data as Record<string, unknown>)?.products ?? data.products ?? data.results;
+      const list = Array.isArray(items) ? items : [];
 
       let products = list.map((item: Record<string, unknown>, index: number) =>
         mapItemToProduct(item, index, queryForApi)
@@ -232,18 +221,11 @@ export class AmazonProvider implements SearchProvider {
           const num = parsePriceToNumber(p.price);
           return num != null && num <= priceIntent.maxPrice;
         });
-        console.log('[AmazonProvider] Price filter:', before, '→', products.length, '(maxPrice:', priceIntent.maxPrice, ')');
       }
 
       return products;
     } catch (err) {
-      const e = err as Error & { response?: { data?: unknown } };
-      console.error('[AmazonProvider] 검색 실패: 요청/파싱 예외 → Fallback 모드 전환', {
-        message: e?.message,
-        name: e?.name,
-        responseData: e?.response?.data,
-        stack: e?.stack?.slice(0, 300),
-      });
+      console.error('❌ [Amazon] Fetch error:', err instanceof Error ? err.message : err);
       return [];
     }
   }

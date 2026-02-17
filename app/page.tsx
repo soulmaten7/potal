@@ -244,13 +244,34 @@ function HomeContent() {
     await executeSearch(trimmed, mainCategory, subCategory);
   };
 
-  const handleScanMarkets = () => {
+  const handleScanMarkets = async (image?: File | null) => {
     const trimmed = query.trim();
-    saveHeroRecent(trimmed);
+    let finalQuery = trimmed;
+
+    // 이미지가 있으면 Vision API로 상품명 추출 후 쿼리에 추가
+    if (image) {
+      try {
+        const formData = new FormData();
+        formData.append('image', image);
+        const res = await fetch('/api/search/analyze', { method: 'POST', body: formData });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.keywords) {
+            finalQuery = trimmed ? `${trimmed} ${data.keywords}` : data.keywords;
+            setQuery(finalQuery);
+          }
+        }
+      } catch (err) {
+        console.error('[HomeImage] Vision API failed:', err);
+        // 이미지 분석 실패해도 텍스트 검색으로 진행
+      }
+    }
+
+    if (finalQuery) saveHeroRecent(finalQuery);
     saveRecentZip(zipcode.trim());
     const params = new URLSearchParams();
-    params.set('q', trimmed);
-    params.set('zip', zipcode.trim());
+    params.set('q', finalQuery);
+    params.set('zipcode', zipcode.trim());
     params.set('market', market);
     router.push(`/search?${params.toString()}`);
   };
@@ -297,6 +318,7 @@ function HomeContent() {
   const getAiFilterLabels = (): string[] => {
     const labels: string[] = [];
     for (const [groupName, values] of Object.entries(aiFilterOptions)) {
+      if (!Array.isArray(values)) continue; // priceInsight 등 비배열 스킵
       for (const label of values) {
         const id = `ai-${groupName}-${String(label).toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
         if (selectedAiFilters.has(id)) labels.push(label);
@@ -410,12 +432,83 @@ function HomeContent() {
               </div>
             </section>
             
-            {/* How to Section (Keep as is) */}
-            <section className="bg-white text-slate-700 py-16 pb-32">
-                {/* ... (생략된 기존 내용 그대로 유지) ... */}
+            {/* How POTAL Works — 3-Step Visual Guide */}
+            <section className="bg-white text-slate-700 py-16 pb-24">
                 <div className="max-w-[1440px] mx-auto px-6">
-                    <h2 className="text-3xl font-bold text-[#02122c] mb-4">How to search with POTAL</h2>
-                    {/* ... details elements ... */}
+                    <h2 className="text-3xl font-extrabold text-[#02122c] mb-2">How POTAL Works</h2>
+                    <p className="text-slate-500 mb-10 text-[15px] max-w-xl">One search. 8 retailers. The lowest total price including shipping and tax — found in seconds.</p>
+
+                    {/* 3-Step Flow */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
+                      {[
+                        {
+                          step: '01',
+                          icon: '🔍',
+                          title: 'Search Any Product',
+                          desc: 'Type what you want and your ZIP code. POTAL instantly searches Amazon, Walmart, eBay, Target, Best Buy, AliExpress, and Temu at once.',
+                        },
+                        {
+                          step: '02',
+                          icon: '🤖',
+                          title: 'AI Compares Everything',
+                          desc: 'Our AI agent calculates the true Total Landed Cost — product price + shipping + tax + import duties — and scores each deal by value, speed, and trust.',
+                        },
+                        {
+                          step: '03',
+                          icon: '🛒',
+                          title: 'Click & Buy Direct',
+                          desc: "Choose the best deal and we'll take you straight to the retailer. No middleman, no markup. You buy directly from Amazon, Walmart, or any partner site.",
+                        },
+                      ].map((item) => (
+                        <div key={item.step} className="relative bg-[#f8f9fc] border border-slate-200 rounded-2xl p-7 hover:shadow-lg hover:border-[#F59E0B]/40 transition-all duration-300 group">
+                          <span className="text-[48px] leading-none mb-4 block group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-[11px] font-extrabold text-[#F59E0B] tracking-widest">STEP {item.step}</span>
+                          </div>
+                          <h3 className="text-lg font-extrabold text-[#02122c] mb-2">{item.title}</h3>
+                          <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* FAQ Accordion — 자주 묻는 질문 */}
+                    <div className="max-w-2xl mx-auto">
+                      <h3 className="text-xl font-extrabold text-[#02122c] mb-5 text-center">Frequently Asked Questions</h3>
+                      {[
+                        {
+                          q: 'Is POTAL free to use?',
+                          a: 'Yes, completely free. POTAL earns a small commission from retailers when you make a purchase — you never pay extra.',
+                        },
+                        {
+                          q: 'Do I buy products from POTAL?',
+                          a: "No. POTAL is a search engine, not a store. When you click 'Select', you go directly to the retailer's website (Amazon, Walmart, etc.) to complete your purchase.",
+                        },
+                        {
+                          q: 'What is Total Landed Cost?',
+                          a: 'It\'s the true final price you pay: product price + shipping + estimated sales tax (domestic) or import duties (global). No hidden surprises.',
+                        },
+                        {
+                          q: 'How do membership toggles work?',
+                          a: 'POTAL supports retailer memberships like Amazon Prime, Walmart+, AliExpress Choice, Target Circle 360, and Best Buy Plus. Membership toggles are ON by default — so prices reflect member benefits (free shipping, faster delivery, exclusive discounts). Toggle OFF any membership you don\'t have to see non-member pricing instead.',
+                        },
+                        {
+                          q: 'How is shipping cost calculated?',
+                          a: 'Shipping varies by retailer and membership. For example, Amazon Prime and Walmart+ members get free shipping on all orders, while non-members pay ~$5.99 for orders under $35. Global retailers like AliExpress (Choice) and Temu offer free or low-cost shipping on many items. POTAL factors these into every comparison automatically.',
+                        },
+                        {
+                          q: 'What about sales tax and import duties?',
+                          a: 'For US domestic purchases, sales tax is estimated based on your state (e.g., ~8.75% in California, 0% in Oregon). For global purchases, import duties depend on the origin country — items from China currently carry ~20% duty (de minimis exemption eliminated Aug 2025), while orders from Korea, Japan, EU, and UK remain duty-free under the $800 threshold. POTAL estimates all of this so you can compare true costs.',
+                        },
+                      ].map((item, idx) => (
+                        <details key={idx} className="group mb-3 border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 transition-colors">
+                          <summary className="flex items-center justify-between px-5 py-4 cursor-pointer select-none bg-white group-open:bg-slate-50 transition-colors">
+                            <span className="text-[15px] font-bold text-[#02122c]">{item.q}</span>
+                            <Icons.ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4" />
+                          </summary>
+                          <div className="px-5 pb-4 pt-1 text-sm text-slate-600 leading-relaxed bg-white">{item.a}</div>
+                        </details>
+                      ))}
+                    </div>
                 </div>
             </section>
           </div>
@@ -623,7 +716,7 @@ function HomeContent() {
                                 <div className="flex items-center gap-2 w-full px-4 pt-3 pb-1 min-w-0 box-border"><span className="text-xl flex-shrink-0">🇺🇸</span><h2 className="text-lg font-bold text-slate-800">Domestic (Fast)</h2></div>
                               </div>
                               <div className="px-4 py-3 w-full min-w-0 box-border">
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 w-full">
+                                <div className="grid grid-cols-1 gap-3 w-full">
                                   {[1, 2, 3].map(i => <div key={i} className="min-w-0 w-full"><ProductCardSkeleton /></div>)}
                                 </div>
                               </div>
@@ -633,7 +726,7 @@ function HomeContent() {
                                 <div className="flex items-center gap-2 w-full px-4 pt-3 pb-1 min-w-0 box-border"><span className="text-xl flex-shrink-0">🌏</span><h2 className="text-lg font-bold text-slate-800">Global (Cheap)</h2></div>
                               </div>
                               <div className="px-4 py-3 w-full min-w-0 box-border">
-                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 w-full">
+                                <div className="grid grid-cols-1 gap-3 w-full">
                                   {[1, 2, 3].map(i => <div key={i} className="min-w-0 w-full"><ProductCardSkeleton /></div>)}
                                 </div>
                               </div>
@@ -674,7 +767,7 @@ function HomeContent() {
                                             <div className="flex items-center gap-2 w-full px-4 pt-3 pb-1 min-w-0 box-border"><span className="text-xl flex-shrink-0">🇺🇸</span><h2 className="text-lg font-bold text-slate-800">Domestic (Fast)</h2></div>
                                         </div>
                                         <div className="px-4 py-3 w-full min-w-0 box-border">
-                                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 w-full">
+                                            <div className="grid grid-cols-1 gap-3 w-full">
                                                 {displayedDomestic.map((item, index) => (
                                                     <div key={`${item.id}-${index}`} className="min-w-0 w-full">
                                                         <ProductCard product={item} type="domestic" onWishlistChange={(added) => showToastMessage(added ? "Saved" : "Removed")} onProductClick={handleProductClick} />
@@ -688,7 +781,7 @@ function HomeContent() {
                                             <div className="flex items-center gap-2 w-full px-4 pt-3 pb-1 min-w-0 box-border"><span className="text-xl flex-shrink-0">🌏</span><h2 className="text-lg font-bold text-slate-800">Global (Cheap)</h2></div>
                                         </div>
                                         <div className="px-4 py-3 w-full min-w-0 box-border">
-                                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-3 w-full">
+                                            <div className="grid grid-cols-1 gap-3 w-full">
                                                 {displayedInternational.map((item, index) => (
                                                     <div key={`${item.id}-${index}`} className="min-w-0 w-full">
                                                         <ProductCard product={item} type="international" onWishlistChange={(added) => showToastMessage(added ? "Saved" : "Removed")} onProductClick={handleProductClick} />

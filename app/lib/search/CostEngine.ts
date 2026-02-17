@@ -4,8 +4,17 @@
  * Calculates the TRUE cost of a product including:
  * - Product price
  * - Shipping cost
- * - Import duty (for Global: US de minimis $800 rule)
+ * - Import duty (for Global: China tariffs + MPF since Aug 2025)
  * - Estimated sales tax (for Domestic: state-based)
+ *
+ * IMPORTANT UPDATE (2025-08-29):
+ * US $800 de minimis exemption has been ELIMINATED.
+ * ALL packages from China are now subject to import duties.
+ * - Reciprocal tariff: ~10%
+ * - Fentanyl tariff: ~10%
+ * - Section 301 additional: varies by category
+ * - Effective rate for Chinese goods: ~20-37%
+ * - Merchandise Processing Fee (MPF): $2.69-$12.09 for informal entries
  *
  * Philosophy: Show the most accurate estimate possible.
  * User sees "Expected Total" — honest about it being an estimate.
@@ -18,16 +27,20 @@ export interface LandedCost {
   productPrice: number;
   /** Shipping cost (0 for free shipping) */
   shippingCost: number;
-  /** Import duty amount (0 if under de minimis or domestic) */
+  /** Import duty amount */
   importDuty: number;
+  /** Merchandise Processing Fee */
+  mpf: number;
   /** Estimated sales tax */
   salesTax: number;
-  /** Total = product + shipping + duty + tax */
+  /** Total = product + shipping + duty + mpf + tax */
   totalLandedCost: number;
   /** Whether this is domestic or global */
   type: 'domestic' | 'global';
-  /** Whether duty-free (under $800 for US imports) */
+  /** Whether duty-free — legacy field, now always false for China imports */
   isDutyFree: boolean;
+  /** Origin country for duty calculation */
+  originCountry: 'CN' | 'OTHER' | 'DOMESTIC';
   /** Breakdown text for display */
   breakdown: CostBreakdownItem[];
 }
@@ -38,10 +51,28 @@ export interface CostBreakdownItem {
   note?: string;
 }
 
-// ─── US Import Rules ─────────────────────────────────
+// ─── US Import Rules (Updated 2025-08) ──────────────
 
-/** US de minimis threshold - packages under this value are duty-free */
-const US_DE_MINIMIS = 800;
+/**
+ * China-specific import duty rates (post de minimis elimination)
+ * Base: Reciprocal 10% + Fentanyl 10% = 20%
+ * With Section 301 (many consumer goods): up to 37%
+ * We use a conservative average of 20% for general merchandise
+ */
+const CHINA_IMPORT_DUTY_RATE = 0.20; // 20% base (reciprocal + fentanyl)
+
+/**
+ * Merchandise Processing Fee (MPF) for informal entries (under $2,500)
+ * CBP charges $2.69 - $12.09 per shipment
+ * We use the middle estimate
+ */
+const MPF_INFORMAL = 5.50; // ~avg of $2.69-$12.09
+
+/**
+ * Non-China import duty rate (general)
+ * Most Favored Nation (MFN) average for consumer goods
+ */
+const OTHER_IMPORT_DUTY_RATE = 0.05; // 5% average MFN
 
 /** Average US sales tax rate by state (simplified) */
 const STATE_TAX_RATES: Record<string, number> = {
@@ -65,16 +96,12 @@ const STATE_TAX_RATES: Record<string, number> = {
 /** Default tax rate when state is unknown */
 const DEFAULT_TAX_RATE = 0.07;
 
-/** Average import duty rate for general merchandise (when over $800) */
-const AVG_IMPORT_DUTY_RATE = 0.05; // 5% average
-
 // ─── Zipcode to State Mapping (first 3 digits) ──────
 
 function zipcodeToState(zipcode: string): string | null {
   if (!zipcode || zipcode.length < 3) return null;
   const prefix = parseInt(zipcode.substring(0, 3), 10);
 
-  // Major zipcode prefix ranges → state codes
   if (prefix >= 100 && prefix <= 149) return 'NY';
   if (prefix >= 150 && prefix <= 196) return 'PA';
   if (prefix >= 197 && prefix <= 199) return 'DE';
@@ -123,6 +150,40 @@ function zipcodeToState(zipcode: string): string | null {
   return null;
 }
 
+// ─── Origin Country Detection ────────────────────────
+
+/**
+ * Detect origin country from product seller/site info.
+ * AliExpress, Temu, Shein → China (CN)
+ * Everything else → OTHER or DOMESTIC
+ */
+function detectOriginCountry(product: Product): 'CN' | 'OTHER' | 'DOMESTIC' {
+  const site = (product.site || '').toLowerCase();
+  const shipping = (product.shipping || '').toLowerCase();
+
+  // Domestic retailers
+  if (shipping.includes('domestic')) return 'DOMESTIC';
+
+  // Chinese origin platforms
+  if (
+    site.includes('aliexpress') ||
+    site.includes('temu') ||
+    site.includes('shein') ||
+    site.includes('wish') ||
+    site.includes('dhgate') ||
+    site.includes('banggood')
+  ) {
+    return 'CN';
+  }
+
+  // International but non-China
+  if (shipping.includes('international') || shipping.includes('global')) {
+    return 'OTHER';
+  }
+
+  return 'DOMESTIC';
+}
+
 // ─── Main Calculator ─────────────────────────────────
 
 export function calculateLandedCost(
@@ -133,10 +194,10 @@ export function calculateLandedCost(
 ): LandedCost {
   const productPrice = parsePriceToNumber(product.price);
   const shippingCost = product.shippingPrice ?? 0;
-  const isDomestic = (product.shipping || '').toLowerCase().includes('domestic');
+  const originCountry = detectOriginCountry(product);
   const zipcode = options?.zipcode || '';
 
-  if (isDomestic) {
+  if (originCountry === 'DOMESTIC') {
     // ── Domestic: Product + Shipping + Sales Tax ──
     const state = zipcodeToState(zipcode);
     const taxRate = state ? (STATE_TAX_RATES[state] ?? DEFAULT_TAX_RATE) : DEFAULT_TAX_RATE;
@@ -152,36 +213,64 @@ export function calculateLandedCost(
       productPrice,
       shippingCost,
       importDuty: 0,
+      mpf: 0,
       salesTax: Math.round(salesTax * 100) / 100,
       totalLandedCost: Math.round((productPrice + shippingCost + salesTax) * 100) / 100,
       type: 'domestic',
       isDutyFree: true,
+      originCountry,
       breakdown,
     };
   } else {
-    // ── Global: Product + Shipping + Import Duty + (no state sales tax for imports) ──
+    // ── Global: Product + Shipping + Import Duty + MPF ──
     const totalDeclaredValue = productPrice + shippingCost;
-    const isDutyFree = totalDeclaredValue <= US_DE_MINIMIS;
-    const importDuty = isDutyFree ? 0 : (totalDeclaredValue * AVG_IMPORT_DUTY_RATE);
+
+    // Duty rate based on origin country
+    const dutyRate = originCountry === 'CN' ? CHINA_IMPORT_DUTY_RATE : OTHER_IMPORT_DUTY_RATE;
+    const importDuty = totalDeclaredValue * dutyRate;
+
+    // MPF applies to all imports post de minimis elimination
+    const mpf = originCountry === 'CN' ? MPF_INFORMAL : 0;
+
+    // isDutyFree is now always false for China imports (de minimis eliminated)
+    const isDutyFree = originCountry !== 'CN' && totalDeclaredValue === 0;
+
+    const dutyLabel = originCountry === 'CN' ? 'Import Duty' : 'Import Duty';
+    const dutyNote = originCountry === 'CN'
+      ? `~${(dutyRate * 100)}% (China tariff)`
+      : `~${(dutyRate * 100)}% (MFN avg)`;
 
     const breakdown: CostBreakdownItem[] = [
       { label: 'Product', amount: productPrice },
       { label: 'Shipping', amount: shippingCost, note: shippingCost === 0 ? 'Free' : undefined },
       {
-        label: 'Import Duty',
+        label: dutyLabel,
         amount: Math.round(importDuty * 100) / 100,
-        note: isDutyFree ? `Duty-Free (Under $${US_DE_MINIMIS})` : `~${(AVG_IMPORT_DUTY_RATE * 100)}%`,
+        note: dutyNote,
       },
     ];
+
+    // Add MPF line for China imports
+    if (mpf > 0) {
+      breakdown.push({
+        label: 'Processing Fee',
+        amount: mpf,
+        note: 'CBP MPF',
+      });
+    }
+
+    const total = productPrice + shippingCost + importDuty + mpf;
 
     return {
       productPrice,
       shippingCost,
       importDuty: Math.round(importDuty * 100) / 100,
-      salesTax: 0, // International imports generally don't have state sales tax at point of entry
-      totalLandedCost: Math.round((productPrice + shippingCost + importDuty) * 100) / 100,
+      mpf,
+      salesTax: 0,
+      totalLandedCost: Math.round(total * 100) / 100,
       type: 'global',
       isDutyFree,
+      originCountry,
       breakdown,
     };
   }
@@ -209,4 +298,4 @@ function parsePriceToNumber(price: string | number | undefined): number {
   return isNaN(num) ? 0 : num;
 }
 
-export { parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, US_DE_MINIMIS };
+export { parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, CHINA_IMPORT_DUTY_RATE, MPF_INFORMAL };

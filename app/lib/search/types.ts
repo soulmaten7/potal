@@ -29,5 +29,9 @@ export interface SearchResult {
       flagged: number;
       removeReasons: Record<string, number>;
     };
+    /** 질문형 쿼리 여부 — true이면 results는 비어있고 suggestedProducts로 칩 표시 */
+    isQuestionQuery?: boolean;
+    /** 추천 상품 카테고리 키워드 (질문형 쿼리에서 반환) */
+    suggestedProducts?: string[];
   };
 }

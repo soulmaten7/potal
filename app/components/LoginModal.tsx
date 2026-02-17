@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Icons } from '@/components/icons'; 
+import { useRouter } from 'next/navigation';
+import { Icons } from '@/components/icons';
 import { useSupabase } from '../context/SupabaseProvider';
 
 // [1] 이메일 아이콘 (깔끔한 선)
@@ -54,6 +55,7 @@ interface LoginModalProps {
 
 export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   const { supabase } = useSupabase();
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -119,7 +121,13 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
           <div className="space-y-3">
             {/* 1. 이메일 */}
-            <button className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-[#02122c] font-bold rounded-xl flex items-center justify-center gap-3 transition-colors">
+            <button
+              onClick={() => {
+                onClose();
+                router.push('/auth/login');
+              }}
+              className="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-[#02122c] font-bold rounded-xl flex items-center justify-center gap-3 transition-colors"
+            >
                <MailIcon className="w-5 h-5" />
                <span>Continue with Email</span>
             </button>
@@ -153,7 +161,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           </div>
 
           <p className="mt-8 text-[11px] text-slate-400 leading-normal">
-            By continuing, you agree to POTAL's <a href="#" className="underline hover:text-slate-600">Terms of Service</a> and acknowledge that you have read our <a href="#" className="underline hover:text-slate-600">Privacy Policy</a>.
+            By continuing, you agree to POTAL's <a href="/legal/terms" className="underline hover:text-slate-600">Terms of Service</a> and acknowledge that you have read our <a href="/legal/privacy" className="underline hover:text-slate-600">Privacy Policy</a>.
           </p>
         </div>
       </div>

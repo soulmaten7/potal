@@ -79,6 +79,16 @@ body {
   animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
 
+/* Loading bar animation (검색 중 프로그레스 바) */
+@keyframes loadingBar {
+  0% { width: 0%; margin-left: 0%; }
+  50% { width: 60%; margin-left: 20%; }
+  100% { width: 0%; margin-left: 100%; }
+}
+.animate-loading-bar {
+  animation: loadingBar 2s ease-in-out infinite;
+}
+
 /* Hero: 순수 Deep Navy, 패턴 없이 단색 (Skyscanner 톤) */
 .hero-pattern {
   background-color: #02122c;

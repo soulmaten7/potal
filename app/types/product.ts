@@ -49,4 +49,26 @@ export interface Product {
   rating?: number;
   /** 리뷰 수 */
   reviewCount?: number;
+
+  // ── Shipping Options (AliExpress 등 Global 상품) ──
+  /** 배송 옵션 목록 (항공/해운/특급 등) */
+  shippingOptions?: Array<{
+    method: string;
+    cost: number;
+    minDays: number;
+    maxDays: number;
+    type: 'air' | 'sea' | 'express';
+  }>;
+  /** 현재 선택된 배송 방식 index (기본 0 = fastest) */
+  selectedShippingIndex?: number;
+
+  // ── Price Range (AliExpress 등 옵션별 가격차가 큰 상품) ──
+  /** 가격 범위의 최저가. 존재하면 "From $X ~ $Y" 형태로 표시 */
+  priceRangeMin?: number;
+
+  // ── Search Card 전용 필드 ──
+  /** true면 실제 상품이 아닌 "해당 사이트에서 검색" CTA 카드 */
+  isSearchCard?: boolean;
+  /** 검색카드 태그라인 (예: "Fast fashion, global shipping") */
+  searchCardTagline?: string;
 }

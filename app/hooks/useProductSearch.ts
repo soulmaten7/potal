@@ -6,7 +6,7 @@ import { useSupabase } from '../context/SupabaseProvider';
 import { useUserPreferences } from './useUserPreferences';
 import { useWishlist } from '../context/WishlistContext';
 import type { Product } from '../types/product';
-import { extractFilterOptionsFromProducts } from '../lib/filter-utils';
+import { extractFilterOptionsFromProducts, type FilterOptions } from '../lib/filter-utils';
 
 /** 홈 초기 진입 시 1회 자동 검색 키워드 */
 export const HOME_INIT_SEARCH_KEYWORD = 'Trending Tech';
@@ -109,7 +109,7 @@ export function useProductSearch() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [showRecentDropdown, setShowRecentDropdown] = useState(false);
   const [recentSearchesEnabled, setRecentSearchesEnabled] = useState(true);
-  const [aiFilterOptions, setAiFilterOptions] = useState<Record<string, string[]>>({});
+  const [aiFilterOptions, setAiFilterOptions] = useState<FilterOptions>({});
   const [selectedAiFilters, setSelectedAiFilters] = useState<Set<string>>(new Set());
   const [aiFiltersLoading, setAiFiltersLoading] = useState(false);
   const [sortBy, setSortBy] = useState<'relevance' | 'price_asc' | 'price_desc' | 'delivery'>('relevance');

@@ -12,14 +12,14 @@ export async function GET(request: Request) {
 
   // Always send user to home after successful session exchange so cookies are set on same origin
   const homeUrl = `${origin}/`;
-  const successRedirect =
-    next && next.startsWith("http")
-      ? next
-      : next && next.startsWith("/")
-        ? `${origin}${next}`
-        : next
-          ? `${origin}/${next}`
-          : homeUrl;
+
+  // Security: only allow internal paths to prevent open redirect attacks
+  // Reject any absolute URLs (http://, https://, //, etc.)
+  const safeNext =
+    next && next.startsWith("/") && !next.startsWith("//")
+      ? `${origin}${next}`
+      : homeUrl;
+  const successRedirect = safeNext;
 
   const cookieStore = await cookies();
 

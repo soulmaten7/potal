@@ -227,11 +227,22 @@ export function scoreProducts(
     priceSpeedBalance?: number; // 0 = all price, 100 = all speed, 50 = default
   }
 ): ScoringResult {
-  if (products.length === 0) {
+  // Search cards (isSearchCard: true) — 스코어링에서 제외, 결과 끝에 붙임
+  const searchCards = products.filter(p => p.isSearchCard);
+  const realProducts = products.filter(p => !p.isSearchCard);
+
+  if (realProducts.length === 0) {
+    // 실제 상품 없으면 검색카드만 반환
+    const cardsAsScoredProducts = searchCards.map(c => ({
+      ...c,
+      bestScore: 0,
+      parsedDeliveryDays: c.parsedDeliveryDays ?? 14,
+      parsedPrice: 0,
+    })) as ScoredProduct[];
     return {
-      bestSorted: [],
-      cheapestSorted: [],
-      fastestSorted: [],
+      bestSorted: cardsAsScoredProducts,
+      cheapestSorted: cardsAsScoredProducts,
+      fastestSorted: cardsAsScoredProducts,
       tabSummary: { best: null, cheapest: null, fastest: null },
     };
   }
@@ -251,8 +262,8 @@ export function scoreProducts(
     weights.price = totalPriceSpeed * (1 - speedRatio);
   }
 
-  // Step 1: Parse raw values for each product
-  const parsed = products.map(product => {
+  // Step 1: Parse raw values for each product (search cards excluded)
+  const parsed = realProducts.map(product => {
     const lc = landedCosts?.get(product.id);
     const rawPrice = lc ? lc.totalLandedCost : parsePriceToNum(product.price) + (product.shippingPrice ?? 0);
     const rawDays = parseDeliveryDays(product);
@@ -336,6 +347,19 @@ export function scoreProducts(
       days: formatDays(fastestSorted[0].parsedDeliveryDays),
     } : null,
   };
+
+  // Append search cards at the end of each sorted list (they're not ranked)
+  if (searchCards.length > 0) {
+    const cardsAsScoredProducts = searchCards.map(c => ({
+      ...c,
+      bestScore: 0,
+      parsedDeliveryDays: c.parsedDeliveryDays ?? 14,
+      parsedPrice: 0,
+    })) as ScoredProduct[];
+    bestSorted.push(...cardsAsScoredProducts);
+    cheapestSorted.push(...cardsAsScoredProducts);
+    fastestSorted.push(...cardsAsScoredProducts);
+  }
 
   return { bestSorted, cheapestSorted, fastestSorted, tabSummary };
 }

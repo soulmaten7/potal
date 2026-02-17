@@ -14,7 +14,6 @@ export function SearchBar() {
     const savedZip = localStorage.getItem('potal_zipcode');
     if (savedZip) {
       setZipcode(savedZip);
-      console.log("📍 SearchBar detected zipcode:", savedZip); // 확인용 로그
     }
   }, []);
 
@@ -37,16 +36,17 @@ export function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto group">
+    <form onSubmit={handleSearch} className="relative w-full max-w-2xl mx-auto group" role="search" aria-label="Product search">
       <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-        <Icons.Search className="w-6 h-6 text-slate-400 group-focus-within:text-[#02122c] transition-colors" />
+        <Icons.Search className="w-6 h-6 text-slate-400 group-focus-within:text-[#02122c] transition-colors" aria-hidden="true" />
       </div>
-      
+
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={zipcode ? `Searching delivery to ${zipcode}...` : "Search products (Amazon, Coupang, AliExpress)..."}
+        aria-label="Search products across all retailers"
+        placeholder={zipcode ? `Searching delivery to ${zipcode}...` : "Search across Amazon, Walmart, eBay, AliExpress..."}
         className="w-full h-14 pl-14 pr-32 bg-white border-2 border-slate-200 rounded-full text-lg shadow-lg focus:outline-none focus:border-[#02122c] focus:ring-4 focus:ring-slate-100 transition-all placeholder:text-slate-400 text-slate-900 font-medium"
       />
 
@@ -59,8 +59,9 @@ export function SearchBar() {
            </div>
          )}
          
-         <button 
+         <button
            type="submit"
+           aria-label="Search products"
            className="h-11 px-6 bg-[#02122c] hover:bg-[#F59E0B] text-white font-bold rounded-full transition-colors flex items-center justify-center"
          >
            Search

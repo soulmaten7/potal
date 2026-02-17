@@ -4,8 +4,6 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'm.media-amazon.com' },
-      { protocol: 'https', hostname: 'images-na.ssl-images.com' },
-      { protocol: 'https', hostname: 'm.media-amazon.com' },
       { protocol: 'https', hostname: 'images-na.ssl-images-amazon.com' },
       { protocol: 'https', hostname: 'i5.walmartimages.com' },
       { protocol: 'https', hostname: 'i.ebayimg.com' },
@@ -15,8 +13,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'ae01.alicdn.com' },
       { protocol: 'https', hostname: 'www.costco.com' },
       { protocol: 'https', hostname: 'c1.neweggimages.com' },
-      // Generic external images (for testing; tighten in production)
-      { protocol: 'https', hostname: '**' },
+      // Shein
+      { protocol: 'https', hostname: 'img.ltwebstatic.com' },
     ],
   },
 };

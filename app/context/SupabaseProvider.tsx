@@ -53,7 +53,14 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, currentSession) => {
-      if (mounted) setSession(currentSession ?? null);
+      if (mounted) {
+        setSession(currentSession ?? null);
+        // Sync zipcode to localStorage on login
+        const zipcode = currentSession?.user?.user_metadata?.zipcode;
+        if (zipcode && typeof window !== 'undefined') {
+          localStorage.setItem('potal_zipcode', zipcode);
+        }
+      }
     });
 
     return () => {

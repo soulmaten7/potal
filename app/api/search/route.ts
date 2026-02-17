@@ -29,7 +29,36 @@ import { getSearchCache, SearchCache } from '../../lib/search/SearchCache';
  *   market   - 'all' | 'domestic' | 'global' (default: all)
  */
 
-const SEARCH_TIMEOUT_MS = 15_000; // 15초
+const SEARCH_TIMEOUT_MS = 45_000; // 45초 (Temu Apify Actor 7-15초 + Provider 병렬 + AI 분석)
+
+// ── Simple in-memory rate limiter ──
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1분
+const RATE_LIMIT_MAX = 20; // 1분당 최대 20회
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  entry.count++;
+  if (entry.count > RATE_LIMIT_MAX) return true;
+  return false;
+}
+
+// Cleanup stale entries every 5 minutes
+if (typeof setInterval !== 'undefined') {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [ip, entry] of rateLimitMap) {
+      if (now > entry.resetAt) rateLimitMap.delete(ip);
+    }
+  }, 300_000);
+}
 
 /** Promise에 타임아웃을 적용하는 유틸 */
 function withTimeout<T>(promise: Promise<T>, ms: number, label = 'Operation'): Promise<T> {
@@ -57,6 +86,17 @@ const emptyResult = {
 };
 
 export async function GET(request: Request) {
+  // Rate limiting by IP
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded?.split(',')[0]?.trim() || request.headers.get('x-real-ip') || 'unknown';
+
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { ...emptyResult, error: 'Too many requests. Please wait a moment and try again.', errorType: 'rate_limit' },
+      { status: 429, headers: { 'Retry-After': '60', 'Cache-Control': 'no-store' } },
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q') || '';
   const page = parseInt(searchParams.get('page') || '1', 10);

@@ -19,6 +19,22 @@ import type { QueryAnalysis } from './types';
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 
+/**
+ * 질문형 쿼리 감지
+ * "what should I buy for camping?" / "I need a good laptop" / "recommend me shoes"
+ * → 이런 쿼리는 API에 보내면 쓰레기 결과 → suggestedProducts 칩으로 대응
+ */
+export function isQuestionQuery(query: string): boolean {
+  const q = query.toLowerCase().trim();
+  // 의문문 패턴 (what, which, how, where, should, etc.)
+  if (/^(what|which|how|where|can|should|do|does|is|are|will|would|could)\b/.test(q)) return true;
+  // 물음표 포함
+  if (q.includes('?')) return true;
+  // 자연어 의도 패턴
+  if (/\b(i need|i want|i'm looking|looking for|recommend|suggest|best for|good for|help me|any ideas|shopping for)\b/.test(q)) return true;
+  return false;
+}
+
 const SYSTEM_PROMPT = `You are POTAL's Query Analysis Agent. Your job is to analyze a shopping search query and produce structured output for a cross-platform shopping search engine.
 
 POTAL searches across US Domestic sites (Amazon, Walmart, eBay, Target, Best Buy, Costco) and Global sites (AliExpress, Temu, Shein, DHgate, YesStyle).
@@ -29,6 +45,11 @@ Your tasks:
 3. Detect price intent (budget, range, max price)
 4. Extract key product attributes (brand, color, size, specs)
 5. Determine search strategy
+6. **CRITICAL**: Detect if the query is a QUESTION (natural language, not a product name).
+   - Question examples: "what should I buy for camping?", "I need warm socks for winter", "recommend me a good laptop"
+   - If it IS a question, set "isQuestionQuery": true and provide "suggestedProducts": an array of 4-8 specific, searchable product keywords the user likely wants.
+   - suggestedProducts must be SHORT, CONCRETE product names that work as search queries (e.g. "camping tent", "sleeping bag", "hiking boots") — NOT generic terms like "camping gear" or "outdoor equipment".
+   - If it is NOT a question (e.g. "airpods", "nike shoes"), set "isQuestionQuery": false and "suggestedProducts": [].
 
 Platform-specific naming conventions:
 - Amazon: Use standard US product names, include brand if mentioned
@@ -40,6 +61,8 @@ Respond in valid JSON only. No markdown, no explanation.`;
 
 const OUTPUT_SCHEMA = `{
   "category": "string (Electronics, Fashion, Home, Beauty, Sports, Toys, Food, Auto, General)",
+  "isQuestionQuery": "boolean - true if query is a question/natural language, false if product name",
+  "suggestedProducts": "string[] - 4-8 specific product keywords if question, empty array otherwise",
   "platformQueries": {
     "amazon": "string - optimized for Amazon US",
     "walmart": "string - optimized for Walmart (optional)",
@@ -110,7 +133,8 @@ export async function analyzeQueryWithAI(query: string): Promise<QueryAnalysis> 
     const parsed = JSON.parse(content);
     const tokensUsed = data.usage?.total_tokens || 0;
 
-    console.log(`🤖 [QueryAgent] AI analysis complete | ${tokensUsed} tokens | strategy: ${parsed.strategy}`);
+    const isQuestion = parsed.isQuestionQuery === true || isQuestionQuery(query);
+    console.log(`🤖 [QueryAgent] AI analysis complete | ${tokensUsed} tokens | strategy: ${parsed.strategy} | question: ${isQuestion}`);
 
     return {
       original: query,
@@ -132,6 +156,8 @@ export async function analyzeQueryWithAI(query: string): Promise<QueryAnalysis> 
       attributes: parsed.attributes || {},
       strategy: parsed.strategy || 'broad',
       confidence: parsed.confidence || 0.8,
+      isQuestionQuery: isQuestion,
+      suggestedProducts: isQuestion ? (parsed.suggestedProducts || []) : [],
     };
   } catch (err) {
     console.warn('⚠️ [QueryAgent] AI analysis failed, using deterministic:', err);
@@ -143,16 +169,30 @@ export async function analyzeQueryWithAI(query: string): Promise<QueryAnalysis> 
  * Deterministic 검색어 분석 (fallback, 무료)
  * AI가 실패하거나 키가 없을 때 사용.
  */
+/** 카테고리별 추천 상품 키워드 (질문형 쿼리의 deterministic fallback용) */
+const CATEGORY_SUGGESTIONS: Record<string, string[]> = {
+  Electronics: ['wireless earbuds', 'laptop stand', 'phone charger', 'bluetooth speaker', 'webcam', 'keyboard'],
+  Fashion: ['sneakers', 'hoodie', 'sunglasses', 'crossbody bag', 'watch', 'running shoes'],
+  Home: ['desk lamp', 'throw blanket', 'kitchen organizer', 'vacuum cleaner', 'bookshelf', 'candle set'],
+  Beauty: ['moisturizer', 'sunscreen SPF 50', 'vitamin C serum', 'lip balm set', 'makeup brush set'],
+  Sports: ['camping tent', 'sleeping bag', 'hiking boots', 'yoga mat', 'water bottle', 'camping chair', 'cooler bag', 'headlamp'],
+  Toys: ['lego set', 'board game', 'puzzle 1000 piece', 'plush toy', 'action figure', 'card game'],
+  Food: ['protein powder', 'vitamin D supplement', 'organic coffee', 'green tea', 'energy bars', 'nut mix'],
+  Auto: ['dash cam', 'car phone mount', 'tire pressure gauge', 'LED headlight', 'car vacuum', 'sunshade'],
+  General: ['gift set', 'daily essentials', 'travel accessories', 'home office setup', 'fitness starter kit'],
+};
+
 export function analyzeQueryDeterministic(query: string): QueryAnalysis {
   const q = query.toLowerCase().trim();
+  const questionDetected = isQuestionQuery(query);
 
   // 카테고리 추론
   const categoryMap: Record<string, string[]> = {
     Electronics: ['laptop', 'phone', 'tablet', 'ipad', 'macbook', 'airpods', 'earbuds', 'headphone', 'speaker', 'monitor', 'keyboard', 'mouse', 'camera', 'tv', 'gpu', 'cpu', 'ssd', 'charger', 'cable', 'usb'],
-    Fashion: ['shoes', 'sneakers', 'dress', 'jacket', 'hoodie', 'pants', 'jeans', 'shirt', 't-shirt', 'nike', 'adidas', 'bag', 'wallet', 'watch', 'sunglasses'],
+    Fashion: ['shoes', 'sneakers', 'dress', 'jacket', 'hoodie', 'pants', 'jeans', 'shirt', 't-shirt', 'nike', 'adidas', 'bag', 'wallet', 'watch', 'sunglasses', 'sock', 'boot'],
     Home: ['lamp', 'desk', 'chair', 'table', 'sofa', 'bed', 'pillow', 'blanket', 'kitchen', 'blender', 'vacuum', 'organizer', 'shelf'],
     Beauty: ['skincare', 'makeup', 'serum', 'moisturizer', 'sunscreen', 'lipstick', 'foundation', 'shampoo', 'perfume', 'cologne'],
-    Sports: ['yoga', 'gym', 'fitness', 'camping', 'tent', 'bike', 'running', 'golf', 'swimming', 'hiking', 'outdoor'],
+    Sports: ['yoga', 'gym', 'fitness', 'camping', 'tent', 'bike', 'running', 'golf', 'swimming', 'hiking', 'outdoor', 'fishing'],
     Toys: ['lego', 'toy', 'puzzle', 'game', 'board game', 'plush', 'doll', 'action figure', 'nerf'],
     Food: ['protein', 'vitamin', 'supplement', 'snack', 'coffee', 'tea', 'organic'],
     Auto: ['car', 'tire', 'oil', 'dash cam', 'gps', 'led light', 'car mount'],
@@ -193,6 +233,15 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
   // 플랫폼별 검색어 (deterministic version)
   const cleanQuery = query.replace(/under\s*\$?\d+/i, '').replace(/over\s*\$?\d+/i, '').trim();
 
+  // 질문형 → suggestedProducts 생성 (카테고리 기반)
+  const suggestedProducts = questionDetected
+    ? (CATEGORY_SUGGESTIONS[category] || CATEGORY_SUGGESTIONS['General'])
+    : [];
+
+  if (questionDetected) {
+    console.log(`❓ [QueryAgent] Question detected (deterministic) | category: ${category} | suggestions: ${suggestedProducts.length}`);
+  }
+
   return {
     original: query,
     category,
@@ -204,7 +253,9 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
       ...(detectedBrand ? { brand: detectedBrand } : {}),
     },
     strategy,
-    confidence: 0.6, // deterministic은 AI보다 낮은 신뢰도
+    confidence: questionDetected ? 0.4 : 0.6,
+    isQuestionQuery: questionDetected,
+    suggestedProducts,
   };
 }
 
@@ -215,6 +266,9 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
  * 복잡한 검색 → AI (비용, 정확)
  */
 export function shouldUseAIAnalysis(query: string): boolean {
+  // 질문형 쿼리 → AI가 suggestedProducts를 생성해야 함
+  if (isQuestionQuery(query)) return true;
+
   const words = query.trim().split(/\s+/);
 
   // 1단어 검색 → deterministic으로 충분

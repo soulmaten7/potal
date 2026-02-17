@@ -1,0 +1,454 @@
+"use client";
+
+import React from 'react';
+// [수정 1] 아이콘 경로: 최상위 components 폴더를 찾도록 '@/' 사용 (가장 확실함)
+import { Icons } from '@/components/icons'; 
+// [수정 2] 스켈레톤 경로: 역시 최상위 폴더 기준 '@/' 사용
+import { SkeletonCard } from '@/components/ui/SkeletonCard';
+// [유지] ProductCard는 바로 위 폴더(app/components)에 있으므로 '../'가 맞음
+import { ProductCard } from '../ProductCard'; 
+// [유지] 타입과 컨텍스트 경로 (app/types, app/context)
+import type { Product as CardProduct } from '../../types/product';
+import { useWishlist } from '../../context/WishlistContext';
+
+export interface IncomingProduct { 
+  id: string; 
+  title: string; 
+  seller: string; 
+  rating: number; 
+  reviewCount: number; 
+  badges: string[]; 
+  price: number; 
+  arrives: string; 
+  shippingDays: number; 
+  shipping: string; 
+  shippingContext?: string; 
+  thumb: string; 
+  type: "domestic" | "global"; 
+  keywords: string[]; 
+  link?: string;
+  totalPrice?: number;
+  shippingPrice?: number;
+  delivery?: string;
+  is_prime?: boolean;
+  trustScore?: number;
+  variants?: any[];
+}
+
+/** Tab summary from ScoringEngine — dynamic values for Best/Cheapest/Fastest tabs */
+interface TabSummaryData {
+  best: { price: string; days: string } | null;
+  cheapest: { price: string; days: string } | null;
+  fastest: { price: string; days: string } | null;
+}
+
+interface ResultsGridProps {
+  loading: boolean;
+  query: string;
+  sortBy: string;
+  setSortBy: (s: any) => void;
+  market: string;
+  domesticProducts: IncomingProduct[];
+  globalProducts: IncomingProduct[];
+  totalResults: number;
+  visibleCount: number;
+  setVisibleCount: React.Dispatch<React.SetStateAction<number>>;
+  isSortOpen: boolean; setIsSortOpen: (b: boolean) => void;
+  isTooltipOpen: boolean; setIsTooltipOpen: (b: boolean) => void;
+  isDomesticTaxOpen: boolean; setIsDomesticTaxOpen: (b: boolean) => void;
+  isGlobalInfoOpen: boolean; setIsGlobalInfoOpen: (b: boolean) => void;
+  activeTooltipId: string | null; setActiveTooltipId: (id: string | null) => void;
+  closeAllDropdowns: () => void;
+  /** Dynamic tab summary values from ScoringEngine */
+  tabSummary?: TabSummaryData;
+}
+
+export function ResultsGrid({
+  loading, query, sortBy, setSortBy, market, domesticProducts, globalProducts, totalResults, visibleCount, setVisibleCount,
+  isSortOpen, setIsSortOpen, isTooltipOpen, setIsTooltipOpen, isDomesticTaxOpen, setIsDomesticTaxOpen, isGlobalInfoOpen, setIsGlobalInfoOpen, activeTooltipId, setActiveTooltipId, closeAllDropdowns,
+  tabSummary
+}: ResultsGridProps) {
+  
+  const showDomestic = market === "all" || market === "domestic";
+  const showGlobal = market === "all" || market === "global";
+  const gridLayoutClass = market === "all" ? "grid grid-cols-2 gap-6" : "w-full";
+  const listLayoutClass = market === "all" ? "flex flex-col gap-4" : "grid grid-cols-2 gap-4";
+
+  // 데이터 매핑 함수 (옛날 데이터 -> 최신 카드 포맷)
+  const mapToCardProduct = (p: IncomingProduct) => {
+    return {
+      id: p.id,
+      name: p.title,
+      site: p.seller,
+      image: p.thumb,
+      price: String(p.price),
+      rating: p.rating,
+      reviewCount: p.reviewCount,
+      badges: p.badges,
+      is_prime: p.is_prime || p.badges?.includes("Prime"),
+      shipping: p.shipping,
+      shippingContext: p.shippingContext,
+      arrives: p.arrives,
+      deliveryDays: String(p.shippingDays),
+      link: p.link || "#",
+      type: p.type,
+      trustScore: p.trustScore,
+      variants: p.variants
+    };
+  };
+
+  return (
+    <section className="flex-1 min-w-0 flex flex-col">
+        {/* Sort Header */}
+        <div className="flex items-center justify-between mb-6 h-[40px]">
+            <div className="flex items-center gap-2">
+                <span className="text-[14px] text-slate-600"><strong className="text-[#02122c]">{totalResults}</strong> results sorted by <strong>{sortBy === "best" ? "Best" : sortBy === "cheapest" ? "Cheapest" : "Fastest"}</strong></span>
+                <div className="relative group">
+                    <button onClick={(e) => {e.stopPropagation(); closeAllDropdowns(); setIsTooltipOpen(!isTooltipOpen)}} className="focus:outline-none">
+                        <Icons.Info className="w-4 h-4 text-[#F59E0B] cursor-pointer hover:text-amber-600 transition-colors" />
+                    </button>
+                    {isTooltipOpen && (
+                        <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-80 bg-white shadow-2xl p-5 rounded-xl text-xs text-slate-600 border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-200">
+                            <div className="flex justify-between items-start mb-3"><strong className="text-[#02122c] text-sm">What is "Best"?</strong><button onClick={() => setIsTooltipOpen(false)}><Icons.X className="w-4 h-4" /></button></div>
+                            <p className="leading-relaxed mb-2">Best Score is a weighted analysis of multiple factors:</p>
+                            <div className="space-y-1.5">
+                              <div className="flex justify-between"><span className="font-bold text-[#02122c]">Total Landed Cost</span><span className="text-slate-400">35%</span></div>
+                              <div className="flex justify-between"><span className="font-bold text-[#02122c]">Delivery Speed</span><span className="text-slate-400">25%</span></div>
+                              <div className="flex justify-between"><span className="font-bold text-[#02122c]">Seller Trust</span><span className="text-slate-400">20%</span></div>
+                              <div className="flex justify-between"><span className="font-bold text-[#02122c]">Match Accuracy</span><span className="text-slate-400">15%</span></div>
+                              <div className="flex justify-between"><span className="font-bold text-[#02122c]">Return Policy</span><span className="text-slate-400">5%</span></div>
+                            </div>
+                            <p className="leading-relaxed mt-2 text-slate-400">Higher score = better overall value.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+
+        {/* Sort Tabs — dynamic values from ScoringEngine */}
+        <div className="bg-white rounded-lg border border-[#e0e3eb] flex mb-6 shadow-sm h-[64px] shrink-0 relative z-40">
+            {[
+              { id: "best", label: "Best", val: tabSummary?.best ? `${tabSummary.best.price} · ${tabSummary.best.days}` : "—" },
+              { id: "cheapest", label: "Cheapest", val: tabSummary?.cheapest ? `${tabSummary.cheapest.price} · ${tabSummary.cheapest.days}` : "—" },
+              { id: "fastest", label: "Fastest", val: tabSummary?.fastest ? `${tabSummary.fastest.price} · ${tabSummary.fastest.days}` : "—" },
+            ].map((tab, idx) => (
+                <button key={tab.id} onClick={() => setSortBy(tab.id as any)} className={`flex-1 px-5 flex flex-col justify-center border-r border-slate-100 hover:bg-slate-50 transition-colors relative ${sortBy === tab.id ? "bg-[#f8fbff]" : ""} ${idx === 0 ? "rounded-l-lg" : ""}`}>
+                {sortBy === tab.id && <div className="absolute top-0 left-0 w-full h-[3px] bg-[#02122c]" />}
+                <span className={`text-[14px] font-extrabold mb-0.5 ${sortBy === tab.id ? "text-[#02122c]" : "text-slate-500"}`}>{tab.label}</span>
+                <span className={`text-[13px] font-bold ${sortBy === tab.id ? "text-[#02122c]" : "text-slate-700"}`}>{tab.val}</span>
+                </button>
+            ))}
+            <div className="w-[200px] relative border-l border-slate-100 bg-slate-50 hover:bg-slate-100 transition-colors rounded-r-lg z-10">
+                <button onClick={(e) => {e.stopPropagation(); closeAllDropdowns(); setIsSortOpen(!isSortOpen)}} className="w-full h-full flex items-center justify-center gap-2 text-[14px] font-extrabold text-[#02122c] rounded-r-lg">Sort by <Icons.ChevronDown className="w-4 h-4 text-slate-500" /></button>
+                {isSortOpen && (
+                <div className="absolute top-full left-0 w-full bg-white shadow-xl rounded-b-lg border border-slate-200 animate-in fade-in zoom-in-95 duration-200 z-50">
+                    <div className="p-2">
+                        <button onClick={() => { setSortBy("best"); setIsSortOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm text-slate-700 font-bold rounded-md">Best</button>
+                        <button onClick={() => { setSortBy("cheapest"); setIsSortOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm text-slate-700 font-bold rounded-md">Cheapest first</button>
+                        <button onClick={() => { setSortBy("fastest"); setIsSortOpen(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm text-slate-700 font-bold rounded-md">Fastest first</button>
+                    </div>
+                </div>
+                )}
+            </div>
+        </div>
+
+        {/* Grid Area */}
+        <div className={`${gridLayoutClass} mb-4 shrink-0 relative z-30`}>
+            {showDomestic && (
+                <div className={market === "domestic" ? "w-full" : ""}>
+                    <div className="flex items-center justify-between pb-3 border-b-[3px] border-[#02122c]">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[24px]">🇺🇸</span>
+                            <h2 className="text-[20px] font-extrabold text-[#02122c]">Domestic <span className="text-[#02122c] font-normal text-sm ml-1">(Fastest)</span></h2>
+                        </div>
+                        <div className="relative">
+                            <button onClick={(e) => {e.stopPropagation(); closeAllDropdowns(); setIsDomesticTaxOpen(!isDomesticTaxOpen)}} className="flex items-center gap-1 focus:outline-none group">
+                                <Icons.Info className="w-4 h-4 text-[#F59E0B] group-hover:text-amber-600 transition-colors" />
+                                <span className="text-[12px] font-bold text-[#F59E0B] group-hover:text-amber-600 transition-colors">Sales Tax Info</span>
+                            </button>
+                            {isDomesticTaxOpen && (
+                                <div className="absolute right-0 mt-2 w-[340px] bg-white shadow-2xl p-5 rounded-xl text-xs text-slate-600 border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-200 max-h-[75vh] overflow-y-auto">
+                                    <div className="flex justify-between items-center mb-3"><strong className="text-[#02122c] text-sm">🇺🇸 US Sales Tax — How It Works</strong><button onClick={() => setIsDomesticTaxOpen(false)}><Icons.X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" /></button></div>
+
+                                    <p className="text-[11px] leading-relaxed mb-3">POTAL estimates sales tax using your <strong>ZIP code</strong> and each state's combined tax rate (state + local average). The actual amount is finalized at checkout by the retailer.</p>
+
+                                    {/* 세금 산정 방식 */}
+                                    <div className="mb-3">
+                                      <p className="text-[11px] font-bold text-[#02122c] mb-1.5">📐 How Tax Is Calculated</p>
+                                      <div className="bg-slate-50 rounded-lg p-2.5 text-[10px] space-y-1 leading-relaxed">
+                                        <p><strong>Tax = Product Price × State+Local Rate</strong></p>
+                                        <p className="text-slate-500">Shipping is generally NOT taxed in most states, but some states (TX, VA, etc.) do tax shipping charges.</p>
+                                      </div>
+                                    </div>
+
+                                    {/* 주별 세율 예시 */}
+                                    <div className="mb-3">
+                                      <p className="text-[11px] font-bold text-[#02122c] mb-1.5">🗺️ Tax Rates by State (Combined Avg.)</p>
+                                      <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px]">
+                                        <div className="flex justify-between"><span>California</span><span className="font-bold">8.75%</span></div>
+                                        <div className="flex justify-between"><span>New York</span><span className="font-bold">8.00%</span></div>
+                                        <div className="flex justify-between"><span>Texas</span><span className="font-bold">8.25%</span></div>
+                                        <div className="flex justify-between"><span>Florida</span><span className="font-bold">7.00%</span></div>
+                                        <div className="flex justify-between"><span>Washington</span><span className="font-bold">8.92%</span></div>
+                                        <div className="flex justify-between"><span>Illinois</span><span className="font-bold">8.82%</span></div>
+                                        <div className="flex justify-between"><span>Pennsylvania</span><span className="font-bold">6.34%</span></div>
+                                        <div className="flex justify-between"><span>Tennessee</span><span className="font-bold">9.55%</span></div>
+                                      </div>
+                                      <div className="mt-1.5 bg-emerald-50 border border-emerald-100 rounded p-1.5 text-[10px]">
+                                        <span className="font-bold text-emerald-700">No Sales Tax:</span> <span className="text-emerald-600">Oregon, Montana, New Hampshire, Delaware, Alaska</span>
+                                      </div>
+                                    </div>
+
+                                    {/* 리테일러별 차이 */}
+                                    <div className="mb-3">
+                                      <p className="text-[11px] font-bold text-[#02122c] mb-1.5">🏪 Retailer-Specific Notes</p>
+                                      <div className="space-y-1.5 text-[10px] leading-relaxed">
+                                        <div className="flex gap-2"><span className="font-bold text-[#FF9900] shrink-0">Amazon</span><span className="text-slate-500">Collects tax in all 50 states. Third-party sellers may vary. Tax shown at checkout.</span></div>
+                                        <div className="flex gap-2"><span className="font-bold text-[#0071ce] shrink-0">Walmart</span><span className="text-slate-500">Collects tax in all states. Online and in-store rates match. Marketplace sellers included.</span></div>
+                                        <div className="flex gap-2"><span className="font-bold text-[#003b64] shrink-0">Best Buy</span><span className="text-slate-500">Collects tax in all states. Same rate for ship-to-home and store pickup.</span></div>
+                                        <div className="flex gap-2"><span className="font-bold text-[#CC0000] shrink-0">Target</span><span className="text-slate-500">Collects tax in all states. Target Circle members still pay full tax (Circle is not a tax exemption).</span></div>
+                                        <div className="flex gap-2"><span className="font-bold text-[#e53238] shrink-0">eBay</span><span className="text-slate-500">Marketplace facilitator — eBay collects and remits tax in all applicable states on behalf of sellers.</span></div>
+                                      </div>
+                                    </div>
+
+                                    {/* 예시 */}
+                                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-2.5 mb-2">
+                                      <p className="text-[11px] font-bold text-blue-700 mb-1">💡 Example: $100 product in California</p>
+                                      <div className="space-y-0.5 text-[10px]">
+                                        <div className="flex justify-between"><span className="text-slate-500">Product Price</span><span>$100.00</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">Shipping</span><span className="text-emerald-600">Free (Prime)</span></div>
+                                        <div className="flex justify-between"><span className="text-slate-500">CA Sales Tax (8.75%)</span><span className="text-slate-700">+$8.75</span></div>
+                                        <div className="flex justify-between border-t border-blue-200 pt-0.5 mt-0.5"><span className="font-bold">You Pay</span><span className="font-bold text-[#02122c]">$108.75</span></div>
+                                      </div>
+                                    </div>
+
+                                    <p className="text-[9px] text-slate-400 leading-relaxed">POTAL's tax estimate uses average combined state+local rates. Your exact tax may differ slightly based on municipality, product category (food, clothing exemptions vary), and retailer-specific calculation.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showGlobal && (
+                <div className={market === "global" ? "w-full" : ""}>
+                    <div className="flex items-center justify-between pb-3 border-b-[3px] border-[#02122c]">
+                        <div className="flex items-center gap-2"><span className="text-[24px]">🌏</span><h2 className="text-[20px] font-extrabold text-[#02122c]">Global <span className="text-[#02122c] font-normal text-sm ml-1">(Lowest Price)</span></h2></div>
+                        <div className="relative">
+                            <button onClick={(e) => {e.stopPropagation(); closeAllDropdowns(); setIsGlobalInfoOpen(!isGlobalInfoOpen)}} className="flex items-center gap-1 focus:outline-none group"><Icons.Help className="w-4 h-4 text-[#F59E0B] group-hover:text-amber-600 transition-colors" /><span className="text-[12px] font-bold text-[#F59E0B] group-hover:text-amber-600 transition-colors">Import Tax Info</span></button>
+                            {isGlobalInfoOpen && (
+                            <div className="absolute right-0 mt-2 w-[380px] bg-white shadow-2xl p-5 rounded-xl text-xs text-slate-600 border border-slate-200 z-50 animate-in fade-in zoom-in-95 duration-200 max-h-[80vh] overflow-y-auto">
+                                <div className="flex justify-between items-center mb-3"><strong className="text-[#02122c] text-sm">🌏 Global Import Tax — Full Breakdown</strong><button onClick={() => setIsGlobalInfoOpen(false)}><Icons.X className="w-3.5 h-3.5 text-slate-400 hover:text-slate-600" /></button></div>
+
+                                <p className="mb-3 text-[11px] leading-relaxed">POTAL calculates <strong>Total Landed Cost</strong> — the actual price including product + shipping + import duties + processing fees. This is what you really pay when buying from overseas.</p>
+
+                                {/* ── 사이트별 배송 정책 ── */}
+                                <div className="mb-4">
+                                  <p className="text-[12px] font-extrabold text-[#02122c] mb-2 pb-1 border-b border-slate-200">📦 Shipping by Retailer</p>
+
+                                  {/* AliExpress */}
+                                  <div className="mb-2.5">
+                                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[11px] font-bold text-[#FF4747]">AliExpress</span><span className="text-[9px] bg-[#FF4747] text-white px-1.5 py-[1px] rounded-full font-bold">Choice</span></div>
+                                    <div className="text-[10px] leading-relaxed text-slate-500 pl-2 border-l-2 border-[#FF4747]/30">
+                                      <p><strong>Origin:</strong> China (mainland), shipped via AliExpress Standard Shipping / Cainiao</p>
+                                      <p><strong>Choice items:</strong> Free shipping, 7-15 day delivery, free returns within 90 days</p>
+                                      <p><strong>Non-Choice items:</strong> Shipping $1-5, delivery 15-45 days, returns at buyer cost</p>
+                                      <p><strong>Express (optional):</strong> $5-15 extra, 5-10 day delivery (DHL/FedEx)</p>
+                                    </div>
+                                  </div>
+
+                                  {/* Shein */}
+                                  <div className="mb-2.5">
+                                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[11px] font-bold text-black">Shein</span><span className="text-[9px] bg-black text-white px-1.5 py-[1px] rounded-full font-bold">S-Club</span></div>
+                                    <div className="text-[10px] leading-relaxed text-slate-500 pl-2 border-l-2 border-black/20">
+                                      <p><strong>Origin:</strong> China, shipped via SHEIN logistics network</p>
+                                      <p><strong>Standard:</strong> Free on $29+, delivery 7-11 business days</p>
+                                      <p><strong>Express:</strong> $12.90, delivery 3-7 business days</p>
+                                      <p><strong>S-Club member:</strong> Free shipping coupons monthly, no minimum</p>
+                                      <p><strong>Returns:</strong> First return free within 35 days</p>
+                                    </div>
+                                  </div>
+
+                                  {/* Temu */}
+                                  <div className="mb-2.5">
+                                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[11px] font-bold text-[#FB7701]">Temu</span></div>
+                                    <div className="text-[10px] leading-relaxed text-slate-500 pl-2 border-l-2 border-[#FB7701]/30">
+                                      <p><strong>Origin:</strong> China, shipped via Temu logistics / J&T Express</p>
+                                      <p><strong>Standard:</strong> Free shipping, delivery 7-15 business days</p>
+                                      <p><strong>Express:</strong> $7.99, delivery 4-8 business days</p>
+                                      <p><strong>Returns:</strong> Free returns within 90 days</p>
+                                    </div>
+                                  </div>
+
+                                  {/* DHgate */}
+                                  <div className="mb-1">
+                                    <div className="flex items-center gap-1.5 mb-1"><span className="text-[11px] font-bold text-slate-600">Other Global Sites</span><span className="text-[9px] text-slate-400">(DHgate, YesStyle, etc.)</span></div>
+                                    <div className="text-[10px] leading-relaxed text-slate-500 pl-2 border-l-2 border-slate-200">
+                                      <p><strong>Origin:</strong> Varies (China, Korea, Japan, EU)</p>
+                                      <p><strong>Shipping:</strong> $0-15, highly variable by seller and item weight</p>
+                                      <p><strong>Delivery:</strong> 10-30+ business days depending on origin</p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* ── 수입 관세 상세 ── */}
+                                <div className="mb-4">
+                                  <p className="text-[12px] font-extrabold text-[#02122c] mb-2 pb-1 border-b border-slate-200">🏛️ US Import Duty — By Origin Country</p>
+
+                                  {/* 중국 */}
+                                  <div className="bg-red-50 border border-red-100 rounded-lg p-3 mb-2.5">
+                                    <p className="text-[11px] font-bold text-red-700 mb-1.5">🇨🇳 From China (AliExpress, Shein, Temu, DHgate)</p>
+                                    <p className="text-[10px] text-red-600 leading-relaxed mb-2">Since <strong>August 2, 2025</strong>, the US has <strong>eliminated the $800 de minimis exemption</strong> for Chinese goods. Every package from China is now subject to full import duties regardless of value.</p>
+                                    <div className="space-y-1 text-[10px]">
+                                      <div className="flex justify-between"><span className="text-slate-600">Reciprocal Tariff (Executive Order)</span><span className="font-bold text-red-600">10%</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-600">Fentanyl-related Tariff (IEEPA)</span><span className="font-bold text-red-600">10%</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-600">Section 301 (select categories)</span><span className="font-bold text-red-600">0-25%</span></div>
+                                      <div className="flex justify-between border-t border-red-200 pt-1 mt-1"><span className="font-bold text-slate-700">Effective Rate (general merchandise)</span><span className="font-bold text-red-700">~20%</span></div>
+                                      <div className="flex justify-between"><span className="font-bold text-slate-700">Electronics, footwear, textiles</span><span className="font-bold text-red-700">up to 37%</span></div>
+                                    </div>
+                                    <p className="text-[9px] text-red-400 mt-1.5 leading-relaxed">POTAL uses 20% as the default rate for general consumer goods. Actual rate varies by HS code (product classification).</p>
+                                  </div>
+
+                                  {/* 한국/일본 */}
+                                  <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 mb-2.5">
+                                    <p className="text-[11px] font-bold text-blue-700 mb-1.5">🇰🇷🇯🇵 From South Korea & Japan (YesStyle, Olive Young, Uniqlo)</p>
+                                    <p className="text-[10px] text-blue-600 leading-relaxed mb-2">The <strong>$800 de minimis exemption still applies</strong> for goods from Korea and Japan. Orders under $800 enter duty-free.</p>
+                                    <div className="space-y-1 text-[10px]">
+                                      <div className="flex justify-between"><span className="text-slate-600">Under $800</span><span className="font-bold text-emerald-600">Duty Free</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-600">Over $800 — MFN Average</span><span className="font-bold text-blue-600">~3-5%</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-600">Apparel/Textiles (over $800)</span><span className="font-bold text-blue-600">~12-15%</span></div>
+                                    </div>
+                                    <p className="text-[9px] text-blue-400 mt-1.5 leading-relaxed">KORUS FTA (Korea) and MFN rates (Japan) typically result in lower duties than Chinese goods.</p>
+                                  </div>
+
+                                  {/* EU/UK */}
+                                  <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 mb-2.5">
+                                    <p className="text-[11px] font-bold text-purple-700 mb-1.5">🇪🇺🇬🇧 From EU & UK (ASOS, Farfetch, MyTheresa)</p>
+                                    <p className="text-[10px] text-purple-600 leading-relaxed mb-2">The <strong>$800 de minimis exemption still applies</strong>. Most personal purchases from EU/UK enter duty-free.</p>
+                                    <div className="space-y-1 text-[10px]">
+                                      <div className="flex justify-between"><span className="text-slate-600">Under $800</span><span className="font-bold text-emerald-600">Duty Free</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-600">Over $800 — MFN Average</span><span className="font-bold text-purple-600">~3-6%</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-600">Luxury goods (over $800)</span><span className="font-bold text-purple-600">~5-10%</span></div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* ── MPF 통관수수료 ── */}
+                                <div className="mb-4">
+                                  <p className="text-[12px] font-extrabold text-[#02122c] mb-2 pb-1 border-b border-slate-200">📋 Merchandise Processing Fee (MPF)</p>
+                                  <div className="text-[10px] leading-relaxed text-slate-500 space-y-1">
+                                    <p>US Customs (CBP) charges a processing fee on all imports. The fee depends on entry type:</p>
+                                    <div className="bg-slate-50 rounded-lg p-2 space-y-0.5">
+                                      <div className="flex justify-between"><span>Informal Entry (under $2,500)</span><span className="font-bold">$2.69 – $12.09</span></div>
+                                      <div className="flex justify-between"><span>Formal Entry ($2,500+)</span><span className="font-bold">0.3464% (min $31.67)</span></div>
+                                    </div>
+                                    <p className="text-slate-400">Most personal purchases fall under informal entry. POTAL estimates <strong>~$5.50</strong> (middle of range).</p>
+                                    <p className="text-slate-400"><strong>Note:</strong> Chinese packages shipped by AliExpress/Shein/Temu may have MPF pre-paid or included in the shipping logistics fee. You may not see it as a separate charge, but it's factored into total cost.</p>
+                                  </div>
+                                </div>
+
+                                {/* ── 종합 예시 ── */}
+                                <div className="mb-3">
+                                  <p className="text-[12px] font-extrabold text-[#02122c] mb-2 pb-1 border-b border-slate-200">💰 Real Cost Examples</p>
+
+                                  {/* 예시 1: 중국 */}
+                                  <div className="bg-red-50/50 border border-red-100 rounded-lg p-2.5 mb-2">
+                                    <p className="text-[10px] font-bold text-red-700 mb-1">$50 headphones from AliExpress (China)</p>
+                                    <div className="space-y-0.5 text-[10px]">
+                                      <div className="flex justify-between"><span className="text-slate-500">Product</span><span>$50.00</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">Shipping (Choice)</span><span className="text-emerald-600">Free</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">Import Duty (20%)</span><span className="text-red-500">+$10.00</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">MPF</span><span className="text-red-500">+$5.50</span></div>
+                                      <div className="flex justify-between border-t border-red-200 pt-0.5 mt-0.5"><span className="font-bold">Total Landed Cost</span><span className="font-bold text-[#02122c]">$65.50</span></div>
+                                    </div>
+                                  </div>
+
+                                  {/* 예시 2: 한국 */}
+                                  <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-2.5 mb-2">
+                                    <p className="text-[10px] font-bold text-blue-700 mb-1">$30 skincare from Olive Young (Korea)</p>
+                                    <div className="space-y-0.5 text-[10px]">
+                                      <div className="flex justify-between"><span className="text-slate-500">Product</span><span>$30.00</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">Shipping</span><span>+$5.00</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">Import Duty</span><span className="text-emerald-600">$0 (under $800)</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">MPF</span><span className="text-emerald-600">$0</span></div>
+                                      <div className="flex justify-between border-t border-blue-200 pt-0.5 mt-0.5"><span className="font-bold">Total Landed Cost</span><span className="font-bold text-[#02122c]">$35.00</span></div>
+                                    </div>
+                                  </div>
+
+                                  {/* 예시 3: EU */}
+                                  <div className="bg-purple-50/50 border border-purple-100 rounded-lg p-2.5">
+                                    <p className="text-[10px] font-bold text-purple-700 mb-1">$200 jacket from ASOS (UK)</p>
+                                    <div className="space-y-0.5 text-[10px]">
+                                      <div className="flex justify-between"><span className="text-slate-500">Product</span><span>$200.00</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">Shipping</span><span>+$10.00</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">Import Duty</span><span className="text-emerald-600">$0 (under $800)</span></div>
+                                      <div className="flex justify-between"><span className="text-slate-500">MPF</span><span className="text-emerald-600">$0</span></div>
+                                      <div className="flex justify-between border-t border-purple-200 pt-0.5 mt-0.5"><span className="font-bold">Total Landed Cost</span><span className="font-bold text-[#02122c]">$210.00</span></div>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="bg-amber-50 border border-amber-100 rounded-lg p-2.5 mb-2">
+                                  <p className="text-[10px] font-bold text-amber-700 mb-0.5">⚠️ Important Note</p>
+                                  <p className="text-[9px] text-amber-600 leading-relaxed">Domestic retailers (Amazon, Walmart, Best Buy, Target, etc.) ship from US warehouses and are <strong>NOT</strong> subject to import duties or MPF. Only sales tax applies.</p>
+                                </div>
+
+                                <p className="text-[9px] text-slate-400 leading-relaxed">Based on US CBP tariff schedule (updated Aug 2025). Rates subject to change by executive order. POTAL updates rates as policies change. For exact classification, consult <strong>hts.usitc.gov</strong>.</p>
+                            </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+
+        <div className="flex-1 flex flex-col relative z-0">
+            {totalResults === 0 ? (
+            <div className="w-full py-20 text-center text-slate-500 bg-white rounded-lg border border-[#e0e3eb]">
+                <div className="text-4xl mb-4">🔍</div>
+                <h3 className="text-lg font-bold text-[#02122c]">No products found for "{query}"</h3>
+                <p className="text-sm">Try adjusting your filters or search terms.</p>
+            </div>
+            ) : (
+            <div className={gridLayoutClass}>
+                {loading ? (
+                    <>
+                        {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                    </>
+                ) : (
+                    <>
+                        {showDomestic && (
+                            <div className={listLayoutClass}>
+                            {domesticProducts.slice(0, visibleCount).map(p => (
+                                <ProductCard 
+                                    key={p.id} 
+                                    product={mapToCardProduct(p)} 
+                                    type="domestic"
+                                />
+                            ))}
+                            </div>
+                        )}
+                        {showGlobal && (
+                            <div className={listLayoutClass}>
+                            {globalProducts.slice(0, visibleCount).map(p => (
+                                <ProductCard 
+                                    key={p.id} 
+                                    product={mapToCardProduct(p)} 
+                                    type="global"
+                                />
+                            ))}
+                            </div>
+                        )}
+                    </>
+                )}
+            </div>
+            )}
+            
+            {!loading && totalResults > visibleCount * 2 && (
+            <div className="flex justify-center pb-8 mt-4">
+                <button onClick={() => setVisibleCount(prev => prev + 20)} className="w-full py-4 bg-slate-100 hover:bg-slate-200 text-[#02122c] font-extrabold text-[16px] rounded-lg shadow-sm transition-all flex items-center justify-center gap-2">Show more results <Icons.ChevronDown className="w-5 h-5" /></button>
+            </div>
+            )}
+        </div>
+    </section>
+  );
+}

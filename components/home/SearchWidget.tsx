@@ -15,7 +15,7 @@ interface SearchWidgetProps {
   heroRecents: string[];
   onRemoveRecentZip: (zip: string) => void;
   onRemoveHeroRecent: (term: string) => void;
-  onSearch: () => void;
+  onSearch: (image?: File | null) => void;
 }
 
 export function SearchWidget({
@@ -76,7 +76,7 @@ export function SearchWidget({
       setShowZipDropdown(false);
       setHeroSearchFocused(false);
       setShowPhotoMenu(false);
-      onSearch(); 
+      onSearch(selectedImage);
     }
   };
 

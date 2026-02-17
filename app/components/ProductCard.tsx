@@ -2,14 +2,12 @@
 
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
-// [경로] 아이콘 경로가 확실하지 않다면 @/components/icons를 시도합니다.
-// 에러나면 '../../../components/icons' 로 바꿔보세요.
 import { Icons } from '@/components/icons';
 import { useWishlist } from '../context/WishlistContext';
 import { normalizeDeliveryInfo } from '../lib/utils/DeliveryStandard';
 import { DeliveryBadge } from './DeliveryBadge';
+import { getRetailerConfig, matchShippingProgram } from '../lib/retailerConfig';
 
-// [중요] page.tsx나 ResultsGrid에서 넘겨주는 모든 props를 받아줄 준비를 해야 에러가 안 납니다.
 interface ProductCardProps {
   product: {
     id: string;
@@ -30,11 +28,10 @@ interface ProductCardProps {
     arrives?: string;
     deliveryDays?: string;
     link?: string;
-    type?: string; // domestic, global 등
+    type?: string;
     trustScore?: number;
-    [key: string]: any; // 유연성을 위해 추가
+    [key: string]: any;
   };
-  // [중요] 부모(page.tsx)에서 type을 내려주므로 받아야 함
   type?: "domestic" | "international" | "global" | string;
   compact?: boolean;
   dense?: boolean;
@@ -42,75 +39,59 @@ interface ProductCardProps {
   onProductClick?: (product: any) => void;
 }
 
-/** Best Score → 색상/라벨 */
-function getScoreBadge(score?: number): { color: string; bg: string; label: string } | null {
-  if (score == null || score <= 0) return null;
-  if (score >= 80) return { color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', label: 'Excellent' };
-  if (score >= 60) return { color: 'text-blue-700', bg: 'bg-blue-50 border-blue-200', label: 'Good' };
-  if (score >= 40) return { color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200', label: 'Fair' };
-  return { color: 'text-red-700', bg: 'bg-red-50 border-red-200', label: 'Low' };
-}
-
-/** 플랫폼별 브랜드 컬러 & 아이콘 */
-const PLATFORM_STYLES: Record<string, { color: string; bg: string; short: string }> = {
-  amazon:     { color: 'text-[#FF9900]', bg: 'bg-[#FF9900]/10', short: 'AMZ' },
-  walmart:    { color: 'text-[#0071ce]', bg: 'bg-[#0071ce]/10', short: 'WMT' },
-  target:     { color: 'text-[#CC0000]', bg: 'bg-[#CC0000]/10', short: 'TGT' },
-  'best buy': { color: 'text-[#003b64]', bg: 'bg-[#003b64]/10', short: 'BBY' },
-  bestbuy:    { color: 'text-[#003b64]', bg: 'bg-[#003b64]/10', short: 'BBY' },
-  ebay:       { color: 'text-[#e53238]', bg: 'bg-[#e53238]/10', short: 'BAY' },
-  aliexpress: { color: 'text-[#FF4747]', bg: 'bg-[#FF4747]/10', short: 'ALI' },
-  temu:       { color: 'text-[#FB7701]', bg: 'bg-[#FB7701]/10', short: 'TMU' },
-  shein:      { color: 'text-[#000]',    bg: 'bg-black/5',      short: 'SHN' },
-  iherb:      { color: 'text-[#458500]', bg: 'bg-[#458500]/10', short: 'IHB' },
+/** 플랫폼별 브랜드 컬러 */
+const PLATFORM_COLORS: Record<string, { color: string; bg: string }> = {
+  amazon:     { color: 'text-[#FF9900]', bg: 'bg-[#FF9900]/10' },
+  walmart:    { color: 'text-[#0071ce]', bg: 'bg-[#0071ce]/10' },
+  target:     { color: 'text-[#CC0000]', bg: 'bg-[#CC0000]/10' },
+  'best buy': { color: 'text-[#003b64]', bg: 'bg-[#003b64]/10' },
+  bestbuy:    { color: 'text-[#003b64]', bg: 'bg-[#003b64]/10' },
+  ebay:       { color: 'text-[#e53238]', bg: 'bg-[#e53238]/10' },
+  aliexpress: { color: 'text-[#FF4747]', bg: 'bg-[#FF4747]/10' },
+  temu:       { color: 'text-[#FB7701]', bg: 'bg-[#FB7701]/10' },
+  shein:      { color: 'text-[#000]',    bg: 'bg-black/5' },
+  iherb:      { color: 'text-[#458500]', bg: 'bg-[#458500]/10' },
 };
 
-function getPlatformStyle(seller: string) {
+function getPlatformColor(seller: string) {
   const key = seller.toLowerCase().trim();
-  return PLATFORM_STYLES[key] || null;
-}
-
-/** Trust Score → 아이콘/색상 */
-function getTrustSignal(score?: number): { icon: string; color: string; label: string } | null {
-  if (score == null) return null;
-  if (score >= 70) return { icon: '🛡️', color: 'text-emerald-600', label: 'Trusted' };
-  if (score >= 40) return { icon: '⚠️', color: 'text-amber-600', label: 'Caution' };
-  return { icon: '🚩', color: 'text-red-500', label: 'Risky' };
+  return PLATFORM_COLORS[key] || null;
 }
 
 /** Skeleton placeholder for loading state */
 export function ProductCardSkeleton() {
   return (
-    <div className="bg-white border border-[#e0e3eb] rounded-lg shadow-sm flex h-[220px] overflow-hidden animate-pulse">
-      {/* 이미지 영역 */}
-      <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-slate-100" />
-      {/* 중앙 정보 */}
-      <div className="flex-1 p-5 flex flex-col justify-start border-r border-slate-100 gap-3">
-        <div className="flex items-center gap-2">
-          <div className="h-4 w-20 bg-slate-200 rounded" />
-          <div className="h-4 w-12 bg-slate-200 rounded" />
+    <>
+      <div className="hidden md:flex bg-white border border-[#e0e3eb] rounded-lg shadow-sm h-[210px] overflow-hidden animate-pulse">
+        <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-slate-100" />
+        <div className="flex-1 p-4 flex flex-col justify-start border-r border-slate-100 gap-3">
+          <div className="h-4 w-28 bg-slate-200 rounded" />
+          <div className="h-4 w-full bg-slate-200 rounded" />
+          <div className="h-4 w-3/4 bg-slate-200 rounded" />
         </div>
-        <div className="h-4 w-full bg-slate-200 rounded" />
-        <div className="h-4 w-3/4 bg-slate-200 rounded" />
-        <div className="h-4 w-1/2 bg-slate-200 rounded mt-auto" />
+        <div className="w-[170px] flex flex-col bg-slate-50/30 min-w-[170px]">
+          <div className="flex-1 p-3 flex flex-col items-end justify-center gap-2">
+            <div className="h-6 w-16 bg-slate-200 rounded" />
+            <div className="h-[30px] w-full bg-slate-200 rounded" />
+          </div>
+        </div>
       </div>
-      {/* 우측 정보 */}
-      <div className="w-[170px] flex flex-col bg-slate-50/30 min-w-[170px]">
-        <div className="p-3 border-b border-slate-200 h-[55px] flex items-center justify-end">
-          <div className="h-3 w-24 bg-slate-200 rounded" />
+      <div className="md:hidden bg-white border border-[#e0e3eb] rounded-xl shadow-sm overflow-hidden animate-pulse">
+        <div className="flex p-3 gap-3">
+          <div className="w-20 h-20 rounded-lg bg-slate-100 shrink-0" />
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="h-3 w-16 bg-slate-200 rounded" />
+            <div className="h-4 w-full bg-slate-200 rounded" />
+            <div className="h-4 w-3/4 bg-slate-200 rounded" />
+          </div>
         </div>
-        <div className="px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
-          <div className="h-3 w-16 bg-slate-200 rounded" />
-        </div>
-        <div className="px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
+        <div className="flex items-center justify-between px-3 pb-3 pt-1 border-t border-slate-100">
           <div className="h-3 w-20 bg-slate-200 rounded" />
-        </div>
-        <div className="flex-1 p-3 flex flex-col items-end justify-center gap-2">
-          <div className="h-6 w-16 bg-slate-200 rounded" />
-          <div className="h-[30px] w-full bg-slate-200 rounded" />
+          <div className="h-5 w-14 bg-slate-200 rounded" />
+          <div className="h-8 w-20 bg-slate-200 rounded" />
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -126,10 +107,7 @@ export function EmptySearchState({ query, onRetry }: { query: string; onRetry?: 
         Try different keywords or check the spelling. You can also browse by category below.
       </p>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          className="px-6 py-2.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-sm font-bold rounded-lg transition-colors"
-        >
+        <button onClick={onRetry} className="px-6 py-2.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-sm font-bold rounded-lg transition-colors">
           Clear & Try Again
         </button>
       )}
@@ -149,19 +127,22 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
   const displayPrice = typeof product.price === 'string' ? product.price : `$${product.price}`;
   const priceNum = parseFloat(String(displayPrice).replace(/[^0-9.-]/g, ""));
 
-  // Score & Trust & Platform
-  const scoreBadge = getScoreBadge(product.bestScore);
-  const trustSignal = getTrustSignal(product.trustScore);
-  const platformStyle = getPlatformStyle(displaySeller);
+  // Platform color
+  const platformColor = getPlatformColor(displaySeller);
   const deliveryInfo = normalizeDeliveryInfo({
     deliveryDays: product.deliveryDays || product.arrives,
     is_prime: product.is_prime,
     site: product.site || product.seller,
     shipping: product.shipping,
     delivery: product.delivery,
+    price: String(product.price ?? ''),
+    appliedMembership: product.appliedMembership,
+    membershipAdjusted: product.membershipAdjusted,
   });
 
-  // 하트 토글
+  const retailerConf = getRetailerConfig(displaySeller);
+  const shippingProg = retailerConf ? matchShippingProgram(retailerConf, product) : null;
+
   const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -169,12 +150,10 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
     else addToWishlist(product);
   };
 
-  // 딜 클릭
   const handleViewDeal = (e: React.MouseEvent) => {
     e.preventDefault();
     const url = product.link || "#";
     if (!url || url === "#") return;
-
     setRedirecting(true);
     setTimeout(() => {
       window.open(url, "_blank", "noopener,noreferrer");
@@ -182,20 +161,26 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
     }, 800);
   };
 
-  // 세금/배송 텍스트 로직
-  let taxSection = null;
-  // type이 global이거나 international이면 세금 계산 로직 적용
-  if (type === "global" || type === "international" || product.type === "global") {
-     const isFree = (priceNum || 0) < 800;
-     const text = isFree ? "No Import Tax" : "+ Est. Tax";
-     taxSection = (
-         <div className="flex items-center justify-end"><span className="text-[12px] font-extrabold text-[#02122c]">{text}</span></div>
-     );
-  } else {
-     taxSection = (
-         <div className="flex items-center justify-end gap-1"><span className="text-[12px] font-extrabold text-[#02122c]">+ Tax</span></div>
-     );
-  }
+  // Total price 계산
+  const isGlobal = type === "global" || type === "international" || product.type === "global";
+  const hasTotal = product.totalPrice != null && product.totalPrice > 0 && product.totalPrice !== priceNum;
+  const totalDisplay = hasTotal ? `$${product.totalPrice.toFixed(2)}` : null;
+  const extraFees = hasTotal ? Math.max(0, product.totalPrice - priceNum) : 0;
+
+  // Global은 항상 breakdown 표시
+  const showBreakdown = hasTotal || isGlobal;
+  const finalTotal = totalDisplay || displayPrice;
+
+  // 가격 범위 (AliExpress 옵션별 가격차가 클 때)
+  const hasPriceRange = product.priceRangeMin != null && product.priceRangeMin > 0 && product.priceRangeMin < priceNum * 0.5;
+
+  // Fraud warning
+  const fraudText = product.fraudFlags && product.fraudFlags.length > 0
+    ? (product.fraudFlags.includes('price_too_low') ? '⚠ Unusually low price'
+      : product.fraudFlags.includes('low_seller_trust') ? '⚠ Low seller trust'
+      : product.fraudFlags.includes('brand_typo_suspected') ? '⚠ Possible knockoff'
+      : '⚠ Flagged')
+    : null;
 
   const redirectOverlay = redirecting && typeof document !== "undefined" && createPortal(
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -207,132 +192,239 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
     document.body
   );
 
-  // [디자인 100% 복원] 가로형 레이아웃
+  // ═══════════════════════════════════════════════════════
+  // SEARCH CARD — 사이트 검색 CTA 카드
+  // ═══════════════════════════════════════════════════════
+  if (product.isSearchCard) {
+    const tagline = product.searchCardTagline || '';
+    const siteName = displaySeller;
+    const siteUrl = product.link || '#';
+    const platform = getPlatformColor(displaySeller);
+    const bgColor = platform?.bg || 'bg-slate-50';
+
+    return (
+      <>
+        {/* Desktop Search Card */}
+        <div className="hidden md:flex bg-white border border-dashed border-slate-300 rounded-lg shadow-sm h-[190px] overflow-hidden hover:border-[#F59E0B] hover:shadow-md transition-all duration-200 group">
+          <div className={`w-[140px] h-full shrink-0 border-r border-slate-100 ${bgColor} flex flex-col items-center justify-center gap-3 p-4`}>
+            <div className="w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center p-2">
+              {displayImage ? (
+                <img src={displayImage} alt={`Search on ${siteName}`} loading="lazy" className="w-full h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              ) : (
+                <span className={`text-lg font-extrabold ${platform?.color || 'text-slate-600'}`}>{siteName.slice(0, 3)}</span>
+              )}
+            </div>
+          </div>
+          <div className="flex-1 p-5 flex flex-col justify-center border-r border-slate-100 gap-2">
+            <span className={`text-[10px] font-bold ${platform?.color || 'text-slate-500'} tracking-wider`}>SEARCH CARD</span>
+            <h3 className="text-base font-bold text-[#02122c] leading-snug">Search on {siteName}</h3>
+            {tagline && <p className="text-sm text-slate-500 italic">{tagline}</p>}
+            <span className="text-xs text-slate-400">Est. {product.deliveryDays || '7-14 Days'} · International Shipping</span>
+          </div>
+          <div className="w-[170px] min-w-[170px] flex flex-col items-center justify-center gap-3 p-4 bg-slate-50/50">
+            <p className="text-xs text-slate-400 text-center">Compare prices directly</p>
+            <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="w-full py-2.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-sm font-bold rounded-lg transition-colors text-center block">
+              Search {siteName} →
+            </a>
+          </div>
+        </div>
+        {/* Mobile Search Card */}
+        <div className="md:hidden bg-white border border-dashed border-slate-300 rounded-xl shadow-sm overflow-hidden active:scale-[0.99] transition-all duration-150">
+          <div className="flex items-center p-3 gap-3">
+            <div className={`w-12 h-12 shrink-0 rounded-lg ${bgColor} flex items-center justify-center p-1.5`}>
+              {displayImage ? (
+                <img src={displayImage} alt={`Search on ${siteName}`} loading="lazy" className="w-full h-full object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              ) : (
+                <span className={`text-sm font-extrabold ${platform?.color || 'text-slate-400'}`}>{siteName.slice(0, 3)}</span>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className={`text-[10px] font-bold ${platform?.color || 'text-slate-500'}`}>SEARCH CARD</span>
+              <p className="text-sm font-bold text-[#02122c] truncate">Search on {siteName}</p>
+            </div>
+            <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-2 bg-[#02122c] hover:bg-[#F59E0B] text-white text-xs font-bold rounded-lg transition-colors">
+              Go →
+            </a>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-       <div className="bg-white border border-[#e0e3eb] rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 flex h-[220px] group relative z-0 overflow-hidden">
-          
-          {/* 1. 좌측 이미지 (w-140px) */}
-          <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-white relative p-4 flex items-center justify-center">
-             <button
-                onClick={handleToggleSave}
-                className="absolute top-2 left-2 z-10 transition-transform active:scale-90"
-             >
+       {/* ═══ DESKTOP CARD (md+) ═══ */}
+       <div className="hidden md:flex bg-white border border-[#e0e3eb] rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 h-[210px] group relative z-0 overflow-hidden">
+
+          {/* 1. 좌측 이미지 — 하트만, 배지 없음 */}
+          <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-white relative p-3 flex items-center justify-center">
+             <button onClick={handleToggleSave} className="absolute top-2 left-2 z-10 transition-transform active:scale-90 cursor-pointer">
                  {isSaved ?
                    <Icons.HeartFilled className="w-5 h-5 text-red-500" /> :
                    <Icons.Heart className="w-5 h-5 text-slate-300 hover:text-red-400" />
                  }
              </button>
-             {/* Best Score 배지 */}
-             {scoreBadge && (
-               <div className={`absolute top-2 right-2 z-10 ${scoreBadge.bg} border rounded-md px-1.5 py-0.5 flex items-center gap-1`}>
-                 <span className={`text-[11px] font-extrabold ${scoreBadge.color}`}>{product.bestScore}</span>
-               </div>
-             )}
-             <img
-                src={displayImage}
-                alt={displayTitle}
-                className="w-full h-full object-contain mix-blend-multiply"
-             />
+             <img src={displayImage} alt={displayTitle} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
           </div>
 
           {/* 2. 중앙 정보 */}
-          <div className="flex-1 p-5 flex flex-col justify-start border-r border-slate-100 min-w-0">
-             <div className="flex justify-between items-start mb-2">
-                 <div className="flex items-start gap-2 min-w-0">
-                     <div className="flex items-center gap-1.5 mt-[2px]">
-                       {platformStyle && (
-                         <span className={`text-[9px] font-black ${platformStyle.color} ${platformStyle.bg} rounded px-1 py-[1px] tracking-wider shrink-0`}>
-                           {platformStyle.short}
-                         </span>
-                       )}
-                       <span className="text-[13px] font-extrabold text-[#02122c] uppercase tracking-wide truncate">
-                          {displaySeller}
-                       </span>
-                     </div>
-                     {/* Trust Signal */}
-                     {trustSignal && (
-                       <span className={`text-[11px] font-bold ${trustSignal.color} mt-[3px] shrink-0`} title={`Trust: ${product.trustScore}/100`}>
-                         {trustSignal.icon}
-                       </span>
-                     )}
-                     <div className="flex flex-col items-start leading-none">
-                        <div className="flex items-center gap-1">
-                            <Icons.Star className="w-3.5 h-3.5 text-[#F59E0B]" />
-                            <span className="text-[13px] font-bold text-slate-900">{product.rating || 0}</span>
-                        </div>
-                        <span className="text-[11px] font-bold text-slate-400 mt-1">({product.reviewCount || 0})</span>
-                     </div>
-                 </div>
-                 {/* 뱃지 복원 */}
-                 <div className="flex gap-1 flex-wrap justify-end">
-                     {(product.is_prime || product.badges?.includes("Prime")) && <span className="bg-[#00A8E1] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">Prime</span>}
-                     {product.badges?.includes("Choice") && <span className="bg-[#FF9900] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">Choice</span>}
+          <div className="flex-1 p-4 flex flex-col justify-between border-r border-slate-100 min-w-0">
+             {/* 셀러 + 평점 + 리뷰 + Prime 뱃지 (한 줄) */}
+             <div className="flex items-center gap-2 mb-0.5">
+                 <span className={`text-[14px] font-extrabold uppercase tracking-wide ${platformColor?.color || 'text-[#02122c]'}`}>
+                    {displaySeller}
+                 </span>
+                 <span className="text-slate-300">/</span>
+                 <div className="flex items-center gap-1">
+                    <Icons.Star className="w-3.5 h-3.5 text-[#F59E0B]" />
+                    <span className="text-[13px] font-bold text-slate-900">{product.rating || 0}</span>
+                    <span className="text-[11px] text-slate-400">({product.reviewCount?.toLocaleString() || 0})</span>
                  </div>
              </div>
-             <h3 className="text-[15px] font-medium text-[#02122c] leading-snug line-clamp-3 group-hover:text-[#F59E0B] transition-colors">
+
+             {/* 상품명 */}
+             <h3 className="text-[14px] font-medium text-[#02122c] leading-snug line-clamp-2 group-hover:text-[#F59E0B] transition-colors flex-1">
                 {displayTitle}
              </h3>
-             {/* Fraud Warning Banner */}
-             {product.fraudFlags && product.fraudFlags.length > 0 && (
-               <div className="mt-auto pt-2 flex items-center gap-1.5">
-                 <span className="text-[11px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5">
-                   {product.fraudFlags.includes('price_too_low') && '⚠ Unusually low price'}
-                   {product.fraudFlags.includes('low_seller_trust') && '⚠ Low seller trust'}
-                   {product.fraudFlags.includes('brand_typo_suspected') && '⚠ Possible knockoff'}
-                   {product.fraudFlags.includes('aliexpress_material_risk') && '⚠ Material risk'}
-                   {!product.fraudFlags.some((f: string) => ['price_too_low', 'low_seller_trust', 'brand_typo_suspected', 'aliexpress_material_risk'].includes(f)) && '⚠ Flagged'}
-                 </span>
+
+             {/* 하단: Fraud 경고 */}
+             {fraudText && (
+               <div className="flex items-center gap-2 mt-1">
+                 <span className="text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5">{fraudText}</span>
                </div>
              )}
           </div>
 
-          {/* 3. 우측 정보 (회색 배경) */}
-          <div className="w-[170px] flex flex-col bg-slate-50/30 min-w-[170px]">
-             {/* 배송 — DeliveryBadge 통합 */}
-             <div className="w-full p-3 border-b border-slate-200 flex flex-col items-end justify-center h-[55px]">
-                <DeliveryBadge
-                  info={deliveryInfo}
-                  compact
-                  deliveryVariant={type === "domestic" ? "domestic" : "international"}
-                />
-                {deliveryInfo.cost && deliveryInfo.cost !== "Check Site" && (
-                    <span className="text-[11px] font-bold text-slate-500 mt-0.5 truncate max-w-full">
-                        {deliveryInfo.cost}
-                    </span>
-                )}
+          {/* 3. 우측 — 통일된 비용 breakdown (API 실제 데이터만) */}
+          {(() => {
+             const shipCostDisplay = deliveryInfo.cost && /free/i.test(deliveryInfo.cost) ? 'Free' : deliveryInfo.cost || 'Free';
+             const isShipFree = shipCostDisplay === 'Free';
+
+             return (
+          <div className="w-[170px] flex flex-col min-w-[170px]">
+             {/* 배송 뱃지 (API에서 가져온 실제 정보) */}
+             <div className="w-full px-3 pt-2 pb-1 flex flex-col items-end justify-center">
+                <DeliveryBadge info={deliveryInfo} compact hideCost deliveryVariant={type === "domestic" ? "domestic" : "international"} />
              </div>
-             
-             {/* 세금 */}
-             <div className="w-full px-3 h-[32px] border-b border-slate-200 flex items-center justify-end">
-                {taxSection}
-             </div>
-             
-             {/* 도착 예정 */}
-             <div className="w-full px-3 h-[32px] border-b border-slate-200 flex items-center justify-end" title={deliveryInfo.tooltip}>
-                <span className="text-[12px] font-extrabold text-green-700 leading-tight truncate">
-                    {deliveryInfo.label}
-                </span>
-             </div>
-             
-             {/* 가격 & 버튼 */}
-             <div className="w-full flex-1 p-3 flex flex-col items-end justify-center gap-1">
-                 <div className="text-[22px] font-extrabold text-[#02122c] leading-none">
-                    {displayPrice}
+
+             {/* 비용 breakdown — Shipping → Tax/Duty → Product → Total */}
+             <div className="w-full flex-1 px-3 pb-3 flex flex-col items-end justify-center gap-[3px]">
+                 {/* Shipping */}
+                 <div className="flex items-center gap-1.5">
+                   <span className="text-[10px] text-slate-400">Shipping</span>
+                   {isShipFree ? (
+                     <span className="text-[11px] font-bold text-emerald-600">Free</span>
+                   ) : (
+                     <span className="text-[11px] font-bold text-slate-500">{shipCostDisplay}</span>
+                   )}
                  </div>
-                 {/* Total Landed Cost (원가와 다를 때만 표시) */}
-                 {product.totalPrice != null && product.totalPrice > 0 && product.totalPrice !== priceNum && (
-                   <span className="text-[11px] font-bold text-slate-400">Total: ${product.totalPrice.toFixed(2)}</span>
+
+                 {/* Tax or Import Duty + Processing Fee */}
+                 {isGlobal ? (
+                   <>
+                     {/* Import Duty 20% — 별도 라인 */}
+                     <div className="flex items-center gap-1.5">
+                       <span className="text-[10px] text-slate-400">Duty 20%</span>
+                       {extraFees > 0 ? (
+                         <span className="text-[11px] font-bold text-red-500">+${Math.max(0, extraFees - 5.50).toFixed(2)}</span>
+                       ) : (
+                         <span className="text-[11px] font-bold text-red-500">+${((priceNum || 0) * 0.20).toFixed(2)}</span>
+                       )}
+                     </div>
+                     {/* MPF 통관수수료 — 별도 라인 */}
+                     <div className="flex items-center gap-1.5">
+                       <span className="text-[10px] text-slate-400">MPF</span>
+                       <span className="text-[11px] font-bold text-red-500">+$5.50</span>
+                     </div>
+                   </>
+                 ) : (
+                   <div className="flex items-center gap-1.5">
+                     <span className="text-[10px] text-slate-400">Est. Tax</span>
+                     {extraFees > 0 ? (
+                       <span className="text-[11px] font-bold text-slate-500">+${extraFees.toFixed(2)}</span>
+                     ) : (
+                       <span className="text-[11px] font-bold text-slate-500">+${((priceNum || 0) * 0.07).toFixed(2)}</span>
+                     )}
+                   </div>
                  )}
-                 <button
-                    onClick={handleViewDeal}
-                    className="w-full h-[30px] bg-[#02122c] hover:bg-[#F59E0B] text-white text-[13px] font-extrabold rounded-[4px] flex items-center justify-center gap-1 transition-colors shadow-sm"
-                 >
+
+                 {/* Product */}
+                 <div className="flex items-center gap-1.5">
+                   <span className="text-[10px] text-slate-400">Product</span>
+                   <span className="text-[11px] font-bold text-slate-500">{displayPrice}</span>
+                 </div>
+
+                 {/* 가격 범위 경고 */}
+                 {hasPriceRange && (
+                   <span className="text-[9px] text-amber-600 font-medium">⚠ Price varies by option</span>
+                 )}
+
+                 {/* Divider + Total */}
+                 <div className="w-full border-t border-dashed border-slate-200 my-0.5" />
+                 <div className="text-[20px] font-extrabold text-[#02122c] leading-none">{finalTotal}</div>
+                 <span className="text-[9px] font-bold text-emerald-600">Total Landed Cost{hasPriceRange ? ' (est.)' : ''}</span>
+
+                 <button onClick={handleViewDeal} className="w-full h-[30px] mt-1.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[13px] font-extrabold rounded-[4px] flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
                     Select <Icons.ArrowRight className="w-3 h-3" />
                  </button>
              </div>
           </div>
+             );
+          })()}
        </div>
+
+       {/* ═══ MOBILE CARD (<md) ═══ */}
+       <div className="md:hidden bg-white border border-[#e0e3eb] rounded-xl shadow-sm hover:shadow-md active:scale-[0.99] transition-all duration-150 group relative z-0 overflow-hidden">
+          <div className="flex p-3 gap-3">
+             {/* 이미지 — 하트만, 배지 없음 */}
+             <div className="w-20 h-20 shrink-0 bg-white rounded-lg border border-slate-100 relative flex items-center justify-center p-1.5">
+                <button onClick={handleToggleSave} className="absolute -top-1 -left-1 z-10 transition-transform active:scale-90 cursor-pointer">
+                   {isSaved ?
+                     <Icons.HeartFilled className="w-4 h-4 text-red-500" /> :
+                     <Icons.Heart className="w-4 h-4 text-slate-300" />
+                   }
+                </button>
+                <img src={displayImage} alt={displayTitle} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
+             </div>
+
+             {/* 정보 */}
+             <div className="flex-1 min-w-0 flex flex-col">
+                {/* 셀러 + 평점 + 리뷰 + Prime (한 줄) */}
+                <div className="flex items-center gap-1 mb-0.5">
+                   <span className={`text-[11px] font-extrabold uppercase tracking-wide ${platformColor?.color || 'text-[#02122c]'}`}>{displaySeller}</span>
+                   <span className="text-slate-300 text-[10px]">/</span>
+                   <Icons.Star className="w-3 h-3 text-[#F59E0B]" />
+                   <span className="text-[11px] font-bold text-slate-700">{product.rating || 0}</span>
+                   <span className="text-[10px] text-slate-400">({product.reviewCount?.toLocaleString() || 0})</span>
+                </div>
+                <h3 className="text-[13px] font-medium text-[#02122c] leading-snug line-clamp-2 group-hover:text-[#F59E0B] transition-colors">
+                   {displayTitle}
+                </h3>
+             </div>
+          </div>
+
+          {/* 하단: 배송 + 가격 + 버튼 */}
+          <div className="flex items-center justify-between px-3 pb-3 pt-1 border-t border-slate-100 gap-2">
+             <div className="flex flex-col min-w-0 flex-1">
+                <DeliveryBadge info={deliveryInfo} compact hideCost deliveryVariant={type === "domestic" ? "domestic" : "international"} />
+                {fraudText && <span className="text-[9px] font-bold text-amber-600 mt-0.5 truncate">{fraudText}</span>}
+             </div>
+             <div className="flex flex-col items-end shrink-0">
+                <span className="text-[16px] font-extrabold text-[#02122c] leading-none">{finalTotal}</span>
+                {isGlobal ? (
+                  <span className="text-[9px] text-slate-400">{displayPrice} + duty</span>
+                ) : extraFees > 0 ? (
+                  <span className="text-[9px] text-slate-400">{displayPrice} + tax</span>
+                ) : (
+                  <span className="text-[9px] text-slate-400">+ est. tax</span>
+                )}
+             </div>
+             <button onClick={handleViewDeal} className="shrink-0 h-8 px-4 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[12px] font-extrabold rounded-lg flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
+                Select <Icons.ArrowRight className="w-3 h-3" />
+             </button>
+          </div>
+       </div>
+
        {redirectOverlay}
     </>
   );

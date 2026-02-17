@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || '862297c953msh18d0e20a472b36bp1e3751jsn9810b160cdbe';
-const RAPIDAPI_HOST = 'real-time-amazon-data.p.rapidapi.com';
-const AMAZON_TAG = 'soulmaten7-20'; // 사장님 수익화 태그
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
+const RAPIDAPI_HOST = process.env.RAPIDAPI_HOST_AMAZON || 'real-time-amazon-data.p.rapidapi.com';
+const AMAZON_TAG = process.env.AMAZON_AFFILIATE_TAG || 'soulmaten7-20';
 
 export interface RapidProduct {
   product_title: string;
@@ -18,8 +18,13 @@ export interface RapidProduct {
 }
 
 export async function searchAmazon(query: string, page = 1): Promise<RapidProduct[]> {
+  if (!RAPIDAPI_KEY) {
+    console.error('RAPIDAPI_KEY is not set. Please check your .env.local file.');
+    return [];
+  }
+
   const url = `https://${RAPIDAPI_HOST}/search?query=${encodeURIComponent(query)}&page=${page}&country=US&sort_by=RELEVANCE`;
-  
+
   try {
     const response = await fetch(url, {
       method: 'GET',

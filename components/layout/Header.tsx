@@ -65,7 +65,7 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-[#02122c] text-white w-full border-b border-white/5 relative z-[999]">
+      <header className="bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000]">
         <div className="max-w-[1440px] mx-auto px-6 h-[80px] flex items-center justify-between shrink-0">
           
           {/* [수정] 로고에도 cursor-pointer 추가 */}
@@ -103,13 +103,10 @@ export function Header() {
                     <span>🇺🇸 EN (USD)</span>
                     {currency === 'USD' && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
                   </button>
-                  <button 
-                    onClick={() => handleCurrencyChange('KRW')}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between hover:bg-slate-50 cursor-pointer ${currency === 'KRW' ? 'text-[#02122c] bg-slate-50' : 'text-slate-500'}`}
-                  >
+                  <div className="w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between text-slate-300 cursor-not-allowed">
                     <span>🇰🇷 KO (KRW)</span>
-                    {currency === 'KRW' && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
-                  </button>
+                    <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Soon</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -143,7 +140,7 @@ export function Header() {
               )}
 
               {showUserDropdown && session && (
-                <div className="absolute right-0 top-full mt-3 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-200 z-[100]">
+                <div className="absolute right-0 top-full mt-3 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 animate-in fade-in zoom-in-95 duration-200 z-[9999]">
                   <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
                     <p className="text-xs text-slate-500">Signed in as</p>
                     <p className="text-sm font-bold text-[#02122c] truncate" title={userEmail}>

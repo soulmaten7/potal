@@ -5,7 +5,7 @@ import { Icons } from '@/components/icons';
 
 // [DATA] Tech Metrics
 const STATS = [
-  { value: "120M+", label: "Products Indexed", description: "Real-time global SKU tracking" },
+  { value: "7", label: "Retail Partners", description: "Amazon, Walmart, eBay, BestBuy, Target, AliExpress, Temu" },
   { value: "0.5s", label: "Query Latency", description: "Average search response time" },
   { value: "100%", label: "Data Neutrality", description: "Unbiased algorithm ranking" },
   { value: "24/7", label: "Price Monitoring", description: "Automated deal detection" },
@@ -20,7 +20,7 @@ const VALUES = [
   },
   {
     title: "Data Sovereignty",
-    description: "Commerce data shouldn't be fragmented. We aggregate Amazon, Walmart, and AliExpress into a single, unified search layer.",
+    description: "Commerce data shouldn't be fragmented. We aggregate Amazon, Walmart, eBay, BestBuy, Target, AliExpress, and Temu into a single, unified search layer.",
     icon: "🌐"
   },
   {

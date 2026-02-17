@@ -12,7 +12,7 @@ const PARTNERS_DOMESTIC = [
 ];
 
 const PARTNERS_GLOBAL = [
-  { name: "AliExpress" }, { name: "Temu" }, { name: "iHerb" }, { name: "Shein" }, { name: "DHgate" },
+  { name: "AliExpress" }, { name: "Temu" }, { name: "iHerb" }, { name: "DHgate" },
   { name: "YesStyle" }, { name: "Farfetch" }, { name: "ASOS" }, { name: "Uniqlo" }, { name: "Etsy" },
   { name: "MyTheresa" }, { name: "Olive Young" }, { name: "Mercari" },
 ];

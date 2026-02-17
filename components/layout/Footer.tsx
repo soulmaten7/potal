@@ -167,13 +167,10 @@ export function Footer() {
                      <span>🇺🇸 USD ($)</span>
                      {currency === 'USD' && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
                    </button>
-                   <button 
-                     onClick={() => handleCurrencyChange('KRW')}
-                     className={`w-full text-left px-4 py-3 text-sm font-bold flex items-center justify-between hover:bg-slate-50 ${currency === 'KRW' ? 'text-[#02122c] bg-slate-50' : 'text-slate-500'}`}
-                   >
+                   <div className="w-full text-left px-4 py-3 text-sm font-bold flex items-center justify-between text-slate-300 cursor-not-allowed">
                      <span>🇰🇷 KRW (₩)</span>
-                     {currency === 'KRW' && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
-                   </button>
+                     <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">Soon</span>
+                   </div>
                 </div>
               )}
             </div>

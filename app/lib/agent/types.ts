@@ -165,6 +165,10 @@ export interface QueryAnalysis {
   strategy: 'broad' | 'specific' | 'brand' | 'comparison';
   /** 신뢰도 (0-1) */
   confidence: number;
+  /** 질문형 쿼리 여부 ("what should I buy for camping?" 등) */
+  isQuestionQuery?: boolean;
+  /** 추천 상품 카테고리 키워드 — 질문형일 때 API 호출 대신 이 칩을 보여줌 */
+  suggestedProducts?: string[];
 }
 
 // ─── Product Analysis (AnalysisAgent output) ────────

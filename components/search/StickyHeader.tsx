@@ -214,16 +214,27 @@ export function StickyHeader({
                     </div>
                     )}
 
-                    <input 
+                    <input
                         ref={searchInputRef}
-                        type="text" 
-                        value={query} 
-                        onChange={(e) => setQuery(e.target.value)} 
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
                         onFocus={handleSearchInputFocus}
                         onClick={handleSearchInputFocus}
-                        placeholder={imagePreview ? "Describe this photo..." : "e.g. Lego Star Wars"} 
-                        className="w-full text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0 pr-8" 
+                        placeholder={imagePreview ? "Describe this photo..." : "e.g. Lego Star Wars"}
+                        className="w-full text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0 pr-16"
                     />
+
+                    {/* X 버튼 — 검색어가 있을 때만 표시, 카메라 아이콘 왼쪽 */}
+                    {query.trim() && (
+                      <button
+                        type="button"
+                        onClick={() => { setQuery(''); searchInputRef.current?.focus(); }}
+                        className="absolute right-9 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full transition-colors"
+                      >
+                        <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
+                      </button>
+                    )}
 
                     <div className="absolute right-0 top-1/2 -translate-y-1/2" ref={photoMenuRef}>
                     <button 
