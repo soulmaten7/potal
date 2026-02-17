@@ -156,12 +156,12 @@ export class BestBuyProvider implements SearchProvider {
     const queryForApi = refineQuery(trimmed) || trimmed;
     const priceIntent = detectPriceIntent(trimmed);
 
-    // BestBuy USA (Pinto) — multiple endpoint + param combos
+    // BestBuy USA (Pinto) — GitHub docs: GET /search with keyword param
     const endpoints = [
       { path: '/search', params: { keyword: queryForApi, page: String(page) } },
-      { path: '/search', params: { query: queryForApi, page: String(page) } },
       { path: '/search', params: { keyword: queryForApi } },
-      { path: '/product/search', params: { keyword: queryForApi, page: String(page) } },
+      { path: '/search', params: { query: queryForApi, page: String(page) } },
+      { path: '/search', params: { q: queryForApi, page: String(page) } },
     ];
 
     for (const ep of endpoints) {
@@ -181,9 +181,17 @@ export class BestBuyProvider implements SearchProvider {
         });
         clearTimeout(timer);
 
-        if (!res.ok) continue;
+        if (!res.ok) {
+          console.warn(`⚠️ [BestBuyProvider] ${res.status} from ${ep.path}`);
+          continue;
+        }
 
         const data = (await res.json()) as Record<string, unknown>;
+
+        // 진단 로그: 응답 구조 확인
+        const topKeys = Object.keys(data).slice(0, 10).join(', ');
+        console.log(`🔍 [BestBuyProvider] ${ep.path} response keys: [${topKeys}]`);
+
         const products = this.parseResponse(data, queryForApi, priceIntent);
         if (products.length > 0) {
           console.log(`✅ [BestBuyProvider] ${products.length} products from ${ep.path}`);

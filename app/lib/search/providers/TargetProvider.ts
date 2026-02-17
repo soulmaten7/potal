@@ -17,8 +17,9 @@ import { refineQuery, detectPriceIntent, parsePriceToNumber } from '../searchInt
  *   item.primary_brand, price, ratings_and_reviews, parent, etc.
  */
 
-const API_KEY = process.env.RAPIDAPI_KEY ?? '';
-const API_HOST = process.env.RAPIDAPI_HOST_TARGET ?? 'target13.p.rapidapi.com';
+// 환경변수를 런타임에 읽도록 함수로 변경 (Vercel 호환)
+const getApiKey = () => process.env.RAPIDAPI_KEY ?? '';
+const getApiHost = () => process.env.RAPIDAPI_HOST_TARGET ?? 'target13.p.rapidapi.com';
 const TIMEOUT_MS = 8_000;
 
 // ── Affiliate ──
@@ -240,7 +241,10 @@ export class TargetProvider implements SearchProvider {
   readonly type = 'domestic' as const;
 
   async search(query: string, page: number = 1): Promise<Product[]> {
-    if (!API_KEY) {
+    const apiKey = getApiKey();
+    const apiHost = getApiHost();
+
+    if (!apiKey) {
       console.warn('⚠️ [TargetProvider] No RAPIDAPI_KEY');
       return [];
     }
@@ -249,15 +253,15 @@ export class TargetProvider implements SearchProvider {
     const priceIntent = detectPriceIntent(query);
 
     const headers = {
-      'x-rapidapi-key': API_KEY,
-      'x-rapidapi-host': API_HOST,
+      'x-rapidapi-key': apiKey,
+      'x-rapidapi-host': apiHost,
     };
 
-    // ecommet / apidojo Target API endpoints
-    // 주의: count/offset 파라미터 추가하면 "Unexpected end of JSON" 에러 발생
-    // RapidAPI Code Snippet 그대로 사용
+    // Target API — 여러 엔드포인트 시도 (API 변경에 대응)
     const endpoints = [
-      `https://${API_HOST}/searchByKeywords?keywords=${encodeURIComponent(q)}&store_id=3207&sort_by=relevance&include_sponsored=false`,
+      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}`,
+      `https://${apiHost}/searchByKeywords?keywords=${encodeURIComponent(q)}&store_id=3207&sort_by=relevance&include_sponsored=false`,
+      `https://${apiHost}/search?keyword=${encodeURIComponent(q)}`,
     ];
 
     for (const url of endpoints) {
@@ -284,6 +288,11 @@ export class TargetProvider implements SearchProvider {
           continue;
         }
         const products = this.parseResponse(data, q, priceIntent);
+
+        if (products.length === 0) {
+          const topKeys = typeof data === 'object' && data ? Object.keys(data as Record<string, unknown>).slice(0, 10).join(', ') : 'N/A';
+          console.warn(`⚠️ [TargetProvider] 200 OK but 0 products. Response keys: [${topKeys}]`);
+        }
 
         if (products.length > 0) {
           console.log(`✅ [TargetProvider] ${products.length} products from ${url}`);

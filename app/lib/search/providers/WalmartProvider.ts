@@ -190,9 +190,16 @@ export class WalmartProvider implements SearchProvider {
         });
         clearTimeout(timer);
 
-        if (!res.ok) continue;
+        if (!res.ok) {
+          console.warn(`⚠️ [WalmartProvider] ${res.status} from ${ep.path}`);
+          continue;
+        }
 
         const data = (await res.json()) as Record<string, unknown>;
+
+        // 진단 로그: 응답 구조 확인
+        const topKeys = Object.keys(data).slice(0, 10).join(', ');
+        console.log(`🔍 [WalmartProvider] ${ep.path} response keys: [${topKeys}]`);
 
         // Parse items from various possible response shapes
         let items: unknown[] = [];
