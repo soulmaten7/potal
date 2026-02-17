@@ -13,16 +13,17 @@ import type { SearchProvider } from '../types';
  * 비용: ~$1.18 / 1,000건, 무료 $5 크레딧/월
  */
 
-const APIFY_TOKEN = process.env.APIFY_API_TOKEN || '';
-const TEMU_AFFILIATE = process.env.TEMU_AFFILIATE_CODE || '';
+// 환경변수를 런타임에 읽도록 함수로 변경 (Vercel 호환)
+const getApifyToken = () => process.env.APIFY_API_TOKEN || '';
+const getTemuAffiliate = () => process.env.TEMU_AFFILIATE_CODE || '';
 const ACTOR_ID = 'amit123~temu-products-scraper';
 const TIMEOUT_MS = 30_000; // Apify Actor 실행은 7~15초 소요
 
 // ── Affiliate ──
 function appendTemuAffiliate(url: string): string {
-  if (!TEMU_AFFILIATE) return url;
+  if (!getTemuAffiliate()) return url;
   const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}aff_code=${encodeURIComponent(TEMU_AFFILIATE)}`;
+  return `${url}${sep}aff_code=${encodeURIComponent(getTemuAffiliate())}`;
 }
 
 function buildTemuLink(url: string | undefined, query: string): string {
@@ -159,8 +160,9 @@ export class TemuProvider implements SearchProvider {
   readonly type = 'global' as const;
 
   async search(query: string, page: number = 1): Promise<Product[]> {
-    if (!APIFY_TOKEN) {
-      console.warn('⚠️ [TemuProvider] No APIFY_API_TOKEN — skipping');
+    const token = getApifyToken();
+    if (!token) {
+      console.warn('⚠️ [TemuProvider] No APIFY_API_TOKEN — skipping. Available env keys:', Object.keys(process.env).filter(k => k.includes('APIFY') || k.includes('apify')).join(', ') || 'NONE');
       return [];
     }
 
@@ -174,7 +176,7 @@ export class TemuProvider implements SearchProvider {
       const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
       // Apify 동기 실행 — Actor 실행 + 데이터셋 결과를 한번에 반환
-      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
+      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${token}`;
 
       const res = await fetch(url, {
         method: 'POST',
