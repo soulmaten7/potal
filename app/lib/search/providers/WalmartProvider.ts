@@ -164,10 +164,10 @@ export class WalmartProvider implements SearchProvider {
     const queryForApi = refineQuery(trimmed) || trimmed;
     const priceIntent = detectPriceIntent(trimmed);
 
-    // Realtime Walmart Data — GET /product?keyword=...&page=...&sort=best_match
-    console.log(`🔍 [WalmartProvider] Using host: ${host}`);
+    // Realtime Walmart Data — GET /search?keyword=...&page=...&sort=best_match
+    // RapidAPI Code Snippet 확인 완료: /search (NOT /product)
     const endpoints = [
-      { path: '/product', params: { keyword: queryForApi, page: String(page), sort: 'best_match' } },
+      { path: '/search', params: { keyword: queryForApi, page: String(page), sort: 'best_match' } },
     ];
 
     for (const ep of endpoints) {
