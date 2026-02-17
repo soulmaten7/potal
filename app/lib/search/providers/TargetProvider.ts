@@ -257,11 +257,12 @@ export class TargetProvider implements SearchProvider {
       'x-rapidapi-host': apiHost,
     };
 
-    // Target API — 여러 엔드포인트 시도 (API 변경에 대응)
+    // Target API — 여러 파라미터 조합 시도
+    console.log(`🔍 [TargetProvider] Using host: ${apiHost}`);
     const endpoints = [
-      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}`,
-      `https://${apiHost}/searchByKeywords?keywords=${encodeURIComponent(q)}&store_id=3207&sort_by=relevance&include_sponsored=false`,
-      `https://${apiHost}/search?keyword=${encodeURIComponent(q)}`,
+      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991`,
+      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991&count=30&offset=0`,
+      `https://${apiHost}/product_search?query=${encodeURIComponent(q)}&store_id=3991`,
     ];
 
     for (const url of endpoints) {

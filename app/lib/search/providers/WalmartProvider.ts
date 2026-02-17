@@ -164,13 +164,14 @@ export class WalmartProvider implements SearchProvider {
     const queryForApi = refineQuery(trimmed) || trimmed;
     const priceIntent = detectPriceIntent(trimmed);
 
-    // Realtime Walmart Data — multiple endpoint + param combos
-    // keyword param이 더 안정적 (이전 테스트에서 확인됨)
+    // Realtime Walmart Data — API 엔드포인트 탐색
+    console.log(`🔍 [WalmartProvider] Using host: ${host}`);
     const endpoints = [
-      { path: '/search', params: { keyword: queryForApi, page: String(page) } },
       { path: '/search', params: { query: queryForApi, page: String(page) } },
-      { path: '/product', params: { keyword: queryForApi, page: String(page), sort: 'best_match' } },
-      { path: '/product', params: { query: queryForApi, page: String(page) } },
+      { path: '/search', params: { keyword: queryForApi, page: String(page) } },
+      { path: '/search', params: { q: queryForApi, page: String(page) } },
+      { path: '/v1/search', params: { query: queryForApi, page: String(page) } },
+      { path: '/product-search', params: { query: queryForApi, page: String(page) } },
     ];
 
     for (const ep of endpoints) {
@@ -191,7 +192,8 @@ export class WalmartProvider implements SearchProvider {
         clearTimeout(timer);
 
         if (!res.ok) {
-          console.warn(`⚠️ [WalmartProvider] ${res.status} from ${ep.path}`);
+          const errBody = await res.text().catch(() => '');
+          console.warn(`⚠️ [WalmartProvider] ${res.status} from ${ep.path}:`, errBody.slice(0, 200));
           continue;
         }
 

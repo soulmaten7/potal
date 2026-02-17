@@ -156,12 +156,10 @@ export class BestBuyProvider implements SearchProvider {
     const queryForApi = refineQuery(trimmed) || trimmed;
     const priceIntent = detectPriceIntent(trimmed);
 
-    // BestBuy USA (Pinto) — GitHub docs: GET /search with keyword param
+    // BestBuy USA (Pinto) — GitHub docs: GET /search?query=...&page=...
     const endpoints = [
-      { path: '/search', params: { keyword: queryForApi, page: String(page) } },
-      { path: '/search', params: { keyword: queryForApi } },
       { path: '/search', params: { query: queryForApi, page: String(page) } },
-      { path: '/search', params: { q: queryForApi, page: String(page) } },
+      { path: '/search', params: { query: queryForApi } },
     ];
 
     for (const ep of endpoints) {
