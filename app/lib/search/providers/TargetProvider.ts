@@ -257,13 +257,22 @@ export class TargetProvider implements SearchProvider {
       'x-rapidapi-host': apiHost,
     };
 
-    // Target API — 여러 파라미터 조합 시도
+    // Target API — host에 따라 엔드포인트 자동 선택
     console.log(`🔍 [TargetProvider] Using host: ${apiHost}`);
-    const endpoints = [
-      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991`,
-      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991&count=30&offset=0`,
-      `https://${apiHost}/product_search?query=${encodeURIComponent(q)}&store_id=3991`,
-    ];
+    const isMicroApi = apiHost.includes('target-com-shopping');
+    const endpoints = isMicroApi
+      ? [
+          // MicroAPI Target.com Shopping API
+          `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991`,
+          `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991&count=30&offset=0`,
+        ]
+      : [
+          // target13 (ecommet / apidojo) — 여러 엔드포인트 시도
+          `https://${apiHost}/searchByKeywords?keywords=${encodeURIComponent(q)}&store_id=3207&sort_by=relevance&include_sponsored=false`,
+          `https://${apiHost}/search?keyword=${encodeURIComponent(q)}`,
+          `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991`,
+          `https://${apiHost}/products?keyword=${encodeURIComponent(q)}`,
+        ];
 
     for (const url of endpoints) {
       try {

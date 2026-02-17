@@ -215,19 +215,39 @@ export class BestBuyProvider implements SearchProvider {
     let items: unknown[] = [];
     const dataAny = data as any;
 
-    // Try multiple response shapes
+    // BestBuy Pinto API: {success, message, data: {products: [...]}} 또는 {success, data: [...]}
+    // 응답 구조를 더 깊이 탐색
     if (Array.isArray(dataAny.products)) {
       items = dataAny.products;
     } else if (Array.isArray(dataAny.data?.products)) {
       items = dataAny.data.products;
+    } else if (Array.isArray(dataAny.data?.items)) {
+      items = dataAny.data.items;
+    } else if (Array.isArray(dataAny.data?.results)) {
+      items = dataAny.data.results;
+    } else if (Array.isArray(dataAny.data?.searchResults)) {
+      items = dataAny.data.searchResults;
     } else if (Array.isArray(dataAny.items)) {
       items = dataAny.items;
     } else if (Array.isArray(dataAny.results)) {
       items = dataAny.results;
     } else if (Array.isArray(dataAny.data)) {
       items = dataAny.data;
+    } else if (dataAny.data && typeof dataAny.data === 'object') {
+      // Deep scan inside data object
+      const innerData = dataAny.data as Record<string, unknown>;
+      const innerKeys = Object.keys(innerData);
+      console.log(`🔍 [BestBuyProvider] data inner keys: [${innerKeys.join(', ')}]`);
+      for (const key of innerKeys) {
+        const val = innerData[key];
+        if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+          items = val;
+          console.log(`🔍 [BestBuyProvider] Found products in data.${key} (${val.length} items)`);
+          break;
+        }
+      }
     } else {
-      // Deep scan: find first array with objects
+      // Deep scan top-level
       for (const key of Object.keys(data)) {
         const val = data[key];
         if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {

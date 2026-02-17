@@ -234,8 +234,8 @@ export class Coordinator {
       }
     }
 
-    // ── Step 8: 결과 조립 ──
-    const results = scoringResult.bestSorted as Product[];
+    // ── Step 8: 결과 조립 + 사이트 인터리빙 ──
+    const results = this.interleaveBysite(scoringResult.bestSorted as Product[]);
     const domesticCount = results.filter(p => {
       if (p.category) return p.category === 'domestic';
       return (p.shipping || '').toLowerCase() === 'domestic';
@@ -256,6 +256,41 @@ export class Coordinator {
         fraudStats: this.getFraudStats(),
       },
     };
+  }
+
+  /**
+   * 사이트별 인터리빙: 같은 사이트 상품이 연속으로 나오지 않도록 교차 배치
+   * bestScore 순서를 최대한 유지하면서 사이트 다양성을 확보
+   */
+  private interleaveBysite(products: Product[]): Product[] {
+    if (products.length <= 1) return products;
+
+    // 사이트별로 그룹핑 (각 그룹 내에서는 bestScore 순서 유지)
+    const groups = new Map<string, Product[]>();
+    for (const p of products) {
+      const site = p.site || 'Unknown';
+      if (!groups.has(site)) groups.set(site, []);
+      groups.get(site)!.push(p);
+    }
+
+    // Round-robin 방식으로 교차 배치
+    const result: Product[] = [];
+    const queues = Array.from(groups.values());
+    const indices = queues.map(() => 0);
+
+    while (result.length < products.length) {
+      let added = false;
+      for (let i = 0; i < queues.length; i++) {
+        if (indices[i] < queues[i].length) {
+          result.push(queues[i][indices[i]]);
+          indices[i]++;
+          added = true;
+        }
+      }
+      if (!added) break;
+    }
+
+    return result;
   }
 
   // ─── Step Implementations ─────────────────────────

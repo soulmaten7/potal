@@ -164,15 +164,21 @@ export class WalmartProvider implements SearchProvider {
     const queryForApi = refineQuery(trimmed) || trimmed;
     const priceIntent = detectPriceIntent(trimmed);
 
-    // Realtime Walmart Data — API 엔드포인트 탐색
+    // Walmart Data API — host에 따라 엔드포인트 자동 선택
     console.log(`🔍 [WalmartProvider] Using host: ${host}`);
-    const endpoints = [
-      { path: '/search', params: { query: queryForApi, page: String(page) } },
-      { path: '/search', params: { keyword: queryForApi, page: String(page) } },
-      { path: '/search', params: { q: queryForApi, page: String(page) } },
-      { path: '/v1/search', params: { query: queryForApi, page: String(page) } },
-      { path: '/product-search', params: { query: queryForApi, page: String(page) } },
-    ];
+    const isAxesso = host.includes('axesso');
+    const endpoints = isAxesso
+      ? [
+          // Axesso Walmart Data Service: /wlm/walmart-search-by-keyword
+          { path: '/wlm/walmart-search-by-keyword', params: { keyword: queryForApi, page: String(page), sortBy: 'best_match', numberOfProducts: '30' } },
+          { path: '/wlm/walmart-search-by-keyword', params: { keyword: queryForApi, page: String(page) } },
+        ]
+      : [
+          // Realtime Walmart Data (기본)
+          { path: '/search', params: { query: queryForApi, page: String(page) } },
+          { path: '/search', params: { keyword: queryForApi, page: String(page) } },
+          { path: '/product', params: { keyword: queryForApi, page: String(page), sort: 'best_match' } },
+        ];
 
     for (const ep of endpoints) {
       try {
