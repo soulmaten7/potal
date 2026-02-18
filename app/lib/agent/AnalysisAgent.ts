@@ -206,6 +206,13 @@ export function shouldRunProductAnalysis(
   productCount: number,
   page: number,
 ): boolean {
+  // MVP 단계: AnalysisAgent 비활성화
+  // 이유: gpt-4o-mini가 20개 상품 + JSON mode + 1500 토큰을 5초 안에 처리 못함
+  //       → 매 검색마다 6초 낭비 (타임아웃 후 기본값 반환)
+  // 대안: ProductJudge가 대신 관련성 필터링 수행 (더 빠르고 안정적)
+  // TODO: v2에서 AnalysisAgent를 non-blocking으로 리팩토링 후 재활성화
+  return false;
+
   // page 1만
   if (page !== 1) return false;
 

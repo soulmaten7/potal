@@ -103,6 +103,12 @@ export interface IntentRouterOutput {
 export interface SmartFilterInput {
   query: string;
   titles: string[];
+  /** v4.0: 상품 상세 데이터 (price, site 포함) — 더 정확한 필터 생성 */
+  products?: Array<{
+    title: string;
+    price?: string;
+    site?: string;
+  }>;
 }
 
 /** 구매 결정 축 — Related 섹션의 그룹 단위 */

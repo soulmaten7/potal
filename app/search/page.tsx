@@ -20,6 +20,38 @@ const ALL_RETAILERS_FLAT = [...DOMESTIC_LIST, ...GLOBAL_LIST];
 const STORAGE_KEY_USER_RECENTS = 'potal_user_recents';
 const STORAGE_KEY_USER_ZIPS = 'potal_user_zips';
 
+/** 사이트별 인터리빙: 정렬 순서를 유지하면서 같은 사이트 상품이 연속되지 않도록 교차 배치 */
+function interleaveBySite(products: Product[]): Product[] {
+  if (products.length <= 1) return products;
+
+  // 사이트별로 그룹핑 (각 그룹 내에서 기존 정렬 순서 유지)
+  const groups = new Map<string, Product[]>();
+  for (const p of products) {
+    const site = p.site || p.seller || 'Unknown';
+    if (!groups.has(site)) groups.set(site, []);
+    groups.get(site)!.push(p);
+  }
+
+  // Round-robin 방식으로 교차 배치
+  const result: Product[] = [];
+  const queues = Array.from(groups.values());
+  const indices = queues.map(() => 0);
+
+  while (result.length < products.length) {
+    let added = false;
+    for (let i = 0; i < queues.length; i++) {
+      if (indices[i] < queues[i].length) {
+        result.push(queues[i][indices[i]]);
+        indices[i]++;
+        added = true;
+      }
+    }
+    if (!added) break;
+  }
+
+  return result;
+}
+
 function SearchContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -182,11 +214,18 @@ function SearchContent() {
             : m === 'global'
             ? realProducts.filter((p: any) => p.category !== 'domestic' && (p.shipping || '').toLowerCase() !== 'domestic')
             : realProducts; // "all" → 전체
-          const titles = [...marketFilteredProducts]
+          // v4.0: title + price + site를 함께 전송 → AI가 더 정확한 필터 생성
+          const topProducts = [...marketFilteredProducts]
             .sort((a: any, b: any) => (b.bestScore ?? 0) - (a.bestScore ?? 0))
-            .slice(0, 25)
-            .map((p: any) => p.name || '')
-            .filter(Boolean);
+            .slice(0, 30);
+          const titles = topProducts.map((p: any) => p.name || '').filter(Boolean);
+          const products = topProducts
+            .filter((p: any) => p.name)
+            .map((p: any) => ({
+              title: p.name || '',
+              price: p.price ? String(p.price) : undefined,
+              site: p.site || p.seller || undefined,
+            }));
 
           if (titles.length > 0 && !cancelled) {
             // AI 호출 전: null → AiSmartSuggestionBox가 자체 로딩 표시
@@ -196,7 +235,7 @@ function SearchContent() {
               const aiRes = await fetch('/api/ai-suggestions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ query: q, titles }),
+                body: JSON.stringify({ query: q, titles, products }),
               });
               const aiData = await aiRes.json();
               if (!cancelled) {
@@ -342,7 +381,10 @@ function SearchContent() {
       // Best: ScoringEngine의 bestScore 사용 (높을수록 좋음)
       realProducts.sort((a, b) => (b.bestScore ?? 0) - (a.bestScore ?? 0));
     }
-    return [...realProducts, ...searchCards];
+
+    // 사이트별 인터리빙: 정렬 후 같은 사이트 상품이 연속으로 나오지 않도록 교차 배치
+    const interleaved = interleaveBySite(realProducts);
+    return [...interleaved, ...searchCards];
   }, [filteredProducts, sortBy, secondarySort]);
 
   const domesticProducts = sortedProducts.filter(p => p.type === "domestic");

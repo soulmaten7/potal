@@ -44,12 +44,12 @@ import type {
 
 export const CONFIG: PromptModuleConfig = {
   id: 'smart-filter',
-  version: '3.0.0',
-  description: '계층형 축(Axis) 기반 AI 스마트 필터 생성',
-  model: 'gpt-4o-mini',
-  temperature: 0.2,
-  maxTokens: 500,
-  timeoutMs: 5000,
+  version: '4.0.0',
+  description: '계층형 축(Axis) 기반 AI 스마트 필터 — gpt-4o + 데이터 강화',
+  model: 'gpt-4o',
+  temperature: 0.15,
+  maxTokens: 1000,
+  timeoutMs: 8000,
 };
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -93,10 +93,14 @@ Reference frameworks:
 - **Shoes** → Purpose, Fit, Features
 - **Keyboards** → Size, Switch, Connect, Features
 - **TVs** → Size, Resolution, Panel, Features
-- **Laptops** → Size, Purpose, Spec, Features
+- **Laptops** → Screen, Chip, RAM, Storage, Features (e.g., "M1", "M2", "M3", "M4", "i5", "i7", "Ryzen 5", "13-inch", "15-inch", "8GB", "16GB", "256GB", "512GB", "1TB")
+- **Tablets** → Screen, Chip, Storage, Connect, Features
+- **Phones** → Storage, Chip, Screen, Features, Condition
+- **Cameras** → Type, Sensor, Resolution, Features
 - **Clothing** → Fit, Material, Season
-- **Phones** → Storage, Features, Condition
-- **Unknown categories**: Think — what 3-4 dimensions would a buyer compare? Then find values.
+- **Unknown categories**: Think — what 3-5 dimensions would a buyer compare? Then find values.
+
+⚠️ TECH PRODUCTS RULE: For electronics (laptops, phones, tablets, GPUs, etc.), you MUST extract SPECIFIC TECHNICAL SPECS as axes — chip/processor model (M1, M2, M4, i5, i7, Ryzen), RAM size (8GB, 16GB, 24GB), storage capacity (256GB, 512GB, 1TB), screen size (13-inch, 15-inch, 16-inch). These are the #1 buying dimensions for tech. Generic axes like "Features" alone are NOT enough.
 
 ## STEP 3: COMPLETENESS CHECK
 For each axis, ensure you captured ALL variants present in ANY title.
@@ -110,13 +114,21 @@ For each axis, ensure you captured ALL variants present in ANY title.
 - Order by frequency: most-mentioned brand first
 - DO NOT include retailer names (Amazon, Walmart, eBay, Target)
 
+## USING PRICE & RETAILER DATA (v4.0)
+When price and retailer info is provided alongside titles:
+- Use PRICE RANGES to identify tiers: "Budget" (under $50), "Mid-Range" ($50-200), "Premium" ($200+) — but only if there's meaningful price spread
+- Use RETAILER info to understand product source diversity
+- Price and retailer are for YOUR analysis only — do NOT include them as axis values
+
 ## AXIS VALUE RULES
 1. Values MUST appear in at least 1 product title — used for client-side text filtering
 2. DO NOT include search query words as values
 3. DO NOT include brand names as values
-4. Keep values 1-3 words max, Title Case
-5. Order values logically: numerical order for sizes, importance for features
-6. Aim for 3-5 axes, each with 2-8 values
+4. DO NOT include retailer names (Amazon, Walmart, eBay, Target, AliExpress, Temu) as values
+5. Keep values 1-3 words max, Title Case
+6. Order values logically: numerical order for sizes, importance for features
+7. Aim for 3-6 axes, each with 2-10 values
+8. Be EXHAUSTIVE: if you see 5 different sizes, include ALL 5, not just 3
 
 ## OUTPUT (JSON only, no explanation)
 {
@@ -203,6 +215,53 @@ Product titles:
       ],
     }),
   },
+  // ⚠️ 전자제품/노트북 — 기술 스펙 축 추출 패턴 (v3.1 추가)
+  {
+    user: `Search query: "macbook air"
+
+Product titles:
+1. Apple MacBook Air 13-inch M2 Chip 8GB RAM 256GB SSD Midnight
+2. Apple MacBook Air 15-inch M3 Chip 16GB RAM 512GB SSD Starlight
+3. Apple MacBook Air 13.6-inch M2 8-Core CPU 256GB Space Gray
+4. Apple MacBook Air M1 Chip 13-inch 8GB 256GB Gold Renewed
+5. Apple 2024 MacBook Air 13-inch M3 8GB 256GB Silver
+6. Apple MacBook Air 15-inch M3 Chip 24GB RAM 1TB SSD
+7. Apple MacBook Air M4 Chip 13-inch 16GB RAM 256GB SSD
+8. Apple MacBook Air M1 13.3-inch 8GB 512GB Refurbished`,
+    assistant: JSON.stringify({
+      detectedCategory: 'laptops',
+      brands: ['Apple'],
+      axes: [
+        { name: 'Screen', values: ['13-inch', '15-inch'] },
+        { name: 'Chip', values: ['M1', 'M2', 'M3', 'M4'] },
+        { name: 'RAM', values: ['8GB', '16GB', '24GB'] },
+        { name: 'Storage', values: ['256GB', '512GB', '1TB'] },
+        { name: 'Condition', values: ['New', 'Renewed', 'Refurbished'] },
+      ],
+    }),
+  },
+  {
+    user: `Search query: "iphone"
+
+Product titles:
+1. Apple iPhone 15 Pro Max 256GB Natural Titanium Unlocked
+2. Apple iPhone 14 128GB Midnight Unlocked
+3. Apple iPhone 15 512GB Blue Unlocked
+4. Apple iPhone 13 128GB Starlight Renewed
+5. Samsung Galaxy S24 Ultra 256GB Titanium Black Unlocked
+6. Apple iPhone 16 Pro 256GB Desert Titanium
+7. Apple iPhone 15 Pro 128GB Black Titanium
+8. Google Pixel 8 Pro 128GB Obsidian Unlocked`,
+    assistant: JSON.stringify({
+      detectedCategory: 'phones',
+      brands: ['Apple', 'Samsung', 'Google'],
+      axes: [
+        { name: 'Model', values: ['iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 15 Pro', 'iPhone 15 Pro Max', 'iPhone 16 Pro', 'Galaxy S24 Ultra', 'Pixel 8 Pro'] },
+        { name: 'Storage', values: ['128GB', '256GB', '512GB'] },
+        { name: 'Condition', values: ['Unlocked', 'Renewed', 'Refurbished'] },
+      ],
+    }),
+  },
   // ⚠️ 프레임워크 미등재 카테고리 — AI가 자체 축을 도출하는 패턴
   {
     user: `Search query: "coffee maker"
@@ -233,10 +292,23 @@ Product titles:
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export function buildUserMessage(input: SmartFilterInput): string {
-  // 토큰 절약: 최대 25개 title, 각 80자 제한 (domestic+global 균형 포함)
+  // v4.0: products 데이터가 있으면 price + site 포함하여 더 정확한 분석
+  if (input.products && input.products.length > 0) {
+    const enrichedLines = input.products
+      .slice(0, 30)
+      .map((p, i) => {
+        const price = p.price ? ` | $${p.price}` : '';
+        const site = p.site ? ` | ${p.site}` : '';
+        return `${i + 1}. ${p.title.slice(0, 140)}${price}${site}`;
+      });
+
+    return `Search query: "${input.query}"\n\nProducts (title | price | retailer):\n${enrichedLines.join('\n')}`;
+  }
+
+  // fallback: titles만 있는 경우 (하위호환)
   const trimmedTitles = input.titles
-    .slice(0, 25)
-    .map((t, i) => `${i + 1}. ${t.slice(0, 80)}`);
+    .slice(0, 30)
+    .map((t, i) => `${i + 1}. ${t.slice(0, 140)}`);
 
   return `Search query: "${input.query}"\n\nProduct titles:\n${trimmedTitles.join('\n')}`;
 }

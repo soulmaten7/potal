@@ -16,14 +16,22 @@ import { generateSmartFilters } from '@/app/lib/ai/prompts';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { query, titles } = body as { query?: string; titles?: string[] };
+    const { query, titles, products } = body as {
+      query?: string;
+      titles?: string[];
+      products?: Array<{ title: string; price?: string; site?: string }>;
+    };
 
-    if (!query?.trim() || !titles?.length) {
+    if (!query?.trim() || (!titles?.length && !products?.length)) {
       return NextResponse.json({ brands: [], axes: [], keywords: [] });
     }
 
-    // 프롬프트 모듈 실행 (timeout, fallback, 비용추적 모두 engine에서 처리)
-    const result = await generateSmartFilters({ query, titles });
+    // v4.0: products 데이터가 있으면 함께 전달 (더 정확한 필터 생성)
+    const result = await generateSmartFilters({
+      query,
+      titles: titles || [],
+      products,
+    });
 
     return NextResponse.json({
       brands: result.data.brands,
@@ -34,7 +42,7 @@ export async function POST(request: NextRequest) {
         durationMs: result.meta.durationMs,
         estimatedCost: result.meta.estimatedCost,
         usedFallback: result.meta.usedFallback,
-        moduleVersion: 'smart-filter@3.0.0',
+        moduleVersion: 'smart-filter@4.0.0',
       },
     });
   } catch (err) {

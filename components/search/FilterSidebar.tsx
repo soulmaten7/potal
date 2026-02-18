@@ -105,7 +105,7 @@ export function FilterSidebar({
            <button onClick={() => setOpenRetailers(!openRetailers)} className="w-full flex items-center justify-between mb-3"><h3 className="text-[15px] font-extrabold uppercase text-[#02122c] tracking-wide">RETAILERS</h3><Icons.ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${openRetailers ? "rotate-180" : ""}`} /></button>
            {openRetailers && (
              <div className="space-y-4">
-                <div className="flex gap-3 text-[12px] font-extrabold">
+                <div className="flex justify-end gap-3 text-[12px] font-extrabold">
                    <button onClick={selectAllRetailers} className="text-[#02122c] hover:text-[#F59E0B] hover:underline">Select All</button>
                    <span className="text-slate-300">|</span>
                    <button onClick={clearAllRetailers} className="text-slate-500 hover:text-[#F59E0B] hover:underline">Clear</button>
