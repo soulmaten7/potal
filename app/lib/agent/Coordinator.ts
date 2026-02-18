@@ -45,7 +45,8 @@ import { AliExpressProvider } from '../search/providers/AliExpressProvider';
 import { TemuProvider } from '../search/providers/TemuProvider';
 // CostcoProvider 비활성화: Deals API만 제공 (전체 상품 검색 불가, 시장점유율 1.5%)
 // import { CostcoProvider } from '../search/providers/CostcoProvider';
-// SheinProvider 비활성화: API 서버 다운 (환불 요청 중)
+// SheinProvider: 새 API (unofficial-shein by apidojo) 코드 준비 완료
+// RapidAPI에서 구독 후 아래 주석 해제 → .env.local에 RAPIDAPI_HOST_SHEIN=unofficial-shein.p.rapidapi.com 추가
 // import { SheinProvider } from '../search/providers/SheinProvider';
 import { EbayProvider } from '../search/providers/EbayProvider';
 import { TargetProvider } from '../search/providers/TargetProvider';
@@ -76,7 +77,7 @@ const temuProvider = new TemuProvider();
 // const costcoProvider = new CostcoProvider(); // 비활성화: Deals API 한정
 const ebayProvider = new EbayProvider();
 const targetProvider = new TargetProvider();
-// const sheinProvider = new SheinProvider(); // 비활성화: API 서버 다운
+// const sheinProvider = new SheinProvider(); // API 구독 후 주석 해제
 
 /** Provider별 개별 타임아웃 (12초, eBay/Target 등 느린 Provider 대응) */
 const PROVIDER_TIMEOUT = 12_000;

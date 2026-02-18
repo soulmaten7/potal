@@ -2,7 +2,7 @@
 
 > 이 파일은 새 AI 세션이 프로젝트의 현재 상태를 완벽히 이해할 수 있도록 작성된 컨텍스트 문서입니다.
 > 새 세션 시작 시: "POTAL 프로젝트 작업을 이어서 하려고 해. /Users/maegbug/portal 에 있는 SESSION-CONTEXT.md 파일을 먼저 읽고 시작해줘." 라고 말하면 됩니다.
-> **마지막 업데이트: 2026-02-18**
+> **마지막 업데이트: 2026-02-18 (2차 — Shein API 준비 + SEO 작업)**
 
 ---
 
@@ -101,56 +101,71 @@ portal/
 
 ---
 
-## 4. 미커밋 변경사항 (2026-02-18 기준)
+## 4. 최근 커밋 이력
 
-아래 6개 파일이 수정되었으나 아직 커밋/푸시되지 않았음:
+### 커밋 1: `3b95b2c` (2026-02-18) — ✅ 커밋 완료, 푸시 필요
+```
+feat: AI Smart Filter v4.0 + interleaving fix + AnalysisAgent disable
+```
+- AI Smart Suggestion v4.0: gpt-4o-mini→gpt-4o, 데이터 강화(price+site), few-shot 예시
+- 프론트엔드 인터리빙 + FilterSidebar 정렬 + AnalysisAgent 비활성화
+- SESSION-CONTEXT.md 추가
+
+### 미커밋 변경사항 (2026-02-18 2차)
 
 | 파일 | 변경 내용 |
 |------|----------|
-| `app/lib/ai/prompts/smart-filter.ts` | AI Smart Suggestion v4.0: gpt-4o-mini→gpt-4o, 데이터 강화(price+site), few-shot 예시(MacBook/iPhone), 온도 0.15, 토큰 1000, 타임아웃 8초 |
-| `app/lib/ai/types.ts` | `SmartFilterInput`에 `products?: Array<{title, price?, site?}>` 필드 추가 |
-| `app/api/ai-suggestions/route.ts` | products 데이터 수신/전달, 모듈 버전 `smart-filter@4.0.0` |
-| `app/search/page.tsx` | 프론트엔드 `interleaveBySite()` 함수 추가 (Global 상품도 사이트별 교차 배치), AI suggestions에 products 데이터 전달 |
-| `components/search/FilterSidebar.tsx` | Select All/Clear 오른쪽 정렬 (`flex` → `flex justify-end`) |
-| `app/lib/agent/AnalysisAgent.ts` | `shouldRunProductAnalysis()` → `return false` (6초 타임아웃 해결) |
+| `app/lib/search/providers/SheinProvider.ts` | 새 API(unofficial-shein by apidojo) 엔드포인트로 교체. 호스트/파라미터/응답파싱 전부 수정 |
+| `app/lib/agent/Coordinator.ts` | SheinProvider 주석 안내 업데이트 (구독 후 활성화 방법) |
+| `.env.example` | RAPIDAPI_HOST_SHEIN 호스트 업데이트 |
+| `app/layout.tsx` | SEO 강화: metadataBase, title template, canonical, OG이미지, googleBot, JSON-LD |
+| `app/opengraph-image.tsx` | 동적 OG 이미지 생성 (Next.js Edge) |
+| `app/robots.ts` | 동적 robots.txt (saved/wishlist/account 추가 차단) |
+| `app/sitemap.ts` | /search 페이지 추가, URL을 potal.app으로 통일 |
+| `public/og-image.svg` | OG 이미지 SVG (fallback) |
 
-**커밋 명령어** (로컬 터미널에서):
+**커밋 명령어** (Mac 터미널):
 ```bash
 cd ~/portal
-git add app/api/ai-suggestions/route.ts app/lib/agent/AnalysisAgent.ts app/lib/ai/prompts/smart-filter.ts app/lib/ai/types.ts app/search/page.tsx components/search/FilterSidebar.tsx
-git commit -m "feat: AI Smart Filter v4.0 + interleaving fix + AnalysisAgent disable
+git add app/lib/search/providers/SheinProvider.ts app/lib/agent/Coordinator.ts .env.example app/layout.tsx app/opengraph-image.tsx app/robots.ts app/sitemap.ts public/og-image.svg SESSION-CONTEXT.md
+git commit -m "feat: Shein API 교체 준비 + SEO 기본 작업
 
-- Upgrade AI Smart Suggestion: gpt-4o-mini → gpt-4o with enriched data (price+site)
-- Add frontend interleaving for Global products (round-robin by site)
-- Fix Select All/Clear right alignment in FilterSidebar
-- Disable AnalysisAgent (saves ~6s timeout per search), ProductJudge handles filtering"
+- SheinProvider: unofficial-shein (apidojo) API로 엔드포인트 교체 (구독 후 활성화)
+- SEO: metadataBase, canonical, JSON-LD (SearchAction), dynamic OG image, robots.ts
+- sitemap: /search 페이지 추가, URL 통일"
 git push origin main
 ```
 
-**로컬 테스트 후 확인할 포인트**:
-- "macbook air" 검색 → AI Smart Suggestion에 Chip/RAM/Storage 축이 나오는지
-- Global 탭 → 상품이 사이트별로 섞여 나오는지 (AliExpress, Temu 교차)
-- RETAILERS 섹션 → Select All/Clear가 오른쪽 정렬인지
-- 검색 속도가 이전보다 ~6초 빨라졌는지 (AnalysisAgent 비활성화 효과)
+**Mac에서 먼저 할 것**:
+```bash
+rm ~/portal/public/robots.txt  # app/robots.ts가 대체
+git push origin main            # 이전 커밋 + 이 커밋 모두 푸시
+```
 
 ---
 
-## 5. Shein API 교체 작업 (다음 할 일)
+## 5. Shein API 활성화 (코드 준비 완료, API 구독 필요)
 
-기존 Shein API(RapidAPI)가 서버 다운되어 환불 처리됨. 새 API 후보:
+**선택한 API**: Unofficial SHEIN by apidojo (`unofficial-shein.p.rapidapi.com`)
+- 엔드포인트: `GET /products/search?keywords=...&country=US&currency=USD&limit=20`
+- 응답: `data.info.products` 배열
 
-| API 이름 | 호스트 | 무료 | 특징 |
-|---------|--------|------|------|
-| **Unofficial SHEIN** (apidojo) | `unofficial-shein` | 무료 티어 있음 | 가장 많이 사용됨, 문서 충실 |
-| **Otapi Shein** | `otapi-shein` | 500건/월 무료 | 이미지 검색 지원 |
-| **Shein Scraper API** | `asyncsolutions` | 확인 필요 | 실시간 추출 |
+**코드 수정 완료** (SheinProvider.ts에 새 API 엔드포인트 적용됨)
 
-**교체 작업 순서**:
-1. RapidAPI에서 새 API 구독
-2. `.env.local`에 `RAPIDAPI_HOST_SHEIN` 업데이트
-3. `app/lib/search/providers/SheinProvider.ts` 수정 (엔드포인트 + 응답 파싱)
-4. `app/lib/agent/Coordinator.ts`에서 SheinProvider import/호출 주석 해제
-5. 테스트 후 커밋/푸시
+**남은 작업 (수동)**:
+1. RapidAPI에서 **Unofficial SHEIN** (apidojo) 구독: https://rapidapi.com/apidojo/api/unofficial-shein
+2. `.env.local`에 추가: `RAPIDAPI_HOST_SHEIN=unofficial-shein.p.rapidapi.com`
+3. `Coordinator.ts`에서 SheinProvider import/인스턴스 주석 해제 (2곳):
+   ```ts
+   import { SheinProvider } from '../search/providers/SheinProvider';
+   const sheinProvider = new SheinProvider();
+   ```
+4. `fetchFromProviders()`의 globalPromises에 Shein 추가:
+   ```ts
+   withTimeout(sheinProvider.search(globalQuery, page), 'Shein'),
+   ```
+5. providerNames 배열에 `'Shein'` 추가
+6. 테스트 후 커밋/푸시
 
 ---
 
@@ -170,7 +185,7 @@ git push origin main
 ### 비활성화 (2개)
 | 리테일러 | 이유 | 해결책 |
 |---------|------|--------|
-| Shein | RapidAPI 서버 다운 → 환불 완료 | 새 API 구독 필요 (위 섹션 참고) |
+| Shein | 기존 API 환불 완료 → 코드 준비 완료 | RapidAPI에서 `unofficial-shein` (apidojo) 구독 → Coordinator 활성화 |
 | Costco | Deals API만 제공 (전체 검색 불가) | 기술적 한계, 시장점유율 1.5%로 우선순위 낮음 |
 
 ---
@@ -211,11 +226,11 @@ git push origin main
 - [x] Select All/Clear 오른쪽 정렬 — 코드 완료, 테스트 필요
 - [x] AnalysisAgent 타임아웃 해결 (비활성화) — 완료
 - [x] BestBuy API 검토 — 현상유지 결정
-- [ ] **Shein API 교체** — 새 API 구독 + SheinProvider 수정 + 활성화
-- [ ] **로컬 테스트 (npm run dev)** — 위 변경사항 확인
-- [ ] **커밋 & 푸시** — Vercel 자동 배포
+- [x] **Shein API 교체** — SheinProvider 코드 수정 완료, **RapidAPI 구독 후 Coordinator 활성화 필요**
+- [ ] **Shein API 구독 + 활성화** — RapidAPI에서 구독 → Coordinator 주석 해제
+- [ ] **커밋 & 푸시** — 2차 변경사항 커밋 후 Vercel 자동 배포
+- [x] SEO 기본 (meta tags, sitemap, robots.ts, Open Graph, JSON-LD) — 완료
 - [ ] 모바일 반응형 디자인 — PC 버전 우선, 이후 모바일
-- [ ] SEO 기본 (meta tags, sitemap, robots.txt, Open Graph)
 - [ ] 어필리에이트 링크 통합 (승인 후)
 
 ### 어필리에이트/비즈니스

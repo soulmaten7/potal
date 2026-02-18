@@ -2,15 +2,17 @@ import type { Product } from '@/app/types/product';
 import type { SearchProvider } from '../types';
 
 /**
- * SheinProvider — Shein Data API (Pinto Studio) via RapidAPI
+ * SheinProvider — Unofficial SHEIN API (apidojo) via RapidAPI
  *
- * Host: shein-data-api.p.rapidapi.com
- * Endpoint: GET /search
- * Params: query(required), page, perPage, countryCode, filter, categoryId,
- *         minPrice, maxPrice, orderBy
+ * Host: unofficial-shein.p.rapidapi.com
+ * Endpoint: GET /products/search
+ * Params: keywords(required), country, currency, language, sort, limit, page
  *
  * Global(International) provider. 중국→미국 직배송 / US warehouse.
  * 배송: 7-14일 기본, Express 감지 시 5일
+ *
+ * 이전 API (shein-data-api.p.rapidapi.com / Pinto Studio)가 서버 다운 → 환불 처리됨
+ * 2026-02-18: apidojo의 Unofficial SHEIN API로 교체
  */
 
 const SHEIN_AFFILIATE = process.env.SHEIN_AFFILIATE_ID || '';
@@ -131,7 +133,8 @@ export class SheinProvider implements SearchProvider {
   readonly name = 'Shein';
   readonly type = 'global' as const;
 
-  private host = process.env.RAPIDAPI_HOST_SHEIN || 'shein-data-api.p.rapidapi.com';
+  // 새 API: Unofficial SHEIN by apidojo
+  private host = process.env.RAPIDAPI_HOST_SHEIN || 'unofficial-shein.p.rapidapi.com';
   private apiKey = process.env.RAPIDAPI_KEY || '';
 
   async search(query: string, page: number = 1): Promise<Product[]> {
@@ -140,119 +143,113 @@ export class SheinProvider implements SearchProvider {
       return [];
     }
 
-    // Shein Data API (Pinto Studio) — 공식 문서 기반
-    // /search/v2 가 503일 때 대안 엔드포인트 시도
-    // trending/bycategory는 perPage 보내면 "perPage is not defined" 에러 → 제거!
-    const q = encodeURIComponent(query);
+    // Unofficial SHEIN API (apidojo) — /products/search 엔드포인트
     const endpoints = [
-      // 1. 공식 문서 예제 (countryCode=US 대문자)
-      `/search/v2?query=${q}&page=${page}&perPage=20&countryCode=US&orderBy=recommend`,
-      // 2. countryCode 없이 (서버 기본값 사용)
-      `/search/v2?query=${q}&page=${page}&perPage=20`,
-      // 3. trending — perPage 없이, 기본값(120) 사용
-      `/product/trending?query=${q}&categoryId=1000&page=${page}&countryCode=US&orderBy=MostPopular`,
-      // 4. bycategory/v2 — perPage 없이
-      `/product/bycategory/v2?query=${q}&categoryId=1000&page=${page}&countryCode=US`,
-      // 5. bycategory (v1) — perPage 없이
-      `/product/bycategory?query=${q}&categoryId=1000&page=${page}&countryCode=US`,
+      // 1. 메인 검색 엔드포인트 (apidojo 공식)
+      `/products/search?keywords=${encodeURIComponent(query)}&language=en&country=US&currency=USD&sort=7&limit=20&page=${page}`,
+      // 2. sort 없이 (기본 정렬)
+      `/products/search?keywords=${encodeURIComponent(query)}&language=en&country=US&currency=USD&limit=20&page=${page}`,
+      // 3. 최소 파라미터 (keywords만)
+      `/products/search?keywords=${encodeURIComponent(query)}&country=US&currency=USD&page=${page}`,
     ];
 
     for (const endpoint of endpoints) {
       const url = `https://${this.host}${endpoint}`;
 
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 10000);
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
 
-      console.log(`🔍 [SheinProvider] Trying: ${endpoint}`);
+        console.log(`🔍 [SheinProvider] Trying: ${endpoint.split('?')[0]}`);
 
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'X-RapidAPI-Key': this.apiKey,
-          'X-RapidAPI-Host': this.host,
-        },
-        signal: controller.signal,
-      });
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'X-RapidAPI-Key': this.apiKey,
+            'X-RapidAPI-Host': this.host,
+          },
+          signal: controller.signal,
+        });
 
-      clearTimeout(timer);
+        clearTimeout(timer);
 
-      if (!res.ok) {
-        const errBody = await res.text().catch(() => '');
-        console.error(`❌ [SheinProvider] ${res.status} from ${endpoint}`, errBody.slice(0, 500));
-        continue;
-      }
-
-      const data = await res.json();
-
-      // Handle various response shapes from Shein Data API
-      const items: Record<string, unknown>[] =
-        Array.isArray(data)
-          ? data
-          : Array.isArray(data?.data?.products)
-            ? data.data.products
-            : Array.isArray(data?.data?.items)
-              ? data.data.items
-              : Array.isArray(data?.data?.list)
-                ? data.data.list
-                : Array.isArray(data?.products)
-                  ? data.products
-                  : Array.isArray(data?.info?.products)
-                    ? data.info.products
-                    : Array.isArray(data?.result)
-                      ? data.result
-                      : Array.isArray(data?.goods)
-                        ? data.goods
-                        : Array.isArray(data?.data)
-                          ? data.data
-                          : [];
-
-      if (items.length === 0) {
-        // Deep scan: find first array with objects
-        const findArray = (obj: Record<string, unknown>): Record<string, unknown>[] => {
-          for (const key of Object.keys(obj)) {
-            const val = obj[key];
-            if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
-              return val as Record<string, unknown>[];
-            }
-            if (val && typeof val === 'object' && !Array.isArray(val)) {
-              const nested = findArray(val as Record<string, unknown>);
-              if (nested.length > 0) return nested;
-            }
-          }
-          return [];
-        };
-
-        const deepItems = findArray(data);
-        if (deepItems.length > 0) {
-          console.log(`✅ [SheinProvider] ${deepItems.length} products (deep scan)`);
-          return deepItems
-            .slice(0, 20)
-            .map((item, i) => mapItemToProduct(item, i, query))
-            .filter((p) => (p.parsedPrice ?? 0) > 0);
+        if (!res.ok) {
+          const errBody = await res.text().catch(() => '');
+          console.error(`❌ [SheinProvider] ${res.status} from ${endpoint.split('?')[0]}`, errBody.slice(0, 500));
+          continue;
         }
 
-        console.warn('⚠️ [SheinProvider] No products found in response');
-        continue;
+        const data = await res.json();
+
+        // Unofficial SHEIN API 응답 구조: data.info.products (주로)
+        // 다양한 응답 구조에 대한 fallback 파싱
+        const items: Record<string, unknown>[] =
+          Array.isArray(data?.info?.products)
+            ? data.info.products
+            : Array.isArray(data?.data?.products)
+              ? data.data.products
+              : Array.isArray(data?.products)
+                ? data.products
+                : Array.isArray(data?.data?.items)
+                  ? data.data.items
+                  : Array.isArray(data?.data?.list)
+                    ? data.data.list
+                    : Array.isArray(data?.info?.items)
+                      ? data.info.items
+                      : Array.isArray(data?.result)
+                        ? data.result
+                        : Array.isArray(data?.data)
+                          ? data.data
+                          : Array.isArray(data)
+                            ? data
+                            : [];
+
+        if (items.length === 0) {
+          // Deep scan: find first array with objects
+          const findArray = (obj: Record<string, unknown>): Record<string, unknown>[] => {
+            for (const key of Object.keys(obj)) {
+              const val = obj[key];
+              if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
+                return val as Record<string, unknown>[];
+              }
+              if (val && typeof val === 'object' && !Array.isArray(val)) {
+                const nested = findArray(val as Record<string, unknown>);
+                if (nested.length > 0) return nested;
+              }
+            }
+            return [];
+          };
+
+          const deepItems = findArray(data);
+          if (deepItems.length > 0) {
+            console.log(`✅ [SheinProvider] ${deepItems.length} products (deep scan)`);
+            return deepItems
+              .slice(0, 20)
+              .map((item, i) => mapItemToProduct(item, i, query))
+              .filter((p) => (p.parsedPrice ?? 0) > 0);
+          }
+
+          console.warn(`⚠️ [SheinProvider] No products found from ${endpoint.split('?')[0]}`);
+          continue;
+        }
+
+        console.log(`✅ [SheinProvider] ${items.length} products found`);
+
+        const results = items
+          .slice(0, 20)
+          .map((item, i) => mapItemToProduct(item, i, query))
+          .filter((p) => (p.parsedPrice ?? 0) > 0);
+
+        if (results.length > 0) return results;
+
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (message.includes('abort')) {
+          console.warn(`⏱️ [SheinProvider] Timeout`);
+        } else {
+          console.warn(`⚠️ [SheinProvider] Error: ${message}`);
+        }
       }
-
-      console.log(`✅ [SheinProvider] ${items.length} products found`);
-
-      const results = items
-        .slice(0, 20)
-        .map((item, i) => mapItemToProduct(item, i, query))
-        .filter((p) => (p.parsedPrice ?? 0) > 0);
-
-      if (results.length > 0) return results;
-
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (message.includes('abort')) {
-        console.warn(`⏱️ [SheinProvider] Timeout`);
-      } else {
-        console.warn(`⚠️ [SheinProvider] Error: ${message}`);
-      }
-    }
     } // end for endpoints
 
     console.warn('⚠️ [SheinProvider] All endpoints returned 0 results');

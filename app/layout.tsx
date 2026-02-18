@@ -26,25 +26,52 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "POTAL - Global Best Price vs Local Fast Delivery",
+  metadataBase: new URL("https://potal.app"),
+  title: {
+    default: "POTAL - Global Best Price vs Local Fast Delivery",
+    template: "%s | POTAL",
+  },
   description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu. AI-powered shopping agent finds the best deal instantly.",
-  keywords: ["price comparison", "shopping agent", "best price", "AI shopping", "Amazon", "Walmart", "eBay", "AliExpress", "Temu"],
+  keywords: ["price comparison", "shopping agent", "best price", "AI shopping", "Amazon", "Walmart", "eBay", "AliExpress", "Temu", "Shein", "best deal", "online shopping"],
+  alternates: {
+    canonical: "https://potal.app",
+  },
   openGraph: {
     type: "website",
     siteName: "POTAL",
     title: "POTAL - Global Best Price vs Local Fast Delivery",
-    description: "Compare prices across 7 major retailers. AI-powered shopping agent finds the best deal instantly.",
+    description: "Compare prices across 7+ major retailers. AI-powered shopping agent finds the best deal instantly.",
     url: "https://potal.app",
     locale: "en_US",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "POTAL - AI Shopping Comparison Agent",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "POTAL - AI Shopping Agent",
     description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu in one search.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // Google Search Console 인증 후 추가
+    // google: "your-google-verification-code",
   },
 };
 
@@ -56,6 +83,27 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900 bg-slate-50`}>
+        {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "POTAL",
+              url: "https://potal.app",
+              description: "AI-powered global shopping comparison agent. Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: {
+                  "@type": "EntryPoint",
+                  urlTemplate: "https://potal.app/search?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
         
         <SupabaseProvider>

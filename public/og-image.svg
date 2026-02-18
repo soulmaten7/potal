@@ -1,0 +1,18 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="580" width="1200" height="50" fill="url(#accent)" opacity="0.8"/>
+  <text x="600" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="800" fill="white" text-anchor="middle">POTAL</text>
+  <text x="600" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#94a3b8" text-anchor="middle">Global Best Price vs Local Fast Delivery</text>
+  <text x="600" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#64748b" text-anchor="middle">Amazon | Walmart | eBay | BestBuy | Target | AliExpress | Temu</text>
+  <text x="600" y="610" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="white" text-anchor="middle" opacity="0.9">AI-Powered Shopping Comparison Agent</text>
+</svg>
