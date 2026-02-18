@@ -220,7 +220,7 @@ export function ResultsGrid({
                   <span className="text-[11px] font-bold text-slate-400">?</span>
                 </button>
                 {activeTooltipId === 'best-info' && (
-                  <div className="absolute top-8 left-0 z-50 w-[340px] bg-white border border-slate-200 rounded-xl shadow-xl p-5 animate-in fade-in slide-in-from-top-2">
+                  <div className="absolute top-8 left-0 z-50 w-[calc(100vw-2rem)] sm:w-[340px] bg-white border border-slate-200 rounded-xl shadow-xl p-4 sm:p-5 animate-in fade-in slide-in-from-top-2">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-extrabold text-[#02122c]">How POTAL Ranks &quot;Best&quot;</h4>
                       <button onClick={() => setActiveTooltipId(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
@@ -328,7 +328,7 @@ export function ResultsGrid({
                             <InfoIcon className="w-3 h-3" /> Sales Tax Info
                         </button>
                         {isDomesticTaxOpen && (
-                            <div className="absolute top-full right-0 mt-2 w-[340px] bg-white rounded-xl shadow-2xl border border-slate-100 p-5 z-50 animate-fadeIn text-left max-h-[75vh] overflow-y-auto">
+                            <div className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[340px] bg-white rounded-xl shadow-2xl border border-slate-100 p-4 sm:p-5 z-50 animate-fadeIn text-left max-h-[75vh] overflow-y-auto">
                                 <div className="flex justify-between items-center mb-3"><h4 className="font-bold text-slate-900 text-sm">🇺🇸 US Sales Tax — How It Works</h4><button onClick={() => setIsDomesticTaxOpen(false)} className="text-slate-400 hover:text-slate-600"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button></div>
 
                                 <p className="text-[11px] leading-relaxed text-slate-600 mb-3">POTAL estimates sales tax using your <strong>ZIP code</strong> and each state&apos;s combined tax rate (state + local average). The actual amount is finalized at checkout by the retailer.</p>
@@ -414,7 +414,7 @@ export function ResultsGrid({
                             <InfoIcon className="w-3 h-3" /> Import Tax Info
                         </button>
                         {isGlobalInfoOpen && (
-                            <div className="absolute top-full right-0 mt-2 w-[380px] bg-white rounded-xl shadow-2xl border border-slate-100 p-5 z-50 animate-fadeIn text-left max-h-[80vh] overflow-y-auto">
+                            <div className="absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[380px] bg-white rounded-xl shadow-2xl border border-slate-100 p-4 sm:p-5 z-50 animate-fadeIn text-left max-h-[80vh] overflow-y-auto">
                                 <div className="flex justify-between items-center mb-3"><h4 className="font-bold text-slate-900 text-sm">🌏 Global Import Tax — Full Breakdown</h4><button onClick={() => setIsGlobalInfoOpen(false)} className="text-slate-400 hover:text-slate-600"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button></div>
 
                                 <p className="text-[11px] leading-relaxed text-slate-600 mb-3">POTAL calculates <strong>Total Landed Cost</strong> — the actual price including product + shipping + import duties + processing fees. This is what you really pay when buying from overseas.</p>

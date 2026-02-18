@@ -66,17 +66,17 @@ export function Header() {
   return (
     <>
       <header className="bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000]">
-        <div className="max-w-[1440px] mx-auto px-6 h-[80px] flex items-center justify-between shrink-0">
+        <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
           
           {/* [수정] 로고에도 cursor-pointer 추가 */}
           <button 
             onClick={resetToHome} 
-            className="text-3xl font-extrabold text-white tracking-tight hover:opacity-90 focus:outline-none cursor-pointer"
+            className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight hover:opacity-90 focus:outline-none cursor-pointer"
           >
             POTAL
           </button>
 
-          <div className="flex items-center gap-6 text-white">
+          <div className="flex items-center gap-3 sm:gap-6 text-white">
             <Link href="/help" className="text-sm font-bold hover:text-slate-200 hidden sm:block cursor-pointer">HELP</Link>
             
             <div className="relative" ref={currencyDropdownRef}>

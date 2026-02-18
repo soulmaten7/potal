@@ -144,28 +144,20 @@ git push origin main            # 이전 커밋 + 이 커밋 모두 푸시
 
 ---
 
-## 5. Shein API 활성화 (코드 준비 완료, API 구독 필요)
+## 5. Shein API 현황 (2026-02-18 확인)
 
-**선택한 API**: Unofficial SHEIN by apidojo (`unofficial-shein.p.rapidapi.com`)
-- 엔드포인트: `GET /products/search?keywords=...&country=US&currency=USD&limit=20`
-- 응답: `data.info.products` 배열
+**RapidAPI Shein API 전멸 상태**:
+- Unofficial SHEIN (apidojo): RapidAPI에서 삭제됨
+- Shein Business API (sheinBusiness): 500 에러 / "failed after 5 attempts"
+- Shein Scraper API (AsyncSolutions): 보안 강화로 공식 중단
+- 기존 Pinto Studio: 서버 다운 (환불 완료)
 
-**코드 수정 완료** (SheinProvider.ts에 새 API 엔드포인트 적용됨)
+**대안: CJ Affiliate API로 Shein 연동**
+- CJ Partners에서 SHEIN (Advertiser ID: 3773223) 발견 — 상품 1.36억 개
+- CJ Product Search API를 통해 상품 검색 + 어필리에이트 수익 동시 해결 가능
+- **선행 조건**: US 주소 활성화 → SHEIN Apply to Program → 승인 → CJ API 키 발급
 
-**남은 작업 (수동)**:
-1. RapidAPI에서 **Unofficial SHEIN** (apidojo) 구독: https://rapidapi.com/apidojo/api/unofficial-shein
-2. `.env.local`에 추가: `RAPIDAPI_HOST_SHEIN=unofficial-shein.p.rapidapi.com`
-3. `Coordinator.ts`에서 SheinProvider import/인스턴스 주석 해제 (2곳):
-   ```ts
-   import { SheinProvider } from '../search/providers/SheinProvider';
-   const sheinProvider = new SheinProvider();
-   ```
-4. `fetchFromProviders()`의 globalPromises에 Shein 추가:
-   ```ts
-   withTimeout(sheinProvider.search(globalQuery, page), 'Shein'),
-   ```
-5. providerNames 배열에 `'Shein'` 추가
-6. 테스트 후 커밋/푸시
+**결론**: Shein은 보류. US 주소 활성화 후 CJ API로 연동하는 것이 최선의 경로
 
 ---
 
@@ -185,7 +177,7 @@ git push origin main            # 이전 커밋 + 이 커밋 모두 푸시
 ### 비활성화 (2개)
 | 리테일러 | 이유 | 해결책 |
 |---------|------|--------|
-| Shein | 기존 API 환불 완료 → 코드 준비 완료 | RapidAPI에서 `unofficial-shein` (apidojo) 구독 → Coordinator 활성화 |
+| Shein | RapidAPI API 전부 죽음 (보안 강화) | US 주소 활성화 후 CJ Affiliate API로 연동 예정 |
 | Costco | Deals API만 제공 (전체 검색 불가) | 기술적 한계, 시장점유율 1.5%로 우선순위 낮음 |
 
 ---
@@ -226,8 +218,7 @@ git push origin main            # 이전 커밋 + 이 커밋 모두 푸시
 - [x] Select All/Clear 오른쪽 정렬 — 코드 완료, 테스트 필요
 - [x] AnalysisAgent 타임아웃 해결 (비활성화) — 완료
 - [x] BestBuy API 검토 — 현상유지 결정
-- [x] **Shein API 교체** — SheinProvider 코드 수정 완료, **RapidAPI 구독 후 Coordinator 활성화 필요**
-- [ ] **Shein API 구독 + 활성화** — RapidAPI에서 구독 → Coordinator 주석 해제
+- [ ] **Shein 연동** — RapidAPI 전멸 → US 주소 활성화 후 CJ Affiliate API로 연동 예정
 - [ ] **커밋 & 푸시** — 2차 변경사항 커밋 후 Vercel 자동 배포
 - [x] SEO 기본 (meta tags, sitemap, robots.ts, Open Graph, JSON-LD) — 완료
 - [ ] 모바일 반응형 디자인 — PC 버전 우선, 이후 모바일

@@ -576,7 +576,7 @@ function SearchContent() {
 
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 w-12 h-12 bg-[#02122c] text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-[#F59E0B] transition-all duration-300 z-[999] ${showTopBtn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+        className={`fixed bottom-20 sm:bottom-8 right-4 sm:right-8 w-10 h-10 sm:w-12 sm:h-12 bg-[#02122c] text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-[#F59E0B] transition-all duration-300 z-[999] ${showTopBtn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
       >
         <Icons.ArrowUp className="w-6 h-6" />
       </button>

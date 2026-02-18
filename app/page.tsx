@@ -418,7 +418,7 @@ function HomeContent() {
           /* --- HOME MODE --- */
           <div className="min-h-screen hero-pattern">
             <section className="py-12">
-              <div className="max-w-[1440px] mx-auto px-6">
+              <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
                 <HeroVisuals />
                 <div className="mt-8">
                   <SearchWidget 
@@ -434,7 +434,7 @@ function HomeContent() {
             
             {/* How POTAL Works — 3-Step Visual Guide */}
             <section className="bg-white text-slate-700 py-16 pb-24">
-                <div className="max-w-[1440px] mx-auto px-6">
+                <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
                     <h2 className="text-3xl font-extrabold text-[#02122c] mb-2">How POTAL Works</h2>
                     <p className="text-slate-500 mb-10 text-[15px] max-w-xl">One search. 8 retailers. The lowest total price including shipping and tax — found in seconds.</p>
 

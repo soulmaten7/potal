@@ -138,8 +138,8 @@ export function Footer() {
         </div>
       )}
 
-      <div className="max-w-[1440px] mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 lg:gap-12 items-start">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 items-start">
           
           <div className="flex flex-col items-start gap-4 pt-1"> 
             <Link href="/" className="text-3xl font-extrabold text-white tracking-tight cursor-pointer">POTAL</Link>
