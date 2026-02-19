@@ -2,7 +2,7 @@
 
 > 이 파일은 새 AI 세션이 프로젝트의 현재 상태를 완벽히 이해할 수 있도록 작성된 컨텍스트 문서입니다.
 > 새 세션 시작 시: "POTAL 프로젝트 작업을 이어서 하려고 해. /Users/maegbug/portal 에 있는 SESSION-CONTEXT.md 파일을 먼저 읽고 시작해줘." 라고 말하면 됩니다.
-> **마지막 업데이트: 2026-02-18 (2차 — Shein API 준비 + SEO 작업)**
+> **마지막 업데이트: 2026-02-19 (3차 — .env.local 정리 + API 변경이력 추가)**
 
 ---
 
@@ -15,7 +15,8 @@ POTAL은 AI 기반 글로벌 쇼핑 비교 에이전트로, 여러 리테일러(
 - **배포**: Vercel Pro (`potal.app`)
 - **AI**: OpenAI GPT-4o / GPT-4o-mini (검색 분석, 스마트 필터, 관련성 판단)
 - **인증**: Supabase Auth
-- **상품 API**: RapidAPI (Amazon/Walmart/BestBuy/eBay/Target/AliExpress) + Apify (Temu)
+- **상품 API**: RapidAPI (Amazon/Walmart/BestBuy/eBay/Target/AliExpress) + **Apify (Temu)**
+- **⚠️ Temu는 Apify를 사용합니다!** Actor: `amit123/temu-products-scraper`, 결제 중 ($5/월 무료 크레딧). RapidAPI Temu는 구독자 1명/리뷰 0개로 거부됨.
 
 ---
 
@@ -42,7 +43,7 @@ portal/
 │   │   │   │   ├── EbayProvider.ts     # ✅ 작동
 │   │   │   │   ├── TargetProvider.ts   # ✅ 작동
 │   │   │   │   ├── AliExpressProvider.ts # ✅ 작동
-│   │   │   │   ├── TemuProvider.ts     # ✅ 작동 (Apify Actor)
+│   │   │   │   ├── TemuProvider.ts     # ✅ 작동 (Apify Actor: amit123/temu-products-scraper) ⚠️ RapidAPI 아님!
 │   │   │   │   ├── SheinProvider.ts    # ❌ 비활성화 (API 서버 다운 → 환불 처리됨)
 │   │   │   │   └── CostcoProvider.ts   # ❌ 비활성화 (Deals API만 제공)
 │   │   │   ├── FraudFilter.ts          # 규칙 기반 사기 상품 필터
@@ -172,7 +173,7 @@ git push origin main            # 이전 커밋 + 이 커밋 모두 푸시
 | eBay | RapidAPI `real-time-ebay-data` | ✅ 정상 | .com TLD 고정 |
 | Target | RapidAPI `target13` | ✅ 정상 | store_id 기반 |
 | AliExpress | RapidAPI `aliexpress-data` | ✅ 정상 | country_code 변경 가능 |
-| Temu | Apify `amit123~temu-products-scraper` | ✅ 정상 | 자체 30초 타임아웃, ~$1.18/1K상품 |
+| Temu | **Apify** `amit123/temu-products-scraper` | ✅ 정상 | 결제 중 ($5/월 무료), 45초 타임아웃, 7-15초 소요. ⚠️ RapidAPI Temu는 거부됨 (구독자1/리뷰0) |
 
 ### 비활성화 (2개)
 | 리테일러 | 이유 | 해결책 |
@@ -255,10 +256,70 @@ git push origin main            # 이전 커밋 + 이 커밋 모두 푸시
 - Target: 4단계 deep scan
 - eBay: 6레벨 fallback
 
-### 환경 변수
-- 모든 API 키는 `.env.local`에 저장 (절대 커밋하지 않음)
-- `.env.example`에 템플릿 제공
-- RapidAPI 호스트는 환경 변수로 관리 (Provider 교체 용이)
+### 환경 변수 (.env.local) — ⚠️ 새 세션 필독
+
+> **절대 .env.local을 임의로 수정하지 마세요!** 아래 정보가 정확한 최신 상태입니다.
+
+**.env.local 현재 사용 중인 키 목록** (2026-02-19 기준):
+
+```
+# RapidAPI (모든 Provider 공통 키)
+RAPIDAPI_KEY=862297c953msh...  (하나의 키로 모든 리테일러 접근)
+
+# Provider별 호스트 (DOMESTIC)
+RAPIDAPI_HOST_AMAZON=real-time-amazon-data.p.rapidapi.com
+RAPIDAPI_HOST_WALMART=realtime-walmart-data.p.rapidapi.com
+RAPIDAPI_HOST_BESTBUY=bestbuy-usa.p.rapidapi.com
+RAPIDAPI_HOST_EBAY=real-time-ebay-data.p.rapidapi.com
+RAPIDAPI_HOST_TARGET=target-com-shopping-api.p.rapidapi.com
+
+# Provider별 호스트 (GLOBAL)
+RAPIDAPI_HOST_ALIEXPRESS=aliexpress-data.p.rapidapi.com
+# ⚠️ Temu는 RapidAPI 아님! 아래 Apify 섹션 참고
+
+# Apify (Temu 전용 — 결제 중!)
+APIFY_API_TOKEN=apify_api_3gWV...
+
+# OpenAI, Supabase, Analytics
+OPENAI_API_KEY=sk-proj-...
+NEXT_PUBLIC_SUPABASE_URL=https://zyurflkhiregundhisky.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
+NEXT_PUBLIC_GA_ID=G-NQMDNW7CXP
+
+# 어필리에이트
+AMAZON_AFFILIATE_TAG=soulmaten7-20
+TEMU_AFFILIATE_CODE=alb130077
+EBAY_CAMPAIGN_ID=5339138476
+ALIEXPRESS_APP_KEY / ALIEXPRESS_APP_SECRET
+CJ_PERSONAL_TOKEN / CJ_PROPERTY_ID
+```
+
+**사용하지 않는 키** (주석 처리됨):
+- `RAPIDAPI_HOST_TEMU` — RapidAPI Temu는 거부됨 (구독자1/리뷰0). **절대 추가하지 마세요.**
+- `RAPIDAPI_HOST_SHEIN` — Shein API 전멸. CJ Affiliate API로 전환 예정.
+- `RAPIDAPI_HOST_COSTCO` — Deals API만 제공, 비활성화.
+
+### API 변경 이력 (헷갈리지 않도록 기록)
+
+| 날짜 | 변경 | 상세 |
+|------|------|------|
+| 2026-02 초 | **Temu: Apify 선택** | RapidAPI Temu(구독자1/리뷰0) vs Apify(검증됨/339유저/3.9점) 비교 후 **Apify 선택**. Actor: `amit123/temu-products-scraper`. 테스트 성공(40상품/7초/$0.05). **결제 중 ($5/월 무료 크레딧)**. |
+| 2026-02 초 | **Target: 호스트 변경** | `target13.p.rapidapi.com` → `target-com-shopping-api.p.rapidapi.com` |
+| 2026-02-18 | **Shein: API 전멸 확인** | RapidAPI의 모든 Shein API(apidojo, sheinBusiness, AsyncSolutions, Pinto) 전부 중단/삭제. CJ Affiliate API로 대체 예정. |
+| 2026-02-18 | ⚠️ **다른 세션이 TemuProvider를 RapidAPI로 잘못 교체** | TemuProvider.ts 코드가 Apify→RapidAPI로 변경됨. **이는 잘못된 변경이며 Apify로 되돌려야 함.** |
+| 2026-02-19 | **.env.local 복원** | APIFY_API_TOKEN 복원, RAPIDAPI_HOST_TEMU 제거. TemuProvider.ts 코드도 Apify로 복원 필요. |
+
+### ⚠️ TemuProvider.ts 복원 필요
+
+**현재 문제**: TemuProvider.ts 코드가 다른 세션에서 RapidAPI 방식으로 잘못 바뀜.
+**해야 할 일**: Apify Actor 호출 방식으로 되돌려야 함.
+**Apify 호출 방식**:
+- URL: `https://api.apify.com/v2/acts/amit123~temu-products-scraper/run-sync-get-dataset-items`
+- Method: POST
+- Body: `{ "keyword": "검색어" }`
+- Header: `Authorization: Bearer ${APIFY_API_TOKEN}`
+- 타임아웃: 45초 (Actor 실행 7-15초)
+- 응답: 상품 배열 직접 반환
 
 ---
 
@@ -291,5 +352,7 @@ POTAL 프로젝트 작업을 이어서 하려고 해.
 1. **git index.lock**: 가끔 `.git/index.lock` 파일이 남아있을 수 있음. `rm .git/index.lock`으로 해결.
 2. **Vercel 배포**: `main` 브랜치에 푸시하면 자동 배포. 도메인: `potal.app`
 3. **API 비용**: OpenAI 사용량 주의. gpt-4o는 gpt-4o-mini보다 ~20배 비싸므로 Smart Suggestion만 gpt-4o 사용, 나머지는 gpt-4o-mini.
-4. **Temu Apify**: 월 $5 무료 크레딧, 1000개 상품당 ~$1.18. 트래픽 늘면 비용 관리 필요.
-5. **Shein API 환불**: RapidAPI에서 환불 처리 완료. 새 API 구독 전 테스트 필수.
+4. **⚠️ Temu는 Apify 사용!** `APIFY_API_TOKEN`이 필수. RapidAPI Temu는 거부됨(구독자1/리뷰0). `RAPIDAPI_HOST_TEMU`를 절대 추가하지 마세요. Actor: `amit123/temu-products-scraper`.
+5. **⚠️ Target 호스트 변경됨**: `target13.p.rapidapi.com`이 아니라 `target-com-shopping-api.p.rapidapi.com`입니다.
+6. **⚠️ .env.local 수정 금지**: 새 세션에서 .env.local을 "정리"하거나 "최적화"하려고 건드리지 마세요. 현재 상태가 정확합니다. 수정이 필요하면 이 SESSION-CONTEXT.md의 "환경 변수" 섹션을 먼저 확인하세요.
+7. **Shein API 환불 완료**: RapidAPI Shein API는 전부 죽었음. CJ Affiliate API로 대체 예정 (US 주소 필요).

@@ -439,7 +439,7 @@ export class Coordinator {
     const globalPromises = fetchGlobal
       ? Promise.allSettled([
           withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
-          temuProvider.search(globalQuery, page), // Temu는 자체 30초 타임아웃 (Apify Actor 7-15초)
+          temuProvider.search(globalQuery, page), // Temu — Apify Actor (30초 자체 타임아웃, 7-15초 소요)
         ])
       : Promise.resolve([]);
 

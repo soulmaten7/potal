@@ -4,32 +4,36 @@ import type { SearchProvider } from '../types';
 /**
  * TemuProvider — Apify Actor (amit123/temu-products-scraper)
  *
+ * ⚠️ Temu는 Apify를 사용합니다! RapidAPI가 아닙니다!
+ * ⚠️ RapidAPI Temu는 구독자1/리뷰0으로 거부됨 — 절대 교체하지 마세요.
+ *
  * Apify 동기 실행 API: run-sync-get-dataset-items
  * 검색어를 보내면 Temu 상품 목록을 JSON 배열로 반환
  *
+ * 환경변수: APIFY_API_TOKEN (필수), TEMU_AFFILIATE_CODE (선택)
+ * 결제 중: 월 $5 무료 크레딧, 초과 시 $1.20/1000상품
+ *
  * Global(International) provider. 중국→미국 직배송.
  * 배송: 7-15일 기본
- *
- * 비용: ~$1.18 / 1,000건, 무료 $5 크레딧/월
  */
 
-// 환경변수를 런타임에 읽도록 함수로 변경 (Vercel 호환)
-const getApifyToken = () => process.env.APIFY_API_TOKEN || '';
-const getTemuAffiliate = () => process.env.TEMU_AFFILIATE_CODE || '';
+const APIFY_TOKEN = process.env.APIFY_API_TOKEN || '';
+const TEMU_AFFILIATE = process.env.TEMU_AFFILIATE_CODE || '';
 const ACTOR_ID = 'amit123~temu-products-scraper';
 const TIMEOUT_MS = 30_000; // Apify Actor 실행은 7~15초 소요
 
 // ── Affiliate ──
 function appendTemuAffiliate(url: string): string {
-  if (!getTemuAffiliate()) return url;
+  if (!TEMU_AFFILIATE) return url;
   const sep = url.includes('?') ? '&' : '?';
-  return `${url}${sep}aff_code=${encodeURIComponent(getTemuAffiliate())}`;
+  return `${url}${sep}aff_code=${encodeURIComponent(TEMU_AFFILIATE)}`;
 }
 
 function buildTemuLink(url: string | undefined, query: string): string {
-  const base = (url && typeof url === 'string' && url.startsWith('http'))
-    ? url
-    : `https://www.temu.com/search_result.html?search_key=${encodeURIComponent(query)}`;
+  const base =
+    url && typeof url === 'string' && url.startsWith('http')
+      ? url
+      : `https://www.temu.com/search_result.html?search_key=${encodeURIComponent(query)}`;
   return appendTemuAffiliate(base);
 }
 
@@ -45,7 +49,8 @@ function parsePriceStr(raw: unknown): { priceStr: string; priceNum: number } {
 
 // ── Image normalization ──
 function normalizeImage(item: Record<string, unknown>): string {
-  const thumb = item.thumb_url ?? item.image ?? item.imageUrl ?? item.thumbnail;
+  const thumb =
+    item.thumb_url ?? item.image ?? item.imageUrl ?? item.thumbnail;
   if (typeof thumb === 'string' && thumb.trim()) {
     let url = thumb.trim();
     if (url.startsWith('//')) url = `https:${url}`;
@@ -61,7 +66,7 @@ function mapItemToProduct(
   query: string,
 ): Product {
   const title = String(
-    item.title ?? item.name ?? item.goods_name ?? 'Temu Product'
+    item.title ?? item.name ?? item.goods_name ?? 'Temu Product',
   ).trim();
 
   // Price — try price_info.price_str first, then direct price
@@ -70,21 +75,30 @@ function mapItemToProduct(
 
   const priceInfo = item.price_info as Record<string, unknown> | undefined;
   if (priceInfo) {
-    const parsed = parsePriceStr(priceInfo.price_str ?? priceInfo.price ?? priceInfo.sale_price);
+    const parsed = parsePriceStr(
+      priceInfo.price_str ?? priceInfo.price ?? priceInfo.sale_price,
+    );
     priceStr = parsed.priceStr;
     priceNum = parsed.priceNum;
   }
 
+  // Fallback: direct price fields
   if (priceNum === 0) {
-    const parsed = parsePriceStr(item.price ?? item.salePrice ?? item.sale_price);
+    const parsed = parsePriceStr(
+      item.price ?? item.salePrice ?? item.sale_price,
+    );
     priceStr = parsed.priceStr;
     priceNum = parsed.priceNum;
   }
 
-  // Original price for discount
+  // Original price for discount display
   let originalPrice = 0;
   if (priceInfo) {
-    const orig = parsePriceStr(priceInfo.market_price_str ?? priceInfo.market_price ?? priceInfo.original_price);
+    const orig = parsePriceStr(
+      priceInfo.market_price_str ??
+        priceInfo.market_price ??
+        priceInfo.original_price,
+    );
     originalPrice = orig.priceNum;
   }
 
@@ -93,19 +107,26 @@ function mapItemToProduct(
   const rawUrl = item.link_url ?? item.url ?? item.product_url;
   const link = buildTemuLink(rawUrl as string | undefined, query);
 
-  // Rating
+  // Rating — from comment object or direct
   let rating = 0;
   let reviewCount = 0;
   const comment = item.comment as Record<string, unknown> | undefined;
   if (comment) {
-    rating = parseFloat(String(comment.goods_score ?? comment.rating ?? 0)) || 0;
-    reviewCount = parseInt(String(comment.comment_num ?? comment.review_count ?? 0), 10) || 0;
+    rating =
+      parseFloat(String(comment.goods_score ?? comment.rating ?? 0)) || 0;
+    reviewCount =
+      parseInt(
+        String(comment.comment_num ?? comment.review_count ?? 0),
+        10,
+      ) || 0;
   }
   if (rating === 0) {
-    rating = parseFloat(String(item.rating ?? item.goods_score ?? 0)) || 0;
+    rating =
+      parseFloat(String(item.rating ?? item.goods_score ?? 0)) || 0;
   }
   if (reviewCount === 0) {
-    reviewCount = parseInt(String(item.review_count ?? item.reviewCount ?? 0), 10) || 0;
+    reviewCount =
+      parseInt(String(item.review_count ?? item.reviewCount ?? 0), 10) || 0;
   }
 
   // Sales count
@@ -119,8 +140,10 @@ function mapItemToProduct(
   if (reviewCount > 100) trustScore += 5;
 
   const itemId = String(
-    item.goods_id ?? item.product_id ?? item.id ?? `temu_${index}`
+    item.goods_id ?? item.product_id ?? item.id ?? `temu_${index}`,
   );
+
+  const parsedDeliveryDays = 10;
 
   // Badges
   const badges: string[] = [];
@@ -145,7 +168,7 @@ function mapItemToProduct(
     category: 'global' as const,
     deliveryDays: '7-15 Business Days',
     delivery: 'Standard Shipping',
-    parsedDeliveryDays: 10,
+    parsedDeliveryDays,
     shippingPrice: 0,
     totalPrice: priceNum,
     trustScore,
@@ -160,9 +183,8 @@ export class TemuProvider implements SearchProvider {
   readonly type = 'global' as const;
 
   async search(query: string, page: number = 1): Promise<Product[]> {
-    const token = getApifyToken();
-    if (!token) {
-      console.warn('⚠️ [TemuProvider] No APIFY_API_TOKEN — skipping. Available env keys:', Object.keys(process.env).filter(k => k.includes('APIFY') || k.includes('apify')).join(', ') || 'NONE');
+    if (!APIFY_TOKEN) {
+      console.warn('⚠️ [TemuProvider] No APIFY_API_TOKEN — skipping');
       return [];
     }
 
@@ -175,8 +197,8 @@ export class TemuProvider implements SearchProvider {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-      // Apify 동기 실행 — Actor 실행 + 데이터셋 결과를 한번에 반환
-      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${token}`;
+      // Apify 동기 실행 API — Actor 실행 + 결과를 한번에 반환
+      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
 
       const res = await fetch(url, {
         method: 'POST',
@@ -192,20 +214,28 @@ export class TemuProvider implements SearchProvider {
 
       if (!res.ok) {
         const errBody = await res.text().catch(() => '');
-        console.error(`❌ [TemuProvider] ${res.status}:`, errBody.slice(0, 300));
+        console.error(
+          `❌ [TemuProvider] ${res.status}:`,
+          errBody.slice(0, 300),
+        );
         return [];
       }
 
       const data = await res.json();
 
-      // run-sync-get-dataset-items는 상품 배열을 직접 반환
+      // 응답은 상품 배열 직접 반환 (run-sync-get-dataset-items)
       let items: Record<string, unknown>[] = [];
 
       if (Array.isArray(data)) {
         items = data;
       } else if (data && typeof data === 'object') {
-        for (const [key, val] of Object.entries(data as Record<string, unknown>)) {
+        for (const [key, val] of Object.entries(
+          data as Record<string, unknown>,
+        )) {
           if (Array.isArray(val) && val.length > 0) {
+            console.log(
+              `[TemuProvider] Found array in key "${key}": ${val.length} items`,
+            );
             items = val;
             break;
           }
@@ -213,18 +243,34 @@ export class TemuProvider implements SearchProvider {
       }
 
       if (items.length === 0) {
-        console.warn('⚠️ [Temu] No products in response');
+        console.warn('⚠️ [TemuProvider] No products in response');
+        console.log(
+          `[TemuProvider] Response sample:`,
+          JSON.stringify(data).slice(0, 500),
+        );
         return [];
+      }
+
+      console.log(`✅ [TemuProvider] ${items.length} raw items from Apify`);
+
+      if (items.length > 0 && typeof items[0] === 'object') {
+        console.log(
+          `[TemuProvider] First item keys:`,
+          Object.keys(items[0] as Record<string, unknown>).slice(0, 15),
+        );
       }
 
       const products = items
         .slice(0, 30)
-        .map((item, i) => mapItemToProduct(item as Record<string, unknown>, i, trimmed))
+        .map((item, i) =>
+          mapItemToProduct(item as Record<string, unknown>, i, trimmed),
+        )
         .filter((p) => (p.parsedPrice ?? 0) > 0);
 
-      console.log(`✅ [Temu] ${products.length} products`);
+      console.log(
+        `✅ [TemuProvider] ${products.length} products after price filter`,
+      );
       return products;
-
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('abort')) {
