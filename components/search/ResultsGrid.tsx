@@ -207,7 +207,7 @@ export function ResultsGrid({
       {/* (1) 상단 텍스트 */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 relative">
-            <span className="text-[15px] font-bold text-slate-700">
+            <span className="text-[13px] sm:text-[15px] font-bold text-slate-700">
                 <span className="text-slate-900 font-extrabold">{totalResults}</span> results sorted by <span className="text-[#F59E0B] capitalize">{sortBy}</span>
             </span>
             {sortBy === 'best' && (
@@ -265,19 +265,19 @@ export function ResultsGrid({
       {/* (2) 요약 카드 & Sort By - 통합 Grid (모바일 2x2, 데스크톱 4칸) */}
       <div className="grid grid-cols-3 gap-0 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-x divide-slate-100" role="tablist" aria-label="Sort results">
 
-         <button role="tab" aria-selected={sortBy === 'best'} aria-label="Sort by best overall" onClick={() => setSortBy("best")} className={`p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors ${sortBy === 'best' ? 'bg-slate-50 border-b-2 border-[#02122c]' : ''}`}>
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Best</span>
-            <span className="text-lg font-extrabold text-slate-900">{tabSummary?.best ? `${tabSummary.best.price} · ${tabSummary.best.days}` : '—'}</span>
+         <button role="tab" aria-selected={sortBy === 'best'} aria-label="Sort by best overall" onClick={() => setSortBy("best")} className={`p-2 sm:p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors ${sortBy === 'best' ? 'bg-slate-50 border-b-2 border-[#02122c]' : ''}`}>
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5 sm:mb-1">Best</span>
+            <span className="text-xs sm:text-lg font-extrabold text-slate-900">{tabSummary?.best ? `${tabSummary.best.price} · ${tabSummary.best.days}` : '—'}</span>
          </button>
 
-         <button role="tab" aria-selected={sortBy === 'cheapest'} aria-label="Sort by cheapest price" onClick={() => setSortBy("cheapest")} className={`p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors ${sortBy === 'cheapest' ? 'bg-slate-50 border-b-2 border-[#02122c]' : ''}`}>
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Cheapest</span>
-            <span className="text-lg font-extrabold text-slate-900">{tabSummary?.cheapest ? `${tabSummary.cheapest.price} · ${tabSummary.cheapest.days}` : '—'}</span>
+         <button role="tab" aria-selected={sortBy === 'cheapest'} aria-label="Sort by cheapest price" onClick={() => setSortBy("cheapest")} className={`p-2 sm:p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors ${sortBy === 'cheapest' ? 'bg-slate-50 border-b-2 border-[#02122c]' : ''}`}>
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5 sm:mb-1">Cheapest</span>
+            <span className="text-xs sm:text-lg font-extrabold text-slate-900">{tabSummary?.cheapest ? `${tabSummary.cheapest.price} · ${tabSummary.cheapest.days}` : '—'}</span>
          </button>
 
-         <button role="tab" aria-selected={sortBy === 'fastest'} aria-label="Sort by fastest delivery" onClick={() => setSortBy("fastest")} className={`p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors ${sortBy === 'fastest' ? 'bg-slate-50 border-b-2 border-[#02122c]' : ''}`}>
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Fastest</span>
-            <span className="text-lg font-extrabold text-slate-900">{tabSummary?.fastest ? `${tabSummary.fastest.price} · ${tabSummary.fastest.days}` : '—'}</span>
+         <button role="tab" aria-selected={sortBy === 'fastest'} aria-label="Sort by fastest delivery" onClick={() => setSortBy("fastest")} className={`p-2 sm:p-4 flex flex-col items-center justify-center hover:bg-slate-50 transition-colors ${sortBy === 'fastest' ? 'bg-slate-50 border-b-2 border-[#02122c]' : ''}`}>
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider mb-0.5 sm:mb-1">Fastest</span>
+            <span className="text-xs sm:text-lg font-extrabold text-slate-900">{tabSummary?.fastest ? `${tabSummary.fastest.price} · ${tabSummary.fastest.days}` : '—'}</span>
          </button>
          
       </div>

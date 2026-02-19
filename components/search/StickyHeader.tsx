@@ -147,32 +147,32 @@ export function StickyHeader({
 
   return (
     <header className="bg-[#02122c] sticky top-0 z-[2000] border-b border-white/10 shadow-md">
-      <div className="max-w-[1440px] mx-auto px-6 h-[90px] flex items-center">
-        
-        <form onSubmit={handleSubmit} className="w-full flex gap-2 relative items-center">
-          
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 py-2 sm:py-0 sm:h-[90px] flex items-center">
+
+        <form onSubmit={handleSubmit} className="w-full flex flex-col sm:flex-row gap-2 relative items-stretch sm:items-center">
+
           <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
           <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" className="hidden" />
 
-          {/* 1. Zipcode Box */}
-          <div 
-            ref={zipRef} 
-            className="flex-none w-[280px] bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative cursor-text"
+          {/* 1. Zipcode Box — 모바일: 전체 너비, 데스크톱: 280px 고정 */}
+          <div
+            ref={zipRef}
+            className="flex-none w-full sm:w-[280px] bg-white rounded-lg shadow-xl h-[48px] sm:h-[60px] flex flex-col justify-center px-3 sm:px-4 relative cursor-text"
             onClick={() => { const input = zipRef.current?.querySelector('input'); input?.focus(); }}
           >
-            <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-none mb-1">Deliver to</label>
+            <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-none mb-0.5 sm:mb-1">Deliver to</label>
             <div className="flex items-center gap-2">
-                <MapPinIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                <input 
-                    type="text" 
-                    inputMode="numeric" 
-                    maxLength={5} 
-                    value={zipcode} 
-                    onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 5))} 
+                <MapPinIcon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 flex-shrink-0" />
+                <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={5}
+                    value={zipcode}
+                    onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 5))}
                     onFocus={handleZipInputFocus}
                     onClick={handleZipInputFocus}
-                    placeholder="Zip" 
-                    className="w-full text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0" 
+                    placeholder="Zip"
+                    className="w-full text-[14px] sm:text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0"
                 />
             </div>
             
@@ -195,13 +195,13 @@ export function StickyHeader({
 
           {/* 2. Search Section */}
           <div className="flex-1 flex gap-2 relative">
-            
-            <div 
+
+            <div
                 ref={searchRef}
-                className="flex-1 bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative z-[2500] cursor-text"
+                className="flex-1 bg-white rounded-lg shadow-xl h-[48px] sm:h-[60px] flex flex-col justify-center px-3 sm:px-4 relative z-[2500] cursor-text"
                 onClick={() => searchInputRef.current?.focus()}
             >
-                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-none mb-1">Search products</label>
+                <label className="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-none mb-0.5 sm:mb-1">Search products</label>
                 <div className="relative flex items-center">
                     
                     {/* [UX] 미리보기 썸네일: 입력창 맨 앞, 텍스트 크기와 비슷하게 (w-8) */}
@@ -222,7 +222,7 @@ export function StickyHeader({
                         onFocus={handleSearchInputFocus}
                         onClick={handleSearchInputFocus}
                         placeholder={imagePreview ? "Describe this photo..." : "e.g. Lego Star Wars"}
-                        className="w-full text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0 pr-16"
+                        className="w-full text-[14px] sm:text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0 pr-16"
                     />
 
                     {/* X 버튼 — 검색어가 있을 때만 표시, 카메라 아이콘 왼쪽 */}
@@ -280,10 +280,10 @@ export function StickyHeader({
                 )}
             </div>
 
-            <button 
-                type="submit" 
-                disabled={isBusy} 
-                className="bg-[#F59E0B] rounded-lg shadow-lg flex items-center justify-center text-2xl font-extrabold text-white drop-shadow-md h-[60px] px-8 hover:bg-amber-600 active:scale-95 cursor-pointer transition-all shrink-0"
+            <button
+                type="submit"
+                disabled={isBusy}
+                className="bg-[#F59E0B] rounded-lg shadow-lg flex items-center justify-center text-lg sm:text-2xl font-extrabold text-white drop-shadow-md h-[48px] sm:h-[60px] px-5 sm:px-8 hover:bg-amber-600 active:scale-95 cursor-pointer transition-all shrink-0"
             >
                 {/* [UX] 버튼 텍스트가 상태에 따라 바뀜 */}
                 {analyzing ? 'Analyzing...' : loading ? '...' : 'Search'}

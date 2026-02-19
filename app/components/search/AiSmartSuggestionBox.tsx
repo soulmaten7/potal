@@ -100,7 +100,7 @@ export function AiSmartSuggestionBox({
           <div className="w-full h-full bg-[#02122c] rounded-md flex items-center justify-between px-4 shadow-sm">
             <div className="flex items-center gap-2">
               <Icons.Sparkles className="w-4 h-4 text-[#F59E0B]" />
-              <span className="text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
+              <span className="text-[12px] sm:text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
             </div>
             <button onClick={() => setIsOpen(!isOpen)}>
               <Icons.ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -159,7 +159,7 @@ export function AiSmartSuggestionBox({
           <div className="w-full h-full bg-[#02122c] rounded-md flex items-center justify-between px-4 shadow-sm">
             <div className="flex items-center gap-2">
               <Icons.Sparkles className="w-4 h-4 text-[#F59E0B] animate-pulse" />
-              <span className="text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
+              <span className="text-[12px] sm:text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
             </div>
             <span className="text-[12px] text-white/50">Analyzing...</span>
           </div>
@@ -212,9 +212,9 @@ export function AiSmartSuggestionBox({
         <div className="space-y-2 mt-3">
           {/* ━━━ Row 1: Top Brands ━━━ */}
           {brands.length > 0 && (
-            <div className="flex items-center gap-3">
-              <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider shrink-0 w-[100px]">Top Brands</span>
-              <div className="flex items-center gap-x-4 gap-y-1 flex-wrap flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <span className="text-[12px] sm:text-[13px] font-bold text-slate-500 uppercase tracking-wider shrink-0 sm:w-[100px]">Top Brands</span>
+              <div className="flex items-center gap-x-3 sm:gap-x-4 gap-y-1 flex-wrap flex-1">
                 {brands.slice(0, 8).map(brand => (
                   <SuggestionCheckbox
                     key={brand}
@@ -246,9 +246,9 @@ export function AiSmartSuggestionBox({
 
           {/* ━━━ Row 2: Related — 축 이름들 (클릭으로 펼침, Apply 불필요) ━━━ */}
           {effectiveAxes.length > 0 && (
-            <div className="flex items-center gap-3">
-              <span className="text-[13px] font-bold text-slate-500 uppercase tracking-wider shrink-0 w-[100px]">Related</span>
-              <div className="flex items-center gap-x-4 gap-y-1 flex-wrap flex-1">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <span className="text-[12px] sm:text-[13px] font-bold text-slate-500 uppercase tracking-wider shrink-0 sm:w-[100px]">Related</span>
+              <div className="flex items-center gap-x-3 sm:gap-x-4 gap-y-1 flex-wrap flex-1">
                 {effectiveAxes.map(axis => (
                   <AxisToggle
                     key={axis.name}
@@ -283,9 +283,9 @@ export function AiSmartSuggestionBox({
           {effectiveAxes
             .filter(axis => expandedAxes.has(axis.name))
             .map(axis => (
-              <div key={`values-${axis.name}`} className="flex items-center gap-3 ml-[100px] pl-3 border-l-2 border-[#F59E0B]/30">
-                <span className="text-[12px] font-bold text-[#F59E0B]/70 uppercase tracking-wider shrink-0 w-[70px]">{axis.name}</span>
-                <div className="flex items-center gap-x-4 gap-y-1 flex-wrap flex-1">
+              <div key={`values-${axis.name}`} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 ml-0 sm:ml-[100px] pl-3 border-l-2 border-[#F59E0B]/30">
+                <span className="text-[11px] sm:text-[12px] font-bold text-[#F59E0B]/70 uppercase tracking-wider shrink-0 sm:w-[70px]">{axis.name}</span>
+                <div className="flex items-center gap-x-3 sm:gap-x-4 gap-y-1 flex-wrap flex-1">
                   {axis.values.map(value => (
                     <SuggestionCheckbox
                       key={value}
