@@ -3,21 +3,21 @@ import type { SearchProvider } from '../types';
 import { refineQuery, detectPriceIntent, parsePriceToNumber } from '../searchIntelligence';
 
 /**
- * TargetProvider — RapidAPI Target.com Shopping API (MicroAPI)
+ * TargetProvider — RapidAPI Target.com Shopping API (target13 by ecommet)
  *
- * Host: target-com-shopping-api.p.rapidapi.com (set via RAPIDAPI_HOST_TARGET env)
- * Endpoint: GET /product_search?keyword=...&pricing_store_id=3991
+ * Host: target13.p.rapidapi.com (set via RAPIDAPI_HOST_TARGET env)
+ * Endpoint: GET /searchByKeywords?keywords=...&store_id=3207&sort_by=relevance
  *
  * US Domestic provider. Target is the 5th largest US e-commerce retailer.
  * Affiliate: Target affiliate program (ID in env).
  *
- * [2026-02] 기존 target13 (ecommet) API가 404/빈 응답 → MicroAPI로 교체
- * MicroAPI 응답: data.search_response.items[] 또는 data.products[] 형태
+ * [2026-02] PRO $9/mo 구독 중 (target13 by ecommet)
+ * ⚠️ MicroAPI(target-com-shopping-api)는 별도 구독 필요 — 사용하지 마세요!
  */
 
 // 환경변수를 런타임에 읽도록 함수로 변경 (Vercel 호환)
 const getApiKey = () => process.env.RAPIDAPI_KEY ?? '';
-const getApiHost = () => process.env.RAPIDAPI_HOST_TARGET ?? 'target-com-shopping-api.p.rapidapi.com';
+const getApiHost = () => process.env.RAPIDAPI_HOST_TARGET ?? 'target13.p.rapidapi.com';
 const TIMEOUT_MS = 8_000;
 
 // ── Affiliate ──
@@ -255,25 +255,16 @@ export class TargetProvider implements SearchProvider {
       'x-rapidapi-host': apiHost,
     };
 
-    // Target API — MicroAPI 기본, legacy target13 fallback
+    // Target API — target13 (ecommet) 기본, PRO $9/mo 구독 중
     console.log(`🔍 [TargetProvider] Using host: ${apiHost}`);
-    const isMicroApi = apiHost.includes('target-com-shopping');
 
-    // keyword 공백을 +로 변환 (MicroAPI 권장)
-    const keywordForUrl = q.replace(/\s+/g, '+');
-
-    const endpoints = isMicroApi
-      ? [
-          // MicroAPI Target.com Shopping API — 메인 엔드포인트
-          `https://${apiHost}/product_search?keyword=${encodeURIComponent(keywordForUrl)}&pricing_store_id=3991`,
-          `https://${apiHost}/product_search?keyword=${encodeURIComponent(keywordForUrl)}&pricing_store_id=3991&pageNumber=1`,
-        ]
-      : [
-          // legacy target13 (ecommet / apidojo) — fallback
-          `https://${apiHost}/searchByKeywords?keywords=${encodeURIComponent(q)}&store_id=3207&sort_by=relevance&include_sponsored=false`,
-          `https://${apiHost}/search?keyword=${encodeURIComponent(q)}`,
-          `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991`,
-        ];
+    const endpoints = [
+      // target13 (ecommet) — 메인 엔드포인트 (PRO 구독 중)
+      `https://${apiHost}/searchByKeywords?keywords=${encodeURIComponent(q)}&store_id=3207&sort_by=relevance&include_sponsored=false`,
+      // target13 대체 엔드포인트
+      `https://${apiHost}/search?keyword=${encodeURIComponent(q)}`,
+      `https://${apiHost}/product_search?keyword=${encodeURIComponent(q)}&store_id=3991`,
+    ];
 
     for (const url of endpoints) {
       try {

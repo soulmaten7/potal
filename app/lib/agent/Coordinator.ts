@@ -40,9 +40,12 @@ import { scoreProducts } from '../search/ScoringEngine';
 // Provider imports
 import { AmazonProvider } from '../search/providers/AmazonProvider';
 import { WalmartProvider } from '../search/providers/WalmartProvider';
-import { BestBuyProvider } from '../search/providers/BestBuyProvider';
+// BestBuyProvider 비활성화: Pinto Studio API 응답 없음 → RapidAPI 환불 예정
+// import { BestBuyProvider } from '../search/providers/BestBuyProvider';
 import { AliExpressProvider } from '../search/providers/AliExpressProvider';
-import { TemuProvider } from '../search/providers/TemuProvider';
+// TemuProvider 비활성화: Apify Actor(amit123)가 Temu 403 차단 → 0 results 반환 중
+// Actor가 업데이트되면 다시 활성화. Apify 콘솔에서 Run 확인 후 결정.
+// import { TemuProvider } from '../search/providers/TemuProvider';
 // CostcoProvider 비활성화: Deals API만 제공 (전체 상품 검색 불가, 시장점유율 1.5%)
 // import { CostcoProvider } from '../search/providers/CostcoProvider';
 // SheinProvider: 새 API (unofficial-shein by apidojo) 코드 준비 완료
@@ -71,9 +74,9 @@ import type { IntentRouterOutput } from '../ai/types';
 
 const amazonProvider = new AmazonProvider();
 const walmartProvider = new WalmartProvider();
-const bestBuyProvider = new BestBuyProvider();
+// const bestBuyProvider = new BestBuyProvider(); // 비활성화: Pinto Studio API 환불 예정
 const aliExpressProvider = new AliExpressProvider();
-const temuProvider = new TemuProvider();
+// const temuProvider = new TemuProvider(); // 비활성화: Temu 403 차단 중 (Apify Actor 업데이트 대기)
 // const costcoProvider = new CostcoProvider(); // 비활성화: Deals API 한정
 const ebayProvider = new EbayProvider();
 const targetProvider = new TargetProvider();
@@ -422,24 +425,26 @@ export class Coordinator {
     const fetchGlobal = market !== 'domestic';
     const q = analysis.platformQueries?.amazon || analysis.original;
 
-    // Domestic: Amazon + Walmart + BestBuy 병렬
+    // Domestic: Amazon + Walmart + eBay + Target 병렬
+    // BestBuy 비활성화: Pinto Studio API 환불 예정
     const domesticPromises = fetchDomestic
       ? Promise.allSettled([
           withTimeout(amazonProvider.search(q, page), 'Amazon'),
           withTimeout(walmartProvider.search(q, page), 'Walmart'),
-          withTimeout(bestBuyProvider.search(q, page), 'BestBuy'),
+          // withTimeout(bestBuyProvider.search(q, page), 'BestBuy'), // 비활성화: 환불 예정
           withTimeout(ebayProvider.search(q, page), 'eBay'),
           withTimeout(targetProvider.search(q, page), 'Target'),
           // withTimeout(costcoProvider.search(q, page), 'Costco'), // 비활성화
         ])
       : Promise.resolve([]);
 
-    // Global: AliExpress + Temu 병렬
+    // Global: AliExpress 병렬
+    // Temu 비활성화: Apify Actor가 Temu 403 차단으로 0 results 반환 중
     const globalQuery = analysis.platformQueries?.aliexpress || analysis.platformQueries?.amazon || analysis.original;
     const globalPromises = fetchGlobal
       ? Promise.allSettled([
           withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
-          temuProvider.search(globalQuery, page), // Temu — Apify Actor (30초 자체 타임아웃, 7-15초 소요)
+          // temuProvider.search(globalQuery, page), // 비활성화: Temu 403 차단 (Actor 업데이트 대기)
         ])
       : Promise.resolve([]);
 
@@ -468,8 +473,8 @@ export class Coordinator {
 
     const allProducts = [...domesticResults, ...globalResults];
     const providerNames = [
-      ...(fetchDomestic ? ['Amazon', 'Walmart', 'BestBuy', 'eBay', 'Target'] : []),
-      ...(fetchGlobal ? ['AliExpress', 'Temu'] : []),
+      ...(fetchDomestic ? ['Amazon', 'Walmart', 'eBay', 'Target'] : []),
+      ...(fetchGlobal ? ['AliExpress'] : []),
     ];
 
     console.log(`🛒 [Coordinator] Domestic: ${domesticResults.length} | Global: ${globalResults.length} | Total: ${allProducts.length}`);
@@ -720,7 +725,7 @@ export class Coordinator {
       const settled = await Promise.allSettled([
         withTimeout(amazonProvider.search(altQuery, page), 'Amazon-refine'),
         withTimeout(walmartProvider.search(altQuery, page), 'Walmart-refine'),
-        withTimeout(bestBuyProvider.search(altQuery, page), 'BestBuy-refine'),
+        // withTimeout(bestBuyProvider.search(altQuery, page), 'BestBuy-refine'), // 비활성화
         withTimeout(ebayProvider.search(altQuery, page), 'eBay-refine'),
         withTimeout(targetProvider.search(altQuery, page), 'Target-refine'),
       ]);
