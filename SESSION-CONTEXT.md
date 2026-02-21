@@ -534,47 +534,59 @@ feat: 모바일 UX 대규모 오버홀 — Skyscanner 스타일 다크 테마 �
 
 ## 11. 환경 변수 (.env.local) — ⚠️ 새 세션 필독
 
-> **절대 .env.local을 임의로 수정하지 마세요!** 아래 정보가 정확한 최신 상태입니다.
+> **절대 .env.local을 임의로 수정하지 마세요!** 아래가 2026-02-22 기준 **실제 파일 내용 그대로**입니다.
+> ⚠️ .env.local은 git에 커밋되지 않으므로, Vercel env와 수동 동기화 필요.
 
-**.env.local 현재 사용 중인 키 목록** (2026-02-20 기준):
+### 실제 .env.local 전체 내용 (2026-02-22 검증 완료)
 
 ```
-# RapidAPI (모든 Provider 공통 키)
-RAPIDAPI_KEY=862297c953msh...  (하나의 키로 모든 리테일러 접근)
+# 1. RapidAPI Master Key (모든 Provider 공유)
+RAPIDAPI_KEY=***REDACTED*** (see .env.local — 862297c953msh... 로 시작)
 
-# Provider별 호스트 (DOMESTIC)
+# 2. Provider별 RapidAPI Host — DOMESTIC
 RAPIDAPI_HOST_AMAZON=real-time-amazon-data.p.rapidapi.com
 RAPIDAPI_HOST_WALMART=realtime-walmart-data.p.rapidapi.com
-RAPIDAPI_HOST_BESTBUY=bestbuy-usa.p.rapidapi.com
+RAPIDAPI_HOST_BESTBUY=bestbuy-usa.p.rapidapi.com          # ❌ API 죽음 (Coordinator에서 비활성화)
 RAPIDAPI_HOST_EBAY=real-time-ebay-data.p.rapidapi.com
-RAPIDAPI_HOST_TARGET=target13.p.rapidapi.com
+RAPIDAPI_HOST_TARGET=target13.p.rapidapi.com               # ⚠️ 2026-02-22 수정! 이전에 target-com-shopping-api였음
 
-# Provider별 호스트 (GLOBAL)
+# 2b. Provider별 RapidAPI Host — GLOBAL
 RAPIDAPI_HOST_ALIEXPRESS=aliexpress-data.p.rapidapi.com
-# ⚠️ Temu는 RapidAPI 아님! 아래 Apify 섹션 참고
+# Shein/Costco 비활성화 (주석처리 상태)
 
-# Apify (Temu 전용 — 결제 중!)
-APIFY_API_TOKEN=apify_api_3gWV...
+# 3. Apify (Temu 전용 — 현재 Coordinator에서 비활성화)
+APIFY_API_TOKEN=***REDACTED*** (see .env.local — apify_api_3gWV... 로 시작)
 
-# OpenAI, Supabase, Analytics
-OPENAI_API_KEY=sk-proj-...
+# 4. OpenAI
+OPENAI_API_KEY=***REDACTED*** (see .env.local — sk-proj-iZcl... 로 시작)
+
+# 5. Supabase (인증)
 NEXT_PUBLIC_SUPABASE_URL=https://zyurflkhiregundhisky.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
-NEXT_PUBLIC_GA_ID=G-NQMDNW7CXP
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_9SvOrlirIrkqtO5-gMMgNg_nsU3x06C
 
-# 어필리에이트 (활성)
+# 6. 어필리에이트 코드 (활성)
 AMAZON_AFFILIATE_TAG=soulmaten7-20
 TEMU_AFFILIATE_CODE=alb130077
 EBAY_CAMPAIGN_ID=5339138476
-ALIEXPRESS_APP_KEY / ALIEXPRESS_APP_SECRET
-CJ_PERSONAL_TOKEN / CJ_PROPERTY_ID
+ALIEXPRESS_APP_KEY=525832
+ALIEXPRESS_APP_SECRET=***REDACTED*** (see .env.local — GeX4dx... 로 시작)
+CJ_PERSONAL_TOKEN=***REDACTED*** (see .env.local — AgcIDk... 로 시작)
+CJ_PROPERTY_ID=101640448
 
-# 어필리에이트 (미설정 — 승인 후 추가)
+# 7. Analytics
+NEXT_PUBLIC_GA_ID=G-NQMDNW7CXP
+
+# 미설정 (승인 후 추가 예정)
 # WALMART_AFFILIATE_ID=       # Impact 승인 후
 # TARGET_AFFILIATE_ID=        # Impact 승인 후
 # BESTBUY_AFFILIATE_ID=       # Impact/CJ 승인 후
 # SHEIN_AFFILIATE_ID=         # CJ 승인 후
 ```
+
+### ⚠️ 발견된 문제 및 수정 이력
+| 날짜 | 문제 | 수정 |
+|------|------|------|
+| 2026-02-22 | `RAPIDAPI_HOST_TARGET`이 `target-com-shopping-api.p.rapidapi.com`으로 잘못 설정되어 있었음 | `target13.p.rapidapi.com`으로 수정 완료. TargetProvider.ts 코드는 fallback으로 target13을 사용하지만 env가 우선 적용되므로 env도 반드시 맞춰야 함 |
 
 ---
 
@@ -627,8 +639,9 @@ POTAL 프로젝트 작업을 이어서 하려고 해.
 2. **Vercel 배포**: `main` 브랜치에 푸시하면 자동 배포. 도메인: `potal.app`
 3. **API 비용**: OpenAI 사용량 주의. gpt-4o는 gpt-4o-mini보다 ~20배 비싸므로 Smart Suggestion만 gpt-4o 사용.
 4. **⚠️ Temu 현재 비활성화**: 2026-02-18부터 Temu 서버 403 차단. Coordinator에서 import 주석처리됨.
-5. **⚠️ Target 호스트는 target13**: `target13.p.rapidapi.com` PRO $9/mo 구독 중. MicroAPI가 아닙니다!
+5. **⚠️ Target 호스트는 target13**: `target13.p.rapidapi.com` PRO $9/mo 구독 중. `.env.local`과 `Vercel env` 양쪽 다 `target13.p.rapidapi.com`인지 확인 필수! (2026-02-22에 .env.local이 잘못된 값이었던 것을 수정함)
 6. **⚠️ .env.local 수정 금지**: 새 세션에서 임의로 수정하지 마세요. 현재 상태가 정확합니다.
+6b. **⚠️ Vercel env 동기화 필수**: .env.local을 수정했으면 Vercel Dashboard > Settings > Environment Variables에서도 동일하게 변경해야 프로덕션에 반영됨. 특히 `RAPIDAPI_HOST_TARGET=target13.p.rapidapi.com` 확인!
 7. **⚠️ US 주소 활성화 완료**: 2803 Philadelphia Pike, Suite B #1126, Claymont, DE 19703. 어필리에이트 가입에 사용.
 8. **⚠️ Impact.com 주소 심사 중**: 티켓 #782618. 승인 전까지 Walmart/Target Apply 보류.
 9. **모바일/데스크톱 분리**: 모든 모바일 변경은 `md:hidden` / `hidden md:block` 패턴 사용. 데스크톱은 완전히 영향 없음.
