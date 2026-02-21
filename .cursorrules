@@ -9,10 +9,35 @@
 ## 2. Anti-Amnesia (Do Not Forget / Zombie Ideas)
 - **Mall Classification:** eBay와 iHerb는 미국인에게 **Domestic(내수)** 쇼핑몰이다. 절대 Global 탭에 넣지 마라.
 - **Show More Button:** 'Show More' 버튼은 필수다. 삭제 제안 금지 (무한 스크롤 구현).
-- **Mobile Layout:** 모바일 검색 결과는 무조건 **1열(grid-cols-1)**이다. 2열로 축소하지 마라.
+- **Mobile Layout:** 모바일 검색 결과는 **2열(grid-cols-2)** 그리드. 위시리스트도 동일.
 - **Price Tag:** 배송비가 'Free'인 경우, 가격 옆에 `+ Shipping` 텍스트를 절대 중복 표기하지 마라.
 - **Data Driven:** 필터 생성 시 LLM 추론을 사용하지 마라. API 응답 데이터 기반으로 생성한다.
+- **Image Container:** 상품 카드 이미지는 `paddingBottom: '125%' + height: 0` 인라인 스타일 방식으로 고정. `aspectRatio` CSS 사용 금지.
+- **Inline Styles 우선:** Tailwind CSS 캐싱 이슈로 시각적 핵심 요소는 반드시 `style={{}}` 인라인 스타일 사용.
+- **No browser confirm():** 모바일에서 `confirm()`, `alert()`, `prompt()` 사용 금지. 바텀시트 또는 커스텀 모달 UI 사용.
+- **Dark Theme 통일:** 모든 페이지 배경 `#02122c`. 새 페이지/컴포넌트 만들 때도 네이비 다크 테마 유지.
 
 ## 3. Coding Standards
 - **Grid System:** PC(Large Screen)에서는 **3열(grid-cols-3)**을 최대로 유지하여 상품 이미지 시인성을 확보한다.
 - **Ranking Logic:** Domestic/Global 탭 내부에서는 사이트별 1등 상품을 **교차(Zipper)** 배치하여 공정성을 보장한다.
+- **z-index 규칙:** BottomNav z-[9999], 풀스크린 시트 z-[10001], Clear 확인 바텀시트 z-[10002], StickyHeader z-[2000].
+- **모바일/PC 분리:** `md:hidden` / `hidden md:block` 패턴 사용. PC 레이아웃에 영향 주지 않도록 주의.
+- **Next.js 16:** `params`가 Promise. 동적 라우트에서 `use(params)` 또는 `await params` 사용 필수.
+
+## 4. 검색 결과 카드 구조 (MobileCompactCard)
+- **이미지 영역:** `paddingBottom: '125%'` + `height: 0` + `position: absolute` img
+- **이미지 우측상단:** 공유 아이콘(3-node 네트워크) + 하트 아이콘 (반투명 원형 배경)
+- **가격 영역 3줄 구조:**
+  - 1줄: 멤버십 뱃지 + 배송비(Free/+$X) + 🚀 + 배송일
+  - 2줄: Est.Tax / Est.Duty
+  - 3줄: Total 가격 (굵은 글씨)
+- **뱃지 4단계 우선순위:** membershipBadge → shippingProg → is_prime → appliedMembership
+- **위시리스트 카드도 동일 구조** 유지 (WishlistMobileCard)
+
+## 5. 주요 파일 매핑
+- `components/search/ResultsGrid.tsx` — 실제 사용하는 검색 결과 그리드 (MobileCompactCard 포함)
+- `app/components/search/` — 안 쓰는 백업 파일 (수정하지 마라)
+- `app/components/ProductCard.tsx` — PC 상품 카드
+- `app/wishlist/page.tsx` — 위시리스트 (WishlistMobileCard + PC ProductCard)
+- `app/lib/agent/Coordinator.ts` — 검색 파이프라인 오케스트레이션 (providerStatus 포함)
+- `app/lib/retailerConfig.ts` — 리테일러 설정 + 멤버십 뱃지 매칭

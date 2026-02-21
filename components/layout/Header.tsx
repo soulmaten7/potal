@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Icons } from '@/components/icons';
-import { useSupabase } from '@/app/context/SupabaseProvider'; 
+import { useSupabase } from '@/app/context/SupabaseProvider';
 import { useWishlist } from '@/app/context/WishlistContext';
-import { LoginModal } from '@/app/components/LoginModal'; 
+import { LoginModal } from '@/app/components/LoginModal';
 
 export function Header() {
   const router = useRouter();
+  const pathname = usePathname();
+  const isSearchPage = pathname?.startsWith('/search');
   const { wishlist } = useWishlist(); 
   const { supabase, session } = useSupabase(); 
   
@@ -65,19 +67,25 @@ export function Header() {
 
   return (
     <>
-      <header className="bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000]">
+      {/* 모바일 검색 페이지에서는 헤더 숨김 — StickyHeader가 대신 역할 */}
+      <header className={`bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000] ${isSearchPage ? 'hidden md:block' : ''}`}>
         <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
           
-          {/* [수정] 로고에도 cursor-pointer 추가 */}
-          <button 
-            onClick={resetToHome} 
-            className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight hover:opacity-90 focus:outline-none cursor-pointer"
+          {/* 로고: P + 오렌지O + TAL */}
+          <button
+            onClick={resetToHome}
+            className="hover:opacity-90 focus:outline-none cursor-pointer flex items-center"
           >
-            POTAL
+            <span className="text-[22px] sm:text-[28px] font-extrabold tracking-tight">
+              <span className="text-white">P</span>
+              <span className="text-[#F59E0B]">O</span>
+              <span className="text-white">TAL</span>
+            </span>
           </button>
 
-          <div className="flex items-center gap-3 sm:gap-6 text-white">
-            <Link href="/help" className="text-sm font-bold hover:text-slate-200 hidden sm:block cursor-pointer">HELP</Link>
+          {/* 데스크톱: 풀 네비게이션 / 모바일: 로고만 (하단 탭바가 대체) */}
+          <div className="hidden md:flex items-center gap-6 text-white">
+            <Link href="/help" className="text-sm font-bold hover:text-slate-200 cursor-pointer">HELP</Link>
             
             <div className="relative" ref={currencyDropdownRef}>
               {/* [수정] 지구본 아이콘 버튼에 cursor-pointer 추가 */}

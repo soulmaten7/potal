@@ -1,5 +1,8 @@
 // app/legal/[slug]/page.tsx
+"use client";
+
 import { notFound } from 'next/navigation';
+import { use } from 'react';
 
 const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections: { heading: string; body: string }[] }> = {
   'terms': {
@@ -127,40 +130,41 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
   },
 };
 
-export default function LegalPage({ params }: { params: { slug: string } }) {
-  const doc = LEGAL_DOCS[params.slug as keyof typeof LEGAL_DOCS];
+export default function LegalPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const doc = LEGAL_DOCS[slug as keyof typeof LEGAL_DOCS];
 
   if (!doc) {
     notFound();
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div style={{ backgroundColor: '#02122c' }} className="min-h-screen pb-28">
       {/* Header */}
-      <div className="bg-[#02122c] pt-28 pb-12">
-        <div className="max-w-[800px] mx-auto px-6">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">{doc.title}</h1>
-          <p className="text-slate-400 text-sm">Last updated: {doc.lastUpdated}</p>
+      <div style={{ padding: '80px 24px 32px' }}>
+        <div className="max-w-[800px] mx-auto">
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', marginBottom: '4px' }}>{doc.title}</h1>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>Last updated: {doc.lastUpdated}</p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-[800px] mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12 space-y-8">
+      <div className="max-w-[800px] mx-auto px-6">
+        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', padding: '24px' }} className="space-y-6">
           {doc.sections.map((section, idx) => (
             <div key={idx}>
-              <h2 className="text-lg font-bold text-[#02122c] mb-3">{section.heading}</h2>
-              <p className="text-slate-600 leading-relaxed text-[15px] whitespace-pre-line">{section.body}</p>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', marginBottom: '8px' }}>{section.heading}</h2>
+              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.7', whiteSpace: 'pre-line' }}>{section.body}</p>
             </div>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-slate-400 mb-4">
-            Questions? <a href="/contact" className="text-[#02122c] font-bold hover:text-[#F59E0B] transition-colors underline">Contact us</a>
+        <div style={{ marginTop: '24px', textAlign: 'center' }}>
+          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }}>
+            Questions? <a href="mailto:legal@potal.com" style={{ color: '#F59E0B', fontWeight: 700, textDecoration: 'none' }}>Contact us</a>
           </p>
-          <a href="/" className="text-sm text-slate-400 hover:text-[#02122c] transition-colors">← Back to POTAL</a>
+          <a href="/profile" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>← Back to Profile</a>
         </div>
       </div>
     </div>

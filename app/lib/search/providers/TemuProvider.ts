@@ -20,6 +20,9 @@ import type { SearchProvider } from '../types';
 const APIFY_TOKEN = process.env.APIFY_API_TOKEN || '';
 const TEMU_AFFILIATE = process.env.TEMU_AFFILIATE_CODE || '';
 const ACTOR_ID = 'amit123~temu-products-scraper';
+// ⚠️ 빌드 버전 고정: v1.0.37에서 Temu 403 차단 발생 → v1.0.32는 정상 작동 (2026-02-17 확인)
+// Apify Actor 업데이트로 깨지면 이 버전 번호를 마지막 작동 버전으로 교체하세요.
+const ACTOR_BUILD = '1.0.32';
 const TIMEOUT_MS = 30_000; // Apify Actor 실행은 7~15초 소요
 
 // ── Affiliate ──
@@ -198,7 +201,8 @@ export class TemuProvider implements SearchProvider {
       const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
       // Apify 동기 실행 API — Actor 실행 + 결과를 한번에 반환
-      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
+      // build 파라미터로 작동하는 버전 고정 (최신 버전이 깨질 수 있음)
+      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&build=${ACTOR_BUILD}`;
 
       const res = await fetch(url, {
         method: 'POST',

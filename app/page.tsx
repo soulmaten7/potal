@@ -84,7 +84,9 @@ function HomeContent() {
   const [activeTab, setActiveTab] = useState<'best' | 'cheapest' | 'fastest'>('best');
   const [showBestTooltip, setShowBestTooltip] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  
+  const [showAboutSheet, setShowAboutSheet] = useState(false);
+  const [showHowItWorksSheet, setShowHowItWorksSheet] = useState(false);
+
   const [recentZips, setRecentZips] = useState<string[]>([]);
   const [heroRecents, setHeroRecents] = useState<string[]>([]);
   
@@ -399,16 +401,16 @@ function HomeContent() {
   };
 
   return (
-    <div className="w-full bg-slate-50 flex flex-col font-sans min-h-full">
+    <div className="w-full flex flex-col font-sans min-h-full">
       
-      {/* Intro Splash */}
+      {/* Intro Splash — pointer-events-none으로 터치 차단 방지 */}
       {showSplash && (
         <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center bg-white md:hidden"
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#02122c] md:hidden pointer-events-none"
           style={{ opacity: splashOpacity, transition: 'opacity 0.45s ease-in-out', transform: `scale(${0.96 + splashOpacity * 0.04})` }}
           aria-hidden="true"
         >
-          <span className="text-5xl font-bold text-indigo-600 tracking-tight">POTAL</span>
+          <span className="text-5xl font-extrabold tracking-tight"><span className="text-white">P</span><span className="text-[#F59E0B]">O</span><span className="text-white">TAL</span></span>
         </div>
       )}
 
@@ -416,12 +418,29 @@ function HomeContent() {
       <div className="w-full flex-1">
         {!searched ? (
           /* --- HOME MODE --- */
-          <div className="min-h-screen hero-pattern">
-            <section className="py-12">
+          <div className="min-h-screen" style={{ backgroundColor: '#02122c' }}>
+            <section className="pt-4 pb-6 sm:py-12">
               <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
-                <HeroVisuals />
-                <div className="mt-8">
-                  <SearchWidget 
+                {/* 모바일: 검색 폼 먼저 → 슬로건 아래 / 데스크톱: 슬로건 먼저 → 검색 폼 아래 */}
+
+                {/* 데스크톱: 기존 순서 유지 (슬로건 + Feature Cards → SearchWidget) */}
+                <div className="hidden md:block">
+                  <HeroVisuals />
+                  <div className="mt-8">
+                    <SearchWidget
+                      query={query} setQuery={setQuery} zipcode={zipcode} setZipcode={setZipcode}
+                      market={market} setMarket={setMarket} loading={loading}
+                      recentZips={recentZips} heroRecents={heroRecents}
+                      onRemoveRecentZip={removeRecentZip} onRemoveHeroRecent={removeHeroRecent}
+                      onSearch={handleScanMarkets}
+                    />
+                  </div>
+                </div>
+
+                {/* 모바일: 스카이스캐너 스타일 */}
+                <div className="md:hidden">
+                  <HeroVisuals />
+                  <SearchWidget
                     query={query} setQuery={setQuery} zipcode={zipcode} setZipcode={setZipcode}
                     market={market} setMarket={setMarket} loading={loading}
                     recentZips={recentZips} heroRecents={heroRecents}
@@ -432,46 +451,47 @@ function HomeContent() {
               </div>
             </section>
             
-            {/* How POTAL Works — 3-Step Visual Guide */}
-            <section className="bg-white text-slate-700 py-16 pb-24">
+            {/* ─── 모바일: 프로모 카드 (스카이스캐너 스타일) ─── */}
+            <section className="md:hidden px-3 pt-6 pb-6" style={{ backgroundColor: '#02122c' }}>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowAboutSheet(true)}
+                  className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left hover:bg-white/15 transition-colors border border-white/5"
+                >
+                  <span className="text-2xl block mb-2">🌐</span>
+                  <p className="text-[13px] font-bold text-white leading-snug">Domestic Speed.<br />Global Prices.</p>
+                  <p className="text-[11px] text-[#F59E0B] font-bold mt-1">Learn more →</p>
+                </button>
+                <button
+                  onClick={() => setShowHowItWorksSheet(true)}
+                  className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left hover:bg-white/15 transition-colors border border-white/5"
+                >
+                  <span className="text-2xl block mb-2">🤖</span>
+                  <p className="text-[13px] font-bold text-white leading-snug">How POTAL<br />Works</p>
+                  <p className="text-[11px] text-[#F59E0B] font-bold mt-1">3 easy steps →</p>
+                </button>
+              </div>
+            </section>
+
+            {/* ─── 데스크톱: 기존 How POTAL Works 3-Step ─── */}
+            <section className="hidden md:block bg-white text-slate-700 py-16 pb-24">
                 <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
                     <h2 className="text-3xl font-extrabold text-[#02122c] mb-2">How POTAL Works</h2>
                     <p className="text-slate-500 mb-10 text-[15px] max-w-xl">One search. 8 retailers. The lowest total price including shipping and tax — found in seconds.</p>
-
-                    {/* 3-Step Flow */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
+                    <div className="grid grid-cols-3 gap-6 mb-14">
                       {[
-                        {
-                          step: '01',
-                          icon: '🔍',
-                          title: 'Search Any Product',
-                          desc: 'Type what you want and your ZIP code. POTAL instantly searches Amazon, Walmart, eBay, Target, Best Buy, AliExpress, and Temu at once.',
-                        },
-                        {
-                          step: '02',
-                          icon: '🤖',
-                          title: 'AI Compares Everything',
-                          desc: 'Our AI agent calculates the true Total Landed Cost — product price + shipping + tax + import duties — and scores each deal by value, speed, and trust.',
-                        },
-                        {
-                          step: '03',
-                          icon: '🛒',
-                          title: 'Click & Buy Direct',
-                          desc: "Choose the best deal and we'll take you straight to the retailer. No middleman, no markup. You buy directly from Amazon, Walmart, or any partner site.",
-                        },
+                        { step: '01', icon: '🔍', title: 'Search Any Product', desc: 'Type what you want and your ZIP code. POTAL instantly searches Amazon, Walmart, eBay, Target, AliExpress, and more at once.' },
+                        { step: '02', icon: '🤖', title: 'AI Compares Everything', desc: 'Our AI agent calculates the true Total Landed Cost — product price + shipping + tax + import duties — and scores each deal.' },
+                        { step: '03', icon: '🛒', title: 'Click & Buy Direct', desc: "Choose the best deal and we'll take you straight to the retailer. No middleman, no markup." },
                       ].map((item) => (
                         <div key={item.step} className="relative bg-[#f8f9fc] border border-slate-200 rounded-2xl p-7 hover:shadow-lg hover:border-[#F59E0B]/40 transition-all duration-300 group">
                           <span className="text-[48px] leading-none mb-4 block group-hover:scale-110 transition-transform duration-300">{item.icon}</span>
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[11px] font-extrabold text-[#F59E0B] tracking-widest">STEP {item.step}</span>
-                          </div>
+                          <div className="flex items-center gap-2 mb-2"><span className="text-[11px] font-extrabold text-[#F59E0B] tracking-widest">STEP {item.step}</span></div>
                           <h3 className="text-lg font-extrabold text-[#02122c] mb-2">{item.title}</h3>
                           <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
                         </div>
                       ))}
                     </div>
-
-                    {/* FAQ Accordion — 자주 묻는 질문 */}
                     <div className="max-w-2xl mx-auto">
                       <h3 className="text-xl font-extrabold text-[#02122c] mb-5 text-center">Frequently Asked Questions</h3>
                       {[
@@ -511,10 +531,92 @@ function HomeContent() {
                     </div>
                 </div>
             </section>
+
+            {/* ─── 모바일: FAQ ─── */}
+            <section className="md:hidden py-6 pb-24" style={{ backgroundColor: '#02122c' }}>
+              <div className="px-3">
+                <h3 className="text-[15px] font-bold text-white/40 mb-3 uppercase tracking-widest text-center">FAQ</h3>
+                {[
+                  { q: 'Is POTAL free to use?', a: 'Yes, completely free. We earn a small commission from retailers — you never pay extra.' },
+                  { q: 'Do I buy products from POTAL?', a: "No. POTAL is a search engine. You buy directly from the retailer's website." },
+                  { q: 'What is Total Landed Cost?', a: "The true final price: product + shipping + tax/duties. No hidden surprises." },
+                ].map((item, idx) => (
+                  <details key={idx} className="group mb-2 bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden transition-colors border border-white/5">
+                    <summary className="flex items-center justify-between px-4 py-3.5 cursor-pointer select-none group-open:bg-white/5 transition-colors">
+                      <span className="text-[13px] font-bold text-white">{item.q}</span>
+                      <Icons.ChevronDown className="w-3.5 h-3.5 text-[#F59E0B] group-open:rotate-180 transition-transform duration-200 shrink-0 ml-3" />
+                    </summary>
+                    <div className="px-4 pb-3 pt-1 text-sm text-white/60 leading-relaxed">{item.a}</div>
+                  </details>
+                ))}
+              </div>
+            </section>
+
+            {/* ─── 모바일: About 바텀시트 ─── */}
+            {showAboutSheet && (
+              <div className="fixed inset-0 z-[9999] md:hidden">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowAboutSheet(false)} />
+                <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-y-auto animate-slide-up">
+                  <div className="sticky top-0 bg-white z-10 px-5 pt-4 pb-2 border-b border-slate-200 flex items-center justify-between">
+                    <h2 className="text-base font-bold text-[#02122c]">About POTAL</h2>
+                    <button onClick={() => setShowAboutSheet(false)} className="p-1"><Icons.X className="w-5 h-5 text-slate-500" /></button>
+                  </div>
+                  <div className="px-5 py-5 space-y-4">
+                    <div>
+                      <h3 className="text-lg font-extrabold text-[#02122c] mb-2">Domestic Speed. Global Prices. One Search.</h3>
+                      <p className="text-sm text-slate-600 leading-relaxed">POTAL is an AI-powered shopping comparison agent that searches across Amazon, Walmart, eBay, Target, AliExpress, and more — all at once.</p>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">🇺🇸</span>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">Domestic vs Global</h4><p className="text-xs text-slate-500">Compare price, shipping, and delivery time across US and international retailers.</p></div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">💰</span>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">Total Landed Cost</h4><p className="text-xs text-slate-500">Product + Shipping + Tax + Import Duties — the true final price with no surprises.</p></div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">🤖</span>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">POTAL AI Agent</h4><p className="text-xs text-slate-500">Automatically filters out fakes, irrelevant listings, and scores deals by value, speed, and trust.</p></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ─── 모바일: How It Works 바텀시트 ─── */}
+            {showHowItWorksSheet && (
+              <div className="fixed inset-0 z-[9999] md:hidden">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowHowItWorksSheet(false)} />
+                <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-y-auto animate-slide-up">
+                  <div className="sticky top-0 bg-white z-10 px-5 pt-4 pb-2 border-b border-slate-200 flex items-center justify-between">
+                    <h2 className="text-base font-bold text-[#02122c]">How POTAL Works</h2>
+                    <button onClick={() => setShowHowItWorksSheet(false)} className="p-1"><Icons.X className="w-5 h-5 text-slate-500" /></button>
+                  </div>
+                  <div className="px-5 py-5 space-y-5">
+                    {[
+                      { step: '01', icon: '🔍', title: 'Search Any Product', desc: 'Type what you want and your ZIP code. POTAL instantly searches Amazon, Walmart, eBay, Target, and more.' },
+                      { step: '02', icon: '🤖', title: 'AI Compares Everything', desc: 'Our AI calculates the true Total Landed Cost and scores each deal by value, speed, and trust.' },
+                      { step: '03', icon: '🛒', title: 'Click & Buy Direct', desc: "Choose the best deal — we take you directly to the retailer's website. No middleman." },
+                    ].map((item) => (
+                      <div key={item.step} className="flex items-start gap-4">
+                        <span className="text-3xl flex-shrink-0">{item.icon}</span>
+                        <div>
+                          <span className="text-[10px] font-extrabold text-[#F59E0B] tracking-widest">STEP {item.step}</span>
+                          <h4 className="text-sm font-bold text-[#02122c] mt-0.5">{item.title}</h4>
+                          <p className="text-xs text-slate-500 leading-relaxed mt-1">{item.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           /* --- SEARCH RESULTS VIEW --- */
-          <>
+          <div className="bg-slate-50 min-h-screen">
             {/* [NEW] Sticky Header Area: 기존의 복잡한 div 구조를 단순화하고 StickyHeader가 알아서 1440px을 맞추도록 함 */}
             <StickyHeader 
                 query={query}
@@ -796,7 +898,7 @@ function HomeContent() {
                     </div>
                 </div>
             </div>
-          </>
+          </div>
         )}
       </div>
       

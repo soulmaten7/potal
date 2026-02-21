@@ -19,24 +19,32 @@ interface SearchWidgetProps {
 }
 
 export function SearchWidget({
-  query, setQuery, zipcode, setZipcode, loading,
+  query, setQuery, zipcode, setZipcode, market, setMarket, loading,
   recentZips, heroRecents, onRemoveRecentZip, onRemoveHeroRecent, onSearch
 }: SearchWidgetProps) {
-  
+
   const [showZipDropdown, setShowZipDropdown] = useState(false);
   const [heroSearchFocused, setHeroSearchFocused] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
-  
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [shakeZip, setShakeZip] = useState(false);
   const [shakeQuery, setShakeQuery] = useState(false);
 
-  const zipRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const photoMenuRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  // 모바일/데스크톱 각각 별도 ref
+  const mZipRef = useRef<HTMLDivElement>(null);
+  const mSearchRef = useRef<HTMLDivElement>(null);
+  const mRecentSearchRef = useRef<HTMLDivElement>(null);
+  const mPhotoMenuRef = useRef<HTMLDivElement>(null);
+  const mSearchInputRef = useRef<HTMLInputElement>(null);
+
+  const dZipRef = useRef<HTMLDivElement>(null);
+  const dSearchRef = useRef<HTMLDivElement>(null);
+  const dPhotoMenuRef = useRef<HTMLDivElement>(null);
+  const dSearchInputRef = useRef<HTMLInputElement>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,9 +52,7 @@ export function SearchWidget({
     e.stopPropagation();
     const nextState = !showPhotoMenu;
     setShowPhotoMenu(nextState);
-    if (nextState) {
-      setHeroSearchFocused(false);
-    }
+    if (nextState) setHeroSearchFocused(false);
   };
 
   const handleSearchInputFocus = () => {
@@ -59,7 +65,7 @@ export function SearchWidget({
     const trimmed = query.trim();
     const hasZip = zipcode.trim().length > 0;
     const hasImage = !!selectedImage;
-    
+
     let isValid = true;
     if (!trimmed && !hasImage) {
       setShakeQuery(true);
@@ -71,7 +77,6 @@ export function SearchWidget({
       setTimeout(() => setShakeZip(false), 500);
       isValid = false;
     }
-
     if (isValid) {
       setShowZipDropdown(false);
       setHeroSearchFocused(false);
@@ -85,13 +90,13 @@ export function SearchWidget({
     if (file) {
       setSelectedImage(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
       setShowPhotoMenu(false);
       setHeroSearchFocused(false);
-      searchInputRef.current?.focus();
+      // 모바일 또는 데스크톱 input에 포커스
+      mSearchInputRef.current?.focus();
+      dSearchInputRef.current?.focus();
     }
   };
 
@@ -101,133 +106,213 @@ export function SearchWidget({
     setImagePreview(null);
   };
 
+  const clearQuery = () => {
+    setQuery('');
+    setSelectedImage(null);
+    setImagePreview(null);
+    mSearchInputRef.current?.focus();
+    dSearchInputRef.current?.focus();
+  };
+
+  const selectRecentSearch = (term: string) => {
+    setQuery(term);
+    setHeroSearchFocused(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      if (zipRef.current && !zipRef.current.contains(target)) setShowZipDropdown(false);
-      if (searchRef.current && !searchRef.current.contains(target)) setHeroSearchFocused(false);
-      if (photoMenuRef.current && !photoMenuRef.current.contains(target)) setShowPhotoMenu(false);
+      // 모바일 refs
+      if (mZipRef.current && !mZipRef.current.contains(target) &&
+          dZipRef.current && !dZipRef.current.contains(target)) setShowZipDropdown(false);
+      if (mSearchRef.current && !mSearchRef.current.contains(target) &&
+          dSearchRef.current && !dSearchRef.current.contains(target) &&
+          (!mRecentSearchRef.current || !mRecentSearchRef.current.contains(target))) setHeroSearchFocused(false);
+      if (mPhotoMenuRef.current && !mPhotoMenuRef.current.contains(target) &&
+          dPhotoMenuRef.current && !dPhotoMenuRef.current.contains(target)) setShowPhotoMenu(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const marketTabs = [
+    { id: 'all' as const, label: 'All', icon: '🔍' },
+    { id: 'domestic' as const, label: 'Domestic', icon: '🇺🇸' },
+    { id: 'global' as const, label: 'Global', icon: '🌏' },
+  ];
+
+  // Photo menu popup — 모바일/데스크톱 모두 드롭다운 (위치만 다르게)
+  const renderPhotoMenu = (isMobile: boolean) => (
+    showPhotoMenu ? (
+      <div className={`absolute ${isMobile ? 'left-0' : 'right-0'} top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-200 z-[60] overflow-hidden animate-fadeIn`}>
+        <button type="button" onClick={() => { cameraInputRef.current?.click(); setShowPhotoMenu(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors border-b border-slate-100">
+          <Icons.Camera className="w-4 h-4 text-[#F59E0B]" /> Take Photo
+        </button>
+        <button type="button" onClick={() => { fileInputRef.current?.click(); setShowPhotoMenu(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors">
+          <Icons.Box className="w-4 h-4 text-[#F59E0B]" /> Upload Photo
+        </button>
+      </div>
+    ) : null
+  );
+
+  // Recent searches dropdown (shared)
+  const renderRecentSearches = (isMobile: boolean) => (
+    heroSearchFocused && !query.trim() && !imagePreview ? (
+      <div className={`absolute left-0 right-0 top-full w-full bg-white ${isMobile ? 'rounded-b-2xl' : 'rounded-xl mt-2'} shadow-2xl border border-slate-100 z-50 overflow-hidden animate-fadeIn`}>
+        <div className="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recent Searches</div>
+        <ul className="py-1">
+          {heroRecents.length === 0 ? (
+            <li className="px-4 py-3 text-sm text-slate-400">No recent searches.</li>
+          ) : (
+            heroRecents.map((term) => (
+              <li key={term} className="flex items-center group">
+                <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); selectRecentSearch(term); }} className="flex-1 flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer text-left text-slate-900 min-w-0">
+                  <ClockIcon className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <span className="font-medium truncate text-sm">{term}</span>
+                </button>
+                <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveHeroRecent(term); }} className="p-2 mr-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors shrink-0">
+                  <Icons.X className="w-4 h-4" />
+                </button>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+    ) : null
+  );
 
   return (
     <form onSubmit={handleSubmit}>
       <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
       <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" className="hidden" />
 
-      <div className="flex flex-col md:flex-row gap-2 relative z-50">
-        
-        {/* Box 1: Deliver to (Zipcode) - [UX Update] Size increased to match Search Page */}
-        <div 
-          ref={zipRef} 
-          className={`flex-1 md:w-[280px] flex-none bg-white rounded-lg shadow-xl h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeZip ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'}`}
-        >
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Deliver to</label>
-          <div className="mt-1 flex items-center gap-2">
-            <MapPinIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
-            <input 
-                type="text" 
-                inputMode="numeric" 
-                maxLength={5} 
-                value={zipcode} 
-                onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 5))} 
-                onFocus={() => { setShowZipDropdown(true); setHeroSearchFocused(false); setShowPhotoMenu(false); }}
-                placeholder="Zipcode" 
-                className="flex-1 min-w-0 text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300" 
-            />
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* ─── MOBILE: 스카이스캐너 스타일 컴팩트 폼 ─── */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <div className="md:hidden">
+        {/* 검색 폼 — 화이트 배경, 라운드 카드 */}
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.2)] overflow-visible relative z-50">
+          {/* Market Tabs — 폼 상단에 통합 */}
+          <div className="flex bg-slate-100 rounded-t-2xl p-1">
+            {marketTabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setMarket(tab.id)}
+                className={`flex-1 flex items-center justify-center gap-1 py-2 rounded-xl text-xs font-bold transition-all ${
+                  market === tab.id
+                    ? 'bg-white text-[#02122c] shadow-sm'
+                    : 'text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <span className="text-sm">{tab.icon}</span>
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </div>
-          {showZipDropdown && recentZips.length > 0 && (
-              <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-fadeIn">
-                 <div className="px-4 py-2 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">Recent Zipcodes</div>
-                 <ul>
-                     {recentZips.map(zip => (
-                         <li key={zip} className="flex items-center hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0">
-                             <button type="button" onClick={() => { setZipcode(zip); setShowZipDropdown(false); }} className="flex-1 text-left px-4 py-3 font-bold text-slate-900 flex items-center gap-2">
-                                 <MapPinIcon className="w-4 h-4 text-slate-400" /> {zip}
-                             </button>
-                             <button type="button" onClick={(e) => { e.stopPropagation(); onRemoveRecentZip(zip); }} className="px-4 py-3 text-slate-400 hover:text-red-500"><Icons.X className="w-4 h-4" /></button>
-                         </li>
-                     ))}
-                 </ul>
-              </div>
-          )}
-        </div>
-
-        {/* Box 2: Search Input */}
-        <div 
-          ref={searchRef}
-          className={`flex-[3] bg-white rounded-lg shadow-xl min-h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeQuery ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'} z-30`}
-        >
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Search products</label>
-          <div className="relative flex items-center">
-            
-            {imagePreview && (
-              <div className="relative flex-shrink-0 mr-2 mt-1 group">
-                <img src={imagePreview} alt="preview" className="w-10 h-10 rounded-md object-cover border border-slate-200" />
-                <button onClick={clearImage} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Icons.X className="w-3 h-3" />
-                </button>
+          {/* Field 1: Deliver to */}
+          <div
+            ref={mZipRef}
+            className={`relative border-b border-slate-200 px-3 py-2.5 transition-colors ${shakeZip ? 'animate-shake bg-red-50' : ''}`}
+          >
+            <div className="flex items-center gap-2">
+              <MapPinIcon className="w-4 h-4 text-[#F59E0B] flex-shrink-0" />
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={5}
+                value={zipcode}
+                onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                onFocus={() => { setShowZipDropdown(true); setHeroSearchFocused(false); setShowPhotoMenu(false); }}
+                placeholder="ZIP code"
+                className="flex-1 min-w-0 text-[15px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-300"
+              />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Deliver to</span>
+            </div>
+            {showZipDropdown && recentZips.length > 0 && (
+              <div className="absolute top-full left-0 w-full bg-white rounded-b-xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-fadeIn">
+                <div className="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recent</div>
+                <ul>
+                  {recentZips.map(zip => (
+                    <li key={zip} className="flex items-center hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0">
+                      <button type="button" onClick={() => { setZipcode(zip); setShowZipDropdown(false); }} className="flex-1 text-left px-4 py-3 font-bold text-slate-900 flex items-center gap-2">
+                        <MapPinIcon className="w-4 h-4 text-slate-400" /> {zip}
+                      </button>
+                      <button type="button" onClick={(e) => { e.stopPropagation(); onRemoveRecentZip(zip); }} className="px-4 py-3 text-slate-400 hover:text-red-500"><Icons.X className="w-4 h-4" /></button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
+          </div>
 
-            <input 
-              ref={searchInputRef}
-              type="text" 
-              value={query} 
-              onChange={(e) => setQuery(e.target.value)} 
-              onFocus={handleSearchInputFocus} 
-              onClick={handleSearchInputFocus}
-              placeholder={imagePreview ? "Describe this photo..." : "e.g. Lego Star Wars, Sony Headphones"} 
-              className="mt-1 text-[16px] font-bold text-slate-900 w-full pr-12 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300" 
-            />
-            
-            <div className="absolute right-0 top-1/2 -translate-y-1/2" ref={photoMenuRef}>
-              <button 
-                type="button" 
-                onClick={handlePhotoBtnClick}
-                className="p-2 hover:bg-slate-100 rounded-full transition-colors group"
-              >
-                <Icons.Camera className={`w-6 h-6 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-slate-400'} group-hover:text-[#F59E0B] transition-colors`} />
-              </button>
+          {/* Field 2: Search products — [📷][input][❌][🔍] */}
+          <div ref={mSearchRef} className={`relative px-3 py-2.5 transition-colors ${shakeQuery ? 'animate-shake bg-red-50' : ''}`}>
+            <div className="relative flex items-center gap-2">
+              {/* 📷 카메라 (왼쪽) */}
+              <div ref={mPhotoMenuRef} className="relative flex-shrink-0">
+                <button type="button" onClick={handlePhotoBtnClick} className="p-1 hover:bg-slate-100 rounded-full transition-colors">
+                  <Icons.Camera className={`w-5 h-5 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-slate-400'} hover:text-[#F59E0B] transition-colors`} />
+                </button>
+                {renderPhotoMenu(true)}
+              </div>
 
-              {showPhotoMenu && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-200 z-[60] overflow-hidden animate-fadeIn">
-                  <button 
-                    type="button" 
-                    onClick={() => cameraInputRef.current?.click()} 
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors border-b border-slate-100"
-                  >
-                    <Icons.Camera className="w-4 h-4 text-[#F59E0B]" /> Take Photo
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => fileInputRef.current?.click()} 
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors"
-                  >
-                    <Icons.Box className="w-4 h-4 text-[#F59E0B]" /> Upload Photo
+              {/* 이미지 프리뷰 */}
+              {imagePreview && (
+                <div className="relative flex-shrink-0 group">
+                  <img src={imagePreview} alt="preview" className="w-8 h-8 rounded-md object-cover border border-slate-200" />
+                  <button onClick={clearImage} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5">
+                    <Icons.X className="w-2.5 h-2.5" />
                   </button>
                 </div>
               )}
+
+              {/* Input */}
+              <input
+                ref={mSearchInputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onFocus={handleSearchInputFocus}
+                onClick={handleSearchInputFocus}
+                placeholder={imagePreview ? "Describe this photo..." : "Search products"}
+                className="flex-1 min-w-0 text-[15px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-300"
+              />
+
+              {/* ❌ Clear (텍스트 있을 때만) */}
+              {(query.trim() || imagePreview) && (
+                <button type="button" onClick={clearQuery} className="p-1 hover:bg-slate-100 rounded-full transition-colors flex-shrink-0">
+                  <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
+                </button>
+              )}
+
+              {/* 🔍 Search */}
+              <button type="submit" disabled={loading} className="p-1.5 bg-[#F59E0B] rounded-lg hover:bg-amber-600 transition-colors flex-shrink-0">
+                {loading ? (
+                  <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                ) : (
+                  <Icons.Search className="w-4 h-4 text-white" />
+                )}
+              </button>
             </div>
           </div>
-
-          {/* Recent Searches */}
+          {/* Recent Searches — 카드 안, mSearchRef 밖에 flow 배치 (클릭+폭 모두 해결) */}
           {heroSearchFocused && !query.trim() && !imagePreview && (
-            <div className="absolute left-0 right-0 top-full w-full bg-white rounded-xl shadow-2xl border border-slate-100 z-50 overflow-hidden mt-2 animate-fadeIn">
-              <div className="px-4 py-2 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">Recent Searches</div>
+            <div ref={mRecentSearchRef} className="border-t border-slate-100 overflow-hidden">
+              <div className="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Recent Searches</div>
               <ul className="py-1">
                 {heroRecents.length === 0 ? (
-                  <li className="px-4 py-3 text-sm text-slate-500">No recent searches.</li>
+                  <li className="px-4 py-3 text-sm text-slate-400">No recent searches.</li>
                 ) : (
                   heroRecents.map((term) => (
                     <li key={term} className="flex items-center group">
-                      <button type="button" onClick={() => { setQuery(term); setHeroSearchFocused(false); searchInputRef.current?.focus(); }} className="flex-1 flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer text-left text-slate-900 min-w-0">
-                        <ClockIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                        <span className="font-medium truncate">{term}</span>
+                      <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); selectRecentSearch(term); }} className="flex-1 flex items-center gap-3 px-4 py-3 hover:bg-slate-50 cursor-pointer text-left text-slate-900 min-w-0">
+                        <ClockIcon className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                        <span className="font-medium truncate text-sm">{term}</span>
                       </button>
-                      <button type="button" onClick={(e) => { e.stopPropagation(); onRemoveHeroRecent(term); }} className="p-2 mr-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors shrink-0"><Icons.X className="w-4 h-4" /></button>
+                      <button type="button" onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); onRemoveHeroRecent(term); }} className="p-2 mr-1 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors shrink-0">
+                        <Icons.X className="w-4 h-4" />
+                      </button>
                     </li>
                   ))
                 )}
@@ -235,9 +320,100 @@ export function SearchWidget({
             </div>
           )}
         </div>
+      </div>
 
-        {/* Submit Button */}
-        <button type="submit" disabled={loading} className="bg-[#F59E0B] rounded-lg shadow-lg flex items-center justify-center text-2xl font-extrabold text-white drop-shadow-md h-[60px] md:h-[68px] px-10 w-full md:w-auto hover:bg-amber-600 active:scale-95 cursor-pointer transition-all">
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* ─── DESKTOP: 기존 가로 배치 (아이콘 배치만 변경) ─── */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <div className="hidden md:flex flex-row gap-2 relative z-50">
+
+        {/* Box 1: Deliver to */}
+        <div
+          ref={dZipRef}
+          className={`w-[280px] flex-none bg-white rounded-lg shadow-xl h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeZip ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'}`}
+        >
+          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Deliver to</label>
+          <div className="mt-1 flex items-center gap-2">
+            <MapPinIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={5}
+              value={zipcode}
+              onChange={(e) => setZipcode(e.target.value.replace(/\D/g, '').slice(0, 5))}
+              onFocus={() => { setShowZipDropdown(true); setHeroSearchFocused(false); setShowPhotoMenu(false); }}
+              placeholder="Zipcode"
+              className="flex-1 min-w-0 text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300"
+            />
+          </div>
+          {showZipDropdown && recentZips.length > 0 && (
+            <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-white rounded-xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-fadeIn">
+              <div className="px-4 py-2 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">Recent Zipcodes</div>
+              <ul>
+                {recentZips.map(zip => (
+                  <li key={zip} className="flex items-center hover:bg-slate-50 cursor-pointer border-b border-slate-50 last:border-0">
+                    <button type="button" onClick={() => { setZipcode(zip); setShowZipDropdown(false); }} className="flex-1 text-left px-4 py-3 font-bold text-slate-900 flex items-center gap-2">
+                      <MapPinIcon className="w-4 h-4 text-slate-400" /> {zip}
+                    </button>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onRemoveRecentZip(zip); }} className="px-4 py-3 text-slate-400 hover:text-red-500"><Icons.X className="w-4 h-4" /></button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Box 2: Search Input — [📷][input][❌] */}
+        <div
+          ref={dSearchRef}
+          className={`flex-[3] bg-white rounded-lg shadow-xl min-h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeQuery ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'} z-30`}
+        >
+          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Search products</label>
+          <div className="relative flex items-center gap-2 mt-1">
+            {/* 📷 카메라 (왼쪽) */}
+            <div ref={dPhotoMenuRef} className="relative flex-shrink-0">
+              <button type="button" onClick={handlePhotoBtnClick} className="p-1 hover:bg-slate-100 rounded-full transition-colors group">
+                <Icons.Camera className={`w-5 h-5 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-slate-400'} group-hover:text-[#F59E0B] transition-colors`} />
+              </button>
+              {renderPhotoMenu(false)}
+            </div>
+
+            {/* 이미지 프리뷰 */}
+            {imagePreview && (
+              <div className="relative flex-shrink-0 group">
+                <img src={imagePreview} alt="preview" className="w-10 h-10 rounded-md object-cover border border-slate-200" />
+                <button onClick={clearImage} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Icons.X className="w-3 h-3" />
+                </button>
+              </div>
+            )}
+
+            {/* Input */}
+            <input
+              ref={dSearchInputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={handleSearchInputFocus}
+              onClick={handleSearchInputFocus}
+              placeholder={imagePreview ? "Describe this photo..." : "e.g. Lego Star Wars, Sony Headphones"}
+              className="flex-1 min-w-0 text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300"
+            />
+
+            {/* ❌ Clear (텍스트 있을 때만) */}
+            {(query.trim() || imagePreview) && (
+              <button type="button" onClick={clearQuery} className="p-1 hover:bg-slate-100 rounded-full transition-colors flex-shrink-0">
+                <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
+              </button>
+            )}
+          </div>
+
+          {/* Recent Searches */}
+          {renderRecentSearches(false)}
+        </div>
+
+        {/* Search Button (데스크톱만) */}
+        <button type="submit" disabled={loading} className="bg-[#F59E0B] rounded-lg shadow-lg flex items-center justify-center text-2xl font-extrabold text-white drop-shadow-md h-[68px] px-10 w-auto hover:bg-amber-600 active:scale-95 cursor-pointer transition-all">
           {loading ? 'Searching...' : 'Search'}
         </button>
       </div>

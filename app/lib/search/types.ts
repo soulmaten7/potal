@@ -33,5 +33,7 @@ export interface SearchResult {
     isQuestionQuery?: boolean;
     /** 추천 상품 카테고리 키워드 (질문형 쿼리에서 반환) */
     suggestedProducts?: string[];
+    /** Skyscanner-style: 리테일러별 성공/실패 상태 */
+    providerStatus?: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }>;
   };
 }

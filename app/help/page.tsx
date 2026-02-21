@@ -94,39 +94,45 @@ function HelpContent() {
   });
 
   return (
-    <div className="w-full bg-white min-h-screen pb-20">
-      
+    <div style={{ backgroundColor: '#02122c' }} className="w-full min-h-screen pb-28">
+
       {/* 1. Hero Search */}
-      <div className="bg-[#f1f2f8] py-16 border-b border-slate-200">
-        <div className="max-w-[1440px] mx-auto px-6 flex flex-col items-center text-center">
-          <h1 className="text-4xl font-extrabold text-[#02122c] mb-6 tracking-tight">
+      <div style={{ padding: '80px 24px 32px' }}>
+        <div className="max-w-[1440px] mx-auto flex flex-col items-center text-center">
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', marginBottom: '20px', letterSpacing: '-0.02em' }}>
             How can we help you?
           </h1>
           <div className="relative w-full max-w-2xl">
-            <input 
-              type="text" 
-              placeholder="Search for answers (e.g. shipping, advertising, refund)"
+            <input
+              type="text"
+              placeholder="Search for answers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-14 pl-12 pr-4 rounded-xl border border-slate-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B] focus:border-transparent text-lg"
+              style={{
+                width: '100%', height: '48px', paddingLeft: '44px', paddingRight: '16px', borderRadius: '12px',
+                background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)',
+                color: '#ffffff', fontSize: '15px', outline: 'none',
+              }}
             />
-            <Icons.Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
+            <Icons.Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', color: 'rgba(255,255,255,0.35)' }} />
           </div>
         </div>
       </div>
 
       {/* 2. Category Pills */}
-      <div className="max-w-[1440px] mx-auto px-6 py-8">
-        <div className="flex flex-wrap gap-2 justify-center mb-12">
+      <div className="max-w-[1440px] mx-auto px-6 py-4">
+        <div className="flex flex-wrap gap-2 justify-center mb-8">
           {FAQ_CATEGORIES.map(cat => (
             <button
               key={cat.id}
               onClick={() => setActiveTab(cat.id)}
-              className={`px-5 py-2 rounded-full text-sm font-bold transition-all border ${
-                activeTab === cat.id 
-                  ? 'bg-[#02122c] text-white border-[#02122c]' 
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-[#02122c] hover:text-[#02122c]'
-              }`}
+              style={{
+                padding: '6px 16px', borderRadius: '9999px', fontSize: '13px', fontWeight: 700,
+                background: activeTab === cat.id ? '#F59E0B' : 'rgba(255,255,255,0.08)',
+                color: activeTab === cat.id ? '#ffffff' : 'rgba(255,255,255,0.5)',
+                border: activeTab === cat.id ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                cursor: 'pointer', transition: 'all 0.2s',
+              }}
             >
               {cat.label}
             </button>
@@ -134,46 +140,48 @@ function HelpContent() {
         </div>
 
         {/* 3. Accordion List */}
-        <div className="max-w-4xl mx-auto space-y-4">
-          {filteredItems.length > 0 ? (
-            filteredItems.map((item) => {
-              const isOpen = openItems.has(item.id);
-              return (
-                <div key={item.id} className="border-b border-slate-200 last:border-0">
-                  <button onClick={() => toggleItem(item.id)} className="w-full flex items-center justify-between py-6 text-left group">
-                    <span className={`text-lg font-bold transition-colors ${isOpen ? 'text-[#F59E0B]' : 'text-[#02122c] group-hover:text-[#F59E0B]'}`}>
-                      {item.question}
-                    </span>
-                    <Icons.ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#F59E0B]' : ''}`} />
-                  </button>
-                  <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100 mb-6' : 'max-h-0 opacity-0'}`}>
-                    <div className="text-slate-600 leading-relaxed text-[15px]">{item.answer}</div>
+        <div className="max-w-4xl mx-auto">
+          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+            {filteredItems.length > 0 ? (
+              filteredItems.map((item, idx) => {
+                const isOpen = openItems.has(item.id);
+                return (
+                  <div key={item.id}>
+                    {idx > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 20px' }} />}
+                    <button onClick={() => toggleItem(item.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 700, color: isOpen ? '#F59E0B' : '#ffffff', transition: 'color 0.2s', paddingRight: '12px' }}>
+                        {item.question}
+                      </span>
+                      <Icons.ChevronDown style={{ width: '16px', height: '16px', color: isOpen ? '#F59E0B' : 'rgba(255,255,255,0.25)', transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none', flexShrink: 0 }} />
+                    </button>
+                    <div style={{ overflow: 'hidden', maxHeight: isOpen ? '500px' : '0', opacity: isOpen ? 1 : 0, transition: 'all 0.3s ease' }}>
+                      <div style={{ padding: '0 20px 16px', fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.7' }}>{item.answer}</div>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="text-center py-20">
-              <p className="text-slate-500 text-lg">No results found for "{searchTerm}"</p>
-              <button onClick={() => setSearchTerm('')} className="mt-4 text-[#F59E0B] font-bold hover:underline">Clear search</button>
-            </div>
-          )}
+                );
+              })
+            ) : (
+              <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>No results found for &ldquo;{searchTerm}&rdquo;</p>
+                <button onClick={() => setSearchTerm('')} style={{ marginTop: '12px', fontSize: '13px', fontWeight: 700, color: '#F59E0B', background: 'transparent', border: 'none', cursor: 'pointer' }}>Clear search</button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 4. Embedded Contact Form Section (Ref for Auto-Scroll) */}
-      <div ref={formRef} className="mt-20 pt-16 border-t border-slate-200 bg-[#f8f9fa]">
-        <div className="max-w-[800px] mx-auto px-6 pb-20">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-extrabold text-[#02122c] mb-4">Still need help?</h2>
-            <p className="text-slate-600">
+      {/* 4. Embedded Contact Form Section */}
+      <div ref={formRef} style={{ marginTop: '40px', padding: '32px 24px 0' }}>
+        <div className="max-w-[800px] mx-auto">
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#ffffff', marginBottom: '8px' }}>Still need help?</h2>
+            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
               Send us a message directly. We usually respond within 24 hours.
             </p>
           </div>
-          
-          {/* [Clean Code] 복잡한 폼 로직은 저쪽 파일로 위임 */}
+
           <ContactForm initialTopic={contactTopic} />
-          
+
         </div>
       </div>
     </div>

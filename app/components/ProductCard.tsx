@@ -150,6 +150,17 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
     else addToWishlist(product);
   };
 
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = product.link || window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: displayTitle, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {}).catch(() => {});
+    }
+  };
+
   const handleViewDeal = (e: React.MouseEvent) => {
     e.preventDefault();
     const url = product.link || "#";
@@ -256,14 +267,19 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
        {/* ═══ DESKTOP CARD (md+) ═══ */}
        <div className="hidden md:flex bg-white border border-[#e0e3eb] rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 h-[210px] group relative z-0 overflow-hidden">
 
-          {/* 1. 좌측 이미지 — 하트만, 배지 없음 */}
+          {/* 1. 좌측 이미지 — 우측상단 공유 + 하트 */}
           <div className="w-[140px] h-full shrink-0 border-r border-slate-100 bg-white relative p-3 flex items-center justify-center">
-             <button onClick={handleToggleSave} className="absolute top-2 left-2 z-10 transition-transform active:scale-90 cursor-pointer">
+             <div className="absolute top-2 right-2 z-10 flex items-center gap-1">
+               <button onClick={handleShare} className="p-1 rounded-full bg-black/10 hover:bg-black/20 transition-all active:scale-90 cursor-pointer">
+                 <Icons.Share className="w-3.5 h-3.5 text-slate-500" />
+               </button>
+               <button onClick={handleToggleSave} className="p-1 rounded-full bg-black/10 hover:bg-black/20 transition-all active:scale-90 cursor-pointer">
                  {isSaved ?
-                   <Icons.HeartFilled className="w-5 h-5 text-red-500" /> :
-                   <Icons.Heart className="w-5 h-5 text-slate-300 hover:text-red-400" />
+                   <Icons.HeartFilled className="w-3.5 h-3.5 text-red-500" /> :
+                   <Icons.Heart className="w-3.5 h-3.5 text-slate-400 hover:text-red-400" />
                  }
-             </button>
+               </button>
+             </div>
              <img src={displayImage} alt={displayTitle} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
           </div>
 
@@ -376,14 +392,19 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
        {/* ═══ MOBILE CARD (<md) ═══ */}
        <div className="md:hidden bg-white border border-[#e0e3eb] rounded-xl shadow-sm hover:shadow-md active:scale-[0.99] transition-all duration-150 group relative z-0 overflow-hidden">
           <div className="flex p-3 gap-3">
-             {/* 이미지 — 하트만, 배지 없음 */}
+             {/* 이미지 — 우측상단 공유 + 하트 */}
              <div className="w-20 h-20 shrink-0 bg-white rounded-lg border border-slate-100 relative flex items-center justify-center p-1.5">
-                <button onClick={handleToggleSave} className="absolute -top-1 -left-1 z-10 transition-transform active:scale-90 cursor-pointer">
-                   {isSaved ?
-                     <Icons.HeartFilled className="w-4 h-4 text-red-500" /> :
-                     <Icons.Heart className="w-4 h-4 text-slate-300" />
-                   }
-                </button>
+                <div className="absolute -top-0.5 -right-0.5 z-10 flex items-center gap-0.5">
+                  <button onClick={handleShare} className="p-0.5 rounded-full bg-black/10 transition-transform active:scale-90 cursor-pointer">
+                    <Icons.Share className="w-3 h-3 text-slate-500" />
+                  </button>
+                  <button onClick={handleToggleSave} className="p-0.5 rounded-full bg-black/10 transition-transform active:scale-90 cursor-pointer">
+                    {isSaved ?
+                      <Icons.HeartFilled className="w-3 h-3 text-red-500" /> :
+                      <Icons.Heart className="w-3 h-3 text-slate-400" />
+                    }
+                  </button>
+                </div>
                 <img src={displayImage} alt={displayTitle} loading="lazy" className="w-full h-full object-contain mix-blend-multiply" />
              </div>
 

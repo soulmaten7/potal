@@ -1,8 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Icons, StarIcon, InfoIcon, ChevronDownIcon } from '../icons';
 import { ProductCard as RealProductCard, ProductCardSkeleton } from '@/app/components/ProductCard';
+import { getRetailerConfig, matchShippingProgram } from '@/app/lib/retailerConfig';
+import { useWishlist } from '@/app/context/WishlistContext';
 
 export interface Product {
   id: string | number;
@@ -51,6 +53,7 @@ interface ResultsGridProps {
   secondarySort?: "best" | "cheapest" | "fastest";
   setSecondarySort?: (val: "best" | "cheapest" | "fastest") => void;
   market: string;
+  setMarket: (val: string) => void;
   domesticProducts: Product[];
   globalProducts: Product[];
   totalResults: number;
@@ -65,10 +68,11 @@ interface ResultsGridProps {
   tabSummary?: TabSummaryData;
   searchError?: boolean;
   onRetry?: () => void;
+  providerStatus?: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }>;
 }
 
 export function ResultsGrid({
-  loading, query, sortBy, setSortBy, secondarySort, setSecondarySort, market,
+  loading, query, sortBy, setSortBy, secondarySort, setSecondarySort, market, setMarket,
   domesticProducts, globalProducts, totalResults,
   visibleCount, setVisibleCount,
   isSortOpen, setIsSortOpen,
@@ -76,7 +80,7 @@ export function ResultsGrid({
   isDomesticTaxOpen, setIsDomesticTaxOpen,
   isGlobalInfoOpen, setIsGlobalInfoOpen,
   activeTooltipId, setActiveTooltipId,
-  closeAllDropdowns, tabSummary, searchError, onRetry
+  closeAllDropdowns, tabSummary, searchError, onRetry, providerStatus
 }: ResultsGridProps) {
 
   // [Logic] 툴팁 토글 (하나 열면 다른 하나 닫기)
@@ -142,24 +146,43 @@ export function ResultsGrid({
   const showDomestic = market === "all" || market === "domestic";
   const showGlobal = market === "all" || market === "global";
 
+  // 마켓 필터 반영된 결과 수
+  const filteredResultCount = market === 'domestic'
+    ? domesticProducts.length
+    : market === 'global'
+      ? globalProducts.length
+      : totalResults;
+
+  // 마켓 필터 반영된 최대 상품 수 (Show More용)
+  const filteredMaxCount = market === 'domestic'
+    ? domesticProducts.length
+    : market === 'global'
+      ? globalProducts.length
+      : Math.max(domesticProducts.length, globalProducts.length);
+
+  // ── Skyscanner-style: 실패한 리테일러 목록 (부분 실패 배너용) ──
+  const failedProviders = providerStatus
+    ? Object.entries(providerStatus)
+        .filter(([, v]) => v.status !== 'ok')
+        .map(([name, v]) => ({ name, reason: v.status as 'error' | 'timeout' }))
+    : [];
+  const hasPartialFailure = failedProviders.length > 0 && totalResults > 0;
+
   // Error state: API failure
   if (!loading && searchError) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-20 gap-4">
-        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center">
-          <svg className="w-8 h-8 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
+          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: 'rgba(239,68,68,0.6)' }}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
         </div>
-        <h3 className="text-lg font-bold text-slate-800">Search temporarily unavailable</h3>
-        <p className="text-sm text-slate-500 text-center max-w-sm">
+        <h3 className="text-lg font-bold md:text-slate-800" style={{ color: 'rgba(255,255,255,0.9)' }}>Search temporarily unavailable</h3>
+        <p className="text-sm text-center max-w-sm md:text-slate-500" style={{ color: 'rgba(255,255,255,0.5)' }}>
           We couldn&apos;t reach our product providers right now. This is usually temporary — please try again.
         </p>
         {onRetry && (
-          <button
-            onClick={onRetry}
-            className="mt-2 px-6 py-2.5 bg-[#02122c] text-white text-sm font-bold rounded-xl hover:bg-[#0a192f] transition-colors shadow-sm"
-          >
+          <button onClick={onRetry} className="mt-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-colors shadow-sm" style={{ backgroundColor: '#F59E0B', color: '#02122c' }}>
             Try Again
           </button>
         )}
@@ -173,7 +196,7 @@ export function ResultsGrid({
       <div className="flex-1 flex flex-col items-center justify-center py-16 gap-5">
         {/* 애니메이션 스피너 */}
         <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-4 border-slate-200" />
+          <div className="absolute inset-0 rounded-full" style={{ border: '4px solid rgba(255,255,255,0.1)' }} />
           <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#F59E0B] animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-xl">🔍</span>
@@ -182,27 +205,347 @@ export function ResultsGrid({
 
         {/* 안내 텍스트 */}
         <div className="text-center space-y-2">
-          <h3 className="text-lg font-extrabold text-slate-800">Searching across 7 retailers...</h3>
-          <p className="text-sm text-slate-500 max-w-sm">
+          <h3 className="text-lg font-extrabold" style={{ color: 'rgba(255,255,255,0.9)' }}>Searching across 7 retailers...</h3>
+          <p className="text-sm max-w-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Comparing prices from Amazon, Walmart, eBay, Target, BestBuy, AliExpress, and Temu. This usually takes 10-15 seconds.
           </p>
         </div>
 
-        {/* 프로그레스 바 (시각적 피드백) */}
-        <div className="w-64 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+        {/* 프로그레스 바 */}
+        <div className="w-64 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
           <div className="h-full bg-[#F59E0B] rounded-full animate-loading-bar" />
         </div>
 
-        {/* 스켈레톤 카드 미리보기 */}
-        <div className="w-full max-w-2xl mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 opacity-50">
+        {/* 스켈레톤 — 모바일: 2열 다크, 데스크톱: 기존 */}
+        <div className="w-full max-w-2xl mt-4 hidden md:grid grid-cols-2 gap-4 opacity-50">
           {[1, 2, 3, 4].map(i => <ProductCardSkeleton key={i} />)}
+        </div>
+        <div className="w-full mt-4 md:hidden grid grid-cols-2 gap-2 opacity-40">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="rounded-lg overflow-hidden animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+              <div className="aspect-square" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
+              <div className="p-2 space-y-2">
+                <div className="h-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', width: '80%' }} />
+                <div className="h-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.08)', width: '60%' }} />
+                <div className="h-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', width: '40%' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ── 검색 결과 0건 (에러 아님) — "No results" 안내 화면 ──
+  if (!loading && !searchError && totalResults === 0) {
+    // 간단한 오타 교정 제안 (공백/특수문자 정리)
+    const cleanedQuery = query.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    const words = cleanedQuery.split(/\s+/).filter(Boolean);
+    // 단어가 2개 이상이면 첫 단어만으로 재검색 제안
+    const suggestedQuery = words.length > 1 ? words[0] : null;
+
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center py-16 gap-5">
+        {/* 아이콘 */}
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+          <span className="text-3xl">🔍</span>
+        </div>
+
+        {/* 메인 메시지 */}
+        <div className="text-center space-y-2">
+          <h3 className="text-lg font-extrabold md:text-slate-800" style={{ color: 'rgba(255,255,255,0.9)' }}>
+            No results found for &quot;{query}&quot;
+          </h3>
+          <p className="text-sm max-w-sm md:text-slate-500" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            We searched across all retailers but couldn&apos;t find matching products.
+          </p>
+        </div>
+
+        {/* 실패한 리테일러가 있으면 표시 */}
+        {failedProviders.length > 0 && (
+          <div className="rounded-lg px-4 py-2 max-w-sm w-full" style={{ backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}>
+            <p className="text-[11px] font-bold text-center" style={{ color: 'rgba(245,158,11,0.9)' }}>
+              ⚠️ {failedProviders.map(p => p.name).join(', ')} did not respond — results may be incomplete
+            </p>
+          </div>
+        )}
+
+        {/* 제안 */}
+        <div className="flex flex-col items-center gap-3 mt-2">
+          <p className="text-xs font-bold md:text-slate-500" style={{ color: 'rgba(255,255,255,0.4)' }}>Try these suggestions:</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {suggestedQuery && (
+              <a
+                href={`/search?q=${encodeURIComponent(suggestedQuery)}`}
+                className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
+                style={{ backgroundColor: 'rgba(245,158,11,0.15)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.3)' }}
+              >
+                Search &quot;{suggestedQuery}&quot; instead
+              </a>
+            )}
+            <button
+              onClick={() => window.history.back()}
+              className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
+              style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}
+            >
+              ← Go back
+            </button>
+          </div>
+          <ul className="text-[11px] space-y-1 mt-1 md:text-slate-400" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <li>• Check your spelling</li>
+            <li>• Try more general keywords</li>
+            <li>• Use fewer words in your search</li>
+          </ul>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col gap-6">
+    <div className="flex-1 min-w-0 flex flex-col gap-2 md:gap-6">
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* ═══ MOBILE: 스카이스캐너 스타일 전체 리디자인 ═══ */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <div className="md:hidden flex flex-col gap-2">
+
+        {/* ── Best / Cheapest / Fastest 정렬 탭 ── */}
+        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="grid grid-cols-3 gap-0">
+            {[
+              { key: 'best' as const, label: 'Best', data: tabSummary?.best },
+              { key: 'cheapest' as const, label: 'Cheapest', data: tabSummary?.cheapest },
+              { key: 'fastest' as const, label: 'Fastest', data: tabSummary?.fastest },
+            ].map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => setSortBy(tab.key)}
+                className="flex items-center justify-center py-1.5 transition-all"
+                style={{
+                  backgroundColor: sortBy === tab.key ? '#ffffff' : 'transparent',
+                }}
+              >
+                <span className="text-[14px] font-extrabold" style={{ color: sortBy === tab.key ? '#02122c' : 'rgba(255,255,255,0.7)' }}>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── 결과 수 + 정렬 표시 + Then By 세컨더리 정렬 ── */}
+        <div className="flex items-center justify-between px-1">
+          {/* 왼쪽: 결과 수 + 정렬 기준 */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              <span className="font-extrabold text-white">{filteredResultCount}</span> results sorted by <span className="text-[#F59E0B] capitalize">{sortBy}</span>
+            </span>
+            {sortBy === 'best' && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setActiveTooltipId(activeTooltipId === 'mobile-best-info' ? null : 'mobile-best-info'); }}
+                className="inline-flex items-center justify-center w-4 h-4 rounded-full"
+                style={{ border: '1px solid rgba(255,255,255,0.3)' }}
+              >
+                <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>?</span>
+              </button>
+            )}
+          </div>
+
+          {/* 오른쪽: Then By 세컨더리 정렬 (cheapest/fastest 일 때만) */}
+          {(sortBy === 'cheapest' || sortBy === 'fastest') && setSecondarySort && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.35)' }}>then</span>
+              <div className="flex gap-1">
+                {(sortBy === 'fastest'
+                  ? [
+                      { key: 'best' as const, label: 'Best' },
+                      { key: 'cheapest' as const, label: 'Cheapest' },
+                    ]
+                  : [
+                      { key: 'best' as const, label: 'Best' },
+                      { key: 'fastest' as const, label: 'Fastest' },
+                    ]
+                ).map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setSecondarySort(opt.key)}
+                    className="px-2 py-[3px] rounded transition-all"
+                    style={{
+                      backgroundColor: secondarySort === opt.key ? '#ffffff' : 'rgba(255,255,255,0.06)',
+                      border: `1px solid ${secondarySort === opt.key ? '#ffffff' : 'rgba(255,255,255,0.1)'}`,
+                    }}
+                  >
+                    <span className="text-[11px] font-bold" style={{ color: secondarySort === opt.key ? '#02122c' : '#ffffff' }}>
+                      {opt.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Skyscanner-style: 부분 실패 배너 (모바일) ── */}
+        {hasPartialFailure && (
+          <div className="mx-1 rounded-lg px-3 py-2 flex items-start gap-2" style={{ backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}>
+            <span className="text-[12px] shrink-0 mt-0.5">⚠️</span>
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] font-bold" style={{ color: 'rgba(245,158,11,0.9)' }}>
+                {failedProviders.map(p => p.name).join(', ')} — {failedProviders.some(p => p.reason === 'timeout') ? 'response timeout' : 'unavailable'}
+              </span>
+              <p className="text-[9px] mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                Showing results from other retailers. Try again later for full comparison.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Best scoring info tooltip (모바일) */}
+        {activeTooltipId === 'mobile-best-info' && (
+          <div className="mx-1 rounded-xl p-3 text-left" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-[11px] font-extrabold text-white">How POTAL Ranks &quot;Best&quot;</h4>
+              <button onClick={() => setActiveTooltipId(null)} className="p-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div className="space-y-1.5">
+              {[
+                { label: 'Total Price', pct: 35, color: '#10B981' },
+                { label: 'Delivery Speed', pct: 25, color: '#3B82F6' },
+                { label: 'Seller Trust', pct: 20, color: '#8B5CF6' },
+                { label: 'Match Accuracy', pct: 15, color: '#F59E0B' },
+                { label: 'Return Policy', pct: 5, color: '#94A3B8' },
+              ].map(item => (
+                <div key={item.label} className="flex items-center gap-2">
+                  <span className="text-[9px] font-bold w-[80px]" style={{ color: 'rgba(255,255,255,0.7)' }}>{item.label}</span>
+                  <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
+                  </div>
+                  <span className="text-[9px] font-extrabold text-white w-[28px] text-right">{item.pct}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Sales Tax Info 팝업 (모바일) */}
+        {isDomesticTaxOpen && (
+          <div className="mx-1 rounded-xl p-3 max-h-[50vh] overflow-y-auto" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[11px] font-extrabold text-white">🇺🇸 US Sales Tax</span>
+              <button onClick={() => setIsDomesticTaxOpen(false)}><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <p className="text-[9px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>Tax = Product Price × State+Local Rate. Estimated using your ZIP code.</p>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px]">
+              {[['California','8.75%'],['New York','8.00%'],['Texas','8.25%'],['Florida','7.00%'],['Washington','8.92%'],['Illinois','8.82%']].map(([s,r]) => (
+                <div key={s} className="flex justify-between"><span style={{ color: 'rgba(255,255,255,0.5)' }}>{s}</span><span className="font-bold text-white">{r}</span></div>
+              ))}
+            </div>
+            <div className="mt-1.5 text-[8px] rounded px-2 py-1" style={{ backgroundColor: 'rgba(16,185,129,0.1)', color: '#10B981' }}>
+              No Tax: OR, MT, NH, DE, AK
+            </div>
+          </div>
+        )}
+
+        {/* Import Tax Info 팝업 (모바일) */}
+        {isGlobalInfoOpen && (
+          <div className="mx-1 rounded-xl p-3 max-h-[50vh] overflow-y-auto" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[11px] font-extrabold text-white">🌏 Import Tax</span>
+              <button onClick={() => setIsGlobalInfoOpen(false)}><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <p className="text-[9px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>POTAL calculates Total Landed Cost — product + shipping + import duties + fees.</p>
+            <div className="space-y-1.5 text-[9px]">
+              <div className="rounded px-2 py-1.5" style={{ backgroundColor: 'rgba(239,68,68,0.08)' }}>
+                <span className="font-bold" style={{ color: '#EF4444' }}>🇨🇳 China (Ali/Temu/Shein): ~20% duty</span>
+                <p className="text-[8px] mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>$800 de minimis eliminated Aug 2025</p>
+              </div>
+              <div className="rounded px-2 py-1.5" style={{ backgroundColor: 'rgba(59,130,246,0.08)' }}>
+                <span className="font-bold" style={{ color: '#3B82F6' }}>🇰🇷🇯🇵 Korea/Japan: Duty free under $800</span>
+              </div>
+              <div className="rounded px-2 py-1.5" style={{ backgroundColor: 'rgba(139,92,246,0.08)' }}>
+                <span className="font-bold" style={{ color: '#8B5CF6' }}>🇪🇺🇬🇧 EU/UK: Duty free under $800</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* (M3) Domestic / Global 컬럼 헤더 + 세금 정보 버튼 (오른쪽 정렬) */}
+        <div className={`grid gap-1.5 mt-0.5 ${showDomestic && showGlobal ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {showDomestic && (
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-1">
+                <span className="text-xs">🇺🇸</span>
+                <span className="text-[10px] font-extrabold" style={{ color: 'rgba(255,255,255,0.8)' }}>Domestic</span>
+                <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.35)' }}>({domesticProducts.length})</span>
+              </div>
+              <button onClick={toggleDomesticTax} className="flex items-center gap-0.5 text-[9px] font-bold text-[#F59E0B]">
+                <InfoIcon className="w-2.5 h-2.5" /> Sales Tax
+              </button>
+            </div>
+          )}
+          {showGlobal && (
+            <div className="flex items-center justify-between px-1">
+              <div className="flex items-center gap-1">
+                <span className="text-xs">🌍</span>
+                <span className="text-[10px] font-extrabold" style={{ color: 'rgba(255,255,255,0.8)' }}>Global</span>
+                <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.35)' }}>({globalProducts.length})</span>
+              </div>
+              <button onClick={toggleGlobalTax} className="flex items-center gap-0.5 text-[9px] font-bold text-[#F59E0B]">
+                <InfoIcon className="w-2.5 h-2.5" /> Import Tax
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* (M4) 상품 그리드 — market 필터에 따라 1열 or 2열 */}
+        <div className={`grid gap-1.5 ${showDomestic && showGlobal ? 'grid-cols-2' : 'grid-cols-2'}`}>
+          {/* Domestic 열 */}
+          {showDomestic && (
+            <div className={`flex flex-col gap-1.5 ${!showGlobal ? 'col-span-2' : ''}`}>
+              {domesticProducts.length > 0 ? (
+                <div className={`${!showGlobal ? 'grid grid-cols-2 gap-1.5' : 'flex flex-col gap-1.5'}`}>
+                  {domesticProducts.slice(0, visibleCount).map((p) => (
+                    <MobileCompactCard key={String(p.id)} product={p} type="domestic" />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center py-8 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                  <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>No domestic results</span>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Global 열 */}
+          {showGlobal && (
+            <div className={`flex flex-col gap-1.5 ${!showDomestic ? 'col-span-2' : ''}`}>
+              {globalProducts.length > 0 ? (
+                <div className={`${!showDomestic ? 'grid grid-cols-2 gap-1.5' : 'flex flex-col gap-1.5'}`}>
+                  {globalProducts.slice(0, visibleCount).map((p) => (
+                    <MobileCompactCard key={String(p.id)} product={p} type="global" />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center py-8 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+                  <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>No global results</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 무한스크롤 감지 센서 + 로딩 표시 */}
+        {filteredMaxCount > visibleCount && (
+          <MobileInfiniteScrollSentinel onVisible={() => setVisibleCount(visibleCount + 10)} />
+        )}
+        {filteredMaxCount <= visibleCount && filteredMaxCount > 0 && (
+          <div className="py-4 text-center">
+            <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>All {filteredResultCount} results loaded</span>
+          </div>
+        )}
+      </div>
+
+      {/* ═══════════════════════════════════════════════════ */}
+      {/* ═══ DESKTOP: 기존 레이아웃 유지 ═══ */}
+      {/* ═══════════════════════════════════════════════════ */}
+      <div className="hidden md:flex md:flex-col gap-6">
 
       {/* (1) 상단 텍스트 */}
       <div className="flex items-center justify-between">
@@ -309,6 +652,21 @@ export function ResultsGrid({
                 {opt.label}
               </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Skyscanner-style: 부분 실패 배너 (데스크톱) ── */}
+      {hasPartialFailure && (
+        <div className="rounded-xl px-4 py-3 flex items-center gap-3" style={{ backgroundColor: '#FFF8E7', border: '1px solid #F5D68A' }}>
+          <span className="text-base shrink-0">⚠️</span>
+          <div className="flex-1 min-w-0">
+            <span className="text-sm font-bold text-amber-800">
+              {failedProviders.map(p => p.name).join(', ')} — {failedProviders.some(p => p.reason === 'timeout') ? 'Response timed out' : 'Currently unavailable'}
+            </span>
+            <p className="text-xs text-amber-600 mt-0.5">
+              Showing results from other retailers. Try again later for a full comparison across all stores.
+            </p>
           </div>
         </div>
       )}
@@ -585,6 +943,269 @@ export function ResultsGrid({
           </button>
       )}
 
+      </div>{/* end DESKTOP wrapper */}
+
+    </div>
+  );
+}
+
+/** ═══ 무한스크롤 센서 (IntersectionObserver) ═══ */
+function MobileInfiniteScrollSentinel({ onVisible }: { onVisible: () => void }) {
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) onVisible(); },
+      { rootMargin: '200px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [onVisible]);
+
+  return (
+    <div ref={sentinelRef} className="w-full py-6 flex items-center justify-center gap-2">
+      <div className="w-4 h-4 rounded-full border-2 border-t-[#F59E0B] animate-spin" style={{ borderColor: 'rgba(255,255,255,0.15)', borderTopColor: '#F59E0B' }} />
+      <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>Loading more...</span>
+    </div>
+  );
+}
+
+/** ═══ 모바일 컴팩트 세로형 카드 ═══ */
+const MOBILE_PLATFORM_COLORS: Record<string, string> = {
+  amazon: '#FF9900', walmart: '#0071ce', target: '#CC0000',
+  'best buy': '#003b64', bestbuy: '#003b64', ebay: '#e53238',
+  aliexpress: '#FF4747', temu: '#FB7701', shein: '#888', iherb: '#458500',
+};
+
+/** Tailwind → hex 색상 변환 맵 (뱃지용) */
+const TW_COLOR_MAP: Record<string, string> = {
+  'text-white': '#ffffff', 'text-[#0071ce]': '#0071ce', 'text-[#003b64]': '#003b64',
+  'bg-[#00A8E1]': '#00A8E1', 'bg-[#FF9900]': '#FF9900', 'bg-[#0071ce]/10': 'rgba(0,113,206,0.1)',
+  'bg-[#FFF200]/30': 'rgba(255,242,0,0.3)', 'bg-[#CC0000]': '#CC0000', 'bg-[#e53238]': '#e53238',
+  'bg-[#FF4747]': '#FF4747',
+};
+function twToHex(tw: string, fallback: string): string {
+  if (TW_COLOR_MAP[tw]) return TW_COLOR_MAP[tw];
+  const m = tw.match(/#[0-9A-Fa-f]{3,8}/);
+  return m ? m[0] : fallback;
+}
+
+function MobileCompactCard({ product, type }: { product: Product; type: 'domestic' | 'global' }) {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const isSaved = isInWishlist(String(product.id));
+  const displayTitle = product.title || 'Untitled';
+  const displayImage = product.thumb || '';
+  const displaySeller = product.seller || product.site || 'Unknown';
+  const displayPrice = typeof product.price === 'number' ? `$${product.price.toFixed(2)}` : String(product.price);
+  const priceNum = parseFloat(String(displayPrice).replace(/[^0-9.-]/g, ''));
+  const platformColor = MOBILE_PLATFORM_COLORS[displaySeller.toLowerCase().trim()] || '#888';
+
+  const isGlobal = type === 'global';
+  const shippingPrice = product.shippingPrice;
+  const shippingLabel = shippingPrice === 0 || shippingPrice == null ? 'Free Shipping' : `+$${shippingPrice.toFixed(2)}`;
+  const hasTotal = product.totalPrice != null && product.totalPrice > 0 && product.totalPrice !== priceNum;
+  const finalTotal = hasTotal ? `$${product.totalPrice!.toFixed(2)}` : displayPrice;
+  const taxAmount = hasTotal ? (product.totalPrice! - priceNum - (shippingPrice || 0)) : 0;
+  const taxLabel = taxAmount > 0.5 ? `Est.${isGlobal ? 'Duty' : 'Tax'} +$${taxAmount.toFixed(2)}` : '';
+
+  // ── 멤버십 뱃지 결정 (3단계 우선순위) ──
+  // 1순위: ScoringEngine이 미리 계산한 membershipBadge (가장 정확)
+  // 2순위: retailerConfig 기반 matchShippingProgram (데이터 매칭)
+  // 3순위: is_prime fallback (Amazon 전용)
+  const mBadge = product.membershipBadge;
+  const retailerConf = getRetailerConfig(displaySeller);
+  const shippingProg = retailerConf ? matchShippingProgram(retailerConf, {
+    is_prime: product.is_prime,
+    badges: product.badges,
+    deliveryDays: product.arrives,
+    shipping: product.shipping,
+  }) : null;
+  const hasFreeShipping = shippingPrice === 0 || shippingPrice == null;
+
+  // 뱃지 렌더링 데이터 결정
+  let badgeLabel: string | null = null;
+  let badgeBg = '#333';
+  let badgeColor = '#fff';
+
+  if (mBadge) {
+    // 1순위: membershipBadge (ScoringEngine 제공) — Tailwind 클래스→hex 변환
+    badgeLabel = mBadge.label;
+    badgeBg = twToHex(mBadge.badgeBg, platformColor);
+    badgeColor = twToHex(mBadge.badgeColor, '#fff');
+  } else if (shippingProg) {
+    // 2순위: retailerConfig 매칭
+    badgeLabel = shippingProg.badge;
+    badgeBg = twToHex(shippingProg.badgeBg, '#333');
+    badgeColor = twToHex(shippingProg.badgeColor, '#fff');
+  } else if (product.is_prime) {
+    // 3순위: Amazon Prime fallback
+    badgeLabel = 'Prime';
+    badgeBg = '#232F3E';
+    badgeColor = '#00A8E1';
+  } else if (product.appliedMembership) {
+    // 4순위: appliedMembership 이름 직접 표시
+    const label = product.appliedMembership.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    badgeLabel = label;
+    badgeBg = platformColor;
+    badgeColor = '#fff';
+  }
+
+  const handleClick = () => {
+    const url = product.link || '#';
+    if (url !== '#') window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = product.link || window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: displayTitle, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        // 간단한 피드백 (alert 대신 조용히 복사)
+      }).catch(() => {});
+    }
+  };
+
+  const handleToggleSave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const wishProduct = {
+      id: String(product.id),
+      title: product.title,
+      name: product.title,
+      price: displayPrice,
+      image: product.thumb,
+      thumb: product.thumb,
+      seller: product.seller,
+      site: product.seller,
+      rating: product.rating,
+      reviewCount: product.reviewCount,
+      link: product.link,
+      totalPrice: product.totalPrice,
+      shippingPrice: product.shippingPrice,
+      is_prime: product.is_prime,
+      badges: product.badges,
+      arrives: product.arrives,
+      shipping: product.shipping,
+      appliedMembership: product.appliedMembership,
+      membershipBadge: product.membershipBadge,
+      type: product.type,
+    };
+    if (isSaved) removeFromWishlist(String(product.id));
+    else addToWishlist(wishProduct);
+  };
+
+  return (
+    <div
+      onClick={handleClick}
+      className="rounded-lg overflow-hidden cursor-pointer transition-all active:scale-[0.98] flex flex-col"
+      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+    >
+      {/* 상단: 왼쪽 셀러뱃지 ←→ 오른쪽 별점 */}
+      <div className="flex items-center justify-between px-1.5 pt-1.5 pb-0.5 flex-shrink-0">
+        <div className="px-1 py-[1px] rounded text-[7px] font-extrabold uppercase" style={{ backgroundColor: platformColor, color: '#fff' }}>
+          {displaySeller.length > 8 ? displaySeller.slice(0, 8) : displaySeller}
+        </div>
+        <div className="flex items-center gap-0.5">
+          <span className="text-[8px]" style={{ color: '#F59E0B' }}>★</span>
+          <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
+          {product.reviewCount > 0 && (
+            <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.35)' }}>({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})</span>
+          )}
+        </div>
+      </div>
+
+      {/* 이미지 — 고정 비율 컨테이너 + 우측상단 공유/하트 */}
+      <div
+        className="relative w-full overflow-hidden"
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.03)',
+          flexShrink: 0,
+          flexGrow: 0,
+          flexBasis: 'auto',
+          height: 0,
+          paddingBottom: '125%',
+        }}
+      >
+        {/* 공유 + 하트 아이콘 (이미지 우측 상단) */}
+        <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1">
+          <button onClick={handleShare} className="p-1 rounded-full transition-transform active:scale-90" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
+            <Icons.Share className="w-3 h-3 text-white" />
+          </button>
+          <button onClick={handleToggleSave} className="p-1 rounded-full transition-transform active:scale-90" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
+            {isSaved
+              ? <Icons.HeartFilled className="w-3 h-3 text-red-500" />
+              : <Icons.Heart className="w-3 h-3 text-white" />
+            }
+          </button>
+        </div>
+        {displayImage && (
+          <img
+            src={displayImage}
+            alt={displayTitle}
+            loading="lazy"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              padding: '6px',
+            }}
+          />
+        )}
+      </div>
+
+      {/* 정보 영역 */}
+      <div className="px-2 py-1.5 flex flex-col gap-1">
+        {/* 상품명 — 3줄 고정 높이 (레이아웃 통일) */}
+        <p className="text-[10px] font-medium leading-tight line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '3.6em' }}>
+          {displayTitle}
+        </p>
+
+        {/* 구분선 */}
+        <div className="w-full h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
+
+        {/* ── 가격 3줄 구조 (total 오른쪽 2-3줄 병합) ── */}
+        <div className="flex gap-1">
+          {/* 왼쪽: 3줄 정보 */}
+          <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+            {/* 1줄: 멤버십 뱃지 + 배송 + 배송일 */}
+            <div className="flex items-center gap-0.5 flex-wrap">
+              {badgeLabel && (
+                <span className="text-[7px] font-extrabold px-1 py-[0.5px] rounded" style={{ backgroundColor: badgeBg, color: badgeColor }}>
+                  {badgeLabel}
+                </span>
+              )}
+              <span className="text-[7px] font-bold" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.5)' }}>
+                {hasFreeShipping ? 'Free' : shippingLabel}
+              </span>
+              <span className="text-[8px]">🚀</span>
+              <span className="text-[7px] font-bold" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
+                {product.arrives || (isGlobal ? '7-15 Days' : '1-2 Days')}
+              </span>
+            </div>
+            {/* 2줄: Est. Tax */}
+            <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              {taxLabel || (isGlobal ? 'Est.Duty —' : 'Est.Tax —')}
+            </span>
+            {/* 3줄: Product 가격 */}
+            <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Product {displayPrice}
+            </span>
+          </div>
+          {/* 오른쪽: total 라벨 + 총가격 (2-3줄 높이 병합) */}
+          <div className="flex flex-col items-end justify-between shrink-0 py-0.5">
+            <span className="text-[7px] font-bold px-1 py-[0.5px] rounded" style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B' }}>total</span>
+            <span className="text-[15px] font-extrabold leading-none text-white">{finalTotal}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

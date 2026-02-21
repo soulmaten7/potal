@@ -85,8 +85,11 @@ function SearchContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchError, setSearchError] = useState(false);
   const [showTopBtn, setShowTopBtn] = useState(false);
+  // Skyscanner-style: 리테일러별 성공/실패 상태
+  const [providerStatus, setProviderStatus] = useState<Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }>>({});
 
   const [priceMax, setPriceMax] = useState(2000);
+  const [maxDeliveryDays, setMaxDeliveryDays] = useState(30);
   const [selectedRetailers, setSelectedRetailers] = useState<Set<string>>(new Set(ALL_RETAILERS_FLAT));
   const [memberships, setMemberships] = useState<Record<string, boolean>>(() => {
     // 기본: 모든 멤버십 활성화 (회원 기준 가격이 기본 표시)
@@ -165,6 +168,11 @@ function SearchContent() {
         // tabSummary 추출
         if (data.metadata?.tabSummary) {
           setTabSummary(data.metadata.tabSummary);
+        }
+
+        // 리테일러별 상태 추출 (Skyscanner-style)
+        if (data.metadata?.providerStatus) {
+          setProviderStatus(data.metadata.providerStatus);
         }
 
         if (data.results) {
@@ -337,6 +345,8 @@ function SearchContent() {
         if (p.isSearchCard) return true;
         const matchesPrice = !isNaN(p.price) && p.price <= priceMax;
         const matchesRetailer = selectedRetailers.size === 0 || selectedRetailers.has(p.seller) || selectedRetailers.has(p.site ?? '');
+        // 배송일 필터: parsedDeliveryDays가 있으면 maxDeliveryDays 이내만 표시
+        const matchesDelivery = maxDeliveryDays >= 30 || !p.parsedDeliveryDays || p.parsedDeliveryDays <= maxDeliveryDays;
 
         // AI Smart Suggestion 클라이언트 사이드 필터링
         let matchesAiFilter = true;
@@ -351,9 +361,9 @@ function SearchContent() {
           });
         }
 
-        return matchesPrice && matchesRetailer && matchesAiFilter;
+        return matchesPrice && matchesRetailer && matchesAiFilter && matchesDelivery;
     });
-  }, [query, priceMax, selectedRetailers, membershipAdjustedProducts, aiActiveFilters]);
+  }, [query, priceMax, maxDeliveryDays, selectedRetailers, membershipAdjustedProducts, aiActiveFilters]);
 
   const sortedProducts = useMemo(() => {
     // 검색카드는 항상 끝에 배치
@@ -413,7 +423,9 @@ function SearchContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f1f2f8] font-sans text-[#02122c] flex flex-col relative" onClick={closeAllDropdowns}>
+    <div className="min-h-screen font-sans flex flex-col relative" style={{ backgroundColor: '#02122c' }} onClick={closeAllDropdowns}>
+      {/* 데스크톱: 기존 밝은 배경 유지 */}
+      <div className="hidden md:block fixed inset-0 z-0" style={{ backgroundColor: '#f1f2f8' }} />
       <style jsx global>{`
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #02122c; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); margin-top: -6px; }
         input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; }
@@ -430,21 +442,23 @@ function SearchContent() {
             - market, isExpanded 등 삭제 (새 헤더엔 없음)
             - recentZips, heroRecents 등 추가
         */}
-        <StickyHeader 
-            query={query} 
-            setQuery={setQuery} 
-            zipcode={zip} 
-            setZipcode={setZip} 
+        <StickyHeader
+            query={query}
+            setQuery={setQuery}
+            zipcode={zip}
+            setZipcode={setZip}
             recentZips={recentZips}
             heroRecents={heroRecents}
             onRemoveRecentZip={removeRecentZip}
             onRemoveHeroRecent={removeHeroRecent}
-            onSearch={handleSearch} 
+            onSearch={handleSearch}
             loading={isLoading}
+            market={market}
+            setMarket={setMarket}
         />
       </div>
 
-      <main className="max-w-[1440px] mx-auto px-3 md:px-6 py-4 md:py-8 flex gap-4 md:gap-8 flex-1 w-full">
+      <main className="max-w-[1440px] mx-auto px-3 md:px-6 py-1 md:py-8 flex flex-col md:flex-row gap-2 md:gap-8 flex-1 w-full relative z-10 overflow-hidden">
         <FilterSidebar
             priceMax={priceMax} setPriceMax={setPriceMax}
             selectedRetailers={selectedRetailers} setSelectedRetailers={setSelectedRetailers}
@@ -453,7 +467,7 @@ function SearchContent() {
         />
 
         {/* 오른쪽 메인 영역: AI Suggestion + Results */}
-        <div className="flex-1 flex flex-col gap-6">
+        <div className="flex-1 min-w-0 flex flex-col gap-2 md:gap-6">
           {/* AI Smart Suggestion Box — 검색바 아래, 결과 위 */}
           <AiSmartSuggestionBox
             loading={isLoading}
@@ -465,12 +479,22 @@ function SearchContent() {
             onApplyFilters={handleAiFilterApply}
             onClearFilters={handleAiFilterClear}
             activeFilters={aiActiveFilters}
+            priceMax={priceMax}
+            setPriceMax={setPriceMax}
+            selectedRetailers={selectedRetailers}
+            setSelectedRetailers={setSelectedRetailers as any}
+            allRetailers={ALL_RETAILERS_FLAT}
+            totalResults={totalResults}
+            memberships={memberships}
+            setMemberships={setMemberships}
+            maxDeliveryDays={maxDeliveryDays}
+            setMaxDeliveryDays={setMaxDeliveryDays}
           />
 
           <ResultsGrid
             loading={isLoading} query={query} sortBy={sortBy} setSortBy={(v) => { setSortBy(v); setSecondarySort('best'); }}
             secondarySort={secondarySort} setSecondarySort={setSecondarySort}
-            market={market} domesticProducts={domesticProducts} globalProducts={globalProducts}
+            market={market} setMarket={setMarket} domesticProducts={domesticProducts} globalProducts={globalProducts}
             totalResults={totalResults} visibleCount={visibleCount} setVisibleCount={setVisibleCount}
             isSortOpen={isSortOpen} setIsSortOpen={setIsSortOpen}
             isTooltipOpen={isTooltipOpen} setIsTooltipOpen={setIsTooltipOpen}
@@ -481,98 +505,20 @@ function SearchContent() {
             tabSummary={tabSummary}
             searchError={searchError}
             onRetry={() => window.location.reload()}
+            providerStatus={providerStatus}
           />
         </div>{/* end 오른쪽 메인 영역 */}
       </main>
 
-      {/* ═══ MOBILE FILTER BUTTON (lg 미만에서만 표시) ═══ */}
+      {/* 모바일 Filters 플로팅 버튼 제거 — AI Suggestion/Filters 2분할 버튼이 대체 */}
+      {/* 태블릿(md~lg)용 Filters 버튼은 유지 */}
       <button
         onClick={() => setMobileFilterOpen(true)}
-        className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[900] flex items-center gap-2 px-5 py-3 bg-[#02122c] text-white rounded-full shadow-2xl hover:bg-[#F59E0B] transition-all active:scale-95"
+        className="hidden md:flex lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[900] items-center gap-2 px-5 py-3 bg-[#02122c] text-white rounded-full shadow-2xl hover:bg-[#F59E0B] transition-all active:scale-95"
       >
         <Icons.Filter className="w-4 h-4" />
         <span className="text-sm font-bold">Filters</span>
       </button>
-
-      {/* ═══ MOBILE FILTER BOTTOM SHEET ═══ */}
-      {mobileFilterOpen && (
-        <div className="lg:hidden fixed inset-0 z-[1000]" onClick={() => setMobileFilterOpen(false)}>
-          {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-          {/* Sheet */}
-          <div
-            className="absolute bottom-0 left-0 right-0 bg-[#f1f2f8] rounded-t-2xl max-h-[85vh] overflow-y-auto animate-slide-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Handle + Close */}
-            <div className="sticky top-0 bg-[#f1f2f8] pt-3 pb-2 px-4 z-10 border-b border-slate-200">
-              <div className="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-3" />
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-extrabold text-[#02122c]">Filters</h3>
-                <button
-                  onClick={() => setMobileFilterOpen(false)}
-                  className="text-sm font-bold text-[#F59E0B] hover:underline"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-
-            {/* Filter Content */}
-            <div className="p-4 space-y-5">
-              {/* Market */}
-              <div>
-                <p className="text-[13px] font-bold text-slate-500 uppercase mb-2">Market Scope</p>
-                <div className="flex gap-2">
-                  {[{ val: "all", label: "All" }, { val: "domestic", label: "US" }, { val: "global", label: "Global" }].map((opt) => (
-                    <button
-                      key={opt.val}
-                      onClick={() => setMarket(opt.val)}
-                      className={`flex-1 py-2 text-sm font-bold rounded-lg border transition-all ${market === opt.val ? 'bg-[#02122c] text-white border-[#02122c]' : 'bg-white text-slate-600 border-slate-200'}`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price */}
-              <div>
-                <p className="text-[13px] font-bold text-slate-500 uppercase mb-2">Max Price: ${priceMax}{priceMax === 2000 ? '+' : ''}</p>
-                <input type="range" min="0" max="2000" step="50" value={priceMax} onChange={(e) => setPriceMax(Number(e.target.value))} className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" />
-              </div>
-
-              {/* Retailers */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[13px] font-bold text-slate-500 uppercase">Retailers</p>
-                  <div className="flex gap-2 text-[11px] font-bold">
-                    <button onClick={() => setSelectedRetailers(new Set(ALL_RETAILERS_FLAT))} className="text-[#02122c] hover:underline">All</button>
-                    <button onClick={() => setSelectedRetailers(new Set())} className="text-slate-400 hover:underline">Clear</button>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {ALL_RETAILERS_FLAT.slice(0, 12).map(r => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        setSelectedRetailers(prev => {
-                          const next = new Set(prev);
-                          if (next.has(r)) next.delete(r); else next.add(r);
-                          return next;
-                        });
-                      }}
-                      className={`px-2.5 py-1.5 text-[12px] font-bold rounded-full border transition-all ${selectedRetailers.has(r) ? 'bg-[#02122c] text-white border-[#02122c]' : 'bg-white text-slate-500 border-slate-200'}`}
-                    >
-                      {r}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <button
         onClick={scrollToTop}

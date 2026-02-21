@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSupabase } from "../context/SupabaseProvider";
 import { useWishlist } from "../context/WishlistContext";
 
@@ -56,19 +57,31 @@ export function BottomNav({ activeTab = "search", session: sessionProp, onSearch
   const { session: contextSession } = useSupabase();
   const session = sessionProp !== undefined ? sessionProp : contextSession;
   const { wishlist } = useWishlist();
+  const pathname = usePathname();
+  const isSearchPage = pathname?.startsWith('/search');
 
   const avatarUrl = session?.user?.user_metadata?.avatar_url as string | undefined;
 
+  // 검색 페이지: 다크테마 탭 스타일
+  const darkTabClass = (active: boolean) =>
+    `flex flex-col items-center justify-center gap-0.5 py-1.5 px-3 transition-colors min-w-[64px] ${active ? "text-indigo-400 font-semibold" : "text-white/40 hover:text-white/60"}`;
+
+  const currentTabClass = isSearchPage ? darkTabClass : tabClass;
+
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[9999] md:hidden border-t border-slate-200 bg-white safe-area-pb"
+      className={`fixed bottom-0 left-0 right-0 z-[9999] md:hidden border-t safe-area-pb ${
+        isSearchPage
+          ? 'border-white/8 bg-[#02122c]'
+          : 'border-slate-200 bg-white'
+      }`}
       aria-label="Bottom navigation"
     >
       <div className="flex items-center justify-around h-14 px-2">
         <button
           type="button"
           onClick={onSearchClick}
-          className={tabClass(activeTab === "search")}
+          className={currentTabClass(activeTab === "search")}
           aria-label="Search"
         >
           <SearchIcon className="w-5 h-5 shrink-0" />
@@ -76,7 +89,7 @@ export function BottomNav({ activeTab = "search", session: sessionProp, onSearch
         </button>
         <Link
           href="/saved"
-          className={`${tabClass(activeTab === "saved")} relative`}
+          className={`${currentTabClass(activeTab === "saved")} relative`}
         >
           <BookmarkIcon className="w-5 h-5 shrink-0" />
           <span className="text-[10px] font-medium">Wishlist</span>
@@ -88,7 +101,7 @@ export function BottomNav({ activeTab = "search", session: sessionProp, onSearch
         </Link>
         <Link
           href={session ? "/settings" : "/auth/signin"}
-          className={tabClass(activeTab === "mypotal")}
+          className={currentTabClass(activeTab === "mypotal")}
         >
           {session ? (
             avatarUrl ? (

@@ -43,8 +43,8 @@ import { WalmartProvider } from '../search/providers/WalmartProvider';
 // BestBuyProvider 비활성화: Pinto Studio API 응답 없음 → RapidAPI 환불 예정
 // import { BestBuyProvider } from '../search/providers/BestBuyProvider';
 import { AliExpressProvider } from '../search/providers/AliExpressProvider';
-// TemuProvider 비활성화: Apify Actor(amit123)가 Temu 403 차단 → 0 results 반환 중
-// Actor가 업데이트되면 다시 활성화. Apify 콘솔에서 Run 확인 후 결정.
+// TemuProvider 비활성화: Temu 서버가 2026-02-18부터 모든 빌드(v1.0.32~1.0.37) 403 차단
+// amit123이 새 우회 방법 적용 시 복원. Apify 콘솔에서 Results > 0 확인 후 주석 해제.
 // import { TemuProvider } from '../search/providers/TemuProvider';
 // CostcoProvider 비활성화: Deals API만 제공 (전체 상품 검색 불가, 시장점유율 1.5%)
 // import { CostcoProvider } from '../search/providers/CostcoProvider';
@@ -76,7 +76,7 @@ const amazonProvider = new AmazonProvider();
 const walmartProvider = new WalmartProvider();
 // const bestBuyProvider = new BestBuyProvider(); // 비활성화: Pinto Studio API 환불 예정
 const aliExpressProvider = new AliExpressProvider();
-// const temuProvider = new TemuProvider(); // 비활성화: Temu 403 차단 중 (Apify Actor 업데이트 대기)
+// const temuProvider = new TemuProvider(); // 비활성화: Temu 403 차단 (2026-02-18~)
 // const costcoProvider = new CostcoProvider(); // 비활성화: Deals API 한정
 const ebayProvider = new EbayProvider();
 const targetProvider = new TargetProvider();
@@ -108,6 +108,8 @@ export class Coordinator {
   private steps: PipelineStep[] = [];
   private startTime: number = 0;
   private totalTokens: number = 0;
+  /** 마지막 검색의 리테일러별 상태 (Skyscanner-style partial failure tracking) */
+  private _lastProviderStatus: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }> = {};
 
   /**
    * 검색 실행 — 전체 파이프라인 오케스트레이션
@@ -233,6 +235,7 @@ export class Coordinator {
             internationalCount: reResults.length - reDomesticCount,
             tabSummary: reScoringResult.tabSummary,
             fraudStats: this.getFraudStats(),
+            providerStatus: this._lastProviderStatus,
           },
         };
       }
@@ -258,6 +261,7 @@ export class Coordinator {
         internationalCount: results.length - domesticCount,
         tabSummary: scoringResult.tabSummary,
         fraudStats: this.getFraudStats(),
+        providerStatus: this._lastProviderStatus,
       },
     };
   }
@@ -438,53 +442,82 @@ export class Coordinator {
         ])
       : Promise.resolve([]);
 
-    // Global: AliExpress 병렬
-    // Temu 비활성화: Apify Actor가 Temu 403 차단으로 0 results 반환 중
+    // Global: AliExpress 병렬 (Temu 비활성화: 403 차단 중)
     const globalQuery = analysis.platformQueries?.aliexpress || analysis.platformQueries?.amazon || analysis.original;
     const globalPromises = fetchGlobal
       ? Promise.allSettled([
           withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
-          // temuProvider.search(globalQuery, page), // 비활성화: Temu 403 차단 (Actor 업데이트 대기)
+          // temuProvider.search(globalQuery, page), // 비활성화: Temu 403 차단 (2026-02-18~)
         ])
       : Promise.resolve([]);
 
     const [domesticSettled, globalSettled] = await Promise.all([domesticPromises, globalPromises]);
 
-    // Collect results (ignore rejected)
+    // Collect results + track provider status (Skyscanner-style partial failure)
     const domesticResults: Product[] = [];
     const globalResults: Product[] = [];
+    const domesticProviderNames = fetchDomestic ? ['Amazon', 'Walmart', 'eBay', 'Target'] : [];
+    const globalProviderNames = fetchGlobal ? ['AliExpress'] : [];
+
+    // 리테일러별 성공/실패 상태 추적
+    const providerStatus: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }> = {};
 
     if (Array.isArray(domesticSettled)) {
-      for (const r of domesticSettled) {
-        if (r.status === 'fulfilled') domesticResults.push(...(r.value ?? []));
-        else console.error('❌ [Coordinator] Domestic provider error:', r.reason?.message);
-      }
+      domesticSettled.forEach((r, i) => {
+        const name = domesticProviderNames[i] || `Provider${i}`;
+        if (r.status === 'fulfilled') {
+          const items = r.value ?? [];
+          domesticResults.push(...items);
+          providerStatus[name] = { status: 'ok', count: items.length };
+        } else {
+          const errMsg = r.reason?.message || '';
+          const isTimeout = errMsg.includes('timeout');
+          providerStatus[name] = { status: isTimeout ? 'timeout' : 'error', count: 0 };
+          console.error(`❌ [Coordinator] ${name} ${isTimeout ? 'timeout' : 'error'}: ${errMsg}`);
+        }
+      });
     }
 
     if (Array.isArray(globalSettled)) {
-      for (const r of globalSettled) {
-        if (r.status === 'fulfilled') globalResults.push(...(r.value ?? []));
-        else console.error('❌ [Coordinator] Global provider error:', r.reason?.message);
-      }
+      globalSettled.forEach((r, i) => {
+        const name = globalProviderNames[i] || `GlobalProvider${i}`;
+        if (r.status === 'fulfilled') {
+          const items = r.value ?? [];
+          globalResults.push(...items);
+          providerStatus[name] = { status: 'ok', count: items.length };
+        } else {
+          const errMsg = r.reason?.message || '';
+          const isTimeout = errMsg.includes('timeout');
+          providerStatus[name] = { status: isTimeout ? 'timeout' : 'error', count: 0 };
+          console.error(`❌ [Coordinator] ${name} ${isTimeout ? 'timeout' : 'error'}: ${errMsg}`);
+        }
+      });
     }
+
+    // 비활성화된 프로바이더도 상태에 추가 (disabled)
+    // (향후 활성화 시 자동 제거)
 
     // NOTE: Shein mock cards are injected AFTER FraudFilter in search()
     // because their price='Compare' ($0) would trigger price_zero removal.
 
     const allProducts = [...domesticResults, ...globalResults];
-    const providerNames = [
-      ...(fetchDomestic ? ['Amazon', 'Walmart', 'eBay', 'Target'] : []),
-      ...(fetchGlobal ? ['AliExpress'] : []),
-    ];
+    const providerNames = [...domesticProviderNames, ...globalProviderNames];
+
+    // providerStatus를 인스턴스에 저장 (metadata에서 사용)
+    this._lastProviderStatus = providerStatus;
 
     console.log(`🛒 [Coordinator] Domestic: ${domesticResults.length} | Global: ${globalResults.length} | Total: ${allProducts.length}`);
+    const failedProviders = Object.entries(providerStatus).filter(([, v]) => v.status !== 'ok').map(([k]) => k);
+    if (failedProviders.length > 0) {
+      console.warn(`⚠️ [Coordinator] Failed providers: ${failedProviders.join(', ')}`);
+    }
 
     this.recordStep(
       'fetch_providers',
       'ProviderAPIs',
       'deterministic',
       { query: analysis.original, providers: providerNames },
-      { domestic: domesticResults.length, global: globalResults.length, total: allProducts.length },
+      { domestic: domesticResults.length, global: globalResults.length, total: allProducts.length, providerStatus },
       stepStart,
     );
 

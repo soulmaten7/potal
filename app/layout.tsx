@@ -8,6 +8,9 @@ import { Header } from "@/components/layout/Header";
 // [핵심 수정 2] 푸터도 layout 폴더에서 가져옵니다.
 import { Footer } from "@/components/layout/Footer";
 
+// [핵심 수정 3] 모바일 하단 네비게이션 바
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
 import { WishlistProvider } from "./context/WishlistContext";
 import { UserPreferenceProvider } from "./context/UserPreferenceContext";
@@ -82,7 +85,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900 bg-slate-50`}>
+      <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
         {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
         <script
           type="application/ld+json"
@@ -120,8 +123,13 @@ export default function RootLayout({
                   {children}
                 </main>
                 
-                {/* 푸터 */}
-                <Footer />
+                {/* 푸터 — 데스크톱만 */}
+                <div className="hidden md:block">
+                  <Footer />
+                </div>
+
+                {/* 모바일 하단 네비게이션 바 */}
+                <MobileBottomNav />
                 
               </div>
               
