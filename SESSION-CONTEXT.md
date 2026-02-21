@@ -28,35 +28,44 @@ POTAL은 AI 기반 글로벌 쇼핑 비교 에이전트로, 여러 리테일러(
 ```
 portal/
 ├── app/
-│   ├── page.tsx                          # 🔥 메인 홈 + 검색 결과 (대규모 리팩토링됨)
+│   ├── page.tsx                          # 🔥 메인 홈 (모바일/PC 분리 레이아웃)
 │   ├── profile/
-│   │   └── page.tsx                      # 🆕 프로필 페이지 (모바일 Footer 대체)
+│   │   └── page.tsx                      # 🆕 프로필 페이지 (2x2 그리드 + 슬라이드 서브페이지 + Zipcode)
 │   ├── search/
-│   │   └── page.tsx                      # 메인 검색 결과 페이지 (프론트엔드 인터리빙 포함)
+│   │   └── page.tsx                      # 🔥 검색 결과 페이지 (상태관리: query, sort, market, providerStatus)
+│   ├── wishlist/
+│   │   └── page.tsx                      # 🔥 위시리스트 (WishlistMobileCard + PC ProductCard + Clear 바텀시트)
+│   ├── context/
+│   │   └── WishlistContext.tsx            # 🔥 위시리스트 Context (localStorage 'potal_wishlist')
+│   ├── components/
+│   │   ├── ProductCard.tsx               # 🔥 PC 상품 카드 (공유/하트 아이콘 포함)
+│   │   ├── BottomNav.tsx                 # 검색 결과용 바텀 네비
+│   │   └── search/                       # ❌ 안 쓰는 백업 파일들 (수정하지 마라!)
 │   ├── api/
 │   │   ├── search/route.ts               # 검색 API 엔드포인트 → Coordinator 호출
-│   │   ├── search/debug/route.ts         # 🆕 Provider 개별 테스트 진단 API
+│   │   ├── search/debug/route.ts         # Provider 개별 테스트 진단 API
 │   │   └── ai-suggestions/route.ts       # AI Smart Suggestion API (v4.0)
 │   ├── lib/
 │   │   ├── agent/
-│   │   │   ├── Coordinator.ts            # 🎯 핵심: 전체 파이프라인 오케스트레이션
+│   │   │   ├── Coordinator.ts            # 🎯 핵심: 파이프라인 오케스트레이션 + providerStatus 추적
 │   │   │   ├── QueryAgent.ts             # 검색어 분석 + 플랫폼별 쿼리 생성
-│   │   │   └── AnalysisAgent.ts          # 상품 관련성/사기 분석 (현재 비활성화)
+│   │   │   └── AnalysisAgent.ts          # 비활성화 (shouldRunProductAnalysis = false)
 │   │   ├── search/
+│   │   │   ├── types.ts                  # 🔥 Product, SearchResult 타입 (providerStatus 포함)
 │   │   │   ├── providers/
 │   │   │   │   ├── AmazonProvider.ts     # ✅ 작동 — tag=soulmaten7-20
 │   │   │   │   ├── WalmartProvider.ts    # ✅ 작동 — affiliateId= (미설정)
-│   │   │   │   ├── BestBuyProvider.ts    # ❌ 비활성화 (Pinto Studio API 죽음)
+│   │   │   │   ├── BestBuyProvider.ts    # ❌ 비활성화 (Coordinator에서 주석처리)
 │   │   │   │   ├── EbayProvider.ts       # ✅ 작동 — campid=5339138476
-│   │   │   │   ├── TargetProvider.ts     # ✅ 작동 — afid= (미설정)
+│   │   │   │   ├── TargetProvider.ts     # ✅ 작동 — target13.p.rapidapi.com
 │   │   │   │   ├── AliExpressProvider.ts # ✅ 작동 — aff_id=
-│   │   │   │   ├── TemuProvider.ts       # ❌ 비활성화 (Temu 403 차단)
-│   │   │   │   ├── SheinProvider.ts      # ❌ 비활성화 (API 서버 다운)
-│   │   │   │   └── CostcoProvider.ts     # ❌ 비활성화 (Deals API만)
+│   │   │   │   ├── TemuProvider.ts       # ❌ 비활성화 (Coordinator에서 주석처리)
+│   │   │   │   ├── SheinProvider.ts      # ❌ 비활성화
+│   │   │   │   └── CostcoProvider.ts     # ❌ 비활성화
 │   │   │   ├── FraudFilter.ts            # 규칙 기반 사기 상품 필터
 │   │   │   ├── CostEngine.ts             # Total Landed Cost 계산
-│   │   │   └── ScoringEngine.ts          # Best/Cheapest/Fastest 점수
-│   │   ├── retailerConfig.ts             # 🎯 어필리에이트 중앙 설정 (각 리테일러별 paramKey, envKey)
+│   │   │   └── ScoringEngine.ts          # Best/Cheapest/Fastest 점수 + membershipBadge 생성
+│   │   ├── retailerConfig.ts             # 🎯 어필리에이트 설정 + matchShippingProgram() + getRetailerConfig()
 │   │   └── ai/
 │   │       ├── prompts/
 │   │       │   ├── smart-filter.ts       # AI Smart Suggestion v4.0 (gpt-4o)
@@ -67,22 +76,23 @@ portal/
 │       └── product.ts                    # Product 타입 정의
 ├── components/
 │   ├── home/
-│   │   ├── HeroVisuals.tsx               # 🔥 데스크톱 슬로건+Feature Cards (모바일 슬로건 제거됨)
+│   │   ├── HeroVisuals.tsx               # 데스크톱 슬로건+Feature Cards
 │   │   └── SearchWidget.tsx              # 🔥 대폭 리팩토링 — 모바일/데스크톱 분리 레이아웃
 │   ├── layout/
-│   │   ├── Header.tsx                    # 🔥 모바일 nav 아이콘 hidden (바텀탭으로 이동)
-│   │   ├── MobileBottomNav.tsx           # 🆕 모바일 바텀 네비게이션 (Search/Wishlist/Profile)
+│   │   ├── Header.tsx                    # 모바일 nav 아이콘 hidden (바텀탭 대체)
+│   │   ├── MobileBottomNav.tsx           # 🔥 글라스모피즘 pill 바텀 네비 (Search/Wishlist/Profile)
 │   │   └── Footer.tsx                    # 데스크톱만 표시 (hidden md:block)
 │   ├── search/
-│   │   ├── StickyHeader.tsx              # 검색 결과 스티키 헤더
-│   │   └── ResultsGrid.tsx              # ✅ 실제 사용하는 결과 그리드 컴포넌트
+│   │   ├── StickyHeader.tsx              # 🔥 검색 스티키 헤더 (market 탭, 정렬)
+│   │   └── ResultsGrid.tsx              # ⚠️ 실제 사용 파일! MobileCompactCard + Then By + Partial Failure
+│   ├── icons.tsx                         # 🔥 Share, Heart, HeartFilled, Shield, ChevronLeft, Plus 등
 │   └── ui/                              # 공통 UI 컴포넌트
-├── .env.local                            # 실제 API 키 (절대 커밋하지 마세요)
-├── .env.example                          # API 키 템플릿
+├── .env.local                            # 실제 API 키 (절대 수정하지 마세요)
+├── .cursorrules                          # AI 행동 지침 + 절대 규칙
 └── SESSION-CONTEXT.md                    # 이 파일
 ```
 
-> **중요**: `app/components/search/` 폴더의 파일들은 안 쓰는 백업 파일. `components/search/ResultsGrid.tsx`가 실제 사용 파일.
+> **⚠️ 매우 중요**: `app/components/search/` 폴더의 파일들은 안 쓰는 백업 파일. `components/search/ResultsGrid.tsx`가 **실제** 사용 파일이다. 절대 혼동하지 마라!
 
 ---
 
@@ -376,9 +386,10 @@ Provider에서 상품 검색 → 각 Provider의 append*Affiliate() 함수가 UR
 #### `components/layout/Header.tsx`
 - 모바일 nav 아이콘 → `hidden md:flex` (바텀탭 대체)
 
-### localStorage 키 (Zipcode 관련)
+### localStorage 키
 | 키 | 용도 | 스코프 |
 |---|---|---|
+| `potal_wishlist` | 위시리스트 상품 배열 (JSON) | 전체 — WishlistContext.tsx에서 관리 |
 | `potal_zipcode` | Primary/Active zipcode | 전체 |
 | `potal_zipcode_list` | 저장된 위치 리스트 (JSON 배열) | 전체 |
 | `potal_user_zips` | 최근 검색 zip (최대 3개) | 로그인 유저 |
@@ -405,7 +416,11 @@ fix: TemuProvider Apify 복원
 fix: 모바일 반응형 2차 — StickyHeader, ResultsGrid, AiSmartSuggestionBox
 ```
 
-### 미커밋 변경사항 (2026-02-20~22)
+### 커밋 4: `e5761de` (2026-02-22) — ✅ push 완료, Vercel 배포됨
+```
+feat: 모바일 UX 대규모 오버홀 — Skyscanner 스타일 다크 테마 통일
+```
+26개 파일 변경, +3881/-1344줄. 이 커밋에 포함된 모든 변경사항:
 
 | 파일 | 변경 내용 |
 |------|----------|
