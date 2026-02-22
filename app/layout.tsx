@@ -36,6 +36,12 @@ export const metadata: Metadata = {
   },
   description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu. AI-powered shopping agent finds the best deal instantly.",
   keywords: ["price comparison", "shopping agent", "best price", "AI shopping", "Amazon", "Walmart", "eBay", "AliExpress", "Temu", "Shein", "best deal", "online shopping"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "POTAL",
+  },
   alternates: {
     canonical: "https://potal.app",
   },
@@ -85,6 +91,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="theme-color" content="#02122c" />
+        <meta name="mobile-web-app-capable" content="yes" />
+      </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
         {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
         <script
@@ -108,6 +121,18 @@ export default function RootLayout({
           }}
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+        {/* PWA Service Worker 등록 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').catch(function() {});
+                });
+              }
+            `,
+          }}
+        />
         
         <SupabaseProvider>
           <UserPreferenceProvider>

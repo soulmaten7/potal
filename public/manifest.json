@@ -1,0 +1,72 @@
+{
+  "name": "POTAL — AI Shopping Comparison",
+  "short_name": "POTAL",
+  "description": "Compare prices across Amazon, Walmart, eBay, Target & AliExpress. AI-powered shopping agent finds the best deal instantly.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02122c",
+  "theme_color": "#02122c",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["shopping", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/og-image.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "POTAL Home — Compare Every Store on Earth"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Search Products",
+      "short_name": "Search",
+      "url": "/search?q=",
+      "description": "Start a new product search"
+    },
+    {
+      "name": "My Wishlist",
+      "short_name": "Wishlist",
+      "url": "/wishlist",
+      "description": "View your saved products"
+    }
+  ]
+}

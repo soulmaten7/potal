@@ -2,7 +2,7 @@
 
 > 이 파일은 새 AI 세션이 프로젝트의 현재 상태를 완벽히 이해할 수 있도록 작성된 컨텍스트 문서입니다.
 > 새 세션 시작 시: "POTAL 프로젝트 작업을 이어서 하려고 해. /Users/maegbug/portal 에 있는 SESSION-CONTEXT.md 파일을 먼저 읽고 시작해줘." 라고 말하면 됩니다.
-> **마지막 업데이트: 2026-02-22 (16차 — AliExpress Affiliate ID 추가, 환경변수 전수 감사, Supabase 마이그레이션 완료)**
+> **마지막 업데이트: 2026-02-22 (17차 — PWA 설정 완료: manifest, 서비스워커, 앱 아이콘, App Store/Play Store 대비)**
 
 ---
 
@@ -804,7 +804,33 @@ POTAL 프로젝트 작업을 이어서 하려고 해.
 
 ---
 
-## 18. 주의사항
+## 18. PWA 설정 — App Store / Play Store 대비 (2026-02-22, 17차)
+
+### 생성된 파일
+- **`public/manifest.json`** — PWA 매니페스트 (앱 이름, 아이콘, 테마, shortcuts, categories)
+- **`public/sw.js`** — 서비스워커 (Network First 전략, 오프라인 캐시, API 호출 제외)
+- **`public/icon-192x192.png`** — PWA 아이콘 (192x192)
+- **`public/icon-512x512.png`** — PWA 아이콘 (512x512)
+- **`public/apple-touch-icon.png`** — iOS 홈화면 아이콘 (180x180)
+- **`public/favicon-32x32.png`** — 파비콘 32px
+- **`public/favicon-16x16.png`** — 파비콘 16px
+- **`public/favicon.ico`** — 멀티사이즈 파비콘
+
+### 수정된 파일
+- **`app/layout.tsx`** — manifest 연결, apple-web-app 메타, 파비콘 링크, theme-color, SW 등록 스크립트
+
+### 앱 아이콘 디자인
+- 네이비(#02122c) 배경 + 흰색 P + 오렌지(#F59E0B) O (화살표 포함)
+- POTAL 브랜드 아이덴티티와 일치
+
+### App Store / Play Store 등록 방법
+- **Play Store (TWA)**: PWABuilder.com에서 TWA 패키지 생성 → Play Console 업로드. 비용: $25 (1회)
+- **App Store**: PWABuilder로 iOS 패키지 생성 → Xcode 빌드 → App Store Connect 업로드. 비용: $99/년
+- PWA 설정이 완료되어 있으므로 PWABuilder에서 바로 패키지 생성 가능
+
+---
+
+## 19. 주의사항
 
 1. **git index.lock**: 가끔 `.git/index.lock` 파일이 남아있을 수 있음. `rm .git/index.lock`으로 해결.
 2. **Vercel 배포**: `main` 브랜치에 푸시하면 자동 배포. 도메인: `potal.app`
