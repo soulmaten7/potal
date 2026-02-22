@@ -71,7 +71,11 @@ function HomeContent() {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [activeMain, setActiveMain] = useState<MainCategoryId | null>(null);
   const [activeSub, setActiveSub] = useState<string | null>(null);
-  const [showSplash, setShowSplash] = useState(true);
+  // 스플래시: 창을 완전히 닫고 다시 열었을 때만 표시 (sessionStorage 기반)
+  const [showSplash, setShowSplash] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !sessionStorage.getItem('potal_splash_shown');
+  });
   const [splashOpacity, setSplashOpacity] = useState(0);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
@@ -97,6 +101,21 @@ function HomeContent() {
   
   // Market Dropdown은 이제 홈 위젯에서만 쓰임 (여기선 제거해도 되지만 에러 방지용으로 둠)
   const [marketDropdownOpen, setMarketDropdownOpen] = useState(false);
+
+  // --- SPLASH SCREEN (sessionStorage 기반, 첫 방문 시만) ---
+  useEffect(() => {
+    if (!showSplash) return;
+    // fade-in
+    const fadeInTimer = setTimeout(() => setSplashOpacity(1), 50);
+    // fade-out 시작 (1.5초 후)
+    const fadeOutTimer = setTimeout(() => setSplashOpacity(0), 1500);
+    // 완전 제거 (2초 후)
+    const removeTimer = setTimeout(() => {
+      setShowSplash(false);
+      sessionStorage.setItem('potal_splash_shown', '1');
+    }, 2000);
+    return () => { clearTimeout(fadeInTimer); clearTimeout(fadeOutTimer); clearTimeout(removeTimer); };
+  }, [showSplash]);
 
   // --- EFFECTS ---
   useEffect(() => {
@@ -403,14 +422,14 @@ function HomeContent() {
   return (
     <div className="w-full flex flex-col font-sans min-h-full">
       
-      {/* Intro Splash — pointer-events-none으로 터치 차단 방지 */}
+      {/* Intro Splash — Amazon 스타일: 첫 방문 시만 POTAL 로고 표시 */}
       {showSplash && (
         <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#02122c] md:hidden pointer-events-none"
-          style={{ opacity: splashOpacity, transition: 'opacity 0.45s ease-in-out', transform: `scale(${0.96 + splashOpacity * 0.04})` }}
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-[#02122c] md:hidden"
+          style={{ opacity: splashOpacity, transition: 'opacity 0.45s ease-in-out' }}
           aria-hidden="true"
         >
-          <span className="text-5xl font-extrabold tracking-tight"><span className="text-white">P</span><span className="text-[#F59E0B]">O</span><span className="text-white">TAL</span></span>
+          <img src="/potal-logo.svg" alt="POTAL" style={{ width: '160px', height: 'auto' }} />
         </div>
       )}
 
@@ -451,25 +470,39 @@ function HomeContent() {
               </div>
             </section>
             
-            {/* ─── 모바일: 프로모 카드 (스카이스캐너 스타일) ─── */}
+            {/* ─── 모바일: 기능 카드 4개 (2x2 그리드) ─── */}
             <section className="md:hidden px-3 pt-6 pb-6" style={{ backgroundColor: '#02122c' }}>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setShowAboutSheet(true)}
-                  className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left hover:bg-white/15 transition-colors border border-white/5"
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left hover:bg-white/15 transition-colors border border-white/5"
                 >
                   <span className="text-2xl block mb-2">🌐</span>
-                  <p className="text-[13px] font-bold text-white leading-snug">Domestic Speed.<br />Global Prices.</p>
-                  <p className="text-[11px] text-[#F59E0B] font-bold mt-1">Learn more →</p>
+                  <p className="text-[13px] font-bold text-white leading-snug">Every Store.<br />One Search.</p>
+                  <p className="text-[10px] text-white/40 mt-1.5 leading-snug">Domestic &amp; Global — side by side</p>
                 </button>
                 <button
                   onClick={() => setShowHowItWorksSheet(true)}
-                  className="flex-1 bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left hover:bg-white/15 transition-colors border border-white/5"
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left hover:bg-white/15 transition-colors border border-white/5"
                 >
-                  <span className="text-2xl block mb-2">🤖</span>
-                  <p className="text-[13px] font-bold text-white leading-snug">How POTAL<br />Works</p>
-                  <p className="text-[11px] text-[#F59E0B] font-bold mt-1">3 easy steps →</p>
+                  <span className="text-2xl block mb-2">💬</span>
+                  <p className="text-[13px] font-bold text-white leading-snug">Just Ask</p>
+                  <p className="text-[10px] text-white/40 mt-1.5 leading-snug">&quot;What&apos;s a good gift for mom?&quot;</p>
                 </button>
+                <div
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left border border-white/5"
+                >
+                  <span className="text-2xl block mb-2">📷</span>
+                  <p className="text-[13px] font-bold text-white leading-snug">Photo Search</p>
+                  <p className="text-[10px] text-white/40 mt-1.5 leading-snug">Snap a photo. Add details if you want.</p>
+                </div>
+                <div
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-left border border-white/5"
+                >
+                  <span className="text-2xl block mb-2">💰</span>
+                  <p className="text-[13px] font-bold text-white leading-snug">True Final Price</p>
+                  <p className="text-[10px] text-white/40 mt-1.5 leading-snug">Product + Shipping + Tax + Duties</p>
+                </div>
               </div>
             </section>
 
@@ -477,11 +510,11 @@ function HomeContent() {
             <section className="hidden md:block bg-white text-slate-700 py-16 pb-24">
                 <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
                     <h2 className="text-3xl font-extrabold text-[#02122c] mb-2">How POTAL Works</h2>
-                    <p className="text-slate-500 mb-10 text-[15px] max-w-xl">One search. 8 retailers. The lowest total price including shipping and tax — found in seconds.</p>
+                    <p className="text-slate-500 mb-10 text-[15px] max-w-xl">One search across every major retailer. Domestic vs Global — the true final price including shipping, tax, and duties.</p>
                     <div className="grid grid-cols-3 gap-6 mb-14">
                       {[
                         { step: '01', icon: '🔍', title: 'Search Any Product', desc: 'Type what you want and your ZIP code. POTAL instantly searches Amazon, Walmart, eBay, Target, AliExpress, and more at once.' },
-                        { step: '02', icon: '🤖', title: 'AI Compares Everything', desc: 'Our AI agent calculates the true Total Landed Cost — product price + shipping + tax + import duties — and scores each deal.' },
+                        { step: '02', icon: '🤖', title: 'POTAL AI Compares Everything', desc: 'POTAL AI scores every deal by Best Value, Cheapest Price, and Fastest Delivery — factoring in your ZIP code and real-time shipping rates.' },
                         { step: '03', icon: '🛒', title: 'Click & Buy Direct', desc: "Choose the best deal and we'll take you straight to the retailer. No middleman, no markup." },
                       ].map((item) => (
                         <div key={item.step} className="relative bg-[#f8f9fc] border border-slate-200 rounded-2xl p-7 hover:shadow-lg hover:border-[#F59E0B]/40 transition-all duration-300 group">
@@ -502,6 +535,14 @@ function HomeContent() {
                         {
                           q: 'Do I buy products from POTAL?',
                           a: "No. POTAL is a search engine, not a store. When you click 'Select', you go directly to the retailer's website (Amazon, Walmart, etc.) to complete your purchase.",
+                        },
+                        {
+                          q: 'Can I search with a question instead of keywords?',
+                          a: 'Yes! Try something like "What\'s a good gift for a 60 year old mom?" or "Best noise-cancelling headphones under $200." POTAL understands natural language and finds relevant products across every retailer.',
+                        },
+                        {
+                          q: 'Can I search with a photo?',
+                          a: 'Yes. Snap a photo or upload one from your gallery. You can also add details like size, color, or budget before searching. POTAL AI analyzes the image and finds matching products across every retailer.',
                         },
                         {
                           q: 'What is Total Landed Cost?',
@@ -539,6 +580,8 @@ function HomeContent() {
                 {[
                   { q: 'Is POTAL free to use?', a: 'Yes, completely free. We earn a small commission from retailers — you never pay extra.' },
                   { q: 'Do I buy products from POTAL?', a: "No. POTAL is a search engine. You buy directly from the retailer's website." },
+                  { q: 'Can I search with a question?', a: 'Yes! Try "What\'s a good gift for a 60 year old mom?" — POTAL understands natural language, not just keywords.' },
+                  { q: 'Can I search with a photo?', a: 'Yes. Take a photo or upload one. You can also add details like size or budget before searching.' },
                   { q: 'What is Total Landed Cost?', a: "The true final price: product + shipping + tax/duties. No hidden surprises." },
                 ].map((item, idx) => (
                   <details key={idx} className="group mb-2 bg-white/10 backdrop-blur-sm rounded-xl overflow-hidden transition-colors border border-white/5">
@@ -563,21 +606,25 @@ function HomeContent() {
                   </div>
                   <div className="px-5 py-5 space-y-4">
                     <div>
-                      <h3 className="text-lg font-extrabold text-[#02122c] mb-2">Domestic Speed. Global Prices. One Search.</h3>
-                      <p className="text-sm text-slate-600 leading-relaxed">POTAL is an AI-powered shopping comparison agent that searches across Amazon, Walmart, eBay, Target, AliExpress, and more — all at once.</p>
+                      <h3 className="text-lg font-extrabold text-[#02122c] mb-2">Compare Every Store on Earth.</h3>
+                      <p className="text-sm text-slate-600 leading-relaxed">POTAL is an AI-powered shopping comparison agent. Domestic vs Global — one search across Amazon, Walmart, eBay, Target, AliExpress, and more.</p>
                     </div>
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
-                        <span className="text-2xl">🇺🇸</span>
-                        <div><h4 className="text-sm font-bold text-[#02122c]">Domestic vs Global</h4><p className="text-xs text-slate-500">Compare price, shipping, and delivery time across US and international retailers.</p></div>
+                        <span className="text-2xl">🌍</span>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">Every Store. One Search.</h4><p className="text-xs text-slate-500">Amazon, Walmart, eBay, Target, AliExpress and more — compare domestic and global retailers side by side.</p></div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">💬</span>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">Just Ask</h4><p className="text-xs text-slate-500">Search with questions like "What's a good gift for mom?" — POTAL understands natural language, not just keywords.</p></div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl">📷</span>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">Photo Search</h4><p className="text-xs text-slate-500">Snap a photo or upload one. Add details if you want. POTAL AI finds matching products across every retailer.</p></div>
                       </div>
                       <div className="flex items-start gap-3">
                         <span className="text-2xl">💰</span>
-                        <div><h4 className="text-sm font-bold text-[#02122c]">Total Landed Cost</h4><p className="text-xs text-slate-500">Product + Shipping + Tax + Import Duties — the true final price with no surprises.</p></div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <span className="text-2xl">🤖</span>
-                        <div><h4 className="text-sm font-bold text-[#02122c]">POTAL AI Agent</h4><p className="text-xs text-slate-500">Automatically filters out fakes, irrelevant listings, and scores deals by value, speed, and trust.</p></div>
+                        <div><h4 className="text-sm font-bold text-[#02122c]">True Final Price</h4><p className="text-xs text-slate-500">Product + Shipping + Tax + Import Duties = Total Landed Cost. No hidden fees.</p></div>
                       </div>
                     </div>
                   </div>
@@ -597,7 +644,7 @@ function HomeContent() {
                   <div className="px-5 py-5 space-y-5">
                     {[
                       { step: '01', icon: '🔍', title: 'Search Any Product', desc: 'Type what you want and your ZIP code. POTAL instantly searches Amazon, Walmart, eBay, Target, and more.' },
-                      { step: '02', icon: '🤖', title: 'AI Compares Everything', desc: 'Our AI calculates the true Total Landed Cost and scores each deal by value, speed, and trust.' },
+                      { step: '02', icon: '🤖', title: 'POTAL AI Compares Everything', desc: 'POTAL AI scores every deal by Best Value, Cheapest Price, and Fastest Delivery — factoring in your ZIP code and real-time shipping rates.' },
                       { step: '03', icon: '🛒', title: 'Click & Buy Direct', desc: "Choose the best deal — we take you directly to the retailer's website. No middleman." },
                     ].map((item) => (
                       <div key={item.step} className="flex items-start gap-4">

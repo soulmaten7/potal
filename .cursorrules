@@ -14,6 +14,8 @@
 - **Price Tag:** 배송비가 'Free'인 경우, 가격 옆에 `+ Shipping` 텍스트를 절대 중복 표기하지 마라.
 - **Data Driven:** 필터 생성 시 LLM 추론을 사용하지 마라. API 응답 데이터 기반으로 생성한다.
 - **Image Container:** 상품 카드 이미지는 반드시 `paddingBottom: '125%' + height: 0` 인라인 스타일 방식으로 고정. `aspectRatio` CSS 사용 금지. img 태그는 `position: absolute; top: 0; left: 0; width: 100%; height: 100%; objectFit: contain; padding: 6px`.
+- **모바일 카드 텍스트/아이콘 표준 크기 (2026-02-22 적용):** 셀러뱃지 9px, 별점/리뷰 10px/9px, 공유/하트 아이콘 w-4 h-4 (16px) + 터치영역 36x36px, 상품명 12px (3줄 clamp, minHeight 4.2em), 멤버십뱃지 9px, 배송/날짜 9px, Est.Tax/Product 10px, Total라벨 9px, Total가격 18px. 검색카드와 위시리스트 카드 동일.
+- **POTAL Filter 브랜딩:** "AI Smart Suggestion" 이름은 사용하지 않음. 사용자에게 보이는 모든 곳에서 **"POTAL Filter"** 사용. 내부 코드 식별자(AiSmartSuggestionBox 등)는 유지.
 - **Inline Styles 우선:** Tailwind CSS 캐싱 이슈로 시각적 핵심 요소는 반드시 `style={{}}` 인라인 스타일 사용. 특히 배경색, 이미지 컨테이너, 뱃지 색상 등.
 - **No browser confirm():** 모바일에서 `confirm()`, `alert()`, `prompt()` 사용 금지. 바텀시트 또는 커스텀 모달 UI 사용 (위시리스트 Clear에서 이미 구현됨).
 - **Dark Theme 통일:** 모든 페이지 배경 `#02122c` (네이비). 새 페이지/컴포넌트 만들 때도 네이비 다크 테마 유지.

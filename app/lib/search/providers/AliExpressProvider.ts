@@ -478,7 +478,6 @@ export class AliExpressProvider implements SearchProvider {
       });
     }
 
-    console.log(`✅ [AliExpress] ${products.length} products`);
     return products;
   }
 }

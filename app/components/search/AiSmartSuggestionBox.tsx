@@ -82,6 +82,13 @@ export function AiSmartSuggestionBox({
     }
   }, [activeFilters]);
 
+  // ═══ 의문문 검색 시 모바일 POTAL Filter 시트 자동 오픈 ═══
+  useEffect(() => {
+    if (isQuestionQuery && suggestedProducts && suggestedProducts.length > 0) {
+      setMobileAiSheetOpen(true);
+    }
+  }, [isQuestionQuery, suggestedProducts]);
+
   const toggleAxis = useCallback((axisName: string) => {
     setExpandedAxes(prev => {
       const next = new Set(prev);
@@ -187,7 +194,7 @@ export function AiSmartSuggestionBox({
             </button>
             <div className="flex items-center gap-1.5">
               <Icons.Sparkles className="w-4 h-4 text-[#F59E0B]" />
-              <span className="text-[15px] font-extrabold text-white">AI Smart Suggestion</span>
+              <span className="text-[15px] font-extrabold text-white">POTAL Filter</span>
             </div>
             {checkedValues.size > 0 && (
               <span className="absolute right-4 text-[12px] font-bold text-[#F59E0B]">{checkedValues.size} selected</span>
@@ -428,7 +435,7 @@ export function AiSmartSuggestionBox({
           className="flex items-center gap-1.5 py-1 transition-all"
         >
           <Icons.Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-          <span className="text-[13px] font-extrabold" style={{ color: 'rgba(255,255,255,0.6)' }}>AI Suggestion</span>
+          <span className="text-[13px] font-extrabold" style={{ color: 'rgba(255,255,255,0.6)' }}>POTAL Filter</span>
           {checkedValues.size > 0 && (
             <span className="text-[9px] font-bold px-1.5 rounded-full" style={{ backgroundColor: '#F59E0B', color: '#02122c' }}>{checkedValues.size}</span>
           )}
@@ -456,7 +463,7 @@ export function AiSmartSuggestionBox({
             <div className="w-full h-full bg-[#02122c] rounded-md flex items-center justify-between px-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <Icons.Sparkles className="w-4 h-4 text-[#F59E0B]" />
-                <span className="text-[12px] sm:text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
+                <span className="text-[12px] sm:text-[15px] font-extrabold text-white tracking-widest uppercase">POTAL Filter</span>
               </div>
               <button onClick={() => setIsOpen(!isOpen)}>
                 <Icons.ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`} />
@@ -516,7 +523,7 @@ export function AiSmartSuggestionBox({
             <div className="w-full h-full bg-[#02122c] rounded-md flex items-center justify-between px-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <Icons.Sparkles className="w-4 h-4 text-[#F59E0B] animate-pulse" />
-                <span className="text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
+                <span className="text-[15px] font-extrabold text-white tracking-widest uppercase">POTAL Filter</span>
               </div>
               <span className="text-[12px] text-white/50">Analyzing...</span>
             </div>
@@ -550,7 +557,7 @@ export function AiSmartSuggestionBox({
         <div className="w-full h-full bg-[#02122c] rounded-md flex items-center justify-between px-4 shadow-sm">
           <div className="flex items-center gap-2">
             <Icons.Sparkles className="w-4 h-4 text-[#F59E0B]" />
-            <span className="text-[15px] font-extrabold text-white tracking-widest uppercase">AI Smart Suggestion</span>
+            <span className="text-[15px] font-extrabold text-white tracking-widest uppercase">POTAL Filter</span>
           </div>
           <div className="flex items-center gap-3">
             {checkedValues.size > 0 && (

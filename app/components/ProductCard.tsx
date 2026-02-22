@@ -7,6 +7,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { normalizeDeliveryInfo } from '../lib/utils/DeliveryStandard';
 import { DeliveryBadge } from './DeliveryBadge';
 import { getRetailerConfig, matchShippingProgram } from '../lib/retailerConfig';
+import { trackAffiliateClick, trackShare } from '../utils/analytics';
 
 interface ProductCardProps {
   product: {
@@ -154,9 +155,12 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     const url = product.link || window.location.href;
+    const vendor = product.seller || product.site || 'unknown';
     if (navigator.share) {
+      trackShare({ productName: displayTitle, vendor, method: 'native' });
       navigator.share({ title: displayTitle, url }).catch(() => {});
     } else {
+      trackShare({ productName: displayTitle, vendor, method: 'clipboard' });
       navigator.clipboard.writeText(url).then(() => {}).catch(() => {});
     }
   };
@@ -165,6 +169,12 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
     e.preventDefault();
     const url = product.link || "#";
     if (!url || url === "#") return;
+    trackAffiliateClick({
+      productName: displayTitle,
+      price: priceNum,
+      vendor: product.seller || product.site || 'unknown',
+      url,
+    });
     setRedirecting(true);
     setTimeout(() => {
       window.open(url, "_blank", "noopener,noreferrer");

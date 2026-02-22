@@ -2,17 +2,18 @@ import type { Product } from '@/app/types/product';
 import type { SearchProvider } from '../types';
 
 /**
- * SheinProvider — Unofficial SHEIN API (apidojo) via RapidAPI
+ * SheinProvider — Shein Business API via RapidAPI
  *
- * Host: unofficial-shein.p.rapidapi.com
- * Endpoint: GET /products/search
- * Params: keywords(required), country, currency, language, sort, limit, page
+ * Host: shein-business-api.p.rapidapi.com
+ * Provider: ecommerce-api (PRO $10/mo, Service Level 100%, Popularity 9.8)
  *
  * Global(International) provider. 중국→미국 직배송 / US warehouse.
  * 배송: 7-14일 기본, Express 감지 시 5일
  *
- * 이전 API (shein-data-api.p.rapidapi.com / Pinto Studio)가 서버 다운 → 환불 처리됨
- * 2026-02-18: apidojo의 Unofficial SHEIN API로 교체
+ * 변천사:
+ *   1. shein-data-api.p.rapidapi.com (Pinto Studio) → 서버 다운, 환불
+ *   2. unofficial-shein.p.rapidapi.com (apidojo) → 서버 다운
+ *   3. shein-business-api.p.rapidapi.com (ecommerce-api) → 현재 활성 ✅
  */
 
 const SHEIN_AFFILIATE = process.env.SHEIN_AFFILIATE_ID || '';
@@ -133,8 +134,8 @@ export class SheinProvider implements SearchProvider {
   readonly name = 'Shein';
   readonly type = 'global' as const;
 
-  // 새 API: Unofficial SHEIN by apidojo
-  private host = process.env.RAPIDAPI_HOST_SHEIN || 'unofficial-shein.p.rapidapi.com';
+  // Shein Business API (ecommerce-api) — PRO $10/mo
+  private host = process.env.RAPIDAPI_HOST_SHEIN || 'shein-business-api.p.rapidapi.com';
   private apiKey = process.env.RAPIDAPI_KEY || '';
 
   async search(query: string, page: number = 1): Promise<Product[]> {
@@ -143,14 +144,13 @@ export class SheinProvider implements SearchProvider {
       return [];
     }
 
-    // Unofficial SHEIN API (apidojo) — /products/search 엔드포인트
+    // Shein Business API — /search_v0.1.php (RapidAPI Playground 확인 완료)
+    const encodedQuery = encodeURIComponent(query);
     const endpoints = [
-      // 1. 메인 검색 엔드포인트 (apidojo 공식)
-      `/products/search?keywords=${encodeURIComponent(query)}&language=en&country=US&currency=USD&sort=7&limit=20&page=${page}`,
-      // 2. sort 없이 (기본 정렬)
-      `/products/search?keywords=${encodeURIComponent(query)}&language=en&country=US&currency=USD&limit=20&page=${page}`,
-      // 3. 최소 파라미터 (keywords만)
-      `/products/search?keywords=${encodeURIComponent(query)}&country=US&currency=USD&page=${page}`,
+      // 1. 메인 검색 엔드포인트 (RapidAPI Playground에서 확인한 정확한 경로)
+      `/search_v0.1.php?keywords=${encodedQuery}&page=${page}&sort=recommend`,
+      // 2. sort 없이 fallback
+      `/search_v0.1.php?keywords=${encodedQuery}&page=${page}`,
     ];
 
     for (const endpoint of endpoints) {
@@ -176,13 +176,17 @@ export class SheinProvider implements SearchProvider {
         if (!res.ok) {
           const errBody = await res.text().catch(() => '');
           console.error(`❌ [SheinProvider] ${res.status} from ${endpoint.split('?')[0]}`, errBody.slice(0, 500));
+          // 429 → rate limit. 연속 요청 중지하고 바로 종료 (나머지 엔드포인트도 429 됨)
+          if (res.status === 429) {
+            console.warn(`⚠️ [SheinProvider] Rate limited — stopping further attempts`);
+            break;
+          }
           continue;
         }
 
         const data = await res.json();
 
-        // Unofficial SHEIN API 응답 구조: data.info.products (주로)
-        // 다양한 응답 구조에 대한 fallback 파싱
+        // Shein Business API 응답 구조: 불명확 → 다양한 패턴 fallback 파싱
         const items: Record<string, unknown>[] =
           Array.isArray(data?.info?.products)
             ? data.info.products

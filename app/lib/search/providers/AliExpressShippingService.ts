@@ -148,13 +148,7 @@ async function fetchShippingOptions(
     }
 
     if (methods.length === 0) {
-      console.log(`[AliShipping] No methods found for ${cleanId}. Keys:`, Object.keys(data));
       return [];
-    }
-
-    // Debug first method
-    if (methods.length > 0) {
-      console.log(`[AliShipping] ${cleanId}: ${methods.length} methods. First:`, JSON.stringify(methods[0]).slice(0, 300));
     }
 
     return methods.map(m => {
@@ -237,8 +231,6 @@ export async function fetchShippingForProducts(
 
   if (aliProducts.length === 0) return result;
 
-  console.log(`[AliShipping] Fetching shipping details for ${aliProducts.length} products...`);
-
   // 병렬 호출 (Promise.allSettled)
   const promises = aliProducts.map(async (p) => {
     const options = await fetchShippingOptions(p.id, apiKey, host);
@@ -264,7 +256,6 @@ export async function fetchShippingForProducts(
     }
   }
 
-  console.log(`[AliShipping] Got shipping info for ${result.size}/${aliProducts.length} products`);
   return result;
 }
 

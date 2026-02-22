@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useEffect, useState, ReactNode } from "react";
+import { trackWishlistAdd, trackWishlistRemove } from '../utils/analytics';
 
 // 유연한 데이터 처리를 위해 any 허용 (타입이 섞여있어서 발생한 문제 방지)
 type WishlistItem = any;
@@ -59,12 +60,26 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     setWishlist((prev) => {
       // 중복 방지
       if (prev.some((p) => p.id === product.id)) return prev;
+      trackWishlistAdd({
+        productName: product.title || product.name || '',
+        price: parseFloat(String(product.price || '0').replace(/[^0-9.]/g, '')) || 0,
+        vendor: product.seller || product.site || 'unknown',
+      });
       return [...prev, product];
     });
   }, []);
 
   const removeFromWishlist = useCallback((productId: string) => {
-    setWishlist((prev) => prev.filter((p) => p.id !== productId));
+    setWishlist((prev) => {
+      const item = prev.find((p) => p.id === productId);
+      if (item) {
+        trackWishlistRemove({
+          productName: item.title || item.name || '',
+          vendor: item.seller || item.site || 'unknown',
+        });
+      }
+      return prev.filter((p) => p.id !== productId);
+    });
   }, []);
 
   const clearWishlist = useCallback(() => {

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation'; // [ADD] 직접 이동을 위해 추가
 import { Icons, MapPinIcon, ClockIcon } from '../icons';
+import { lookupZip } from '@/app/lib/utils/zipCodeDatabase';
 
 interface StickyHeaderProps {
   query: string;
@@ -29,6 +30,12 @@ export function StickyHeader({
   const [showZipDropdown, setShowZipDropdown] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+
+  // ZIP 코드 실시간 검증
+  const zipInfo = useMemo(() => {
+    if (zipcode.length !== 5) return null;
+    return lookupZip(zipcode);
+  }, [zipcode]);
   
   // [ADD] 내부 로딩 상태 (이미지 분석 중일 때 사용)
   const [analyzing, setAnalyzing] = useState(false);
@@ -41,14 +48,8 @@ export function StickyHeader({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const photoMenuRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const handlePhotoBtnClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const nextState = !showPhotoMenu;
-    setShowPhotoMenu(nextState);
-    if (nextState) { setSearchFocused(false); setShowZipDropdown(false); }
-  };
+  // handlePhotoBtnClick 제거 — 카메라 아이콘이 OS 기본 picker를 직접 호출
 
   const handleSearchInputFocus = () => {
     setSearchFocused(true); setShowPhotoMenu(false); setShowZipDropdown(false);
@@ -153,8 +154,8 @@ export function StickyHeader({
 
         <form onSubmit={handleSubmit} className="w-full relative">
 
+          {/* 단일 파일 input — OS가 카메라/사진첩 선택지를 자동 표시 */}
           <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-          <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" className="hidden" />
 
           {/* ═══ MOBILE: ← Search 헤더 + 컴팩트 검색바 ═══ */}
           <div className="md:hidden py-1">
@@ -195,9 +196,9 @@ export function StickyHeader({
             )}
             {/* 검색 입력바 */}
             <div className="flex items-center gap-1.5 mt-1" style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '6px 8px' }}>
-              {/* ZIP 입력 — 작은 영역 */}
+              {/* ZIP 입력 — 작은 영역 + State 코드 표시 */}
               <div ref={zipRef} className="relative flex items-center gap-1 shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '8px' }}>
-                <MapPinIcon className="w-3.5 h-3.5 text-[#F59E0B] shrink-0" />
+                <MapPinIcon className="w-3.5 h-3.5 shrink-0" style={{ color: zipInfo ? '#059669' : '#F59E0B' }} />
                 <input
                   type="text"
                   inputMode="numeric"
@@ -224,24 +225,13 @@ export function StickyHeader({
                     </ul>
                   </div>
                 )}
-              </div>
-
-              {/* 카메라 버튼 — 왼쪽 (홈과 동일 위치) */}
-              <div ref={photoMenuRef} className="relative shrink-0">
-                <button type="button" onClick={handlePhotoBtnClick} className="p-0.5">
-                  <Icons.Camera className={`w-4 h-4 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-white/40'}`} />
-                </button>
-                {showPhotoMenu && (
-                  <div className="absolute left-0 top-full mt-2 w-40 bg-white rounded-xl shadow-2xl border border-slate-200 z-[3000] overflow-hidden">
-                    <button type="button" onClick={(e) => { e.stopPropagation(); cameraInputRef.current?.click(); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-bold text-slate-900 hover:bg-slate-50 border-b border-slate-100">
-                      <Icons.Camera className="w-3.5 h-3.5 text-[#F59E0B]" /> Take Photo
-                    </button>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="w-full flex items-center gap-2 px-3 py-2.5 text-xs font-bold text-slate-900 hover:bg-slate-50">
-                      <Icons.Box className="w-3.5 h-3.5 text-[#F59E0B]" /> Upload Photo
-                    </button>
-                  </div>
+                {zipInfo && (
+                  <span className="text-[9px] font-bold ml-0.5 whitespace-nowrap" style={{ color: '#059669' }}>{zipInfo.stateCode}</span>
                 )}
               </div>
+
+              {/* 🔍 돋보기 (왼쪽) — Amazon 스타일 */}
+              <Icons.Search className="w-4 h-4 shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }} />
 
               {/* Search 입력 — 메인 영역 */}
               <div ref={searchRef} className="flex-1 flex items-center gap-1.5 min-w-0 relative">
@@ -291,14 +281,11 @@ export function StickyHeader({
                 )}
               </div>
 
-              {/* 검색 버튼 */}
-              <button type="submit" disabled={isBusy} className="shrink-0 p-1.5 rounded-lg" style={{ backgroundColor: '#F59E0B' }}>
-                {isBusy ? (
-                  <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                ) : (
-                  <Icons.Search className="w-4 h-4 text-white" />
-                )}
+              {/* 📷 카메라 아이콘 (오른쪽) — OS 기본 picker 호출 */}
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="shrink-0 p-0.5">
+                <Icons.Camera className="w-4 h-4" style={{ color: imagePreview ? '#F59E0B' : 'rgba(255,255,255,0.5)' }} />
               </button>
+              {/* 노란 검색 버튼 제거 — 왼쪽 돋보기와 중복. 엔터키로 검색 실행 */}
             </div>
           </div>
 
@@ -310,9 +297,11 @@ export function StickyHeader({
               className="flex-none w-[280px] bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative cursor-text"
               onClick={() => { const input = zipRef.current?.querySelector('input'); input?.focus(); }}
             >
-              <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-none mb-1">Deliver to</label>
+              <label className="text-[11px] font-bold uppercase tracking-wider leading-none mb-1" style={{ color: zipInfo ? '#059669' : '#6b7280' }}>
+                {zipInfo ? `${zipInfo.city}, ${zipInfo.stateCode}` : 'Deliver to'}
+              </label>
               <div className="flex items-center gap-2">
-                <MapPinIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
+                <MapPinIcon className="w-5 h-5 flex-shrink-0" style={{ color: zipInfo ? '#059669' : '#94a3b8' }} />
                 <input
                   type="text"
                   inputMode="numeric"
@@ -374,20 +363,11 @@ export function StickyHeader({
                       <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
                     </button>
                   )}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2" ref={photoMenuRef}>
-                    <button type="button" onClick={handlePhotoBtnClick} className="p-1.5 hover:bg-slate-100 rounded-full transition-colors group">
-                      <Icons.Camera className={`w-6 h-6 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-slate-400'} group-hover:text-[#F59E0B] transition-colors`} />
+                  {/* 📷 카메라 아이콘 — OS 기본 picker 호출 */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                    <button type="button" onClick={() => fileInputRef.current?.click()} className="flex items-center justify-center rounded-full transition-all hover:scale-105 hover:bg-slate-100" style={{ width: '32px', height: '32px' }}>
+                      <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#94a3b8' }} />
                     </button>
-                    {showPhotoMenu && (
-                      <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-200 z-[3000] overflow-hidden animate-fadeIn">
-                        <button type="button" onClick={(e) => { e.stopPropagation(); cameraInputRef.current?.click(); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors border-b border-slate-100">
-                          <Icons.Camera className="w-4 h-4 text-[#F59E0B]" /> Take Photo
-                        </button>
-                        <button type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors">
-                          <Icons.Box className="w-4 h-4 text-[#F59E0B]" /> Upload Photo
-                        </button>
-                      </div>
-                    )}
                   </div>
                 </div>
                 {searchFocused && !query.trim() && !imagePreview && (

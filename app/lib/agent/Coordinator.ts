@@ -40,16 +40,15 @@ import { scoreProducts } from '../search/ScoringEngine';
 // Provider imports
 import { AmazonProvider } from '../search/providers/AmazonProvider';
 import { WalmartProvider } from '../search/providers/WalmartProvider';
-// BestBuyProvider 비활성화: Pinto Studio API 응답 없음 → RapidAPI 환불 예정
+// BestBuyProvider 비활성화: RapidAPI 서버 500 에러 (2026-02-22 Playground에서도 확인)
 // import { BestBuyProvider } from '../search/providers/BestBuyProvider';
 import { AliExpressProvider } from '../search/providers/AliExpressProvider';
 // TemuProvider 비활성화: Temu 서버가 2026-02-18부터 모든 빌드(v1.0.32~1.0.37) 403 차단
 // amit123이 새 우회 방법 적용 시 복원. Apify 콘솔에서 Results > 0 확인 후 주석 해제.
 // import { TemuProvider } from '../search/providers/TemuProvider';
-// CostcoProvider 비활성화: Deals API만 제공 (전체 상품 검색 불가, 시장점유율 1.5%)
+// CostcoProvider 비활성화: Deals API만 제공 (오프라인 중심, MVP 제외)
 // import { CostcoProvider } from '../search/providers/CostcoProvider';
-// SheinProvider: 새 API (unofficial-shein by apidojo) 코드 준비 완료
-// RapidAPI에서 구독 후 아래 주석 해제 → .env.local에 RAPIDAPI_HOST_SHEIN=unofficial-shein.p.rapidapi.com 추가
+// SheinProvider 비활성화: 3번째 API도 서버 500 (2026-02-22 Playground에서도 확인)
 // import { SheinProvider } from '../search/providers/SheinProvider';
 import { EbayProvider } from '../search/providers/EbayProvider';
 import { TargetProvider } from '../search/providers/TargetProvider';
@@ -74,13 +73,13 @@ import type { IntentRouterOutput } from '../ai/types';
 
 const amazonProvider = new AmazonProvider();
 const walmartProvider = new WalmartProvider();
-// const bestBuyProvider = new BestBuyProvider(); // 비활성화: Pinto Studio API 환불 예정
+// const bestBuyProvider = new BestBuyProvider(); // 비활성화: RapidAPI 서버 500 에러 (2026-02-22 확인). 복구 시 주석 해제.
 const aliExpressProvider = new AliExpressProvider();
 // const temuProvider = new TemuProvider(); // 비활성화: Temu 403 차단 (2026-02-18~)
-// const costcoProvider = new CostcoProvider(); // 비활성화: Deals API 한정
+// const costcoProvider = new CostcoProvider(); // 비활성화: 오프라인 중심, MVP 제외
 const ebayProvider = new EbayProvider();
 const targetProvider = new TargetProvider();
-// const sheinProvider = new SheinProvider(); // API 구독 후 주석 해제
+// const sheinProvider = new SheinProvider(); // 비활성화: RapidAPI 서버 500 에러 (2026-02-22 확인). 복구 시 주석 해제.
 
 /** Provider별 개별 타임아웃 (12초, eBay/Target 등 느린 Provider 대응) */
 const PROVIDER_TIMEOUT = 12_000;
@@ -429,24 +428,26 @@ export class Coordinator {
     const fetchGlobal = market !== 'domestic';
     const q = analysis.platformQueries?.amazon || analysis.original;
 
-    // Domestic: Amazon + Walmart + eBay + Target 병렬
-    // BestBuy 비활성화: Pinto Studio API 환불 예정
+    // Domestic: Amazon + Walmart + eBay + Target 병렬 (4개)
+    // BestBuy 비활성화: RapidAPI 서버 500 (2026-02-22). 복구 시 추가.
     const domesticPromises = fetchDomestic
       ? Promise.allSettled([
           withTimeout(amazonProvider.search(q, page), 'Amazon'),
           withTimeout(walmartProvider.search(q, page), 'Walmart'),
-          // withTimeout(bestBuyProvider.search(q, page), 'BestBuy'), // 비활성화: 환불 예정
+          // withTimeout(bestBuyProvider.search(q, page), 'BestBuy'), // 비활성화: RapidAPI 500 에러 (2026-02-22)
           withTimeout(ebayProvider.search(q, page), 'eBay'),
           withTimeout(targetProvider.search(q, page), 'Target'),
-          // withTimeout(costcoProvider.search(q, page), 'Costco'), // 비활성화
+          // withTimeout(costcoProvider.search(q, page), 'Costco'), // 비활성화: 오프라인 중심, MVP 제외
         ])
       : Promise.resolve([]);
 
-    // Global: AliExpress 병렬 (Temu 비활성화: 403 차단 중)
+    // Global: AliExpress 단독 (1개)
+    // Shein 비활성화: RapidAPI 서버 500 (2026-02-22). Temu: 403 차단. 복구 시 추가.
     const globalQuery = analysis.platformQueries?.aliexpress || analysis.platformQueries?.amazon || analysis.original;
     const globalPromises = fetchGlobal
       ? Promise.allSettled([
           withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
+          // withTimeout(sheinProvider.search(globalQuery, page), 'Shein'), // 비활성화: RapidAPI 500 에러 (2026-02-22)
           // temuProvider.search(globalQuery, page), // 비활성화: Temu 403 차단 (2026-02-18~)
         ])
       : Promise.resolve([]);

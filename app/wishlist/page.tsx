@@ -118,14 +118,14 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
     >
       {/* 상단: 셀러뱃지 ↔ 별점 */}
       <div className="flex items-center justify-between px-1.5 pt-1.5 pb-0.5" style={{ flexShrink: 0 }}>
-        <div className="px-1 py-[1px] rounded text-[7px] font-extrabold uppercase" style={{ backgroundColor: platformColor, color: '#fff' }}>
+        <div className="px-1.5 py-[2px] rounded text-[9px] font-extrabold uppercase" style={{ backgroundColor: platformColor, color: '#fff' }}>
           {displaySeller.length > 8 ? displaySeller.slice(0, 8) : displaySeller}
         </div>
         <div className="flex items-center gap-0.5">
-          <span className="text-[8px]" style={{ color: '#F59E0B' }}>★</span>
-          <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
+          <span className="text-[10px]" style={{ color: '#F59E0B' }}>★</span>
+          <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
           {product.reviewCount > 0 && (
-            <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
               ({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})
             </span>
           )}
@@ -137,13 +137,13 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
         className="relative w-full overflow-hidden"
         style={{ backgroundColor: 'rgba(255,255,255,0.03)', flexShrink: 0, flexGrow: 0, height: 0, paddingBottom: '125%' }}
       >
-        {/* 공유 + 삭제(하트 대신) */}
-        <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1">
-          <button onClick={handleShare} className="p-1 rounded-full transition-transform active:scale-90" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
-            <Icons.Share className="w-3 h-3 text-white" />
+        {/* 공유 + 삭제(하트 대신) — 배경 없이, 드롭섀도우로 가독성 확보 */}
+        <div className="absolute top-1.5 right-1 z-10 flex items-center" style={{ gap: '2px' }}>
+          <button onClick={handleShare} className="transition-transform active:scale-90" style={{ padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))' }}>
+            <Icons.Share className="w-4 h-4 text-white" />
           </button>
-          <button onClick={handleRemove} className="p-1 rounded-full transition-transform active:scale-90" style={{ backgroundColor: 'rgba(239,68,68,0.7)' }}>
-            <Icons.HeartFilled className="w-3 h-3 text-white" />
+          <button onClick={handleRemove} className="transition-transform active:scale-90" style={{ padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))' }}>
+            <Icons.HeartFilled className="w-4 h-4 text-red-400" />
           </button>
         </div>
         {displayImage && (
@@ -157,9 +157,9 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
       </div>
 
       {/* 정보 영역 */}
-      <div className="px-2 py-1.5 flex flex-col gap-1">
+      <div className="px-2 py-2 flex flex-col gap-1.5">
         {/* 상품명 — 3줄 고정 */}
-        <p className="text-[10px] font-medium leading-tight line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '3.6em' }}>
+        <p className="text-[12px] font-medium leading-snug line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '4.2em' }}>
           {displayTitle}
         </p>
 
@@ -169,34 +169,34 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
         {/* 가격 3줄 구조 */}
         <div className="flex gap-1">
           <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-            {/* 1줄: 멤버십 뱃지 + 배송 + 배송일 */}
-            <div className="flex items-center gap-0.5 flex-wrap">
+            {/* 1줄: 멤버십 뱃지 + 배송 + 배송일 — nowrap 강제 */}
+            <div className="flex items-center gap-0.5" style={{ flexWrap: 'nowrap', overflow: 'hidden' }}>
               {badgeLabel && (
-                <span className="text-[7px] font-extrabold px-1 py-[0.5px] rounded" style={{ backgroundColor: badgeBg, color: badgeColor }}>
+                <span className="text-[8px] font-extrabold px-1 py-[0.5px] rounded shrink-0" style={{ backgroundColor: badgeBg, color: badgeColor }}>
                   {badgeLabel}
                 </span>
               )}
-              <span className="text-[7px] font-bold" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.5)' }}>
+              <span className="text-[8px] font-bold shrink-0" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.5)' }}>
                 {hasFreeShipping ? 'Free' : shippingLabel}
               </span>
-              <span className="text-[8px]">🚀</span>
-              <span className="text-[7px] font-bold" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
+              <span className="text-[9px] shrink-0">🚀</span>
+              <span className="text-[8px] font-bold shrink-0" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
                 {product.arrives || (isGlobal ? '7-15 Days' : '1-2 Days')}
               </span>
             </div>
             {/* 2줄: Est. Tax */}
-            <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>
               {taxLabel || (isGlobal ? 'Est.Duty —' : 'Est.Tax —')}
             </span>
             {/* 3줄: Product 가격 */}
-            <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Product {displayPrice}
             </span>
           </div>
           {/* 오른쪽: total */}
           <div className="flex flex-col items-end justify-between shrink-0 py-0.5">
-            <span className="text-[7px] font-bold px-1 py-[0.5px] rounded" style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B' }}>total</span>
-            <span className="text-[15px] font-extrabold leading-none text-white">{finalTotal}</span>
+            <span className="text-[9px] font-bold px-1.5 py-[1px] rounded" style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B' }}>total</span>
+            <span className="text-[18px] font-extrabold leading-none text-white">{finalTotal}</span>
           </div>
         </div>
       </div>

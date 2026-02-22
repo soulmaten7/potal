@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Icons } from '@/components/icons';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { LoginModal } from '@/app/components/LoginModal';
+import { lookupZip, validateZip } from '@/app/lib/utils/zipCodeDatabase';
 
 type SubPage = null | 'account' | 'settings' | 'help' | 'legal';
 
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const [inputZip, setInputZip] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
   const [zipSuccess, setZipSuccess] = useState('');
+  const [zipError, setZipError] = useState('');
 
   useEffect(() => {
     const saved = localStorage.getItem('user_currency');
@@ -50,6 +52,12 @@ export default function ProfilePage() {
   const handleAddZipcode = () => {
     const zip = inputZip.trim();
     if (!zip) return;
+    setZipError('');
+    // ZIP 코드 유효성 검증
+    if (!validateZip(zip)) {
+      setZipError('Invalid ZIP code. Please enter a valid US ZIP code.');
+      return;
+    }
     if (savedZips.includes(zip)) {
       setInputZip('');
       return;
@@ -160,6 +168,8 @@ export default function ProfilePage() {
               </span>
               {zipSuccess === primaryZip && primaryZip ? (
                 <span style={{ fontSize: '11px', color: '#34d399', fontWeight: 700 }}>Saved!</span>
+              ) : primaryZip && lookupZip(primaryZip) ? (
+                <span style={{ fontSize: '11px', color: '#F59E0B', fontWeight: 700 }}>{lookupZip(primaryZip)!.city}, {lookupZip(primaryZip)!.state}</span>
               ) : !primaryZip ? (
                 <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Add a location below to set</span>
               ) : null}
@@ -177,16 +187,29 @@ export default function ProfilePage() {
                 inputMode="numeric"
                 maxLength={5}
                 value={inputZip}
-                onChange={(e) => setInputZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
+                onChange={(e) => { setInputZip(e.target.value.replace(/\D/g, '').slice(0, 5)); setZipError(''); }}
                 placeholder="e.g. 90210"
                 autoFocus
                 style={{
                   width: '100%', padding: '12px 14px', borderRadius: '10px', fontSize: '16px', fontWeight: 700,
-                  background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
-                  color: '#ffffff', outline: 'none', fontFamily: 'monospace', marginBottom: '10px',
+                  background: 'rgba(255,255,255,0.1)',
+                  border: zipError ? '1px solid #ef4444' : inputZip.length === 5 && lookupZip(inputZip) ? '1px solid #34d399' : '1px solid rgba(255,255,255,0.2)',
+                  color: '#ffffff', outline: 'none', fontFamily: 'monospace', marginBottom: '4px',
                   boxSizing: 'border-box',
                 }}
               />
+              {/* ZIP 실시간 검증 피드백 */}
+              {inputZip.length === 5 && lookupZip(inputZip) && (
+                <p style={{ fontSize: '12px', color: '#34d399', fontWeight: 700, marginBottom: '8px' }}>
+                  📍 {lookupZip(inputZip)!.city}, {lookupZip(inputZip)!.state}
+                </p>
+              )}
+              {zipError && (
+                <p style={{ fontSize: '12px', color: '#ef4444', fontWeight: 700, marginBottom: '8px' }}>{zipError}</p>
+              )}
+              {inputZip.length === 5 && !lookupZip(inputZip) && !zipError && (
+                <p style={{ fontSize: '12px', color: '#ef4444', fontWeight: 700, marginBottom: '8px' }}>Invalid ZIP code</p>
+              )}
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handleAddZipcode} disabled={!inputZip.trim()} style={{
                   flex: 1, padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: 700,
@@ -229,6 +252,9 @@ export default function ProfilePage() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <span style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff', fontFamily: 'monospace' }}>{zip}</span>
+                    {lookupZip(zip) && (
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.4)' }}>{lookupZip(zip)!.city}, {lookupZip(zip)!.stateCode}</span>
+                    )}
                     {primaryZip === zip && (
                       <span style={{
                         fontSize: '10px', fontWeight: 700, color: '#F59E0B',

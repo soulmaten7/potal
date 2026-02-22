@@ -1,5 +1,5 @@
 /**
- * AI Smart Suggestion API
+ * POTAL Filter API
  * ━━━━━━━━━━━━━━━━━━━━━━━━
  * 이 파일은 얇은 API 래퍼(thin wrapper).
  * 실제 프롬프트 로직은 → app/lib/ai/prompts/smart-filter.ts

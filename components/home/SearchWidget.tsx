@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Icons, MapPinIcon, ClockIcon } from '../icons';
+import { lookupZip, validateZip } from '@/app/lib/utils/zipCodeDatabase';
 
 interface SearchWidgetProps {
   query: string;
@@ -27,6 +28,13 @@ export function SearchWidget({
   const [heroSearchFocused, setHeroSearchFocused] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
 
+  // ZIP 코드 실시간 검증 — City, State 표시
+  const zipInfo = useMemo(() => {
+    if (zipcode.length !== 5) return null;
+    return lookupZip(zipcode);
+  }, [zipcode]);
+  const isZipInvalid = zipcode.length === 5 && !zipInfo;
+
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -46,14 +54,8 @@ export function SearchWidget({
   const dSearchInputRef = useRef<HTMLInputElement>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const handlePhotoBtnClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const nextState = !showPhotoMenu;
-    setShowPhotoMenu(nextState);
-    if (nextState) setHeroSearchFocused(false);
-  };
+  // handlePhotoBtnClick 제거 — 카메라 아이콘이 OS 기본 picker를 직접 호출
 
   const handleSearchInputFocus = () => {
     setHeroSearchFocused(true);
@@ -141,19 +143,7 @@ export function SearchWidget({
     { id: 'global' as const, label: 'Global', icon: '🌏' },
   ];
 
-  // Photo menu popup — 모바일/데스크톱 모두 드롭다운 (위치만 다르게)
-  const renderPhotoMenu = (isMobile: boolean) => (
-    showPhotoMenu ? (
-      <div className={`absolute ${isMobile ? 'left-0' : 'right-0'} top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-slate-200 z-[60] overflow-hidden animate-fadeIn`}>
-        <button type="button" onClick={() => { cameraInputRef.current?.click(); setShowPhotoMenu(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors border-b border-slate-100">
-          <Icons.Camera className="w-4 h-4 text-[#F59E0B]" /> Take Photo
-        </button>
-        <button type="button" onClick={() => { fileInputRef.current?.click(); setShowPhotoMenu(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-slate-900 hover:bg-slate-50 transition-colors">
-          <Icons.Box className="w-4 h-4 text-[#F59E0B]" /> Upload Photo
-        </button>
-      </div>
-    ) : null
-  );
+  // renderPhotoMenu 제거 — OS 기본 picker로 대체
 
   // Recent searches dropdown (shared)
   const renderRecentSearches = (isMobile: boolean) => (
@@ -183,8 +173,8 @@ export function SearchWidget({
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* 단일 파일 input — OS가 카메라/사진첩 선택지를 자동 표시 */}
       <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
-      <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" className="hidden" />
 
       {/* ═══════════════════════════════════════════════════ */}
       {/* ─── MOBILE: 스카이스캐너 스타일 컴팩트 폼 ─── */}
@@ -227,7 +217,13 @@ export function SearchWidget({
                 placeholder="ZIP code"
                 className="flex-1 min-w-0 text-[15px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-300"
               />
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Deliver to</span>
+              {zipInfo ? (
+                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest whitespace-nowrap">{zipInfo.city}, {zipInfo.stateCode}</span>
+              ) : isZipInvalid ? (
+                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Invalid ZIP</span>
+              ) : (
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Deliver to</span>
+              )}
             </div>
             {showZipDropdown && recentZips.length > 0 && (
               <div className="absolute top-full left-0 w-full bg-white rounded-b-xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-fadeIn">
@@ -246,26 +242,29 @@ export function SearchWidget({
             )}
           </div>
 
-          {/* Field 2: Search products — [📷][input][❌][🔍] */}
-          <div ref={mSearchRef} className={`relative px-3 py-2.5 transition-colors ${shakeQuery ? 'animate-shake bg-red-50' : ''}`}>
-            <div className="relative flex items-center gap-2">
-              {/* 📷 카메라 (왼쪽) */}
-              <div ref={mPhotoMenuRef} className="relative flex-shrink-0">
-                <button type="button" onClick={handlePhotoBtnClick} className="p-1 hover:bg-slate-100 rounded-full transition-colors">
-                  <Icons.Camera className={`w-5 h-5 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-slate-400'} hover:text-[#F59E0B] transition-colors`} />
-                </button>
-                {renderPhotoMenu(true)}
-              </div>
-
-              {/* 이미지 프리뷰 */}
-              {imagePreview && (
-                <div className="relative flex-shrink-0 group">
-                  <img src={imagePreview} alt="preview" className="w-8 h-8 rounded-md object-cover border border-slate-200" />
-                  <button onClick={clearImage} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5">
+          {/* Field 2: Search — Amazon 스타일 [🔍][input][❌][📷] */}
+          <div ref={mSearchRef} className={`relative px-3 py-2 transition-colors ${shakeQuery ? 'animate-shake bg-red-50' : ''}`}>
+            {/* 이미지 프리뷰 (선택된 이미지가 있을 때) */}
+            {imagePreview && (
+              <div className="flex items-center gap-2 mb-2 px-1">
+                <div className="relative flex-shrink-0">
+                  <img src={imagePreview} alt="preview" className="w-10 h-10 rounded-lg object-cover border border-slate-200" />
+                  <button onClick={clearImage} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 shadow-sm">
                     <Icons.X className="w-2.5 h-2.5" />
                   </button>
                 </div>
-              )}
+                <span className="text-[12px] font-bold text-slate-400">Add details or search directly</span>
+              </div>
+            )}
+            <div className="relative flex items-center gap-2">
+              {/* 🔍 돋보기 (왼쪽, 진한색) — 탭하면 검색 실행 */}
+              <button type="submit" disabled={loading} className="flex-shrink-0 p-0.5">
+                {loading ? (
+                  <svg className="animate-spin w-5 h-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                ) : (
+                  <Icons.Search className="w-5 h-5" style={{ color: '#02122c' }} />
+                )}
+              </button>
 
               {/* Input */}
               <input
@@ -275,24 +274,20 @@ export function SearchWidget({
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={handleSearchInputFocus}
                 onClick={handleSearchInputFocus}
-                placeholder={imagePreview ? "Describe this photo..." : "Search products"}
-                className="flex-1 min-w-0 text-[15px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-300"
+                placeholder={imagePreview ? "Describe this photo..." : "POTAL Search"}
+                className="flex-1 min-w-0 text-[15px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-400"
               />
 
-              {/* ❌ Clear (텍스트 있을 때만) */}
+              {/* ❌ Clear (텍스트/이미지 있을 때만) */}
               {(query.trim() || imagePreview) && (
                 <button type="button" onClick={clearQuery} className="p-1 hover:bg-slate-100 rounded-full transition-colors flex-shrink-0">
                   <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
                 </button>
               )}
 
-              {/* 🔍 Search */}
-              <button type="submit" disabled={loading} className="p-1.5 bg-[#F59E0B] rounded-lg hover:bg-amber-600 transition-colors flex-shrink-0">
-                {loading ? (
-                  <svg className="animate-spin w-4 h-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                ) : (
-                  <Icons.Search className="w-4 h-4 text-white" />
-                )}
+              {/* 📷 카메라 (오른쪽, 진한색) — OS 기본 picker 직접 호출 */}
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-shrink-0 p-0.5">
+                <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#02122c' }} />
               </button>
             </div>
           </div>
@@ -332,9 +327,11 @@ export function SearchWidget({
           ref={dZipRef}
           className={`w-[280px] flex-none bg-white rounded-lg shadow-xl h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeZip ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'}`}
         >
-          <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Deliver to</label>
+          <label className="text-[11px] font-bold uppercase tracking-wider" style={{ color: zipInfo ? '#059669' : isZipInvalid ? '#ef4444' : '#6b7280' }}>
+            {zipInfo ? `${zipInfo.city}, ${zipInfo.stateCode}` : isZipInvalid ? 'Invalid ZIP code' : 'Deliver to'}
+          </label>
           <div className="mt-1 flex items-center gap-2">
-            <MapPinIcon className="w-5 h-5 text-slate-400 flex-shrink-0" />
+            <MapPinIcon className="w-5 h-5 flex-shrink-0" style={{ color: zipInfo ? '#059669' : '#94a3b8' }} />
             <input
               type="text"
               inputMode="numeric"
@@ -370,13 +367,8 @@ export function SearchWidget({
         >
           <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Search products</label>
           <div className="relative flex items-center gap-2 mt-1">
-            {/* 📷 카메라 (왼쪽) */}
-            <div ref={dPhotoMenuRef} className="relative flex-shrink-0">
-              <button type="button" onClick={handlePhotoBtnClick} className="p-1 hover:bg-slate-100 rounded-full transition-colors group">
-                <Icons.Camera className={`w-5 h-5 ${showPhotoMenu || imagePreview ? 'text-[#F59E0B]' : 'text-slate-400'} group-hover:text-[#F59E0B] transition-colors`} />
-              </button>
-              {renderPhotoMenu(false)}
-            </div>
+            {/* 🔍 돋보기 (왼쪽) */}
+            <Icons.Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
 
             {/* 이미지 프리뷰 */}
             {imagePreview && (
@@ -406,6 +398,11 @@ export function SearchWidget({
                 <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
               </button>
             )}
+
+            {/* 📷 카메라 (오른쪽) */}
+            <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-shrink-0 p-1 hover:bg-slate-100 rounded-full transition-colors">
+              <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#64748b' }} />
+            </button>
           </div>
 
           {/* Recent Searches */}

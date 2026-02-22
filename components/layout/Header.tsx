@@ -68,7 +68,8 @@ export function Header() {
   return (
     <>
       {/* 모바일 검색 페이지에서는 헤더 숨김 — StickyHeader가 대신 역할 */}
-      <header className={`bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000] ${isSearchPage ? 'hidden md:block' : ''}`}>
+      {/* 모바일: 항상 헤더 숨김 (로고 불필요, 바텀탭이 네비 역할) / 데스크톱: 항상 표시 */}
+      <header className="bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000] hidden md:block">
         <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
           
           {/* 로고: P + 오렌지O + TAL */}

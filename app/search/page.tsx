@@ -10,6 +10,7 @@ import { Icons } from '../../components/icons';
 import { extractFilterOptionsFromProducts } from '@/app/lib/filter-utils';
 import { applyMembershipToProducts } from '@/app/lib/membership/applyMembershipAdjustments';
 import { getAllProgramIds } from '@/app/lib/membership/MembershipConfig';
+import { trackSearch, trackSearchResults, trackSortChange, trackFilterApply, trackFilterClear, trackQuestionQuery, trackMarketSwitch } from '@/app/utils/analytics';
 
 // 1. 리테일러 리스트 — API 연결된 사이트를 상단 배치
 const DOMESTIC_LIST = ["Amazon", "Walmart", "Best Buy", "eBay", "Target", "Costco", "Home Depot", "Lowe's", "Macy's", "Apple", "Nike", "Kohl's", "Sephora", "Chewy", "Kroger", "Wayfair"];
@@ -103,7 +104,7 @@ function SearchContent() {
   const [aiActiveFilters, setAiActiveFilters] = useState<Set<string>>(new Set());
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // [ADD] 질문형 쿼리 상태 — AI Smart Suggestion Box에서 사용
+  // [ADD] 질문형 쿼리 상태 — POTAL Filter Box에서 사용
   const [isQuestionQuery, setIsQuestionQuery] = useState(false);
   const [suggestedProducts, setSuggestedProducts] = useState<string[]>([]);
 
@@ -142,12 +143,14 @@ function SearchContent() {
       setIsQuestionQuery(false);
       setSuggestedProducts([]);
       setAiActiveFilters(new Set());
+      const fetchStartTime = Date.now();
       const q = searchParams.get("q") ?? "";
       const z = searchParams.get("zipcode") ?? searchParams.get("zip") ?? (typeof window !== 'undefined' ? localStorage.getItem('potal_zipcode') ?? '' : '');
       const m = searchParams.get("market") ?? "all";
 
       setQuery(q); setZip(z); setMarket(m);
       setMarketLabel(m === "domestic" ? "Domestic" : m === "global" ? "Global" : "All Markets");
+      trackSearch({ query: q, market: m, zipcode: z });
 
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&market=${m}${z ? `&zipcode=${encodeURIComponent(z)}` : ''}`);
@@ -162,6 +165,7 @@ function SearchContent() {
           setProducts([]);
           setAiSuggestions(null);
           setTabSummary(undefined);
+          trackQuestionQuery({ query: q, suggestedCount: data.metadata.suggestedProducts.length });
           return; // 질문형이면 여기서 끝 (상품 매핑 불필요)
         }
 
@@ -209,14 +213,24 @@ function SearchContent() {
           });
           setProducts(mappedProducts);
 
+          // GA4: 검색 결과 트래킹
+          const providerStatus = data.metadata?.providerStatus || {};
+          const successCount = Object.values(providerStatus).filter((v: any) => v.status === 'ok').length;
+          const failCount = Object.values(providerStatus).filter((v: any) => v.status !== 'ok').length;
+          trackSearchResults({
+            query: q, resultCount: mappedProducts.length, market: m,
+            responseTimeMs: Date.now() - fetchStartTime,
+            providerSuccessCount: successCount, providerFailCount: failCount,
+          });
+
           // ✅ 상품 로딩 완료 → ResultsGrid 즉시 표시 (AI는 별도 로딩)
           setIsLoading(false);
 
-          // ═══ AI Smart Suggestion: 전체 AI 단일 호출 ═══
+          // ═══ POTAL Filter: 전체 AI 단일 호출 ═══
           // Brands + Keywords 모두 AI가 판단 (빈도 기반 제거)
           const realProducts = data.results.filter((p: any) => !p.isSearchCard);
           // Market Scope에 맞는 상품만 필터링 후 BestScore 순 상위 25개 추출
-          // → AI Smart Suggestion 브랜드가 선택된 market과 일치하도록
+          // → POTAL Filter 브랜드가 선택된 market과 일치하도록
           const marketFilteredProducts = m === 'domestic'
             ? realProducts.filter((p: any) => p.category === 'domestic' || (p.shipping || '').toLowerCase() === 'domestic')
             : m === 'global'
@@ -266,7 +280,7 @@ function SearchContent() {
                 }
               }
             } catch (err) {
-              console.warn('AI Smart Suggestion failed, using frequency-based fallback');
+              console.warn('POTAL Filter failed, using frequency-based fallback');
               if (!cancelled) {
                 const fallbackSuggestions = extractFilterOptionsFromProducts(
                   realProducts.map((p: any) => ({ name: p.name || '', brand: p.brand, price: p.price, parsedPrice: p.parsedPrice })),
@@ -348,7 +362,7 @@ function SearchContent() {
         // 배송일 필터: parsedDeliveryDays가 있으면 maxDeliveryDays 이내만 표시
         const matchesDelivery = maxDeliveryDays >= 30 || !p.parsedDeliveryDays || p.parsedDeliveryDays <= maxDeliveryDays;
 
-        // AI Smart Suggestion 클라이언트 사이드 필터링
+        // POTAL Filter 클라이언트 사이드 필터링
         let matchesAiFilter = true;
         if (aiActiveFilters.size > 0) {
           const titleLower = (p.title || '').toLowerCase();
@@ -413,14 +427,16 @@ function SearchContent() {
     router.push(`/search?${params.toString()}`);
   }, [zip, market, router]);
 
-  // [ADD] AI Smart Suggestion: 체크된 키워드로 기존 결과 클라이언트 필터링 (API 재호출 없음)
+  // [ADD] POTAL Filter: 체크된 키워드로 기존 결과 클라이언트 필터링 (API 재호출 없음)
   const handleAiFilterApply = useCallback((keywords: string[]) => {
     setAiActiveFilters(new Set(keywords));
-  }, []);
+    trackFilterApply({ filterKeywords: keywords, query });
+  }, [query]);
 
   const handleAiFilterClear = useCallback(() => {
     setAiActiveFilters(new Set());
-  }, []);
+    trackFilterClear({ query });
+  }, [query]);
 
   return (
     <div className="min-h-screen font-sans flex flex-col relative" style={{ backgroundColor: '#02122c' }} onClick={closeAllDropdowns}>
@@ -466,9 +482,9 @@ function SearchContent() {
             memberships={memberships} setMemberships={setMemberships}
         />
 
-        {/* 오른쪽 메인 영역: AI Suggestion + Results */}
+        {/* 오른쪽 메인 영역: POTAL Filter + Results */}
         <div className="flex-1 min-w-0 flex flex-col gap-2 md:gap-6">
-          {/* AI Smart Suggestion Box — 검색바 아래, 결과 위 */}
+          {/* POTAL Filter Box — 검색바 아래, 결과 위 */}
           <AiSmartSuggestionBox
             loading={isLoading}
             isQuestionQuery={isQuestionQuery}
@@ -492,7 +508,7 @@ function SearchContent() {
           />
 
           <ResultsGrid
-            loading={isLoading} query={query} sortBy={sortBy} setSortBy={(v) => { setSortBy(v); setSecondarySort('best'); }}
+            loading={isLoading} query={query} sortBy={sortBy} setSortBy={(v) => { setSortBy(v); setSecondarySort('best'); trackSortChange({ sortType: v, query }); }}
             secondarySort={secondarySort} setSecondarySort={setSecondarySort}
             market={market} setMarket={setMarket} domesticProducts={domesticProducts} globalProducts={globalProducts}
             totalResults={totalResults} visibleCount={visibleCount} setVisibleCount={setVisibleCount}
@@ -510,7 +526,7 @@ function SearchContent() {
         </div>{/* end 오른쪽 메인 영역 */}
       </main>
 
-      {/* 모바일 Filters 플로팅 버튼 제거 — AI Suggestion/Filters 2분할 버튼이 대체 */}
+      {/* 모바일 Filters 플로팅 버튼 제거 — POTAL Filter/Filters 2분할 버튼이 대체 */}
       {/* 태블릿(md~lg)용 Filters 버튼은 유지 */}
       <button
         onClick={() => setMobileFilterOpen(true)}

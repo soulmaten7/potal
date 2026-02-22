@@ -186,13 +186,8 @@ export class BestBuyProvider implements SearchProvider {
 
         const data = (await res.json()) as Record<string, unknown>;
 
-        // 진단 로그: 응답 구조 확인
-        const topKeys = Object.keys(data).slice(0, 10).join(', ');
-        console.log(`🔍 [BestBuyProvider] ${ep.path} response keys: [${topKeys}]`);
-
         const products = this.parseResponse(data, queryForApi, priceIntent);
         if (products.length > 0) {
-          console.log(`✅ [BestBuyProvider] ${products.length} products from ${ep.path}`);
           return products;
         }
       } catch (err: unknown) {
@@ -236,13 +231,10 @@ export class BestBuyProvider implements SearchProvider {
     } else if (dataAny.data && typeof dataAny.data === 'object') {
       // Deep scan inside data object
       const innerData = dataAny.data as Record<string, unknown>;
-      const innerKeys = Object.keys(innerData);
-      console.log(`🔍 [BestBuyProvider] data inner keys: [${innerKeys.join(', ')}]`);
-      for (const key of innerKeys) {
+      for (const key of Object.keys(innerData)) {
         const val = innerData[key];
         if (Array.isArray(val) && val.length > 0 && typeof val[0] === 'object') {
           items = val;
-          console.log(`🔍 [BestBuyProvider] Found products in data.${key} (${val.length} items)`);
           break;
         }
       }

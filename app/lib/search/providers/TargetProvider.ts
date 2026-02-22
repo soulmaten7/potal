@@ -256,7 +256,6 @@ export class TargetProvider implements SearchProvider {
     };
 
     // Target API — target13 (ecommet) 기본, PRO $9/mo 구독 중
-    console.log(`🔍 [TargetProvider] Using host: ${apiHost}`);
 
     const endpoints = [
       // target13 (ecommet) — 메인 엔드포인트 (PRO 구독 중)

@@ -2,7 +2,7 @@
 
 > 이 파일은 새 AI 세션이 프로젝트의 현재 상태를 완벽히 이해할 수 있도록 작성된 컨텍스트 문서입니다.
 > 새 세션 시작 시: "POTAL 프로젝트 작업을 이어서 하려고 해. /Users/maegbug/portal 에 있는 SESSION-CONTEXT.md 파일을 먼저 읽고 시작해줘." 라고 말하면 됩니다.
-> **마지막 업데이트: 2026-02-22 (9차 — 검색결과 모바일 리디자인 완료 + 위시리스트 모바일 카드 + 에러 핸들링 + 공유/하트 아이콘)**
+> **마지막 업데이트: 2026-02-22 (16차 — AliExpress Affiliate ID 추가, 환경변수 전수 감사, Supabase 마이그레이션 완료)**
 
 ---
 
@@ -17,9 +17,11 @@ POTAL은 AI 기반 글로벌 쇼핑 비교 에이전트로, 여러 리테일러(
 - **배포**: Vercel Pro (`potal.app`)
 - **AI**: OpenAI GPT-4o / GPT-4o-mini (검색 분석, 스마트 필터, 관련성 판단)
 - **인증**: Supabase Auth
-- **상품 API**: RapidAPI (Amazon/Walmart/eBay/Target/AliExpress) — BestBuy/Temu 비활성화됨
-- **⚠️ Temu Apify 차단됨**: Actor `amit123/temu-products-scraper` — 2026-02-18부터 Temu 서버 403 차단. 모든 빌드(v1.0.32~v1.0.37) 실패. Temu Individual Affiliate 신청 중 (승인 대기 2-5일).
-- **⚠️ BestBuy 비활성화**: Pinto Studio API 응답 없음. RapidAPI 환불 예정.
+- **상품 API**: RapidAPI — MVP 활성 5개 (Amazon/Walmart/eBay/Target/AliExpress)
+- **❌ BestBuy 비활성화**: bestbuy-usa.p.rapidapi.com — RapidAPI Playground에서도 500 에러 (2026-02-22 확인). 코드 준비 완료, 서버 복구 시 주석 해제.
+- **❌ Shein 비활성화**: shein-business-api.p.rapidapi.com — RapidAPI Playground에서도 500 "gateway error" (2026-02-22 확인). 3번째 API 제공자도 불안정. 코드 준비 완료, 서버 복구 시 주석 해제.
+- **❌ Temu 비활성화**: Actor `amit123/temu-products-scraper` — 2026-02-18부터 Temu 서버 403 차단. Phase 2에서 대안 검토.
+- **❌ Costco 제외**: 오프라인 중심 리테일러, Deals API만 제공. MVP 범위에서 제외.
 
 ---
 
@@ -55,13 +57,15 @@ portal/
 │   │   │   ├── providers/
 │   │   │   │   ├── AmazonProvider.ts     # ✅ 작동 — tag=soulmaten7-20
 │   │   │   │   ├── WalmartProvider.ts    # ✅ 작동 — affiliateId= (미설정)
-│   │   │   │   ├── BestBuyProvider.ts    # ❌ 비활성화 (Coordinator에서 주석처리)
+│   │   │   │   ├── BestBuyProvider.ts    # ✅ 재활성화 — bestbuy-usa.p.rapidapi.com (PRO)
 │   │   │   │   ├── EbayProvider.ts       # ✅ 작동 — campid=5339138476
 │   │   │   │   ├── TargetProvider.ts     # ✅ 작동 — target13.p.rapidapi.com
 │   │   │   │   ├── AliExpressProvider.ts # ✅ 작동 — aff_id=
-│   │   │   │   ├── TemuProvider.ts       # ❌ 비활성화 (Coordinator에서 주석처리)
-│   │   │   │   ├── SheinProvider.ts      # ❌ 비활성화
-│   │   │   │   └── CostcoProvider.ts     # ❌ 비활성화
+│   │   │   │   ├── TemuProvider.ts       # ❌ 비활성화 (Temu 403 차단, Phase 2)
+│   │   │   │   ├── SheinProvider.ts      # ✅ 재활성화 — shein-business-api.p.rapidapi.com (PRO $10/mo)
+│   │   │   │   └── CostcoProvider.ts     # ❌ 비활성화 (오프라인 중심, MVP 제외)
+│   │   │   ├── utils/
+│   │   │   │   └── zipCodeDatabase.ts   # 🆕 ZIP 코드 검증 DB (41K ZIP→City,State, 세율 매핑)
 │   │   │   ├── FraudFilter.ts            # 규칙 기반 사기 상품 필터
 │   │   │   ├── CostEngine.ts             # Total Landed Cost 계산
 │   │   │   └── ScoringEngine.ts          # Best/Cheapest/Fastest 점수 + membershipBadge 생성
@@ -228,14 +232,14 @@ Provider에서 상품 검색 → 각 Provider의 append*Affiliate() 함수가 UR
 
 ## 6. 어필리에이트/수익화 현황
 
-### 어필리에이트 플랫폼 현황 (2026-02-20 기준)
+### 어필리에이트 플랫폼 현황 (2026-02-22 기준)
 
 | 플랫폼 | 상태 | 은행 | 다음 단계 |
 |--------|------|------|----------|
 | **Amazon Associates** | ✅ 활성 | Wise EFT 등록 완료 | 주소 Delaware 업데이트 완료 (19703-2506), 프로필 POTAL 업데이트 완료 |
 | **Impact.com** | ⚠️ 주소 변경 심사 중 | Wise EFT (무료) 등록 완료 | Corporate/Billing Address → DE 주소로 변경 요청 접수 (티켓 #782618). 1-3영업일 승인 대기 |
 | **CJ Affiliate** | ✅ 가입완료 | Wise 등록 완료 ($50 최소) | US 주소 등록 완료 (Suite B No 1126), W-8BEN 제출, 프로필 작성 완료. Shein Apply 대기 (메인터넌스 확인) |
-| **Rakuten** | ⚠️ W-8BEN 이슈 | PayPal Business | US 주소로 변경 시 W-9 강제 → W-8BEN 필요 (한국 세금거주자). Dolly(서포트) 이메일 답변 대기 중 |
+| **Rakuten** | ⚠️ 계정 재활성화 완료, 프로필 완료 대기 | 카카오뱅크 (한국 원화) | 계정 재활성화 완료 (compliance팀 승인 2026-02-22). W-8BEN 이슈 해결: 한국 주소 유지 + W-8BEN 제출. 은행=카카오뱅크 (Rakuten은 한국 주소 설정 시 한국 은행만 등록 가능, Wise USD 불가). Publisher Profile 58% → "Complete company details" 미완료 표시 → 내부팀 확인 중 (Madhu Chatterjee, 이메일 답변 대기). 광고주 Apply는 Company details 완료 후 가능. |
 | **eBay Partner Network** | ✅ 활성 | — | campid=5339138476 적용 중 |
 | **AliExpress Portals** | ✅ 활성 | — | aff_id 적용 중 |
 | **Walmart (Impact)** | ⏳ 가입 대기 | — | Impact 주소 승인 후 Apply |
@@ -501,6 +505,17 @@ feat: 모바일 UX 대규모 오버홀 — Skyscanner 스타일 다크 테마 �
 - [x] **위시리스트 모바일 카드 통일** — WishlistMobileCard (검색결과와 동일 스타일)
 - [x] **위시리스트 멤버십 뱃지** — 4단계 우선순위 뱃지 시스템 (검색결과와 동일)
 - [x] **위시리스트 Clear 바텀시트** — confirm() 제거, 모바일 친화적 바텀시트 확인 UI
+- [x] **모바일 카드 텍스트/아이콘 크기 업** — 모바일 표준 적용 (셀러 9px, 상품명 12px, Total 18px, 아이콘 16px+36px터치영역)
+- [x] **Partial Failure 배너 간소화** — 리테일러 이름 제거, "Some retailers didn't respond" 간결 메시지 (모바일+PC)
+- [x] **"AI Smart Suggestion" → "POTAL Filter" 리브랜딩** — 사용자 노출 텍스트 전체 변경 (AiSmartSuggestionBox, search/page, API route)
+- [x] **카메라 아이콘 → + 버튼** — ChatGPT/Claude AI 스타일 + 버튼 (SearchWidget 모바일28px/PC30px, StickyHeader 모바일24px/PC32px). 비활성=흰배경+테두리, 활성=오렌지
+- [x] **공유/하트 아이콘 경량화** — 원형 배경 제거, drop-shadow만 적용, 가로 배치, gap 2px (모바일+위시리스트)
+- [x] **Partial Failure 배너 완전 제거** — 사용자 신뢰도 저하 방지. 부분 실패 시 UI 알림 없이 결과만 표시 (모바일+PC)
+- [x] **모바일 의문문 검색 플로우 개선** — 의문문 검색 시 POTAL Filter 시트 자동 오픈 (PC와 동일하게 카테고리 후보를 즉시 표시)
+- [x] **스플래시 스크린** — Amazon 스타일. sessionStorage 기반으로 브라우저 탭 닫고 다시 열 때만 POTAL 로고 표시 (1.5초 fade in/out). 모바일만
+- [x] **모바일 홈 슬로건 제거** — HeroVisuals 모바일 슬로건 제거, 검색바 placeholder "POTAL Search"로 변경. 세로 공간 절약
+- [x] **검색바 Amazon 스타일 리디자인** — 돋보기(왼쪽, 진한색) + input + 카메라(오른쪽, 진한색). ZIP 입력은 별도 줄 유지. 홈(SearchWidget) + 검색결과(StickyHeader) 양쪽 적용
+- [x] **카메라 OS 기본 picker** — Take Photo/Upload Photo 자체 메뉴 제거. `<input accept="image/*">` 하나로 OS가 카메라/사진첩 선택지 표시. cameraInputRef 제거
 
 ### 코드/기능 (남은 작업)
 - [ ] **Temu 재연동** — Individual Affiliate 승인 후 새 API 방법 조사
@@ -509,6 +524,7 @@ feat: 모바일 UX 대규모 오버홀 — Skyscanner 스타일 다크 테마 �
 - [ ] **BestBuy RapidAPI 환불** — support@rapidapi.com에 환불 이메일
 - [ ] **어필리에이트 .env 설정** — Walmart/Target ID 받으면 .env에 추가 (코드 변경 불필요)
 - [ ] 모바일 UI 추가 수정 (유저 피드백 반영)
+- [ ] **공유/하트 아이콘 터치 영역 확대** — 현재 아이콘 16px + 패딩 4px = 약 24px. Apple HIG 기준 44px 권장. 시각적 크기 유지하면서 투명 터치 히트 영역만 확대 검토
 
 ### 어필리에이트/비즈니스 (완료)
 - [x] 영문 주민등록 초본 발급
@@ -523,7 +539,10 @@ feat: 모바일 UX 대규모 오버홀 — Skyscanner 스타일 다크 테마 �
 - [x] Temu Individual Affiliate 승인 완료 (PayPal 출금, $20 최소)
 - [ ] Impact.com 주소 변경 승인 대기 (티켓 #782618, 1-3영업일)
 - [ ] Impact.com Timezone → Eastern Time 변경
-- [ ] Rakuten W-8BEN + US 주소 이슈 해결 (Dolly 이메일 대기)
+- [x] Rakuten 계정 재활성화 완료 (compliance팀 승인 2026-02-22)
+- [x] Rakuten W-8BEN 이슈 해결 → 한국 주소 유지 + W-8BEN + 카카오뱅크 등록
+- [ ] Rakuten "Complete company details" 미완료 표시 → 내부팀 확인 중 (Madhu, 이메일 대기)
+- [ ] Rakuten 광고주 Apply → Company details 완료 후 진행
 - [ ] **Walmart 어필리에이트** — Impact에서 Apply
 - [ ] **Target 어필리에이트** — Impact에서 Apply
 - [ ] **BestBuy 어필리에이트** — Impact/CJ에서 Apply
@@ -613,6 +632,18 @@ NEXT_PUBLIC_GA_ID=G-NQMDNW7CXP
 | 2026-02-22 | **공유/하트 아이콘** | Skyscanner 스타일 3-node 공유 아이콘 + 하트 아이콘, 이미지 우측상단 (모바일+PC) |
 | 2026-02-22 | **Partial Failure 핸들링** | Coordinator providerStatus + Promise.allSettled, 프론트엔드 amber 배너 |
 | 2026-02-22 | **위시리스트 모바일 통일** | WishlistMobileCard 생성 + 멤버십 뱃지 + Clear 바텀시트 (confirm() 제거) |
+| 2026-02-22 | **Rakuten 계정 재활성화** | compliance팀 승인 → 계정 복구. W-8BEN 이슈 해결: 한국 주소 유지 + W-8BEN + 카카오뱅크. Publisher Profile "Complete company details" 미완료 → 내부팀 확인 중 |
+| 2026-02-22 | **모바일 카드 크기 업** | 텍스트/아이콘 모바일 표준 적용 — 셀러 7→9px, 상품명 10→12px, Total 15→18px, 아이콘 12→16px+36px터치, 검색+위시리스트 동일 |
+| 2026-02-22 | **Partial Failure 배너 간소화** | 리테일러 이름+에러타입 제거 → "Some retailers didn't respond. Try again for full results." 간결 메시지 (모바일+PC) |
+| 2026-02-22 | **POTAL Filter 리브랜딩** | "AI Smart Suggestion" → "POTAL Filter"로 사용자 노출 텍스트 전체 변경. 내부 코드명(AiSmartSuggestionBox)은 유지 |
+| 2026-02-22 | **카메라→+ 버튼** | SearchWidget(홈) + StickyHeader(검색) 양쪽, 모바일/PC 4군데 모두 변경. 흰 배경+테두리(비활성), 오렌지(활성) |
+| 2026-02-22 | **공유/하트 아이콘 경량화** | 원형 배경 제거 → drop-shadow만, 가로 배치 gap 2px. ResultsGrid + wishlist 동일 적용 |
+| 2026-02-22 | **Partial Failure 배너 완전 제거** | 사용자 신뢰도 저하 방지. hasPartialFailure 로직은 유지하되 UI 렌더링만 제거 (모바일+PC) |
+| 2026-02-22 | **모바일 의문문 플로우 개선** | 의문문 검색 시 POTAL Filter 시트 자동 오픈 (useEffect). PC와 동일하게 카테고리 후보 즉시 표시 |
+| 2026-02-22 | **스플래시 스크린** | Amazon 스타일. sessionStorage 기반, 모바일 전용. POTAL 로고 1.5초 fade in/out |
+| 2026-02-22 | **모바일 홈 슬로건 제거** | HeroVisuals 모바일 슬로건 제거 → 검색바 "POTAL Search" placeholder로 대체 |
+| 2026-02-22 | **검색바 Amazon 스타일** | 돋보기(왼쪽)+카메라(오른쪽) 레이아웃. +버튼/자체 메뉴 제거. SearchWidget+StickyHeader 양쪽 적용 |
+| 2026-02-22 | **카메라 OS 기본 picker** | cameraInputRef 제거. 단일 input으로 OS 카메라/사진첩 선택지 자동 표시 |
 
 ---
 
@@ -633,12 +664,153 @@ POTAL 프로젝트 작업을 이어서 하려고 해.
 
 ---
 
-## 14. 주의사항
+## 14. 콘텐츠 오버홀 + 리테일러 확장 + ZIP 검증 (2026-02-22 — 13차)
+
+### 홈페이지 콘텐츠 오버홀
+- **메인 슬로건**: "Compare Every Store on Earth." + "Domestic vs Global — One Search."
+- **4개 Feature Cards** (모바일+PC 동일): Every Store One Search, Just Ask, Photo Search, True Final Price
+- **모바일 프로모 카드**: 2개→4개 (2x2 그리드)
+- **모바일 FAQ**: 3개→5개 (질문형 검색 + 사진 검색 추가)
+- **데스크톱 FAQ**: 6개→8개 (동일 항목 추가)
+- **About 바텀시트**: 새 4개 feature에 맞춤 업데이트 (🌍💬📷💰)
+- **How It Works Step 2**: "POTAL AI" 브랜딩 강화
+
+### 리테일러 상태 (MVP 활성 5개)
+- **현재 활성**: Domestic 3개 (Amazon, Walmart, eBay, Target) + Global 1개 (AliExpress) = **총 5개**
+- **BestBuy 코드 준비 완료 but 비활성**: `bestbuy-usa.p.rapidapi.com` — RapidAPI Playground에서도 500 에러 (2026-02-22). Provider 코드 완성, 서버 복구 시 Coordinator 주석 해제만 하면 됨.
+- **Shein 코드 준비 완료 but 비활성**: `shein-business-api.p.rapidapi.com` — RapidAPI Playground에서도 500 "gateway error" (2026-02-22). 3번째 API 제공자. Provider 코드 완성, 서버 복구 시 Coordinator 주석 해제만 하면 됨.
+- **Temu 비활성**: 403 차단 (2026-02-18~). Phase 2.
+- **Costco 제외**: 오프라인 중심, MVP 범위 밖.
+
+### ZIP 코드 검증 시스템
+- **새 파일**: `app/lib/utils/zipCodeDatabase.ts` (596줄)
+  - 3-digit prefix → State 매핑 (전체 ZIP 커버리지)
+  - 상위 200개 ZIP → City 매핑 (인구 기준)
+  - 52개 주/준주 세율 데이터
+  - 함수: `lookupZip()`, `validateZip()`, `getStateFromZip()`, `getTaxRateFromZip()`
+- **SearchWidget.tsx**: ZIP 입력 시 실시간으로 "Beverly Hills, CA" 표시 (모바일+PC)
+- **StickyHeader.tsx**: ZIP 옆에 State 코드 표시 (모바일), City+State (PC)
+- **Profile/page.tsx**: ZIP 추가 시 유효성 검증 + 실시간 City/State 피드백
+  - 잘못된 ZIP → "Invalid ZIP code" 빨간 에러
+  - 유효한 ZIP → "📍 Beverly Hills, California" 초록 확인
+  - 저장된 ZIP 목록에 City, State 표시
+
+### .env.local 변경
+- `RAPIDAPI_HOST_SHEIN=shein-business-api.p.rapidapi.com` (주석 해제 + 호스트 변경)
+
+### 변경된 파일 요약
+- `app/lib/search/providers/SheinProvider.ts` — 호스트+엔드포인트 교체
+- `app/lib/agent/Coordinator.ts` — BestBuy+Shein import 해제, provider 배열 추가
+- `app/lib/utils/zipCodeDatabase.ts` — 🆕 ZIP 검증 DB
+- `components/home/SearchWidget.tsx` — ZIP 실시간 검증 UI
+- `components/search/StickyHeader.tsx` — ZIP 실시간 검증 UI
+- `app/profile/page.tsx` — ZIP 추가 시 유효성 검증
+- `components/home/HeroVisuals.tsx` — 슬로건+Feature Cards 변경
+- `app/page.tsx` — 프로모카드, FAQ, About 시트, How It Works 전체 업데이트
+- `.env.local` — Shein 호스트 변경
+
+---
+
+## 15. BestBuy/Shein API 서버 다운 → 비활성화 (2026-02-22, 14차)
+
+### 문제 발견
+- **BestBuy USA** (`bestbuy-usa.p.rapidapi.com`): RapidAPI Playground에서 Product Search 테스트 → 500 Server Error, `error: "something went wrong"`
+- **Shein Business API** (`shein-business-api.p.rapidapi.com`): RapidAPI Playground에서 search_v0.1.php 테스트 → 500 "Oops, an error in the gateway has occurred"
+- 두 API 모두 Playground에서조차 안 되므로 우리 코드 문제가 아닌 **API 제공자 서버 다운**
+
+### 조치
+- Coordinator.ts에서 BestBuy + Shein import/인스턴스/호출 모두 주석 처리
+- 불필요한 API 호출 + 타임아웃 지연 방지
+- Provider 코드(BestBuyProvider.ts, SheinProvider.ts)는 그대로 보존 — 서버 복구 시 주석만 해제하면 즉시 활성화 가능
+
+### MVP 최종 Provider 구성
+- **Domestic**: Amazon, Walmart, eBay, Target (4개)
+- **Global**: AliExpress (1개)
+- **총 5개 활성 Provider**
+
+### 변경 파일
+- `app/lib/agent/Coordinator.ts` — BestBuy/Shein 비활성화 (import + 인스턴스 + 호출 주석 처리)
+
+---
+
+## 16. MVP 런칭 준비 — GA4 + 디버그 정리 + 로딩 텍스트 (2026-02-22, 15차)
+
+### GA4 이벤트 트래킹 구현
+- **`app/utils/analytics.ts`** — 전면 재작성. 기존 `trackAffiliateClick`만 있던 것을 12개 이벤트 함수로 확장:
+  - `trackSearch` — 검색 실행 시 (query, market, zipcode)
+  - `trackSearchResults` — 결과 로드 시 (result_count, response_time_ms, provider_success/fail)
+  - `trackAffiliateClick` — 상품 클릭 → 쇼핑몰 이동
+  - `trackProductView` — 상품 카드 상세 보기
+  - `trackSortChange` — Best/Cheapest/Fastest 정렬 변경
+  - `trackFilterApply` / `trackFilterClear` — POTAL Filter 적용/해제
+  - `trackWishlistAdd` / `trackWishlistRemove` — 위시리스트 추가/제거
+  - `trackQuestionQuery` — 질문형 쿼리 감지
+  - `trackSuggestedCategoryClick` — 추천 카테고리 클릭
+  - `trackMarketSwitch` — All/Domestic/Global 전환
+  - `trackShare` — 상품 공유 (native/clipboard)
+
+### GA4 통합 위치
+- `app/search/page.tsx` — trackSearch, trackSearchResults, trackQuestionQuery, trackSortChange, trackFilterApply/Clear
+- `app/components/ProductCard.tsx` — trackAffiliateClick (handleViewDeal), trackShare (handleShare)
+- `app/context/WishlistContext.tsx` — trackWishlistAdd, trackWishlistRemove
+
+### Provider 디버그 로그 정리
+- `BestBuyProvider.ts` — 진단용 console.log 전부 제거 (console.warn/error는 유지)
+- `TargetProvider.ts` — host 출력 로그 제거
+- `AliExpressProvider.ts` — products 카운트 로그 제거
+- `AliExpressShippingService.ts` — 배송 디버그 로그 제거
+
+### 로딩 화면 텍스트 업데이트
+- `ResultsGrid.tsx` — "7 retailers" → "retailers", 리테일러 목록을 현재 활성 5개로 수정
+
+### 변경 파일
+- `app/utils/analytics.ts` — 12개 GA4 이벤트 함수
+- `app/search/page.tsx` — GA4 통합
+- `app/components/ProductCard.tsx` — GA4 통합
+- `app/context/WishlistContext.tsx` — GA4 통합
+- `app/lib/search/providers/BestBuyProvider.ts` — 디버그 로그 제거
+- `app/lib/search/providers/TargetProvider.ts` — 디버그 로그 제거
+- `app/lib/search/providers/AliExpressProvider.ts` — 디버그 로그 제거
+- `app/lib/search/providers/AliExpressShippingService.ts` — 디버그 로그 제거
+- `components/search/ResultsGrid.tsx` — 로딩 텍스트 수정
+
+---
+
+## 17. 환경변수 전수 감사 + AliExpress Affiliate ID + Supabase 마이그레이션 (2026-02-22, 16차)
+
+### AliExpress Affiliate ID 추가
+- AliExpress Portals(portals.aliexpress.com)에서 Tracking ID `potal` 확인
+- `.env.local`에 `ALIEXPRESS_AFFILIATE_ID=potal` 추가 (2026-02-22)
+- Vercel env에도 동일하게 추가 완료
+- 이전: `ALIEXPRESS_APP_KEY=525832`가 fallback으로 사용됨 → 이후: `aff_id=potal`로 정확한 트래킹
+
+### 환경변수 전수 감사 결과
+- **.env.local ↔ 코드 참조** 전수 비교 완료
+- **활성 Provider 변수**: 전부 정상 (RAPIDAPI_KEY, HOST_AMAZON/WALMART/EBAY/TARGET/ALIEXPRESS, OPENAI_API_KEY, Supabase, GA4)
+- **비활성 Provider 변수**: HOST_BESTBUY, HOST_SHEIN, APIFY_API_TOKEN — 보관 (복구 대비)
+- **미사용 변수 (보관)**: ALIEXPRESS_APP_SECRET, CJ_PERSONAL_TOKEN, CJ_PROPERTY_ID — Phase 2 연동 대비
+- **누락 → 해결**: `ALIEXPRESS_AFFILIATE_ID=potal` 추가
+- **Vercel 전용 확인**: `RAPIDAPI_HOST_TARGET=target13.p.rapidapi.com` ✅, `NEXT_PUBLIC_GA_ID` ✅, `RAPIDAPI_HOST_SHEIN` ✅
+- **불필요**: `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` — fallback용이라 없어도 됨
+
+### Supabase 프로덕션 마이그레이션
+- SQL Editor에서 `contact_messages` 테이블 생성 완료 (RLS + INSERT 정책 포함)
+- `profiles` 테이블은 기존 작동 중 (트리거 + RLS 정상)
+
+### .env.local 변경
+- `ALIEXPRESS_AFFILIATE_ID=potal` 추가
+- 마지막 업데이트 날짜: 2026-02-19 → 2026-02-22
+- CJ 변수들에 "현재 미사용" 주석 추가
+
+---
+
+## 18. 주의사항
 
 1. **git index.lock**: 가끔 `.git/index.lock` 파일이 남아있을 수 있음. `rm .git/index.lock`으로 해결.
 2. **Vercel 배포**: `main` 브랜치에 푸시하면 자동 배포. 도메인: `potal.app`
 3. **API 비용**: OpenAI 사용량 주의. gpt-4o는 gpt-4o-mini보다 ~20배 비싸므로 Smart Suggestion만 gpt-4o 사용.
-4. **⚠️ Temu 현재 비활성화**: 2026-02-18부터 Temu 서버 403 차단. Coordinator에서 import 주석처리됨.
+4. **⚠️ Temu 비활성화 (Phase 2)**: 2026-02-18부터 Temu 서버 403 차단. Apify Actor 교체 또는 공식 API 출시 시 복구.
+4b. **❌ Shein/BestBuy 비활성화**: 둘 다 RapidAPI Playground에서도 500 에러 (2026-02-22). 코드는 준비 완료. 서버 복구 시 Coordinator.ts에서 주석 해제 + Vercel env에 `RAPIDAPI_HOST_SHEIN=shein-business-api.p.rapidapi.com` 추가.
 5. **⚠️ Target 호스트는 target13**: `target13.p.rapidapi.com` PRO $9/mo 구독 중. `.env.local`과 `Vercel env` 양쪽 다 `target13.p.rapidapi.com`인지 확인 필수! (2026-02-22에 .env.local이 잘못된 값이었던 것을 수정함)
 6. **⚠️ .env.local 수정 금지**: 새 세션에서 임의로 수정하지 마세요. 현재 상태가 정확합니다.
 6b. **⚠️ Vercel env 동기화 필수**: .env.local을 수정했으면 Vercel Dashboard > Settings > Environment Variables에서도 동일하게 변경해야 프로덕션에 반영됨. 특히 `RAPIDAPI_HOST_TARGET=target13.p.rapidapi.com` 확인!

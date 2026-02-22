@@ -205,9 +205,9 @@ export function ResultsGrid({
 
         {/* 안내 텍스트 */}
         <div className="text-center space-y-2">
-          <h3 className="text-lg font-extrabold" style={{ color: 'rgba(255,255,255,0.9)' }}>Searching across 7 retailers...</h3>
+          <h3 className="text-lg font-extrabold" style={{ color: 'rgba(255,255,255,0.9)' }}>Searching across retailers...</h3>
           <p className="text-sm max-w-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Comparing prices from Amazon, Walmart, eBay, Target, BestBuy, AliExpress, and Temu. This usually takes 10-15 seconds.
+            Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.
           </p>
         </div>
 
@@ -383,20 +383,7 @@ export function ResultsGrid({
           )}
         </div>
 
-        {/* ── Skyscanner-style: 부분 실패 배너 (모바일) ── */}
-        {hasPartialFailure && (
-          <div className="mx-1 rounded-lg px-3 py-2 flex items-start gap-2" style={{ backgroundColor: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)' }}>
-            <span className="text-[12px] shrink-0 mt-0.5">⚠️</span>
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold" style={{ color: 'rgba(245,158,11,0.9)' }}>
-                {failedProviders.map(p => p.name).join(', ')} — {failedProviders.some(p => p.reason === 'timeout') ? 'response timeout' : 'unavailable'}
-              </span>
-              <p className="text-[9px] mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                Showing results from other retailers. Try again later for full comparison.
-              </p>
-            </div>
-          </div>
-        )}
+        {/* ── 부분 실패 배너 (모바일) — 제거: 사용자 경험상 불필요, 신뢰도 저하 방지 ── */}
 
         {/* Best scoring info tooltip (모바일) */}
         {activeTooltipId === 'mobile-best-info' && (
@@ -656,20 +643,7 @@ export function ResultsGrid({
         </div>
       )}
 
-      {/* ── Skyscanner-style: 부분 실패 배너 (데스크톱) ── */}
-      {hasPartialFailure && (
-        <div className="rounded-xl px-4 py-3 flex items-center gap-3" style={{ backgroundColor: '#FFF8E7', border: '1px solid #F5D68A' }}>
-          <span className="text-base shrink-0">⚠️</span>
-          <div className="flex-1 min-w-0">
-            <span className="text-sm font-bold text-amber-800">
-              {failedProviders.map(p => p.name).join(', ')} — {failedProviders.some(p => p.reason === 'timeout') ? 'Response timed out' : 'Currently unavailable'}
-            </span>
-            <p className="text-xs text-amber-600 mt-0.5">
-              Showing results from other retailers. Try again later for a full comparison across all stores.
-            </p>
-          </div>
-        </div>
-      )}
+      {/* ── 부분 실패 배너 (데스크톱) — 제거: 사용자 경험상 불필요, 신뢰도 저하 방지 ── */}
 
       {/* (3) 메인 상품 리스트 — 모바일: 1열 세로, 데스크톱: 2열 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
@@ -1107,14 +1081,14 @@ function MobileCompactCard({ product, type }: { product: Product; type: 'domesti
     >
       {/* 상단: 왼쪽 셀러뱃지 ←→ 오른쪽 별점 */}
       <div className="flex items-center justify-between px-1.5 pt-1.5 pb-0.5 flex-shrink-0">
-        <div className="px-1 py-[1px] rounded text-[7px] font-extrabold uppercase" style={{ backgroundColor: platformColor, color: '#fff' }}>
+        <div className="px-1.5 py-[2px] rounded text-[9px] font-extrabold uppercase" style={{ backgroundColor: platformColor, color: '#fff' }}>
           {displaySeller.length > 8 ? displaySeller.slice(0, 8) : displaySeller}
         </div>
         <div className="flex items-center gap-0.5">
-          <span className="text-[8px]" style={{ color: '#F59E0B' }}>★</span>
-          <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
+          <span className="text-[10px]" style={{ color: '#F59E0B' }}>★</span>
+          <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
           {product.reviewCount > 0 && (
-            <span className="text-[7px]" style={{ color: 'rgba(255,255,255,0.35)' }}>({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})</span>
+            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.35)' }}>({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})</span>
           )}
         </div>
       </div>
@@ -1131,15 +1105,15 @@ function MobileCompactCard({ product, type }: { product: Product; type: 'domesti
           paddingBottom: '125%',
         }}
       >
-        {/* 공유 + 하트 아이콘 (이미지 우측 상단) */}
-        <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1">
-          <button onClick={handleShare} className="p-1 rounded-full transition-transform active:scale-90" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
-            <Icons.Share className="w-3 h-3 text-white" />
+        {/* 공유 + 하트 아이콘 (이미지 우측 상단) — 배경 없이, 드롭섀도우로 가독성 확보 */}
+        <div className="absolute top-1.5 right-1 z-10 flex items-center" style={{ gap: '2px' }}>
+          <button onClick={handleShare} className="transition-transform active:scale-90" style={{ padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))' }}>
+            <Icons.Share className="w-4 h-4 text-white" />
           </button>
-          <button onClick={handleToggleSave} className="p-1 rounded-full transition-transform active:scale-90" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }}>
+          <button onClick={handleToggleSave} className="transition-transform active:scale-90" style={{ padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))' }}>
             {isSaved
-              ? <Icons.HeartFilled className="w-3 h-3 text-red-500" />
-              : <Icons.Heart className="w-3 h-3 text-white" />
+              ? <Icons.HeartFilled className="w-4 h-4 text-red-500" />
+              : <Icons.Heart className="w-4 h-4 text-white" />
             }
           </button>
         </div>
@@ -1162,9 +1136,9 @@ function MobileCompactCard({ product, type }: { product: Product; type: 'domesti
       </div>
 
       {/* 정보 영역 */}
-      <div className="px-2 py-1.5 flex flex-col gap-1">
+      <div className="px-2 py-2 flex flex-col gap-1.5">
         {/* 상품명 — 3줄 고정 높이 (레이아웃 통일) */}
-        <p className="text-[10px] font-medium leading-tight line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '3.6em' }}>
+        <p className="text-[12px] font-medium leading-snug line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '4.2em' }}>
           {displayTitle}
         </p>
 
@@ -1175,34 +1149,34 @@ function MobileCompactCard({ product, type }: { product: Product; type: 'domesti
         <div className="flex gap-1">
           {/* 왼쪽: 3줄 정보 */}
           <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-            {/* 1줄: 멤버십 뱃지 + 배송 + 배송일 */}
-            <div className="flex items-center gap-0.5 flex-wrap">
+            {/* 1줄: 멤버십 뱃지 + 배송 + 배송일 — nowrap 강제 */}
+            <div className="flex items-center gap-0.5" style={{ flexWrap: 'nowrap', overflow: 'hidden' }}>
               {badgeLabel && (
-                <span className="text-[7px] font-extrabold px-1 py-[0.5px] rounded" style={{ backgroundColor: badgeBg, color: badgeColor }}>
+                <span className="text-[8px] font-extrabold px-1 py-[0.5px] rounded shrink-0" style={{ backgroundColor: badgeBg, color: badgeColor }}>
                   {badgeLabel}
                 </span>
               )}
-              <span className="text-[7px] font-bold" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.5)' }}>
+              <span className="text-[8px] font-bold shrink-0" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.5)' }}>
                 {hasFreeShipping ? 'Free' : shippingLabel}
               </span>
-              <span className="text-[8px]">🚀</span>
-              <span className="text-[7px] font-bold" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
+              <span className="text-[9px] shrink-0">🚀</span>
+              <span className="text-[8px] font-bold shrink-0" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
                 {product.arrives || (isGlobal ? '7-15 Days' : '1-2 Days')}
               </span>
             </div>
             {/* 2줄: Est. Tax */}
-            <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>
               {taxLabel || (isGlobal ? 'Est.Duty —' : 'Est.Tax —')}
             </span>
             {/* 3줄: Product 가격 */}
-            <span className="text-[8px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Product {displayPrice}
             </span>
           </div>
           {/* 오른쪽: total 라벨 + 총가격 (2-3줄 높이 병합) */}
           <div className="flex flex-col items-end justify-between shrink-0 py-0.5">
-            <span className="text-[7px] font-bold px-1 py-[0.5px] rounded" style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B' }}>total</span>
-            <span className="text-[15px] font-extrabold leading-none text-white">{finalTotal}</span>
+            <span className="text-[9px] font-bold px-1.5 py-[1px] rounded" style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B' }}>total</span>
+            <span className="text-[18px] font-extrabold leading-none text-white">{finalTotal}</span>
           </div>
         </div>
       </div>
