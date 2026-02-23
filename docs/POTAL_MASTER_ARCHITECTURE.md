@@ -1,7 +1,7 @@
 # POTAL 2.0 — Master Architecture Document
 ### AI Shopping Intelligence Agent
-> Last Updated: 2026-02-13
-> Status: Design Confirmed → Implementation Phase
+> Last Updated: 2026-02-23
+> Status: MVP Complete — Production Live at potal.app
 
 ---
 
@@ -37,30 +37,39 @@ Users come in with a product in mind, compare across Domestic (US) and Global pl
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────┐
-│              LLM PRE-THINK LAYER                         │
+│              LLM PRE-THINK LAYER (✅ 구현 완료)            │
 │  "What product is the user looking for?"                 │
 │                                                          │
-│  Clear query ("AirPods Pro 2")                           │
-│    → Generate platform-specific search terms             │
+│  Step 1: Intent Router (intent-router.ts)                │
+│    → 5가지 의도 분류: PRODUCT_SPECIFIC, PRODUCT_CATEGORY,│
+│      COMPARISON, QUESTION, PRICE_HUNT                    │
+│    → GPT-4o-mini + deterministic fallback                │
 │                                                          │
-│  Vague query ("good headphones")                         │
-│    → Generate category search terms                      │
-│    → AI Filter will handle refinement in results         │
+│  Step 2: QueryAgent (deterministic, $0 비용)             │
+│    → isQuestionQuery v3 (브랜드/상품명 우선 감지)        │
+│    → analyzeQueryDeterministic (카테고리, 가격, 전략)    │
+│    → 가격 오타 허용 (dollors/bucks → $)                  │
+│    → 플랫폼별 쿼리 최적화 (AliExpress 용어 변환)        │
 │                                                          │
-│  Image query (photo upload)                              │
-│    → Vision API identifies product → search terms        │
+│  Step 3: AnalysisAgent (AI, 복잡한 쿼리만)               │
+│    → shouldUseAIAnalysis()가 true일 때만 호출            │
 │                                                          │
-│  Model: Claude Haiku / GPT-4o-mini (~$0.001/search)     │
+│  Image query (photo upload) → Phase 2                    │
+│  Model: GPT-4o-mini (~$0.001/search)                     │
 └──────────────────────┬──────────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────────┐
-│            PARALLEL SEARCH (Provider Layer)               │
+│            PARALLEL SEARCH (Provider Layer) ✅             │
 │                                                          │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐   │
 │  │ Amazon   │ │ Walmart  │ │ eBay     │ │AliExpress│   │
 │  │ Provider │ │ Provider │ │ Provider │ │ Provider │   │
 │  └──────────┘ └──────────┘ └──────────┘ └──────────┘   │
+│  ┌──────────┐                                            │
+│  │ Target   │  + BestBuy/Temu/Shein (Phase 2 비활성)    │
+│  │ Provider │                                            │
+│  └──────────┘                                            │
 │                                                          │
 │  Each provider:                                          │
 │  1. Calls API with optimized search terms                │
@@ -261,17 +270,29 @@ Users come in with a product in mind, compare across Domestic (US) and Global pl
 
 ---
 
-## 6. Data Collection (Background, No User-Facing Features)
+## 6. Data Collection (✅ Phase 1 구현 완료)
 
-Every search silently records to Supabase:
-- Product ID, title, platform, price, timestamp
-- Search query, user ID (if logged in), zipcode
-- Which product was "Selected" (clicked)
+**SearchLogger (fire-and-forget, 검색 블로킹 없음):**
+
+### search_logs 테이블 (18 컬럼):
+- session_id, query, intent, confidence, strategy
+- category, price_intent, provider_results (JSON)
+- total_results, ai_analysis_used, filter_generated
+- error_occurred, error_message, duration_ms
+- user_agent, country, created_at
+
+### search_signals 테이블 (7 컬럼):
+- search_id (→ search_logs.id FK), signal_type, signal_data (JSON)
+- product_id, provider, created_at
+
+### Signal Types:
+- click, add_to_wishlist, remove_from_wishlist
+- filter_use, sort_change, show_more, dwell_time
 
 **Purpose (NOT shown to users):**
-- Improve Fake Detector accuracy (real average prices per category)
-- Improve Best Score weights (click data feedback loop)
-- Future B2B data licensing potential
+- Phase 2: 주간 메트릭스 자동 분석
+- Phase 3: 실패 패턴 자동 감지 → 규칙 자동 수정
+- Phase 4+: 모델 파인튜닝용 학습 데이터
 - Affiliate revenue optimization
 
 ---
@@ -294,38 +315,40 @@ Every search silently records to Supabase:
 
 ## 8. Implementation Phases
 
-### Phase 1: Data Foundation (Week 1-2)
-- [ ] Provider architecture refactor (plugin interface with country/currency params)
-- [ ] Add WalmartProvider, eBayProvider, AliExpressProvider
-- [ ] Total Landed Cost calculation engine
-- [ ] Variant price normalization (Stage 1)
-- [ ] Platform-specific fraud rules (instant remove)
-- [ ] Search result caching (Vercel KV or in-memory)
-- [ ] API key security (.env.local cleanup)
-- [ ] Background data collection to Supabase
+### Phase 1: Data Foundation ✅ COMPLETE
+- [x] 5개 Provider 구현 (Amazon, Walmart, eBay, Target, AliExpress) + 3개 비활성 (BestBuy, Temu, Shein)
+- [x] Total Landed Cost calculation engine (CostEngine)
+- [x] Platform-specific fraud rules (FraudFilter — 규칙 기반)
+- [x] API key security (.env.local + Vercel env)
+- [x] Background data collection to Supabase (SearchLogger Phase 1)
 
-### Phase 2: AI Brain (Week 3-4)
-- [ ] LLM pre-think layer (query → platform-specific search terms)
-- [ ] Best/Fastest/Cheapest scoring algorithm
-- [ ] AI Filter auto-generation
-- [ ] Brand filter (knockoff detection)
-- [ ] Trust Signal system + explanation icon
-- [ ] Dynamic tab values (replace hardcoded $695/4 Days)
+### Phase 2: AI Brain ✅ COMPLETE
+- [x] Intent Router (5가지 의도 분류 + deterministic fallback)
+- [x] QueryAgent (deterministic 쿼리 분석 + 가격 오타 허용)
+- [x] AnalysisAgent (GPT-4o-mini, 복잡한 쿼리만)
+- [x] Product Judge (AI 품질/관련성 판단)
+- [x] Best/Fastest/Cheapest scoring algorithm (ScoringEngine)
+- [x] AI Filter auto-generation (Smart Filter)
+- [x] Dynamic tab values (실시간 데이터 기반)
 
-### Phase 3: UX/UI & Polish (Week 5-6)
-- [ ] Search results page redesign (AI Filter panel integration)
-- [ ] Product card enhancement (Total Landed Cost display)
-- [ ] Image search capability
-- [ ] User profile (price↔speed slider)
-- [ ] Performance optimization
-- [ ] Closed beta soft launch
+### Phase 3: UX/UI & Polish ✅ COMPLETE
+- [x] 검색 결과 페이지 (모바일 2열 + PC 3열)
+- [x] Product card (MobileCompactCard — Total Landed Cost 표시)
+- [x] PWA 설정 (manifest.json + service worker)
+- [x] 프로필 페이지 (2x2 그리드 + Zipcode)
+- [x] 위시리스트 (localStorage + Supabase 동기화)
+- [ ] Image search capability → Post-MVP
+- [ ] User profile price↔speed slider → Post-MVP
 
-### Phase 4: Launch (Week 7)
-- [ ] Security audit
-- [ ] SEO + OG tags
-- [ ] GA4 event tracking
-- [ ] Beta feedback integration
-- [ ] Production deploy
+### Phase 4: Launch ✅ COMPLETE (potal.app LIVE)
+- [x] Security audit (Open Redirect 방어, 프롬프트 인젝션 방어, RLS)
+- [x] GA4 event tracking (12개 이벤트)
+- [x] Error Boundary (app/error.tsx)
+- [x] AI Quality Test (90/90 통과)
+- [x] Live QA (3건 버그 수정 완료)
+- [x] Production deploy (Vercel Pro → potal.app)
+- [ ] SEO + OG tags → Post-MVP
+- [ ] Google Play Console / Apple Developer → 대기 중
 
 ---
 
@@ -344,10 +367,12 @@ Every search silently records to Supabase:
 - Max Width: 1440px
 - Grid: 3-col max on PC for product image visibility
 - Ranking: Zipper interleaving for fairness within Domestic/Global
-- Mobile: 1-col grid (grid-cols-1)
+- Mobile: 2-col grid (grid-cols-2), Mobile background: #02122c (Dark Navy)
+- Desktop: background #f1f2f8 (Light)
 - Clean, minimal, no unnecessary decorations
 
 ---
 
-*This document reflects all discussions between the Project Owner and Claude (2026-02-13).*
+*This document reflects all discussions between the Project Owner and Claude (2026-02-23).*
+*MVP Complete. potal.app LIVE. Phase 1 Learning System deployed.*
 *Any future changes should be logged with date and reasoning.*

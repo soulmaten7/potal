@@ -1,5 +1,47 @@
 # POTAL Development Changelog
 
+## [2026-02-23] MVP Final Audit + Live QA Bug Fixes + Phase 1 Learning System
+
+### 🔍 MVP 최종 검수 (2라운드)
+- **TypeScript 컴파일**: 0 에러 확인
+- **Dead Code 삭제**: amazonApi.ts, MockProvider.ts, debug/route.ts, mockData.ts, page.tsx.bak, SESSION-CONTEXT.md (6개 파일)
+- **Console.log 전량 제거**: 13개 파일에서 41개 제거
+- **불필요한 `as any` 캐스트 제거**: search/page.tsx
+- **QueryAgent.ts 빈 if블록 제거**
+- **.gitignore 중복 엔트리 정리**
+
+### 🛡️ Security Hardening
+- **Auth Callback**: Open Redirect 방어 강화 (URL 인코딩 우회 + 백슬래시 방어)
+- **AI API**: 프롬프트 인젝션 방어 (따옴표 변형 제거, injection 키워드 제거)
+- **Error Boundary**: app/error.tsx 앱 전체 크래시 방어 추가
+
+### 🧪 AI Quality Test
+- 90개 테스트 케이스 작성 (6개 테스트 스위트)
+- isQuestionQuery, analyzeQueryDeterministic, shouldUseAIAnalysis, IntentRouter fallback, FraudFilter, parseOutput
+- **100% (90/90) 통과**
+- 수정: `which X is best` 패턴, 'buds' 카테고리, comparison 우선순위, `X or Y` 패턴
+
+### 🧠 Phase 1 학습 시스템 구현
+- `SearchLogger.ts` — fire-and-forget 비동기 로깅 (검색 블로킹 없음)
+- `search_logs` 테이블 (18 컬럼) + `search_signals` 테이블 (7 컬럼) — Supabase
+- RLS 활성화 + anon insert 정책
+- `signals/route.ts` — 클라이언트 시그널 수집 API
+- Coordinator.ts + search/page.tsx에 로깅 연동
+
+### 🐛 Live QA 버그 수정 (3건)
+1. **로딩 텍스트 색상**: 데스크톱(#f1f2f8 밝은 배경)에서 텍스트 안 보임 → 반응형 색상 처리 (데스크톱 진한색, 모바일 흰색)
+2. **필터 체크박스 겹침**: 긴 텍스트가 체크박스와 겹침 → `min-w-0` + `truncate` + 간격/폰트 축소
+3. **가격 오타 인식**: "100dollors", "50bucks", "200dollers" 등 → 자동 정규화 ($100, $50, $200)
+   - QueryAgent: priceNormalized + standalonePrice + cleanQuery에서 통화 오타 제거
+   - Intent Router: PRICE_PATTERN + fallback 가격 추출에 오타 패턴 추가
+
+### 📄 문서
+- `POTAL_AI_EVOLUTION_ROADMAP.docx` — AI 자가 학습 로드맵 (Phase 1-6)
+- POST_MVP_CHECKLIST 전면 업데이트
+- .cursorrules AI 파이프라인 매핑 추가
+
+---
+
 ## [2026-02-04] POTAL 2.0 Home Page Finalization & Strategy Shift
 
 ### ⏱️ Timeline & Action Log (1-min granularity)

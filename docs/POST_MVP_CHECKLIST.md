@@ -1,7 +1,31 @@
 # POTAL POST-MVP Improvement Checklist
 > Created: 2026-02-15
+> Last Updated: 2026-02-23
 > Purpose: MVP 완성 후 순차적으로 개선할 항목들
 > Priority: P0(즉시) → P1(중요) → P2(개선) → P3(장기)
+
+---
+
+## ✅ MVP 완료 항목 (2026-02-23 검수 완료)
+
+- [x] **Intent Router 연결** — Coordinator.analyzeQuery()의 첫 단계로 통합
+- [x] **Product Judge 활성화** — Coordinator.runAIFilter()에서 기존 AIFilterService 대체
+- [x] **Total Landed Cost 계산 엔진** — CostEngine 완성
+- [x] **Best/Fastest/Cheapest 스코어링** — ScoringEngine 완성
+- [x] **5개 리테일러 API 활성화** — Amazon, Walmart, eBay, Target, AliExpress
+- [x] **GA4 이벤트 트래킹** — 12개 이벤트 구현
+- [x] **PWA 설정** — manifest.json + service worker
+- [x] **Supabase Auth + RLS** — Google/Email 로그인, RLS 정책
+- [x] **Error Boundary** — app/error.tsx 앱 전체 크래시 방어
+- [x] **Security Audit (기본)** — Open Redirect 방어, 프롬프트 인젝션 방어, RLS
+- [x] **AI Quality Test** — 90/90 (100%) 테스트 케이스 통과
+- [x] **Dead Code Cleanup** — amazonApi.ts, MockProvider.ts, debug/route.ts 등 6개 파일 삭제
+- [x] **Console.log 전량 제거** — 13개 파일에서 41개 제거
+- [x] **Phase 1 학습 시스템** — SearchLogger + search_logs/search_signals Supabase 테이블 + RLS
+- [x] **Live QA 버그 수정 3건:**
+  - 로딩 텍스트 색상 반응형 (데스크톱 진한색/모바일 흰색)
+  - 필터 체크박스 긴 텍스트 겹침 수정
+  - 가격 오타 허용 (dollors/bucks/dollers → $ 자동 변환)
 
 ---
 
@@ -24,87 +48,50 @@
 - [ ] **eBay Browse API 연동 (무료)**
   - AspectFilter, AspectDistributions 활용
   - 검색 시 facet 데이터 함께 수신 → Supabase 저장
-  - 실제 카테고리별 필터 구조 확보
-
-- [ ] **Best Buy Products API 연동 (무료)**
-  - `&facet=attribute,count` 파라미터로 facet 수신
-  - 주의: Best Buy TOS상 캐싱 제한 있음 (7일 만료)
-  - 실시간 facet 데이터로만 활용
 
 - [ ] **Brand 검증 강화**
-  - 현재 문제: "Open Ear" 같은 제품 특성이 브랜드로 분류됨
-  - 해결: 알려진 브랜드 DB (Supabase) 구축 → AI 결과와 교차 검증
-  - Golden Template에 검증된 브랜드 목록 함께 저장
+  - 알려진 브랜드 DB (Supabase) 구축 → AI 결과와 교차 검증
 
 - [ ] **filter-utils.ts 개선 (AI 실패 시 fallback)**
   - STOPWORDS 확장 (32개 → 80개+)
-  - query 토큰 인식: 검색어 자체 단어는 키워드에서 제외
-  - isValidKeyword() 함수: 1글자, 숫자만, 의미없는 단어 필터링
 
 ### P2 — 데이터 축적 후
 - [ ] **AI 역할 전환**
   - 충분한 category_templates 축적 후
   - AI: "axes 생성" → "카테고리 매칭 + 현재 제목에서 값 추출"로 전환
-  - 저장된 axes 구조를 기반으로, 실시간 상품 제목에서 값만 추출
-
-- [ ] **다중 리테일러 Facet 통합**
-  - eBay + Best Buy facet 데이터를 카테고리별로 병합
-  - 중복 제거 후 통합 필터 구조 생성
-  - AI가 통합 구조를 참조하여 일관된 axes 생성
-
-- [ ] **SearchApi 검토 ($40/월)**
-  - 멀티 리테일러 facet 데이터 한 번에 수신 가능
-  - 사용자 수 증가 시 비용 대비 효율 평가
-
-### P3 — 장기
-- [ ] **Amazon PA-API → Creators API 마이그레이션**
-  - PA-API 5.0 폐지 예정: 2026년 4월 30일
-  - SearchRefinements (동적 facet) 기능이 Creators API에서도 지원되는지 확인
-  - 마이그레이션 계획 수립
 
 ---
 
-## B. AI 모듈 통합
+## B. Phase 2 — 프로바이더 확장 & 투자자 컨택 후
 
-### ✅ 완료 (2026-02-15)
-- [x] **Intent Router 연결** — Coordinator.analyzeQuery()의 첫 단계로 통합
-  - QUESTION → suggestedCategories로 조기 반환
-  - PRODUCT_SPECIFIC → deterministic 분석 (AI 비용 절감)
-  - PRICE_HUNT → priceSignal 자동 적용
-  - COMPARISON → comparisonTargets 활용
-- [x] **Product Judge 활성화** — Coordinator.runAIFilter()에서 기존 AIFilterService 대체
-  - 모듈 시스템 통합, few-shot 예시, 자동 fallback
-  - 전체 제거 안전장치 (모든 상품 제거 시 원본 반환)
+- [ ] **BestBuy Provider 활성화** — 코드 이미 존재, API 키 연결만 필요
+- [ ] **Temu Provider 활성화** — 코드 이미 존재
+- [ ] **Shein Provider 활성화** — 코드 이미 존재
+- [ ] **Provider 플러그인 아키텍처 리팩토링** — 통일된 Provider 인터페이스 + country/currency 파라미터
 
 ---
 
-## C. 핵심 기능 구현 (Master Architecture 기준)
+## C. AI 자가 학습 로드맵 (POTAL_AI_EVOLUTION_ROADMAP.docx 참조)
 
-### ✅ 이미 구현됨 (확인 완료)
-- [x] **Total Landed Cost 계산 엔진** — CostEngine 완성 (배송비 + 주별 세금 + $800 de minimis 관세)
-- [x] **Best/Fastest/Cheapest 스코어링** — ScoringEngine 완성 (5-factor 가중치 + 동적 탭 요약)
-- [x] **8개 리테일러 API** — Amazon, Walmart, eBay, Best Buy, Target, AliExpress, Temu, Shein 전부 동작
+### Phase 1 — 데이터 수집 (✅ 구현 완료)
+- [x] SearchLogger — fire-and-forget 비동기 로깅
+- [x] search_logs 테이블 (Supabase)
+- [x] search_signals 테이블 (Supabase)
+- [x] signals API endpoint
 
-### P0 — MVP 직후
-- [ ] **Provider 플러그인 아키텍처 리팩토링**
-  - 현재: 각 리테일러별 개별 구현 (동작하지만 구조 개선 필요)
-  - 할 일: 통일된 Provider 인터페이스 + country/currency 파라미터
-  - 새 리테일러 추가 시 파일 하나만 생성하면 되는 구조
+### Phase 2 — 주간 메트릭스 대시보드 (Post-Launch)
+- [ ] 주간 자동 분석 파이프라인
+- [ ] 실패 패턴 자동 감지
+- [ ] 프롬프트 최적화 제안
 
-- [ ] **3단계 Fake Detector 완성**
-  - Stage 1: 즉시 제거 (룰 기반, $0 상품 등) — 부분 구현됨
-  - Stage 2: AI 브랜드 필터 (모조품 자동 제거) — 미구현
-  - Stage 3: Trust Signal 시스템 (경고 아이콘) — 미구현
+### Phase 3 — 자동 분석 파이프라인 (Post-Launch)
+- [ ] 프롬프트 A/B 테스트
+- [ ] 규칙 자동 생성/수정
 
-- [ ] **Variant/Option 가격 정규화**
-  - $0 base price + variant prices → 최저 variant 가격 표시
-  - 가격 범위: "$8.99 ~ $25.99" 포맷
-  - AI가 옵션(Color, Size, Storage)을 필터로 생성
-
-- [ ] **Background 데이터 수집**
-  - Supabase에 검색 로그 저장: query, results, clicks
-  - Fake Detector 정확도 개선용 평균 가격 데이터
-  - Best Score 가중치 최적화용 클릭 데이터
+### Phase 4-6 — 모델 파인튜닝 (장기)
+- [ ] Phase 4: Adapter/LoRA 파인튜닝
+- [ ] Phase 5: 전용 소형 모델 학습
+- [ ] Phase 6: 온디바이스 추론 (FastVLM 등 참고)
 
 ---
 
@@ -113,45 +100,21 @@
 ### P1
 - [ ] **Image Search (사진 검색)**
   - Vision API로 상품 식별 → 검색어 생성
-  - 모델: GPT-4o / Claude Sonnet (~$0.02/검색)
-
-- [ ] **검색 결과 페이지 리디자인**
-  - AI Filter Panel 통합 (현재 AiSmartSuggestionBox)
-  - Product Card에 Total Landed Cost 표시
-  - Domestic | Global 섹션 명확 구분
+  - 모델: GPT-4o / Claude Vision (~$0.02/검색)
 
 ### P2
-- [ ] **Mobile Responsive**
-  - PC First 완성 후 모바일 CSS 일괄 작업
-  - 1-col 그리드, 터치 최적화
-  - "One Logic, Multi-Device" 원칙 유지
-
-- [ ] **User Profile**
+- [ ] **User Profile 확장**
   - Price↔Speed 슬라이더 (단일 설정)
   - Best Score 가중치 조절
 
 ---
 
-## E. Launch 준비
+## E. Launch 준비 (나머지)
 
-### P1
-- [ ] **Security Audit**
-  - API 키 노출 점검 (.env.local)
-  - Supabase RLS 정책 확인
-  - XSS/CSRF 방어
-
-- [ ] **SEO + OG Tags**
-  - 검색 결과 페이지 메타데이터
-  - Open Graph 이미지 자동 생성
-
-- [ ] **GA4 Event Tracking**
-  - 검색, 필터 사용, 클릭, 구매전환 이벤트
-  - AI 필터 사용률 추적
-
-- [ ] **Performance 최적화**
-  - API 병렬 호출 최적화
-  - 검색 결과 캐싱 (Vercel KV or in-memory)
-  - 이미지 lazy loading
+- [ ] **SEO + OG Tags** — 검색 결과 페이지 메타데이터, Open Graph 이미지
+- [ ] **Performance 최적화** — API 병렬 호출 최적화, 검색 결과 캐싱
+- [ ] **Google Play Console** — country change 지원 응답 대기 중
+- [ ] **Apple Developer** — 계정 활성화 대기 중
 
 ---
 
@@ -165,24 +128,4 @@
 
 ---
 
----
-
-## F. MVP 완성 시 필수 실행 (배포 전)
-
-- [ ] **Supabase `contact_messages` 테이블 생성**
-  - 파일: `supabase/migrations/002_contact_messages.sql`
-  - Supabase Dashboard → SQL Editor에서 실행
-  - Contact form이 동작하려면 이 테이블이 필요
-
-- [ ] **리테일러 설정 중앙화**
-  - 현재: 리테일러 목록이 search/page.tsx, FilterSidebar.tsx, ResultsGrid.tsx 등 3곳 이상에 하드코딩
-  - 할 일: 단일 config 파일로 통합
-
-- [ ] **FraudFilter 미완성 규칙 정리**
-  - FraudFilter.ts의 placeholder 코멘트 (store_age, seller verification) 정리
-  - 실제 데이터 없으면 해당 규칙 제거 (false positive 방지)
-
----
-
-*이 체크리스트는 MVP 완성 후 활용합니다. MVP 개발 중에는 참고만 하세요.*
-*Last updated: 2026-02-15 (Intent Router + Product Judge 통합 완료)*
+*Last updated: 2026-02-23 (MVP 최종 검수 + Live QA 버그 수정 완료)*

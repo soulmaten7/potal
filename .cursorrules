@@ -1,11 +1,12 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-02-22
+# 마지막 업데이트: 2026-02-23
 
 ## 1. Business Philosophy (The "Why")
 - **Target Audience:** US Residents (미국 현지인). 절대 한국인의 직구 관점으로 배송/서비스를 해석하지 마라.
 - **Transparency:** API가 주는 정보(도착일, 배송비)는 100% 투명하게 공개한다.
 - **First Impression:** 사용자에게 두 번째 기회는 없다. 첫 16개 상품 리스트와 UI에서 압도적인 편의성을 제공해야 한다.
 - **Clean UI:** 반복되는 툴팁(Tooltip)은 시각적 공해다. 개별 툴팁을 제거하고 상단 'Unified Shipping Guide'를 사용한다.
+- **Google Shopping 수준의 품질:** vibe coding이 아닌 프로덕션 레벨. 모든 코드는 빌드 통과 + 실제 시나리오 검증 필수.
 
 ## 2. Anti-Amnesia (Do Not Forget / Zombie Ideas)
 - **Mall Classification:** eBay와 iHerb는 미국인에게 **Domestic(내수)** 쇼핑몰이다. 절대 Global 탭에 넣지 마라.
@@ -16,12 +17,14 @@
 - **Image Container:** 상품 카드 이미지는 반드시 `paddingBottom: '125%' + height: 0` 인라인 스타일 방식으로 고정. `aspectRatio` CSS 사용 금지. img 태그는 `position: absolute; top: 0; left: 0; width: 100%; height: 100%; objectFit: contain; padding: 6px`.
 - **모바일 카드 텍스트/아이콘 표준 크기 (2026-02-22 적용):** 셀러뱃지 9px, 별점/리뷰 10px/9px, 공유/하트 아이콘 w-4 h-4 (16px) + 터치영역 36x36px, 상품명 12px (3줄 clamp, minHeight 4.2em), 멤버십뱃지 9px, 배송/날짜 9px, Est.Tax/Product 10px, Total라벨 9px, Total가격 18px. 검색카드와 위시리스트 카드 동일.
 - **POTAL Filter 브랜딩:** "AI Smart Suggestion" 이름은 사용하지 않음. 사용자에게 보이는 모든 곳에서 **"POTAL Filter"** 사용. 내부 코드 식별자(AiSmartSuggestionBox 등)는 유지.
-- **Inline Styles 우선:** Tailwind CSS 캐싱 이슈로 시각적 핵심 요소는 반드시 `style={{}}` 인라인 스타일 사용. 특히 배경색, 이미지 컨테이너, 뱃지 색상 등.
+- **Inline Styles 우선:** Tailwind CSS v4 캐싱 이슈로 시각적 핵심 요소는 반드시 `style={{}}` 인라인 스타일 사용. 특히 배경색, 이미지 컨테이너, 뱃지 색상 등.
 - **No browser confirm():** 모바일에서 `confirm()`, `alert()`, `prompt()` 사용 금지. 바텀시트 또는 커스텀 모달 UI 사용 (위시리스트 Clear에서 이미 구현됨).
-- **Dark Theme 통일:** 모든 페이지 배경 `#02122c` (네이비). 새 페이지/컴포넌트 만들 때도 네이비 다크 테마 유지.
+- **Dark Theme 통일 (모바일):** 모바일 배경 `#02122c` (네이비). **데스크톱 배경:** `#f1f2f8` (라이트). 새 페이지/컴포넌트 만들 때 반응형 배경 처리 필수.
 - **카드 스타일 통일:** 검색결과 MobileCompactCard와 위시리스트 WishlistMobileCard는 반드시 동일한 구조/스타일 유지. 하나 수정하면 다른 것도 동일하게 수정.
 - **Product 필드 호환:** product 객체의 필드명이 컴포넌트마다 다를 수 있음 (title/name, thumb/image, seller/site). 항상 `product.title || product.name || 'Untitled'` 식으로 폴백 처리.
 - **wishProduct 객체:** 위시리스트에 저장할 때 `is_prime`, `badges`, `arrives`, `shipping`, `appliedMembership`, `membershipBadge`, `type` 필드를 반드시 포함해야 뱃지가 위시리스트에서도 표시됨.
+- **FraudFilter no_image 규칙:** 빈 문자열 이미지는 제거하지 마라. API가 합법적으로 이미지를 안 줄 수 있음. 명시적 placeholder URL만 제거 (`placehold.co`, `placeholder.com` 등).
+- **Phase 2 마케팅 유지:** BestBuy, Temu, Shein은 비활성 프로바이더지만 마케팅 카피에서 제거하지 마라. Phase 2에서 즉시 활성화 예정.
 
 ## 3. Coding Standards
 - **Grid System:** PC(Large Screen)에서는 **3열(grid-cols-3)**을 최대로 유지하여 상품 이미지 시인성을 확보한다.
@@ -36,6 +39,7 @@
 - **이벤트 핸들링:** 카드 내부 버튼 (공유, 하트 등)은 반드시 `e.preventDefault()` + `e.stopPropagation()` 처리. 안하면 카드 클릭 (상품 링크 열기)이 같이 발생함.
 - **색상 매핑:** 리테일러별 플랫폼 색상은 `MOBILE_PLATFORM_COLORS` / `PLATFORM_COLORS` 딕셔너리에 정의됨. Amazon=#FF9900, Walmart=#0071ce, Target=#CC0000, eBay=#E53238, AliExpress=#E43225 등.
 - **twToHex() 헬퍼:** Tailwind 클래스 문자열에서 hex 색상을 추출하는 함수. `bg-[#FF9900]` → `#FF9900`. ResultsGrid.tsx와 wishlist/page.tsx 양쪽에 동일하게 존재.
+- **console.log 금지:** 프로덕션 코드에 console.log를 남기지 마라. 디버깅 후 반드시 제거.
 
 ## 4. 검색 결과 카드 구조 (MobileCompactCard)
 카드 전체 구조 (위→아래):
@@ -71,15 +75,34 @@
 
 ## 5. 주요 파일 매핑 (⚠️ 매우 중요)
 
+### AI 파이프라인 — 핵심 (2026-02-23 기준)
+| 파일 | 역할 |
+|------|------|
+| `app/lib/agent/Coordinator.ts` | **실제 검색 오케스트레이터**. Intent Router → QueryAgent → Provider 호출 → FraudFilter → ProductJudge → ScoringEngine. providerStatus 추적. SearchLogger 연동. |
+| `app/lib/agent/QueryAgent.ts` | 검색어 분석 (deterministic). isQuestionQuery v3 + analyzeQueryDeterministic + 가격 오타 허용 (dollors/bucks→$) + 플랫폼별 쿼리 생성 (AliExpress 용어 변환 포함) |
+| `app/lib/agent/AnalysisAgent.ts` | AI 기반 쿼리 분석 (GPT-4o-mini). shouldUseAIAnalysis()가 true일 때만 호출 |
+| `app/lib/ai/prompts/intent-router.ts` | Intent Router — PRODUCT_SPECIFIC/CATEGORY/COMPARISON/QUESTION/PRICE_HUNT 5가지 분류. fallback에 오타 허용 가격 파싱 포함 |
+| `app/lib/ai/prompts/product-judge.ts` | Product Judge — AI가 상품 품질/관련성 판단 |
+| `app/lib/ai/prompts/smart-filter.ts` | Smart Filter — AI 필터 축 생성 |
+| `app/lib/ai/prompts/query-enhancer.ts` | Query Enhancer — 검색어 보강 |
+| `app/lib/ai/engine.ts` | AI 실행 엔진 — OpenAI API 호출, timeout, fallback 처리 |
+| `app/lib/search/FraudFilter.ts` | 규칙 기반 사기 필터. no_image는 빈 문자열 제거 안 함 (placeholder URL만 제거) |
+| `app/lib/search/ScoringEngine.ts` | Best/Cheapest/Fastest 점수 |
+| `app/lib/search/CostEngine.ts` | Total Landed Cost 계산 |
+| `app/lib/learning/SearchLogger.ts` | Phase 1 학습: fire-and-forget 검색 로그 → Supabase (search_logs, search_signals) |
+| `app/api/signals/route.ts` | 클라이언트 시그널 수집 API |
+
 ### 프론트엔드 — 실제 사용 파일
 | 파일 | 역할 | 비고 |
 |------|------|------|
-| `components/search/ResultsGrid.tsx` | 검색 결과 그리드 + MobileCompactCard | ⚠️ 실제 사용 파일. ~1200줄. |
+| `components/search/ResultsGrid.tsx` | 검색 결과 그리드 + MobileCompactCard | ⚠️ 실제 사용 파일. ~1200줄. 로딩 UI 반응형 (데스크톱 진한색/모바일 흰색) |
+| `components/search/FilterSidebar.tsx` | 필터 사이드바 | FilterCheckbox: min-w-0 + truncate로 긴 텍스트 처리 |
 | `app/components/ProductCard.tsx` | PC 상품 카드 | 데스크톱/모바일 양쪽 카드 포함 |
 | `app/wishlist/page.tsx` | 위시리스트 페이지 | WishlistMobileCard + PC ProductCard + Clear 바텀시트 |
-| `app/search/page.tsx` | 검색 결과 페이지 | 상태 관리 (query, sort, market, providerStatus 등) |
+| `app/search/page.tsx` | 검색 결과 페이지 | 상태 관리 (query, sort, market, providerStatus 등). SearchLogger 연동 |
 | `app/page.tsx` | 메인 홈페이지 | 모바일/PC 분리 레이아웃 |
 | `app/profile/page.tsx` | 프로필 페이지 | 2x2 그리드 + 슬라이드 서브페이지 + Zipcode |
+| `app/error.tsx` | Error Boundary | 앱 전체 크래시 방어 (인라인 스타일) |
 | `components/search/StickyHeader.tsx` | 검색 스티키 헤더 | market 탭, 검색바, 정렬 |
 | `components/layout/MobileBottomNav.tsx` | 모바일 바텀 네비 | 글라스모피즘 pill bar (3탭) |
 | `components/icons.tsx` | 아이콘 컴포넌트 | Share, Heart, HeartFilled, Shield, ChevronLeft, Plus 등 |
@@ -92,18 +115,38 @@
 | `app/components/search/StickyHeader.tsx` | ❌ 백업 파일 |
 | `app/components/search/AiSmartSuggestionBox.tsx` | ❌ 백업 파일 |
 
-### 백엔드
+### 백엔드 — 프로바이더 (5개 활성 / 3개 비활성)
+| 파일 | 상태 | 비고 |
+|------|------|------|
+| `AmazonProvider.ts` | ✅ 활성 | RapidAPI Real-Time Amazon Data |
+| `WalmartProvider.ts` | ✅ 활성 | RapidAPI |
+| `EbayProvider.ts` | ✅ 활성 | RapidAPI |
+| `TargetProvider.ts` | ✅ 활성 | RapidAPI |
+| `AliExpressProvider.ts` | ✅ 활성 | RapidAPI |
+| `BestBuyProvider.ts` | ⏸ 비활성 | Phase 2에서 활성화 예정 |
+| `TemuProvider.ts` | ⏸ 비활성 | Phase 2에서 활성화 예정 |
+| `SheinProvider.ts` | ⏸ 비활성 | Phase 2에서 활성화 예정 |
+| `CostcoProvider.ts` | ⏸ 비활성 | 미래 고려 |
+| `GlobalMockProvider.ts` | ⏸ 비활성 | 개발/테스트용 |
+
+### 기타 백엔드
 | 파일 | 역할 |
 |------|------|
-| `app/lib/agent/Coordinator.ts` | 검색 파이프라인 오케스트레이션 + providerStatus 추적 |
-| `app/lib/agent/QueryAgent.ts` | 검색어 분석 + 플랫폼별 쿼리 생성 |
+| `app/lib/agent/types.ts` | QueryAnalysis, Coordinator 타입 |
 | `app/lib/search/types.ts` | Product, SearchResult 등 타입 정의 |
 | `app/lib/retailerConfig.ts` | 리테일러 설정 + 어필리에이트 + 멤버십 뱃지 매칭 |
-| `app/lib/search/CostEngine.ts` | Total Landed Cost 계산 |
-| `app/lib/search/ScoringEngine.ts` | Best/Cheapest/Fastest 점수 |
+| `app/lib/rapidapi.ts` | RapidAPI 헬퍼 |
 | `app/api/search/route.ts` | 검색 API 엔드포인트 |
+| `app/api/search/analyze/route.ts` | AI 분석 API (프롬프트 인젝션 방어 포함) |
+| `app/auth/callback/route.ts` | Auth 콜백 (Open Redirect 방어 강화) |
 
-## 6. 유저(Euntae) 디자인 성향 & 피드백 패턴
+## 6. Supabase 테이블 (2026-02-23 기준)
+- `search_logs` — 검색 로그 (18 컬럼, RLS + insert 정책)
+- `search_signals` — 사용자 시그널: click, add_to_cart, filter_use 등 (7 컬럼, RLS + insert 정책)
+- `contact_messages` — Contact form 메시지
+- 인덱스: query, created_at, session_id, search_id 기반 4개
+
+## 7. 유저(Euntae) 디자인 성향 & 피드백 패턴
 - **스카이스캐너(Skyscanner) 모바일 UX**를 주요 레퍼런스로 사용
 - 수정 전이 나을 때 바로 "수정전이 더 괜찮네" → 즉시 리버트
 - 이모지 아이콘 배경 박스 싫어함 → 이모지만 사용
@@ -112,7 +155,15 @@
 - 한국어로 소통하되 코드/기술 용어는 영어 그대로 사용
 - 코딩 초보자이므로 기술적 설명은 간결하게, 작업은 직접 해줘야 함
 
-## 7. 배포
+## 8. 보안 (2026-02-23 검수 완료)
+- **Auth Callback:** Open Redirect 방어 — URL 인코딩 우회 + 백슬래시 방어 포함
+- **AI API:** 프롬프트 인젝션 방어 — 따옴표 변형 제거, injection 키워드 제거
+- **Supabase RLS:** search_logs, search_signals 모두 RLS 활성화 + anon insert 정책
+- **.gitignore:** .env, .env.local 제외 확인 완료
+
+## 9. 배포
 - **Vercel Pro** → `potal.app` 도메인
 - `main` 브랜치에 push하면 자동 배포
 - .env.local 수정 금지 (Vercel env와 동기화됨)
+- **PWA 설정 완료:** manifest.json + service worker 등록됨
+- **GA4 이벤트:** 12개 이벤트 트래킹 구현됨
