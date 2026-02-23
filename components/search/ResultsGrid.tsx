@@ -194,25 +194,30 @@ export function ResultsGrid({
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-16 gap-5">
-        {/* 애니메이션 스피너 */}
+        {/* 애니메이션 스피너 — 데스크톱(밝은 배경) + 모바일(다크 배경) */}
         <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full" style={{ border: '4px solid rgba(255,255,255,0.1)' }} />
+          <div className="absolute inset-0 rounded-full hidden md:block" style={{ border: '4px solid rgba(0,0,0,0.08)' }} />
+          <div className="absolute inset-0 rounded-full md:hidden" style={{ border: '4px solid rgba(255,255,255,0.1)' }} />
           <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#F59E0B] animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-xl">🔍</span>
           </div>
         </div>
 
-        {/* 안내 텍스트 */}
+        {/* 안내 텍스트 — 데스크톱(밝은 배경) + 모바일(다크 배경) 모두 대응 */}
         <div className="text-center space-y-2">
-          <h3 className="text-lg font-extrabold" style={{ color: 'rgba(255,255,255,0.9)' }}>Searching across retailers...</h3>
-          <p className="text-sm max-w-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.
+          <h3 className="text-lg font-extrabold" style={{ color: '#02122c' }}>
+            <span className="md:inline hidden">Searching across retailers...</span>
+            <span className="md:hidden" style={{ color: 'rgba(255,255,255,0.95)' }}>Searching across retailers...</span>
+          </h3>
+          <p className="text-sm max-w-sm" style={{ color: '#64748b' }}>
+            <span className="md:inline hidden">Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.</span>
+            <span className="md:hidden" style={{ color: 'rgba(255,255,255,0.5)' }}>Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.</span>
           </p>
         </div>
 
         {/* 프로그레스 바 */}
-        <div className="w-64 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
+        <div className="w-64 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.08)' }}>
           <div className="h-full bg-[#F59E0B] rounded-full animate-loading-bar" />
         </div>
 

@@ -255,11 +255,18 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
   const knownBrands = ['apple', 'samsung', 'sony', 'bose', 'nike', 'adidas', 'dyson', 'lg', 'dell', 'hp', 'lenovo', 'asus', 'logitech', 'razer', 'anker', 'jbl', 'canon', 'nikon', 'nintendo', 'playstation', 'xbox'];
   const detectedBrand = knownBrands.find(b => q.includes(b));
 
-  // 가격 의도
+  // 가격 의도 — 오타 허용 (dollors, dollers, bucks 등)
+  // "100dollors" → 숫자+통화 오타를 먼저 정규화
+  const priceNormalized = q
+    .replace(/(\d+)\s*(?:doll[aoe]rs?|dollers?|bucks?|usd)/gi, '$$$1')  // "100dollors" → "$100"
+    .replace(/(\d+)\s*(?:won|원)/gi, '$$$1');  // 한국 원화도 지원
   let priceIntent: QueryAnalysis['priceIntent'];
-  const maxMatch = q.match(/(?:under|below|less than|max|budget|cheap)\s*\$?(\d+)/);
-  const minMatch = q.match(/(?:over|above|more than|min|premium)\s*\$?(\d+)/);
-  const rangeMatch = q.match(/\$?(\d+)\s*[-–to]+\s*\$?(\d+)/);
+  const maxMatch = priceNormalized.match(/(?:under|below|less than|max|budget|cheap)\s*\$?(\d+)/);
+  const minMatch = priceNormalized.match(/(?:over|above|more than|min|premium)\s*\$?(\d+)/);
+  const rangeMatch = priceNormalized.match(/\$?(\d+)\s*[-–to]+\s*\$?(\d+)/);
+  // 숫자+통화만 있는 경우도 가격으로 인식: "laptop $100" or "laptop 100dollars"
+  const standalonePrice = !maxMatch && !minMatch && !rangeMatch
+    ? priceNormalized.match(/\$(\d+)/) : null;
 
   if (rangeMatch) {
     priceIntent = { min: parseInt(rangeMatch[1]), max: parseInt(rangeMatch[2]), currency: 'USD' };
@@ -267,6 +274,9 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
     priceIntent = { max: parseInt(maxMatch[1]), currency: 'USD' };
   } else if (minMatch) {
     priceIntent = { min: parseInt(minMatch[1]), currency: 'USD' };
+  } else if (standalonePrice) {
+    // "laptop 100dollors" → "$100" → max price로 해석 (under 의미로 추정)
+    priceIntent = { max: parseInt(standalonePrice[1]), currency: 'USD' };
   }
 
   // 전략 결정 (우선순위: comparison > specific > brand > broad)
@@ -277,7 +287,14 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
   if (q.includes(' vs ') || q.includes(' or ') || q.includes('compare')) strategy = 'comparison';
 
   // 플랫폼별 검색어 (deterministic version — 모든 플랫폼 지원)
-  const cleanQuery = query.replace(/under\s*\$?\d+/i, '').replace(/over\s*\$?\d+/i, '').trim();
+  // 가격 관련 단어 제거: "under 100dollors", "over $200", "50bucks" 등
+  // 순서 중요: 오타 통화 전체 패턴 먼저 → 나머지 under/over + 숫자
+  const cleanQuery = query
+    .replace(/(?:under|below|less than|over|above|more than)\s*\d+\s*(?:doll[aoe]rs?|dollers?|bucks?|usd|won|원)/gi, '')
+    .replace(/(?:under|below|less than|over|above|more than)\s*\$?\d+/gi, '')
+    .replace(/\d+\s*(?:doll[aoe]rs?|dollers?|bucks?|usd|won|원)/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
   const baseQuery = cleanQuery && cleanQuery.length > 0 ? cleanQuery : query;
 
   // AliExpress 최적화: 중국 셀러 용어 변환 테이블

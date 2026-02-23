@@ -218,12 +218,12 @@ function RetailerRow({
 
 function FilterCheckbox({ label, checked, onChange }: { label: string, checked: boolean, onChange: () => void }) {
    return (
-      <label className="flex items-center gap-3 cursor-pointer group hover:bg-slate-100 p-1 rounded-md transition-colors">
+      <label className="flex items-center gap-2 cursor-pointer group hover:bg-slate-100 p-1 rounded-md transition-colors min-w-0">
          <div className="relative flex items-center justify-center w-4 h-4 shrink-0">
             <input type="checkbox" checked={checked} onChange={onChange} className="peer appearance-none w-4 h-4 border-2 border-slate-400 rounded-[3px] bg-transparent checked:bg-[#F59E0B] checked:border-[#F59E0B] transition-all" />
             <Icons.Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
          </div>
-         <span className="text-[14px] font-bold text-slate-700 group-hover:text-[#02122c] truncate">{label}</span>
+         <span className="text-[13px] font-bold text-slate-700 group-hover:text-[#02122c] truncate min-w-0">{label}</span>
       </label>
    )
 }

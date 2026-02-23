@@ -221,7 +221,7 @@ export function parseOutput(raw: string): IntentRouterOutput {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const QUESTION_PATTERN = /^(what|which|how|where|can|should|do|does|is|are|will|would|could|recommend|suggest|best\s+.+\s+for)\b/i;
-const PRICE_PATTERN = /\b(cheap|cheapest|budget|affordable|under\s*\$?\d+|below\s*\$?\d+|deal|sale|discount)\b/i;
+const PRICE_PATTERN = /\b(cheap|cheapest|budget|affordable|under\s*\$?\d+|below\s*\$?\d+|deal|sale|discount|\d+\s*(?:doll[aoe]rs?|dollers?|bucks?|usd))\b/i;
 const COMPARISON_PATTERN = /\b(vs\.?|versus|compared?\s+to|or\b.*\bwhich|difference\s+between)\b|\b\w+\s+or\s+\w+\b/i;
 
 /** 카테고리 키워드 → 추천 상품 키워드 (fallback용) */
@@ -277,11 +277,16 @@ export function fallback(input: IntentRouterInput): IntentRouterOutput {
     intent = 'PRICE_HUNT';
   }
 
-  // 가격 추출 시도
+  // 가격 추출 시도 — 오타 허용 (dollors, dollers, bucks 등)
   let priceSignal = null;
-  const priceMatch = qLower.match(/(?:under|below)\s*\$?(\d+)/);
+  const priceNorm = qLower
+    .replace(/(\d+)\s*(?:doll[aoe]rs?|dollers?|bucks?|usd)/gi, '$$$1');
+  const priceMatch = priceNorm.match(/(?:under|below)\s*\$?(\d+)/);
+  const standalonePriceMatch = !priceMatch ? priceNorm.match(/\$(\d+)/) : null;
   if (priceMatch) {
     priceSignal = { type: 'budget' as const, maxPrice: parseInt(priceMatch[1], 10) };
+  } else if (standalonePriceMatch) {
+    priceSignal = { type: 'budget' as const, maxPrice: parseInt(standalonePriceMatch[1], 10) };
   }
 
   // 질문형 → 카테고리 기반 추천 상품 생성
@@ -289,8 +294,14 @@ export function fallback(input: IntentRouterInput): IntentRouterOutput {
     ? inferCategoryFromQuery(qLower)
     : null;
 
-  // searchQuery: 의도 패턴 제거 후 빈 문자열 방지
-  const cleanedQuery = q.replace(QUESTION_PATTERN, '').replace(PRICE_PATTERN, '').trim();
+  // searchQuery: 의도 패턴 + 통화 오타 제거 후 빈 문자열 방지
+  const cleanedQuery = q
+    .replace(QUESTION_PATTERN, '')
+    .replace(/(?:under|below|less than|over|above|more than)\s*\d+\s*(?:doll[aoe]rs?|dollers?|bucks?|usd)/gi, '')
+    .replace(PRICE_PATTERN, '')
+    .replace(/\d+\s*(?:doll[aoe]rs?|dollers?|bucks?|usd)/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
   const searchQuery = cleanedQuery.length > 0 ? cleanedQuery : q;
 
   return {
