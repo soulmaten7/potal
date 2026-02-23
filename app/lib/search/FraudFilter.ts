@@ -53,7 +53,13 @@ const REMOVE_RULES: RemoveRule[] = [
   },
   {
     name: 'no_image',
-    test: (p) => !p.image || p.image.trim() === '' || p.image === 'placeholder',
+    test: (p) => {
+      // Only remove products with explicitly fake/placeholder images
+      // Empty string or missing image is acceptable (API didn't return one)
+      if (!p.image) return false;
+      const img = p.image.trim().toLowerCase();
+      return img === 'placeholder' || img.includes('placehold.co') || img.includes('placeholder.com');
+    },
   },
   {
     name: 'empty_title',
@@ -84,13 +90,12 @@ const REMOVE_RULES: RemoveRule[] = [
   {
     name: 'amazon_zombie_review',
     test: (p) => {
-      // Product with 500+ reviews but created < 30 days ago = suspicious
-      // We can only detect this if we have review count and creation date
-      // For now, flag products with suspiciously high reviews AND very low price
+      // Detect suspiciously mismatched review count vs price:
+      // Very cheap product ($1-5) with 1000+ reviews = likely hijacked/zombie listing
       const price = parsePriceNum(p.price);
-      if (!price) return false;
-      // This will be enhanced when we have more data
-      return false; // Placeholder — needs product age data from API
+      if (!price || price > 5) return false;
+      const reviewCount = typeof p.reviewCount === 'number' ? p.reviewCount : 0;
+      return reviewCount > 1000;
     },
     platforms: ['amazon'],
   },
@@ -99,10 +104,11 @@ const REMOVE_RULES: RemoveRule[] = [
   {
     name: 'temu_extreme_discount',
     test: (p) => {
-      // Temu often shows fake "original" prices with 90%+ discount
-      // If we detect original price data, remove the fake markup
-      // For now, just remove $0 items (caught by universal rule above)
-      return false; // Placeholder — needs original_price field
+      // Remove items with impossibly low prices that are likely bait listings
+      const price = parsePriceNum(p.price);
+      if (!price) return false;
+      // Items under $0.50 on Temu are almost always bait/accessories nobody wants
+      return price < 0.50;
     },
     platforms: ['temu'],
   },
@@ -310,13 +316,23 @@ function detectPlatform(product: Product): string {
   return 'unknown';
 }
 
+/**
+ * Calculate median price (robust against outliers unlike mean).
+ * A single $9999 scam item won't distort the "average" and cause
+ * legitimate products to be flagged as "too cheap".
+ */
 function calculateAvgPrice(products: Product[]): number {
   const prices = products
     .map(p => parsePriceNum(p.price))
-    .filter((p): p is number => p !== null && p > 0);
+    .filter((p): p is number => p !== null && p > 0)
+    .sort((a, b) => a - b);
 
   if (prices.length === 0) return 0;
-  return prices.reduce((sum, p) => sum + p, 0) / prices.length;
+
+  const mid = Math.floor(prices.length / 2);
+  return prices.length % 2 === 0
+    ? (prices[mid - 1] + prices[mid]) / 2
+    : prices[mid];
 }
 
 // ─── Exports ─────────────────────────────────

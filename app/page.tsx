@@ -274,6 +274,7 @@ function HomeContent() {
       try {
         const formData = new FormData();
         formData.append('image', image);
+        if (trimmed) formData.append('userText', trimmed);  // 사용자 텍스트 컨텍스트 전달
         const res = await fetch('/api/search/analyze', { method: 'POST', body: formData });
         if (res.ok) {
           const data = await res.json();

@@ -28,12 +28,30 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 
+// Simple email validation
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
+}
+
+// Sanitize text input (strip control characters, limit length)
+function sanitizeText(input: string, maxLength: number): string {
+  return input.trim().replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').slice(0, maxLength);
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { type, name, email, message } = await request.json();
+    const body = await request.json();
+    const type = sanitizeText(String(body.type || 'general'), 50);
+    const name = sanitizeText(String(body.name || ''), 200);
+    const email = sanitizeText(String(body.email || ''), 254);
+    const message = sanitizeText(String(body.message || ''), 5000);
 
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    if (!name || !email || !message) {
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
+    }
+
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
     }
 
     // Supabase가 설정되어 있으면 DB에 저장
@@ -42,17 +60,12 @@ export async function POST(request: NextRequest) {
 
       const { error } = await supabase
         .from('contact_messages')
-        .insert({ type: type || 'general', name, email, message });
+        .insert({ type, name, email, message });
 
       if (error) {
         console.error('❌ [Contact] Supabase insert error:', error.message);
-        // 테이블이 없어도 성공으로 처리 (MVP — 로그만 기록)
-      } else {
-        console.log(`📬 [Contact] Saved: ${type} from ${email}`);
+        return NextResponse.json({ error: 'Failed to save your message. Please try again.' }, { status: 500 });
       }
-    } else {
-      // Supabase 미설정 → 콘솔 로그만
-      console.log(`📬 [Contact] (no DB) ${type} | ${name} <${email}> | ${message.slice(0, 100)}`);
     }
 
     return NextResponse.json({ success: true });

@@ -50,7 +50,7 @@ function normalizeImage(item: Record<string, unknown>): string {
     const v = item[k];
     if (typeof v === 'string' && v.trim().startsWith('http')) return v.trim();
   }
-  return 'https://placehold.co/400x400?text=No+Image';
+  return '';
 }
 
 /**
@@ -193,13 +193,18 @@ export class AmazonProvider implements SearchProvider {
       url.searchParams.set('page', String(page));
       url.searchParams.set('country', 'US');
 
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
+
       const res = await fetch(url.toString(), {
         method: 'GET',
         headers: {
           'x-rapidapi-key': apiKey,
           'x-rapidapi-host': host,
         },
+        signal: controller.signal,
       });
+      clearTimeout(timer);
 
       if (!res.ok) {
         console.error(`❌ [Amazon] HTTP ${res.status}`);
@@ -214,6 +219,9 @@ export class AmazonProvider implements SearchProvider {
         mapItemToProduct(item, index, queryForApi)
       );
 
+      // $0 상품 제거 (가격 파싱 실패 또는 잘못된 데이터)
+      products = products.filter(p => (p.parsedPrice ?? 0) > 0);
+
       // AI 인텔리전스: 가격 제한 의도가 있으면 해당 금액 이하만 필터링
       if (priceIntent != null && priceIntent.maxPrice > 0) {
         const before = products.length;
@@ -224,8 +232,13 @@ export class AmazonProvider implements SearchProvider {
       }
 
       return products;
-    } catch (err) {
-      console.error('❌ [Amazon] Fetch error:', err instanceof Error ? err.message : err);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('abort')) {
+        console.warn('⏱️ [Amazon] Timeout (10s)');
+      } else {
+        console.error('❌ [Amazon] Fetch error:', msg);
+      }
       return [];
     }
   }

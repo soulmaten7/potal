@@ -78,6 +78,7 @@ export function StickyHeader({
 
       const formData = new FormData();
       formData.append('image', selectedImage);
+      if (query.trim()) formData.append('userText', query.trim());  // 사용자 텍스트 컨텍스트 전달
 
       // Vision API 호출
       const res = await fetch('/api/search/analyze', {

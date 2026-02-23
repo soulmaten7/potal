@@ -195,7 +195,6 @@ export class TemuProvider implements SearchProvider {
     if (!trimmed) return [];
 
     try {
-      console.log(`🔍 [TemuProvider] Searching Temu via Apify: "${trimmed}"`);
 
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -237,9 +236,6 @@ export class TemuProvider implements SearchProvider {
           data as Record<string, unknown>,
         )) {
           if (Array.isArray(val) && val.length > 0) {
-            console.log(
-              `[TemuProvider] Found array in key "${key}": ${val.length} items`,
-            );
             items = val;
             break;
           }
@@ -248,21 +244,9 @@ export class TemuProvider implements SearchProvider {
 
       if (items.length === 0) {
         console.warn('⚠️ [TemuProvider] No products in response');
-        console.log(
-          `[TemuProvider] Response sample:`,
-          JSON.stringify(data).slice(0, 500),
-        );
         return [];
       }
 
-      console.log(`✅ [TemuProvider] ${items.length} raw items from Apify`);
-
-      if (items.length > 0 && typeof items[0] === 'object') {
-        console.log(
-          `[TemuProvider] First item keys:`,
-          Object.keys(items[0] as Record<string, unknown>).slice(0, 15),
-        );
-      }
 
       const products = items
         .slice(0, 30)
@@ -271,9 +255,6 @@ export class TemuProvider implements SearchProvider {
         )
         .filter((p) => (p.parsedPrice ?? 0) > 0);
 
-      console.log(
-        `✅ [TemuProvider] ${products.length} products after price filter`,
-      );
       return products;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);

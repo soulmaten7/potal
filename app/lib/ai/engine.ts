@@ -40,9 +40,28 @@ const COST_PER_TOKEN: Record<string, { input: number; output: number }> = {
   'gpt-4-turbo':  { input: 0.00001,    output: 0.00003 },
 };
 
+// ━━━ Cumulative cost tracking (per-instance lifecycle) ━━━
+let _cumulativeCost = 0;
+let _totalCalls = 0;
+const COST_ALERT_THRESHOLD = 1.00; // $1.00 per server lifecycle
+
 function estimateCost(model: string, inputTokens: number, outputTokens: number): number {
   const rates = COST_PER_TOKEN[model] ?? COST_PER_TOKEN['gpt-4o-mini'];
-  return inputTokens * rates.input + outputTokens * rates.output;
+  const cost = inputTokens * rates.input + outputTokens * rates.output;
+
+  _cumulativeCost += cost;
+  _totalCalls++;
+
+  if (_cumulativeCost > COST_ALERT_THRESHOLD) {
+    console.warn(`⚠️ [AI Engine] Cumulative cost $${_cumulativeCost.toFixed(4)} exceeds threshold ($${COST_ALERT_THRESHOLD}). Total calls: ${_totalCalls}`);
+  }
+
+  return cost;
+}
+
+/** Get current AI cost stats */
+export function getAICostStats(): { cumulativeCost: number; totalCalls: number } {
+  return { cumulativeCost: _cumulativeCost, totalCalls: _totalCalls };
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -113,13 +132,27 @@ export async function executePrompt<T>(options: ExecuteOptions<T>): Promise<Prom
     const inputTokens = completion.usage?.prompt_tokens ?? 0;
     const outputTokens = completion.usage?.completion_tokens ?? 0;
 
-    // JSON 파싱 (마크다운 펜스 방어)
-    const cleaned = raw
+    // JSON 파싱 (마크다운 펜스 방어 — 중첩 펜스도 처리)
+    let cleaned = raw
       .replace(/^```(?:json)?\s*/i, '')
       .replace(/\s*```$/i, '')
       .trim();
 
-    const parsed = parseOutput(cleaned);
+    // 추가 방어: JSON이 아닌 텍스트가 앞뒤에 붙은 경우
+    const jsonStart = cleaned.indexOf('{');
+    const jsonEnd = cleaned.lastIndexOf('}');
+    if (jsonStart >= 0 && jsonEnd > jsonStart) {
+      cleaned = cleaned.slice(jsonStart, jsonEnd + 1);
+    }
+
+    let parsed: T;
+    try {
+      parsed = parseOutput(cleaned);
+    } catch (parseErr) {
+      const parseMsg = parseErr instanceof Error ? parseErr.message : 'Unknown parse error';
+      console.warn(`⚠️ [${config.id} v${config.version}] parseOutput failed: ${parseMsg} | Raw: ${cleaned.slice(0, 200)}`);
+      return buildResult(config, fallback(), startTime, true, `Parse error: ${parseMsg}`);
+    }
 
     return {
       ok: true,

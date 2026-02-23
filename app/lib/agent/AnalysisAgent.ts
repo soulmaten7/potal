@@ -112,22 +112,38 @@ ${JSON.stringify(productSummaries, null, 0)}`,
       return products.map(p => defaultAnalysis(p));
     }
 
-    const parsed = JSON.parse(content);
-    const analyses = parsed.analyses || [];
+    // Markdown fence cleanup + JSON extraction safety
+    let cleanedContent = content
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
+    const jsonStart = cleanedContent.indexOf('{');
+    const jsonEnd = cleanedContent.lastIndexOf('}');
+    if (jsonStart >= 0 && jsonEnd > jsonStart) {
+      cleanedContent = cleanedContent.slice(jsonStart, jsonEnd + 1);
+    }
 
-    console.log(`🤖 [AnalysisAgent] Analyzed ${analyses.length} products | ${tokensUsed} tokens`);
+    const parsed = JSON.parse(cleanedContent);
+    const analyses = Array.isArray(parsed.analyses) ? parsed.analyses : [];
+
 
     // API 응답을 ProductAnalysis 형식으로 매핑
     return products.map((product, i) => {
       const analysis = analyses.find((a: any) => a.index === i);
       if (!analysis) return defaultAnalysis(product);
 
+      // Clamp relevance to 0-100, validate fraudSuspicion enum
+      const rawRelevance = typeof analysis.relevance === 'number' ? analysis.relevance : 70;
+      const validFraud = ['none', 'low', 'medium', 'high'].includes(analysis.fraudSuspicion)
+        ? analysis.fraudSuspicion
+        : 'none';
+
       return {
         productId: product.id,
-        relevanceScore: analysis.relevance || 70,
-        relevanceReason: analysis.relevanceReason || '',
-        fraudSuspicion: analysis.fraudSuspicion || 'none',
-        fraudReasons: analysis.fraudReasons || [],
+        relevanceScore: Math.max(0, Math.min(100, rawRelevance)),
+        relevanceReason: typeof analysis.relevanceReason === 'string' ? analysis.relevanceReason : '',
+        fraudSuspicion: validFraud,
+        fraudReasons: Array.isArray(analysis.fraudReasons) ? analysis.fraudReasons : [],
         sameProductGroupId: analysis.sameProductGroupId || undefined,
       };
     });
@@ -203,25 +219,11 @@ export function applyAnalysisResults(
  * Coordinator가 AI 분석을 호출할지 판단하는 헬퍼
  */
 export function shouldRunProductAnalysis(
-  productCount: number,
-  page: number,
+  _productCount: number,
+  _page: number,
 ): boolean {
-  // MVP 단계: AnalysisAgent 비활성화
-  // 이유: gpt-4o-mini가 20개 상품 + JSON mode + 1500 토큰을 5초 안에 처리 못함
-  //       → 매 검색마다 6초 낭비 (타임아웃 후 기본값 반환)
-  // 대안: ProductJudge가 대신 관련성 필터링 수행 (더 빠르고 안정적)
-  // TODO: v2에서 AnalysisAgent를 non-blocking으로 리팩토링 후 재활성화
+  // MVP: AnalysisAgent 비활성화
+  // gpt-4o-mini가 20개 상품 분석을 5초 안에 못하므로 타임아웃 발생
+  // ProductJudge가 대신 관련성 필터링 수행 (더 빠르고 안정적)
   return false;
-
-  // page 1만
-  if (page !== 1) return false;
-
-  // API 키 필요
-  if (!OPENAI_API_KEY) return false;
-
-  // 상품이 3개 미만이면 스킵
-  if (productCount < 3) return false;
-
-  // 비용 제한: 50개 이상이면 처음 20개만 분석
-  return true;
 }

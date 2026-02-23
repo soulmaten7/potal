@@ -53,9 +53,14 @@ export function SearchWidget({
   const dPhotoMenuRef = useRef<HTMLDivElement>(null);
   const dSearchInputRef = useRef<HTMLInputElement>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);   // capture="environment" → 카메라 직접 실행
+  const galleryInputRef = useRef<HTMLInputElement>(null);  // capture 없음 → 사진 보관함만
 
-  // handlePhotoBtnClick 제거 — 카메라 아이콘이 OS 기본 picker를 직접 호출
+  // 카메라 또는 사진보관함 선택 메뉴 토글
+  const handlePhotoBtnClick = () => {
+    setShowPhotoMenu((prev) => !prev);
+    setHeroSearchFocused(false);
+  };
 
   const handleSearchInputFocus = () => {
     setHeroSearchFocused(true);
@@ -143,7 +148,29 @@ export function SearchWidget({
     { id: 'global' as const, label: 'Global', icon: '🌏' },
   ];
 
-  // renderPhotoMenu 제거 — OS 기본 picker로 대체
+  // 📷 / 🖼️ 선택 메뉴 렌더링 (ref 없음 — 부모 wrapper가 ref를 소유)
+  const renderPhotoMenu = (isMobile: boolean) =>
+    showPhotoMenu ? (
+      <div
+        className={`absolute ${isMobile ? 'right-0 top-full mt-1' : 'right-0 top-full mt-2'} bg-white rounded-xl shadow-2xl border border-slate-100 z-[60] overflow-hidden animate-fadeIn min-w-[180px]`}
+      >
+        <button
+          type="button"
+          onMouseDown={(e) => { e.preventDefault(); cameraInputRef.current?.click(); setShowPhotoMenu(false); }}
+          className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-50 text-left text-sm font-semibold text-slate-800 transition-colors"
+        >
+          <span className="text-lg">📷</span> Take Photo
+        </button>
+        <div className="border-t border-slate-100" />
+        <button
+          type="button"
+          onMouseDown={(e) => { e.preventDefault(); galleryInputRef.current?.click(); setShowPhotoMenu(false); }}
+          className="flex items-center gap-3 w-full px-4 py-3 hover:bg-slate-50 text-left text-sm font-semibold text-slate-800 transition-colors"
+        >
+          <span className="text-lg">🖼️</span> Photo Library
+        </button>
+      </div>
+    ) : null;
 
   // Recent searches dropdown (shared)
   const renderRecentSearches = (isMobile: boolean) => (
@@ -173,8 +200,10 @@ export function SearchWidget({
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* 단일 파일 input — OS가 카메라/사진첩 선택지를 자동 표시 */}
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+      {/* 카메라 전용 input — capture="environment"로 OS가 카메라만 실행 */}
+      <input type="file" ref={cameraInputRef} onChange={handleFileChange} accept="image/*" capture="environment" className="hidden" />
+      {/* 사진 보관함 전용 input — capture 없이 갤러리만 열림 */}
+      <input type="file" ref={galleryInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
 
       {/* ═══════════════════════════════════════════════════ */}
       {/* ─── MOBILE: 스카이스캐너 스타일 컴팩트 폼 ─── */}
@@ -285,10 +314,13 @@ export function SearchWidget({
                 </button>
               )}
 
-              {/* 📷 카메라 (오른쪽, 진한색) — OS 기본 picker 직접 호출 */}
-              <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-shrink-0 p-0.5">
-                <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#02122c' }} />
-              </button>
+              {/* 📷 카메라 (오른쪽, 진한색) — 메뉴 토글 */}
+              <div className="relative flex-shrink-0" ref={mPhotoMenuRef}>
+                <button type="button" onClick={handlePhotoBtnClick} className="p-0.5">
+                  <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#02122c' }} />
+                </button>
+                {renderPhotoMenu(true)}
+              </div>
             </div>
           </div>
           {/* Recent Searches — 카드 안, mSearchRef 밖에 flow 배치 (클릭+폭 모두 해결) */}
@@ -399,10 +431,13 @@ export function SearchWidget({
               </button>
             )}
 
-            {/* 📷 카메라 (오른쪽) */}
-            <button type="button" onClick={() => fileInputRef.current?.click()} className="flex-shrink-0 p-1 hover:bg-slate-100 rounded-full transition-colors">
-              <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#64748b' }} />
-            </button>
+            {/* 📷 카메라 (오른쪽) — 메뉴 토글 */}
+            <div className="relative flex-shrink-0" ref={dPhotoMenuRef}>
+              <button type="button" onClick={handlePhotoBtnClick} className="p-1 hover:bg-slate-100 rounded-full transition-colors">
+                <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#64748b' }} />
+              </button>
+              {renderPhotoMenu(false)}
+            </div>
           </div>
 
           {/* Recent Searches */}

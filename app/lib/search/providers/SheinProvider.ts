@@ -160,7 +160,6 @@ export class SheinProvider implements SearchProvider {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 10000);
 
-        console.log(`🔍 [SheinProvider] Trying: ${endpoint.split('?')[0]}`);
 
         const res = await fetch(url, {
           method: 'GET',
@@ -226,7 +225,6 @@ export class SheinProvider implements SearchProvider {
 
           const deepItems = findArray(data);
           if (deepItems.length > 0) {
-            console.log(`✅ [SheinProvider] ${deepItems.length} products (deep scan)`);
             return deepItems
               .slice(0, 20)
               .map((item, i) => mapItemToProduct(item, i, query))
@@ -237,7 +235,6 @@ export class SheinProvider implements SearchProvider {
           continue;
         }
 
-        console.log(`✅ [SheinProvider] ${items.length} products found`);
 
         const results = items
           .slice(0, 20)

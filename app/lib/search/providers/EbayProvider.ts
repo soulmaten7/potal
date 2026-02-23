@@ -212,7 +212,6 @@ export class EbayProvider implements SearchProvider {
         const products = this.parseResponse(data, q, priceIntent);
 
         if (products.length > 0) {
-          console.log(`✅ [eBay] ${products.length} products`);
           return products;
         } else {
           // 디버그: 응답은 200인데 파싱 결과 0건일 때 — 응답 구조 확인용
@@ -259,27 +258,44 @@ export class EbayProvider implements SearchProvider {
     }
     else if (Array.isArray(data)) items = data;
 
-    // Deep scan: walk ALL keys recursively to find ANY array with 3+ objects
+    // Deep scan: walk ALL keys recursively to find product-like arrays
     if (items.length === 0) {
-      const findItems = (obj: Record<string, unknown>, depth: number, path: string): Record<string, unknown>[] | null => {
+      const PRODUCT_KEYS = ['title', 'name', 'product_title', 'itemTitle', 'heading', 'productName'];
+      const PRICE_KEYS = ['price', 'currentPrice', 'sellingPrice', 'cost', 'salePrice'];
+
+      const visited = new WeakSet<object>(); // Circular reference protection
+      const findItems = (obj: Record<string, unknown>, depth: number): Record<string, unknown>[] | null => {
         if (depth > 5) return null;
-        for (const [key, val] of Object.entries(obj)) {
+        if (visited.has(obj)) return null; // Prevent infinite loops
+        visited.add(obj);
+        let bestMatch: Record<string, unknown>[] | null = null;
+
+        for (const [, val] of Object.entries(obj)) {
           if (Array.isArray(val) && val.length >= 2 && typeof val[0] === 'object' && val[0] !== null) {
             const first = val[0] as Record<string, unknown>;
             const firstKeys = Object.keys(first);
-            // Accept any array of objects with 3+ keys (very relaxed)
-            if (firstKeys.length >= 3) {
-              return val;
+
+            // Require product-like structure: must have a title-like AND price-like key
+            const hasTitle = firstKeys.some(k => PRODUCT_KEYS.some(pk => k.toLowerCase().includes(pk.toLowerCase())));
+            const hasPrice = firstKeys.some(k => PRICE_KEYS.some(pk => k.toLowerCase().includes(pk.toLowerCase())));
+
+            if (hasTitle && hasPrice && firstKeys.length >= 3) {
+              // Prefer larger arrays (more products = more likely the right one)
+              if (!bestMatch || val.length > bestMatch.length) {
+                bestMatch = val;
+              }
             }
           }
           if (val && typeof val === 'object' && !Array.isArray(val)) {
-            const found = findItems(val as Record<string, unknown>, depth + 1, `${path}.${key}`);
-            if (found) return found;
+            const found = findItems(val as Record<string, unknown>, depth + 1);
+            if (found && (!bestMatch || found.length > bestMatch.length)) {
+              bestMatch = found;
+            }
           }
         }
-        return null;
+        return bestMatch;
       };
-      const found = findItems(d, 0, 'root');
+      const found = findItems(d, 0);
       if (found) items = found;
     }
 

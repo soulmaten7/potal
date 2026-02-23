@@ -69,7 +69,7 @@ function normalizeImage(item: Record<string, unknown>): string {
       if (typeof url === 'string' && url.startsWith('http')) return url;
     }
   }
-  return 'https://placehold.co/400x400?text=Walmart';
+  return '';
 }
 
 // ── Shipping parsing ──
@@ -195,9 +195,7 @@ export class WalmartProvider implements SearchProvider {
 
         const data = (await res.json()) as Record<string, unknown>;
 
-        // 진단 로그: 응답 구조 확인
-        const topKeys = Object.keys(data).slice(0, 10).join(', ');
-        console.log(`🔍 [WalmartProvider] ${ep.path} response keys: [${topKeys}]`);
+        // Parse response data
 
         // Parse items from various possible response shapes
         let items: unknown[] = [];
@@ -242,7 +240,6 @@ export class WalmartProvider implements SearchProvider {
         }
 
         if (products.length > 0) {
-          console.log(`✅ [WalmartProvider] ${products.length} products from ${ep.path}`);
           return products;
         }
       } catch (err: unknown) {

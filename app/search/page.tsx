@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, Suspense, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { StickyHeader } from '../../components/search/StickyHeader';
 import { FilterSidebar, type AiSuggestions } from '../../components/search/FilterSidebar';
@@ -11,6 +11,7 @@ import { extractFilterOptionsFromProducts } from '@/app/lib/filter-utils';
 import { applyMembershipToProducts } from '@/app/lib/membership/applyMembershipAdjustments';
 import { getAllProgramIds } from '@/app/lib/membership/MembershipConfig';
 import { trackSearch, trackSearchResults, trackSortChange, trackFilterApply, trackFilterClear, trackQuestionQuery, trackMarketSwitch } from '@/app/utils/analytics';
+import { generateSessionId, logSignal, flushPendingSignals } from '@/app/lib/learning';
 
 // 1. 리테일러 리스트 — API 연결된 사이트를 상단 배치
 const DOMESTIC_LIST = ["Amazon", "Walmart", "Best Buy", "eBay", "Target", "Costco", "Home Depot", "Lowe's", "Macy's", "Apple", "Nike", "Kohl's", "Sephora", "Chewy", "Kroger", "Wayfair"];
@@ -20,6 +21,7 @@ const ALL_RETAILERS_FLAT = [...DOMESTIC_LIST, ...GLOBAL_LIST];
 // [ADD] 히스토리 저장을 위한 키값 정의
 const STORAGE_KEY_USER_RECENTS = 'potal_user_recents';
 const STORAGE_KEY_USER_ZIPS = 'potal_user_zips';
+const STORAGE_KEY_SESSION_ID = 'potal_session_id';
 
 /** 사이트별 인터리빙: 정렬 순서를 유지하면서 같은 사이트 상품이 연속되지 않도록 교차 배치 */
 function interleaveBySite(products: Product[]): Product[] {
@@ -67,10 +69,27 @@ function SearchContent() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [tabSummary, setTabSummary] = useState<{ best: { price: string; days: string } | null; cheapest: { price: string; days: string } | null; fastest: { price: string; days: string } | null } | undefined>(undefined);
-  
+
   // [ADD] StickyHeader에 필요한 히스토리 State 추가
   const [recentZips, setRecentZips] = useState<string[]>([]);
   const [heroRecents, setHeroRecents] = useState<string[]>([]);
+
+  // [ADD] Phase 1 Learning System State
+  const [sessionId, setSessionId] = useState<string>('');
+  const [lastSearchId, setLastSearchId] = useState<string>('');
+  const [resultsLoadTime, setResultsLoadTime] = useState<number>(0);
+  const lastSearchRef = useRef<string>(''); // track if this is a re-search in the same session
+  const bounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Helper to get or create search ID (used in result URLs)
+  const getCurrentSearchId = useCallback((): string => {
+    if (typeof window === 'undefined') return '';
+    const existing = sessionStorage.getItem('potal_current_search_id');
+    if (existing) return existing;
+    const newId = `search_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    sessionStorage.setItem('potal_current_search_id', newId);
+    return newId;
+  }, []);
 
   // UI States
   const [isExpanded, setIsExpanded] = useState(false);
@@ -119,7 +138,7 @@ function SearchContent() {
       return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // [ADD] 히스토리 로드 (StickyHeader용)
+  // [ADD] 히스토리 로드 (StickyHeader용) + 세션 ID 초기화
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -127,7 +146,20 @@ function SearchContent() {
         const queries = JSON.parse(localStorage.getItem(STORAGE_KEY_USER_RECENTS) || '[]');
         setRecentZips(zips);
         setHeroRecents(queries);
+
+        // Phase 1: Initialize or restore session ID
+        let sid = sessionStorage.getItem(STORAGE_KEY_SESSION_ID);
+        if (!sid) {
+          sid = generateSessionId();
+          sessionStorage.setItem(STORAGE_KEY_SESSION_ID, sid);
+        }
+        setSessionId(sid);
       } catch (e) {}
+
+      // Phase 1: Flush pending signals on page unload
+      window.addEventListener('beforeunload', () => {
+        flushPendingSignals().catch(() => {});
+      });
     }
   }, []);
 
@@ -154,6 +186,18 @@ function SearchContent() {
 
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&market=${m}${z ? `&zipcode=${encodeURIComponent(z)}` : ''}`);
+
+        // API 응답 에러 체크 (res.ok가 아니면 에러 처리)
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+          console.error(`[Search] API error ${res.status}:`, errorData.error);
+          if (cancelled) return;
+          setSearchError(true);
+          setProducts([]);
+          setIsLoading(false);
+          return;
+        }
+
         const data = await res.json();
 
         if (cancelled) return;
@@ -226,6 +270,31 @@ function SearchContent() {
           // ✅ 상품 로딩 완료 → ResultsGrid 즉시 표시 (AI는 별도 로딩)
           setIsLoading(false);
 
+          // Phase 1: Track search timing and re-search signal
+          const currentLoadTime = Date.now();
+          setResultsLoadTime(currentLoadTime);
+          const currentSearchId = getCurrentSearchId();
+          setLastSearchId(currentSearchId);
+
+          // Signal: Track re-search (if user searched again in same session)
+          if (lastSearchRef.current && sessionId) {
+            logSignal({
+              search_id: lastSearchRef.current,
+              signal_type: 're_search',
+              metadata: { newSearchQuery: q },
+            });
+          }
+          lastSearchRef.current = currentSearchId;
+
+          // Signal: Track bounce (if no click within 10 seconds, send bounce signal)
+          if (bounceTimerRef.current) clearTimeout(bounceTimerRef.current);
+          bounceTimerRef.current = setTimeout(() => {
+            logSignal({
+              search_id: currentSearchId,
+              signal_type: 'bounce',
+            });
+          }, 10000);
+
           // ═══ POTAL Filter: 전체 AI 단일 호출 ═══
           // Brands + Keywords 모두 AI가 판단 (빈도 기반 제거)
           const realProducts = data.results.filter((p: any) => !p.isSearchCard);
@@ -296,6 +365,7 @@ function SearchContent() {
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
+        if (cancelled) return;
         setProducts([]);
         setSearchError(true);
         setIsLoading(false);
@@ -353,6 +423,19 @@ function SearchContent() {
     return applyMembershipToProducts(products, memberships);
   }, [products, memberships]);
 
+  // POTAL Filter regex 사전 컴파일 — 렌더링마다 재생성 방지
+  const aiFilterRegexes = useMemo(() => {
+    return Array.from(aiActiveFilters).map(filter => {
+      const raw = filter.toLowerCase();
+      try {
+        const escaped = raw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return { regex: new RegExp(`(?:^|[\\s,/\\-\\(])${escaped}(?:$|[\\s,/\\-\\)])`, 'i'), raw };
+      } catch {
+        return { regex: new RegExp(raw, 'i'), raw };
+      }
+    });
+  }, [aiActiveFilters]);
+
   const filteredProducts = useMemo(() => {
     return membershipAdjustedProducts.filter(p => {
         // 검색카드(isSearchCard)는 항상 표시
@@ -362,22 +445,19 @@ function SearchContent() {
         // 배송일 필터: parsedDeliveryDays가 있으면 maxDeliveryDays 이내만 표시
         const matchesDelivery = maxDeliveryDays >= 30 || !p.parsedDeliveryDays || p.parsedDeliveryDays <= maxDeliveryDays;
 
-        // POTAL Filter 클라이언트 사이드 필터링
+        // POTAL Filter 클라이언트 사이드 필터링 (v3 — 사전 컴파일 regex + 단어 경계)
         let matchesAiFilter = true;
-        if (aiActiveFilters.size > 0) {
-          const titleLower = (p.title || '').toLowerCase();
-          const sellerLower = (p.seller || '').toLowerCase();
-          const siteLower = (p.site || '').toLowerCase();
-          // OR 로직: 체크된 항목 중 하나라도 매칭되면 표시
-          matchesAiFilter = Array.from(aiActiveFilters).some(filter => {
-            const filterLower = filter.toLowerCase();
-            return titleLower.includes(filterLower) || sellerLower.includes(filterLower) || siteLower.includes(filterLower);
+        if (aiFilterRegexes.length > 0) {
+          const searchText = `${(p.title || '').toLowerCase()} ${(p.seller || '').toLowerCase()} ${(p.site || '').toLowerCase()}`;
+          matchesAiFilter = aiFilterRegexes.some(({ regex, raw }) => {
+            try { return regex.test(searchText); }
+            catch { return searchText.includes(raw); }
           });
         }
 
         return matchesPrice && matchesRetailer && matchesAiFilter && matchesDelivery;
     });
-  }, [query, priceMax, maxDeliveryDays, selectedRetailers, membershipAdjustedProducts, aiActiveFilters]);
+  }, [query, priceMax, maxDeliveryDays, selectedRetailers, membershipAdjustedProducts, aiFilterRegexes]);
 
   const sortedProducts = useMemo(() => {
     // 검색카드는 항상 끝에 배치
@@ -437,6 +517,20 @@ function SearchContent() {
     setAiActiveFilters(new Set());
     trackFilterClear({ query });
   }, [query]);
+
+  // Phase 1: Track product click signals (prepared for future ResultsGrid integration)
+  // Once ResultsGrid supports onProductClick callback, uncomment this:
+  // const handleProductClick = useCallback((product: Product) => {
+  //   if (bounceTimerRef.current) clearTimeout(bounceTimerRef.current);
+  //   if (lastSearchId) {
+  //     logSignal({
+  //       search_id: lastSearchId,
+  //       signal_type: 'click',
+  //       product_id: String(product.id),
+  //       product_site: product.site || product.seller,
+  //     });
+  //   }
+  // }, [lastSearchId]);
 
   return (
     <div className="min-h-screen font-sans flex flex-col relative" style={{ backgroundColor: '#02122c' }} onClick={closeAllDropdowns}>
@@ -498,7 +592,7 @@ function SearchContent() {
             priceMax={priceMax}
             setPriceMax={setPriceMax}
             selectedRetailers={selectedRetailers}
-            setSelectedRetailers={setSelectedRetailers as any}
+            setSelectedRetailers={setSelectedRetailers}
             allRetailers={ALL_RETAILERS_FLAT}
             totalResults={totalResults}
             memberships={memberships}

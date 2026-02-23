@@ -119,12 +119,18 @@ export function buildUserMessage(input: ProductJudgeInput): string {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export function parseOutput(raw: string): ProductJudgeOutput {
-  const parsed = JSON.parse(raw);
+  // Extra markdown fence cleanup (defense in depth — engine.ts also cleans)
+  const cleaned = raw
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  const parsed = JSON.parse(cleaned);
 
   return {
     relevantIds: Array.isArray(parsed.relevantIds) ? parsed.relevantIds : [],
     removedReasons: Array.isArray(parsed.removedReasons)
-      ? parsed.removedReasons.filter((r: any) => r.id && r.reason)
+      ? parsed.removedReasons.filter((r: any) => r.id != null && String(r.id).length > 0 && r.reason)
       : [],
   };
 }

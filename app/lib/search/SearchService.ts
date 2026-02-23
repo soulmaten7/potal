@@ -80,7 +80,6 @@ export class SearchService {
 
     if (cleaned.length === 0) return emptyResult;
 
-    console.log(`🛡️ FraudFilter: ${fraudResult.stats.removed} removed, ${fraudResult.stats.flagged} flagged out of ${fraudResult.stats.total}`);
 
     // ── Step 3: AI Filter (page 1 only, needs OpenAI key) ──
     if (page === 1 && process.env.OPENAI_API_KEY && cleaned.length > 0) {
@@ -156,7 +155,6 @@ export class SearchService {
       console.error('❌ SearchService: Walmart error:', walmartResults.reason);
     }
 
-    console.log(`🛒 Domestic: Amazon ${amazon.length} + Walmart ${walmart.length} = ${amazon.length + walmart.length}`);
     return [...amazon, ...walmart];
   }
 
@@ -178,7 +176,6 @@ export class SearchService {
       console.error('❌ SearchService: Temu error:', temuResults.reason);
     }
 
-    console.log(`🌏 Global: AliExpress ${ali.length} + Temu ${temu.length}`);
     return [...ali, ...temu];
   }
 }

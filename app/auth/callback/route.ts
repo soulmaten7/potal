@@ -13,10 +13,19 @@ export async function GET(request: Request) {
   // Always send user to home after successful session exchange so cookies are set on same origin
   const homeUrl = `${origin}/`;
 
-  // Security: only allow internal paths to prevent open redirect attacks
-  // Reject any absolute URLs (http://, https://, //, etc.)
+  // Security: only allow internal relative paths to prevent open redirect attacks
+  // Block absolute URLs, protocol-relative URLs, and encoded bypasses
+  const isValidPath = (path: string): boolean => {
+    if (!path.startsWith('/') || path.startsWith('//')) return false;
+    // Block URL-encoded bypass attempts (e.g., /%2F, /\, etc.)
+    try {
+      const decoded = decodeURIComponent(path);
+      if (decoded.startsWith('//') || decoded.includes('\\')) return false;
+    } catch { return false; }
+    return true;
+  };
   const safeNext =
-    next && next.startsWith("/") && !next.startsWith("//")
+    next && isValidPath(next)
       ? `${origin}${next}`
       : homeUrl;
   const successRedirect = safeNext;

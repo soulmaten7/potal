@@ -20,18 +20,61 @@ import type { QueryAnalysis } from './types';
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || '';
 
 /**
- * 질문형 쿼리 감지
- * "what should I buy for camping?" / "I need a good laptop" / "recommend me shoes"
- * → 이런 쿼리는 API에 보내면 쓰레기 결과 → suggestedProducts 칩으로 대응
+ * 질문형 쿼리 감지 (v3 — 전문가 리뷰 반영)
+ *
+ * 핵심 원칙: "구체적 상품명이 있으면 검색, 없으면 탐색"
+ *
+ * 탐색형 (true): "what should I buy for camping?" / "recommend me something for winter"
+ * → API에 보내면 쓰레기 결과 → suggestedProducts 칩으로 대응
+ *
+ * 사실적/상품 포함 (false): "I want airpods" / "Is the iPhone waterproof?" / "I need a macbook"
+ * → 구체적 상품명 포함 → 일반 검색으로 처리
  */
 export function isQuestionQuery(query: string): boolean {
   const q = query.toLowerCase().trim();
-  // 의문문 패턴 (what, which, how, where, should, etc.)
-  if (/^(what|which|how|where|can|should|do|does|is|are|will|would|could)\b/.test(q)) return true;
-  // 물음표 포함
-  if (q.includes('?')) return true;
-  // 자연어 의도 패턴
-  if (/\b(i need|i want|i'm looking|looking for|recommend|suggest|best for|good for|help me|any ideas|shopping for)\b/.test(q)) return true;
+
+  // ── 0. 너무 짧은 쿼리 → 무조건 검색 ──
+  if (q.split(/\s+/).length <= 2) return false;
+
+  // ── 1. 구체적 상품/브랜드명 포함 여부 감지 ──
+  // 상품명이나 브랜드가 포함되면 어떤 문장 구조든 일반 검색으로 처리
+  const KNOWN_BRANDS = /\b(apple|samsung|sony|bose|nike|adidas|dyson|lg|dell|hp|lenovo|asus|logitech|razer|anker|jbl|canon|nikon|nintendo|playstation|xbox|google|pixel|macbook|iphone|ipad|airpods|galaxy|surface|kindle|lego|gopro|beats|fitbit|garmin|cuisinart|keurig|ninja|instant pot|roomba|cricut)\b/;
+  const SPECIFIC_PRODUCT = /\b(airpods|macbook|iphone|ipad|ps5|xbox|switch|roku|alexa|echo|kindle|chromebook|thinkpad|pixel \d|galaxy s\d|galaxy buds|quest \d)\b/;
+
+  if (KNOWN_BRANDS.test(q) || SPECIFIC_PRODUCT.test(q)) return false;
+
+  // ── 2. 사실적 질문 제외 (구매 의도가 명확한 질문) ──
+  if (/^(where\s+to\s+buy|how\s+much\s+(is|are|does|for)|where\s+can\s+i\s+(buy|get|find))\b/.test(q)) return false;
+  if (/^is\s+\w+\s+(worth|good|better|reliable|durable|waterproof|compatible)\b/.test(q)) return false;
+  if (/^(does|do|can|is|are)\b\s+\w+\s+(waterproof|worth|good|compatible|available|work with|support|fit|last)\b/.test(q)) return false;
+
+  // ── 3. 탐색형 패턴 (의문사로 시작하는 열린 질문) ──
+  if (/^(what|which)\s+(should|would|could|can|do|are|is\s+(?:the\s+)?best|is a good)\b/.test(q)) return true;
+  // "which X is best/good for Y?" — 명사 하나 끼어도 매칭
+  if (/^which\s+\w+\s+is\s+(the\s+)?best\b/.test(q)) return true;
+  if (/^how\s+(to\s+choose|to\s+pick|do\s+i\s+(choose|pick|select|decide))\b/.test(q)) return true;
+  if (/^should\s+i\s+(buy|get)\b/.test(q) && q.split(' ').length <= 6) return true;
+
+  // ── 4. 물음표 + 짧은 쿼리 = 탐색 가능성 ──
+  if (q.includes('?') && q.split(' ').length <= 5 && !/\b(buy|price|cost|stock|deliver)\b/.test(q)) return true;
+
+  // ── 5. 자연어 의도 패턴 (명확한 탐색형) ──
+  // "recommend me X" / "suggest something" / "gift ideas" / "any ideas"
+  if (/\b(recommend|suggest|any ideas|gift ideas|what to get|shopping for)\b/.test(q)) return true;
+  // "I need / I want / looking for" → 뒤에 형용사+일반명사 조합이면 탐색 (예: "good laptop")
+  // "I want airpods" → false (step 1에서 이미 걸림), "I want a good laptop" → true
+  if (/\b(i need|i want|i'm looking|looking for|help me find)\b/.test(q)) {
+    // 형용사 패턴: "a good X", "some nice X", "warm X", "affordable X"
+    if (/\b(a good|some|nice|warm|cool|affordable|cheap|lightweight|portable|wireless|small|big|large|compact|durable)\b/.test(q)) return true;
+    // "I need X for Y" 패턴: "I need something for camping"
+    if (/\bfor\s+\w+/.test(q)) return true;
+    // 구체적 제품 없이 일반 카테고리만: "I want shoes" → 검색으로 처리
+    return false;
+  }
+
+  // "best X for Y" 패턴 제거: "best laptop for college"는 구매 의도 (검색으로 처리)
+  // 이 패턴은 너무 광범위하여 실제 상품 검색 쿼리를 잘못 분류함
+
   return false;
 }
 
@@ -94,7 +137,6 @@ const OUTPUT_SCHEMA = `{
 export async function analyzeQueryWithAI(query: string): Promise<QueryAnalysis> {
   // OpenAI 키가 없으면 fallback
   if (!OPENAI_API_KEY) {
-    console.log('⚠️ [QueryAgent] No OpenAI key, using deterministic analysis');
     return analyzeQueryDeterministic(query);
   }
 
@@ -133,8 +175,11 @@ export async function analyzeQueryWithAI(query: string): Promise<QueryAnalysis> 
     const parsed = JSON.parse(content);
     const tokensUsed = data.usage?.total_tokens || 0;
 
-    const isQuestion = parsed.isQuestionQuery === true || isQuestionQuery(query);
-    console.log(`🤖 [QueryAgent] AI analysis complete | ${tokensUsed} tokens | strategy: ${parsed.strategy} | question: ${isQuestion}`);
+    // AI 판단 우선: AI가 명시적으로 false를 반환하면 존중
+    // 로컬 함수는 AI가 판단하지 못한 경우(null/undefined)만 보조
+    const isQuestion = parsed.isQuestionQuery != null
+      ? parsed.isQuestionQuery === true
+      : isQuestionQuery(query);
 
     return {
       original: query,
@@ -188,7 +233,7 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
 
   // 카테고리 추론
   const categoryMap: Record<string, string[]> = {
-    Electronics: ['laptop', 'phone', 'tablet', 'ipad', 'macbook', 'airpods', 'earbuds', 'headphone', 'speaker', 'monitor', 'keyboard', 'mouse', 'camera', 'tv', 'gpu', 'cpu', 'ssd', 'charger', 'cable', 'usb'],
+    Electronics: ['laptop', 'phone', 'tablet', 'ipad', 'macbook', 'airpods', 'earbuds', 'buds', 'headphone', 'speaker', 'monitor', 'keyboard', 'mouse', 'camera', 'tv', 'gpu', 'cpu', 'ssd', 'charger', 'cable', 'usb'],
     Fashion: ['shoes', 'sneakers', 'dress', 'jacket', 'hoodie', 'pants', 'jeans', 'shirt', 't-shirt', 'nike', 'adidas', 'bag', 'wallet', 'watch', 'sunglasses', 'sock', 'boot'],
     Home: ['lamp', 'desk', 'chair', 'table', 'sofa', 'bed', 'pillow', 'blanket', 'kitchen', 'blender', 'vacuum', 'organizer', 'shelf'],
     Beauty: ['skincare', 'makeup', 'serum', 'moisturizer', 'sunscreen', 'lipstick', 'foundation', 'shampoo', 'perfume', 'cologne'],
@@ -224,29 +269,58 @@ export function analyzeQueryDeterministic(query: string): QueryAnalysis {
     priceIntent = { min: parseInt(minMatch[1]), currency: 'USD' };
   }
 
-  // 전략 결정
+  // 전략 결정 (우선순위: comparison > specific > brand > broad)
   let strategy: QueryAnalysis['strategy'] = 'broad';
   if (detectedBrand) strategy = 'brand';
-  if (q.includes(' vs ') || q.includes(' or ') || q.includes('compare')) strategy = 'comparison';
   if (q.split(' ').length >= 5 || priceIntent) strategy = 'specific';
+  // comparison은 최우선 — vs/or/compare가 있으면 무조건 비교
+  if (q.includes(' vs ') || q.includes(' or ') || q.includes('compare')) strategy = 'comparison';
 
-  // 플랫폼별 검색어 (deterministic version)
+  // 플랫폼별 검색어 (deterministic version — 모든 플랫폼 지원)
   const cleanQuery = query.replace(/under\s*\$?\d+/i, '').replace(/over\s*\$?\d+/i, '').trim();
+  const baseQuery = cleanQuery && cleanQuery.length > 0 ? cleanQuery : query;
+
+  // AliExpress 최적화: 중국 셀러 용어 변환 테이블
+  // 순서 중요: multi-word → single-word (긴 매칭 우선)
+  const ALI_TERM_MAP: [RegExp, string][] = [
+    [/\bphone case\b/gi, 'mobile phone cover silicone'],
+    [/\bpower bank\b/gi, 'portable charger powerbank'],
+    [/\bsmart watch\b/gi, 'smartwatch bluetooth'],
+    [/\bscreen protector\b/gi, 'tempered glass film'],
+    [/\bcamera lens\b/gi, 'camera lens filter'],
+    [/\bcar mount\b/gi, 'car phone holder'],
+    [/\bearbuds\b/gi, 'TWS bluetooth earphone'],
+    [/\bheadphones\b/gi, 'bluetooth headset wireless'],
+    [/\bcharger\b/gi, 'fast charger USB'],
+    [/\bsneakers\b/gi, 'casual shoes sports'],
+    [/\bbackpack\b/gi, 'travel backpack bag'],
+    [/\bflashlight\b/gi, 'LED torch light'],
+    [/\bwall art\b/gi, 'canvas painting wall decor'],
+    [/\bkeyboard\b/gi, 'mechanical keyboard'],
+    [/\bmouse\b/gi, 'wireless mouse gaming'],
+    [/\bwatch band\b/gi, 'watch strap silicone'],
+    [/\btripod\b/gi, 'phone tripod stand'],
+    [/\bsunglasses\b/gi, 'polarized sunglasses UV400'],
+  ];
+  let aliExpressQuery = baseQuery;
+  for (const [pattern, replacement] of ALI_TERM_MAP) {
+    aliExpressQuery = aliExpressQuery.replace(pattern, replacement);
+  }
+  const finalAliQuery = aliExpressQuery !== baseQuery ? aliExpressQuery : baseQuery;
 
   // 질문형 → suggestedProducts 생성 (카테고리 기반)
   const suggestedProducts = questionDetected
     ? (CATEGORY_SUGGESTIONS[category] || CATEGORY_SUGGESTIONS['General'])
     : [];
 
-  if (questionDetected) {
-    console.log(`❓ [QueryAgent] Question detected (deterministic) | category: ${category} | suggestions: ${suggestedProducts.length}`);
-  }
-
   return {
     original: query,
     category,
     platformQueries: {
-      amazon: cleanQuery || query,
+      amazon: baseQuery,
+      walmart: baseQuery,
+      ebay: baseQuery,
+      aliexpress: finalAliQuery,
     },
     priceIntent,
     attributes: {

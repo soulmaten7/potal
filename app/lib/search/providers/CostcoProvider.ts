@@ -51,7 +51,6 @@ export class CostcoProvider implements SearchProvider {
 
     const url = `https://${API_HOST}/search/${encodeURIComponent(query)}`;
 
-    console.log(`🛒 [Costco] Searching: "${query}"`);
 
     try {
       const controller = new AbortController();
@@ -98,7 +97,6 @@ export class CostcoProvider implements SearchProvider {
         .map((item) => this.mapToProduct(item))
         .filter((p): p is Product => p !== null);
 
-      console.log(`✅ [Costco] ${products.length} products from ${data.length} items`);
       return products;
     } catch (err: unknown) {
       if (err instanceof Error && err.name === 'AbortError') {

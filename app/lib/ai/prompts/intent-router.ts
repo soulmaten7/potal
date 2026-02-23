@@ -201,10 +201,14 @@ export function parseOutput(raw: string): IntentRouterOutput {
     throw new Error(`Invalid intent: ${parsed.intent}`);
   }
 
+  // Confidence clamping: always 0-1 range
+  const rawConf = typeof parsed.confidence === 'number' ? parsed.confidence : 0.5;
+  const confidence = Math.max(0, Math.min(1, rawConf));
+
   return {
     intent: parsed.intent as QueryIntent,
-    confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0.5,
-    searchQuery: typeof parsed.searchQuery === 'string' ? parsed.searchQuery.trim() : '',
+    confidence,
+    searchQuery: typeof parsed.searchQuery === 'string' && parsed.searchQuery.trim().length > 0 ? parsed.searchQuery.trim() : '',
     attributes: Array.isArray(parsed.attributes) ? parsed.attributes : [],
     priceSignal: parsed.priceSignal ?? null,
     suggestedCategories: Array.isArray(parsed.suggestedCategories) ? parsed.suggestedCategories : null,
@@ -218,7 +222,7 @@ export function parseOutput(raw: string): IntentRouterOutput {
 
 const QUESTION_PATTERN = /^(what|which|how|where|can|should|do|does|is|are|will|would|could|recommend|suggest|best\s+.+\s+for)\b/i;
 const PRICE_PATTERN = /\b(cheap|cheapest|budget|affordable|under\s*\$?\d+|below\s*\$?\d+|deal|sale|discount)\b/i;
-const COMPARISON_PATTERN = /\b(vs\.?|versus|compared?\s+to|or\b.*\bwhich|difference\s+between)\b/i;
+const COMPARISON_PATTERN = /\b(vs\.?|versus|compared?\s+to|or\b.*\bwhich|difference\s+between)\b|\b\w+\s+or\s+\w+\b/i;
 
 /** 카테고리 키워드 → 추천 상품 키워드 (fallback용) */
 const CATEGORY_SUGGESTIONS: Record<string, string[]> = {
@@ -285,10 +289,14 @@ export function fallback(input: IntentRouterInput): IntentRouterOutput {
     ? inferCategoryFromQuery(qLower)
     : null;
 
+  // searchQuery: 의도 패턴 제거 후 빈 문자열 방지
+  const cleanedQuery = q.replace(QUESTION_PATTERN, '').replace(PRICE_PATTERN, '').trim();
+  const searchQuery = cleanedQuery.length > 0 ? cleanedQuery : q;
+
   return {
     intent,
-    confidence: 0.4,
-    searchQuery: q.replace(QUESTION_PATTERN, '').replace(PRICE_PATTERN, '').trim() || q,
+    confidence: 0.5, // Fallback은 AI보다 낮지만 너무 낮으면 불필요한 재검색 트리거
+    searchQuery,
     attributes: [],
     priceSignal,
     suggestedCategories,
@@ -303,6 +311,22 @@ export function fallback(input: IntentRouterInput): IntentRouterOutput {
 export async function classifyIntent(
   input: IntentRouterInput,
 ): Promise<PromptResult<IntentRouterOutput>> {
+  // Empty query guard: skip AI call entirely
+  if (!input.query || !input.query.trim()) {
+    return {
+      ok: true,
+      data: fallback({ query: '' }),
+      meta: {
+        moduleId: CONFIG.id,
+        durationMs: 0,
+        tokensUsed: { input: 0, output: 0, total: 0 },
+        estimatedCost: 0,
+        usedFallback: true,
+        error: 'Empty query',
+      },
+    };
+  }
+
   return executePrompt<IntentRouterOutput>({
     config: CONFIG,
     systemPrompt: SYSTEM_PROMPT,

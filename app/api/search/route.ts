@@ -31,13 +31,32 @@ import { getSearchCache, SearchCache } from '../../lib/search/SearchCache';
 
 const SEARCH_TIMEOUT_MS = 45_000; // 45초 (Temu Apify Actor 7-15초 + Provider 병렬 + AI 분석)
 
-// ── Simple in-memory rate limiter ──
+// ── Simple in-memory rate limiter (lazy cleanup — no setInterval memory leak) ──
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1분
 const RATE_LIMIT_MAX = 20; // 1분당 최대 20회
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+let _lastRateLimitCleanup = Date.now();
+
+const RATE_LIMIT_MAP_MAX = 10_000; // Max IPs tracked (prevent memory exhaustion)
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
+
+  // Lazy cleanup: purge stale entries every 5 minutes (no setInterval = no memory leak in serverless)
+  if (now - _lastRateLimitCleanup > 300_000) {
+    _lastRateLimitCleanup = now;
+    for (const [key, entry] of rateLimitMap) {
+      if (now > entry.resetAt) rateLimitMap.delete(key);
+    }
+  }
+
+  // Hard cap: if map is too large, clear oldest entries
+  if (rateLimitMap.size > RATE_LIMIT_MAP_MAX) {
+    const entries = [...rateLimitMap.entries()].sort((a, b) => a[1].resetAt - b[1].resetAt);
+    const toRemove = entries.slice(0, Math.floor(RATE_LIMIT_MAP_MAX / 2));
+    for (const [key] of toRemove) rateLimitMap.delete(key);
+  }
+
   const entry = rateLimitMap.get(ip);
 
   if (!entry || now > entry.resetAt) {
@@ -50,31 +69,20 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-// Cleanup stale entries every 5 minutes
-if (typeof setInterval !== 'undefined') {
-  setInterval(() => {
-    const now = Date.now();
-    for (const [ip, entry] of rateLimitMap) {
-      if (now > entry.resetAt) rateLimitMap.delete(ip);
-    }
-  }, 300_000);
-}
-
-/** Promise에 타임아웃을 적용하는 유틸 */
+/** Promise에 타임아웃을 적용하는 유틸 (settled flag로 double-settle 방지) */
 function withTimeout<T>(promise: Promise<T>, ms: number, label = 'Operation'): Promise<T> {
   return new Promise((resolve, reject) => {
+    let settled = false;
     const timer = setTimeout(() => {
-      reject(new Error(`${label} timed out after ${ms}ms`));
+      if (!settled) { settled = true; reject(new Error(`${label} timed out after ${ms}ms`)); }
     }, ms);
 
     promise
       .then((result) => {
-        clearTimeout(timer);
-        resolve(result);
+        if (!settled) { settled = true; clearTimeout(timer); resolve(result); }
       })
       .catch((err) => {
-        clearTimeout(timer);
-        reject(err);
+        if (!settled) { settled = true; clearTimeout(timer); reject(err); }
       });
   });
 }
@@ -113,7 +121,6 @@ export async function GET(request: Request) {
   const cached = cache.get(cacheKey);
 
   if (cached) {
-    console.log(`⚡ [POTAL API] Cache HIT: "${q}" page=${page}`);
     return NextResponse.json(cached, {
       headers: {
         'X-POTAL-Cache': 'HIT',

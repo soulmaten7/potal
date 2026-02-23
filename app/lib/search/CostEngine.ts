@@ -201,7 +201,8 @@ export function calculateLandedCost(
     // ── Domestic: Product + Shipping + Sales Tax ──
     const state = zipcodeToState(zipcode);
     const taxRate = state ? (STATE_TAX_RATES[state] ?? DEFAULT_TAX_RATE) : DEFAULT_TAX_RATE;
-    const salesTax = productPrice * taxRate;
+    // Sales tax applies to product + shipping (most US states tax shipping)
+    const salesTax = (productPrice + shippingCost) * taxRate;
 
     const breakdown: CostBreakdownItem[] = [
       { label: 'Product', amount: productPrice },
@@ -232,8 +233,9 @@ export function calculateLandedCost(
     // MPF applies to all imports post de minimis elimination
     const mpf = originCountry === 'CN' ? MPF_INFORMAL : 0;
 
-    // isDutyFree is now always false for China imports (de minimis eliminated)
-    const isDutyFree = originCountry !== 'CN' && totalDeclaredValue === 0;
+    // isDutyFree: always false for CN (de minimis eliminated Aug 2025)
+    // For OTHER origin: only free if declared value is truly $0 (practically never)
+    const isDutyFree = originCountry === 'OTHER' && totalDeclaredValue === 0;
 
     const dutyLabel = originCountry === 'CN' ? 'Import Duty' : 'Import Duty';
     const dutyNote = originCountry === 'CN'
@@ -292,10 +294,10 @@ export function calculateAllLandedCosts(
 // ─── Helper ──────────────────────────────────────────
 
 function parsePriceToNumber(price: string | number | undefined): number {
-  if (typeof price === 'number') return price;
+  if (typeof price === 'number') return Math.max(0, price);
   if (!price) return 0;
   const num = parseFloat(String(price).replace(/[^0-9.-]/g, ''));
-  return isNaN(num) ? 0 : num;
+  return isNaN(num) || !isFinite(num) ? 0 : Math.max(0, num);
 }
 
 export { parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, CHINA_IMPORT_DUTY_RATE, MPF_INFORMAL };

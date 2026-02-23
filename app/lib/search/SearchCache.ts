@@ -23,9 +23,19 @@ const MAX_ENTRIES = 50;
 class SearchCache {
   private cache = new Map<string, CacheEntry>();
   private ttl: number;
+  private _lastPurge = Date.now();
 
   constructor(ttl = DEFAULT_TTL) {
     this.ttl = ttl;
+  }
+
+  /** Lazy cleanup: periodically purge expired entries (every 60 seconds) */
+  private maybePurge(): void {
+    const now = Date.now();
+    if (now - this._lastPurge > 60_000) {
+      this._lastPurge = now;
+      this.cleanup();
+    }
   }
 
   /** 캐시 키 생성 (쿼리 정규화) */
@@ -36,6 +46,9 @@ class SearchCache {
 
   /** 캐시에서 결과 조회 */
   get(key: string): SearchResult | null {
+    // Lazy cleanup every 60 seconds
+    this.maybePurge();
+
     const entry = this.cache.get(key);
     if (!entry) return null;
 
@@ -51,6 +64,9 @@ class SearchCache {
 
   /** 결과를 캐시에 저장 */
   set(key: string, result: SearchResult): void {
+    // Lazy cleanup every 60 seconds
+    this.maybePurge();
+
     // 최대 항목 초과 시 가장 오래된 항목 제거 (LRU)
     if (this.cache.size >= MAX_ENTRIES) {
       this.evictOldest();

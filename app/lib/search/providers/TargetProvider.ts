@@ -63,10 +63,10 @@ function getNestedString(obj: unknown, path: string): string {
 
 function getNestedNumber(obj: unknown, path: string): number {
   const val = getNestedValue(obj, path);
-  if (typeof val === 'number') return val;
+  if (typeof val === 'number') return isNaN(val) ? 0 : Math.max(0, val);
   if (typeof val === 'string') {
     const n = parseFloat(val.replace(/[^0-9.-]/g, ''));
-    return Number.isNaN(n) ? 0 : n;
+    return Number.isNaN(n) ? 0 : Math.max(0, n);
   }
   return 0;
 }
@@ -296,7 +296,6 @@ export class TargetProvider implements SearchProvider {
         }
 
         if (products.length > 0) {
-          console.log(`✅ [TargetProvider] ${products.length} products from ${url}`);
           return products;
         }
       } catch (err: unknown) {

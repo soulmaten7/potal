@@ -24,7 +24,7 @@
  * - 축 개수 조정 → SYSTEM_PROMPT의 숫자 수정
  * - 다른 파일 건드릴 필요 없음
  *
- * 비용: ~400 input tokens + ~120 output tokens ≈ $0.00013/call
+ * 비용: ~400 input tokens + ~120 output tokens ≈ $0.00008/call (gpt-4o-mini)
  * ══════════════════════════════════════════════════════════════
  */
 
@@ -45,8 +45,8 @@ import type {
 export const CONFIG: PromptModuleConfig = {
   id: 'smart-filter',
   version: '4.0.0',
-  description: '계층형 축(Axis) 기반 AI 스마트 필터 — gpt-4o + 데이터 강화',
-  model: 'gpt-4o',
+  description: '계층형 축(Axis) 기반 AI 스마트 필터 — gpt-4o-mini + 데이터 강화',
+  model: 'gpt-4o-mini',
   temperature: 0.15,
   maxTokens: 1000,
   timeoutMs: 8000,
@@ -352,15 +352,131 @@ export function parseOutput(raw: string): SmartFilterOutput {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// FALLBACK — AI 실패 시 빈 결과 (빈도 기반 fallback은 호출측에서)
+// FALLBACK — AI 실패 시 빈도 기반 자동 필터 생성
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+/**
+ * Fallback factory — 클로저로 input을 캡처하여 레이스 컨디션 방지
+ * (모듈 레벨 변수 대신 함수 스코프 사용)
+ */
+export function createFallback(input: SmartFilterInput): () => SmartFilterOutput {
+  return () => {
+    if (input.titles.length > 0 || (input.products && input.products.length > 0)) {
+      return frequencyBasedFallback(input);
+    }
+    return { detectedCategory: 'unknown', brands: [], axes: [], keywords: [] };
+  };
+}
+
+// executePrompt 호환용 기본 fallback (input 없이 호출될 때)
 export function fallback(): SmartFilterOutput {
+  return { detectedCategory: 'unknown', brands: [], axes: [], keywords: [] };
+}
+
+/**
+ * 빈도 기반 fallback — AI 없이 상품 타이틀에서 패턴 추출
+ * - 대소문자 통합 (lowercase key 기반 카운팅)
+ * - 2-gram 지원 ("Noise Cancelling", "Stainless Steel" 등)
+ * - 브랜드 2단어 지원 ("Mr. Coffee", "Royal Kludge" 등)
+ */
+function frequencyBasedFallback(input: SmartFilterInput): SmartFilterOutput {
+  const titles = input.products?.map(p => p.title) || input.titles || [];
+  if (titles.length === 0) {
+    return { detectedCategory: 'unknown', brands: [], axes: [], keywords: [] };
+  }
+
+  // ── 브랜드 추출: 첫 1-2 단어 조합을 카운트 ──
+  const brandCount = new Map<string, number>();  // key: original case
+  const brandLowerMap = new Map<string, string>(); // lowercase → first-seen original
+  const SKIP_BRANDS = new Set(['the', 'new', 'for', 'with', 'and', 'pack', 'set', 'pro', 'premium', 'original', 'official', 'genuine', 'best', 'top', 'amazon', 'walmart', 'ebay', 'target']);
+
+  for (const title of titles) {
+    const words = title.trim().split(/\s+/);
+    // 1단어 + 2단어 브랜드 후보 시도
+    const candidates: string[] = [];
+    if (words[0] && words[0].length >= 2) candidates.push(words[0]);
+    if (words[0] && words[1] && /^[A-Z]/.test(words[1])) candidates.push(`${words[0]} ${words[1]}`);
+
+    for (const candidate of candidates) {
+      const lower = candidate.toLowerCase();
+      if (SKIP_BRANDS.has(lower) || /^\d/.test(candidate)) continue;
+      const normalized = candidate.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+      if (normalized.length < 2) continue;
+
+      if (!brandLowerMap.has(lower)) brandLowerMap.set(lower, candidate);
+      const canonical = brandLowerMap.get(lower)!;
+      brandCount.set(canonical, (brandCount.get(canonical) || 0) + 1);
+    }
+  }
+  const brands = [...brandCount.entries()]
+    .filter(([, count]) => count >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([brand]) => brand);
+
+  // ── 공통 키워드 추출 (대소문자 통합 + 2-gram 지원) ──
+  const queryWords = new Set(input.query.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+  const brandLowers = new Set(brands.map(b => b.toLowerCase()));
+  const wordCount = new Map<string, number>();     // lowercase → count
+  const wordOriginal = new Map<string, string>();   // lowercase → first-seen original
+  const STOP_WORDS = new Set([
+    'the', 'a', 'an', 'and', 'or', 'for', 'with', 'in', 'of', 'to', 'by', 'on', 'at', 'is', 'it', 'from',
+    'new', 'pack', 'set', 'free', 'shipping', 'best', 'top', 'sale', 'hot', 'item', 'lot', 'pcs', 'piece',
+    'amazon', 'walmart', 'ebay', 'target', 'aliexpress',
+  ]);
+
+  for (const title of titles) {
+    const words = title.split(/\s+/).map(w => w.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')).filter(w => w.length >= 2);
+    const seen = new Set<string>();
+
+    for (let i = 0; i < words.length; i++) {
+      // 1-gram
+      const w1 = words[i];
+      const l1 = w1.toLowerCase();
+      if (!STOP_WORDS.has(l1) && !queryWords.has(l1) && !brandLowers.has(l1) && !seen.has(l1)) {
+        seen.add(l1);
+        if (!wordOriginal.has(l1)) wordOriginal.set(l1, w1);
+        wordCount.set(l1, (wordCount.get(l1) || 0) + 1);
+      }
+
+      // 2-gram (예: "Noise Cancelling", "Stainless Steel")
+      if (i + 1 < words.length) {
+        const w2 = `${words[i]} ${words[i + 1]}`;
+        const l2 = w2.toLowerCase();
+        if (!queryWords.has(l2) && !seen.has(l2)) {
+          seen.add(l2);
+          if (!wordOriginal.has(l2)) wordOriginal.set(l2, w2);
+          wordCount.set(l2, (wordCount.get(l2) || 0) + 1);
+        }
+      }
+    }
+  }
+
+  // 2-gram이 1-gram보다 가치가 높으므로 우선 정렬
+  const featureValues = [...wordCount.entries()]
+    .filter(([, count]) => count >= 2)
+    .sort((a, b) => {
+      // 2-gram 우선, 같으면 빈도순
+      const aGram = a[0].includes(' ') ? 1 : 0;
+      const bGram = b[0].includes(' ') ? 1 : 0;
+      if (bGram !== aGram) return bGram - aGram;
+      return b[1] - a[1];
+    })
+    .slice(0, 10)
+    .map(([lower]) => wordOriginal.get(lower) || lower);
+
+  const axes: FilterAxis[] = [];
+  if (featureValues.length > 0) {
+    axes.push({ name: 'Features', values: featureValues });
+  }
+
+  const keywords = axes.flatMap(a => a.values);
+
   return {
     detectedCategory: 'unknown',
-    brands: [],
-    axes: [],
-    keywords: [],
+    brands,
+    axes,
+    keywords,
   };
 }
 
@@ -376,7 +492,7 @@ export async function generateSmartFilters(
     systemPrompt: SYSTEM_PROMPT,
     userMessage: buildUserMessage(input),
     fewShot: FEW_SHOT_EXAMPLES,
-    fallback,
+    fallback: createFallback(input),  // 클로저로 input 캡처 — 레이스 컨디션 방지
     parseOutput,
   });
 }

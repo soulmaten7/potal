@@ -99,7 +99,7 @@ function normalizeImage(item: Record<string, unknown>): string {
       if (typeof imgUrl === 'string' && imgUrl.trim()) return ensureHttps(imgUrl);
     }
   }
-  return 'https://placehold.co/400x400?text=AliExpress';
+  return '';
 }
 
 // ── 가격 추출: minPrice 대신 실제 판매가 우선 ──
@@ -224,7 +224,7 @@ function mapItemToProduct(
   const minPriceNum = item.prices ? findMinPriceInObject(item.prices) : 0;
   const hasPriceRange = minPriceNum > 0 && priceNum > 0 && minPriceNum < priceNum * 0.5;
   // 가격 범위가 클 때 (minPrice가 메인 가격의 50% 미만) "From $X" 표시
-  const price = hasPriceRange ? `$${priceNum.toFixed(2)}` : `$${priceNum.toFixed(2)}`;
+  const price = hasPriceRange ? `From $${minPriceNum.toFixed(2)}` : `$${priceNum.toFixed(2)}`;
 
   // AliExpress: usually free shipping, sometimes paid
   const shippingRaw = item.shippingFee ?? item.logistics_cost ?? item.freightAmount;
@@ -378,13 +378,18 @@ export class AliExpressProvider implements SearchProvider {
       url.searchParams.set('query', queryForApi);
       url.searchParams.set('page', String(page));
 
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+
       const res = await fetch(url.toString(), {
         method: 'GET',
         headers: {
           'x-rapidapi-key': apiKey,
           'x-rapidapi-host': host,
         },
+        signal: controller.signal,
       });
+      clearTimeout(timer);
 
       if (!res.ok) {
         // Try alternative endpoint
@@ -392,10 +397,15 @@ export class AliExpressProvider implements SearchProvider {
         altUrl.searchParams.set('q', queryForApi);
         altUrl.searchParams.set('page', String(page));
 
+        const controller2 = new AbortController();
+        const timer2 = setTimeout(() => controller2.abort(), 8000);
+
         const altRes = await fetch(altUrl.toString(), {
           method: 'GET',
           headers: { 'x-rapidapi-key': apiKey, 'x-rapidapi-host': host },
+          signal: controller2.signal,
         });
+        clearTimeout(timer2);
 
         if (!altRes.ok) {
           console.error(`❌ [AliExpress] Both endpoints failed: ${res.status}, ${altRes.status}`);
@@ -406,8 +416,13 @@ export class AliExpressProvider implements SearchProvider {
       }
 
       return this.parseResponse(await res.json(), queryForApi, priceIntent);
-    } catch (err) {
-      console.error('❌ [AliExpress] Fetch error:', err instanceof Error ? err.message : err);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes('abort')) {
+        console.warn('⏱️ [AliExpress] Timeout');
+      } else {
+        console.error('❌ [AliExpress] Fetch error:', msg);
+      }
       return [];
     }
   }

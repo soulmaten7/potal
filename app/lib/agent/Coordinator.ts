@@ -31,6 +31,7 @@ import type {
 } from './types';
 import type { SearchResult } from '../search/types';
 import type { TabSummary, ScoredProduct } from '../search/ScoringEngine';
+import { logSearch, generateSessionId, type SearchLogEntry } from '../learning';
 
 // Tool imports (deterministic, $0, fast)
 import { filterFraudulentProducts } from '../search/FraudFilter';
@@ -88,8 +89,12 @@ const PROVIDER_TIMEOUT = 12_000;
 const AI_AGENT_TIMEOUT = 6_000;
 function withTimeout<T>(p: Promise<T>, name: string): Promise<T> {
   return new Promise((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error(`[${name}] timeout`)), PROVIDER_TIMEOUT);
-    p.then(r => { clearTimeout(t); resolve(r); }).catch(e => { clearTimeout(t); reject(e); });
+    let settled = false;
+    const t = setTimeout(() => {
+      if (!settled) { settled = true; reject(new Error(`[${name}] timeout`)); }
+    }, PROVIDER_TIMEOUT);
+    p.then(r => { if (!settled) { settled = true; clearTimeout(t); resolve(r); } })
+     .catch(e => { if (!settled) { settled = true; clearTimeout(t); reject(e); } });
   });
 }
 
@@ -109,6 +114,8 @@ export class Coordinator {
   private totalTokens: number = 0;
   /** 마지막 검색의 리테일러별 상태 (Skyscanner-style partial failure tracking) */
   private _lastProviderStatus: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }> = {};
+  /** Session ID for learning system (generated once per coordinator instance) */
+  private sessionId: string = generateSessionId();
 
   /**
    * 검색 실행 — 전체 파이프라인 오케스트레이션
@@ -125,7 +132,6 @@ export class Coordinator {
       return this.emptyResult();
     }
 
-    console.log(`\n🎯 [Coordinator] Starting search: "${trimmed}" | market=${market} | page=${page}`);
 
     // ── Step 1: Query Analysis ──
     // 현재는 간단한 분석. 향후 QueryAgent(AI)로 교체.
@@ -133,8 +139,7 @@ export class Coordinator {
 
     // ── Step 1.5: 질문형 쿼리 → 조기 반환 (API 호출 없이 suggestedProducts만) ──
     if (queryAnalysis.isQuestionQuery && queryAnalysis.suggestedProducts && queryAnalysis.suggestedProducts.length > 0) {
-      console.log(`❓ [Coordinator] Question query detected → returning ${queryAnalysis.suggestedProducts.length} suggested products (no API calls)`);
-      return {
+      const questionResult = {
         results: [],
         total: 0,
         metadata: {
@@ -144,13 +149,14 @@ export class Coordinator {
           suggestedProducts: queryAnalysis.suggestedProducts,
         },
       };
+      this.logSearchAsync(context, queryAnalysis, questionResult);
+      return questionResult;
     }
 
     // ── Step 2: Fetch from Providers ──
     const rawProducts = await this.fetchFromProviders(queryAnalysis, page, market);
 
     if (rawProducts.length === 0) {
-      console.log('📭 [Coordinator] No results from providers.');
       return this.emptyResult();
     }
 
@@ -158,7 +164,6 @@ export class Coordinator {
     const cleanedProducts = await this.runFraudFilter(rawProducts);
 
     if (cleanedProducts.length === 0) {
-      console.log('🛡️ [Coordinator] All products filtered by fraud rules.');
       return this.emptyResult();
     }
 
@@ -172,7 +177,6 @@ export class Coordinator {
       filteredProducts = analysisResult.filtered;
 
       if (analysisResult.sameProductGroups.size > 0) {
-        console.log(`🔗 [Coordinator] Found ${analysisResult.sameProductGroups.size} same-product groups`);
       }
     } else if (this.shouldRunAIFilter(page, cleanedProducts.length)) {
       // Fallback: 기존 AIFilter (가벼움, 관련성만)
@@ -207,11 +211,12 @@ export class Coordinator {
 
     if (decision === 'refine' && page === 1 && queryAnalysis.confidence < 0.8) {
       // 재검색: 다른 검색어로 추가 검색 시도
-      console.log('🔄 [Coordinator] Results insufficient, attempting refined search...');
       const refinedProducts = await this.attemptRefinedSearch(queryAnalysis, page, market);
       if (refinedProducts.length > 0) {
-        // 기존 결과에 추가하고 다시 스코어링
-        const merged = [...enrichedProducts, ...refinedProducts];
+        // 기존 결과에 추가하되 중복 제거 (같은 ID 방지)
+        const existingIds = new Set(enrichedProducts.map(p => p.id));
+        const uniqueRefined = refinedProducts.filter(p => !existingIds.has(p.id));
+        const merged = [...enrichedProducts, ...uniqueRefined];
         const mergedLandedCosts = calculateAllLandedCosts(merged, { zipcode });
         const reScoringResult = scoreProducts(merged, {
           landedCosts: mergedLandedCosts,
@@ -225,7 +230,6 @@ export class Coordinator {
           return (p.shipping || '').toLowerCase() === 'domestic';
         }).length;
         const pipeline = this.buildPipelineResult();
-        console.log(`\n✅ [Coordinator] Done (with refinement) in ${pipeline.totalDuration}ms | ${reResults.length} products`);
         return {
           results: reResults,
           total: reResults.length,
@@ -250,9 +254,8 @@ export class Coordinator {
     const pipeline = this.buildPipelineResult();
     const aiSteps = pipeline.steps.filter(s => s.type === 'ai');
     const toolSteps = pipeline.steps.filter(s => s.type === 'deterministic');
-    console.log(`\n✅ [Coordinator] Done in ${pipeline.totalDuration}ms | ${results.length} products (🇺🇸${domesticCount} + 🌏${results.length - domesticCount}) | AI:${aiSteps.length} Tool:${toolSteps.length} | ~$${pipeline.estimatedCost.toFixed(4)}`);
 
-    return {
+    const result = {
       results,
       total: results.length,
       metadata: {
@@ -263,6 +266,11 @@ export class Coordinator {
         providerStatus: this._lastProviderStatus,
       },
     };
+
+    // ── Phase 1: Log search (fire-and-forget, never awaited) ──
+    this.logSearchAsync(context, queryAnalysis, result);
+
+    return result;
   }
 
   /**
@@ -324,7 +332,6 @@ export class Coordinator {
       this.recordStep('intent_router', 'IntentRouter', 'ai', query,
         { intent: intent.intent, confidence: intent.confidence, searchQuery: intent.searchQuery },
         stepStart, tokensUsed);
-      console.log(`🧠 [IntentRouter] ${intent.intent} (${(intent.confidence * 100).toFixed(0)}%) → "${intent.searchQuery}"`);
     } catch (err) {
       console.warn('⚠️ [Coordinator] Intent Router failed, continuing with QueryAgent:', err);
     }
@@ -471,10 +478,12 @@ export class Coordinator {
           domesticResults.push(...items);
           providerStatus[name] = { status: 'ok', count: items.length };
         } else {
-          const errMsg = r.reason?.message || '';
+          const errMsg = r.reason?.message || 'Unknown error';
+          const fullError = r.reason ? `${r.reason.message}${r.reason.stack ? '\n' + r.reason.stack : ''}` : errMsg;
           const isTimeout = errMsg.includes('timeout');
           providerStatus[name] = { status: isTimeout ? 'timeout' : 'error', count: 0 };
           console.error(`❌ [Coordinator] ${name} ${isTimeout ? 'timeout' : 'error'}: ${errMsg}`);
+          console.error(`  Details: ${fullError}`);
         }
       });
     }
@@ -487,10 +496,12 @@ export class Coordinator {
           globalResults.push(...items);
           providerStatus[name] = { status: 'ok', count: items.length };
         } else {
-          const errMsg = r.reason?.message || '';
+          const errMsg = r.reason?.message || 'Unknown error';
+          const fullError = r.reason ? `${r.reason.message}${r.reason.stack ? '\n' + r.reason.stack : ''}` : errMsg;
           const isTimeout = errMsg.includes('timeout');
           providerStatus[name] = { status: isTimeout ? 'timeout' : 'error', count: 0 };
           console.error(`❌ [Coordinator] ${name} ${isTimeout ? 'timeout' : 'error'}: ${errMsg}`);
+          console.error(`  Details: ${fullError}`);
         }
       });
     }
@@ -507,7 +518,6 @@ export class Coordinator {
     // providerStatus를 인스턴스에 저장 (metadata에서 사용)
     this._lastProviderStatus = providerStatus;
 
-    console.log(`🛒 [Coordinator] Domestic: ${domesticResults.length} | Global: ${globalResults.length} | Total: ${allProducts.length}`);
     const failedProviders = Object.entries(providerStatus).filter(([, v]) => v.status !== 'ok').map(([k]) => k);
     if (failedProviders.length > 0) {
       console.warn(`⚠️ [Coordinator] Failed providers: ${failedProviders.join(', ')}`);
@@ -538,11 +548,8 @@ export class Coordinator {
     const globalBefore = products.filter(p => p.category === 'international' || p.shipping === 'International').length;
     const globalAfter = cleaned.filter(p => p.category === 'international' || p.shipping === 'International').length;
     if (globalBefore > 0) {
-      console.log(`🛡️ [FraudFilter] Global items: ${globalBefore} → ${globalAfter} (removed ${globalBefore - globalAfter})`);
       if (fraudResult.removed.length > 0) {
         const sample = fraudResult.removed.slice(0, 3).map(p => `${p.site}: "${(p.name || '').slice(0, 30)}" price=${p.price}`);
-        console.log(`🛡️ [FraudFilter] Removed samples:`, sample);
-        console.log(`🛡️ [FraudFilter] Remove reasons:`, fraudResult.stats.removeReasons);
       }
     }
 
@@ -605,9 +612,6 @@ export class Coordinator {
       const tokensUsed = (result.meta.tokensUsed?.input ?? 0) + (result.meta.tokensUsed?.output ?? 0);
       this.totalTokens += tokensUsed;
 
-      if (removedReasons.length > 0) {
-        console.log(`⚖️ [ProductJudge] Kept ${filtered.length}/${products.length} | Removed: ${removedReasons.map(r => r.reason).join(', ')}`);
-      }
 
       this.recordStep(
         'ai_filter',
@@ -755,7 +759,6 @@ export class Coordinator {
     }
 
     try {
-      console.log(`🔄 [Coordinator] Refined search with: "${altQuery}"`);
       const settled = await Promise.allSettled([
         withTimeout(amazonProvider.search(altQuery, page), 'Amazon-refine'),
         withTimeout(walmartProvider.search(altQuery, page), 'Walmart-refine'),
@@ -797,7 +800,6 @@ export class Coordinator {
 
     // 비용 최적화: 상품이 5개 미만이면 AI 필터 스킵 (이미 적으니까)
     if (productCount < 5) {
-      console.log('💡 [Coordinator] Skipping AI filter: too few products');
       return false;
     }
 
@@ -839,7 +841,6 @@ export class Coordinator {
   ) {
     const duration = Date.now() - startTime;
     const emoji = type === 'ai' ? '🤖' : '⚡';
-    console.log(`  ${emoji} [${agent}] ${step} — ${duration}ms${tokensUsed ? ` (~${tokensUsed} tokens)` : ''}`);
 
     this.steps.push({
       step,
@@ -865,6 +866,44 @@ export class Coordinator {
       totalTokensUsed: this.totalTokens,
       estimatedCost,
     };
+  }
+
+  /**
+   * Log search to Supabase asynchronously (fire-and-forget)
+   * Never awaited in search path — does not affect search latency
+   */
+  private logSearchAsync(context: SearchContext, queryAnalysis: QueryAnalysis, result: SearchResult) {
+    const endTime = Date.now();
+    const responseTime = endTime - this.startTime;
+
+    // Collect provider results
+    const providerResults: Record<string, number> = {};
+    if (this._lastProviderStatus) {
+      for (const [name, status] of Object.entries(this._lastProviderStatus)) {
+        providerResults[name] = status.count || 0;
+      }
+    }
+
+    const entry: SearchLogEntry = {
+      session_id: this.sessionId,
+      query: context.originalQuery,
+      intent: (this.steps.find(s => s.step === 'intent_router')?.output as any)?.intent || 'unknown',
+      intent_confidence: (this.steps.find(s => s.step === 'intent_router')?.output as any)?.confidence || 0,
+      is_question_query: queryAnalysis.isQuestionQuery || false,
+      search_query_used: queryAnalysis.platformQueries?.amazon || context.originalQuery,
+      category: queryAnalysis.category || 'General',
+      strategy: queryAnalysis.strategy || 'unknown',
+      provider_results: providerResults,
+      total_results: result.total,
+      fraud_removed: this.fraudStats.removed,
+      ai_filtered: this.fraudStats.flagged,
+      response_time_ms: responseTime,
+      ai_cost_usd: this.buildPipelineResult().estimatedCost,
+      used_ai_analysis: this.steps.some(s => s.type === 'ai' && s.step !== 'intent_router'),
+    };
+
+    // Fire-and-forget: never await (logSearch is synchronous, async happens in background)
+    logSearch(entry);
   }
 }
 

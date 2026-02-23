@@ -110,10 +110,10 @@ function parseDeliveryDays(product: Product): number {
 // ─── Helper: Parse price to number ──────────────────
 
 function parsePriceToNum(price: string | number | undefined): number {
-  if (typeof price === 'number') return price;
+  if (typeof price === 'number') return isNaN(price) || !isFinite(price) ? 0 : Math.max(0, price);
   if (!price) return 0;
   const num = parseFloat(String(price).replace(/[^0-9.-]/g, ''));
-  return isNaN(num) ? 0 : num;
+  return isNaN(num) || !isFinite(num) ? 0 : Math.max(0, num);
 }
 
 // ─── Helper: Estimate trust score ───────────────────
@@ -153,23 +153,31 @@ function estimateTrustScore(product: Product): number {
 
 // ─── Helper: Estimate match accuracy ────────────────
 
-function estimateMatchAccuracy(product: Product, _query?: string): number {
-  // For now, return a baseline. This will be enhanced when LLM pre-think
-  // layer provides relevance scoring.
-  // Higher-priced items with real images tend to be more relevant.
-
+function estimateMatchAccuracy(product: Product, query?: string): number {
   let score = 70; // baseline — all results from API should be somewhat relevant
 
   // Has image → more likely real product
-  if (product.image && product.image !== 'placeholder') score += 10;
+  if (product.image && product.image !== 'placeholder' && !product.image.includes('placehold')) score += 5;
 
   // Has brand → more likely main product (not accessory)
-  if (product.brand) score += 10;
+  if (product.brand) score += 5;
 
   // Title length sweet spot (not too short, not keyword-stuffed)
   const titleLen = (product.name || '').length;
-  if (titleLen >= 20 && titleLen <= 150) score += 10;
+  if (titleLen >= 20 && titleLen <= 150) score += 5;
   else if (titleLen > 200) score -= 5; // keyword stuffing risk
+
+  // Query word matching: how many query words appear in product title?
+  if (query) {
+    const titleLower = (product.name || '').toLowerCase();
+    const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+    if (queryWords.length > 0) {
+      const matchCount = queryWords.filter(w => titleLower.includes(w)).length;
+      const matchRatio = matchCount / queryWords.length;
+      // 0% match → -10, 50% match → 0, 100% match → +15
+      score += Math.round(matchRatio * 25 - 10);
+    }
+  }
 
   return Math.max(0, Math.min(100, score));
 }
@@ -208,10 +216,12 @@ function estimateReturnPolicyScore(product: Product): number {
 
 function normalizeValues(values: number[]): number[] {
   if (values.length === 0) return [];
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  if (max === min) return values.map(() => 50); // all equal → all get 50
-  return values.map(v => ((v - min) / (max - min)) * 100);
+  // NaN 방어: NaN이 있으면 0으로 대체
+  const safe = values.map(v => (isNaN(v) || !isFinite(v)) ? 0 : v);
+  const min = Math.min(...safe);
+  const max = Math.max(...safe);
+  if (max === min) return safe.map(() => 50); // all equal → all get 50
+  return safe.map(v => ((v - min) / (max - min)) * 100);
 }
 
 // ─── Main Scoring Function ──────────────────────────
@@ -367,14 +377,16 @@ export function scoreProducts(
 // ─── Format Helpers ─────────────────────────────────
 
 function formatPrice(price: number): string {
+  if (!isFinite(price) || isNaN(price) || price < 0) return '$0';
   if (price === 0) return '$0';
   return `$${price.toFixed(price % 1 === 0 ? 0 : 2)}`;
 }
 
 function formatDays(days: number): string {
+  if (!isFinite(days) || isNaN(days) || days < 0) return 'N/A';
   if (days === 0) return 'Today';
   if (days === 1) return '1 Day';
-  return `${days} Days`;
+  return `${Math.round(days)} Days`;
 }
 
 // ─── Exports ────────────────────────────────────────
