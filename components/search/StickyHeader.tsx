@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useRouter } from 'next/navigation'; // [ADD] 직접 이동을 위해 추가
 import { Icons, MapPinIcon, ClockIcon } from '../icons';
 import { lookupZip } from '@/app/lib/utils/zipCodeDatabase';
+import { useVoiceSearch } from '@/app/hooks/useVoiceSearch';
 
 interface StickyHeaderProps {
   query: string;
@@ -30,6 +31,16 @@ export function StickyHeader({
   const [showZipDropdown, setShowZipDropdown] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+
+  // 🎤 음성 검색
+  const handleVoiceResult = useCallback((transcript: string) => {
+    setQuery(transcript);
+  }, [setQuery]);
+
+  const { isSupported: voiceSupported, isListening, toggleListening } = useVoiceSearch({
+    lang: 'en-US',
+    onResult: handleVoiceResult,
+  });
 
   // ZIP 코드 실시간 검증
   const zipInfo = useMemo(() => {
@@ -282,11 +293,25 @@ export function StickyHeader({
                 )}
               </div>
 
+              {/* 🎤 마이크 (음성 검색) */}
+              {voiceSupported && (
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`shrink-0 p-0.5 rounded-full transition-colors ${isListening ? 'bg-red-500/20' : ''}`}
+                  aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
+                >
+                  <Icons.Microphone
+                    className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`}
+                    style={{ color: isListening ? '#ef4444' : 'rgba(255,255,255,0.5)' }}
+                  />
+                </button>
+              )}
+
               {/* 📷 카메라 아이콘 (오른쪽) — OS 기본 picker 호출 */}
               <button type="button" onClick={() => fileInputRef.current?.click()} className="shrink-0 p-0.5">
                 <Icons.Camera className="w-4 h-4" style={{ color: imagePreview ? '#F59E0B' : 'rgba(255,255,255,0.5)' }} />
               </button>
-              {/* 노란 검색 버튼 제거 — 왼쪽 돋보기와 중복. 엔터키로 검색 실행 */}
             </div>
           </div>
 
@@ -357,15 +382,31 @@ export function StickyHeader({
                     onFocus={handleSearchInputFocus}
                     onClick={handleSearchInputFocus}
                     placeholder={imagePreview ? "Describe this photo..." : "e.g. Lego Star Wars"}
-                    className="w-full text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0 pr-16"
+                    className="w-full text-[16px] font-bold text-slate-900 outline-none border-0 focus:ring-0 bg-transparent placeholder:text-gray-300 p-0 pr-24"
                   />
                   {query.trim() && (
-                    <button type="button" onClick={() => { setQuery(''); searchInputRef.current?.focus(); }} className="absolute right-9 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full transition-colors">
+                    <button type="button" onClick={() => { setQuery(''); searchInputRef.current?.focus(); }} className={`absolute ${voiceSupported ? 'right-[72px]' : 'right-9'} top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 rounded-full transition-colors`}>
                       <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
                     </button>
                   )}
-                  {/* 📷 카메라 아이콘 — OS 기본 picker 호출 */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2">
+                  {/* 🎤 + 📷 아이콘 — 오른쪽 배치 */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                    {/* 🎤 마이크 (음성 검색) */}
+                    {voiceSupported && (
+                      <button
+                        type="button"
+                        onClick={toggleListening}
+                        className={`flex items-center justify-center rounded-full transition-all hover:scale-105 ${isListening ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-slate-100'}`}
+                        style={{ width: '32px', height: '32px' }}
+                        aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
+                      >
+                        <Icons.Microphone
+                          className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`}
+                          style={{ color: isListening ? '#ef4444' : '#94a3b8' }}
+                        />
+                      </button>
+                    )}
+                    {/* 📷 카메라 아이콘 — OS 기본 picker 호출 */}
                     <button type="button" onClick={() => fileInputRef.current?.click()} className="flex items-center justify-center rounded-full transition-all hover:scale-105 hover:bg-slate-100" style={{ width: '32px', height: '32px' }}>
                       <Icons.Camera className="w-5 h-5" style={{ color: imagePreview ? '#F59E0B' : '#94a3b8' }} />
                     </button>

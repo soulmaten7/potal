@@ -1,6 +1,32 @@
 # POTAL Development Changelog
 
-## [2026-02-24] Serper Google Shopping 17개 Provider 추가 + 상품 링크 문제 대응
+## [2026-02-24] Serper 제거 + 음성 검색 + Rakuten/RapidAPI 환불
+
+### 🎤 음성 검색 (Voice Search) 기능 추가
+- **`useVoiceSearch.ts`** 커스텀 훅 생성 — Web Speech API 기반, 비용 $0
+- **SearchWidget.tsx** (홈) + **StickyHeader.tsx** (검색결과) 양쪽에 마이크 아이콘 추가
+- 모바일 + 데스크톱 모두 적용
+- 마이크 클릭 → 빨간색 펄스 → 음성 인식 → 검색창 텍스트 자동 입력
+- Chrome/Edge 완벽 지원, Safari 기본, Firefox 미지원 (버튼 숨김)
+- `icons.tsx`에 `Microphone` SVG 아이콘 추가
+
+### 🗑️ Serper Google Shopping 17개 Provider 제거
+- Coordinator.ts에서 Serper 관련 코드 전부 제거
+- 5개 RapidAPI provider만 유지 (Amazon, Walmart, eBay, Target, AliExpress)
+- 이유: Serper Shopping API가 Google 리다이렉트 URL만 반환 → 실제 상품 페이지 연결 불가
+- 코드 파일은 `providers/` 폴더에 보존 (향후 직접 API 확보 시 참고)
+
+### 💰 RapidAPI 환불 요청
+- Best Buy API (bestbuy-usa.p.rapidapi.com) — 500 에러, 환불 요청 메일 발송
+- Shein API (unofficial-shein.p.rapidapi.com) — 500 에러, 환불 요청 메일 발송
+
+### 🏪 Rakuten Publisher 이슈
+- "Complete company details" 미완료 상태 — 시크릿 모드에서도 동일
+- Case #390705 스크린샷 첨부 답장 완료
+
+---
+
+## [2026-02-24] (이전 세션) Serper Google Shopping 17개 Provider 추가 + 상품 링크 문제 대응
 
 ### 🛒 Serper Google Shopping Provider 확장
 - **SerperShoppingProvider 베이스 클래스** 생성 — 17개 provider가 상속하는 공통 추상 클래스

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { Icons, MapPinIcon, ClockIcon } from '../icons';
 import { lookupZip, validateZip } from '@/app/lib/utils/zipCodeDatabase';
+import { useVoiceSearch } from '@/app/hooks/useVoiceSearch';
 
 interface SearchWidgetProps {
   query: string;
@@ -27,6 +28,16 @@ export function SearchWidget({
   const [showZipDropdown, setShowZipDropdown] = useState(false);
   const [heroSearchFocused, setHeroSearchFocused] = useState(false);
   const [showPhotoMenu, setShowPhotoMenu] = useState(false);
+
+  // 🎤 음성 검색
+  const handleVoiceResult = useCallback((transcript: string) => {
+    setQuery(transcript);
+  }, [setQuery]);
+
+  const { isSupported: voiceSupported, isListening, toggleListening } = useVoiceSearch({
+    lang: 'en-US',
+    onResult: handleVoiceResult,
+  });
 
   // ZIP 코드 실시간 검증 — City, State 표시
   const zipInfo = useMemo(() => {
@@ -314,6 +325,21 @@ export function SearchWidget({
                 </button>
               )}
 
+              {/* 🎤 마이크 (음성 검색) — Web Speech API 미지원 시 숨김 */}
+              {voiceSupported && (
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className={`p-0.5 flex-shrink-0 rounded-full transition-colors ${isListening ? 'bg-red-100' : ''}`}
+                  aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
+                >
+                  <Icons.Microphone
+                    className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`}
+                    style={{ color: isListening ? '#ef4444' : '#02122c' }}
+                  />
+                </button>
+              )}
+
               {/* 📷 카메라 (오른쪽, 진한색) — 메뉴 토글 */}
               <div className="relative flex-shrink-0" ref={mPhotoMenuRef}>
                 <button type="button" onClick={handlePhotoBtnClick} className="p-0.5">
@@ -428,6 +454,21 @@ export function SearchWidget({
             {(query.trim() || imagePreview) && (
               <button type="button" onClick={clearQuery} className="p-1 hover:bg-slate-100 rounded-full transition-colors flex-shrink-0">
                 <Icons.X className="w-4 h-4 text-slate-400 hover:text-slate-600" />
+              </button>
+            )}
+
+            {/* 🎤 마이크 (음성 검색) — Web Speech API 미지원 시 숨김 */}
+            {voiceSupported && (
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={`p-1 rounded-full transition-colors flex-shrink-0 ${isListening ? 'bg-red-100 hover:bg-red-200' : 'hover:bg-slate-100'}`}
+                aria-label={isListening ? 'Stop voice search' : 'Start voice search'}
+              >
+                <Icons.Microphone
+                  className={`w-5 h-5 ${isListening ? 'animate-pulse' : ''}`}
+                  style={{ color: isListening ? '#ef4444' : '#64748b' }}
+                />
               </button>
             )}
 
