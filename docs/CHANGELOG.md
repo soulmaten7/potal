@@ -1,5 +1,41 @@
 # POTAL Development Changelog
 
+## [2026-02-24] Serper Google Shopping 17개 Provider 추가 + 상품 링크 문제 대응
+
+### 🛒 Serper Google Shopping Provider 확장
+- **SerperShoppingProvider 베이스 클래스** 생성 — 17개 provider가 상속하는 공통 추상 클래스
+- **16개 신규 Provider 추가**: Best Buy, Home Depot, Lowe's, Nordstrom, IKEA, Wayfair, Newegg, Sephora, Etsy, Mercari, iHerb, Shein, ASOS, Farfetch, YesStyle, MyTheresa
+- **기존 Temu Provider** SerperShoppingProvider 기반으로 리팩토링
+- Coordinator.ts에 22개 provider 등록 (RapidAPI 5개 + Serper 17개)
+
+### 🔗 상품 링크(URL) 문제 대응 시도
+Serper Shopping API가 Google 리다이렉트 URL을 반환하는 근본 문제에 대해 아래 해결책 시도:
+1. **2단계 Web Search** (site: 검색으로 실제 URL 찾기) — 부분 성공, 해석률 낮음
+2. **RequestThrottler** (5/sec + early release) — rate limit 해결
+3. **429 자동 재시도** (1회, 500ms) — 재시도 로직
+4. **시간 예산 (10s deadline)** — timeout 방지
+5. **directUrlLimit=2 + products=limit** — fallback URL 제거, 상품 수 제한
+6. **5분 in-memory 캐시** — 크레딧 절약
+7. **카테고리 기반 사전 필터링** — 쿼리 분류 → 관련 provider만 호출
+
+### ❌ 근본 문제 미해결 & 전략 전환 결정
+- **Serper 2단계 방식의 한계 인정**: URL 해석률 낮고, 크레딧 과다 소모
+- **Temu는 한 번도 제대로 작동한 적 없음** — 가장 처음 추가하려던 provider
+- **전략 전환**: Serper 의존 탈피, 각 쇼핑몰별 직접 API (RapidAPI/자체 API) 방식으로 전환
+- **다음 단계**: RapidAPI Temu Shopping API 테스트 후 Serper→RapidAPI 전환 시작
+
+### ❌ Temu API 시도 — 전부 실패 (다시 시도하지 말 것)
+- **Apify Actor** (`amit123/temu-products-scraper`) — 유일하게 잠깐 동작 후 403 차단 (2026-02-18~)
+- **RapidAPI Temu Shopping API** — 호출 자체 안 됨
+- **Apify Temu Listings Scraper** — 호출 안 됨
+- **Scrapeless** (scraper.temu, webunlocker) — 호출 안 됨
+- **Serper organic search** (`site:temu.com`) — 가격 데이터 미포함
+- **Serper Shopping** (`query + "temu"`) — URL이 Google 리다이렉트
+- **Google &btnI 리다이렉트** — 서버사이드 302 안 됨
+- directUrlLimit 5개 이상 — 65 web searches → timeout
+
+---
+
 ## [2026-02-23] MVP Final Audit + Live QA Bug Fixes + Phase 1 Learning System
 
 ### 🔍 MVP 최종 검수 (2라운드)

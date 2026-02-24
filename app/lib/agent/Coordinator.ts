@@ -38,21 +38,17 @@ import { filterFraudulentProducts } from '../search/FraudFilter';
 import { calculateAllLandedCosts } from '../search/CostEngine';
 import { scoreProducts } from '../search/ScoringEngine';
 
-// Provider imports
+// Provider imports — RapidAPI 기반 (기존)
 import { AmazonProvider } from '../search/providers/AmazonProvider';
 import { WalmartProvider } from '../search/providers/WalmartProvider';
-// BestBuyProvider 비활성화: RapidAPI 서버 500 에러 (2026-02-22 Playground에서도 확인)
-// import { BestBuyProvider } from '../search/providers/BestBuyProvider';
 import { AliExpressProvider } from '../search/providers/AliExpressProvider';
-// TemuProvider 활성화: Serper Google Shopping API 기반 (2026-02-24 전환)
-// 검색어에 "temu" 추가 → Google Shopping에서 가격/이미지/평점 전부 확보
-import { TemuProvider } from '../search/providers/TemuProvider';
-// CostcoProvider 비활성화: Deals API만 제공 (오프라인 중심, MVP 제외)
-// import { CostcoProvider } from '../search/providers/CostcoProvider';
-// SheinProvider 비활성화: 3번째 API도 서버 500 (2026-02-22 Playground에서도 확인)
-// import { SheinProvider } from '../search/providers/SheinProvider';
 import { EbayProvider } from '../search/providers/EbayProvider';
 import { TargetProvider } from '../search/providers/TargetProvider';
+
+// Serper Google Shopping providers — 제거됨 (2026-02-24)
+// 이유: Serper Shopping API가 Google 리다이렉트 URL만 반환 → 실제 상품 페이지 연결 불가
+// 17개 provider (Temu, Best Buy, Home Depot 등) 모두 제거
+// 향후 각 쇼핑몰의 직접 API (RapidAPI/자체 API) 확보 시 개별 재추가 예정
 
 // AI Agent imports (costs money, but makes decisions)
 import { filterProducts } from '../search/AIFilterService';
@@ -72,15 +68,12 @@ import { classifyIntent } from '../ai/prompts/intent-router';
 import { judgeProducts } from '../ai/prompts/product-judge';
 import type { IntentRouterOutput } from '../ai/types';
 
+// RapidAPI providers — 실제 작동하는 5개만 유지
 const amazonProvider = new AmazonProvider();
 const walmartProvider = new WalmartProvider();
-// const bestBuyProvider = new BestBuyProvider(); // 비활성화: RapidAPI 서버 500 에러 (2026-02-22 확인). 복구 시 주석 해제.
 const aliExpressProvider = new AliExpressProvider();
-const temuProvider = new TemuProvider(); // Serper Google Shopping 기반 활성화 (2026-02-24)
-// const costcoProvider = new CostcoProvider(); // 비활성화: 오프라인 중심, MVP 제외
 const ebayProvider = new EbayProvider();
 const targetProvider = new TargetProvider();
-// const sheinProvider = new SheinProvider(); // 비활성화: RapidAPI 서버 500 에러 (2026-02-22 확인). 복구 시 주석 해제.
 
 /** Provider별 개별 타임아웃 (12초, eBay/Target 등 느린 Provider 대응) */
 const PROVIDER_TIMEOUT = 12_000;
@@ -196,7 +189,7 @@ export class Coordinator {
     });
 
     // Step 5.3 제거: 가짜 config 기반 배송 토글 삭제 → API 실제 데이터만 표시
-    // Temu는 이제 실제 Provider로 fetchFromProviders에서 호출됨 (GlobalMockProvider 제거)
+    // GlobalMockProvider 제거됨 — 모든 provider는 fetchFromProviders에서 호출
 
     // ── Step 6: ScoringEngine (Tool — deterministic, $0) ──
     const scoringResult = await this.runScoringEngine(
@@ -421,8 +414,13 @@ export class Coordinator {
 
   /**
    * Step 2: Fetch from Providers (Tool)
-   * Amazon + Walmart + BestBuy (Domestic) | AliExpress + Temu + Shein (Global)
-   * 모두 병렬, 각 10초 개별 타임아웃
+   * Domestic: Amazon, Walmart, eBay, Target (RapidAPI)
+   * Global: AliExpress (RapidAPI)
+   * 모두 병렬, 각 12초 개별 타임아웃
+   *
+   * 2026-02-24: Serper Google Shopping 기반 17개 provider 제거
+   * 이유: Google 리다이렉트 URL만 반환 → 실제 상품 페이지 연결 불가
+   * 향후 각 쇼핑몰의 직접 API 확보 시 개별 재추가 예정
    */
   private async fetchFromProviders(
     analysis: QueryAnalysis,
@@ -435,38 +433,31 @@ export class Coordinator {
     const fetchGlobal = market !== 'domestic';
     const q = analysis.platformQueries?.amazon || analysis.original;
 
-    // Domestic: Amazon + Walmart + eBay + Target 병렬 (4개)
-    // BestBuy 비활성화: RapidAPI 서버 500 (2026-02-22). 복구 시 추가.
+    // Domestic: Amazon, Walmart, eBay, Target (RapidAPI — 직접 상품 URL 제공)
     const domesticPromises = fetchDomestic
       ? Promise.allSettled([
           withTimeout(amazonProvider.search(q, page), 'Amazon'),
           withTimeout(walmartProvider.search(q, page), 'Walmart'),
-          // withTimeout(bestBuyProvider.search(q, page), 'BestBuy'), // 비활성화: RapidAPI 500 에러 (2026-02-22)
           withTimeout(ebayProvider.search(q, page), 'eBay'),
           withTimeout(targetProvider.search(q, page), 'Target'),
-          // withTimeout(costcoProvider.search(q, page), 'Costco'), // 비활성화: 오프라인 중심, MVP 제외
         ])
       : Promise.resolve([]);
 
-    // Global: AliExpress + Temu (2개)
-    // Temu: Serper Google Shopping 기반 (2026-02-24 전환)
-    // Shein 비활성화: RapidAPI 서버 500 (2026-02-22). 복구 시 추가.
+    // Global: AliExpress (RapidAPI — 직접 상품 URL 제공)
     const globalQuery = analysis.platformQueries?.aliexpress || analysis.platformQueries?.amazon || analysis.original;
     const globalPromises = fetchGlobal
       ? Promise.allSettled([
           withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
-          withTimeout(temuProvider.search(globalQuery, page), 'Temu'),
-          // withTimeout(sheinProvider.search(globalQuery, page), 'Shein'), // 비활성화: RapidAPI 500 에러 (2026-02-22)
         ])
       : Promise.resolve([]);
 
     const [domesticSettled, globalSettled] = await Promise.all([domesticPromises, globalPromises]);
 
-    // Collect results + track provider status (Skyscanner-style partial failure)
+    // Collect results + track provider status
     const domesticResults: Product[] = [];
     const globalResults: Product[] = [];
     const domesticProviderNames = fetchDomestic ? ['Amazon', 'Walmart', 'eBay', 'Target'] : [];
-    const globalProviderNames = fetchGlobal ? ['AliExpress', 'Temu'] : [];
+    const globalProviderNames = fetchGlobal ? ['AliExpress'] : [];
 
     // 리테일러별 성공/실패 상태 추적
     const providerStatus: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }> = {};
@@ -480,11 +471,9 @@ export class Coordinator {
           providerStatus[name] = { status: 'ok', count: items.length };
         } else {
           const errMsg = r.reason?.message || 'Unknown error';
-          const fullError = r.reason ? `${r.reason.message}${r.reason.stack ? '\n' + r.reason.stack : ''}` : errMsg;
           const isTimeout = errMsg.includes('timeout');
           providerStatus[name] = { status: isTimeout ? 'timeout' : 'error', count: 0 };
           console.error(`❌ [Coordinator] ${name} ${isTimeout ? 'timeout' : 'error'}: ${errMsg}`);
-          console.error(`  Details: ${fullError}`);
         }
       });
     }
@@ -498,20 +487,12 @@ export class Coordinator {
           providerStatus[name] = { status: 'ok', count: items.length };
         } else {
           const errMsg = r.reason?.message || 'Unknown error';
-          const fullError = r.reason ? `${r.reason.message}${r.reason.stack ? '\n' + r.reason.stack : ''}` : errMsg;
           const isTimeout = errMsg.includes('timeout');
           providerStatus[name] = { status: isTimeout ? 'timeout' : 'error', count: 0 };
           console.error(`❌ [Coordinator] ${name} ${isTimeout ? 'timeout' : 'error'}: ${errMsg}`);
-          console.error(`  Details: ${fullError}`);
         }
       });
     }
-
-    // 비활성화된 프로바이더도 상태에 추가 (disabled)
-    // (향후 활성화 시 자동 제거)
-
-    // NOTE: Shein mock cards are injected AFTER FraudFilter in search()
-    // because their price='Compare' ($0) would trigger price_zero removal.
 
     const allProducts = [...domesticResults, ...globalResults];
     const providerNames = [...domesticProviderNames, ...globalProviderNames];

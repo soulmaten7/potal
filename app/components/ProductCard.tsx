@@ -52,6 +52,23 @@ const PLATFORM_COLORS: Record<string, { color: string; bg: string }> = {
   temu:       { color: 'text-[#FB7701]', bg: 'bg-[#FB7701]/10' },
   shein:      { color: 'text-[#000]',    bg: 'bg-black/5' },
   iherb:      { color: 'text-[#458500]', bg: 'bg-[#458500]/10' },
+  // ── New Serper Google Shopping providers (2026-02-24) ──
+  'home depot': { color: 'text-[#F96302]', bg: 'bg-[#F96302]/10' },
+  homedepot:   { color: 'text-[#F96302]', bg: 'bg-[#F96302]/10' },
+  "lowe's":    { color: 'text-[#004990]', bg: 'bg-[#004990]/10' },
+  lowes:       { color: 'text-[#004990]', bg: 'bg-[#004990]/10' },
+  nordstrom:   { color: 'text-[#000]',    bg: 'bg-black/5' },
+  ikea:        { color: 'text-[#0058A3]', bg: 'bg-[#0058A3]/10' },
+  wayfair:     { color: 'text-[#7B0E7B]', bg: 'bg-[#7B0E7B]/10' },
+  newegg:      { color: 'text-[#F7A600]', bg: 'bg-[#F7A600]/10' },
+  sephora:     { color: 'text-[#000]',    bg: 'bg-black/5' },
+  etsy:        { color: 'text-[#F1641E]', bg: 'bg-[#F1641E]/10' },
+  mercari:     { color: 'text-[#4DC9F6]', bg: 'bg-[#4DC9F6]/10' },
+  asos:        { color: 'text-[#2D2D2D]', bg: 'bg-[#2D2D2D]/10' },
+  farfetch:    { color: 'text-[#000]',    bg: 'bg-black/5' },
+  yesstyle:    { color: 'text-[#E91E8C]', bg: 'bg-[#E91E8C]/10' },
+  'yes style': { color: 'text-[#E91E8C]', bg: 'bg-[#E91E8C]/10' },
+  mytheresa:   { color: 'text-[#000]',    bg: 'bg-black/5' },
 };
 
 function getPlatformColor(seller: string) {
