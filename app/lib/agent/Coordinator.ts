@@ -44,9 +44,9 @@ import { WalmartProvider } from '../search/providers/WalmartProvider';
 // BestBuyProvider 비활성화: RapidAPI 서버 500 에러 (2026-02-22 Playground에서도 확인)
 // import { BestBuyProvider } from '../search/providers/BestBuyProvider';
 import { AliExpressProvider } from '../search/providers/AliExpressProvider';
-// TemuProvider 비활성화: Temu 서버가 2026-02-18부터 모든 빌드(v1.0.32~1.0.37) 403 차단
-// amit123이 새 우회 방법 적용 시 복원. Apify 콘솔에서 Results > 0 확인 후 주석 해제.
-// import { TemuProvider } from '../search/providers/TemuProvider';
+// TemuProvider 활성화: Serper Google Shopping API 기반 (2026-02-24 전환)
+// 검색어에 "temu" 추가 → Google Shopping에서 가격/이미지/평점 전부 확보
+import { TemuProvider } from '../search/providers/TemuProvider';
 // CostcoProvider 비활성화: Deals API만 제공 (오프라인 중심, MVP 제외)
 // import { CostcoProvider } from '../search/providers/CostcoProvider';
 // SheinProvider 비활성화: 3번째 API도 서버 500 (2026-02-22 Playground에서도 확인)
@@ -76,7 +76,7 @@ const amazonProvider = new AmazonProvider();
 const walmartProvider = new WalmartProvider();
 // const bestBuyProvider = new BestBuyProvider(); // 비활성화: RapidAPI 서버 500 에러 (2026-02-22 확인). 복구 시 주석 해제.
 const aliExpressProvider = new AliExpressProvider();
-// const temuProvider = new TemuProvider(); // 비활성화: Temu 403 차단 (2026-02-18~)
+const temuProvider = new TemuProvider(); // Serper Google Shopping 기반 활성화 (2026-02-24)
 // const costcoProvider = new CostcoProvider(); // 비활성화: 오프라인 중심, MVP 제외
 const ebayProvider = new EbayProvider();
 const targetProvider = new TargetProvider();
@@ -448,14 +448,15 @@ export class Coordinator {
         ])
       : Promise.resolve([]);
 
-    // Global: AliExpress 단독 (1개)
-    // Shein 비활성화: RapidAPI 서버 500 (2026-02-22). Temu: 403 차단. 복구 시 추가.
+    // Global: AliExpress + Temu (2개)
+    // Temu: Serper Google Shopping 기반 (2026-02-24 전환)
+    // Shein 비활성화: RapidAPI 서버 500 (2026-02-22). 복구 시 추가.
     const globalQuery = analysis.platformQueries?.aliexpress || analysis.platformQueries?.amazon || analysis.original;
     const globalPromises = fetchGlobal
       ? Promise.allSettled([
           withTimeout(aliExpressProvider.search(globalQuery, page), 'AliExpress'),
+          withTimeout(temuProvider.search(globalQuery, page), 'Temu'),
           // withTimeout(sheinProvider.search(globalQuery, page), 'Shein'), // 비활성화: RapidAPI 500 에러 (2026-02-22)
-          // temuProvider.search(globalQuery, page), // 비활성화: Temu 403 차단 (2026-02-18~)
         ])
       : Promise.resolve([]);
 
@@ -465,7 +466,7 @@ export class Coordinator {
     const domesticResults: Product[] = [];
     const globalResults: Product[] = [];
     const domesticProviderNames = fetchDomestic ? ['Amazon', 'Walmart', 'eBay', 'Target'] : [];
-    const globalProviderNames = fetchGlobal ? ['AliExpress'] : [];
+    const globalProviderNames = fetchGlobal ? ['AliExpress', 'Temu'] : [];
 
     // 리테일러별 성공/실패 상태 추적
     const providerStatus: Record<string, { status: 'ok' | 'error' | 'timeout'; count: number }> = {};

@@ -2,28 +2,25 @@ import type { Product } from '@/app/types/product';
 import type { SearchProvider } from '../types';
 
 /**
- * TemuProvider — Apify Actor (amit123/temu-products-scraper)
+ * TemuProvider — Serper Google Shopping API
  *
- * ⚠️ Temu는 Apify를 사용합니다! RapidAPI가 아닙니다!
- * ⚠️ RapidAPI Temu는 구독자1/리뷰0으로 거부됨 — 절대 교체하지 마세요.
+ * 방식: Serper Shopping API + 검색어에 "temu" 추가 → Temu 상품만 필터링
+ * Google Shopping에 Temu가 등록되어 있어 가격/이미지/평점 전부 확보 가능.
  *
- * Apify 동기 실행 API: run-sync-get-dataset-items
- * 검색어를 보내면 Temu 상품 목록을 JSON 배열로 반환
+ * 기존 Apify Actor 방식은 Temu 403 차단으로 폐기 (2026-02-18~)
+ * Serper organic 방식은 가격 미포함으로 부적합 (2026-02-24 확인)
+ * → Serper Shopping + "temu" 키워드 방식으로 최종 전환 (2026-02-24)
  *
- * 환경변수: APIFY_API_TOKEN (필수), TEMU_AFFILIATE_CODE (선택)
- * 결제 중: 월 $5 무료 크레딧, 초과 시 $1.20/1000상품
+ * 환경변수: SERPER_API_KEY (필수), TEMU_AFFILIATE_CODE (선택)
+ * 비용: $0.001/검색 (무료 2,500건/월 포함)
  *
  * Global(International) provider. 중국→미국 직배송.
  * 배송: 7-15일 기본
  */
 
-const APIFY_TOKEN = process.env.APIFY_API_TOKEN || '';
+const SERPER_API_KEY = process.env.SERPER_API_KEY || '';
 const TEMU_AFFILIATE = process.env.TEMU_AFFILIATE_CODE || '';
-const ACTOR_ID = 'amit123~temu-products-scraper';
-// ⚠️ 빌드 버전 고정: v1.0.37에서 Temu 403 차단 발생 → v1.0.32는 정상 작동 (2026-02-17 확인)
-// Apify Actor 업데이트로 깨지면 이 버전 번호를 마지막 작동 버전으로 교체하세요.
-const ACTOR_BUILD = '1.0.32';
-const TIMEOUT_MS = 30_000; // Apify Actor 실행은 7~15초 소요
+const TIMEOUT_MS = 10_000;
 
 // ── Affiliate ──
 function appendTemuAffiliate(url: string): string {
@@ -32,132 +29,74 @@ function appendTemuAffiliate(url: string): string {
   return `${url}${sep}aff_code=${encodeURIComponent(TEMU_AFFILIATE)}`;
 }
 
-function buildTemuLink(url: string | undefined, query: string): string {
-  const base =
-    url && typeof url === 'string' && url.startsWith('http')
-      ? url
-      : `https://www.temu.com/search_result.html?search_key=${encodeURIComponent(query)}`;
-  return appendTemuAffiliate(base);
-}
-
 // ── Price parsing ──
-function parsePriceStr(raw: unknown): { priceStr: string; priceNum: number } {
+function parsePriceStr(raw: string): { priceStr: string; priceNum: number } {
   if (!raw) return { priceStr: '$0.00', priceNum: 0 };
-  const s = String(raw).trim();
-  const cleaned = s.replace(/[^\d.]/g, '');
+  const cleaned = raw.replace(/[^\d.]/g, '');
   const n = parseFloat(cleaned);
   if (Number.isNaN(n) || n <= 0) return { priceStr: '$0.00', priceNum: 0 };
   return { priceStr: `$${n.toFixed(2)}`, priceNum: n };
 }
 
-// ── Image normalization ──
-function normalizeImage(item: Record<string, unknown>): string {
-  const thumb =
-    item.thumb_url ?? item.image ?? item.imageUrl ?? item.thumbnail;
-  if (typeof thumb === 'string' && thumb.trim()) {
-    let url = thumb.trim();
-    if (url.startsWith('//')) url = `https:${url}`;
-    return url;
-  }
-  return '';
+// ── Serper Shopping response types ──
+interface SerperShoppingItem {
+  title?: string;
+  source?: string;
+  link?: string;
+  price?: string;
+  imageUrl?: string;
+  thumbnail?: string;
+  rating?: number;
+  ratingCount?: number;
+  productId?: string;
+  position?: number;
+  delivery?: string;
 }
 
-// ── Map Apify item → Product ──
-function mapItemToProduct(
-  item: Record<string, unknown>,
+interface SerperShoppingResponse {
+  shopping?: SerperShoppingItem[];
+  searchParameters?: Record<string, unknown>;
+}
+
+// ── Map Serper Shopping item → Product ──
+function mapShoppingItemToProduct(
+  item: SerperShoppingItem,
   index: number,
   query: string,
 ): Product {
-  const title = String(
-    item.title ?? item.name ?? item.goods_name ?? 'Temu Product',
-  ).trim();
+  const title = (item.title || 'Temu Product').trim();
 
-  // Price — try price_info.price_str first, then direct price
-  let priceStr = '$0.00';
-  let priceNum = 0;
+  // Price — structured data from Google Shopping
+  const { priceStr, priceNum } = parsePriceStr(item.price || '');
 
-  const priceInfo = item.price_info as Record<string, unknown> | undefined;
-  if (priceInfo) {
-    const parsed = parsePriceStr(
-      priceInfo.price_str ?? priceInfo.price ?? priceInfo.sale_price,
-    );
-    priceStr = parsed.priceStr;
-    priceNum = parsed.priceNum;
-  }
+  // Image — Google Shopping provides CDN image URLs
+  const image = item.imageUrl || item.thumbnail || '';
 
-  // Fallback: direct price fields
-  if (priceNum === 0) {
-    const parsed = parsePriceStr(
-      item.price ?? item.salePrice ?? item.sale_price,
-    );
-    priceStr = parsed.priceStr;
-    priceNum = parsed.priceNum;
-  }
+  // Link — Google Shopping gives redirect URL; build direct Temu search link as fallback
+  // Temu affiliate code는 직접 Temu URL에 추가
+  const temuSearchLink = `https://www.temu.com/search_result.html?search_key=${encodeURIComponent(query)}`;
+  const link = appendTemuAffiliate(temuSearchLink);
 
-  // Original price for discount display
-  let originalPrice = 0;
-  if (priceInfo) {
-    const orig = parsePriceStr(
-      priceInfo.market_price_str ??
-        priceInfo.market_price ??
-        priceInfo.original_price,
-    );
-    originalPrice = orig.priceNum;
-  }
+  // Rating from Google Shopping
+  const rating = typeof item.rating === 'number' ? Math.min(item.rating, 5) : 0;
+  const reviewCount = typeof item.ratingCount === 'number' ? item.ratingCount : 0;
 
-  const image = normalizeImage(item);
-
-  const rawUrl = item.link_url ?? item.url ?? item.product_url;
-  const link = buildTemuLink(rawUrl as string | undefined, query);
-
-  // Rating — from comment object or direct
-  let rating = 0;
-  let reviewCount = 0;
-  const comment = item.comment as Record<string, unknown> | undefined;
-  if (comment) {
-    rating =
-      parseFloat(String(comment.goods_score ?? comment.rating ?? 0)) || 0;
-    reviewCount =
-      parseInt(
-        String(comment.comment_num ?? comment.review_count ?? 0),
-        10,
-      ) || 0;
-  }
-  if (rating === 0) {
-    rating =
-      parseFloat(String(item.rating ?? item.goods_score ?? 0)) || 0;
-  }
-  if (reviewCount === 0) {
-    reviewCount =
-      parseInt(String(item.review_count ?? item.reviewCount ?? 0), 10) || 0;
-  }
-
-  // Sales count
-  const salesStr = String(item.sales_num ?? item.sold ?? item.sales ?? '');
-  const salesNum = parseInt(salesStr.replace(/[^\d]/g, ''), 10) || 0;
+  // Product ID from Google Shopping
+  const productId = item.productId || `temu_${index}`;
 
   // Trust score
   let trustScore = 40;
-  if (rating >= 4.5) trustScore += 10;
-  if (salesNum > 1000) trustScore += 10;
-  if (reviewCount > 100) trustScore += 5;
-
-  const itemId = String(
-    item.goods_id ?? item.product_id ?? item.id ?? `temu_${index}`,
-  );
-
-  const parsedDeliveryDays = 10;
+  if (rating >= 4.5) trustScore += 15;
+  else if (rating >= 4.0) trustScore += 10;
+  if (reviewCount > 1000) trustScore += 10;
+  else if (reviewCount > 100) trustScore += 5;
+  if (priceNum > 0) trustScore += 5;
 
   // Badges
   const badges: string[] = [];
-  if (originalPrice > 0 && priceNum > 0 && originalPrice > priceNum) {
-    const discount = Math.round((1 - priceNum / originalPrice) * 100);
-    if (discount >= 10) badges.push(`-${discount}%`);
-  }
-  if (salesNum >= 10000) badges.push('Best Seller');
 
   return {
-    id: `temu-${itemId}-${index}`,
+    id: `temu-${productId}-${index}`,
     name: title,
     price: priceStr,
     parsedPrice: priceNum,
@@ -165,19 +104,19 @@ function mapItemToProduct(
     link,
     site: 'Temu',
     seller: 'Temu',
-    rating: Math.min(rating, 5),
+    rating,
     reviewCount,
     shipping: 'International' as const,
     category: 'global' as const,
     deliveryDays: '7-15 Business Days',
     delivery: 'Standard Shipping',
-    parsedDeliveryDays,
+    parsedDeliveryDays: 10,
     shippingPrice: 0,
     totalPrice: priceNum,
     trustScore,
     is_prime: false,
     badges,
-    brand: String(item.brand ?? '').trim() || undefined,
+    brand: undefined,
   } as unknown as Product;
 }
 
@@ -186,8 +125,8 @@ export class TemuProvider implements SearchProvider {
   readonly type = 'global' as const;
 
   async search(query: string, page: number = 1): Promise<Product[]> {
-    if (!APIFY_TOKEN) {
-      console.warn('⚠️ [TemuProvider] No APIFY_API_TOKEN — skipping');
+    if (!SERPER_API_KEY) {
+      console.warn('⚠️ [TemuProvider] No SERPER_API_KEY — skipping');
       return [];
     }
 
@@ -195,20 +134,22 @@ export class TemuProvider implements SearchProvider {
     if (!trimmed) return [];
 
     try {
-
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-      // Apify 동기 실행 API — Actor 실행 + 결과를 한번에 반환
-      // build 파라미터로 작동하는 버전 고정 (최신 버전이 깨질 수 있음)
-      const url = `https://api.apify.com/v2/acts/${ACTOR_ID}/run-sync-get-dataset-items?token=${APIFY_TOKEN}&build=${ACTOR_BUILD}`;
-
-      const res = await fetch(url, {
+      // Serper Google Shopping API
+      // 핵심: 검색어에 "temu"를 추가해야 Temu 상품이 Google Shopping에 노출됨
+      const res = await fetch('https://google.serper.dev/shopping', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'X-API-KEY': SERPER_API_KEY,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          searchQueries: [trimmed],
-          maxProducts: 40,
+          q: `${trimmed} temu`,
+          gl: 'us',
+          hl: 'en',
+          num: 30,
         }),
         signal: controller.signal,
       });
@@ -218,42 +159,40 @@ export class TemuProvider implements SearchProvider {
       if (!res.ok) {
         const errBody = await res.text().catch(() => '');
         console.error(
-          `❌ [TemuProvider] ${res.status}:`,
+          `❌ [TemuProvider] Serper ${res.status}:`,
           errBody.slice(0, 300),
         );
         return [];
       }
 
-      const data = await res.json();
+      const data: SerperShoppingResponse = await res.json();
 
-      // 응답은 상품 배열 직접 반환 (run-sync-get-dataset-items)
-      let items: Record<string, unknown>[] = [];
-
-      if (Array.isArray(data)) {
-        items = data;
-      } else if (data && typeof data === 'object') {
-        for (const [key, val] of Object.entries(
-          data as Record<string, unknown>,
-        )) {
-          if (Array.isArray(val) && val.length > 0) {
-            items = val;
-            break;
-          }
-        }
-      }
-
-      if (items.length === 0) {
-        console.warn('⚠️ [TemuProvider] No products in response');
+      if (!data.shopping || data.shopping.length === 0) {
+        console.warn('⚠️ [TemuProvider] No shopping results from Serper');
         return [];
       }
 
+      // Filter: Temu 상품만 (source가 "Temu"인 것)
+      const temuItems = data.shopping.filter((item) => {
+        const source = (item.source || '').toLowerCase();
+        return source.includes('temu');
+      });
 
-      const products = items
-        .slice(0, 30)
-        .map((item, i) =>
-          mapItemToProduct(item as Record<string, unknown>, i, trimmed),
-        )
+      if (temuItems.length === 0) {
+        console.warn('⚠️ [TemuProvider] No Temu products in shopping results');
+        return [];
+      }
+
+      const products = temuItems
+        .slice(0, 20)
+        .map((item, i) => mapShoppingItemToProduct(item, i, trimmed))
         .filter((p) => (p.parsedPrice ?? 0) > 0);
+
+      if (products.length > 0) {
+        console.log(
+          `✅ [TemuProvider] ${products.length} products via Google Shopping`,
+        );
+      }
 
       return products;
     } catch (err: unknown) {
