@@ -72,9 +72,10 @@ function mapShoppingItemToProduct(
   // Image — Google Shopping provides CDN image URLs
   const image = item.imageUrl || item.thumbnail || '';
 
-  // Link — Google Shopping gives redirect URL; build direct Temu search link as fallback
-  // Temu affiliate code는 직접 Temu URL에 추가
-  const temuSearchLink = `https://www.temu.com/search_result.html?search_key=${encodeURIComponent(query)}`;
+  // Link — 상품명으로 Temu 검색 → 해당 상품이 바로 보이도록 정확한 검색어 사용
+  // Google Shopping에서 받은 상품명의 핵심 키워드를 검색어로 사용 (너무 길면 앞 60자)
+  const searchKeyword = title.length > 60 ? title.slice(0, 60).trim() : title;
+  const temuSearchLink = `https://www.temu.com/search_result.html?search_key=${encodeURIComponent(searchKeyword)}`;
   const link = appendTemuAffiliate(temuSearchLink);
 
   // Rating from Google Shopping
