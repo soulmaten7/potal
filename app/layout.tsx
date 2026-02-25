@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -27,11 +27,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://potal.app"),
@@ -102,17 +97,24 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#02122c" />
         <meta name="mobile-web-app-capable" content="yes" />
-        {/* 태블릿(768~1366px)에서 viewport를 1440px로 강제 → 데스크톱 레이아웃 축소 표시 */}
+        {/* 디바이스별 viewport 설정: 모바일=device-width, 태블릿=1440px(데스크톱 레이아웃 축소) */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var w = Math.max(window.screen.width, window.screen.height);
-                var isTablet = (w >= 768 && w <= 1366) && ('ontouchstart' in window);
-                if (isTablet && window.innerWidth >= 768) {
-                  var vp = document.querySelector('meta[name="viewport"]');
-                  if (vp) vp.setAttribute('content', 'width=1440');
+                var meta = document.createElement('meta');
+                meta.name = 'viewport';
+                var sw = window.screen.width;
+                var sh = window.screen.height;
+                var maxDim = Math.max(sw, sh);
+                var minDim = Math.min(sw, sh);
+                var isTouch = 'ontouchstart' in window;
+                if (isTouch && minDim >= 768 && minDim <= 1366) {
+                  meta.content = 'width=1440';
+                } else {
+                  meta.content = 'width=device-width, initial-scale=1';
                 }
+                document.head.appendChild(meta);
               })();
             `,
           }}

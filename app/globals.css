@@ -101,9 +101,3 @@ body {
   }
 }
 
-/* 태블릿(768~1366px)에서 데스크톱(1440px) 레이아웃으로 축소 표시 */
-@media screen and (min-width: 768px) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
-  html {
-    min-width: 1440px;
-  }
-}
