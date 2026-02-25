@@ -111,8 +111,20 @@ export default function RootLayout({
               (function() {
                 var w = window.screen.width;
                 if (w >= 768 && w <= 1366) {
-                  var vp = document.querySelector('meta[name="viewport"]');
-                  if (vp) vp.setAttribute('content', 'width=1440');
+                  function fixViewport() {
+                    var vp = document.querySelector('meta[name="viewport"]');
+                    if (vp) {
+                      vp.setAttribute('content', 'width=1440');
+                    } else {
+                      var meta = document.createElement('meta');
+                      meta.name = 'viewport';
+                      meta.content = 'width=1440';
+                      document.head.appendChild(meta);
+                    }
+                  }
+                  fixViewport();
+                  document.addEventListener('DOMContentLoaded', fixViewport);
+                  window.addEventListener('load', fixViewport);
                 }
               })();
             `,
