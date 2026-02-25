@@ -1,6 +1,24 @@
 # POTAL Development Changelog
 
-## [2026-02-24] Serper 제거 + 음성 검색 + Rakuten/RapidAPI 환불
+## [2026-02-25] iOS 앱 빌드 (Capacitor) — 진행 중
+
+### 📱 Xcode 설치 및 프로젝트 설정
+- Xcode 전체 앱 설치 (기존 Command Line Tools만 있었음)
+- iOS 26.2 Simulator + Predictive Code Completion Model 다운로드
+- `open ~/portal/ios/App/App.xcodeproj`로 Xcode에서 프로젝트 열기 성공
+- Signing & Capabilities: Team(EUNTAE JANG), Bundle ID(com.potal.app), Auto Signing 설정 완료
+- iPhone 17 Pro 시뮬레이터로 빌드 시작 → "Installing App" 단계까지 확인
+
+### ⏳ 다음 세션에서 이어서 할 것
+- 시뮬레이터 테스트 (potal.app 로드 확인)
+- General 탭 설정 (Display Name, Deployment Target 16.0, App Category)
+- 앱 아이콘 (1024x1024) 생성
+- App Store Connect 등록 및 심사 제출
+- Capacitor 파일 커밋 + push
+
+---
+
+## [2026-02-24] Serper 제거 + 음성 검색 + Capacitor 초기 설정 + Rakuten/RapidAPI 환불
 
 ### 🎤 음성 검색 (Voice Search) 기능 추가
 - **`useVoiceSearch.ts`** 커스텀 훅 생성 — Web Speech API 기반, 비용 $0
@@ -23,6 +41,12 @@
 ### 🏪 Rakuten Publisher 이슈
 - "Complete company details" 미완료 상태 — 시크릿 모드에서도 동일
 - Case #390705 스크린샷 첨부 답장 완료
+
+### 📱 Capacitor iOS 초기 설정
+- `capacitor.config.ts` 생성 — WebView 방식 (server.url: https://potal.app)
+- 패키지 설치: @capacitor/core, @capacitor/cli, @capacitor/ios, @capacitor/splash-screen, @capacitor/status-bar
+- `npx cap add ios` + `npx cap sync` → ios/ 폴더 생성
+- package.json에 cap:sync, cap:open:ios 스크립트 추가
 
 ---
 

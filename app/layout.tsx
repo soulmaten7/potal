@@ -12,7 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
-import { ViewportManager } from "./components/ViewportManager";
+// ViewportManager 제거됨 — 태블릿 viewport는 iOS 네이티브(TabletViewController)에서 처리
 import { WishlistProvider } from "./context/WishlistContext";
 import { UserPreferenceProvider } from "./context/UserPreferenceContext";
 import { SupabaseProvider } from "./context/SupabaseProvider";
@@ -98,22 +98,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#02122c" />
         <meta name="mobile-web-app-capable" content="yes" />
-        {/* viewport: 서버 HTML에 포함 (React hydration 시 삭제 방지) */}
-        <meta name="viewport" content="width=device-width, initial-scale=1" suppressHydrationWarning />
-        {/* 태블릿에서 viewport를 1440px로 즉시 변경 */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                var minDim = Math.min(window.screen.width, window.screen.height);
-                if ('ontouchstart' in window && minDim >= 768 && minDim <= 1366) {
-                  var vp = document.querySelector('meta[name="viewport"]');
-                  if (vp) vp.setAttribute('content', 'width=1440');
-                }
-              })();
-            `,
-          }}
-        />
+        {/* viewport: iOS 네이티브(TabletViewController)에서 태블릿 1440px 강제 처리 */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
         {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
@@ -138,8 +124,7 @@ export default function RootLayout({
           }}
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
-        {/* 태블릿에서 1440px 데스크톱 레이아웃 강제 (페이지 이동 시에도 유지) */}
-        <ViewportManager />
+        {/* 태블릿 viewport는 iOS 네이티브(TabletViewController.swift)에서 WKUserScript로 처리 */}
         {/* PWA Service Worker 등록 */}
         <script
           dangerouslySetInnerHTML={{
