@@ -103,19 +103,21 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var meta = document.createElement('meta');
-                meta.name = 'viewport';
                 var sw = window.screen.width;
                 var sh = window.screen.height;
-                var maxDim = Math.max(sw, sh);
                 var minDim = Math.min(sw, sh);
                 var isTouch = 'ontouchstart' in window;
-                if (isTouch && minDim >= 768 && minDim <= 1366) {
-                  meta.content = 'width=1440';
+                var isTablet = isTouch && minDim >= 768 && minDim <= 1366;
+                var content = isTablet ? 'width=1440' : 'width=device-width, initial-scale=1';
+                var vp = document.querySelector('meta[name="viewport"]');
+                if (vp) {
+                  vp.setAttribute('content', content);
                 } else {
-                  meta.content = 'width=device-width, initial-scale=1';
+                  var meta = document.createElement('meta');
+                  meta.name = 'viewport';
+                  meta.content = content;
+                  document.head.appendChild(meta);
                 }
-                document.head.appendChild(meta);
               })();
             `,
           }}
