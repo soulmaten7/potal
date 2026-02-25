@@ -104,6 +104,20 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#02122c" />
         <meta name="mobile-web-app-capable" content="yes" />
+        {/* 태블릿(768~1366px)에서 데스크톱(1440px) 레이아웃으로 축소 표시 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var w = window.screen.width;
+                if (w >= 768 && w <= 1366) {
+                  var vp = document.querySelector('meta[name="viewport"]');
+                  if (vp) vp.setAttribute('content', 'width=1440');
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
         {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
