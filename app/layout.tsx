@@ -12,6 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import { ViewportManager } from "./components/ViewportManager";
 import { WishlistProvider } from "./context/WishlistContext";
 import { UserPreferenceProvider } from "./context/UserPreferenceContext";
 import { SupabaseProvider } from "./context/SupabaseProvider";
@@ -143,6 +144,8 @@ export default function RootLayout({
           }}
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+        {/* 태블릿에서 1440px 데스크톱 레이아웃 강제 (페이지 이동 시에도 유지) */}
+        <ViewportManager />
         {/* PWA Service Worker 등록 */}
         <script
           dangerouslySetInnerHTML={{
