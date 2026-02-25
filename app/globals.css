@@ -93,3 +93,17 @@ body {
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* iOS input 자동 확대 방지 (viewport maximum-scale 대신 CSS로 처리) */
+@supports (-webkit-touch-callout: none) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* 태블릿(768~1366px)에서 데스크톱(1440px) 레이아웃으로 축소 표시 */
+@media screen and (min-width: 768px) and (max-width: 1366px) and (hover: none) and (pointer: coarse) {
+  html {
+    min-width: 1440px;
+  }
+}

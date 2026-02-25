@@ -31,8 +31,6 @@ const geistMono = Geist_Mono({
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export const metadata: Metadata = {
@@ -104,27 +102,16 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#02122c" />
         <meta name="mobile-web-app-capable" content="yes" />
-        {/* 태블릿(768~1366px)에서 데스크톱(1440px) 레이아웃으로 축소 표시 */}
+        {/* 태블릿(768~1366px)에서 viewport를 1440px로 강제 → 데스크톱 레이아웃 축소 표시 */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var w = window.screen.width;
-                if (w >= 768 && w <= 1366) {
-                  function fixViewport() {
-                    var vp = document.querySelector('meta[name="viewport"]');
-                    if (vp) {
-                      vp.setAttribute('content', 'width=1440');
-                    } else {
-                      var meta = document.createElement('meta');
-                      meta.name = 'viewport';
-                      meta.content = 'width=1440';
-                      document.head.appendChild(meta);
-                    }
-                  }
-                  fixViewport();
-                  document.addEventListener('DOMContentLoaded', fixViewport);
-                  window.addEventListener('load', fixViewport);
+                var w = Math.max(window.screen.width, window.screen.height);
+                var isTablet = (w >= 768 && w <= 1366) && ('ontouchstart' in window);
+                if (isTablet && window.innerWidth >= 768) {
+                  var vp = document.querySelector('meta[name="viewport"]');
+                  if (vp) vp.setAttribute('content', 'width=1440');
                 }
               })();
             `,
