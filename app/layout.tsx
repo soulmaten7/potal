@@ -98,25 +98,17 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#02122c" />
         <meta name="mobile-web-app-capable" content="yes" />
-        {/* 디바이스별 viewport 설정: 모바일=device-width, 태블릿=1440px(데스크톱 레이아웃 축소) */}
+        {/* viewport: 서버 HTML에 포함 (React hydration 시 삭제 방지) */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" suppressHydrationWarning />
+        {/* 태블릿에서 viewport를 1440px로 즉시 변경 */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                var sw = window.screen.width;
-                var sh = window.screen.height;
-                var minDim = Math.min(sw, sh);
-                var isTouch = 'ontouchstart' in window;
-                var isTablet = isTouch && minDim >= 768 && minDim <= 1366;
-                var content = isTablet ? 'width=1440' : 'width=device-width, initial-scale=1';
-                var vp = document.querySelector('meta[name="viewport"]');
-                if (vp) {
-                  vp.setAttribute('content', content);
-                } else {
-                  var meta = document.createElement('meta');
-                  meta.name = 'viewport';
-                  meta.content = content;
-                  document.head.appendChild(meta);
+                var minDim = Math.min(window.screen.width, window.screen.height);
+                if ('ontouchstart' in window && minDim >= 768 && minDim <= 1366) {
+                  var vp = document.querySelector('meta[name="viewport"]');
+                  if (vp) vp.setAttribute('content', 'width=1440');
                 }
               })();
             `,
