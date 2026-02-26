@@ -49,8 +49,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "POTAL",
-    title: "POTAL - Global Best Price vs Local Fast Delivery",
-    description: "Compare prices across 7+ major retailers. AI-powered shopping agent finds the best deal instantly.",
+    title: "POTAL - Compare Real Total Cost, Domestic vs Global",
+    description: "Compare real total cost across Amazon, Walmart, Target, eBay, Costco & AliExpress. Domestic vs Global side by side.",
     url: "https://potal.app",
     locale: "en_US",
     images: [
@@ -64,8 +64,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "POTAL - AI Shopping Agent",
-    description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu in one search.",
+    title: "POTAL - Compare Real Total Cost, Domestic vs Global",
+    description: "Compare real total cost across Amazon, Walmart, Target, eBay, Costco & AliExpress. Domestic vs Global side by side.",
     images: ["/og-image.png"],
   },
   robots: {
