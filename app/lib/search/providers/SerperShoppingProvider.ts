@@ -422,17 +422,10 @@ export abstract class SerperShoppingProvider implements SearchProvider {
           ...products[i],
           link: this.appendAffiliate(directUrl),
         };
-        console.log(`  🔗 [${this.name}] ✅ ${title.slice(0, 40)}`);
-      } else if (Date.now() > deadline) {
-        console.log(`  🔗 [${this.name}] ⏰ ${title.slice(0, 40)} → time limit`);
-      } else {
-        console.log(`  🔗 [${this.name}] ❌ ${title.slice(0, 40)} → fallback`);
       }
     });
 
     await Promise.allSettled(tasks);
-    const elapsed = Date.now() - resolveStart;
-    console.log(`  ⏱️ [${this.name}] URL resolution: ${elapsed}ms (${limit} products)`);
   }
 
   // ── Map Serper item → Product ──
@@ -495,7 +488,6 @@ export abstract class SerperShoppingProvider implements SearchProvider {
       const cachedShop = getCached<SerperShoppingResponse>(shopCacheKey);
 
       if (cachedShop) {
-        console.log(`📦 [${this.name}] Shopping cache hit`);
         data = cachedShop;
       } else {
         const label = `[${this.name}] Shopping`;
@@ -541,10 +533,6 @@ export abstract class SerperShoppingProvider implements SearchProvider {
       // 2단계: 실제 상품 URL 해석 (시간 예산 전달)
       if (this.enableDirectUrl && products.length > 0) {
         await this.applyDirectUrls(products, searchStartTime);
-      }
-
-      if (products.length > 0) {
-        console.log(`✅ [${this.name}] ${products.length} products via Google Shopping`);
       }
 
       return products;

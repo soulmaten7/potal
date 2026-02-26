@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { StickyHeader } from '../../components/search/StickyHeader';
 import { FilterSidebar, type AiSuggestions } from '../../components/search/FilterSidebar';
 import { ResultsGrid, type Product } from '../../components/search/ResultsGrid';
-import { AiSmartSuggestionBox } from '@/app/components/search/AiSmartSuggestionBox';
+import { AiSmartSuggestionBox } from '@/components/search/AiSmartSuggestionBox';
 import { Icons } from '../../components/icons';
 import { extractFilterOptionsFromProducts } from '@/app/lib/filter-utils';
 import { applyMembershipToProducts } from '@/app/lib/membership/applyMembershipAdjustments';
@@ -349,7 +349,6 @@ function SearchContent() {
                 }
               }
             } catch (err) {
-              console.warn('POTAL Filter failed, using frequency-based fallback');
               if (!cancelled) {
                 const fallbackSuggestions = extractFilterOptionsFromProducts(
                   realProducts.map((p: any) => ({ name: p.name || '', brand: p.brand, price: p.price, parsedPrice: p.parsedPrice })),

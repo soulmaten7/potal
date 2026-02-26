@@ -7,7 +7,7 @@
  * - 정적 자산만 프리캐시
  */
 
-const CACHE_NAME = 'potal-v1';
+const CACHE_NAME = 'potal-v2';
 const OFFLINE_URL = '/';
 
 // 프리캐시할 정적 자산

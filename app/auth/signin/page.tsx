@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { AuthForm } from "../../components/AuthForm";
+import { AuthForm } from "@/components/auth/AuthForm";
 
 export default function SignInPage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);

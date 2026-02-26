@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import { Icons } from '@/components/icons';
-import { useWishlist } from '../context/WishlistContext';
-import { normalizeDeliveryInfo } from '../lib/utils/DeliveryStandard';
-import { DeliveryBadge } from './DeliveryBadge';
-import { getRetailerConfig, matchShippingProgram } from '../lib/retailerConfig';
-import { trackAffiliateClick, trackShare } from '../utils/analytics';
+import { useWishlist } from '@/app/context/WishlistContext';
+import { normalizeDeliveryInfo } from '@/app/lib/utils/DeliveryStandard';
+import { DeliveryBadge } from '@/components/search/DeliveryBadge';
+import { TaxInfoPopup } from '@/components/search/TaxInfoPopup';
+import { getRetailerConfig, matchShippingProgram } from '@/app/lib/retailerConfig';
+import { trackAffiliateClick, trackShare } from '@/app/utils/analytics';
 
 interface ProductCardProps {
   product: {
@@ -134,9 +136,24 @@ export function EmptySearchState({ query, onRetry }: { query: string; onRetry?: 
 }
 
 export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
+  const router = useRouter();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const isSaved = isInWishlist(product.id);
   const [redirecting, setRedirecting] = useState(false);
+  const [showTaxPopup, setShowTaxPopup] = useState(false);
+  const taxPopupRef = useRef<HTMLDivElement>(null);
+
+  // 팝업 외부 클릭 시 닫기
+  useEffect(() => {
+    if (!showTaxPopup) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (taxPopupRef.current && !taxPopupRef.current.contains(e.target as Node)) {
+        setShowTaxPopup(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showTaxPopup]);
 
   // 데이터 정규화
   const displayTitle = product.title || product.name || "Untitled Product";
@@ -208,6 +225,10 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
   // Global은 항상 breakdown 표시
   const showBreakdown = hasTotal || isGlobal;
   const finalTotal = totalDisplay || displayPrice;
+
+  // Shipping cost (데스크톱 + 모바일 공통)
+  const shipCostDisplay = deliveryInfo.cost && /free/i.test(deliveryInfo.cost) ? 'Free' : deliveryInfo.cost || 'Free';
+  const isShipFree = shipCostDisplay === 'Free';
 
   // 가격 범위 (AliExpress 옵션별 가격차가 클 때)
   const hasPriceRange = product.priceRangeMin != null && product.priceRangeMin > 0 && product.priceRangeMin < priceNum * 0.5;
@@ -318,11 +339,23 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
                     {displaySeller}
                  </span>
                  <span className="text-slate-300">/</span>
-                 <div className="flex items-center gap-1">
-                    <Icons.Star className="w-3.5 h-3.5 text-[#F59E0B]" />
-                    <span className="text-[13px] font-bold text-slate-900">{product.rating || 0}</span>
-                    <span className="text-[11px] text-slate-400">({product.reviewCount?.toLocaleString() || 0})</span>
-                 </div>
+                 {product.sellerFeedbackPercent ? (
+                   /* eBay: 판매자 피드백 표시 */
+                   <div className="flex items-center gap-1">
+                     <span className="text-[12px] font-bold text-emerald-600">{product.sellerFeedbackPercent}%</span>
+                     <span className="text-[11px] text-slate-400">positive</span>
+                     {product.sellerFeedbackCount ? (
+                       <span className="text-[11px] text-slate-400">({product.sellerFeedbackCount >= 1000 ? `${(product.sellerFeedbackCount / 1000).toFixed(1)}K` : product.sellerFeedbackCount})</span>
+                     ) : null}
+                   </div>
+                 ) : (
+                   /* 일반 사이트: 별점 + 리뷰 수 */
+                   <div className="flex items-center gap-1">
+                     <Icons.Star className="w-3.5 h-3.5 text-[#F59E0B]" />
+                     <span className="text-[13px] font-bold text-slate-900">{product.rating || 0}</span>
+                     <span className="text-[11px] text-slate-400">({product.reviewCount?.toLocaleString() || 0})</span>
+                   </div>
+                 )}
              </div>
 
              {/* 상품명 */}
@@ -339,11 +372,6 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
           </div>
 
           {/* 3. 우측 — 통일된 비용 breakdown (API 실제 데이터만) */}
-          {(() => {
-             const shipCostDisplay = deliveryInfo.cost && /free/i.test(deliveryInfo.cost) ? 'Free' : deliveryInfo.cost || 'Free';
-             const isShipFree = shipCostDisplay === 'Free';
-
-             return (
           <div className="w-[170px] flex flex-col min-w-[170px]">
              {/* 배송 뱃지 (API에서 가져온 실제 정보) */}
              <div className="w-full px-3 pt-2 pb-1 flex flex-col items-end justify-center">
@@ -362,34 +390,26 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
                    )}
                  </div>
 
-                 {/* Tax or Import Duty + Processing Fee */}
-                 {isGlobal ? (
-                   <>
-                     {/* Import Duty 20% — 별도 라인 */}
-                     <div className="flex items-center gap-1.5">
-                       <span className="text-[10px] text-slate-400">Duty 20%</span>
-                       {extraFees > 0 ? (
-                         <span className="text-[11px] font-bold text-red-500">+${Math.max(0, extraFees - 5.50).toFixed(2)}</span>
-                       ) : (
-                         <span className="text-[11px] font-bold text-red-500">+${((priceNum || 0) * 0.20).toFixed(2)}</span>
-                       )}
-                     </div>
-                     {/* MPF 통관수수료 — 별도 라인 */}
-                     <div className="flex items-center gap-1.5">
-                       <span className="text-[10px] text-slate-400">MPF</span>
-                       <span className="text-[11px] font-bold text-red-500">+$5.50</span>
-                     </div>
-                   </>
-                 ) : (
-                   <div className="flex items-center gap-1.5">
-                     <span className="text-[10px] text-slate-400">Est. Tax</span>
-                     {extraFees > 0 ? (
-                       <span className="text-[11px] font-bold text-slate-500">+${extraFees.toFixed(2)}</span>
-                     ) : (
-                       <span className="text-[11px] font-bold text-slate-500">+${((priceNum || 0) * 0.07).toFixed(2)}</span>
-                     )}
-                   </div>
-                 )}
+                 {/* Tax or Duty+MPF — 항상 1줄 (PC: 팝업, 모바일: 페이지 이동) */}
+                 <div className="flex items-center gap-1.5 relative">
+                   <span className="text-[10px] text-slate-400">{isGlobal ? 'Duty+MPF' : 'Est. Tax'}</span>
+                   <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTaxPopup(!showTaxPopup); }} className="p-0 border-0 bg-transparent cursor-pointer">
+                     <Icons.Info className="w-2.5 h-2.5 text-slate-300 hover:text-[#F59E0B]" />
+                   </button>
+                   {isGlobal ? (
+                     <span className="text-[11px] font-bold text-red-500">+${(extraFees > 0 ? extraFees : ((priceNum || 0) * 0.20) + 5.50).toFixed(2)}</span>
+                   ) : (
+                     <span className="text-[11px] font-bold text-slate-500">+${(extraFees > 0 ? extraFees : (priceNum || 0) * 0.07).toFixed(2)}</span>
+                   )}
+
+                   {/* PC Tax Info 팝업 — 외부 클릭 시 닫힘 */}
+                   <TaxInfoPopup
+                     ref={taxPopupRef}
+                     isVisible={showTaxPopup}
+                     onClose={() => setShowTaxPopup(false)}
+                     type={isGlobal ? 'global' : 'domestic'}
+                   />
+                 </div>
 
                  {/* Product */}
                  <div className="flex items-center gap-1.5">
@@ -402,18 +422,16 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
                    <span className="text-[9px] text-amber-600 font-medium">⚠ Price varies by option</span>
                  )}
 
-                 {/* Divider + Total */}
+                 {/* Divider + Total — Total Landed Cost 위, 가격 아래 */}
                  <div className="w-full border-t border-dashed border-slate-200 my-0.5" />
-                 <div className="text-[20px] font-extrabold text-[#02122c] leading-none">{finalTotal}</div>
                  <span className="text-[9px] font-bold text-emerald-600">Total Landed Cost{hasPriceRange ? ' (est.)' : ''}</span>
+                 <div className="text-[20px] font-extrabold text-[#02122c] leading-none">{finalTotal}</div>
 
                  <button onClick={handleViewDeal} className="w-full h-[30px] mt-1.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[13px] font-extrabold rounded-[4px] flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
                     Select <Icons.ArrowRight className="w-3 h-3" />
                  </button>
              </div>
           </div>
-             );
-          })()}
        </div>
 
        {/* ═══ MOBILE CARD (<md) ═══ */}
@@ -441,9 +459,18 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
                 <div className="flex items-center gap-1 mb-0.5">
                    <span className={`text-[11px] font-extrabold uppercase tracking-wide ${platformColor?.color || 'text-[#02122c]'}`}>{displaySeller}</span>
                    <span className="text-slate-300 text-[10px]">/</span>
-                   <Icons.Star className="w-3 h-3 text-[#F59E0B]" />
-                   <span className="text-[11px] font-bold text-slate-700">{product.rating || 0}</span>
-                   <span className="text-[10px] text-slate-400">({product.reviewCount?.toLocaleString() || 0})</span>
+                   {product.sellerFeedbackPercent ? (
+                     <>
+                       <span className="text-[10px] font-bold text-emerald-600">{product.sellerFeedbackPercent}%</span>
+                       <span className="text-[9px] text-slate-400">positive</span>
+                     </>
+                   ) : (
+                     <>
+                       <Icons.Star className="w-3 h-3 text-[#F59E0B]" />
+                       <span className="text-[11px] font-bold text-slate-700">{product.rating || 0}</span>
+                       <span className="text-[10px] text-slate-400">({product.reviewCount?.toLocaleString() || 0})</span>
+                     </>
+                   )}
                 </div>
                 <h3 className="text-[13px] font-medium text-[#02122c] leading-snug line-clamp-2 group-hover:text-[#F59E0B] transition-colors">
                    {displayTitle}
@@ -451,25 +478,65 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
              </div>
           </div>
 
-          {/* 하단: 배송 + 가격 + 버튼 */}
-          <div className="flex items-center justify-between px-3 pb-3 pt-1 border-t border-slate-100 gap-2">
-             <div className="flex flex-col min-w-0 flex-1">
+          {/* 하단: 배송 + 비용 breakdown (PC와 동일) + 버튼 */}
+          <div className="px-3 pb-3 pt-1 border-t border-slate-100">
+             {/* 배송 뱃지 */}
+             <div className="mb-1.5">
                 <DeliveryBadge info={deliveryInfo} compact hideCost deliveryVariant={type === "domestic" ? "domestic" : "international"} />
-                {fraudText && <span className="text-[9px] font-bold text-amber-600 mt-0.5 truncate">{fraudText}</span>}
              </div>
-             <div className="flex flex-col items-end shrink-0">
-                <span className="text-[16px] font-extrabold text-[#02122c] leading-none">{finalTotal}</span>
-                {isGlobal ? (
-                  <span className="text-[9px] text-slate-400">{displayPrice} + duty</span>
-                ) : extraFees > 0 ? (
-                  <span className="text-[9px] text-slate-400">{displayPrice} + tax</span>
-                ) : (
-                  <span className="text-[9px] text-slate-400">+ est. tax</span>
+
+             {/* Fraud 경고 */}
+             {fraudText && <span className="text-[9px] font-bold text-amber-600 mb-1 block">{fraudText}</span>}
+
+             {/* 비용 breakdown — PC와 동일 */}
+             <div className="flex flex-col gap-[2px] mb-1.5">
+                {/* Shipping */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Shipping</span>
+                  {isShipFree ? (
+                    <span className="text-[11px] font-bold text-emerald-600">Free</span>
+                  ) : (
+                    <span className="text-[11px] font-bold text-slate-500">{shipCostDisplay}</span>
+                  )}
+                </div>
+
+                {/* Tax or Duty+MPF — 항상 1줄 (Domestic/Global 통일) */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-slate-400">{isGlobal ? 'Duty+MPF' : 'Est. Tax'}</span>
+                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(isGlobal ? '/tax-info?type=import' : '/tax-info?type=sales'); }} className="p-0 border-0 bg-transparent cursor-pointer">
+                      <Icons.Info className="w-3 h-3 text-slate-300 hover:text-[#F59E0B]" />
+                    </button>
+                  </div>
+                  {isGlobal ? (
+                    <span className="text-[11px] font-bold text-red-500">+${(extraFees > 0 ? extraFees : ((priceNum || 0) * 0.20) + 5.50).toFixed(2)}</span>
+                  ) : (
+                    <span className="text-[11px] font-bold text-slate-500">+${(extraFees > 0 ? extraFees : (priceNum || 0) * 0.07).toFixed(2)}</span>
+                  )}
+                </div>
+
+                {/* Product */}
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Product</span>
+                  <span className="text-[11px] font-bold text-slate-500">{displayPrice}</span>
+                </div>
+
+                {/* 가격 범위 경고 */}
+                {hasPriceRange && (
+                  <span className="text-[9px] text-amber-600 font-medium">⚠ Price varies by option</span>
                 )}
              </div>
-             <button onClick={handleViewDeal} className="shrink-0 h-8 px-4 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[12px] font-extrabold rounded-lg flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
-                Select <Icons.ArrowRight className="w-3 h-3" />
-             </button>
+
+             {/* Total + Select 버튼 */}
+             <div className="border-t border-dashed border-slate-200 pt-1.5 flex items-center justify-between">
+                <div className="flex flex-col">
+                  <span className="text-[9px] font-bold text-emerald-600">Total Landed Cost{hasPriceRange ? ' (est.)' : ''}</span>
+                  <span className="text-[18px] font-extrabold text-[#02122c] leading-none">{finalTotal}</span>
+                </div>
+                <button onClick={handleViewDeal} className="shrink-0 h-8 px-5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[12px] font-extrabold rounded-lg flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
+                   Select <Icons.ArrowRight className="w-3 h-3" />
+                </button>
+             </div>
           </div>
        </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import type { StandardDeliveryInfo } from "../lib/utils/DeliveryStandard";
+import type { StandardDeliveryInfo } from "@/app/lib/utils/DeliveryStandard";
 
 type DeliveryBadgeProps = {
   info: StandardDeliveryInfo;

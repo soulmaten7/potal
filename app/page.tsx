@@ -7,7 +7,7 @@ import { useSupabase } from './context/SupabaseProvider';
 import { useUserPreferences } from './hooks/useUserPreferences';
 import { useProductSearch, inferCategoriesFromQuery } from './hooks/useProductSearch';
 import type { Product } from './types/product';
-import { ProductCard, ProductCardSkeleton, EmptySearchState } from './components/ProductCard';
+import { ProductCard, ProductCardSkeleton, EmptySearchState } from '@/components/search/ProductCard';
 import { interleaveDomesticInternational } from './lib/product-utils';
 
 import { HeroVisuals } from '../components/home/HeroVisuals';
@@ -20,9 +20,8 @@ import { SkeletonCard } from '../components/ui/SkeletonCard';
 import { Icons, SearchIcon, ChevronDownIcon, GlobeIcon, FlagIcon, PlaneIcon, ClockIcon } from '../components/icons';
 
 import { 
-  CATEGORY_TREE, 
-  type MainCategory, 
-  type MainCategoryId 
+  CATEGORY_TREE,
+  type MainCategory
 } from './data';
 
 export type { Product } from './types/product';
@@ -69,8 +68,6 @@ function HomeContent() {
   const [subCategory, setSubCategory] = useState<string | null>(null);
 
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-  const [activeMain, setActiveMain] = useState<MainCategoryId | null>(null);
-  const [activeSub, setActiveSub] = useState<string | null>(null);
   // 스플래시: 창을 완전히 닫고 다시 열었을 때만 표시 (sessionStorage 기반)
   const [showSplash, setShowSplash] = useState(() => {
     if (typeof window === 'undefined') return false;
@@ -526,50 +523,52 @@ function HomeContent() {
                         </div>
                       ))}
                     </div>
-                    <div className="max-w-2xl mx-auto">
+                    <div className="max-w-[1440px] mx-auto">
                       <h3 className="text-xl font-extrabold text-[#02122c] mb-5 text-center">Frequently Asked Questions</h3>
-                      {[
-                        {
-                          q: 'Is POTAL free to use?',
-                          a: 'Yes, completely free. POTAL earns a small commission from retailers when you make a purchase — you never pay extra.',
-                        },
-                        {
-                          q: 'Do I buy products from POTAL?',
-                          a: "No. POTAL is a search engine, not a store. When you click 'Select', you go directly to the retailer's website (Amazon, Walmart, etc.) to complete your purchase.",
-                        },
-                        {
-                          q: 'Can I search with a question instead of keywords?',
-                          a: 'Yes! Try something like "What\'s a good gift for a 60 year old mom?" or "Best noise-cancelling headphones under $200." POTAL understands natural language and finds relevant products across every retailer.',
-                        },
-                        {
-                          q: 'Can I search with a photo?',
-                          a: 'Yes. Snap a photo or upload one from your gallery. You can also add details like size, color, or budget before searching. POTAL AI analyzes the image and finds matching products across every retailer.',
-                        },
-                        {
-                          q: 'What is Total Landed Cost?',
-                          a: 'It\'s the true final price you pay: product price + shipping + estimated sales tax (domestic) or import duties (global). No hidden surprises.',
-                        },
-                        {
-                          q: 'How do membership toggles work?',
-                          a: 'POTAL supports retailer memberships like Amazon Prime, Walmart+, AliExpress Choice, Target Circle 360, and Best Buy Plus. Membership toggles are ON by default — so prices reflect member benefits (free shipping, faster delivery, exclusive discounts). Toggle OFF any membership you don\'t have to see non-member pricing instead.',
-                        },
-                        {
-                          q: 'How is shipping cost calculated?',
-                          a: 'Shipping varies by retailer and membership. For example, Amazon Prime and Walmart+ members get free shipping on all orders, while non-members pay ~$5.99 for orders under $35. Global retailers like AliExpress (Choice) and Temu offer free or low-cost shipping on many items. POTAL factors these into every comparison automatically.',
-                        },
-                        {
-                          q: 'What about sales tax and import duties?',
-                          a: 'For US domestic purchases, sales tax is estimated based on your state (e.g., ~8.75% in California, 0% in Oregon). For global purchases, import duties depend on the origin country — items from China currently carry ~20% duty (de minimis exemption eliminated Aug 2025), while orders from Korea, Japan, EU, and UK remain duty-free under the $800 threshold. POTAL estimates all of this so you can compare true costs.',
-                        },
-                      ].map((item, idx) => (
-                        <details key={idx} className="group mb-3 border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 transition-colors">
-                          <summary className="flex items-center justify-between px-5 py-4 cursor-pointer select-none bg-white group-open:bg-slate-50 transition-colors">
-                            <span className="text-[15px] font-bold text-[#02122c]">{item.q}</span>
-                            <Icons.ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4" />
-                          </summary>
-                          <div className="px-5 pb-4 pt-1 text-sm text-slate-600 leading-relaxed bg-white">{item.a}</div>
-                        </details>
-                      ))}
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          {
+                            q: 'Is POTAL free to use?',
+                            a: 'Yes, completely free. POTAL earns a small commission from retailers when you make a purchase — you never pay extra.',
+                          },
+                          {
+                            q: 'Do I buy products from POTAL?',
+                            a: "No. POTAL is a search engine, not a store. When you click 'Select', you go directly to the retailer's website (Amazon, Walmart, etc.) to complete your purchase.",
+                          },
+                          {
+                            q: 'Can I search with a question instead of keywords?',
+                            a: 'Yes! Try something like "What\'s a good gift for a 60 year old mom?" or "Best noise-cancelling headphones under $200." POTAL understands natural language and finds relevant products across every retailer.',
+                          },
+                          {
+                            q: 'Can I search with a photo?',
+                            a: 'Yes. Snap a photo or upload one from your gallery. You can also add details like size, color, or budget before searching. POTAL AI analyzes the image and finds matching products across every retailer.',
+                          },
+                          {
+                            q: 'What is Total Landed Cost?',
+                            a: 'It\'s the true final price you pay: product price + shipping + estimated sales tax (domestic) or import duties (global). No hidden surprises.',
+                          },
+                          {
+                            q: 'How do membership toggles work?',
+                            a: 'POTAL supports retailer memberships like Amazon Prime, Walmart+, AliExpress Choice, Target Circle 360, and Best Buy Plus. Membership toggles are ON by default — so prices reflect member benefits (free shipping, faster delivery, exclusive discounts). Toggle OFF any membership you don\'t have to see non-member pricing instead.',
+                          },
+                          {
+                            q: 'How is shipping cost calculated?',
+                            a: 'Shipping varies by retailer and membership. For example, Amazon Prime and Walmart+ members get free shipping on all orders, while non-members pay ~$5.99 for orders under $35. Global retailers like AliExpress (Choice) and Temu offer free or low-cost shipping on many items. POTAL factors these into every comparison automatically.',
+                          },
+                          {
+                            q: 'What about sales tax and import duties?',
+                            a: 'For US domestic purchases, sales tax is estimated based on your state (e.g., ~8.75% in California, 0% in Oregon). For global purchases, import duties depend on the origin country — items from China currently carry ~20% duty (de minimis exemption eliminated Aug 2025), while orders from Korea, Japan, EU, and UK remain duty-free under the $800 threshold. POTAL estimates all of this so you can compare true costs.',
+                          },
+                        ].map((item, idx) => (
+                          <details key={idx} className="group border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 transition-colors">
+                            <summary className="flex items-center justify-between px-5 py-4 cursor-pointer select-none bg-white group-open:bg-slate-50 transition-colors">
+                              <span className="text-[15px] font-bold text-[#02122c]">{item.q}</span>
+                              <Icons.ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4" />
+                            </summary>
+                            <div className="px-5 pb-4 pt-1 text-sm text-slate-600 leading-relaxed bg-white">{item.a}</div>
+                          </details>
+                        ))}
+                      </div>
                     </div>
                 </div>
             </section>

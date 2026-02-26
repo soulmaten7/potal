@@ -274,7 +274,19 @@ export function normalizeDeliveryInfo(raw: RawDeliveryInput): StandardDeliveryIn
     return { originalMark: "", label: "📦 3-7 Days", cost: estCost, tooltip: price && price >= 35 ? "Free shipping on orders $35+." : "Estimated shipping. Free on orders $35+.", brandId: "bestbuy", colorClass: "font-medium text-slate-600" };
   }
   if (site === "ebay") {
-    return { originalMark: "", label: "📦 5-10 Days", cost: "Seller Dependent", tooltip: "Shipping cost and time depend on the seller.", brandId: "ebay", colorClass: "font-medium text-slate-600" };
+    // eBay: API에서 배송일/배송비가 오면 사용, 없으면 국내 판매자 기준 기본값
+    const deliveryDaysStr = raw.deliveryDays || '';
+    const shippingStr = raw.shipping || '';
+    const hasDeliveryData = deliveryDaysStr && !deliveryDaysStr.includes('undefined');
+    const hasFreeShipping = shippingStr.toLowerCase().includes('free') || deliveryDaysStr.toLowerCase().includes('free');
+
+    const label = hasDeliveryData ? `📦 ${deliveryDaysStr}` : '📦 3-5 Days';
+    const cost = hasFreeShipping ? 'Free' : 'Seller Dependent';
+    const tooltip = hasFreeShipping
+      ? 'Free shipping from this eBay seller.'
+      : 'Shipping cost depends on the seller. Most US sellers ship via USPS Ground Advantage (3-5 days).';
+
+    return { originalMark: "", label, cost, tooltip, brandId: "ebay", colorClass: "font-medium text-slate-600" };
   }
   if (site === "iherb") {
     const price = parsePriceNum(raw.price);

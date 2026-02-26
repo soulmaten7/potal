@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icons } from '@/components/icons';
 import { useSupabase } from '@/app/context/SupabaseProvider';
-import { LoginModal } from '@/app/components/LoginModal';
+import { LoginModal } from '@/components/auth/LoginModal';
 import { lookupZip, validateZip } from '@/app/lib/utils/zipCodeDatabase';
 
 type SubPage = null | 'account' | 'settings' | 'help' | 'legal';
@@ -371,7 +371,7 @@ export default function ProfilePage() {
       <div style={{ padding: '8px 20px' }} className="space-y-3">
         <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
           {[
-            { href: '/help', icon: Icons.Info, label: 'Help Centre', desc: 'Get answers to common questions' },
+            { href: '/help', icon: Icons.Info, label: 'Help Center', desc: 'Get answers to common questions' },
             { href: '/partners', icon: Icons.Box, label: 'Affiliate Disclosure', desc: 'How POTAL earns revenue' },
             { href: '/about', icon: Icons.Star, label: 'About POTAL', desc: 'Our mission and team' },
           ].map((item, idx) => (

@@ -49,6 +49,10 @@ export interface Product {
   rating?: number;
   /** 리뷰 수 */
   reviewCount?: number;
+  /** eBay 판매자 피드백 퍼센트 (예: 99.8) — eBay 특성상 상품 리뷰 대신 판매자 평판 사용 */
+  sellerFeedbackPercent?: number;
+  /** eBay 판매자 피드백 건수 (예: 5547) */
+  sellerFeedbackCount?: number;
 
   // ── Shipping Options (AliExpress 등 Global 상품) ──
   /** 배송 옵션 목록 (항공/해운/특급 등) */

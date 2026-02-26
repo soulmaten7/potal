@@ -34,7 +34,6 @@ function buildAliLink(url: string | undefined, productId: string | undefined, qu
     return appendAliAffiliate(`https://www.aliexpress.com/item/${productId}.html`);
   }
   // 3) 마지막 fallback: 검색 페이지 (이건 거의 안 나와야 함)
-  console.warn('[AliExpressProvider] No product URL or ID, falling back to search page');
   return appendAliAffiliate(`https://www.aliexpress.com/wholesale?SearchText=${encodeURIComponent(query)}`);
 }
 

@@ -11,7 +11,7 @@ import { Footer } from "@/components/layout/Footer";
 // [핵심 수정 3] 모바일 하단 네비게이션 바
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
-import { GoogleAnalytics } from "./components/GoogleAnalytics";
+import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
 // ViewportManager 제거됨 — 태블릿 viewport는 iOS 네이티브(TabletViewController)에서 처리
 import { WishlistProvider } from "./context/WishlistContext";
 import { UserPreferenceProvider } from "./context/UserPreferenceContext";
@@ -125,14 +125,24 @@ export default function RootLayout({
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
         {/* 태블릿 viewport는 iOS 네이티브(TabletViewController.swift)에서 WKUserScript로 처리 */}
-        {/* PWA Service Worker 등록 */}
+        {/* PWA Service Worker 등록 (프로덕션만) */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function() {});
-                });
+                if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                  // 개발환경: 기존 SW 해제 + 캐시 전부 삭제
+                  navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    regs.forEach(function(r) { r.unregister(); });
+                  });
+                  caches.keys().then(function(names) {
+                    names.forEach(function(n) { caches.delete(n); });
+                  });
+                } else {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').catch(function() {});
+                  });
+                }
               }
             `,
           }}

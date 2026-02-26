@@ -92,37 +92,58 @@ function parseShipping(item: Record<string, unknown>): {
 
   let shippingPrice = 0;
   let isFree = false;
-  let deliveryDays = '5-10 Days';
+  let deliveryDays = '3-5 Days';    // eBay Domestic 기본값 (USPS Ground Advantage 기준)
   let deliveryLabel = 'Standard';
-  let parsedDeliveryDays = 7;
+  let parsedDeliveryDays = 4;       // eBay 대부분 국내 판매자 → 3-5일이 현실적
 
-  // Free shipping detection
+  // ── 배송일 파싱: 여러 포맷 지원 ──
+  // "Free delivery in 3-5 days", "Estimated between Mon, Mar 3 and Thu, Mar 6"
+  // "delivery in 2-4 business days", "+$7.99 delivery 5-7 days"
+  const daysRangeMatch = msg.match(/(\d+)\s*[-–to]+\s*(\d+)\s*(?:business\s*)?days?/i);
+  const singleDayMatch = !daysRangeMatch ? msg.match(/(\d+)\s*(?:business\s*)?days?/i) : null;
+
+  // eBay API의 다른 배송 필드도 확인
+  const deliveryInfo = String(item.delivery ?? item.deliveryMessage ?? item.estimatedDelivery ?? '').trim().toLowerCase();
+  const deliveryDaysMatch = !daysRangeMatch && !singleDayMatch
+    ? deliveryInfo.match(/(\d+)\s*[-–to]+\s*(\d+)\s*(?:business\s*)?days?/i)
+    : null;
+
+  if (daysRangeMatch) {
+    const low = parseInt(daysRangeMatch[1], 10);
+    const high = parseInt(daysRangeMatch[2], 10);
+    deliveryDays = `${low}-${high} Days`;
+    parsedDeliveryDays = Math.ceil((low + high) / 2);
+  } else if (singleDayMatch) {
+    const days = parseInt(singleDayMatch[1], 10);
+    deliveryDays = `${days} Days`;
+    parsedDeliveryDays = days;
+  } else if (deliveryDaysMatch) {
+    const low = parseInt(deliveryDaysMatch[1], 10);
+    const high = parseInt(deliveryDaysMatch[2], 10);
+    deliveryDays = `${low}-${high} Days`;
+    parsedDeliveryDays = Math.ceil((low + high) / 2);
+  }
+
+  // ── 배송비 파싱 ──
   if (msg.includes('free')) {
     isFree = true;
     shippingPrice = 0;
-
-    // Parse delivery time from "Free delivery in X-Y days"
-    const daysMatch = msg.match(/(\d+)-(\d+)\s*days?/i);
-    if (daysMatch) {
-      const low = parseInt(daysMatch[1], 10);
-      const high = parseInt(daysMatch[2], 10);
-      deliveryDays = `${low}-${high} Days`;
-      deliveryLabel = `Free Shipping · ${low}-${high} Days`;
-      parsedDeliveryDays = Math.ceil((low + high) / 2);
-    } else {
-      deliveryDays = '3-7 Days';
-      deliveryLabel = 'Free Shipping';
-      parsedDeliveryDays = 5;
-    }
-  } else if (msg.startsWith('+')) {
-    // "+$7.99 delivery" format
+    deliveryLabel = `Free Shipping · ${deliveryDays}`;
+  } else if (msg.startsWith('+') || msg.includes('$')) {
+    // "+$7.99 delivery" or "$5.99 shipping" format
     const priceMatch = msg.match(/\$?([\d.]+)/);
     if (priceMatch) {
       shippingPrice = parseFloat(priceMatch[1]) || 0;
     }
-    deliveryDays = '5-10 Days';
-    deliveryLabel = `+$${shippingPrice.toFixed(2)} Shipping`;
-    parsedDeliveryDays = 7;
+    deliveryLabel = `+$${shippingPrice.toFixed(2)} · ${deliveryDays}`;
+  }
+
+  // ── 특급 배송 감지 ──
+  if (msg.includes('expedited') || msg.includes('express') || msg.includes('1-day') || msg.includes('next day')) {
+    if (parsedDeliveryDays > 3) {
+      parsedDeliveryDays = 2;
+      deliveryDays = '1-3 Days';
+    }
   }
 
   return { shippingPrice, isFree, deliveryDays, deliveryLabel, parsedDeliveryDays };
@@ -147,13 +168,39 @@ function parseReviews(item: Record<string, unknown>): { rating: number; reviewCo
 }
 
 // ── Seller info parsing ──
-function parseSellerInfo(item: Record<string, unknown>): string {
-  const raw = String(item.sellerInfo ?? '').trim();
-  if (!raw) return 'eBay Seller';
+interface SellerData {
+  name: string;
+  feedbackPercent: number;  // e.g. 99.8
+  feedbackCount: number;    // e.g. 36600
+}
 
-  // Extract seller name from "cocosprinkles 99.8% positive (36.6K)"
+function parseSellerInfo(item: Record<string, unknown>): SellerData {
+  const raw = String(item.sellerInfo ?? '').trim();
+  if (!raw) return { name: 'eBay Seller', feedbackPercent: 0, feedbackCount: 0 };
+
+  // Extract seller name (first word)
   const parts = raw.split(/\s+/);
-  return parts[0] || 'eBay Seller';
+  const name = parts[0] || 'eBay Seller';
+
+  // Extract feedback percentage: "99.8% positive" → 99.8
+  let feedbackPercent = 0;
+  const percentMatch = raw.match(/([\d.]+)%\s*positive/i);
+  if (percentMatch) {
+    feedbackPercent = parseFloat(percentMatch[1]) || 0;
+  }
+
+  // Extract feedback count: "(36.6K)" or "(5,547)" → number
+  let feedbackCount = 0;
+  const countMatch = raw.match(/\(([\d.,]+)\s*([KkMm])?\)/);
+  if (countMatch) {
+    let num = parseFloat(countMatch[1].replace(/,/g, '')) || 0;
+    const suffix = (countMatch[2] || '').toUpperCase();
+    if (suffix === 'K') num *= 1000;
+    else if (suffix === 'M') num *= 1000000;
+    feedbackCount = Math.round(num);
+  }
+
+  return { name, feedbackPercent, feedbackCount };
 }
 
 // ── Condition from subTitles ──
@@ -209,6 +256,39 @@ export class EbayProvider implements SearchProvider {
         }
 
         const data = await res.json();
+
+        // ── Challenge/Captcha 감지: eBay가 봇 차단 페이지를 보냈는지 확인 ──
+        const dataStr = JSON.stringify(data).slice(0, 500);
+        const isChallenged = (
+          dataStr.includes('splashui/challenge') ||
+          dataStr.includes('original_status":307') ||
+          dataStr.includes('captcha') ||
+          dataStr.includes('blocked')
+        );
+        if (isChallenged) {
+          console.warn(`⚠️ [eBay] Challenge/captcha detected, retrying after delay...`);
+          // 1초 후 재시도 (1회)
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          try {
+            const retryController = new AbortController();
+            const retryTimer = setTimeout(() => retryController.abort(), TIMEOUT_MS);
+            const retryRes = await fetch(url, { headers, signal: retryController.signal });
+            clearTimeout(retryTimer);
+            if (retryRes.ok) {
+              const retryData = await retryRes.json();
+              const retryStr = JSON.stringify(retryData).slice(0, 500);
+              if (!retryStr.includes('splashui/challenge') && !retryStr.includes('original_status":307')) {
+                const retryProducts = this.parseResponse(retryData, q, priceIntent);
+                if (retryProducts.length > 0) {
+                  return retryProducts;
+                }
+              }
+            }
+          } catch { /* retry failed, continue to next endpoint */ }
+          console.warn(`⚠️ [eBay] Retry also returned challenge, trying next endpoint...`);
+          continue;
+        }
+
         const products = this.parseResponse(data, q, priceIntent);
 
         if (products.length > 0) {
@@ -216,7 +296,7 @@ export class EbayProvider implements SearchProvider {
         } else {
           // 디버그: 응답은 200인데 파싱 결과 0건일 때 — 응답 구조 확인용
           const keys = data && typeof data === 'object' ? Object.keys(data) : [];
-          console.warn(`⚠️ [eBay] 200 OK but 0 parsed products. Response keys: [${keys.join(',')}], sample: ${JSON.stringify(data).slice(0, 200)}`);
+          console.warn(`⚠️ [eBay] 200 OK but 0 parsed products. Response keys: [${keys.join(',')}], sample: ${dataStr}`);
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
@@ -385,16 +465,29 @@ export class EbayProvider implements SearchProvider {
       queryForApi,
     );
 
-    const sellerName = parseSellerInfo(item);
+    const sellerData = parseSellerInfo(item);
+    const sellerName = sellerData.name;
     const condition = parseCondition(item);
-    const { rating, reviewCount } = parseReviews(item);
+    const { rating: productRating, reviewCount: productReviewCount } = parseReviews(item);
     const { shippingPrice, isFree, deliveryDays, deliveryLabel, parsedDeliveryDays } = parseShipping(item);
+
+    // eBay 특성: 상품 리뷰가 없으면 판매자 피드백으로 대체
+    // feedbackPercent(99.8%) → 5점 만점 환산 (95%=4.75, 99%=4.95, 100%=5.0)
+    let rating = productRating;
+    let reviewCount = productReviewCount;
+    if (rating === 0 && sellerData.feedbackPercent > 0) {
+      rating = Math.min(5, sellerData.feedbackPercent / 20); // 99.8% → 4.99
+      reviewCount = sellerData.feedbackCount || 0;
+    }
 
     const totalPrice = priceNum + shippingPrice;
 
-    // Trust score: eBay is peer-to-peer, slightly lower base trust
+    // Trust score: eBay는 판매자 피드백 기반
     let trustScore = 55;
     if (rating >= 4.5) trustScore += 10;
+    if (sellerData.feedbackPercent >= 99) trustScore += 10;
+    else if (sellerData.feedbackPercent >= 97) trustScore += 5;
+    if (sellerData.feedbackCount >= 1000) trustScore += 5;
     if (condition.toLowerCase().includes('new') || condition.toLowerCase().includes('excellent')) trustScore += 5;
     if (isFree) trustScore += 5;
     if (item.topRatedSeller === true) trustScore += 10;
@@ -430,6 +523,8 @@ export class EbayProvider implements SearchProvider {
       shippingPrice,
       totalPrice,
       trustScore,
+      sellerFeedbackPercent: sellerData.feedbackPercent || undefined,
+      sellerFeedbackCount: sellerData.feedbackCount || undefined,
     } as unknown as Product;
   }
 }

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Icons } from '@/components/icons';
 import { useWishlist } from '../context/WishlistContext';
-import { ProductCard } from '../components/ProductCard';
+import { ProductCard } from '@/components/search/ProductCard';
 import { getRetailerConfig, matchShippingProgram } from '../lib/retailerConfig';
 
 function TrashIcon(props: React.SVGProps<SVGSVGElement>) {

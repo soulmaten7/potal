@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Icons } from '@/components/icons';
-import { LoginModal } from '@/app/components/LoginModal'; 
+import { LoginModal } from '@/components/auth/LoginModal';
 
 // ==================================================================================
 // 🔒 [DATA SECTION]

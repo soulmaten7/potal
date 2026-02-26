@@ -63,7 +63,7 @@ export async function filterProducts(query: string, products: Product[]): Promis
     return products.filter((p) => validIds.has(p.id));
   } catch (err) {
     if (err instanceof Error && err.message === 'Timeout') {
-      console.warn('⚠️ AI Filter Timeout - Skipping');
+      // AI Filter Timeout - return original products
     } else {
       console.error('AIFilterService.filterProducts failed, returning original list.', err);
     }

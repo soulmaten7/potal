@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Icons } from '@/components/icons';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { useWishlist } from '@/app/context/WishlistContext';
-import { LoginModal } from '@/app/components/LoginModal';
+import { LoginModal } from '@/components/auth/LoginModal';
 
 export function Header() {
   const router = useRouter();

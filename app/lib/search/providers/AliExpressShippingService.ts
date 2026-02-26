@@ -103,7 +103,6 @@ async function fetchShippingOptions(
     });
 
     if (!res.ok) {
-      console.warn(`[AliShipping] Failed for ${cleanId}: ${res.status}`);
       return [];
     }
 
@@ -197,8 +196,6 @@ async function fetchShippingOptions(
       };
     }).filter(o => o.method !== 'Unknown');
   } catch (err) {
-    const e = err as Error;
-    console.warn(`[AliShipping] Error for ${cleanId}:`, e.message);
     return [];
   }
 }
@@ -220,7 +217,6 @@ export async function fetchShippingForProducts(
   const result = new Map<string, ProductShippingInfo>();
 
   if (!apiKey?.trim()) {
-    console.warn('[AliShipping] No API key, skipping shipping detail fetch');
     return result;
   }
 

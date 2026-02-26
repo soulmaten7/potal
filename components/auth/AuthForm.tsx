@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSupabase } from "../context/SupabaseProvider";
+import { useSupabase } from "@/app/context/SupabaseProvider";
 
 type AuthFormProps = {
   onMagicLinkSent?: () => void;
