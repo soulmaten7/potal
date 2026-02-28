@@ -4,6 +4,7 @@ import { AmazonProvider } from './providers/AmazonProvider';
 import { WalmartProvider } from './providers/WalmartProvider';
 import { AliExpressProvider } from './providers/AliExpressProvider';
 import { TemuProvider } from './providers/TemuProvider';
+import { BestBuyProvider } from './providers/BestBuyProvider';
 // SheinProvider 비활성화: API 서버 다운 (환불 요청 중)
 // import { SheinProvider } from './providers/SheinProvider';
 import { filterProducts } from './AIFilterService';
@@ -11,11 +12,13 @@ import { filterFraudulentProducts } from './FraudFilter';
 import { calculateAllLandedCosts } from './CostEngine';
 import { scoreProducts } from './ScoringEngine';
 import type { ScoredProduct } from './ScoringEngine';
+import { generateQueryVariants } from './searchIntelligence';
 
 const amazonProvider = new AmazonProvider();
 const walmartProvider = new WalmartProvider();
 const aliExpressProvider = new AliExpressProvider();
 const temuProvider = new TemuProvider();
+const bestBuyProvider = new BestBuyProvider();
 
 /** Provider별 개별 타임아웃 (12초). eBay 등 느린 Provider 대응. */
 const PROVIDER_TIMEOUT_MS = 12_000;
@@ -71,7 +74,25 @@ export class SearchService {
       market !== 'domestic' ? this.fetchGlobal(trimmed, page) : Promise.resolve([]),
     ]);
 
-    const allRaw: Product[] = [...domesticRaw, ...globalRaw];
+    let allRaw: Product[] = [...domesticRaw, ...globalRaw];
+
+    // ── Step 1b: 결과 0건 → 단수↔복수 변형 검색어로 전체 provider 재시도 ──
+    if (allRaw.length === 0) {
+      const variants = generateQueryVariants(trimmed);
+      if (variants.length > 1) {
+        const altQuery = variants[1];
+        console.warn(`⚠️ [SearchService] 결과 0건 → 변형 "${altQuery}"로 전체 재시도`);
+        const [altDomestic, altGlobal] = await Promise.all([
+          market !== 'global' ? this.fetchDomestic(altQuery, page) : Promise.resolve([]),
+          market !== 'domestic' ? this.fetchGlobal(altQuery, page) : Promise.resolve([]),
+        ]);
+        allRaw = [...altDomestic, ...altGlobal];
+        if (allRaw.length > 0) {
+          console.warn(`🔄 [SearchService] 변형 "${altQuery}"로 ${allRaw.length}개 결과 확보`);
+        }
+      }
+    }
+
     if (allRaw.length === 0) return emptyResult;
 
     // ── Step 2: FraudFilter Stage 1 (rule-based, $0 cost) ──
@@ -140,13 +161,15 @@ export class SearchService {
 
   /** Domestic: Amazon + Walmart 병렬 호출 (각 10초 개별 타임아웃). */
   private async fetchDomestic(query: string, page: number): Promise<Product[]> {
-    const [amazonResults, walmartResults] = await Promise.allSettled([
+    const [amazonResults, walmartResults, bestBuyResults] = await Promise.allSettled([
       withProviderTimeout(amazonProvider.search(query, page), 'Amazon'),
       withProviderTimeout(walmartProvider.search(query, page), 'Walmart'),
+      withProviderTimeout(bestBuyProvider.search(query, page), 'Best Buy'),
     ]);
 
     const amazon = amazonResults.status === 'fulfilled' ? (amazonResults.value ?? []) : [];
     const walmart = walmartResults.status === 'fulfilled' ? (walmartResults.value ?? []) : [];
+    const bestBuy = bestBuyResults.status === 'fulfilled' ? (bestBuyResults.value ?? []) : [];
 
     if (amazonResults.status === 'rejected') {
       console.error('❌ SearchService: Amazon error:', amazonResults.reason);
@@ -154,8 +177,11 @@ export class SearchService {
     if (walmartResults.status === 'rejected') {
       console.error('❌ SearchService: Walmart error:', walmartResults.reason);
     }
+    if (bestBuyResults.status === 'rejected') {
+      console.error('❌ SearchService: Best Buy error:', bestBuyResults.reason);
+    }
 
-    return [...amazon, ...walmart];
+    return [...amazon, ...walmart, ...bestBuy];
   }
 
   /** Global: AliExpress + Temu 병렬 호출 */

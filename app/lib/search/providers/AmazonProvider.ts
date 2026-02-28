@@ -188,7 +188,7 @@ export class AmazonProvider implements SearchProvider {
     const priceIntent = detectPriceIntent(trimmed);
 
     try {
-      const url = new URL('https://real-time-amazon-data.p.rapidapi.com/search');
+      const url = new URL(`https://${host}/search`);
       url.searchParams.set('query', queryForApi);
       url.searchParams.set('page', String(page));
       url.searchParams.set('country', 'US');
@@ -224,7 +224,6 @@ export class AmazonProvider implements SearchProvider {
 
       // AI 인텔리전스: 가격 제한 의도가 있으면 해당 금액 이하만 필터링
       if (priceIntent != null && priceIntent.maxPrice > 0) {
-        const before = products.length;
         products = products.filter((p) => {
           const num = parsePriceToNumber(p.price);
           return num != null && num <= priceIntent.maxPrice;

@@ -78,6 +78,55 @@ export function detectPriceIntent(query: string): PriceIntent | null {
 }
 
 /**
+ * 검색어 변형 생성: 단수↔복수.
+ * API마다 "airpod" vs "airpods", "iphone" vs "iphones" 결과가 다를 수 있으므로
+ * 결과가 0건일 때 변형으로 재시도할 수 있도록 후보 목록 반환.
+ * [0] = 원본, [1] = 변형 (단수↔복수)
+ */
+export function generateQueryVariants(query: string): string[] {
+  const words = query.trim().split(/\s+/);
+  if (words.length === 0) return [query];
+
+  const lastWord = words[words.length - 1].toLowerCase();
+  const prefix = words.slice(0, -1).join(' ');
+  const variants: string[] = [query]; // 원본 우선
+
+  if (lastWord.endsWith('s')) {
+    // 복수 → 단수 변환 시도
+    if (lastWord.endsWith('ies')) {
+      // batteries → battery
+      variants.push([prefix, lastWord.slice(0, -3) + 'y'].filter(Boolean).join(' '));
+    } else if (
+      lastWord.endsWith('ses') || lastWord.endsWith('xes') ||
+      lastWord.endsWith('zes') || lastWord.endsWith('ches') || lastWord.endsWith('shes')
+    ) {
+      // boxes → box, watches → watch
+      variants.push([prefix, lastWord.slice(0, -2)].filter(Boolean).join(' '));
+    } else {
+      // airpods → airpod
+      variants.push([prefix, lastWord.slice(0, -1)].filter(Boolean).join(' '));
+    }
+  } else {
+    // 단수 → 복수 변환 시도
+    if (lastWord.endsWith('y') && !/[aeiou]y$/.test(lastWord)) {
+      // battery → batteries
+      variants.push([prefix, lastWord.slice(0, -1) + 'ies'].filter(Boolean).join(' '));
+    } else if (
+      lastWord.endsWith('x') || lastWord.endsWith('ch') ||
+      lastWord.endsWith('sh') || lastWord.endsWith('s') || lastWord.endsWith('z')
+    ) {
+      // box → boxes, watch → watches
+      variants.push([prefix, lastWord + 'es'].filter(Boolean).join(' '));
+    } else {
+      // airpod → airpods, iphone → iphones
+      variants.push([prefix, lastWord + 's'].filter(Boolean).join(' '));
+    }
+  }
+
+  return variants;
+}
+
+/**
  * 상품 가격 문자열에서 숫자 추출 (비교용).
  */
 export function parsePriceToNumber(priceStr: string | undefined): number | null {
