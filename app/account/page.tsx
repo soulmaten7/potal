@@ -103,6 +103,28 @@ export default function AccountPage() {
     window.location.href = '/';
   };
 
+  // [기능] 계정 삭제 (Apple Guideline 5.1.1(v) 준수)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      // Supabase Edge Function 또는 API route로 계정 삭제 요청
+      const res = await fetch('/api/delete-account', { method: 'DELETE' });
+      if (res.ok) {
+        await supabase.auth.signOut();
+        window.location.href = '/';
+      } else {
+        alert('Failed to delete account. Please try again or contact support@potal.app.');
+      }
+    } catch {
+      alert('An error occurred. Please contact support@potal.app.');
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8fbff] pb-20">
       <main className="max-w-[1440px] mx-auto px-6 pt-10">
@@ -250,11 +272,38 @@ export default function AccountPage() {
               </div>
             </Section>
 
-            {/* Delete Account */}
+            {/* Delete Account — Apple Guideline 5.1.1(v) */}
             <div className="mt-12 pt-8 border-t border-slate-200">
-               <button className="text-sm font-bold text-red-600 hover:text-red-700 hover:underline flex items-center gap-1">
-                 Delete account <Icons.ChevronRight className="w-3 h-3" />
-               </button>
+              {!showDeleteConfirm ? (
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-sm font-bold text-red-600 hover:text-red-700 hover:underline flex items-center gap-1"
+                >
+                  Delete account <Icons.ChevronRight className="w-3 h-3" />
+                </button>
+              ) : (
+                <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                  <p className="text-sm font-bold text-red-800 mb-2">Are you sure?</p>
+                  <p className="text-xs text-red-600 mb-4">
+                    This will permanently delete your account, search history, and all saved data. This action cannot be undone.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleteLoading}
+                      className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {deleteLoading ? 'Deleting...' : 'Yes, delete my account'}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(false)}
+                      className="px-4 py-2 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>

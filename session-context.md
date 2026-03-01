@@ -1,887 +1,660 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-02-28 (김범수 QPV 리서치 + 피치덱 v4 + LinkedIn 메시지 확정 + iOS 승인 완료)
-
-## 현재 상태 요약
-
-POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 가격비교 서비스.
-**현재 6개 쇼핑몰 연동** — Amazon, Walmart, Target, eBay, Costco, AliExpress (RapidAPI 기반 5개 + Costco).
-**Founder**: 장은태 (EunTae Jang) — Founder & CEO. 코딩 경험 없이 Claude AI + 바이브코딩으로 1달 만에 구축 (매일 9시간).
-
-**iOS 앱**: App Store 승인 완료 ✅ (Build 2, 태블릿 1440px 레이아웃 수정 포함).
-**Android 앱**: Google Play Console 국가 변경 대기 중 (미국→한국). 영어로 재문의 완료. Capacitor Android 빌드는 아직 미시작.
-**웹사이트**: https://potal.app (Vercel 배포)
+> 마지막 업데이트: 2026-03-01 (세션 5)
 
 ---
 
-## POTAL 핵심 기능 정의 (WHY · HOW · WHAT)
+## ⏰ 세션 업데이트 지침 (모든 Claude 세션 필독)
 
-### WHY (왜 만들었나) — 피치덱 v4 기준 재정의
+**이 파일은 POTAL 프로젝트의 핵심 맥락 파일입니다. 모든 세션에서 아래 규칙을 반드시 따를 것.**
 
-**핵심 태그라인**: "Compare Every Store on Earth." + "Domestic vs Global — One Search."
+### 규칙 1: 30분마다 업데이트 제안
+- 세션 시작 후 30분이 지나면, Claude가 먼저 "session-context.md 업데이트할까요?"라고 제안할 것
+- 이후 30분 간격으로 반복 제안
+- 주요 작업이 완료된 시점에도 즉시 제안
 
-크로스보더 커머스로 국가 간 경계가 무너지면서 가격 체계가 붕괴되었다. 기존 쇼핑은 내수시장의 특정 사이트에서 sort by price로 나열하는 수준이었지만, 소비자가 진짜 필요한 건 '가장 싸거나, 가장 빠르거나, 가장 합리적인 선택'인데 — Domestic vs Global을 한번에 비교해주는 곳이 어디에도 없다.
+### 규칙 2: 업데이트 시 구조 유지
+- 이 파일의 섹션 구조(0~10 + 부록)를 그대로 유지할 것
+- 새 내용은 해당 섹션에 맞춰서 추가 (타임라인 나열 ❌)
+- 상태 변경 시 해당 항목을 올바른 섹션으로 이동 (예: IN PROGRESS → DONE)
 
-똑같은 상품이라도 무조건 Global이 싼 것도 아니고, 비싸지만 일주일 빨리 오는 Domestic을 살 필요가 없는 사람도 있다. 이 비교를 직접 하기엔 복잡하고, 귀찮다. 결국 비교를 안 하는 게 아니라 **못 하는 것**이고, 그래서 어느 쪽이든 손해를 보고 있다.
+### 규칙 3: 업데이트 내용
+- 섹션 2 (TODO): 새로운 할 일 추가, 완료된 항목 체크
+- 섹션 4 (IN PROGRESS): 현재 진행 상황 반영
+- 섹션 5 (DONE): 완료된 작업 추가
+- 섹션 10 (작업 로그): 해당 날짜에 1줄 요약 추가/업데이트
+- 섹션 1 (가치관): 은태님의 새로운 의사결정 패턴이 발견되면 추가
 
-**3가지 핵심 문제:**
-1. 비교할 방법이 없다 — Domestic vs Global 실제 총비용을 나란히 비교해주는 서비스가 존재하지 않음
-2. 실제 총비용을 모른다 — 배송비+관세+세금 포함 총비용을 자동 계산해서 보여주는 곳이 없어 합리적 판단 불가능
-3. 대다수 소비자는 포기 — 검색에 익숙한 젊은 층 제외하면 직접 비교가 어렵고 복잡해서 아예 시도하지 않음
-
-**이것은 블루오션이다**: 크로스보더 커머스가 가격 체계를 파괴했지만, 그 파괴된 시장에서 소비자를 도와주는 서비스는 아직 없다.
-
-### HOW (어떻게 해결하나)
-
-**1. 스마트 가격비교 (핵심 차별점)**
-- Domestic vs Global 분류 — 국내 상품과 해외배송 상품을 나눠서 나란히 비교
-- Total Landed Cost 계산 — 상품가 + 배송비 + 세금/관세/MPF 전부 포함한 실제 총비용
-- 배송 예상 기간 비교 — 국내 vs 해외 배송 소요일을 나란히 확인
-- Duty-Free 국가 자동 판별 — FTA 체결국 상품은 관세 면제 자동 반영
-- Tax/Duty 계산 근거 투명 공개 — 세금/관세 산출 방식을 직접 확인 가능
-
-**2. 통합 검색**
-- 6개 쇼핑몰 동시 검색 — Amazon, Walmart, Target, eBay, Costco, AliExpress
-- 멤버십 할인 반영 — Amazon Prime, Walmart+, Costco 회원 가격 자동 적용
-- 각 쇼핑몰별 리뷰/평점 표시 — eBay는 판매자 신뢰도(피드백 %) 표시
-- 상품 클릭 → 해당 쇼핑몰로 바로 이동 — 중간 단계 없이 구매 페이지 직행
-
-**3. POTAL AI — 버티컬 AI 쇼핑 엔진** (피치덱 v4 기준)
-- AI 필터링 — 검색어와 무관한 상품 자동 판별/제거 (OpenAI 기반)
-- AI Smart Suggestion — 검색 결과 분석 → 브랜드, 용량, 색상 등 필터 축 자동 생성
-- searchIntelligence — refineQuery, detectPriceIntent, generateQueryVariants
-- 이미지 검색 + 자연어 쿼리 처리 지원
-- 데이터 축적 → 개인화 진화 (자동으로, 유저 데이터가 쌓이면서)
-- **핵심 원칙**: 가격 추적 알림, 히스토리 차트 등은 소비자 기능 ❌ → B2B 기능으로 분류
-
-**4. 사용 편의성**
-- PC + 모바일 반응형 + iOS 앱 — 어디서든 동일한 경험
-- 음성 검색 — 타이핑 없이 말로 검색
-- 위시리스트 — 상품 저장해두고 나중에 비교
-- 회원가입 없이 완전 무료 — 가입 장벽 없음
-
-### WHAT (최종 목표)
-
-현재 MVP는 미국 기준 6개 쇼핑몰로 시작했지만, 다음 단계로 미국에서 구매 가능한 모든 쇼핑몰을 Domestic과 Global에 추가하고, 이후 전 세계 모든 국가에서 동일하게 이용 가능하도록 확장한다. 최종적으로 **어느 나라 어떤 사용자든, 전 세계 모든 쇼핑몰의 상품을 한 손에서 실제 총비용과 배송기간으로 쉽게 비교할 수 있는 글로벌 쇼핑 비교 플랫폼**을 만드는 것이 POTAL의 목표다.
+### 규칙 4: Make 자동화 연동 (4단계 도달 시)
+- 합의된 실행 순서 4단계(Make 자동화 설계)에 도달하면, session-context.md 자동 업데이트도 Make 워크플로우에 포함시킬 것을 은태님에게 제안할 것
+- "이전에 합의했던 대로, session-context.md 자동 업데이트도 Make에 포함시킬까요?"
 
 ---
 
-## 2026-02-26 작업 요약
+## 0. POTAL 개요
 
-### 1. 코드베이스 종합 점검 및 리팩토링 ✅
+### 서비스 정의
+POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 **가격비교 서비스**. 핵심은 Domestic vs Global 실제 총비용(배송비+관세+세금) 비교.
 
-#### 1-1. 고아 파일 삭제 (7개)
-- `app/components/FilterBar.tsx` — 미사용
-- `app/components/CategoryScreen.tsx` — 미사용
-- `app/components/ShippingGuideModal.tsx` — 미사용
-- `app/components/BottomNav.tsx` — 미사용 (components/layout/MobileBottomNav.tsx가 실제 사용)
-- `app/components/SearchOverlay.tsx` — 미사용
-- `app/components/EmptyState.tsx` — 미사용
-- `components/auth/LoginModal.tsx` — 미사용 (app/components/LoginModal.tsx가 실제 사용)
+**태그라인**: "Compare Every Store on Earth." + "Domestic vs Global — One Search."
 
-#### 1-2. 죽은 코드 제거
-- `app/page.tsx`: `activeMain`, `activeSub` state 변수 삭제
-- `app/page.tsx`: `MainCategoryId` 타입 import 삭제
+**최종 목표**: 어느 나라 어떤 사용자든, 전 세계 모든 쇼핑몰의 상품을 한 손에서 실제 총비용과 배송기간으로 쉽게 비교할 수 있는 글로벌 쇼핑 비교 플랫폼
 
-#### 1-3. console.log/warn 정리 (13개)
-- SerperShoppingProvider.ts: console.log 6개 삭제
-- EbayProvider.ts: console.log 1개 삭제
-- AliExpressShippingService.ts, AliExpressProvider.ts, AIFilterService.ts, search/page.tsx: 비핵심 console.warn 6개 삭제
-- 중요한 에러 추적용 console.warn은 유지 (API key 미설정, timeout, HTTP 에러 등)
+### WHY (왜 만들었나)
+크로스보더 커머스로 가격 체계가 붕괴되었지만, Domestic vs Global을 한번에 비교해주는 서비스가 존재하지 않음. 비교를 안 하는 게 아니라 **못 하는 것**이고, 이것이 블루오션.
 
-#### 1-4. 컴포넌트 디렉토리 통합 (app/components/ → components/)
-**이동된 파일:**
-- `app/components/ProductCard.tsx` → `components/search/ProductCard.tsx`
-- `app/components/DeliveryBadge.tsx` → `components/search/DeliveryBadge.tsx`
-- `app/components/LoginModal.tsx` → `components/auth/LoginModal.tsx`
-- `app/components/AuthForm.tsx` → `components/auth/AuthForm.tsx`
-- `app/components/GoogleAnalytics.tsx` → `components/common/GoogleAnalytics.tsx`
-- `app/components/search/AiSmartSuggestionBox.tsx` → `components/search/AiSmartSuggestionBox.tsx`
+3가지 핵심 문제: (1) 비교할 방법이 없다 (2) 실제 총비용을 모른다 (3) 대다수 소비자는 포기
 
-**업데이트된 import (7개 파일):**
-- `components/search/ResultsGrid.tsx`
-- `components/layout/Header.tsx`
-- `components/layout/Footer.tsx`
-- `app/profile/page.tsx`
-- `app/search/page.tsx`
-- `app/layout.tsx`
-- `app/auth/signin/page.tsx`
-- `app/page.tsx`
-- `app/wishlist/page.tsx`
+### HOW (핵심 기능)
+1. **스마트 가격비교** — Domestic vs Global 분류, Total Landed Cost 계산, 배송 기간 비교, Duty-Free 자동 판별, 세금 계산 근거 공개
+2. **통합 검색** — 6개 쇼핑몰 동시 검색, 멤버십 할인 반영, 리뷰/평점 표시, 원클릭 이동
+3. **POTAL AI** — AI 필터링(무관 상품 제거), Smart Suggestion(필터 축 자동 생성), searchIntelligence, 이미지/자연어 검색
+4. **사용 편의성** — PC+모바일+iOS 반응형, 음성 검색, 위시리스트, 무료/회원가입 불필요
 
-**`app/components/` 폴더 완전 삭제됨.**
+### Founder & 환경
+- **장은태 (Euntae Jang)** — Founder & CEO
+- 코딩 경험 없음 → Claude AI + 바이브코딩으로 **1달 만에 구축** (매일 9시간)
+- 이메일: soulmaten7@gmail.com / contact@potal.app
+- 프로젝트 경로 (Mac): `~/portal/`
+- Git push: HTTPS 인증 실패 → 사용자가 Mac 터미널에서 직접 push
+- DB: Supabase / 배포: Vercel (https://potal.app)
 
-#### 1-5. 대형 파일 분리
-- **ResultsGrid.tsx**: 1220줄 → 955줄 — `MobileCompactCard` 추출 → `components/search/MobileCompactCard.tsx` (277줄)
-- **ProductCard.tsx**: 622줄 → 546줄 — `TaxInfoPopup` 추출 → `components/search/TaxInfoPopup.tsx` (208줄)
+### 현재 연동 상태
+- **6개 쇼핑몰**: Amazon, Walmart, Target, eBay, Costco, AliExpress (RapidAPI 기반)
+- **iOS 앱**: App Store 리뷰 거절 (2026-02-26) — 3가지 수정 필요 (크래시, 로그인UX, 데모계정)
+- **Android 앱**: Google Play Console 국가 변경 대기 중
+- **웹사이트**: https://potal.app
 
-#### 1-6. 이전 세션 UI 수정사항 (커밋에 포함)
-- Duty+MPF 합쳐서 1줄로 (PC + 모바일 모든 카드 타입)
-- PC (i) 아이콘 → 팝업으로 변경 (mobile은 /tax-info 페이지 이동 유지)
-- 팝업 outside-click 닫기 (useRef + useEffect)
-- eBay 판매자 피드백 % 표시 (0/0 리뷰 대신)
-- eBay 캡차 감지 + 1초 재시도 로직
-- eBay 배송기간 "5-10 Days" → "3-5 Days" (DeliveryStandard.ts 하드코딩 수정)
-- Total Landed Cost 순서 변경 (라벨 위, 가격 아래)
-- FAQ 2열 레이아웃 (max-w-[1440px])
-- /tax-info 페이지 생성
+### 비즈니스 모델
+- **Phase 1 (현재)**: 어필리에이트 커미션 (1~8.5%) — Amazon Associates, CJ, Rakuten 등
+- **Phase 2**: 스폰서 리스팅 (Google Shopping 모델)
+- **Phase 3 (글로벌 후)**: B2B API 서비스 — 차량/스마트기기 쇼핑 비교 위젯, 금융앱 최저가 확인
 
-### 2. OG 이미지 업데이트 ✅
-- `public/og-image.png` 새로 생성 (1200x630, Domestic vs Global 비교 디자인)
-- 기존 `og-image.svg`는 텍스트만 있던 구버전
-- `app/layout.tsx` openGraph + twitter 메타 description 업데이트
-- 새 description: "Compare real total cost across Amazon, Walmart, Target, eBay, Costco & AliExpress. Domestic vs Global side by side."
+### Roadmap (피치덱 v4 확정)
+- **Ch1: 미국 장악** — 쇼핑몰 20개+ API, 무료 채널 공략, 어필리에이트 수익화, 미국 법인
+- **Ch2: 글로벌 확장** — 1~2개국 시범, 다국어, 현지 법인, 글로벌 데이터 축적
+- **Ch3: 플랫폼+B2B** — POTAL AI 개인화, B2B API, 차량/스마트기기, 금융앱 위젯
 
-### 3. 홍보 채널 실행 ✅
-
-#### Reddit r/SideProject
-- 글 올림 → **스팸 필터에 걸림** (karma 1이라서)
-- 모더레이터에게 승인 요청 메시지 보냄 → 대기 중
-- 이미지: imgur에 POTAL 스크린샷 업로드 (https://imgur.com/a/gcfkwAJ)
-
-#### LinkedIn
-- 프로필 설정 완료 (Founder, POTAL, 한줄소개, potal.app 링크)
-- 글 올림 (POTAL 소개 + 핵심 기능 + 피드백 요청)
-- 해시태그: #buildinpublic #startup #ecommerce #sideproject #pricecomparison #indiehacker
-
-#### X (Twitter)
-- 일론 머스크 태그하여 글 올림
-- 핵심 메시지: "테슬라 유저가 차 안에서 음성 한마디로 모든 쇼핑사이트 비교 구매"
-- MVP 링크 + 1년 안에 전 세계 쇼핑몰 넣겠다는 비전
-
-#### 김범수 대표님 (퀀텀프라임/데모데이) LinkedIn
-- 200자 메시지로 1촌 신청 → ✅ **수락 완료**
-- 내용: 데모데이 구독자이자 멤버십 회원, 바이브코딩으로 MVP 완성, 피드백 요청
-- **김범수 대표 응답**: "사업 내용 볼수있는 웹사이트나 자료 있으면 보내주세요"
-- **대응**: 피치덱 v4 + LinkedIn 메시지 작성 완료, 발송 대기 중
-
-### 4. 외부 서비스 대응 ✅
-
-#### Rakuten
-- 담당자 Madhu에게 영어로 답장 완료
-- 내용: 로그아웃+캐시삭제+시크릿모드+다른브라우저 전부 시도했으나 여전히 incomplete 상태
-- 스크린샷 첨부
-
-#### Google Play Console
-- 국가 변경 요청 영어로 재작성하여 기존 티켓 #782618에 답장
-- 내용: US→South Korea 변경 요청, 한국 서류만 있어서 인증 불가
-
-#### Impact (어필리에이트 네트워크)
-- 계정 활성화 확인 (POTAL OFFICIAL, ID: 6999751)
-- Media Property (potal.app) Verified 상태
-- **문제**: Brands Marketplace 메뉴가 안 보임 → 어드버타이저 파트너십 신청 불가
-- Application Approval 티켓 제출 완료
-
-### 5. Amazon API 디버깅 + 검색 인텔리전스 강화 ✅
-
-#### 5-1. Amazon API 문제 발견 및 원인 분석
-- **증상**: potal.app에서 특정 키워드(airpods, iphone 등) 검색 시 Amazon 결과 0건
-- **원인 분석**:
-  - POTAL 코드 문제 ❌ — 코드 정상
-  - API 키/할당량 문제 ❌ — 8,361/10,000 남음
-  - **RapidAPI (OpenWeb Ninja, real-time-amazon-data) API 자체의 간헐적 불안정** ✅
-  - 같은 검색어 "airpods"가 5번 중 2번만 결과 반환 (API 서버 로드밸런서 문제)
-  - 일부 키워드("earbud", "iphone")는 지속적으로 0건 반환
-- **API 구독**: OpenWeb Ninja PRO 플랜 ($25/mo, 10,000 requests/mo)
-
-#### 5-2. 검색어 단수↔복수 변형 로직 추가 (searchIntelligence.ts)
-- **문제**: "airpod" → 0건, "airpods" → 15,798건 등 단수/복수에 따라 결과 차이
-- **해결**: `generateQueryVariants()` 함수를 `searchIntelligence.ts`에 추가
-  - Amazon만이 아니라 **모든 provider에 공통 적용**되는 검색 인텔리전스 기능으로 구현
-  - 단수→복수: airpod→airpods, iphone→iphones, battery→batteries, box→boxes
-  - 복수→단수: airpods→airpod, batteries→battery, watches→watch
-- **적용 위치**: `SearchService.ts` Step 1b
-  - 전체 provider 호출 후 결과 0건이면 → 변형 검색어로 전체 provider 재시도
-  - AmazonProvider에 넣지 않고 SearchService 레벨에서 처리 (모든 provider 혜택)
-- **변경 파일**:
-  - `app/lib/search/searchIntelligence.ts` — `generateQueryVariants()` 함수 추가 (export)
-  - `app/lib/search/SearchService.ts` — import + Step 1b 재시도 로직 추가
-  - `app/lib/search/providers/AmazonProvider.ts` — 중복 로직 제거, 원래 심플한 구조로 복원
-
-#### 5-3. 로그에서 발견된 다른 Provider 문제
-- **Target**: API 엔드포인트 404 에러 (`/search`, `/product_search` 모두 없음) — 수정 필요
-- **eBay**: captcha/challenge 감지 (기존 재시도 로직 있음)
-- **product-judge**: 3초 타임아웃 (AI 필터 fallback 작동 중)
-
-### 6. 타겟 시장 분석 ✅
-
-#### 크로스보더 이커머스 시장 데이터 (2025, 피치덱 v4 기준 — 출처 검증 완료)
-- 글로벌 크로스보더 이커머스: **$1.47 trillion** (2025) — Coherent Market Insights (2032년 $4.81T 전망, CAGR 18.4%)
-- 미국 온라인 쇼퍼: **289M** (288.45M 반올림) — eMarketer 2025
-- **59%** 전 세계 온라인 쇼퍼가 해외 사이트 구매 경험 — DHL 2025 Online Shopper Survey (24개국, 24,000명)
-- **48%** 예상치 못한 비용으로 해외 구매 포기 — Baymard Institute 2024.2 (미국 성인 1,012명)
-- **54%** 높은 배송비가 최대 불만
-- ~~Gen Z 해외 구매 지출 YoY 21% 성장~~ → 피치덱 v4에서 Gen Z 한정 타겟 삭제
-
-#### 1차 타겟층 (피치덱 v4 기준 재정의)
-- **1차 타겟**: 가격 민감 미국 온라인 쇼퍼 (연령 무관)
-- **잠재 시장**: 전체 온라인 쇼핑 인구 (Domestic vs Global 비교는 보편적 니즈, 40대 이상이 오히려 더 큰 pain point)
-- **59% 전략적 가치**: 이미 해외 구매를 하는 인구 = 즉시 타겟 가능한 고객 (교육 비용 없이 바로 acquisition 가능)
-- **채널 우선순위**: Facebook 쇼핑 그룹 (즉시 가능) > Reddit r/Frugal (3.5M, karma 필요) > SEO 블로그
-- **접근 방식**: "가격 비교 결과"를 먼저 보여주고 자연스럽게 POTAL로 유입
-
-### 7. Slickdeals 분석 ✅
-
-#### Slickdeals 비즈니스 모델
-- **딜 소싱**: 크라우드소싱 — 12M 유저가 직접 딜을 찾아서 올림 (API가 아님)
-- **딜 등급**: 유저 투표 → Popular → Front Page → Fire
-- **수익 모델**:
-  - 유저가 올린 상품 링크를 어필리에이트 링크로 교체 (tag=slickdeals-XX)
-  - 구매 시 1~8.5% 커미션 수취
-  - 어필리에이트 네트워크: **CJ, Impact, Rakuten, Awin** (POTAL과 동일한 네트워크!)
-  - 추가 수익: 스폰서 딜 (브랜드가 돈 내고 노출)
-- **글 올리기**: Deal 게시(상품만 가능), 포럼 게시(활동 이력 필요), 유료 광고(비용 큼)
-
-#### POTAL vs Slickdeals 관계
-- Slickdeals = "커뮤니티 딜 큐레이션" (유저가 딜을 올림)
-- POTAL = "실시간 자동 가격비교 + 총비용 계산" (자동 비교)
-- 경쟁이 아닌 보완 관계이지만, 실질적으로 Slickdeals 유저를 POTAL로 끌어와야 함
-- **타겟층 겹침**: 둘 다 가격 민감한 미국 온라인 쇼퍼가 타겟
-- 두 종류 유저 모두 잡을 수 있음:
-  - 딜 찾는 데 익숙한 유저 (Slickdeals형): "이 딜이 진짜 최저가인지 확인해봐"
-  - 비교를 못 하는 일반 유저: "탭 6개 열 필요 없이 한번에 비교해"
-
-### 8. 실유저 확보 전략 수립 ✅
-
-#### 핵심 원칙
-- **광고 집행은 아직 이르다** — 무료 채널에서 반응 검증 후 집행
-- **가치를 먼저 보여주는 방식** — "POTAL 써보세요!" ❌ → "airpods 비교해봤더니 Amazon $189, AliExpress $67이더라" ✅
-- **메시지는 채널별로 다르게** — 같은 POTAL이지만 타겟에 맞는 어필
-
-#### 실행 순서 (무료 채널 우선)
-1. **Reddit** — karma 쌓인 후 r/Frugal (3.5M), r/deals, r/OnlineShopping (가격 비교 결과 공유)
-2. **Facebook 그룹** — "Amazon Deals & Steals", "Online Shopping Deals USA" 등 (가입 후 바로 글 가능)
-3. **SEO 블로그** — "Amazon vs AliExpress price comparison" 등 검색 유입 콘텐츠
-4. **반응 검증 후** — 어떤 메시지/채널이 먹히는지 데이터 확인
-5. **검증된 채널에만 광고 집행** — 뭐가 먹히는지 모르고 태우면 낭비
+### 투자금 배분 (피치덱 확정)
+35% API 확장 | 25% 마케팅/트래픽 | 25% 운영/서버 | 15% 법인+채용
 
 ---
 
-## 최종 components/ 디렉토리 구조 (2026-02-26 리팩토링 후)
+## 1. 🧠 은태님 가치관 & 대화 스타일
+
+### 의사결정 패턴
+- **"프랑크푸르트 선언" 마인드**: 데이터가 부족하면 전면 재조사를 요구. "마누라와 자식빼고 싹다 바꾸는" 철저함. 중도반단 수정이 아니라 근본적으로 다시 하는 걸 선호.
+- **단계적 확인**: 큰 작업 전에 "내 말이 무슨 말인지 이해했는지 답변만 먼저 해줘"로 이해도 확인 후 진행
+- **정확성 최우선**: "요약 summary로 적어준 내용들의 정확성이 떨어지는거같아" — 추정치보다 실제 데이터를 선호, 출처 명시 요구
+- **논리적 사고**: 종합몰에 이미 포함된 브랜드라도 DTC 판매가 있으면 별도 유지해야 한다는 비즈니스 로직을 직접 제시
+- **수익화 관점**: 단순 내부 도구가 아닌 수익 자산으로 발전 가능성을 항상 고려 ("이 데이터가 추가 수익에 사용될 도구가 될 수 있을까?")
+- **사실 기반 커뮤니케이션**: 아직 없는 숫자나 과장 표현을 싫어함 (예: "수백만 쇼퍼" → 런칭 전이니 근거 없음)
+
+### 작업 지시 스타일
+- **"답변만 해줘"**: 실행 전에 의견/확인만 먼저 요청할 때 사용. 바로 실행에 들어가면 안 됨.
+- **"진행하지말고"**: 추가 질문이 있을 때 사용. 작업 시작 금지.
+- **"해당질문에 대해 답변만 해줘"**: 토론 모드. 코드 작성이나 파일 수정 하지 말 것.
+- **순서 합의 후 진행**: 작업 순서를 먼저 같이 정한 다음 실행 ("이메일 보내기 전에 내용 틀을 같이 맞춰보고")
+- **한국어 선호**: 대화는 한국어, 외부 발송물(이메일/SNS)은 영문+한글 번역 함께
+- **이전 답변 내용 반영 철저히**: Claude가 이전에 제안한 전문가 의견을 실제 결과물에 반영하지 않으면 지적함
+- **빠른 실행 선호**: 느린 방법보다 빠른 방법 선택 (예: Gmail API OAuth 30분~1시간 vs SMTP 앱 비밀번호 10분 → 후자 선택)
+
+### 중요하게 생각하는 것
+- **데이터 근거**: 모든 시장점유율은 실제 % 숫자 + 출처 필수 (텍스트 설명 ❌)
+- **중복 제거**: 종합몰에서 이미 커버되는 스토어는 별도 API 불필요 → 제외
+- **실용성**: "굳이 따로 사이트를 빼도 되지않을만한곳은 제외시켜도 될거아냐?"
+- **전체 일관성**: 글로벌 스토어도 US 카테고리와 동일한 % 기준 적용 요구
+- **비용 대비 가치**: 유료 구독도 "지적자산"이 될 수 있다는 관점
+
+### AI에 대한 기대
+- 코딩 초보자이지만 AI Agent를 만들려는 의지
+- Claude에게 전문가 수준의 리서치와 실행을 기대
+- 잘못된 부분은 직접 지적하고 정확히 수정 방향을 제시
+- 한번에 완벽하지 않아도 됨 → 반복 수정을 통해 완성도를 높이는 방식 수용
+- 단, 같은 실수 반복은 싫어함 (수정 지시가 누적되면 "프랑크푸르트 선언" 발동)
+
+---
+
+## 2. ✅ 해야 할 행동 (TODO)
+
+### 🔴 즉시
+
+| # | 항목 | 사유 | 관련 파일 |
+|---|------|------|----------|
+| 1 | ~~미발송 스토어 이메일 일괄 발송~~ ✅ | **29곳 발송 완료** (은태님 6 + 자동 23) | `send_emails.py` |
+| 2 | Affiliate 네트워크 경유 스토어 8곳 수동 신청 | Nike, Sephora, Ulta Beauty, Kroger, Lowe's, Kohl's + ASOS(Awin), Office Depot(CJ) — 네트워크 경유만 가능 | 각 Affiliate 네트워크 포털 |
+| 3 | ~~김범수 대표님 LinkedIn 메시지 + 피치덱 발송~~ ✅ | **발송 완료** (은태님 직접, LinkedIn 메시지 + 피치덱 첨부) | `LinkedIn_Message_KimBumsoo.md`, `POTAL_Pitch_Deck.pptx` |
+| 4 | 미커밋 파일 git push | Mac 터미널에서 은태님이 직접 (HTTPS 인증 문제) | searchIntelligence.ts, SearchService.ts, AmazonProvider.ts, BestBuyProvider.ts |
+| 5 | Facebook 미국 쇼핑 그룹 글 올리기 | 가입 승인된 12개 그룹에 순차 게시 (하루 2~3개, 그룹별 다른 내용) | 홍보 글 작성 기준 참조 |
+| 6 | Apple App Store 리뷰 거절 3가지 수정 후 재제출 | (1) Take Photo 크래시(iPad), (2) 로그인 UX → ASWebAuthenticationSession, (3) 데모 계정 제공, (4) 계정 삭제 기능 확인 | App Store Connect |
+| 7 | Impact.com 주소 변경 서류 제출 | 주소 증빙 + 신분증 인증 필요 (은태님 직접) | Impact.com 계정 설정 |
+| 8 | Google Payments 본인 확인 | 다른 유형 문서 재제출 필요 (은태님 직접) | Google Play Console |
+
+### 🟡 대기 후 진행
+
+| # | 항목 | 대기 조건 | 사유 |
+|---|------|----------|------|
+| 1 | Make 자동화 설계 | 이메일 발송 후 | 데이터 항목/주기/API 소스 설계, 이메일 대기 시간에 병렬 진행 |
+| 2 | Similarweb/SemRush 유료 플랜 검토 | 자동화 설계 단계 | 정확한 12개월 트래픽 데이터 확보용, 지적자산으로서의 가치 |
+| 3 | Android 앱 제출 | Google Play 국가 변경 해결 | Capacitor 빌드 → 제출 |
+| 4 | Best Buy API 연동 테스트 | API 키 발급 | BestBuyProvider 코드 완성됨, 키만 대기 |
+| 5 | Target API 수정 | 파트너십 응답 | 현재 404 에러, 엔드포인트 변경됨 |
+| 6 | SEO 블로그 콘텐츠 | 유저 유입 채널 확보 | "Amazon vs AliExpress price comparison" 등 |
+
+### 🟢 장기
+
+| # | 항목 | 사유 |
+|---|------|------|
+| 1 | API 키 확보 후 실제 자동화 연동 | Make + API 연동 |
+| 2 | B2B 리포트/구독 서비스 설계 | 데이터 수익화 |
+| 3 | 데이터 기반 어필리에이트 최적화 | 트래픽 트렌드로 추천 최적화 |
+| 4 | Product Hunt 런치 | 유저/피드백 데이터 있을 때 |
+| 5 | 투자자 피치 원페이저 PDF | 보여줄 숫자가 생긴 후 |
+| 6 | 글로벌 확장 (Chapter 2) | 미국 시장 장악 후 |
+
+### 합의된 실행 순서 (2026-03-01 확정)
 
 ```
-components/
-├── auth/
-│   ├── AuthForm.tsx (118줄)
-│   ├── LoginModal.tsx (170줄)
-│   └── OnboardingModal.tsx (41줄)
-├── common/
-│   ├── GoogleAnalytics.tsx (26줄)
-│   └── LanguageModal.tsx (35줄)
-├── help/
-│   └── ContactForm.tsx (73줄)
-├── home/
-│   ├── HeroVisuals.tsx (60줄)
-│   ├── SearchBar.tsx (71줄)
-│   └── SearchWidget.tsx (495줄)
-├── icons.tsx (202줄)
-├── layout/
-│   ├── Footer.tsx (257줄)
-│   ├── Header.tsx (189줄)
-│   └── MobileBottomNav.tsx (81줄)
-├── search/
-│   ├── AiSmartSuggestionBox.tsx (673줄)
-│   ├── DeliveryBadge.tsx (76줄)
-│   ├── FilterSidebar.tsx (229줄)
-│   ├── MobileCompactCard.tsx (277줄) ← NEW
-│   ├── ProductCard.tsx (546줄)
-│   ├── ResultsGrid.tsx (955줄)
-│   ├── StickyHeader.tsx (445줄)
-│   └── TaxInfoPopup.tsx (208줄) ← NEW
-└── ui/
-    └── SkeletonCard.tsx (24줄)
+1단계 — 트래픽 시트 + 차트 추가 ✅ 완료
+    ↓
+2단계 — 파트너십 이메일 + PDF 제안서 작성 ✅ 완료 (US Domestic + Global 각각)
+    ↓
+3단계 — 미발송 스토어 이메일 일괄 발송 ✅ 완료 (29곳 발송, SMTP 자동화)
+    ↓
+4단계 — Make 자동화 설계 (이메일 대기 시간에 병렬) ← 현재 위치
+    ↓
+5단계 — API 키 확보 후 실제 자동화 연동
 ```
 
 ---
 
-## 검색 파이프라인 구조 (2026-02-26 업데이트)
+## 3. 🚫 하지 말아야 할 행동 (DON'T)
+
+### 제품 관련
+| 규칙 | 사유 |
+|------|------|
+| 소비자 기능으로 가격 추적 알림/히스토리 차트 추가 ❌ | B2B 기능으로 분류됨 (피치덱 v4 확정) |
+| 프리미엄 소비자 기능 추가 ❌ | 코어 기능(Domestic vs Global 비교)에 집중 |
+| 전통적 팀 빌딩 ❌ | AI 시대 = 최소 채용 (1-2명) |
+
+### 마케팅 관련
+| 규칙 | 사유 |
+|------|------|
+| "POTAL 써보세요!" 식 직접 홍보 ❌ | 가치(가격 비교 결과)를 먼저 보여주고 자연스럽게 유입 |
+| 반응 검증 전 광고 집행 ❌ | 무료 채널에서 먹히는 메시지 확인 후 |
+| Facebook 여러 그룹 동시 게시 ❌ | 스팸 처리됨, 그룹별 다른 내용 필수 |
+| 같은 글 복붙 ❌ | 그룹 유형별 톤 다르게 |
+
+### 데이터/엑셀 관련
+| 규칙 | 사유 |
+|------|------|
+| 카테고리 점유율을 텍스트로 표시 ❌ (예: "종합1위") | 실제 % 숫자 + 출처 필수 (v4 프랑크푸르트 선언) |
+| 종합몰에 이미 포함된 스토어 무조건 제외 ❌ | DTC 직판 점유율 있으면 유지 (Apple, Nike 등) |
+| 미국 본사인데 글로벌로 분류 ❌ | eBay, iHerb 등 US 기업은 미국 카테고리로 |
+| 카테고리 # 순서를 전체 순번으로 ❌ | 카테고리 내 순위 사용 |
+
+### 커뮤니케이션 관련
+| 규칙 | 사유 |
+|------|------|
+| 영어 콘텐츠 작성 시 한국어 번역 누락 ❌ | 항상 영문 + 한글 번역 함께 제공 (리뷰용) |
+| 투자자에게 "투자해주세요" ❌ | 자료 요청에 답변하는 형식, 피치덱이 설득을 담당 |
+| 이메일에 과장 표현 ❌ | "수백만 쇼퍼", "다른곳에서 찾아볼수없는" 같은 근거 없는 표현 대신 구체적 차별점 |
+| 파트너십 이메일에 전화 요청 ❌ | 이메일만 (no phone calls) |
+| 연동 안 된 스토어를 연동된 것처럼 나열 ❌ | 사실만 언급 (US 스토어만 나열, 글로벌은 방향성만) |
+| 앱 비밀번호를 파일에 하드코딩 보관 ❌ | 사용 후 삭제 권장, 필요시 재생성 |
+
+---
+
+## 4. 🔄 진행 중인 내용 (IN PROGRESS)
+
+### 파트너십 이메일 아웃리치 — 3단계 완료, 응답 대기 중
+- **총 발송 완료 29곳** (은태님 직접 6 + SMTP 자동 23)
+- **바운스 처리 완료 (세션 5)**: YesStyle → ys-affiliates@yesstyle.com으로 재발송 ✅, ASOS → Awin 경유로 재분류, Office Depot → CJ 경유로 재분류
+- **Affiliate 네트워크 경유만 가능 8곳**: Nike, Sephora, Ulta Beauty, Kroger, Lowe's, Kohl's + ASOS(Awin), Office Depot(CJ)
+- **제외 3곳**: Apple (직접이메일 없음, Partnerize 포탈 신청), Samsung (직접이메일 없음, 전화만), LEGO (라이센싱팀이라 불필요)
+- **Academy Sports**: communityrelations@academy.com은 기부/후원 부서 → 파트너십 전용 이메일 없음
+- **Gmail 초안 23개 삭제 완료** (SMTP로 이미 발송되어 불필요)
+- **다음 단계**: 응답 트래킹 + Affiliate 네트워크 8곳 수동 신청
+
+### Apple App Store 리뷰 거절 — 수정 후 재제출 필요
+- **거절일**: 2026-02-26 (iOS 1.0)
+- **사유 3가지**:
+  1. Guideline 2.1 - Take Photo 탭 시 크래시 (iPad Air 11-inch M3, iPadOS 26.3)
+  2. Guideline 4.0 - 로그인 시 외부 브라우저로 이동 → ASWebAuthenticationSession 또는 SFSafariViewController 필요
+  3. Guideline 2.1 - 데모 계정 미제공 → App Review Information에 아이디/비밀번호 입력
+- **추가**: Guideline 5.1.1(v) — 계정 삭제 기능 필수 확인
+- **은태님 직접 처리 예정**
+
+### 외부 서비스 대기
+
+| 서비스 | 상태 | 다음 단계 |
+|--------|------|----------|
+| Google Play Console | 국가 변경 재요청 (영어, 티켓 #782618) | 해결되면 Android 빌드 |
+| Reddit r/SideProject | 스팸 필터 → 모더레이터 승인 대기 | 승인 후 r/Frugal 진출 |
+| Rakuten (Case #390705) | Madhu에게 재답장 완료 | 기술팀 해결 대기 |
+| Temu Affiliate | 승인 대기 중 | 승인되면 API 구현 |
+| RapidAPI 환불 (#130604) | 신원 확인 요청 | 신원 확인 후 환불 |
+| 김범수 대표 LinkedIn | ✅ 피치덱 + 메시지 발송 완료 (은태님 직접) | 응답 대기 |
+| Best Buy Developer Portal | 이메일 발송 완료 | API 키 발급 대기 |
+| Target | 파트너십 이메일 발송 완료 | 응답 대기 |
+| Kroger | Partner Request 제출 완료 (Developer Portal) | 응답 대기 |
+| 파트너십 이메일 29곳 | 전체 발송 완료 (2026-03-01) | 응답 대기 중 |
+| Apple App Store | 리뷰 거절 (2026-02-26) — 3가지 수정 필요 | 은태님 수정 후 재제출 |
+| Impact.com 주소 변경 | 서류 제출 필요 (주소 증빙 + 신분증) | 은태님 직접 제출 |
+| Google Payments 본인 확인 | 다른 유형 문서 재제출 필요 | 은태님 직접 제출 |
+
+---
+
+## 5. ✅ 완료된 내용 (DONE)
+
+### 제품 개발
+
+**iOS 앱 출시 → 리뷰 거절** ⚠️
+- App Store Build 2 제출 완료 (태블릿 1440px 수정 포함)
+- Bundle ID: com.potal.app, Apple Distribution 인증서
+- ⚠️ 리뷰 거절 (2026-02-26): 크래시(iPad Take Photo), 로그인 UX, 데모 계정 미제공 → 수정 후 재제출 필요
+
+**코드베이스 리팩토링** ✅ (2026-02-26)
+- 고아 파일 7개 삭제, 죽은 코드 제거, console.log 13개 정리
+- 컴포넌트 디렉토리 통합 (app/components/ → components/), app/components/ 완전 삭제
+- 대형 파일 분리: ResultsGrid.tsx 1220→955줄, ProductCard.tsx 622→546줄
+- UI 수정: Duty+MPF 합침, PC (i) 팝업, eBay 피드백% 표시, Total Landed Cost 순서 변경 등
+
+**검색 인텔리전스 강화** ✅ (2026-02-26)
+- Amazon API 간헐적 0건 문제 → `generateQueryVariants()` 단수↔복수 변형 로직 추가
+- SearchService 레벨에서 모든 provider에 공통 적용
+- BestBuyProvider 코드 완성 (API 키 대기)
+
+**OG 이미지 업데이트** ✅
+- 1200x630 Domestic vs Global 비교 디자인, 메타 description 업데이트
+
+### 마케팅 & 홍보
+
+**홍보 채널 실행** ✅
+- LinkedIn: 프로필 설정 + 글 게시
+- X (Twitter): 일론 머스크 태그 + POTAL 비전 글
+- Facebook: "Amazing deals" 그룹 첫 글 + 자체 그룹 2개 생성 (Smart Deal Finder, Amazon vs AliExpress)
+- Reddit: r/SideProject 글 올림 → 스팸 필터 걸림 (karma 1)
+
+**피치덱 v4 완성** ✅ (2026-02-28)
+- 11 슬라이드, 4번 피드백 반영
+- 김범수/QPV 종합 리서치 완료
+- LinkedIn 메시지 초안 확정
+
+### Master Partnership Tracker
+
+**v1→v5 완성 + 트래픽 시트 + 차트** ✅ (2026-03-01)
+- v1: 81개 스토어, 단일 시장점유율 컬럼
+- v2: 시장점유율 2개 컬럼 분리 + 글로벌 분류
+- v3: 교차(cross-reference) 시스템 도입 + 저가치 스토어 제외
+- v4: 프랑크푸르트 선언 — 카테고리 % 실수치, 카테고리 내 순위, 시장규모 헤더, Sam's Club 제외
+- v5: 글로벌 스토어 US % 적용 + US 카테고리 교차 추가 6곳 + 저가치 글로벌 5곳 제외
+- 트래픽 시트 v3: 18개 스토어 × 12개월 (2025년 데이터), 3개 차트 (Bar/Line/Pie), 성장률 테이블
+- 전체 4시트 데이터 2025 기준 최종 검수 완료
+
+**v5 최종 구성:**
+| 카테고리 | 시장규모 | 스토어 | 교차 |
+|----------|---------|--------|------|
+| 종합 | $1,190B | 8 | 1 (Temu) |
+| 전자제품 | $120B | 7 | 3 |
+| 패션 | $159.4B | 12 | 5 (Shein, H&M, Zara 포함) |
+| 홈/가구 | $182B | 7 | 3 (IKEA 포함) |
+| 그로서리 | $205B | 5 | 3 |
+| 뷰티/건강 | $61B | 6 | 2 |
+| 스포츠 | $15B | 5 | 2 |
+| 펫 | $21B | 5 | 2 |
+| 장난감 | $18B | 5 | 4 (LEGO 포함) |
+| 오피스 | $23B | 3 | 1 |
+| 글로벌 | 크로스보더 | 9 | 0 |
+| **합계** | | **46 고유** | **26 교차** |
+
+제외 사이트: 35곳 (사유 포함)
+
+### Gmail 스캔 + 바운스 처리 + 초안 정리 ✅ (2026-03-01, 세션 5)
+
+**contact@potal.app 전체 이메일 스캔:**
+- 100+ 이메일 전수 조사 → 미처리 항목 발견 및 처리
+- 바운스 3곳 발견: YesStyle(affiliates@), ASOS(gavina@), Office Depot(vendordiversity@) — 모두 "550 Recipient address rejected"
+- YesStyle: ys-affiliates@yesstyle.com으로 재발송 ✅
+- ASOS: Awin 네트워크 경유만 가능 → Affiliate로 재분류
+- Office Depot: CJ 네트워크 경유만 가능 → Affiliate로 재분류
+- Academy Sports: communityrelations@academy.com은 기부/후원 부서 (파트너십 전용 이메일 없음)
+- Apple App Store 리뷰 거절 발견 (2/26) → 분석 완료, 은태님 직접 처리
+- Gmail 초안 23개 IMAP으로 일괄 삭제 (SMTP로 이미 발송 완료되어 불필요)
+- 엑셀 트래커 업데이트: ASOS/Office Depot Affiliate 재분류, YesStyle 이메일 변경, Academy Sports 비고 추가
+
+### 파트너십 이메일 일괄 발송 ✅ (2026-03-01, 세션 4)
+
+**이메일 리서치 + 발송 자동화:**
+- 25개 N/A 스토어 이메일 주소 리서치 → 19개 발견, 엑셀 업데이트
+- Gmail SMTP + 앱 비밀번호로 23개 이메일 PDF 첨부 자동 발송
+- US Domestic 19곳: `POTAL_Partnership_Proposal_FINAL.pdf` 첨부
+- Global 4곳 (H&M, Adidas, ASOS, YesStyle): `POTAL_Global_Partnership_Proposal_FINAL.pdf` 첨부
+- 카테고리별 맞춤 문구 적용 (Electronics, Fashion, Home, Grocery, Pet)
+- 엑셀 트래커 26행 "Sent" + 발송일 2026-03-01 업데이트
+
+**은태님 직접 발송 6곳:** Macy's, Nordstrom, Zappos, Home Depot, Wayfair, iHerb
+
+**발송 불가 스토어:**
+- Apple: 직접이메일 없음 → Partnerize 포탈 신청 필요
+- Samsung: 직접이메일 없음 → 전화 (866) 726-4249
+- LEGO: licensing@lego.com 있으나 라이센싱팀이라 불필요
+- Kroger: 이메일 아닌 Developer Portal URL만
+- Nike, Sephora, Ulta Beauty, Kohl's, Lowe's: Affiliate 네트워크 경유만 가능
+
+### 파트너십 이메일 + PDF 제안서 ✅ (2026-03-01, 세션 2~3)
+
+**US Domestic 스토어용:**
+- 이메일 템플릿: 짧은 hook + PDF 첨부 전략
+- PDF 1페이지 제안서: What is POTAL → Why (equal competition) → What You Get (4항목) → What We Need → Closing (글로벌 확장 + confidence)
+- 핵심 메시지: "Your competitive products deserve equal visibility"
+- 카테고리별 맞춤 문구 테이블 포함
+
+**Global 스토어용:**
+- 이메일 템플릿: US Domestic과 다른 접근 — "미국 소비자 접근" + "Total Landed Cost 투명성"
+- PDF 1페이지 제안서: What is POTAL → Why Global Retailers Need POTAL (hidden costs) → What You Get (5항목) → What We Need → Closing (revenue pipeline + 글로벌 확장)
+- 핵심 메시지: "US consumers want to buy from global stores — but hidden costs stop them."
+- 연동 안 된 글로벌 스토어는 이름 나열하지 않음 (사실 기반)
+
+**이메일 전략 합의사항:**
+- 이메일은 짧게 (hook) + PDF (상세) 분리
+- What you get → What we need 순서 (benefits first)
+- Benefits 3~4개로 압축 (읽기 부담 줄이기)
+- 전화 없음, 이메일만
+- "수백만 쇼퍼" 같은 근거 없는 숫자 사용 ❌
+
+---
+
+## 6. 🗄️ 더 이상 사용하지 않는 내용 (DEPRECATED)
+
+| 항목 | 폐기 사유 |
+|------|----------|
+| **Serper 기반 17개 provider** | Serper Shopping API의 한계 (부정확한 가격, 재고 미반영) → 공식 API/RapidAPI로 전환. 코드 파일은 providers/ 폴더에 남아있음 |
+| **Impact.com 어필리에이트 전략** | 트래픽 부족으로 거절됨 → 직접 쇼핑몰 컨택 전략으로 전환 |
+| **Gen Z 한정 타겟** | 피치덱 v4에서 삭제. 40대 이상이 오히려 더 큰 pain point → "가격 민감 미국 온라인 쇼퍼 (연령 무관)"으로 재정의 |
+| **3개월 구축 → 1달** | 사실관계 수정: 실제 1달 (매일 9시간) |
+| **Sam's Club 파트너십** | Walmart 자회사 — 데이터/상품 중복, 별도 API 없음 → 제외 시트로 이동 |
+| **Shein RapidAPI** | 서버 다운, 환불 요청 중 |
+| **create_master_tracker v1~v4.py** | v5로 대체됨. 세션 2에서 삭제 완료 |
+| **add_traffic_sheet v1~v2.py** | v3로 대체됨. 세션 2에서 삭제 완료 |
+| **create_proposal_pdf v1~v2.py** | v3 (dual-mode)로 대체됨 |
+| **email_template_draft.md (v1)** | 이전 이메일 템플릿. FINAL 버전으로 대체됨 |
+| **POTAL_Partnership_Email_Template.md** | 세션 1 기본 템플릿. 세션 3에서 US/Global 분리 FINAL로 대체 |
+
+---
+
+## 7. ⛔ 진행하지 말아야 하는 내용 (DO NOT PROCEED)
+
+| 항목 | 사유 |
+|------|------|
+| **소비자 기능 확장** (가격 추적, 히스토리 차트) | B2B 기능으로 분류 확정. 코어(비교)에 집중 |
+| **반응 검증 전 광고 집행** | 무료 채널에서 먹히는 메시지 확인 후 |
+| **B2B API 서비스 지금 시작** | 글로벌 확장 후 (Chapter 3) |
+| **전통적 팀 빌딩** | AI 시대 = 1-2명 최소 채용 |
+| **Slickdeals 직접 진출** | Deal 게시(상품만), 포럼(활동이력필요), 유료광고(비용높음) — Slickdeals 유저가 겹치는 Reddit/Facebook에서 공략 |
+| **사업계획서 우선 작성** | Pre-seed 단계에선 피치덱 + 작동하는 웹사이트가 우선, 추가 요청 시 준비 |
+
+---
+
+## 8. 📋 참조 데이터
+
+### 검색 파이프라인
 
 ```
 유저 검색 "airpod"
   → SearchService.search("airpod")
-    → Step 1: 모든 provider 동시 호출 (Domestic: Amazon, Walmart, Best Buy* / Global: eBay, AliExpress) *Best Buy는 API 키 대기
-    → Step 1b: 전체 결과 0건?
-      → generateQueryVariants("airpod") → ["airpod", "airpods"]
-      → "airpods"로 모든 provider 다시 동시 호출
+    → Step 1: 모든 provider 동시 호출 (Domestic: Amazon, Walmart, Best Buy* / Global: eBay, AliExpress)
+    → Step 1b: 전체 결과 0건? → generateQueryVariants("airpod") → ["airpods"]로 재호출
     → Step 2: FraudFilter (rule-based, $0/no-image/sponsored 제거)
-    → Step 3: AI Filter (OpenAI, 무관한 상품 제거)
+    → Step 3: AI Filter (OpenAI, 무관 상품 제거)
     → Step 4: CostEngine (Total Landed Cost 계산)
     → Step 5: ScoringEngine (Best/Fastest/Cheapest 점수)
-    → 결과 반환
 ```
 
-**핵심 파일:**
-- `app/lib/search/searchIntelligence.ts` — refineQuery(), detectPriceIntent(), generateQueryVariants()
-- `app/lib/search/SearchService.ts` — 전체 파이프라인 오케스트레이션
-- `app/lib/search/providers/AmazonProvider.ts` — Amazon RapidAPI 호출
-- `app/lib/search/CostEngine.ts` — Total Landed Cost 계산
-- `app/lib/search/ScoringEngine.ts` — 상품 점수 산정
-- `app/lib/search/FraudFilter.ts` — 사기/저품질 상품 필터
-- `app/lib/search/AIFilterService.ts` — AI 기반 관련성 필터
+### Provider 현황
 
----
-
-## Git 상태
-
-### 커밋 완료 + Push 완료
-- `9ea57b3` — Serper 17개 provider 제거
-- `9f1b716` — 음성 검색 기능 추가
-- `e408f67` — iOS App Store 제출 + 태블릿 1440px 수정
-- `899eb98` — 코드베이스 리팩토링 + 컴포넌트 통합 + eBay 개선 (35 files, +1059 -1696)
-- `(latest)` — OG 이미지 + 메타 description 업데이트
-
-### 미커밋 파일 (Push 필요)
-- `app/lib/search/searchIntelligence.ts` — generateQueryVariants() 추가
-- `app/lib/search/SearchService.ts` — Step 1b 변형 재시도 로직 + BestBuyProvider import + fetchDomestic에 Best Buy 추가
-- `app/lib/search/providers/AmazonProvider.ts` — 중복 로직 제거, 원래 구조 복원
-- `app/lib/search/providers/BestBuyProvider.ts` — Serper → Best Buy 공식 API로 완전 교체
-- `session-context.md` (이 파일)
-
----
-
-## 외부 서비스 대기 현황
-
-| 서비스 | 상태 | 다음 단계 |
-|--------|------|----------|
-| App Store (Build 2) | ✅ 승인 완료 | 출시됨 |
-| Google Play Console | 국가 변경 재요청 (영어, 티켓 #782618) | Google 답변 대기 → 해결되면 Android 빌드 |
-| Reddit r/SideProject | 스팸 필터 걸림 → 모더레이터 승인 대기 | 승인되면 karma 올라간 후 r/Frugal, r/deals 진출 |
-| Impact (어필리에이트) | **트래픽 부족으로 거절됨** → 직접 쇼핑몰 컨택 전략으로 전환 | 파트너십 이메일 발송 (26개 타겟) |
-| Rakuten (Case #390705) | Madhu에게 재답장 완료 | 기술팀 해결 대기 |
-| Temu Affiliate Program | 승인 대기 중 | 승인되면 API 구현 |
-| RapidAPI 환불 (Request #130604) | Belchior Arkad 신원 확인 요청 | 신원 확인 후 환불 진행 |
-| 김범수 대표님 LinkedIn | ✅ 1촌 수락 + 자료 요청 받음 | 피치덱 + LinkedIn 메시지 발송 예정 |
-
----
-
-## 홍보 글 작성 기준 (지침)
-
-### 📋 광고글 요청 방법 (모든 채널 공통)
-
-사용자가 광고글을 요청할 때 아래 정보를 제공하면 즉시 작성 가능:
-
-```
-1. 채널 — 어디에 올릴 건지 (Facebook 그룹명 / Reddit 서브레딧 / LinkedIn / X 등)
-2. 상품/검색어 — POTAL에서 비교한 상품 (예: "airpods", "dyson v15")
-3. 스크린샷 유무 — 첨부할 건지 / 텍스트만인지
-4. (선택) 특별 강조사항 — 가격 차이, 배송 기간, 특정 기능 등
-```
-
-**예시 요청:** "Facebook 월마트 그룹에 올릴 글. dyson 검색 결과로. 스크린샷 첨부할 거야."
-
-### 📝 채널별 글 작성 규칙
-
-#### Facebook 딜 그룹
-- **톤**: 실제 비교 결과를 먼저 보여주기 — "비교해봤더니 이렇게 차이남" 식
-- **구조**: 가격 비교 숫자 먼저 → 절약 금액 강조 → potal.app 언급 → 질문으로 마무리
-- **이미지**: POTAL 검색 결과 스크린샷 (검색 결과 부분만 캡처, 전체 화면 ❌)
-- **금지**: "POTAL 써보세요!" 식 직접 홍보 ❌, 노골적 광고 ❌
-- **게시 속도**: 하루 2~3개 그룹까지, 그룹 간 30분~1시간 간격
-- **동시 게시 절대 금지**: Facebook "여러 그룹에 게시" 기능 사용 ❌ (스팸 처리됨)
-- **그룹별 글 내용 반드시 다르게**: 같은 글 복붙 ❌
-
-#### Facebook 그룹 유형별 톤
-| 그룹 유형 | 톤 | 예시 |
-|-----------|-----|------|
-| Amazon 딜 그룹 | Amazon vs 해외 가격 비교 | "Amazon $106 vs AliExpress $49" |
-| 절약/쿠폰 그룹 | 절약 팁 공유 | "Money-saving tip that blew my mind" |
-| Walmart/매장 그룹 | 해당 매장 가격을 다른 곳과 비교 | "Walmart $99 — but is it the cheapest?" |
-
-#### Reddit
-- **톤**: 개인 경험 기반, 피드백 요청, 겸손하게
-- **금지**: 노골적 홍보 (삭제 + ban 위험)
-- **제한**: karma 필요 (현재 karma 1 → 대부분 서브레딧 글 올리기 불가)
-- **서브레딧별 톤 차이**:
-  - r/SideProject: "만들었는데 피드백 주세요"
-  - r/Frugal: "절약 팁 공유합니다"
-  - r/SaaS: "수익화 조언 구합니다"
-  - r/deals: 딜 공유 (POTAL 결과 기반)
-
-#### LinkedIn
-- **톤**: 프로페셔널, 빌더 스토리, 업계 인사이트
-- **해시태그**: #buildinpublic #startup #ecommerce #sideproject #pricecomparison #indiehacker
-
-#### X (Twitter)
-- **제한**: 280자
-- **톤**: 짧고 임팩트 있게, 비전 제시
-
-### 공통 지침
-- **영어로 작성하는 모든 콘텐츠는 항상 영어 원문 + 한글 번역을 함께 제공할 것**
-- POTAL URL: https://potal.app
-- 스크린샷은 검색 결과 부분만 캡처 (Domestic vs Global 비교가 보이게)
-- "POTAL" 브랜드명 직접 홍보 ❌ → 가치(가격 비교 결과)를 먼저 보여주고 자연스럽게 링크 제공
-
-### 작성 완료 현황
-
-| 채널 | 상태 | 비고 |
-|------|------|------|
-| Reddit r/SideProject | ❌ 스팸 필터 삭제됨 | karma 올라간 후 재시도 |
-| LinkedIn | ✅ 게시 완료 | 프로페셔널 톤 |
-| X (Twitter) | ✅ 게시 완료 | 일론 머스크 태그 |
-| Facebook Amazing deals clearance and codes (20만명) | ✅ 첫 글 게시 완료 | Version 1 (Amazon 딜용), AirPods 스크린샷 첨부 |
-| Facebook 기타 12개 그룹 | ⏳ 가입 승인 대기 | 승인 후 하루 2~3개씩 순차 게시 |
-| **Facebook 자체 그룹 (Smart Deal Finder)** | ✅ 생성 완료 | 커버 사진 + 설명 + Version 1,2,3 모두 게시 |
-
-### POTAL 자체 Facebook 그룹 (2개)
-
-#### 1. Smart Deal Finder — Compare Prices Before You Buy (메인)
-- **공개 그룹** (검색 가능)
-- **커버 사진**: POTAL 브랜딩 ("Compare Every Store on Earth. Domestic vs Global — One Search.")
-- **설명**: Amazon, Walmart, Target, eBay, Costco, AliExpress 가격 비교, 세금/배송/관세 포함 실제 총비용
-- **게시물**: Version 1 (Amazon 딜용), Version 2 (절약 팁용), Version 3 (Walmart 비교용) 모두 게시
-- **운영 전략**: 매일 다른 상품으로 가격 비교 결과 게시 → 콘텐츠 축적 → 멤버 유입
-- **게시 빈도**: 매일 1~2개
-
-#### 2. Amazon vs AliExpress — Who's Really Cheaper? (서브)
-- **공개 그룹** (검색 가능)
-- **설명**: Amazon vs AliExpress 실제 총비용 비교 (관세/배송 포함) + 배송 기간 비교
-- **운영 전략**: 가볍게 유지, 콘텐츠 보조 채널
-- **게시 빈도**: 주 1회
-
-### 가입 완료 Facebook 그룹 (13개)
-
-| 그룹 | 유형 | 글 버전 |
-|------|------|---------|
-| Amazon Deals & Discounts | Amazon 딜 | Version 1 |
-| Amazon 90% Off Deals (9.2만명) | Amazon 딜 | Version 1 |
-| Amazing deals clearance and codes (20만명) | 종합 딜 | Version 1 ✅ 게시완료 |
-| Super Saver Deals & Discounts | 절약 | Version 2 |
-| Deals finds / Sales, Coupons, Codes & Hidden Clearances | 절약/쿠폰 | Version 2 |
-| Amazing Deals & Discount Community | 종합 딜 | Version 2 |
-| The Bargain Hunters | 절약 | Version 2 |
-| Walmart Hidden Clearance (2개, 19만명) | Walmart | Version 3 |
-| Dollar General Penny List (49만명) | 매장별 | Version 2 |
-| Hobby Lobby Community (28만명) | 매장별 | Version 2 |
-| Family Dollar's Couponers | 쿠폰 | Version 2 |
-| Couponing for Beginners (24만명) | 쿠폰 입문 | Version 2 |
-| Online Shopping group | 온라인 쇼핑 | Version 1 |
-
----
-
-## TODO (우선순위 순)
-
-### 🔴 즉시
-- [ ] 김범수 대표님 LinkedIn 메시지 + 피치덱 발송 (메시지 확정됨, 발송만 하면 됨)
-- [ ] 미커밋 파일 push (검색 인텔리전스 + Amazon 수정 + BestBuyProvider 추가)
-- [ ] 나머지 파트너십 이메일 6곳 발송 (Wayfair, iHerb, Macy's, Nordstrom, Zappos, Home Depot)
-- [ ] Facebook 미국 쇼핑/직구 그룹 공략 (karma 제한 없음, 즉시 가능)
-- [ ] SEO 블로그 콘텐츠 작성 ("Amazon vs AliExpress price comparison" 등)
-- [ ] Target API 404 문제 해결 (엔드포인트 변경됨, 수정 필요) — Target에 직접 이메일 발송 완료
-- [ ] Best Buy API 키 발급 후 연동 테스트 (BestBuyProvider 코드 작성 완료, API 키 대기)
-- [x] iOS App Store 심사 → ✅ 승인 완료
-- [x] 쇼핑몰 파트너십 이메일 발송 시작 — 7곳 완료 (아래 발송 현황 참조)
-- [x] 김범수/QPV 리서치 완료 → `Kim_Bumsoo_QPV_Research.md`
-- [x] 피치덱 v4 완성 → `POTAL_Pitch_Deck.pptx` (11 슬라이드, 4번 피드백 반영)
-- [x] 김범수 LinkedIn 메시지 초안 확정 → `LinkedIn_Message_KimBumsoo.md`
-
-### 🟡 승인 대기 후 진행
-- [ ] Android 앱 제출 (Google Play 국가 변경 해결 후 → Capacitor 빌드 → 제출)
-- [ ] Best Buy Developer Portal — 이메일 발송 완료, API 키 발급 대기
-- [ ] Target — 파트너십 이메일 발송 완료, 응답 대기
-- [ ] Kroger — Developer Partner Request 제출 완료, 응답 대기
-- [ ] Reddit r/SideProject 모더레이터 승인 대기 → 승인 후 r/Frugal, r/deals 진출
-- [ ] Google Play 국가 변경 대기 (티켓 #782618)
-- [ ] Reddit karma 올라가면 r/Frugal (3.5M), r/deals, r/OnlineShopping 글 올리기
-- [ ] Temu Affiliate 승인 → API 구현
-- [ ] Rakuten 기술팀 해결 대기
-
-### 🟢 무료 채널 반응 검증 후 진행
-- [ ] 광고 집행 (어떤 메시지/채널이 먹히는지 확인 후)
-- [ ] Product Hunt 런치 페이지 (유저/피드백 데이터 있을 때 효과적)
-- [ ] 투자자 피치 원페이저 PDF (보여줄 숫자가 생긴 후)
-- [ ] 크라우드펀딩 (Kickstarter/Indiegogo)
-
-### 🔵 장기
-- [ ] 새로운 Temu API 주기적 확인
-- [ ] Serper 기반 provider 대안 API 조사
-- [ ] Push notification 등 네이티브 기능 확장
-- [ ] ResultsGrid.tsx 추가 분리 (955줄 → 더 작게)
-- [ ] SearchWidget.tsx 분리 (495줄)
-- [ ] OpenWeb Ninja에 API 불안정 이슈 리포트 (간헐적 0건 반환)
-
----
-
-## Provider 현황
-
-### 활성 (피치덱 기준 6개 쇼핑몰)
+**활성:**
 | Provider | API | 상태 | 분류 |
 |----------|-----|------|------|
-| Amazon | RapidAPI (`real-time-amazon-data`, OpenWeb Ninja PRO $25/mo) | ✅ 정상 (간헐적 0건 → SearchService 재시도로 커버) | Domestic |
-| Walmart | RapidAPI (`realtime-walmart-data`) | ✅ 정상 | Domestic |
-| eBay | RapidAPI PRO (`real-time-ebay-data`) | ✅ 정상 (캡차 재시도 로직 추가) | Global |
-| Target | RapidAPI (`target-com-shopping-api`) | ❌ 404 에러 — 엔드포인트 변경됨, 파트너십 이메일 발송 완료 | Domestic |
-| AliExpress | RapidAPI (`aliexpress-data`) | ✅ 정상 | Global |
-| Costco | (피치덱에 포함, 실제 구현 상태 확인 필요) | 🔄 연동 상태 확인 필요 | Domestic |
+| Amazon | RapidAPI (OpenWeb Ninja PRO $25/mo) | ✅ (간헐적 0건 → 재시도 커버) | Domestic |
+| Walmart | RapidAPI (realtime-walmart-data) | ✅ | Domestic |
+| eBay | RapidAPI PRO (real-time-ebay-data) | ✅ (캡차 재시도 있음) | Global |
+| Target | RapidAPI (target-com-shopping-api) | ❌ 404 에러 | Domestic |
+| AliExpress | RapidAPI (aliexpress-data) | ✅ | Global |
+| Costco | (구현 상태 확인 필요) | 🔄 | Domestic |
 
-### 연동 준비 완료 (API 키 대기)
-| Provider | API | 상태 |
-|----------|-----|------|
-| Best Buy | Best Buy 공식 Products API (무료) | 🔄 BestBuyProvider 코드 완성, API 키 대기 (Developer Portal 가입 오류 → 이메일로 요청) |
+**대기:** Best Buy (코드 완성, API 키 대기)
+**비활성:** Shein (서버 다운), Temu (어필리에이트 대기), Serper 기반 17개 (폐기)
 
-### 비활성
-| Provider | 이유 |
-|----------|------|
-| Shein | RapidAPI 서버 다운, 환불 요청 중 |
-| Temu | Serper 기반 제거됨, 어필리에이트 승인 대기 |
-| HomeDepot 등 17개 | Serper 기반 제거됨 (코드 파일은 providers/ 폴더에 남아있음) |
+### 컴포넌트 디렉토리 구조
 
----
-
-## Capacitor iOS 앱 설정 상세
-
-### capacitor.config.ts
-```typescript
-import type { CapacitorConfig } from '@capacitor/cli';
-const config: CapacitorConfig = {
-  appId: 'com.potal.app',
-  appName: 'POTAL',
-  webDir: 'out',
-  server: {
-    url: 'https://potal.app',
-    cleartext: false,
-    allowNavigation: ['potal.app', '*.potal.app'],
-  },
-  ios: {
-    contentInset: 'automatic',
-    preferredContentMode: 'mobile',
-    scheme: 'POTAL',
-    backgroundColor: '#02122c',
-  },
-  plugins: {
-    SplashScreen: {
-      launchShowDuration: 0,
-      launchAutoHide: true,
-      showSpinner: false,
-      backgroundColor: '#02122c',
-    },
-    StatusBar: {
-      style: 'LIGHT',
-      backgroundColor: '#02122c',
-    },
-  },
-};
-export default config;
+```
+components/
+├── auth/ — AuthForm, LoginModal, OnboardingModal
+├── common/ — GoogleAnalytics, LanguageModal
+├── help/ — ContactForm
+├── home/ — HeroVisuals, SearchBar, SearchWidget(495줄)
+├── icons.tsx
+├── layout/ — Footer, Header, MobileBottomNav
+├── search/ — AiSmartSuggestionBox(673줄), DeliveryBadge, FilterSidebar,
+│             MobileCompactCard(277줄), ProductCard(546줄),
+│             ResultsGrid(955줄), StickyHeader, TaxInfoPopup(208줄)
+└── ui/ — SkeletonCard
 ```
 
-### iOS 네이티브 파일 (Swift)
+### 핵심 파일 경로
 
 | 파일 | 역할 |
 |------|------|
-| `AppDelegate.swift` | 앱 생명주기 + KeyboardAccessoryFix 적용 |
-| `KeyboardAccessoryFix.swift` | WKContentView method swizzling으로 키보드 accessory bar 제거 |
-| `TabletViewController.swift` | CAPBridgeViewController 서브클래스. iPad에서 viewport를 1440px로 강제 잠금 (setAttribute monkey-patch) |
-| `Main.storyboard` | customClass=`TabletViewController`, customModule=`App` |
+| `app/lib/search/searchIntelligence.ts` | refineQuery, detectPriceIntent, generateQueryVariants |
+| `app/lib/search/SearchService.ts` | 전체 파이프라인 오케스트레이션 |
+| `app/lib/search/CostEngine.ts` | Total Landed Cost 계산 |
+| `app/lib/search/ScoringEngine.ts` | 상품 점수 산정 |
+| `app/lib/search/FraudFilter.ts` | 사기/저품질 필터 |
+| `app/lib/search/AIFilterService.ts` | AI 관련성 필터 |
+| `app/lib/search/providers/AmazonProvider.ts` | Amazon RapidAPI |
+| `app/lib/search/providers/BestBuyProvider.ts` | Best Buy 공식 API (키 대기) |
 
----
+### Master Tracker 엑셀 구조
 
-## Apple Developer 계정 정보
+**컬럼 (A~U):**
+순위 | 카테고리 | 본사 | 쇼핑몰 | 웹사이트 | US 전체 시장점유율 | 카테고리 내 점유율(%) | 월간 트래픽 | 주요 연령층 | Affiliate Program | Affiliate Link | API Status | API Type | Contact Email | Contact Page | Priority | 이메일 발송 | 발송일 | 응답 | POTAL 상태 | 비고
 
-- **이름**: EUNTAE JANG (장은태)
-- **이메일**: contact@potal.app
-- **Bundle ID**: com.potal.app
-- **앱 이름**: POTAL
-- **인증서**: Apple Distribution (수동 생성)
-- **프로비저닝 프로필**: POTAL Distribution (수동 생성)
-- **Xcode**: 전체 앱 설치 완료 (iOS 26.2 Simulator)
+**스타일링:** 카테고리별 고유 색상, 교차 행 = 보라색(#E8EAF6) + 이탤릭, 발송 상태 색상 코딩
 
----
+### 카테고리 시장규모 (US 온라인, 2024)
 
-## 사용자 환경 참고
+전체 이커머스 $1,190B | 그로서리 $205B | 홈/가구 $182B | 패션 $159.4B | 전자제품 $120B | 뷰티/건강 $61B | 오피스 $23B | 펫 $21B | 장난감 $18B | 스포츠 $15B
 
-- **프로젝트 경로 (Mac)**: `~/portal/`
-- **Git push**: HTTPS 인증 실패함 → 사용자가 Mac 터미널에서 직접 push
-- **개발 서버**: `npm run dev` (Next.js)
-- **배포**: Vercel (https://potal.app)
-- **DB**: Supabase
-- **사용자 이름**: 장은태 (EunTae Jang / EUNTAE JANG)
-- **직함**: Founder & CEO, POTAL
-- **이메일**: soulmaten7@gmail.com
-- **사업 이메일**: contact@potal.app
-- **코딩 경험**: 없음 → Claude AI + 바이브코딩으로 구축
-- **구축 기간**: 1달 (매일 9시간)
+### 크로스보더 이커머스 통계 (피치덱 사용, 출처 검증)
 
----
-
-## POTAL 비전 & 투자 전략
-
-### 비전
-- 전세계 모든 국가의 쇼핑사이트를 연결
-- 국경이 허물어지는 시대에 모든 상품을 시간과 비용으로 비교
-- 기존 쇼핑 플랫폼이 할 수 없는 일 → 모든 사람이 POTAL을 거쳐 구매
-
-### 비즈니스 모델 (피치덱 v4 확정)
-- **Phase 1 (현재)**: 어필리에이트 커미션 — 사용자가 POTAL에서 상품 클릭 → 쇼핑몰에서 구매 시 1~8.5% 커미션 (Amazon Associates, CJ, Rakuten 등)
-- **Phase 2**: 스폰서 리스팅 — 쇼핑몰이 POTAL 검색 결과 상위 노출을 위해 광고비 지불 (Google Shopping 모델)
-- **Phase 3 (글로벌 확장 후)**: B2B API 서비스 — 차량/스마트기기에 쇼핑 비교 API 임베드, 금융앱/카드사에 결제 전 최저가 확인 위젯 제공
-- **vs Slickdeals**: Slickdeals = 딜 큐레이션 (미국 한정, 유저가 올림) | POTAL = 실시간 자동 비교 (글로벌 확장 가능, 자동화)
-
-### Honest Challenges (피치덱 v4 — 지적 정직성)
-1. **트래픽 없음** → 무료 채널(Reddit, Facebook, SEO) 우선 공략 → 반응 검증 후 광고 집행
-2. **API 의존도 높음 (RapidAPI)** → 직접 쇼핑몰 파트너십으로 공식 API 전환 제안 중 + 수익금으로 유료 API 확보
-3. **1인 개발 한계** → API 확보 한계 → 마케팅/트래픽으로 협상력 확보 / 비용 한계 → 투자금으로 해결
-4. **수익 없음 (Pre-Revenue)** → 어필리에이트 파이프라인 구축 중 (Amazon Associates 연결 완료)
-
-### Roadmap (피치덱 v4 — 챕터 기반)
-- **Chapter 1: 미국 시장 장악** — 쇼핑몰 20개+ API 연동 확대, 무료 채널 공략, 어필리에이트 수익화, 미국 법인 설립
-- **Chapter 2: 글로벌 확장** — 1~2개 국가 시범 연동, 다국어 지원, 현지 법인, 글로벌 쇼핑 데이터 축적
-- **Chapter 3: 플랫폼 확장 + B2B** — POTAL AI 개인화, B2B API 런칭, 차량/스마트기기 연동, 금융앱 위젯, 글로벌 M&A Exit
-
-### 전략
-1. **실유저 확보 최우선** — 무료 채널(Reddit, Facebook, SEO) 먼저, 반응 검증 후 광고 집행
-2. **어필리에이트 수익 파이프라인** — Amazon Associates(연결됨) + Walmart/Impact(대기) + Rakuten(대기) + Temu(대기)
-3. **크라우드펀딩** — 소규모 투자자 모집
-4. **일론 머스크 공표** — Tesla 차량 내 쇼핑 플랫폼 비전 (X에 글 올림)
-5. **단계적 확장** — 미국 모든 쇼핑사이트 → 전세계 확장
-
-### 1차 투자금 용도 (피치덱 확정)
-- **35% API 확장** — 미국 내 모든 쇼핑사이트 API 연결 (최우선)
-- **25% 마케팅/트래픽** — 실유저 확보
-- **25% 운영** — 서버/인프라
-- **15% 법인설립 + 채용** — 미국 현지 법인 + 최소 인력 (AI 시대, 1-2명)
-
-### 피치덱 관련 파일
-- `POTAL_Pitch_Deck.pptx` — 최종 피치덱 (v4, 11 슬라이드)
-- `create_pitchdeck.js` — 피치덱 생성 스크립트 (pptxgenjs)
-- `Kim_Bumsoo_QPV_Research.md` — 김범수/QPV 종합 리서치
-- `LinkedIn_Message_KimBumsoo.md` — LinkedIn 메시지 초안 (확정)
-
----
-
-## Slickdeals 경쟁/보완 분석
-
-### Slickdeals 비즈니스 모델
-- 크라우드소싱 딜 플랫폼 (12M 유저가 딜을 찾아 올림)
-- 유저 투표로 딜 등급 결정 (Popular → Front Page → Fire)
-- 수익: 어필리에이트 링크 교체 (1~8.5% 커미션) + 스폰서 딜
-- 네트워크: CJ, Impact, Rakuten, Awin (POTAL과 동일)
-- Goldman Sachs + Hearst가 2018년 인수
-
-### POTAL과의 관계
-- Slickdeals = "딜 큐레이션" (유저가 올림) / POTAL = "실시간 자동 비교" (자동)
-- 타겟층 겹침: 가격 민감한 미국 온라인 쇼퍼 (25-34세 밀레니얼)
-- 두 유저 모두 잡을 수 있음: 딜 찾는 고수 + 비교를 못 하는 일반인
-- 채널별 메시지만 다르게: 고수에겐 "최저가 검증 도구", 일반인에겐 "한번에 비교"
-
-### Slickdeals 직접 진출 방법
-- Deal 게시: 상품 딜만 가능 (서비스 불가) ❌
-- 포럼 게시: 활동 이력 필요, 노골적 홍보 삭제됨 △
-- 유료 광고: 최소 집행 금액 높음, MVP 단계 부적합 ❌
-- **현실적 방법**: Slickdeals 유저가 겹치는 Reddit/Facebook에서 공략
-
----
-
-## 쇼핑몰 파트너십 이메일 아웃리치 지침
-
-### 배경
-- POTAL의 근본적 문제: 쇼핑몰 API 부족 → 직접 쇼핑몰에 컨택하여 API 확보
-- Impact.com에서 트래픽 부족으로 거절당함 → 어필리에이트 네트워크 우회, 직접 접근 전략
-- **핵심 제안**: "무료로 API 공유해주면, POTAL에서 무료 상품 노출 제공"
-
-### 이메일 템플릿 파일
-- **위치**: `POTAL_Partnership_Email_Template.md`
-- **대상 리스트**: `POTAL_Partnership_Target_List.xlsx` (26개 쇼핑몰, 연락처, API 상태, 체크리스트)
-
-### 이메일 핵심 구조
-1. **자기소개** — EunTae Jang, POTAL 창업자
-2. **제안 혜택 4가지**:
-   - 무료 상품 노출 (비용 없이 구매 의향 쇼핑객에게 노출)
-   - 직접 트래픽 유도 (상품 페이지로 바로 연결)
-   - 수수료 없음 (성장 단계 동안 조건 없이 무료)
-   - 글로벌 확장 시 해외 노출 (글로벌 배송 진행 시 해외 쇼핑객에게 다이렉트 노출)
-3. **비전** — 전세계 1순위 가격비교 플랫폼 (배송비 포함 실제 총비용 비교), 미국 우선 → 글로벌 확장
-4. **초기 파트너 혜택** — 우선 배치, Featured Store 배지, 의견 반영권, 프리미엄 우선 접근
-5. **필요한 것**:
-   - 상품 검색 API 접근 (상품명, 가격, 이미지, URL)
-   - 기술 담당자 연결
-   - 어필리에이트는 트래픽 충분해진 후 제공해도 됨 (상대 부담 낮추기)
-6. **연락 방법** — 이메일 또는 채팅 선호 (영어 통화 부담 → 서면 커뮤니케이션)
-
-### 이메일 작성 규칙
-- **영문 본문 + 한국어 번역** 항상 함께 제공
-- **[Company Name]** → 각 쇼핑몰 이름으로 교체
-- **[Name / Partnership Team]** → 담당자 이름 또는 "Partnership Team"
-- Subject Line 3가지 옵션 중 상황에 맞게 선택
-- "영어가 자연스럽지 않아"는 영문에 넣지 않음 (신뢰도 유지)
-- "다른곳에서 찾아볼수없는" 같은 과장 표현 대신 구체적 차별점 명시
-
-### 발송 프로세스
-1. 엑셀 리스트에서 대상 쇼핑몰 선택
-2. 템플릿의 [Company Name] 교체
-3. 해당 회사 Contact/Partnership 페이지에서 이메일 확인
-4. 발송 후 엑셀 Email Outreach Checklist에 기록
-5. 1주일 후 응답 없으면 Follow-up 이메일 발송
-
-### 관련 파일
-- `POTAL_Partnership_Email_Template.md` — 기본 템플릿 (영문 + 한국어)
-- `BestBuy_Email_Ready.md` — Best Buy 맞춤 이메일 (Developer Portal 오류 언급)
-- `Target_Email_Ready.md` — Target 맞춤 이메일 (기존 API 404 문제 언급)
-- `All_Partnership_Emails_Ready.md` — 13개 쇼핑몰 전체 이메일 모음 (카테고리별)
-- `POTAL_Partnership_Target_List.xlsx` — 27개 쇼핑몰 리스트 + Email Outreach Checklist
-
-### 파트너십 이메일 발송 현황 (2026-02-28)
-
-#### ✅ 발송 완료 (7곳)
-| 쇼핑몰 | 방법 | 이메일/폼 |
-|--------|------|----------|
-| Best Buy | 이메일 | developer@bestbuy.com |
-| Target | 이메일 | partners@Targetpartnerships.com |
-| Newegg | 이메일 | Partnerservices@newegg.com |
-| Costco | 이메일 | isinfo@costco.com |
-| Sam's Club | 이메일 | partner-support@samsclub.com |
-| Kroger | Developer Partner Request 폼 | developer.kroger.com/support |
-| Lowe's | ⛔ 직접 컨택 불가 | 고객용 폼만 있음, HR 폼밖에 없음 |
-
-#### ⬜ 발송 대기 (6곳)
-| 쇼핑몰 | 방법 | 이메일/폼 |
-|--------|------|----------|
-| Macy's | CJ Affiliate 통해 가입 필요 | macys.com/campaign/affiliate.jsp |
-| Nordstrom | Rakuten Affiliate 통해 가입 필요 | nordstrom.com/browse/affiliate-program |
-| Zappos | CJ Affiliate 통해 가입 필요 | zappos.com/associates-program |
-| Wayfair | 이메일 | supplierservicedesk@wayfair.com |
-| Home Depot | Impact Radius 통해 가입 필요 | homedepot.com 기업 문의 |
-| iHerb | 이메일 | affiliates@iherb.com |
-
-#### 발견된 사항
-- **Best Buy**: 무료 공개 API 존재 (Products API) → BestBuyProvider 코드 작성 완료, Developer Portal 가입 시 에러 발생 → developer@bestbuy.com으로 직접 요청
-- **Best Buy API 키 정책**: Gmail 등 무료 이메일 불가, 회사 이메일(contact@potal.app) 필수
-- **Kroger**: Developer Portal 가입 완료, 그러나 Products API "Insufficient privileges" → Public API 없음 → Partner Request 폼으로 요청
-- **Lowe's**: Developer Portal은 IMS-Auth(인증)만 제공, 상품 API 없음. 기업 문의 폼은 HR/고객용만 있어 컨택 불가
-- **Sam's Club**: 원래 엑셀 리스트에 없었음 → 추가 완료 (Walmart 자회사, 벌크 가격 비교 가치)
-
----
-
-## 2026-02-28 작업 요약 (김범수/QPV 리서치 + 피치덱 제작)
-
-### 1. 김범수 대표 / Quantum Prime Ventures 리서치 ✅
-
-김범수 대표님이 LinkedIn 1촌 수락 후 "사업 내용 볼 수 있는 웹사이트나 자료 있으면 보내주세요"라고 응답.
-종합 리서치 파일 작성 완료: `Kim_Bumsoo_QPV_Research.md`
-
-**김범수 프로필:**
-- 연세대 → 삼성 → KTB → 실리콘밸리 22년 → Translink Capital → QPV (2025.7 설립)
-- QPV Inc.: 2025.7.8 캘리포니아 Stock Corporation, Sunnyvale 소재
-- Quantum Ventures Korea: 119개 포트폴리오, 주요 엑싯 (Broadcom, Inphi IPO, HP, Qualcomm)
-- 첫 펀드: 300억원 목표
-- Demoday SV 유튜브 채널 운영
-
-**투자 철학 (3가지 기준):**
-1. 창업가의 행동력 — "말만 하는 사람 vs 실제로 만든 사람"
-2. 지적 정직성 — "모르는 건 모른다고 인정하는가"
-3. 사람 — "제품보다 사람에게 투자"
-
-**투자 성향:**
-- Pre-seed/Seed 집중, 60%가 1년 미만 회사
-- Anti-hype: 남들이 하니까 하는 투자 ❌
-- B2B/SaaS 비중 높음, 생성형 AI 최우선 관심사
-- 실리콘밸리 한인 창업자 네트워크
-
-### 2. POTAL 피치덱 v3 → v4 완성 ✅
-
-파일: `POTAL_Pitch_Deck.pptx` (11 슬라이드)
-생성 스크립트: `create_pitchdeck.js` (pptxgenjs + react-icons + sharp)
-
-**3번의 피드백 라운드를 거쳐 확정된 핵심 변경사항 (v3):**
-
-1. **Title**: "Compare Every Store on Earth." + "Domestic vs Global — One Search." 두 태그라인
-2. **Problem**: "진짜 최저가를 아는 사람은 없다" → 크로스보더 커머스 시장 파괴 + Domestic vs Global 비교 격차 + 블루오션 내러티브로 전면 재구성
-3. **Solution**: POTAL AI를 "버티컬 AI 쇼핑 엔진"으로 상세화, "현재 6개 → 전체 확장 준비 완료"
-4. **Market**: Gen Z 한정 ❌ → "1차 타겟 + 잠재 전체 시장" 프레이밍, 2025 통계 ($1.47T, 289M, 59%)
-5. **Traction**: iOS 승인 완료, Best Buy 제거, 파트너십 워딩 변경, 5개 항목으로 축소
-6. **Why Me**: "확신에서 시작한 실행" 파운더 내러티브
-7. **Business Model**: B2B 2개 예시 (차량/스마트기기, 금융앱), Slickdeals 비교, "글로벌 확장 후" 타이밍
-8. **Honest Challenges**: API 듀얼트랙, 1인 한계 상세, 로컬 법인은 제거 (The Ask으로 이동)
-9. **Roadmap**: 연도 기반 → 챕터 기반 (Ch1: 미국 장악, Ch2: 글로벌 확장, Ch3: 플랫폼+B2B)
-10. **The Ask**: 35% API / 25% 마케팅 / 25% 운영 / 15% 법인+채용
-
-**v4 추가 수정사항 (v3 → v4):**
-1. **Market Opportunity 59% 라벨 수정**: "글로벌 쇼퍼 중 해외 구매 경험 비율" → "전 세계 온라인 쇼퍼 중 해외 사이트 구매 경험" (동어반복 문제 해결)
-2. **Market Opportunity 출처 개별 명시**: 기존 "Sources: Coherent Market Insights 2025, Capital One Shopping 2025, DHL Cross-Border Survey 2025" → "$1.47T — Coherent Market Insights 2025 | 289M — eMarketer 2025 | 59% — DHL Online Shopper Survey 2025 (24,000명, 24개국)" (각 숫자별 정확한 출처 매칭)
-3. **Traction 하단 문구 수정**: "모든 것을 1인이, AI로, 3개월 만에 구축했습니다." → "1인이, AI로, 매일 9시간씩, 1달 만에 구축했습니다." (사실관계 수정: 3개월→1달, 하루 9시간 투입 추가)
-
-**확립된 핵심 원칙:**
-- POTAL은 코어 기능(Domestic vs Global 비교)에 집중, 프리미엄 소비자 기능 추가 ❌
-- "가격 추적 알림, 히스토리 차트"는 B2B 기능이지 소비자 기능이 아님
-- AI 시대 = 최소 채용 (1-2명), 전통적 팀 빌딩 ❌
-- B2B API 서비스는 글로벌 확장 후
-- 투자 배분에서 API 확장이 최우선 (35%)
-- 59% 통계는 "시장 크기"뿐 아니라 "이미 해외 구매를 하는 즉시 타겟 가능 인구"로서의 전략적 가치가 있음
-- Market Opportunity의 모든 숫자는 개별 출처를 명확히 밝혀야 함
-- 투자자에게 보내는 첫 메시지는 짧게 (자료 요청에 대한 답변, 투자 요청 ❌)
-- 사업계획서는 Pre-seed 단계에서 필수 아님 — 피치덱 + 작동하는 웹사이트가 우선, 추가 자료 요청 시 준비
-
-**2025 크로스보더 이커머스 통계 (피치덱에 사용, 출처 검증 완료):**
-- $1.47T 글로벌 크로스보더 시장 — **Coherent Market Insights 2025** (2032년 $4.81T 전망, CAGR 18.4%)
-- 289M 미국 온라인 쇼퍼 — **eMarketer 2025** (정확히 288.45M, 반올림)
-- 59% 전 세계 온라인 쇼퍼 중 해외 사이트 구매 경험 — **DHL 2025 Online Shopper Survey** (24개국 24,000명 조사, 35%는 월 1회 이상)
-- 48% 예상치 못한 비용으로 해외 구매 포기 — **Baymard Institute 2024.2** (미국 성인 1,012명 조사)
+- $1.47T 글로벌 크로스보더 — Coherent Market Insights 2025
+- 289M 미국 온라인 쇼퍼 — eMarketer 2025
+- 59% 해외 구매 경험 — DHL 2025 Survey (24개국 24,000명)
+- 48% 예상치 못한 비용으로 포기 — Baymard Institute 2024.2
 - 54% 높은 배송비가 최대 불만
 
-**창업자 팩트 (피치덱 반영):**
-- 구축 기간: **1달** (3개월 아님)
-- 일일 투입 시간: **매일 9시간**
-- 코딩 경험: 전혀 없음 → Claude AI + 바이브코딩으로 구축
+### Capacitor iOS 설정 요약
 
-### 3. 김범수 대표님 LinkedIn 메시지 초안 작성 ✅
-
-파일: `LinkedIn_Message_KimBumsoo.md`
-
-**확정된 메시지 (은태님이 직접 수정):**
-```
-범수님, 관심 가져주셔서 감사합니다.
-저는 POTAL이라는 가격비교 서비스를 만들고 있는 장은태입니다.
-웹사이트: https://potal.app
-피치덱: 첨부드렸습니다.
-한 줄로 요약하면, 미국 내 쇼핑몰과 해외 직구 상품을 한번에 검색해서 배송비·관세·세금까지 포함한 실제 총비용으로 비교해주는 서비스입니다.
-편하실 때 피치덱 봐주시면 감사하겠습니다. 궁금하신 점 있으시면 언제든 말씀 부탁드립니다.
-장은태 드림
-contact@potal.app
-```
-
-**메시지 설계 원칙:**
-- 긴 메시지 ❌ → 피치덱에 다 있으니 메시지는 짧게 (뭐하는 서비스인지 한 줄 + 링크 + 파일)
-- 중간에 행동력/지적 정직성 어필하는 내용은 피치덱이 하는 역할 → 메시지에서 중복 불필요
-- "투자해주세요" ❌ → 자료 요청에 대한 답변일 뿐
-- 시장 규모 숫자 나열 ❌ → 피치덱에 있음
-- 김범수 대표가 피치덱 보고 관심 생기면 자연스럽게 질문이 옴 → 그때 대화에서 보여주기
-
-### 4. 다음 세션에서 이어서 할 일 (우선순위 순)
-
-#### 🔴 즉시 실행 (은태님이 직접 해야 할 것)
-1. **김범수 대표님 LinkedIn 메시지 발송** — 메시지 확정됨 (`LinkedIn_Message_KimBumsoo.md`), `POTAL_Pitch_Deck.pptx` 첨부해서 LinkedIn에서 발송만 하면 됨
-2. **미커밋 파일 push** — Mac 터미널에서 `git add` + `git commit` + `git push` (HTTPS 인증 문제로 은태님이 직접 해야 함)
-   - `app/lib/search/searchIntelligence.ts`
-   - `app/lib/search/SearchService.ts`
-   - `app/lib/search/providers/AmazonProvider.ts`
-   - `app/lib/search/providers/BestBuyProvider.ts`
-
-#### 🟡 Claude와 함께 할 일
-3. **나머지 파트너십 이메일 6곳 작성/발송** — Wayfair(supplierservicedesk@wayfair.com), iHerb(affiliates@iherb.com)는 직접 이메일 가능. Macy's/Nordstrom/Zappos는 CJ/Rakuten 어필리에이트 경유, Home Depot는 Impact 경유
-4. **Facebook 그룹 글 올리기** — 가입 승인된 12개 그룹에 순차 게시 (하루 2~3개, 그룹별 다른 내용)
-5. **Android 앱 제출** — Google Play 국가 변경 해결되면 → Capacitor Android 빌드 → 제출
-6. **SEO 블로그 콘텐츠 작성** — "Amazon vs AliExpress price comparison" 등 검색 유입용
-
-#### ⏳ 대기 중 (응답 오면 대응)
-- 김범수 대표 응답 → 추가 자료 요청 시 사업계획서 작성
-- Best Buy API 키 발급
-- Target 파트너십 응답
-- Kroger Partner Request 응답
-- Google Play 국가 변경 (티켓 #782618)
-
-#### 참고 파일 위치
-- 피치덱: `POTAL_Pitch_Deck.pptx` (최종 v4)
-- 피치덱 생성 스크립트: `create_pitchdeck.js` (수정 시 `node create_pitchdeck.js`로 재생성)
-- 김범수 리서치: `Kim_Bumsoo_QPV_Research.md`
-- LinkedIn 메시지: `LinkedIn_Message_KimBumsoo.md`
-- 파트너십 이메일 템플릿: `POTAL_Partnership_Email_Template.md`
-- 전체 이메일 모음: `All_Partnership_Emails_Ready.md`
-- 쇼핑몰 타겟 리스트: `POTAL_Partnership_Target_List.xlsx`
+- appId: `com.potal.app`, webDir: `out`, server URL: `https://potal.app`
+- TabletViewController: iPad 1440px viewport 강제
+- KeyboardAccessoryFix: WKContentView swizzling
+- Apple Distribution 인증서 (수동), Xcode iOS 26.2
 
 ---
 
-### BestBuyProvider 코드 변경사항 (2026-02-28)
-- `app/lib/search/providers/BestBuyProvider.ts` — Serper 기반 → Best Buy 공식 Products API로 완전 교체
-  - API endpoint: `https://api.bestbuy.com/v1/products`
-  - 환경변수: `BESTBUY_API_KEY` 필요
-  - 필드 매핑: name, salePrice/regularPrice, largeImage, url, customerReviewAverage/Count, manufacturer, freeShipping
-  - 정렬: bestSellingRank.asc
-  - 페이지당 25개 상품
-- `app/lib/search/SearchService.ts` — fetchDomestic()에 Best Buy 병렬 호출 추가 (Amazon + Walmart + Best Buy)
+## 9. 📁 파일 인덱스
+
+### 현재 활성 파일 (mnt/portal/)
+| 파일 | 역할 |
+|------|------|
+| `POTAL_Master_Partnership_Tracker.xlsx` | 최종 v5 트래커 + 트래픽 시트/차트 |
+| `POTAL_Partnership_Proposal_FINAL.pdf` | US Domestic 파트너십 제안서 (영어만, 발송용) |
+| `POTAL_Global_Partnership_Proposal_FINAL.pdf` | Global 스토어 파트너십 제안서 (영어만, 발송용) |
+| `POTAL_Partnership_Email_FINAL.md` | US Domestic 이메일 템플릿 (영어만, 발송용) |
+| `POTAL_Global_Partnership_Email_FINAL.md` | Global 스토어 이메일 템플릿 (영어만, 발송용) |
+| `POTAL_Partnership_Proposal.pdf` | US Domestic 제안서 리뷰본 (한글 포함) |
+| `POTAL_Global_Partnership_Proposal.pdf` | Global 제안서 리뷰본 (한글 포함) |
+| `email_template_draft.md` | US 이메일 리뷰본 (한글 포함) |
+| `email_template_global_draft.md` | Global 이메일 리뷰본 (한글 포함) |
+| `POTAL_Pitch_Deck.pptx` | 피치덱 v4 (11 슬라이드) |
+| `create_pitchdeck.js` | 피치덱 생성 스크립트 (pptxgenjs) |
+| `Kim_Bumsoo_QPV_Research.md` | 김범수/QPV 리서치 |
+| `LinkedIn_Message_KimBumsoo.md` | LinkedIn 메시지 (확정) |
+| `All_Partnership_Emails_Ready.md` | 13개 쇼핑몰 이메일 모음 |
+| `BestBuy_Email_Ready.md` | Best Buy 맞춤 이메일 |
+| `Target_Email_Ready.md` | Target 맞춤 이메일 |
+| `POTAL_Partnership_Target_List.xlsx` | 27개 쇼핑몰 타겟 리스트 |
+| `Partnership_Emails_Ready_v2.md` | 6개 스토어 프리메이드 이메일 (은태님 직접 발송용, 참조) |
+| `session-context.md` | 이 파일 (프로젝트 맥락) |
+
+### 작업 스크립트 (세션 작업 디렉토리)
+
+⚠️ **절대 삭제 금지** — PDF 내용 수정 시 이 스크립트들을 다시 돌려야 함
+
+| 파일 | 역할 | 삭제 |
+|------|------|------|
+| `create_master_tracker_v5.py` | v5 엑셀 생성 스크립트 | ❌ 금지 |
+| `add_traffic_sheet_v3.py` | 트래픽 시트 + 차트 스크립트 | ❌ 금지 |
+| `create_proposal_pdf_v3.py` | US Domestic PDF 생성 (dual-mode: review/final) | ❌ 금지 — PDF 수정 시 필요 |
+| `create_proposal_pdf_global.py` | Global PDF 생성 (dual-mode: review/final) | ❌ 금지 — PDF 수정 시 필요 |
+| `NotoSansKR.ttf` | 한국어 폰트 (reportlab용, PDF 스크립트 의존) | ❌ 금지 |
+| ~~`send_emails.py`~~ | SMTP 이메일 발송 스크립트 — **삭제됨** (앱 비밀번호 하드코딩 보안 이슈) | ✅ 삭제됨 |
+| ~~`delete_drafts.py`~~ | IMAP 초안 삭제 스크립트 — **삭제됨** (앱 비밀번호 포함) | ✅ 삭제됨 |
+| ~~`create_proposal_pdf.py`~~ | v1 PDF 스크립트 — v3로 대체 | ✅ 삭제됨 |
+| ~~`create_proposal_pdf_v2.py`~~ | v2 PDF 스크립트 — v3로 대체 | ✅ 삭제됨 |
+
+### 미커밋 코드 (은태님 push 필요)
+- `app/lib/search/searchIntelligence.ts` — generateQueryVariants() 추가
+- `app/lib/search/SearchService.ts` — Step 1b 변형 재시도 + BestBuy 추가
+- `app/lib/search/providers/AmazonProvider.ts` — 중복 로직 제거
+- `app/lib/search/providers/BestBuyProvider.ts` — Serper → Best Buy 공식 API
+
+---
+
+## 10. 📝 작업 로그 (날짜별 요약)
+
+### 2026-03-01 (세션 5) — Gmail 전수 스캔 + 바운스 처리 + App Store 거절 분석
+- contact@potal.app 전체 이메일 100+건 전수 조사
+- 바운스 3곳 발견 및 처리: YesStyle 재발송(ys-affiliates@yesstyle.com), ASOS→Awin 재분류, Office Depot→CJ 재분류
+- Academy Sports communityrelations@ = 기부/후원 부서로 확인 (파트너십 전용 이메일 없음)
+- Apple App Store 리뷰 거절 (2/26) 분석: (1) iPad Take Photo 크래시, (2) 로그인 외부 브라우저 UX, (3) 데모 계정 미제공, (4) 계정 삭제 기능 확인 필요
+- Impact.com 주소 변경 서류 제출 안내 (은태님 직접)
+- Google Payments 본인 확인 안내 (은태님 직접)
+- Gmail 초안 23개 IMAP으로 일괄 삭제 완료
+- 엑셀 트래커 업데이트 (바운스 처리 결과, Affiliate 재분류)
+- session-context.md 업데이트 (세션 5 반영)
+
+### 2026-03-01 (세션 4) — 이메일 일괄 발송 완료 (29곳)
+- 이전 세션 컨텍스트 이어받아 작업 재개
+- 25개 N/A 스토어 이메일 주소 병렬 리서치 → 19개 발견
+- 엑셀 트래커에 19개 이메일 주소 업데이트
+- Gmail MCP 커넥터로 23개 초안 생성 (US Domestic 19 + Global 4)
+- Gmail MCP 한계 (첨부/발송 불가) → SMTP + 앱 비밀번호 방식으로 전환
+- Python 스크립트(send_emails.py)로 23개 이메일 PDF 첨부 + 자동 발송 성공 (실패 0)
+- 카테고리별 맞춤 문구 적용: Electronics(Best Buy, Newegg, B&H), Fashion(Gap, Lululemon), Home(Overstock), Grocery(Instacart), Pet(Chewy, PetSmart, Petco)
+- 엑셀 트래커 26행 "Sent" + 발송일 업데이트
+- 은태님 직접 발송 6곳 확인: Macy's, Nordstrom, Zappos, Home Depot, Wayfair, iHerb
+- 제외 결정: Apple(직접이메일 없음), Samsung(직접이메일 없음), LEGO(라이센싱팀 불필요)
+- **총 발송: 29곳** (은태님 6 + 자동 23), 미발송: Affiliate 경유 6곳 + 제외 3곳
+
+### 2026-03-01 (세션 3) — 이메일 + PDF 제안서 완성
+- 파트너십 PDF 제안서 v1→v3: 한글 렌더링 해결(NotoSansKR.ttf), dual-mode(review/final)
+- US Domestic PDF: equal competition 메시지, 5 benefits, 글로벌 확장 closing
+- Global PDF: TLC 투명성, hidden costs 해결, revenue pipeline, 5 benefits
+- 이메일 템플릿 US Domestic + Global 각각 작성 및 확정
+- 은태님 피드백 반영: 이름 수정(Euntae Jang), 근거 없는 숫자 삭제, 연동 안 된 스토어 나열 금지, 이해 안 되는 표현 수정
+- 전략 합의: 이메일(짧은 hook) + PDF(상세) 분리, benefits first, 전화 없음
+
+### 2026-03-01 (세션 2) — 트래픽 시트 + 데이터 검수
+- 트래픽 시트 v1→v3: 차트 렌더링 이슈 해결 (category references, 30-row spacing)
+- 2025년 데이터 기준 전체 4시트 최종 검수 (18개 데이터 포인트 중 15개 정확, 3개 수정)
+- 이전 버전 스크립트 정리 삭제 (v1~v4 tracker, v1~v2 traffic)
+- 이메일 템플릿 초안 작성 시작
+
+### 2026-03-01 (세션 1) — Master Tracker v5 완성 + 수익화 논의
+- Master Partnership Tracker v1→v5 완성 (5번 반복, 사용자 수정 5회 반영)
+- v5 핵심: 글로벌 스토어 US 시장점유율 % 적용, US 카테고리 교차 6곳 추가, 저가치 글로벌 5곳 제외
+- 사용자 질문 대응: 마이너스 표기 확인, 월간vs연간 트래픽, 데이터 수익화 가능성
+- 합의: 트래픽 시트+차트 → 이메일 템플릿 검토 → 발송 → Make 자동화 → 연동
+- 수익화 방향 논의: B2B 리포트, 어필리에이트 최적화, 광고 세일즈 데이터
+- session-context.md 전면 재구조화
+
+### 2026-02-28 — 김범수/QPV 리서치 + 피치덱 v4
+- 김범수 대표 LinkedIn 1촌 수락 → "자료 보내달라" 응답
+- QPV 종합 리서치 완료, 투자 철학 3가지 (행동력, 지적 정직성, 사람)
+- 피치덱 v3→v4 (4번 피드백 반영, 11 슬라이드)
+- LinkedIn 메시지 초안 확정 (은태님 직접 수정)
+- 파트너십 이메일 7곳 발송 완료
+
+### 2026-02-26 — 코드베이스 리팩토링 + 마케팅 실행
+- 코드베이스 종합 점검: 고아 파일 삭제, 컴포넌트 통합, 대형 파일 분리
+- Amazon API 디버깅 + searchIntelligence 검색어 변형 로직
+- BestBuyProvider 코드 작성 (공식 API)
+- OG 이미지 업데이트
+- 홍보 채널: Reddit, LinkedIn, X, Facebook 글 게시
+- Slickdeals 분석, 실유저 확보 전략 수립
+
+---
+
+## 부록: 홍보 글 작성 기준
+
+### 공통 지침
+- 영어 원문 + 한글 번역 항상 함께
+- POTAL URL: https://potal.app
+- "POTAL" 직접 홍보 ❌ → 가치(가격 비교 결과)를 먼저, 자연스럽게 링크
+
+### 채널별 톤
+| 채널 | 톤 | 제한사항 |
+|------|-----|---------|
+| Facebook 딜 그룹 | 실제 비교 결과 먼저 | 하루 2~3개, 그룹간 30분 간격, 동시 게시 ❌ |
+| Reddit | 개인 경험, 피드백 요청, 겸손 | karma 필요, 노골적 홍보 → 삭제+ban |
+| LinkedIn | 프로페셔널, 빌더 스토리 | #buildinpublic 등 해시태그 |
+| X (Twitter) | 짧고 임팩트, 비전 | 280자 |
+
+### Facebook 그룹 현황
+- 자체 그룹 2개: Smart Deal Finder (메인), Amazon vs AliExpress (서브)
+- 가입 완료 13개 그룹 (Amazing deals 20만명, Couponing 24만명, Dollar General 49만명 등)
+- 첫 글 게시 완료: Amazing deals clearance and codes
+
+### 이메일 전략 (세션 3 확정)
+- **2종 템플릿**: US Domestic용 (공정 경쟁 중심) + Global용 (미국 시장 접근 + TLC 투명성)
+- **2종 PDF**: 각 템플릿에 매칭되는 1페이지 제안서
+- **구조**: 이메일 = 짧은 hook + PDF 첨부 (상세)
+- **Benefits → Needs 순서** (상대방 이점을 먼저)
+- **연락**: 이메일만 (전화 ❌)
+
+### 파트너십 이메일 발송 현황
+
+**✅ 발송 완료 — 총 29곳 (2026-03-01)**
+
+은태님 직접 발송 (6곳):
+Macy's, Nordstrom, Zappos, Home Depot, Wayfair, iHerb
+
+SMTP 자동 발송 — US Domestic (19곳, PDF: POTAL_Partnership_Proposal_FINAL.pdf):
+Target (partners@Targetpartnerships.com), Costco (isinfo@costco.com), Etsy (developers@etsy.com), Best Buy (developer@bestbuy.com), Newegg (Partnerservices@newegg.com), B&H Photo (info@bhphoto.com), Gap/Old Navy (press@gap.com), Lululemon (media@lululemon.com), Overstock (affiliates@overstock.com), Instacart (partners@instacart.com), Dick's Sporting Goods (DSGAffiliateProgram@dcsg.com), REI (advertising@rei.com), Academy Sports (communityrelations@academy.com), Chewy (affiliates@chewy.com), PetSmart (Merchandising2@PetSmart.com), Petco (pressinquiries@petco.com), GameStop (partnerships@gamestop.com), Staples (kevin.dunne@staples.com), Office Depot (vendordiversity@officedepot.com)
+
+SMTP 자동 발송 — Global (4곳, PDF: POTAL_Global_Partnership_Proposal_FINAL.pdf):
+H&M (mediarelations@hm.com), Adidas (corporate.press@adidas.com), ~~ASOS (gavina@asos.com)~~ ❌바운스→Awin경유, ~~YesStyle (affiliates@yesstyle.com)~~ ❌바운스→ys-affiliates@yesstyle.com으로 재발송 ✅
+
+**❌ 바운스 처리 (세션 5):**
+- YesStyle: affiliates@ → ys-affiliates@yesstyle.com 재발송 ✅
+- ASOS: gavina@ 바운스 → Awin 네트워크 경유만 가능, Affiliate로 재분류
+- Office Depot: vendordiversity@ 바운스 → CJ 네트워크 경유만 가능, Affiliate로 재분류
+
+**⬜ 미발송 — Affiliate 네트워크 경유만 가능 (8곳):**
+Nike, Sephora, Ulta Beauty, Kroger, Lowe's, Kohl's, ASOS(Awin), Office Depot(CJ)
+
+**⛔ 제외 (3곳):**
+Apple (직접이메일 없음, Partnerize 포탈), Samsung (직접이메일 없음, 전화만), LEGO (라이센싱팀 불필요)
+
+**이메일 발송 인프라:**
+- 발신: contact@potal.app (Gmail SMTP + 앱 비밀번호)
+- 스크립트: `send_emails.py` (Python smtplib, PDF 자동 첨부, US/Global 분리)
+- Gmail MCP 커넥터: 초안 생성/읽기 가능, 첨부/발송은 불가 → SMTP로 대체
+
+### 김범수 대표 투자 관련
+- QPV Inc. (2025.7 설립, Sunnyvale), 첫 펀드 300억원 목표
+- 투자 기준: 행동력, 지적 정직성, 사람
+- Pre-seed/Seed 집중, 60% 1년 미만 회사, Anti-hype
+- ✅ LinkedIn 메시지 + 피치덱 발송 완료 (2026-03-01, 은태님 직접)
+- 다음: 응답 대기 → 추가 자료 요청 시 사업계획서 작성

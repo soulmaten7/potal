@@ -11,6 +11,7 @@ import {
 import { createBrowserClient } from "@supabase/ssr";
 import type { Session } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { setupDeepLinkListener } from "@/app/lib/native-auth";
 
 type SupabaseContextValue = {
   supabase: SupabaseClient;
@@ -63,9 +64,17 @@ export function SupabaseProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // 네이티브 앱: 딥링크 리스너 등록 (OAuth 콜백 처리)
+    let cleanupDeepLink: (() => void) | undefined;
+    setupDeepLinkListener(supabase).then((cleanup) => {
+      if (mounted) cleanupDeepLink = cleanup;
+      else cleanup();
+    });
+
     return () => {
       mounted = false;
       subscription?.unsubscribe();
+      cleanupDeepLink?.();
     };
   }, [supabase]);
 

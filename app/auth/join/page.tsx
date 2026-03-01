@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSupabase } from '../../context/SupabaseProvider';
+import { isNativePlatform, startNativeOAuth } from '@/app/lib/native-auth';
 
 export default function JoinPage() {
   const { supabase } = useSupabase();
@@ -84,11 +85,17 @@ export default function JoinPage() {
   };
 
   const handleGoogleSignUp = async () => {
-    const redirectTo = getAuthCallbackUrl();
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo },
-    });
+    if (isNativePlatform()) {
+      // iOS/Android: SFSafariViewController로 열기 (Apple Guideline 4.0 준수)
+      await startNativeOAuth(supabase, 'google');
+    } else {
+      // 웹: 기존 방식
+      const redirectTo = getAuthCallbackUrl();
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo },
+      });
+    }
   };
 
   // Success state
