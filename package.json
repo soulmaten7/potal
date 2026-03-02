@@ -1,5 +1,5 @@
 {
-  "name": "portal",
+  "name": "bidtable",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "cap:sync": "npx cap sync",
-    "cap:open:ios": "npx cap open ios"
+    "cap:open:ios": "npx cap open ios",
+    "dev:server": "pnpm --filter @bidtable/server dev",
+    "dev:mobile": "pnpm --filter @bidtable/mobile start",
+    "db:migrate": "pnpm --filter @bidtable/server prisma migrate dev",
+    "db:seed": "pnpm --filter @bidtable/server prisma db seed",
+    "db:studio": "pnpm --filter @bidtable/server prisma studio"
   },
   "dependencies": {
     "@capacitor/app": "^8.0.1",
