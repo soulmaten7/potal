@@ -132,14 +132,6 @@ export default function BlogPage() {
                 borderRadius: '16px',
                 padding: '28px',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-              className="hover:shadow-lg"
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,158,11,0.4)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(245,158,11,0.2)';
               }}
             >
               <div
@@ -235,15 +227,6 @@ export default function BlogPage() {
                   borderRadius: '14px',
                   padding: '20px',
                   cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.12)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)';
                 }}
               >
                 {/* Category Badge */}
@@ -362,13 +345,6 @@ export default function BlogPage() {
               fontWeight: 700,
               borderRadius: '10px',
               textDecoration: 'none',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.opacity = '0.9';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.opacity = '1';
             }}
           >
             Start Comparing Prices

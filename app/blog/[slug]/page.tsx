@@ -265,13 +265,6 @@ export default async function BlogPostPage({ params }: Props) {
               fontWeight: 700,
               borderRadius: '10px',
               textDecoration: 'none',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.opacity = '0.9';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.opacity = '1';
             }}
           >
             Search with POTAL
@@ -311,13 +304,6 @@ export default async function BlogPostPage({ params }: Props) {
                     borderRadius: '14px',
                     padding: '16px',
                     cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
                   }}
                 >
                   <p
@@ -354,13 +340,6 @@ export default async function BlogPostPage({ params }: Props) {
                     borderRadius: '14px',
                     padding: '16px',
                     cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
                   }}
                 >
                   <p
