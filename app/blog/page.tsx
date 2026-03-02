@@ -207,9 +207,7 @@ export default function BlogPage() {
       <div style={{ padding: '0 20px' }}>
         <h2
           style={{
-            fontSize: '18px',
             fontWeight: 700,
-            color: '#ffffff',
             marginBottom: '16px',
             marginTop: sortedPosts.length > 0 ? '32px' : '0',
             textTransform: 'uppercase',
