@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-01 (세션 5)
+> 마지막 업데이트: 2026-03-02 (세션 7)
 
 ---
 
@@ -60,8 +60,8 @@ POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 **가격비교 서
 
 ### 현재 연동 상태
 - **6개 쇼핑몰**: Amazon, Walmart, Target, eBay, Costco, AliExpress (RapidAPI 기반)
-- **iOS 앱**: App Store 리뷰 거절 (2026-02-26) — 3가지 수정 필요 (크래시, 로그인UX, 데모계정)
-- **Android 앱**: Google Play Console 국가 변경 대기 중
+- **iOS 앱**: App Store Build 3 재제출 완료, 심사 대기 중 (2026-03-02)
+- **Android 앱**: Google Play Console 새 계정 등록 진행 중 (한국 주소, 기존 계정 국가 변경 포기)
 - **웹사이트**: https://potal.app
 
 ### 비즈니스 모델
@@ -123,11 +123,11 @@ POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 **가격비교 서
 | 1 | ~~미발송 스토어 이메일 일괄 발송~~ ✅ | **29곳 발송 완료** (은태님 6 + 자동 23) | `send_emails.py` |
 | 2 | Affiliate 네트워크 경유 스토어 8곳 수동 신청 | Nike, Sephora, Ulta Beauty, Kroger, Lowe's, Kohl's + ASOS(Awin), Office Depot(CJ) — 네트워크 경유만 가능 | 각 Affiliate 네트워크 포털 |
 | 3 | ~~김범수 대표님 LinkedIn 메시지 + 피치덱 발송~~ ✅ | **발송 완료** (은태님 직접, LinkedIn 메시지 + 피치덱 첨부) | `LinkedIn_Message_KimBumsoo.md`, `POTAL_Pitch_Deck.pptx` |
-| 4 | 미커밋 파일 git push | Mac 터미널에서 은태님이 직접 (HTTPS 인증 문제) | searchIntelligence.ts, SearchService.ts, AmazonProvider.ts, BestBuyProvider.ts |
+| 4 | ~~미커밋 파일 git push~~ ✅ | **30개 파일 push 완료** (세션 6, Build 3 포함) | 전체 push 완료 |
 | 5 | Facebook 미국 쇼핑 그룹 글 올리기 | 가입 승인된 12개 그룹에 순차 게시 (하루 2~3개, 그룹별 다른 내용) | 홍보 글 작성 기준 참조 |
-| 6 | Apple App Store 리뷰 거절 3가지 수정 후 재제출 | (1) Take Photo 크래시(iPad), (2) 로그인 UX → ASWebAuthenticationSession, (3) 데모 계정 제공, (4) 계정 삭제 기능 확인 | App Store Connect |
+| 6 | ~~Apple App Store 리뷰 거절 수정 후 재제출~~ ✅ | **Build 3 재제출 완료** (4가지 모두 수정, 심사 대기 중) | App Store Connect |
 | 7 | Impact.com 주소 변경 서류 제출 | 주소 증빙 + 신분증 인증 필요 (은태님 직접) | Impact.com 계정 설정 |
-| 8 | Google Payments 본인 확인 | 다른 유형 문서 재제출 필요 (은태님 직접) | Google Play Console |
+| 8 | ~~Google Payments 본인 확인~~ → 새 계정으로 전환 | 기존 계정 국가 변경 포기 → 새 Google 계정 + Play Console 한국 주소 등록 ($25) | Google Play Console |
 
 ### 🟡 대기 후 진행
 
@@ -215,20 +215,22 @@ POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 **가격비교 서
 - **Gmail 초안 23개 삭제 완료** (SMTP로 이미 발송되어 불필요)
 - **다음 단계**: 응답 트래킹 + Affiliate 네트워크 8곳 수동 신청
 
-### Apple App Store 리뷰 거절 — 수정 후 재제출 필요
-- **거절일**: 2026-02-26 (iOS 1.0)
-- **사유 3가지**:
-  1. Guideline 2.1 - Take Photo 탭 시 크래시 (iPad Air 11-inch M3, iPadOS 26.3)
-  2. Guideline 4.0 - 로그인 시 외부 브라우저로 이동 → ASWebAuthenticationSession 또는 SFSafariViewController 필요
-  3. Guideline 2.1 - 데모 계정 미제공 → App Review Information에 아이디/비밀번호 입력
-- **추가**: Guideline 5.1.1(v) — 계정 삭제 기능 필수 확인
-- **은태님 직접 처리 예정**
+### Apple App Store — Build 3 재제출 완료, 심사 대기 중
+- **거절일**: 2026-02-26 (Build 2)
+- **재제출일**: 2026-03-02 (Build 3, 1.0(3))
+- **수정 완료 4가지**:
+  1. ✅ Guideline 2.1 - iPad Take Photo 크래시 → `Info.plist`에 `NSCameraUsageDescription` + `NSPhotoLibraryUsageDescription` 추가
+  2. ✅ Guideline 4.0 - 로그인 외부 브라우저 → `@capacitor/browser` (SFSafariViewController) + `potal://` 딥링크 콜백 구현
+  3. ✅ Guideline 2.1 - 데모 계정 미제공 → Supabase에 `appreview@potal.app` / `PotalReview2026!` 계정 생성, App Store Connect에 입력
+  4. ✅ Guideline 5.1.1(v) - 계정 삭제 기능 → `/api/delete-account` API + 확인 다이얼로그 UI 구현
+- **수동 설정 3가지 완료**: Supabase 리다이렉트 URL(`potal://auth-callback`), App Store Connect 데모 계정, Vercel 환경변수(`SUPABASE_SERVICE_ROLE_KEY`)
+- **다음**: Apple 심사 결과 대기 (24~48시간)
 
 ### 외부 서비스 대기
 
 | 서비스 | 상태 | 다음 단계 |
 |--------|------|----------|
-| Google Play Console | 국가 변경 재요청 (영어, 티켓 #782618) | 해결되면 Android 빌드 |
+| Google Play Console | 기존 계정 국가 변경 포기 → 새 Google 계정으로 한국 주소 등록 진행 중 ($25) | 등록 완료 후 Android Capacitor 빌드 + 제출 |
 | Reddit r/SideProject | 스팸 필터 → 모더레이터 승인 대기 | 승인 후 r/Frugal 진출 |
 | Rakuten (Case #390705) | Madhu에게 재답장 완료 | 기술팀 해결 대기 |
 | Temu Affiliate | 승인 대기 중 | 승인되면 API 구현 |
@@ -238,9 +240,9 @@ POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 **가격비교 서
 | Target | 파트너십 이메일 발송 완료 | 응답 대기 |
 | Kroger | Partner Request 제출 완료 (Developer Portal) | 응답 대기 |
 | 파트너십 이메일 29곳 | 전체 발송 완료 (2026-03-01) | 응답 대기 중 |
-| Apple App Store | 리뷰 거절 (2026-02-26) — 3가지 수정 필요 | 은태님 수정 후 재제출 |
+| Apple App Store | Build 3 재제출 완료 (2026-03-02) | 심사 결과 대기 (24~48시간) |
 | Impact.com 주소 변경 | 서류 제출 필요 (주소 증빙 + 신분증) | 은태님 직접 제출 |
-| Google Payments 본인 확인 | 다른 유형 문서 재제출 필요 | 은태님 직접 제출 |
+| Google Play Console (새 계정) | 새 Google 계정 생성 + Play Console 등록 진행 중 | 한국 주소 인증 → Android 빌드 |
 
 ---
 
@@ -248,10 +250,19 @@ POTAL은 여러 쇼핑몰에서 상품을 검색/비교하는 **가격비교 서
 
 ### 제품 개발
 
-**iOS 앱 출시 → 리뷰 거절** ⚠️
-- App Store Build 2 제출 완료 (태블릿 1440px 수정 포함)
+**iOS 앱 Build 3 재제출 완료** ✅ (2026-03-02, 세션 6)
+- Build 2 리뷰 거절 (2026-02-26) → 4가지 수정 → Build 3 (1.0(3)) 재제출
 - Bundle ID: com.potal.app, Apple Distribution 인증서
-- ⚠️ 리뷰 거절 (2026-02-26): 크래시(iPad Take Photo), 로그인 UX, 데모 계정 미제공 → 수정 후 재제출 필요
+- **수정 내역**:
+  1. iPad Take Photo 크래시 → `NSCameraUsageDescription` + `NSPhotoLibraryUsageDescription` Info.plist 추가
+  2. 로그인 외부 브라우저 → `@capacitor/browser` SFSafariViewController + `potal://auth-callback` 딥링크 구현
+  3. 데모 계정 미제공 → `appreview@potal.app` / `PotalReview2026!` Supabase 생성 + App Store Connect 입력
+  4. 계정 삭제 기능 → `app/api/delete-account/route.ts` API (Supabase Admin) + `app/account/page.tsx` 확인 다이얼로그
+- **새 코드 파일**: `app/lib/native-auth.ts` (네이티브 OAuth 유틸리티), `app/api/delete-account/route.ts` (계정 삭제 API)
+- **수정 파일 7개**: Info.plist, SupabaseProvider.tsx, AuthForm.tsx, login/page.tsx, join/page.tsx, account/page.tsx, package.json
+- **수동 설정 3가지**: Supabase 리다이렉트 URL, App Store Connect 데모 계정, Vercel `SUPABASE_SERVICE_ROLE_KEY`
+- **빌드/배포**: git push (30 files, 2914 insertions) → Vercel 자동 배포 → `npx cap sync ios` (4 plugins) → Xcode Archive → Upload → App Store Connect 제출
+- 심사 대기 중
 
 **코드베이스 리팩토링** ✅ (2026-02-26)
 - 고아 파일 7개 삭제, 죽은 코드 제거, console.log 13개 정리
@@ -453,6 +464,10 @@ components/
 | `app/lib/search/AIFilterService.ts` | AI 관련성 필터 |
 | `app/lib/search/providers/AmazonProvider.ts` | Amazon RapidAPI |
 | `app/lib/search/providers/BestBuyProvider.ts` | Best Buy 공식 API (키 대기) |
+| `app/lib/native-auth.ts` | 네이티브 OAuth (SFSafariViewController + 딥링크) |
+| `app/api/delete-account/route.ts` | 계정 삭제 API (Supabase Admin) |
+| `app/account/page.tsx` | 계정 설정 (삭제 기능 포함) |
+| `app/context/SupabaseProvider.tsx` | Supabase 클라이언트 + 세션 + 딥링크 리스너 |
 
 ### Master Tracker 엑셀 구조
 
@@ -479,6 +494,11 @@ components/
 - TabletViewController: iPad 1440px viewport 강제
 - KeyboardAccessoryFix: WKContentView swizzling
 - Apple Distribution 인증서 (수동), Xcode iOS 26.2
+- **URL Scheme**: `potal://` (CFBundleURLTypes, 딥링크 OAuth 콜백용)
+- **Capacitor 플러그인 4개**: @capacitor/splash-screen, @capacitor/status-bar, @capacitor/browser (SFSafariViewController), @capacitor/app (딥링크 리스너)
+- **Info.plist 권한**: NSCameraUsageDescription, NSPhotoLibraryUsageDescription
+- **Supabase 리다이렉트 URL**: `potal://auth-callback` (네이티브 OAuth 콜백)
+- **환경변수**: `SUPABASE_SERVICE_ROLE_KEY` (Vercel, 계정 삭제 Admin API용)
 
 ---
 
@@ -506,6 +526,8 @@ components/
 | `POTAL_Partnership_Target_List.xlsx` | 27개 쇼핑몰 타겟 리스트 |
 | `Partnership_Emails_Ready_v2.md` | 6개 스토어 프리메이드 이메일 (은태님 직접 발송용, 참조) |
 | `session-context.md` | 이 파일 (프로젝트 맥락) |
+| `app/lib/native-auth.ts` | 네이티브 OAuth 유틸리티 (SFSafariViewController + 딥링크 토큰 파싱) |
+| `app/api/delete-account/route.ts` | 계정 삭제 API (Supabase Admin, Apple Guideline 5.1.1(v)) |
 
 ### 작업 스크립트 (세션 작업 디렉토리)
 
@@ -523,15 +545,32 @@ components/
 | ~~`create_proposal_pdf.py`~~ | v1 PDF 스크립트 — v3로 대체 | ✅ 삭제됨 |
 | ~~`create_proposal_pdf_v2.py`~~ | v2 PDF 스크립트 — v3로 대체 | ✅ 삭제됨 |
 
-### 미커밋 코드 (은태님 push 필요)
-- `app/lib/search/searchIntelligence.ts` — generateQueryVariants() 추가
-- `app/lib/search/SearchService.ts` — Step 1b 변형 재시도 + BestBuy 추가
-- `app/lib/search/providers/AmazonProvider.ts` — 중복 로직 제거
-- `app/lib/search/providers/BestBuyProvider.ts` — Serper → Best Buy 공식 API
+### 커밋 완료 (세션 6에서 push 완료)
+- ✅ 세션 6에서 30개 파일 git push 완료 (2914 insertions, 62 deletions)
+- 포함 내역: App Store 거절 수정 4가지 (Info.plist, native-auth, delete-account, OAuth 수정), searchIntelligence, BestBuyProvider 등 전체
 
 ---
 
 ## 10. 📝 작업 로그 (날짜별 요약)
+
+### 2026-03-02 (세션 7) — Google Play Console 새 계정 전환 + Android 앱 등록
+- Google Payments 본인 확인: 기존 계정 미국 주소 인증 서류 없음 → 국가 변경 루프 포기
+- 새 Google 계정 생성 + Play Console 한국 주소 등록 ($25) 결정
+- 한국 주소로 등록해도 전 세계(미국 포함) 앱 배포 가능 확인
+- (진행 중)
+
+### 2026-03-02 (세션 6) — App Store 거절 4가지 수정 + Build 3 재제출
+- App Store 리뷰 거절 3가지 사유 + 추가 1가지 (계정 삭제) 분석 및 전체 수정 완료
+- **(1) iPad Take Photo 크래시**: Info.plist에 `NSCameraUsageDescription` + `NSPhotoLibraryUsageDescription` 추가
+- **(2) 로그인 외부 브라우저**: `@capacitor/browser` + `@capacitor/app` 설치, `potal://` URL scheme 등록, `native-auth.ts` 생성 (SFSafariViewController + 딥링크 토큰 파싱 + setSession), SupabaseProvider/AuthForm/login/join 페이지 수정
+- **(3) 데모 계정 미제공**: Supabase에 `appreview@potal.app` / `PotalReview2026!` 생성, App Store Connect에 입력
+- **(4) 계정 삭제 (5.1.1(v))**: `app/api/delete-account/route.ts` 생성 (Supabase Admin API), `app/account/page.tsx`에 확인 다이얼로그 + API 호출 추가
+- 수동 설정 3가지 완료: Supabase 리다이렉트 URL (`potal://auth-callback`), App Store Connect 데모 계정, Vercel `SUPABASE_SERVICE_ROLE_KEY`
+- Git push 완료 (30 files changed, 2914 insertions, 62 deletions) — HEAD.lock 이슈 해결 후
+- `npx cap sync ios` 성공 (4 Capacitor plugins)
+- Xcode Archive → Upload → App Store Connect Build 3 (1.0(3)) 제출 완료
+- Gmail 초안 23개 IMAP 삭제 완료 (세션 5에서 이어서)
+- session-context.md 세션 6 업데이트
 
 ### 2026-03-01 (세션 5) — Gmail 전수 스캔 + 바운스 처리 + App Store 거절 분석
 - contact@potal.app 전체 이메일 100+건 전수 조사
