@@ -22,6 +22,7 @@ const EXPLORE_DATA = [
 
 const COMPANY_LINKS = [
   { label: "About POTAL", href: "/about" },
+  { label: "Blog", href: "/blog" },
   { label: "Sustainability", href: "/about#sustainability" },
   { label: "Contact Us", href: "/help?topic=general" },
 ];
