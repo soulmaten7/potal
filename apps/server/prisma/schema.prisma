@@ -1,0 +1,468 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserTier {
+  LEVEL_1
+  LEVEL_2
+}
+
+enum VerificationStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id                String    @id @default(uuid())
+  email             String    @unique
+  password          String
+  username          String    @unique
+  displayName       String
+  bio               String?   @db.VarChar(150)
+  profileImageUrl   String?
+  websiteUrl        String?
+  tier              UserTier  @default(LEVEL_1)
+  verificationStatus VerificationStatus @default(NONE)
+  verificationBadge Boolean   @default(false)
+  followerCount     Int       @default(0)
+  followingCount    Int       @default(0)
+  postCount         Int       @default(0)
+  auctionCount      Int       @default(0)
+  averageRating     Float     @default(0)
+  totalRatingCount  Int       @default(0)
+  city              String?
+  latitude          Float?
+  longitude         Float?
+  isActive          Boolean   @default(true)
+  isBanned          Boolean   @default(false)
+  banReason         String?
+  isPrivate         Boolean   @default(false)
+  refreshToken      String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  lastLoginAt       DateTime?
+  posts             Post[]
+  auctions          Auction[]           @relation("AuctionHost")
+  bids              Bid[]
+  sentMessages      ChatMessage[]       @relation("MessageSender")
+  followers         Follow[]            @relation("Following")
+  following         Follow[]            @relation("Follower")
+  likes             Like[]
+  givenReviews      Review[]            @relation("ReviewAuthor")
+  receivedReviews   Review[]            @relation("ReviewTarget")
+  reports           Report[]            @relation("Reporter")
+  reportedBy        Report[]            @relation("ReportedUser")
+  blocks            Block[]             @relation("Blocker")
+  blockedBy         Block[]             @relation("Blocked")
+  notifications     Notification[]
+  verification      UserVerification?
+  payments          Payment[]
+  chatRoomUser1     ChatRoom[]          @relation("ChatUser1")
+  chatRoomUser2     ChatRoom[]          @relation("ChatUser2")
+  @@index([username])
+  @@index([city])
+  @@index([tier])
+  @@index([averageRating])
+}
+
+model UserVerification {
+  id                  String    @id @default(uuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  idCardVerified      Boolean   @default(false)
+  idCardType          String?
+  idCardImageUrl      String?
+  realName            String?
+  birthDate           DateTime?
+  faceVerified        Boolean   @default(false)
+  faceImageUrl        String?
+  livenessScore       Float?
+  livenessCheckedAt   DateTime?
+  verifiedAt          DateTime?
+  rejectedAt          DateTime?
+  rejectionReason     String?
+  reviewedBy          String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model Follow {
+  id          String    @id @default(uuid())
+  followerId  String
+  followingId String
+  follower    User      @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User      @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Post {
+  id            String    @id @default(uuid())
+  authorId      String
+  author        User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  caption       String?   @db.VarChar(2200)
+  likeCount     Int       @default(0)
+  locationName  String?
+  latitude      Float?
+  longitude     Float?
+  isArchived    Boolean   @default(false)
+  isDeleted     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  images        PostImage[]
+  likes         Like[]
+  @@index([authorId])
+  @@index([createdAt(sort: Desc)])
+  @@index([likeCount(sort: Desc)])
+}
+
+model PostImage {
+  id          String    @id @default(uuid())
+  postId      String
+  post        Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  imageUrl    String
+  width       Int?
+  height      Int?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  @@index([postId])
+}
+
+enum LikeTargetType {
+  POST
+  AUCTION
+}
+
+model Like {
+  id            String          @id @default(uuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType    LikeTargetType
+  postId        String?
+  post          Post?           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  auctionId     String?
+  auction       Auction?        @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime        @default(now())
+  @@unique([userId, targetType, postId])
+  @@unique([userId, targetType, auctionId])
+  @@index([postId])
+  @@index([auctionId])
+}
+
+enum AuctionStatus {
+  DRAFT
+  ACTIVE
+  ENDED
+  FAILED
+  CANCELLED
+  COMPLETED
+}
+
+enum AuctionDuration {
+  HOURS_24
+  HOURS_48
+  HOURS_72
+}
+
+enum MealDuration {
+  MIN_60
+  MIN_90
+  MIN_120
+  MIN_150
+  MIN_180
+}
+
+model Auction {
+  id                String          @id @default(uuid())
+  hostId            String
+  host              User            @relation("AuctionHost", fields: [hostId], references: [id], onDelete: Cascade)
+  title             String          @db.VarChar(100)
+  description       String?         @db.VarChar(1000)
+  auctionDuration   AuctionDuration
+  mealDuration      MealDuration
+  startPrice        Int
+  buyNowPrice       Int?
+  currentPrice      Int             @default(0)
+  startsAt          DateTime
+  endsAt            DateTime
+  mealDate          DateTime?
+  restaurantName    String?
+  restaurantAddress String?
+  restaurantLatitude  Float?
+  restaurantLongitude Float?
+  city              String
+  latitude          Float?
+  longitude         Float?
+  status            AuctionStatus   @default(DRAFT)
+  winnerId          String?
+  winningPrice      Int?
+  wonAt             DateTime?
+  bidCount          Int             @default(0)
+  likeCount         Int             @default(0)
+  viewCount         Int             @default(0)
+  hostConfirmedComplete   Boolean   @default(false)
+  winnerConfirmedComplete Boolean   @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  images            AuctionImage[]
+  bids              Bid[]
+  likes             Like[]
+  payment           Payment?
+  chatRoom          ChatRoom?
+  reviews           Review[]
+  @@index([hostId])
+  @@index([status])
+  @@index([city])
+  @@index([endsAt])
+  @@index([status, city, endsAt])
+  @@index([status, likeCount])
+  @@index([createdAt(sort: Desc)])
+}
+
+model AuctionImage {
+  id          String    @id @default(uuid())
+  auctionId   String
+  auction     Auction   @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  imageUrl    String
+  width       Int?
+  height      Int?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  @@index([auctionId])
+}
+
+enum BidStatus {
+  ACTIVE
+  OUTBID
+  WON
+  CANCELLED
+  REFUNDED
+}
+
+model Bid {
+  id            String      @id @default(uuid())
+  auctionId     String
+  auction       Auction     @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  bidderId      String
+  bidder        User        @relation(fields: [bidderId], references: [id], onDelete: Cascade)
+  amount        Int
+  status        BidStatus   @default(ACTIVE)
+  paymentId     String?     @unique
+  payment       Payment?    @relation(fields: [paymentId], references: [id])
+  isBuyNow      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  @@index([auctionId])
+  @@index([bidderId])
+  @@index([auctionId, amount(sort: Desc)])
+  @@index([status])
+}
+
+enum PaymentStatus {
+  PENDING
+  ESCROW_HELD
+  RELEASED
+  REFUNDED
+  PENALTY_CHARGED
+  FAILED
+}
+
+enum PaymentType {
+  BID_DEPOSIT
+  SETTLEMENT
+  REFUND
+  PENALTY
+}
+
+model Payment {
+  id                  String          @id @default(uuid())
+  userId              String
+  user                User            @relation(fields: [userId], references: [id])
+  auctionId           String?         @unique
+  auction             Auction?        @relation(fields: [auctionId], references: [id])
+  type                PaymentType
+  amount              Int
+  platformFee         Int             @default(0)
+  hostPayout          Int             @default(0)
+  status              PaymentStatus   @default(PENDING)
+  tossPaymentKey      String?         @unique
+  tossOrderId         String?         @unique
+  tossTransactionId   String?
+  settlementDate      DateTime?
+  settledAt           DateTime?
+  refundedAt          DateTime?
+  refundReason        String?
+  penaltyReason       String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  bid                 Bid?
+  @@index([userId])
+  @@index([status])
+  @@index([settlementDate])
+}
+
+model ChatRoom {
+  id          String        @id @default(uuid())
+  auctionId   String        @unique
+  auction     Auction       @relation(fields: [auctionId], references: [id])
+  user1Id     String
+  user2Id     String
+  user1       User          @relation("ChatUser1", fields: [user1Id], references: [id])
+  user2       User          @relation("ChatUser2", fields: [user2Id], references: [id])
+  isActive    Boolean       @default(true)
+  closedAt    DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  messages    ChatMessage[]
+  @@index([user1Id])
+  @@index([user2Id])
+}
+
+model ChatMessage {
+  id          String    @id @default(uuid())
+  chatRoomId  String
+  chatRoom    ChatRoom  @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  senderId    String
+  sender      User      @relation("MessageSender", fields: [senderId], references: [id])
+  content     String    @db.VarChar(1000)
+  imageUrl    String?
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+  @@index([chatRoomId, createdAt])
+  @@index([senderId])
+}
+
+model Review {
+  id          String    @id @default(uuid())
+  auctionId   String
+  auction     Auction   @relation(fields: [auctionId], references: [id])
+  authorId    String
+  author      User      @relation("ReviewAuthor", fields: [authorId], references: [id])
+  targetId    String
+  target      User      @relation("ReviewTarget", fields: [targetId], references: [id])
+  rating      Int
+  content     String?   @db.VarChar(500)
+  punctuality   Int?
+  manner        Int?
+  conversation  Int?
+  isPublic    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@unique([auctionId, authorId])
+  @@index([targetId])
+  @@index([targetId, rating])
+}
+
+enum NotificationType {
+  AUCTION_NEW_BID
+  AUCTION_OUTBID
+  AUCTION_WON
+  AUCTION_ENDED
+  AUCTION_FAILED
+  NEW_FOLLOWER
+  POST_LIKED
+  AUCTION_LIKED
+  NEW_MESSAGE
+  NEW_REVIEW
+  PAYMENT_COMPLETED
+  PAYMENT_REFUNDED
+  SETTLEMENT_COMPLETED
+  VERIFICATION_APPROVED
+  VERIFICATION_REJECTED
+  ACCOUNT_WARNING
+}
+
+model Notification {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type          NotificationType
+  title         String
+  body          String
+  relatedUserId     String?
+  relatedAuctionId  String?
+  relatedPostId     String?
+  relatedChatRoomId String?
+  isRead        Boolean           @default(false)
+  readAt        DateTime?
+  createdAt     DateTime          @default(now())
+  @@index([userId, isRead])
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+enum ReportReason {
+  INAPPROPRIATE_CONTENT
+  HARASSMENT
+  SCAM
+  FAKE_PROFILE
+  NO_SHOW
+  SPAM
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id              String        @id @default(uuid())
+  reporterId      String
+  reporter        User          @relation("Reporter", fields: [reporterId], references: [id])
+  reportedUserId  String
+  reportedUser    User          @relation("ReportedUser", fields: [reportedUserId], references: [id])
+  reason          ReportReason
+  description     String?       @db.VarChar(500)
+  relatedAuctionId  String?
+  relatedPostId     String?
+  relatedChatRoomId String?
+  status          ReportStatus  @default(PENDING)
+  adminNote       String?
+  resolvedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  @@index([reportedUserId])
+  @@index([status])
+}
+
+model Block {
+  id          String    @id @default(uuid())
+  blockerId   String
+  blocker     User      @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blockedId   String
+  blocked     User      @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+}
+
+model Admin {
+  id          String      @id @default(uuid())
+  email       String      @unique
+  password    String
+  name        String
+  role        AdminRole   @default(MODERATOR)
+  isActive    Boolean     @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}

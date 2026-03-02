@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "BidTable",
+    "slug": "bidtable",
+    "version": "1.0.0",
+    "scheme": "bidtable",
+    "platforms": ["ios", "android"],
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bidtable.app"
+    },
+    "android": {
+      "package": "com.bidtable.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF"
+      }
+    },
+    "plugins": ["expo-router", "expo-image-picker", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
