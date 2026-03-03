@@ -1,4 +1,4 @@
-export type PaymentStatus = 'PENDING' | 'ESCROW_HELD' | 'RELEASED' | 'REFUNDED' | 'PENALTY_CHARGED' | 'FAILED';
+export type PaymentStatus = 'PENDING' | 'ESCROW_HELD' | 'PENDING_COMPLETION' | 'PENDING_SETTLEMENT' | 'RELEASED' | 'REFUNDED' | 'PENALTY_CHARGED' | 'FAILED';
 export type PaymentType = 'BID_DEPOSIT' | 'SETTLEMENT' | 'REFUND' | 'PENALTY';
 
 export interface Payment {

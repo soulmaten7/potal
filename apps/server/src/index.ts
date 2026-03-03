@@ -10,7 +10,7 @@ const io = setupSocket(server);
 
 (app as any).io = io;
 
-startAuctionEndJob();
+startAuctionEndJob(io);
 startSettlementJob();
 
 server.listen(env.PORT, () => {

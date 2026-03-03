@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,8 +8,9 @@ import ImageCarousel from './ImageCarousel';
 import LikeButton from './LikeButton';
 import PriceDisplay from '../common/PriceDisplay';
 import { COLORS, FONT_SIZES, SPACING, PROFILE_IMAGE_SIZE } from '../../utils/constants';
-import { formatTimer, formatTimeAgo } from '../../utils/format';
+import { formatTimer } from '../../utils/format';
 import { auctionService } from '../../services/auctionService';
+import { useSocket } from '../../hooks/useSocket';
 
 interface AuctionCardProps {
   auction: any;
@@ -18,10 +19,37 @@ interface AuctionCardProps {
 export default function AuctionCard({ auction }: AuctionCardProps) {
   const [isLiked, setIsLiked] = useState(auction.isLiked || false);
   const [remainingMs, setRemainingMs] = useState(0);
+  const serverTimeOffsetRef = useRef(0);
+  const { on, off, emit, isConnected } = useSocket('/auction');
 
+  // Subscribe to server timer sync
+  useEffect(() => {
+    if (!isConnected) return;
+
+    emit('join_auction', auction.id);
+
+    const handleTimerSync = (data: { auctionId: string; remainingMs: number; serverTime: number }) => {
+      if (data.auctionId === auction.id) {
+        if (data.serverTime) {
+          serverTimeOffsetRef.current = data.serverTime - Date.now();
+        }
+        setRemainingMs(data.remainingMs);
+      }
+    };
+
+    on('auction_timer_sync', handleTimerSync);
+
+    return () => {
+      emit('leave_auction', auction.id);
+      off('auction_timer_sync', handleTimerSync);
+    };
+  }, [auction.id, isConnected, on, off, emit]);
+
+  // Local countdown (between server syncs)
   useEffect(() => {
     const timer = setInterval(() => {
-      const remaining = new Date(auction.endsAt).getTime() - Date.now();
+      const serverNow = Date.now() + serverTimeOffsetRef.current;
+      const remaining = new Date(auction.endsAt).getTime() - serverNow;
       setRemainingMs(Math.max(0, remaining));
     }, 1000);
     return () => clearInterval(timer);
@@ -44,13 +72,19 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
           <Avatar uri={auction.host?.profileImageUrl} size={PROFILE_IMAGE_SIZE.small} />
           <Text style={styles.username}>{auction.host?.username}</Text>
           {auction.host?.verificationBadge && <VerificationBadge />}
-          {auction.host?.averageRating > 0 && <Text style={styles.rating}>⭐ {auction.host.averageRating.toFixed(1)}</Text>}
+          {auction.host?.averageRating > 0 && (
+            <View style={styles.ratingContainer}>
+              <Ionicons name="star" size={12} color="#FFD700" />
+              <Text style={styles.rating}>{auction.host.averageRating.toFixed(1)}</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
       <View style={styles.imageWrapper}>
         <ImageCarousel images={auction.images || []} />
         <View style={styles.liveBadge}>
-          <Text style={styles.liveBadgeText}>🔴 LIVE 경매</Text>
+          <View style={styles.liveDot} />
+          <Text style={styles.liveBadgeText}>LIVE 경매</Text>
         </View>
         <View style={styles.timerOverlay}>
           <Text style={[styles.timerText, isUrgent && styles.urgentTimer]}>{formatTimer(remainingMs)}</Text>
@@ -70,7 +104,7 @@ export default function AuctionCard({ auction }: AuctionCardProps) {
           {auction.buyNowPrice && <Text style={styles.detail}>즉시낙찰 ₩{auction.buyNowPrice.toLocaleString()}</Text>}
         </View>
         <TouchableOpacity style={styles.bidButton} onPress={() => router.push(`/auction/${auction.id}`)}>
-          <Text style={styles.bidButtonText}>💰 입찰하기</Text>
+          <Text style={styles.bidButtonText}>입찰하기</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -82,10 +116,12 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', padding: SPACING.md },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   username: { fontSize: FONT_SIZES.medium, fontWeight: '600', color: COLORS.text },
+  ratingContainer: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   rating: { fontSize: FONT_SIZES.small, color: COLORS.textSecondary },
   imageWrapper: { position: 'relative' },
-  liveBadge: { position: 'absolute', top: 12, left: 12, backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4 },
-  liveBadgeText: { color: COLORS.white, fontSize: FONT_SIZES.small, fontWeight: '700' },
+  liveBadge: { position: 'absolute', top: 12, left: 12, backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: 4, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 },
+  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.auctionLive },
+  liveBadgeText: { color: '#FFFFFF', fontSize: FONT_SIZES.small, fontWeight: '700' },
   timerOverlay: { position: 'absolute', bottom: 12, right: 12, backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: 4, paddingHorizontal: 10, paddingVertical: 6 },
   timerText: { color: COLORS.white, fontSize: FONT_SIZES.large, fontWeight: '700', fontVariant: ['tabular-nums'] },
   urgentTimer: { color: COLORS.auctionLive },

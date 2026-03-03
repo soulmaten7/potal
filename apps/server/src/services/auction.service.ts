@@ -90,11 +90,28 @@ export async function endAuction(auctionId: string) {
     const winningBid = auction.bids[0];
     await tx.bid.update({ where: { id: winningBid.id }, data: { status: 'WON' } });
 
+    // Transition winning bid's payment to PENDING_COMPLETION (awaiting meal)
+    if (winningBid.paymentId) {
+      await tx.payment.update({
+        where: { id: winningBid.paymentId },
+        data: { status: 'PENDING_COMPLETION', auctionId },
+      });
+    }
+
+    // Refund all non-winning bidders and notify them
+    const refundNotifications: { userId: string; type: 'BID_REFUNDED'; title: string; body: string; relatedAuctionId: string }[] = [];
     for (const bid of auction.bids.slice(1)) {
       await tx.bid.update({ where: { id: bid.id }, data: { status: 'REFUNDED' } });
       if (bid.paymentId) {
         await tx.payment.update({ where: { id: bid.paymentId }, data: { status: 'REFUNDED', refundedAt: new Date() } });
       }
+      refundNotifications.push({
+        userId: bid.bidderId,
+        type: 'BID_REFUNDED',
+        title: '입찰 금액이 환불되었습니다',
+        body: `"${auction.title}" 경매가 종료되어 입찰금 ₩${bid.amount.toLocaleString()}이 환불됩니다.`,
+        relatedAuctionId: auctionId,
+      });
     }
 
     await tx.chatRoom.create({
@@ -110,6 +127,7 @@ export async function endAuction(auctionId: string) {
       data: [
         { userId: winningBid.bidderId, type: 'AUCTION_WON', title: '낙찰 축하합니다!', body: `"${auction.title}" 경매에서 ₩${winningBid.amount.toLocaleString()}에 낙찰되었습니다.`, relatedAuctionId: auctionId },
         { userId: auction.hostId, type: 'AUCTION_ENDED', title: '경매가 종료되었습니다', body: `"${auction.title}" 경매가 ₩${winningBid.amount.toLocaleString()}에 낙찰되었습니다.`, relatedAuctionId: auctionId },
+        ...refundNotifications,
       ],
     });
 
@@ -118,38 +136,61 @@ export async function endAuction(auctionId: string) {
 }
 
 export async function completeMeeting(auctionId: string, userId: string) {
-  const auction = await prisma.auction.findUnique({ where: { id: auctionId } });
-  if (!auction) throw new AppError(404, 'AUCTION_NOT_FOUND', '경매를 찾을 수 없습니다');
-  if (auction.status !== 'ENDED') throw new AppError(400, 'NOT_ENDED', '종료된 경매만 완료할 수 있습니다');
+  return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const auction = await tx.auction.findUnique({ where: { id: auctionId } });
+    if (!auction) throw new AppError(404, 'AUCTION_NOT_FOUND', '경매를 찾을 수 없습니다');
+    if (auction.status !== 'ENDED') throw new AppError(400, 'NOT_ENDED', '종료된 경매만 완료할 수 있습니다');
 
-  const isHost = auction.hostId === userId;
-  const isWinner = auction.winnerId === userId;
-  if (!isHost && !isWinner) throw new AppError(403, 'FORBIDDEN', '경매 참여자만 완료할 수 있습니다');
+    const isHost = auction.hostId === userId;
+    const isWinner = auction.winnerId === userId;
+    if (!isHost && !isWinner) throw new AppError(403, 'FORBIDDEN', '경매 참여자만 완료할 수 있습니다');
 
-  const updateData: any = {};
-  if (isHost) updateData.hostConfirmedComplete = true;
-  if (isWinner) updateData.winnerConfirmedComplete = true;
+    const updateData: Record<string, boolean> = {};
+    if (isHost) updateData.hostConfirmedComplete = true;
+    if (isWinner) updateData.winnerConfirmedComplete = true;
 
-  const updated = await prisma.auction.update({ where: { id: auctionId }, data: updateData });
+    const updated = await tx.auction.update({ where: { id: auctionId }, data: updateData });
 
-  if ((isHost && updated.winnerConfirmedComplete) || (isWinner && updated.hostConfirmedComplete)) {
-    const { addBusinessDays } = require('../utils/businessDays');
-    const settlementDate = addBusinessDays(new Date(), 5);
+    // Check if both parties have confirmed
+    const bothConfirmed = updated.hostConfirmedComplete && updated.winnerConfirmedComplete;
 
-    await prisma.auction.update({ where: { id: auctionId }, data: { status: 'COMPLETED' } });
+    if (bothConfirmed) {
+      const { addBusinessDays } = await import('../utils/businessDays');
+      const settlementDate = addBusinessDays(new Date(), 5);
 
-    if (auction.winningPrice) {
-      const platformFee = Math.floor(auction.winningPrice * 0.10);
-      const hostPayout = auction.winningPrice - platformFee;
-      const payment = await prisma.payment.findFirst({ where: { auctionId } });
-      if (payment) {
-        await prisma.payment.update({
-          where: { id: payment.id },
-          data: { settlementDate, platformFee, hostPayout },
+      // Mark auction as COMPLETED
+      await tx.auction.update({ where: { id: auctionId }, data: { status: 'COMPLETED' } });
+
+      // Transition payment: PENDING_COMPLETION → PENDING_SETTLEMENT
+      // Set settlementDate so the settlement cron job will pick it up after 5 business days
+      if (auction.winningPrice) {
+        const platformFee = Math.floor(auction.winningPrice * 0.10);
+        const hostPayout = auction.winningPrice - platformFee;
+        const payment = await tx.payment.findFirst({
+          where: { auctionId, status: 'PENDING_COMPLETION' },
         });
+        if (payment) {
+          await tx.payment.update({
+            where: { id: payment.id },
+            data: {
+              status: 'PENDING_SETTLEMENT',
+              settlementDate,
+              platformFee,
+              hostPayout,
+            },
+          });
+        }
       }
-    }
-  }
 
-  return updated;
+      // Notify both parties
+      await tx.notification.createMany({
+        data: [
+          { userId: auction.hostId, type: 'MEETING_COMPLETED', title: '식사가 완료되었습니다', body: '양측 확인이 완료되었습니다. 리뷰를 작성해주세요!', relatedAuctionId: auctionId },
+          { userId: auction.winnerId!, type: 'MEETING_COMPLETED', title: '식사가 완료되었습니다', body: '양측 확인이 완료되었습니다. 리뷰를 작성해주세요!', relatedAuctionId: auctionId },
+        ],
+      });
+    }
+
+    return updated;
+  });
 }

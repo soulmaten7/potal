@@ -7,16 +7,19 @@ import FeedCard from '../../components/feed/FeedCard';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import EmptyState from '../../components/common/EmptyState';
 import { useFeed } from '../../hooks/useFeed';
+import { useAuthStore } from '../../stores/authStore';
 import { COLORS, FONT_SIZES, SPACING } from '../../utils/constants';
 
 export default function HomeScreen() {
   const [activeTab, setActiveTab] = useState<'following' | 'local'>('following');
   const { followingFeed, localFeed, isLoading, loadMore, refresh, fetchLocalFeed } = useFeed();
+  const user = useAuthStore((state) => state.user);
+  const userCity = user?.city || '서울';
 
   useEffect(() => {
     if (activeTab === 'following') refresh();
-    else fetchLocalFeed('서울');
-  }, [activeTab]);
+    else fetchLocalFeed(userCity);
+  }, [activeTab, userCity]);
 
   const data = activeTab === 'following' ? followingFeed : localFeed.map((a: any) => ({ type: 'auction', data: a }));
 

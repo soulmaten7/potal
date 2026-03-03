@@ -33,8 +33,12 @@ const BidSheet = forwardRef<BottomSheet, BidSheetProps>(({ auctionId, currentPri
     }
     try {
       await submitBid(auctionId, bidAmount);
+      Alert.alert('입찰 완료', `₩${bidAmount.toLocaleString()}에 입찰되었습니다.`);
       onBidSuccess?.();
-    } catch {}
+    } catch (error: any) {
+      const message = error?.response?.data?.error?.message || '입찰에 실패했습니다. 다시 시도해주세요.';
+      Alert.alert('입찰 실패', message);
+    }
   };
 
   return (
@@ -59,7 +63,7 @@ const BidSheet = forwardRef<BottomSheet, BidSheetProps>(({ auctionId, currentPri
             </TouchableOpacity>
           ))}
         </View>
-        <Text style={styles.escrowNote}>⚠️ 입찰 금액 전액이 에스크로에 보관됩니다</Text>
+        <Text style={styles.escrowNote}>입찰 금액 전액이 에스크로에 보관됩니다</Text>
         <TouchableOpacity style={[styles.bidButton, isSubmitting && styles.disabled]} onPress={handleBid} disabled={isSubmitting}>
           <Text style={styles.bidButtonText}>{isSubmitting ? '처리 중...' : '결제 후 입찰 확정'}</Text>
         </TouchableOpacity>

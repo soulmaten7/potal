@@ -4,6 +4,8 @@ export type NotificationType =
   | 'AUCTION_WON'
   | 'AUCTION_ENDED'
   | 'AUCTION_FAILED'
+  | 'BID_REFUNDED'
+  | 'MEETING_COMPLETED'
   | 'NEW_FOLLOWER'
   | 'POST_LIKED'
   | 'AUCTION_LIKED'

@@ -1,48 +1,63 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuctionStore } from '../stores/auctionStore';
 import { useSocket } from './useSocket';
 
 export function useAuction(auctionId: string) {
   const { currentAuction, isLoading, fetchAuction } = useAuctionStore();
   const [remainingMs, setRemainingMs] = useState(0);
-  const socketRef = useSocket('/auction');
+  const { on, off, emit, isConnected } = useSocket('/auction');
+  const serverTimeOffsetRef = useRef(0); // Diff between server and client time
 
   useEffect(() => {
     fetchAuction(auctionId);
   }, [auctionId]);
 
+  // Join/leave auction room and subscribe to events
   useEffect(() => {
-    const socket = socketRef.current;
-    if (!socket) return;
+    if (!isConnected) return;
 
-    socket.emit('join_auction', auctionId);
+    emit('join_auction', auctionId);
 
-    socket.on('auction_timer_sync', (data: any) => {
+    const handleTimerSync = (data: { auctionId: string; remainingMs: number; serverTime: number }) => {
       if (data.auctionId === auctionId) {
+        // Calculate server-client time offset for accurate local countdown
+        if (data.serverTime) {
+          serverTimeOffsetRef.current = data.serverTime - Date.now();
+        }
         setRemainingMs(data.remainingMs);
       }
-    });
+    };
 
-    socket.on('auction_bid_update', (data: any) => {
-      fetchAuction(auctionId);
-    });
+    const handleBidUpdate = (data: { auctionId: string }) => {
+      if (data.auctionId === auctionId) {
+        fetchAuction(auctionId);
+      }
+    };
 
-    socket.on('auction_ended', (data: any) => {
-      fetchAuction(auctionId);
-    });
+    const handleAuctionEnded = (data: { auctionId: string }) => {
+      if (data.auctionId === auctionId) {
+        fetchAuction(auctionId);
+      }
+    };
+
+    on('auction_timer_sync', handleTimerSync);
+    on('auction_bid_update', handleBidUpdate);
+    on('auction_ended', handleAuctionEnded);
 
     return () => {
-      socket.emit('leave_auction', auctionId);
-      socket.off('auction_timer_sync');
-      socket.off('auction_bid_update');
-      socket.off('auction_ended');
+      emit('leave_auction', auctionId);
+      off('auction_timer_sync', handleTimerSync);
+      off('auction_bid_update', handleBidUpdate);
+      off('auction_ended', handleAuctionEnded);
     };
-  }, [auctionId, socketRef.current]);
+  }, [auctionId, isConnected, on, off, emit]);
 
+  // Local countdown timer (between server syncs)
   useEffect(() => {
     if (currentAuction?.endsAt) {
       const timer = setInterval(() => {
-        const remaining = new Date(currentAuction.endsAt).getTime() - Date.now();
+        const serverNow = Date.now() + serverTimeOffsetRef.current;
+        const remaining = new Date(currentAuction.endsAt).getTime() - serverNow;
         setRemainingMs(Math.max(0, remaining));
       }, 1000);
       return () => clearInterval(timer);

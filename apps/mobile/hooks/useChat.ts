@@ -4,25 +4,25 @@ import { useSocket } from './useSocket';
 
 export function useChat(roomId?: string) {
   const { rooms, messages, isLoading, fetchRooms, fetchMessages, sendMessage, addMessage } = useChatStore();
-  const socketRef = useSocket('/chat');
+  const { on, off, emit, isConnected } = useSocket('/chat');
 
   useEffect(() => {
-    if (!roomId) return;
-    const socket = socketRef.current;
-    if (!socket) return;
+    if (!roomId || !isConnected) return;
 
-    socket.emit('join_chat', roomId);
+    emit('join_chat', roomId);
     fetchMessages(roomId);
 
-    socket.on('new_message', (message: any) => {
+    const handleNewMessage = (message: any) => {
       addMessage(message);
-    });
+    };
+
+    on('new_message', handleNewMessage);
 
     return () => {
-      socket.emit('leave_chat', roomId);
-      socket.off('new_message');
+      emit('leave_chat', roomId);
+      off('new_message', handleNewMessage);
     };
-  }, [roomId, socketRef.current]);
+  }, [roomId, isConnected, on, off, emit]);
 
   return { rooms, messages, isLoading, fetchRooms, sendMessage: (content: string) => roomId ? sendMessage(roomId, content) : Promise.resolve() };
 }
