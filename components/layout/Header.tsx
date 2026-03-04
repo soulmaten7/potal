@@ -86,6 +86,9 @@ export function Header() {
 
           {/* 데스크톱: 풀 네비게이션 / 모바일: 로고만 (하단 탭바가 대체) */}
           <div className="hidden md:flex items-center gap-6 text-[#02122c]">
+            <Link href="/developers" className="text-sm font-bold hover:text-[#F59E0B] cursor-pointer">DEVELOPERS</Link>
+            <Link href="/pricing" className="text-sm font-bold hover:text-[#F59E0B] cursor-pointer">PRICING</Link>
+            <Link href="/dashboard" className="text-sm font-bold hover:text-[#F59E0B] cursor-pointer">DASHBOARD</Link>
             <Link href="/help" className="text-sm font-bold hover:text-[#F59E0B] cursor-pointer">HELP</Link>
             
             <div className="relative" ref={currencyDropdownRef}>
