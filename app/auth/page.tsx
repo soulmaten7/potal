@@ -101,8 +101,8 @@ export default function AuthPage() {
     return (
       <div style={{
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #02122c 0%, #0a2540 50%, #1a365d 100%)',
+        minHeight: 'calc(100vh - 80px)',
+        background: '#f8fafc',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -114,7 +114,8 @@ export default function AuthPage() {
           padding: 40,
           width: '100%',
           maxWidth: 520,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          border: '1px solid #e2e8f0',
         }}>
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>&#127881;</div>
@@ -239,8 +240,8 @@ export default function AuthPage() {
   return (
     <div style={{
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #02122c 0%, #0a2540 50%, #1a365d 100%)',
+      minHeight: 'calc(100vh - 80px)',
+      background: '#f8fafc',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -252,7 +253,8 @@ export default function AuthPage() {
         padding: 40,
         width: '100%',
         maxWidth: 440,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+        boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        border: '1px solid #e2e8f0',
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>

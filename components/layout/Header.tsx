@@ -8,13 +8,13 @@ import { useSupabase } from '@/app/context/SupabaseProvider';
 import { useI18n } from '@/app/i18n';
 import type { LanguageCode } from '@/app/i18n/translations';
 
-const LANGUAGES: { code: string; label: string; short: string; soon?: boolean }[] = [
+const LANGUAGES: { code: string; label: string; short: string }[] = [
   { code: 'en', label: 'English', short: 'EN' },
   { code: 'ko', label: '한국어', short: 'KO' },
-  { code: 'ja', label: '日本語', short: 'JA', soon: true },
-  { code: 'zh', label: '中文', short: 'ZH', soon: true },
-  { code: 'es', label: 'Español', short: 'ES', soon: true },
-  { code: 'de', label: 'Deutsch', short: 'DE', soon: true },
+  { code: 'ja', label: '日本語', short: 'JA' },
+  { code: 'zh', label: '中文', short: 'ZH' },
+  { code: 'es', label: 'Español', short: 'ES' },
+  { code: 'de', label: 'Deutsch', short: 'DE' },
 ];
 
 export function Header() {
@@ -42,9 +42,7 @@ export function Header() {
   }, []);
 
   const handleLanguageChange = (code: string) => {
-    if (code === 'en' || code === 'ko') {
-      setLanguage(code as LanguageCode);
-    }
+    setLanguage(code as LanguageCode);
     setShowLangDropdown(false);
   };
 
@@ -127,24 +125,14 @@ export function Header() {
                   {t('nav.language')}
                 </div>
                 {LANGUAGES.map((lang) => (
-                  lang.soon ? (
-                    <div
-                      key={lang.code}
-                      className="w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between text-slate-300 cursor-not-allowed"
-                    >
-                      <span>{lang.label}</span>
-                      <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{t('common.comingSoon')}</span>
-                    </div>
-                  ) : (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between hover:bg-slate-50 cursor-pointer ${language === lang.code ? 'text-[#02122c] bg-slate-50' : 'text-slate-500'}`}
-                    >
-                      <span>{lang.label}</span>
-                      {language === lang.code && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
-                    </button>
-                  )
+                  <button
+                    key={lang.code}
+                    onClick={() => handleLanguageChange(lang.code)}
+                    className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between hover:bg-slate-50 cursor-pointer ${language === lang.code ? 'text-[#02122c] bg-slate-50' : 'text-slate-500'}`}
+                  >
+                    <span>{lang.label}</span>
+                    {language === lang.code && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
+                  </button>
                 ))}
               </div>
             )}

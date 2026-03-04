@@ -11,6 +11,7 @@ import React, {
 
 import {
   getTranslation,
+  translations,
   DEFAULT_LANGUAGE,
   type LanguageCode,
   type TranslationKey,
@@ -42,7 +43,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const savedLanguage = window.localStorage.getItem(STORAGE_KEY);
       if (savedLanguage) {
         // Validate it's a supported language
-        if (savedLanguage === 'en' || savedLanguage === 'ko') {
+        if (savedLanguage in translations) {
           setLanguageState(savedLanguage as LanguageCode);
         }
       }
