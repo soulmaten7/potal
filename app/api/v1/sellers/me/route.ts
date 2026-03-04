@@ -44,8 +44,8 @@ export async function GET(req: NextRequest) {
     // Get seller record
     const { data: seller, error: sellerError } = await (supabase
       .from('sellers') as any)
-      .select('id, email, company_name, plan_id, subscription_status, stripe_customer_id, stripe_subscription_id, current_period_end, created_at')
-      .eq('id', user.id)
+      .select('id, user_id, contact_email, company_name, plan_id, subscription_status, stripe_customer_id, stripe_subscription_id, current_period_end, created_at')
+      .eq('user_id', user.id)
       .single();
 
     if (sellerError || !seller) {
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
       data: {
         seller: {
           id: s.id,
-          email: s.email,
+          email: s.contact_email,
           companyName: s.company_name,
           plan: s.plan_id,
           subscriptionStatus: s.subscription_status,
