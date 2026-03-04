@@ -106,7 +106,7 @@ export default function DashboardPage() {
     if (!session) {
       // Not logged in — redirect to auth
       const timer = setTimeout(() => {
-        if (!session) router.push('/auth');
+        if (!session) router.push('/auth/login');
       }, 1500);
       return () => clearTimeout(timer);
     }
