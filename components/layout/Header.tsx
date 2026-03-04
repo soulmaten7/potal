@@ -61,6 +61,9 @@ export function Header() {
 
   const userEmail = session?.user?.email;
 
+  // Hide main header on dashboard (dashboard has its own header)
+  if (pathname?.startsWith('/dashboard')) return null;
+
   return (
     <header className="bg-white text-[#02122c] w-full border-b border-slate-200 relative z-[5000] hidden md:block">
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">

@@ -2,10 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useI18n } from '@/app/i18n';
 
 export function Footer() {
   const { t } = useI18n();
+  const pathname = usePathname();
+
+  // Hide footer on dashboard
+  if (pathname?.startsWith('/dashboard')) return null;
 
   return (
     <footer className="bg-[#02122c] text-white py-12 mt-auto w-full z-10 relative">
