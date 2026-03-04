@@ -67,6 +67,127 @@ export const STATE_TAX_RATES: Record<string, number> = {
 
 const DEFAULT_TAX_RATE = 0.07;
 
+// ─── Canada Provincial Tax Rates (GST/HST/PST for imports) ──────
+
+/** Combined effective tax rate for cross-border imports by province */
+export const CANADA_PROVINCE_TAX_RATES: Record<string, number> = {
+  // HST provinces (single combined rate)
+  'ON': 0.13,    // HST 13%
+  'NB': 0.15,    // HST 15%
+  'NS': 0.15,    // HST 15%
+  'NL': 0.15,    // HST 15%
+  'PE': 0.15,    // HST 15%
+  // GST + PST/QST provinces
+  'BC': 0.12,    // GST 5% + PST 7%
+  'SK': 0.11,    // GST 5% + PST 6%
+  'MB': 0.12,    // GST 5% + RST 7%
+  'QC': 0.14975, // GST 5% + QST 9.975%
+  // GST only
+  'AB': 0.05,    // GST 5%
+  'NT': 0.05,    // GST 5%
+  'NU': 0.05,    // GST 5%
+  'YT': 0.05,    // GST 5%
+};
+
+/**
+ * Map Canadian postal code first letter to province.
+ * Canadian postal codes: "A1A 1A1" — first letter = Forward Sortation Area → province.
+ */
+export function postalCodeToProvince(postalCode: string): string | null {
+  if (!postalCode || postalCode.length < 1) return null;
+  const first = postalCode.charAt(0).toUpperCase();
+
+  const map: Record<string, string> = {
+    'A': 'NL', 'B': 'NS', 'C': 'PE', 'E': 'NB',
+    'G': 'QC', 'H': 'QC', 'J': 'QC',
+    'K': 'ON', 'L': 'ON', 'M': 'ON', 'N': 'ON', 'P': 'ON',
+    'R': 'MB', 'S': 'SK', 'T': 'AB', 'V': 'BC',
+    'X': 'NT', // NT/NU share X — same 5% rate
+    'Y': 'YT',
+  };
+
+  return map[first] || null;
+}
+
+// ─── Brazil State Tax Rates (ICMS for imports) ──────
+
+/** ICMS standard rates by state for imports (2025) */
+export const BRAZIL_STATE_ICMS_RATES: Record<string, number> = {
+  'AC': 0.19,   'AL': 0.19,   'AM': 0.20,   'AP': 0.18,
+  'BA': 0.205,  'CE': 0.20,   'DF': 0.20,   'ES': 0.17,
+  'GO': 0.19,   'MA': 0.22,   'MG': 0.18,   'MS': 0.17,
+  'MT': 0.17,   'PA': 0.19,   'PB': 0.20,   'PE': 0.205,
+  'PI': 0.21,   'PR': 0.195,  'RJ': 0.22,   'RN': 0.18,
+  'RO': 0.195,  'RR': 0.20,   'RS': 0.17,   'SC': 0.17,
+  'SE': 0.19,   'SP': 0.18,   'TO': 0.20,
+};
+
+/** Brazil federal import taxes (fixed rates) */
+export const BRAZIL_IPI_DEFAULT = 0.10;       // ~10% avg for general merchandise
+export const BRAZIL_PIS_IMPORT = 0.021;       // 2.1%
+export const BRAZIL_COFINS_IMPORT = 0.0965;   // 9.65%
+
+/**
+ * Map Brazilian CEP (postal code) to state.
+ * CEP format: XXXXX-XXX or XXXXXXXX (8 digits).
+ */
+export function cepToState(cep: string): string | null {
+  if (!cep) return null;
+  const digits = cep.replace(/\D/g, '');
+  if (digits.length < 5) return null;
+  const prefix = parseInt(digits.substring(0, 5), 10);
+
+  if (prefix >= 1000 && prefix <= 19999) return 'SP';
+  if (prefix >= 20000 && prefix <= 28999) return 'RJ';
+  if (prefix >= 29000 && prefix <= 29999) return 'ES';
+  if (prefix >= 30000 && prefix <= 39999) return 'MG';
+  if (prefix >= 40000 && prefix <= 48999) return 'BA';
+  if (prefix >= 49000 && prefix <= 49999) return 'SE';
+  if (prefix >= 50000 && prefix <= 56999) return 'PE';
+  if (prefix >= 57000 && prefix <= 57999) return 'AL';
+  if (prefix >= 58000 && prefix <= 58999) return 'PB';
+  if (prefix >= 59000 && prefix <= 59999) return 'RN';
+  if (prefix >= 60000 && prefix <= 63999) return 'CE';
+  if (prefix >= 64000 && prefix <= 64999) return 'PI';
+  if (prefix >= 65000 && prefix <= 65999) return 'MA';
+  if (prefix >= 66000 && prefix <= 68899) return 'PA';
+  if (prefix >= 68900 && prefix <= 68999) return 'AP';
+  if (prefix >= 69000 && prefix <= 69299) return 'AM';
+  if (prefix >= 69300 && prefix <= 69399) return 'RR';
+  if (prefix >= 69400 && prefix <= 69899) return 'AM';
+  if (prefix >= 69900 && prefix <= 69999) return 'AC';
+  if (prefix >= 70000 && prefix <= 73699) return 'DF';
+  if (prefix >= 73700 && prefix <= 76799) return 'GO';
+  if (prefix >= 76800 && prefix <= 77999) return 'TO';
+  if (prefix >= 78000 && prefix <= 78899) return 'MT';
+  if (prefix >= 78900 && prefix <= 79999) return 'MS';
+  if (prefix >= 80000 && prefix <= 87999) return 'PR';
+  if (prefix >= 88000 && prefix <= 89999) return 'SC';
+  if (prefix >= 90000 && prefix <= 99999) return 'RS';
+
+  return null;
+}
+
+/**
+ * Calculate Brazil cascading import taxes.
+ * II → IPI → PIS/COFINS → ICMS (por dentro).
+ */
+export function calculateBrazilImportTaxes(
+  declaredValue: number,
+  importDuty: number,
+  icmsRate: number
+): { ipi: number; pisCofins: number; icms: number; totalTax: number; effectiveRate: number } {
+  const ipi = (declaredValue + importDuty) * BRAZIL_IPI_DEFAULT;
+  const pisCofins = declaredValue * (BRAZIL_PIS_IMPORT + BRAZIL_COFINS_IMPORT);
+  // ICMS "por dentro": base = (CIF + II + IPI + PIS + COFINS) / (1 - ICMS rate)
+  const preIcmsTotal = declaredValue + importDuty + ipi + pisCofins;
+  const icmsBase = preIcmsTotal / (1 - icmsRate);
+  const icms = icmsBase * icmsRate;
+  const totalTax = ipi + pisCofins + icms;
+  const effectiveRate = declaredValue > 0 ? totalTax / declaredValue : 0;
+  return { ipi, pisCofins, icms, totalTax, effectiveRate };
+}
+
 // ─── Zipcode to State Mapping (first 3 digits) ──────
 
 export function zipcodeToState(zipcode: string): string | null {

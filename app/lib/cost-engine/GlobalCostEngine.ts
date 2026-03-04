@@ -12,7 +12,7 @@
  */
 
 import type { CostInput, LandedCost, CostBreakdownItem } from './types';
-import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES } from './CostEngine';
+import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes } from './CostEngine';
 import { getCountryProfile, type CountryTaxProfile } from './country-data';
 import { classifyWithOverride } from './hs-code';
 import type { HsClassificationResult } from './hs-code';
@@ -190,6 +190,29 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     vat = declaredValue * 0.07;
     effectiveVatRate = 0.07;
     effectiveVatLabel = 'Sales Tax';
+  } else if (profile.code === 'CA' && input.zipcode) {
+    // Canada uses province-level GST/HST/PST
+    const province = postalCodeToProvince(input.zipcode);
+    const provRate = province ? (CANADA_PROVINCE_TAX_RATES[province] ?? 0.05) : 0.05;
+    const taxBase = isDomestic ? declaredValue : (declaredValue + importDuty);
+    vat = taxBase * provRate;
+    effectiveVatRate = provRate;
+    const HST_PROVINCES = new Set(['ON', 'NB', 'NS', 'NL', 'PE']);
+    effectiveVatLabel = province && HST_PROVINCES.has(province) ? 'HST' : (provRate > 0.05 ? 'GST+PST' : 'GST');
+  } else if (profile.code === 'CA') {
+    // Canada without postal code → national avg
+    const taxBase = isDomestic ? declaredValue : (declaredValue + importDuty);
+    vat = taxBase * profile.vatRate;
+    effectiveVatRate = profile.vatRate;
+    effectiveVatLabel = 'GST/HST';
+  } else if (profile.code === 'BR' && !isDomestic && !deMinimisApplied) {
+    // Brazil: cascading tax (IPI + PIS/COFINS + ICMS por dentro)
+    const brState = input.zipcode ? cepToState(input.zipcode) : null;
+    const icmsRate = brState ? (BRAZIL_STATE_ICMS_RATES[brState] ?? 0.18) : 0.18;
+    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate);
+    vat = brTaxes.totalTax;
+    effectiveVatRate = brTaxes.effectiveRate;
+    effectiveVatLabel = brState ? `ICMS ${brState}` : 'Import Taxes';
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -218,7 +241,15 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     }
   }
 
-  if (vat > 0) {
+  // Brazil: detailed tax breakdown (IPI, PIS/COFINS, ICMS separately)
+  if (profile.code === 'BR' && !isDomestic && !deMinimisApplied && vat > 0) {
+    const brState = input.zipcode ? cepToState(input.zipcode) : null;
+    const icmsRate = brState ? (BRAZIL_STATE_ICMS_RATES[brState] ?? 0.18) : 0.18;
+    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate);
+    breakdown.push({ label: 'IPI', amount: round(brTaxes.ipi), note: '~10% industrial tax' });
+    breakdown.push({ label: 'PIS/COFINS', amount: round(brTaxes.pisCofins), note: '11.75% federal' });
+    breakdown.push({ label: 'ICMS', amount: round(brTaxes.icms), note: `${(icmsRate * 100).toFixed(1)}% ${brState || 'avg'}` });
+  } else if (vat > 0) {
     breakdown.push({
       label: effectiveVatLabel === 'None' ? 'Tax' : effectiveVatLabel,
       amount: round(vat),
@@ -374,6 +405,27 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     vat = declaredValue * 0.07;
     effectiveVatRateSync = 0.07;
     effectiveVatLabelSync = 'Sales Tax';
+  } else if (profile.code === 'CA' && input.zipcode) {
+    // Canada uses province-level GST/HST/PST
+    const province = postalCodeToProvince(input.zipcode);
+    const provRate = province ? (CANADA_PROVINCE_TAX_RATES[province] ?? 0.05) : 0.05;
+    const taxBase = isDomestic ? declaredValue : (declaredValue + importDuty);
+    vat = taxBase * provRate;
+    effectiveVatRateSync = provRate;
+    const HST_PROVS = new Set(['ON', 'NB', 'NS', 'NL', 'PE']);
+    effectiveVatLabelSync = province && HST_PROVS.has(province) ? 'HST' : (provRate > 0.05 ? 'GST+PST' : 'GST');
+  } else if (profile.code === 'CA') {
+    const taxBase = isDomestic ? declaredValue : (declaredValue + importDuty);
+    vat = taxBase * profile.vatRate;
+    effectiveVatRateSync = profile.vatRate;
+    effectiveVatLabelSync = 'GST/HST';
+  } else if (profile.code === 'BR' && !isDomestic && !deMinimisApplied) {
+    const brState = input.zipcode ? cepToState(input.zipcode) : null;
+    const icmsRate = brState ? (BRAZIL_STATE_ICMS_RATES[brState] ?? 0.18) : 0.18;
+    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate);
+    vat = brTaxes.totalTax;
+    effectiveVatRateSync = brTaxes.effectiveRate;
+    effectiveVatLabelSync = brState ? `ICMS ${brState}` : 'Import Taxes';
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -398,7 +450,14 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     }
   }
 
-  if (vat > 0) {
+  if (profile.code === 'BR' && !isDomestic && !deMinimisApplied && vat > 0) {
+    const brState = input.zipcode ? cepToState(input.zipcode) : null;
+    const icmsRate = brState ? (BRAZIL_STATE_ICMS_RATES[brState] ?? 0.18) : 0.18;
+    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate);
+    breakdown.push({ label: 'IPI', amount: round(brTaxes.ipi), note: '~10% industrial tax' });
+    breakdown.push({ label: 'PIS/COFINS', amount: round(brTaxes.pisCofins), note: '11.75% federal' });
+    breakdown.push({ label: 'ICMS', amount: round(brTaxes.icms), note: `${(icmsRate * 100).toFixed(1)}% ${brState || 'avg'}` });
+  } else if (vat > 0) {
     breakdown.push({
       label: effectiveVatLabelSync === 'None' ? 'Tax' : effectiveVatLabelSync,
       amount: round(vat),
