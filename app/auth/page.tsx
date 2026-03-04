@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 
-export default function AuthPage() {
+function AuthContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { supabase } = useSupabase();
@@ -468,5 +468,23 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthPage() {
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight: 'calc(100vh - 80px)',
+        background: '#f8fafc',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <div style={{ color: '#94a3b8', fontSize: 14 }}>Loading...</div>
+      </div>
+    }>
+      <AuthContent />
+    </Suspense>
   );
 }
