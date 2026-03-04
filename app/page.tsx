@@ -676,37 +676,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer style={{
-        background: '#02122c',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        padding: '40px 20px',
-        color: 'rgba(255,255,255,0.4)',
-        fontSize: 13,
-      }}>
-        <div style={{
-          maxWidth: 1100,
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <div>
-            <span style={{ fontWeight: 800, fontSize: 18 }}>
-              <span style={{ color: 'white' }}>P</span>
-              <span style={{ color: '#F59E0B' }}>O</span>
-              <span style={{ color: 'white' }}>TAL</span>
-            </span>
-            <span style={{ marginLeft: 16 }}>&copy; 2026 POTAL Inc.</span>
-          </div>
-          <div style={{ display: 'flex', gap: 24 }}>
-            <Link href="/developers" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Developers</Link>
-            <Link href="/pricing" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Pricing</Link>
-            <Link href="/terms" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Terms</Link>
-            <Link href="/privacy" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>Privacy</Link>
-          </div>
-        </div>
-      </footer>
+      {/* Footer is provided by layout.tsx */}
     </div>
   );
 }
