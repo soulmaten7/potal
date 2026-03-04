@@ -27,7 +27,7 @@
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
-import { calculateGlobalLandedCost, type GlobalCostInput, type GlobalLandedCost } from '@/app/lib/cost-engine';
+import { calculateGlobalLandedCostAsync, type GlobalCostInput, type GlobalLandedCost } from '@/app/lib/cost-engine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
 const MAX_BATCH_SIZE = 100;
@@ -112,7 +112,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       productCategory: typeof item.productCategory === 'string' ? item.productCategory : undefined,
     };
 
-    const result = calculateGlobalLandedCost(costInput);
+    const result = await calculateGlobalLandedCostAsync(costInput);
     results.push({ id: item.id, result });
   }
 

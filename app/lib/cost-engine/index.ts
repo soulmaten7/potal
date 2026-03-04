@@ -14,9 +14,13 @@ export type { CostInput, LandedCost, CostBreakdownItem } from './types';
 // Constants (for API documentation / transparency)
 export { CHINA_IMPORT_DUTY_RATE, MPF_INFORMAL, STATE_TAX_RATES } from './CostEngine';
 
-// Global multi-country calculator
+// Global multi-country calculator (sync = hardcoded, async = DB-backed)
 export { calculateGlobalLandedCost, calculateGlobalBatchLandedCosts } from './GlobalCostEngine';
+export { calculateGlobalLandedCostAsync, calculateGlobalBatchLandedCostsAsync } from './GlobalCostEngine';
 export type { GlobalLandedCost, GlobalCostInput } from './GlobalCostEngine';
+
+// DB layer (cache control)
+export { invalidateAllCaches, invalidateCache, getCacheStatus } from './db';
 
 // Country data
 export { getCountryProfile, getSupportedCountries, getCountriesByRegion, getCountryCount, COUNTRY_DATA } from './country-data';

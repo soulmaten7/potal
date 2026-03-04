@@ -18,7 +18,7 @@
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
-import { calculateGlobalLandedCost } from '@/app/lib/cost-engine';
+import { calculateGlobalLandedCostAsync } from '@/app/lib/cost-engine';
 import type { GlobalCostInput } from '@/app/lib/cost-engine/GlobalCostEngine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
@@ -68,8 +68,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     productCategory: typeof body.productCategory === 'string' ? body.productCategory : undefined,
   };
 
-  // 6. Calculate (global engine — supports 58+ countries)
-  const result = calculateGlobalLandedCost(costInput);
+  // 6. Calculate (DB-backed global engine — supports 58+ countries)
+  const result = await calculateGlobalLandedCostAsync(costInput);
 
   // 7. Return response
   return apiSuccess(result, {
