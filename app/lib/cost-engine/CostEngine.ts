@@ -138,6 +138,9 @@ function detectOriginCountry(input: CostInput): 'CN' | 'OTHER' | 'DOMESTIC' {
   if (origin === 'cn' || origin === 'china') return 'CN';
   if (origin === 'us' || origin === 'usa' || origin === 'domestic') return 'DOMESTIC';
 
+  // Any 2-letter ISO code that isn't US → international
+  if (origin.length === 2 && /^[a-z]{2}$/.test(origin)) return 'OTHER';
+
   // Shipping type hint
   if (shippingType.includes('domestic')) return 'DOMESTIC';
 

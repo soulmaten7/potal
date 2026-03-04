@@ -12,7 +12,7 @@
  */
 
 import type { CostInput, LandedCost, CostBreakdownItem } from './types';
-import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber } from './CostEngine';
+import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES } from './CostEngine';
 import { getCountryProfile, type CountryTaxProfile } from './country-data';
 import { classifyWithOverride } from './hs-code';
 import type { HsClassificationResult } from './hs-code';
@@ -82,7 +82,14 @@ export interface GlobalLandedCost extends LandedCost {
 export async function calculateGlobalLandedCostAsync(input: GlobalCostInput): Promise<GlobalLandedCost> {
   const destination = (input.destinationCountry || 'US').toUpperCase();
 
-  // US destination → US-specific engine
+  // Get country profile from DB (works for US and all other countries)
+  const profile = await getCountryProfileFromDb(destination);
+
+  if (profile) {
+    return calculateWithProfileAsync(input, profile);
+  }
+
+  // US fallback if no DB profile found
   if (destination === 'US') {
     const usResult = calculateUSLandedCost(input);
     const hsResult = (input.productName || input.hsCode)
@@ -101,13 +108,7 @@ export async function calculateGlobalLandedCostAsync(input: GlobalCostInput): Pr
     };
   }
 
-  // Get country profile from DB
-  const profile = await getCountryProfileFromDb(destination);
-  if (!profile) {
-    return calculateWithDefaults(input, destination);
-  }
-
-  return calculateWithProfileAsync(input, profile);
+  return calculateWithDefaults(input, destination);
 }
 
 async function calculateWithProfileAsync(input: GlobalCostInput, profile: CountryTaxProfile): Promise<GlobalLandedCost> {
@@ -172,9 +173,24 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     importDuty = declaredValue * dutyRate;
   }
 
-  // VAT/GST
+  // VAT/GST (US: state-level sales tax from zipcode)
   let vat = 0;
-  if (isDomestic) {
+  let effectiveVatRate = profile.vatRate;
+  let effectiveVatLabel = profile.vatLabel;
+
+  if (profile.code === 'US' && input.zipcode) {
+    // US uses state-level sales tax, not national VAT
+    const state = zipcodeToState(input.zipcode);
+    const stateTaxRate = state ? (STATE_TAX_RATES[state] ?? 0.07) : 0.07;
+    vat = declaredValue * stateTaxRate;
+    effectiveVatRate = stateTaxRate;
+    effectiveVatLabel = 'Sales Tax';
+  } else if (profile.code === 'US') {
+    // US without zipcode → avg 7%
+    vat = declaredValue * 0.07;
+    effectiveVatRate = 0.07;
+    effectiveVatLabel = 'Sales Tax';
+  } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
     vat = (declaredValue + importDuty) * profile.vatRate;
@@ -204,11 +220,20 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
 
   if (vat > 0) {
     breakdown.push({
-      label: profile.vatLabel === 'None' ? 'Tax' : profile.vatLabel,
+      label: effectiveVatLabel === 'None' ? 'Tax' : effectiveVatLabel,
       amount: round(vat),
-      note: `${(profile.vatRate * 100).toFixed(1)}%`,
+      note: `${(effectiveVatRate * 100).toFixed(1)}%`,
     });
   }
+
+  // US MPF (Merchandise Processing Fee) for non-domestic
+  let mpf = 0;
+  if (profile.code === 'US' && !isDomestic && !deMinimisApplied) {
+    mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+    breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+  }
+
+  const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf;
 
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' : originCountry === 'CN' ? 'CN' : 'OTHER';
@@ -217,17 +242,17 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     productPrice: round(productPrice),
     shippingCost: round(shippingCost),
     importDuty: round(importDuty),
-    mpf: 0,
+    mpf: round(mpf),
     salesTax: round(vat),
-    totalLandedCost: round(totalLandedCost),
+    totalLandedCost: round(totalWithMpf),
     type: isDomestic ? 'domestic' : 'global',
     isDutyFree: importDuty === 0,
     originCountry: originClass,
     breakdown,
     destinationCountry: profile.code,
     vat: round(vat),
-    vatLabel: profile.vatLabel,
-    vatRate: profile.vatRate,
+    vatLabel: effectiveVatLabel,
+    vatRate: effectiveVatRate,
     deMinimisApplied,
     destinationCurrency: profile.currency,
     hsClassification: hsResult,
@@ -249,6 +274,13 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
 export function calculateGlobalLandedCost(input: GlobalCostInput): GlobalLandedCost {
   const destination = (input.destinationCountry || 'US').toUpperCase();
 
+  const profile = getCountryProfile(destination);
+
+  if (profile) {
+    return calculateWithProfileSync(input, profile);
+  }
+
+  // US fallback if no hardcoded profile
   if (destination === 'US') {
     const usResult = calculateUSLandedCost(input);
     const hsResult = (input.productName || input.hsCode)
@@ -267,10 +299,7 @@ export function calculateGlobalLandedCost(input: GlobalCostInput): GlobalLandedC
     };
   }
 
-  const profile = getCountryProfile(destination);
-  if (!profile) return calculateWithDefaults(input, destination);
-
-  return calculateWithProfileSync(input, profile);
+  return calculateWithDefaults(input, destination);
 }
 
 function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxProfile): GlobalLandedCost {
@@ -330,14 +359,26 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     importDuty = declaredValue * dutyRate;
   }
 
+  // VAT/GST (US: state-level sales tax from zipcode)
   let vat = 0;
-  if (isDomestic) {
+  let effectiveVatRateSync = profile.vatRate;
+  let effectiveVatLabelSync = profile.vatLabel;
+
+  if (profile.code === 'US' && input.zipcode) {
+    const state = zipcodeToState(input.zipcode);
+    const stateTaxRate = state ? (STATE_TAX_RATES[state] ?? 0.07) : 0.07;
+    vat = declaredValue * stateTaxRate;
+    effectiveVatRateSync = stateTaxRate;
+    effectiveVatLabelSync = 'Sales Tax';
+  } else if (profile.code === 'US') {
+    vat = declaredValue * 0.07;
+    effectiveVatRateSync = 0.07;
+    effectiveVatLabelSync = 'Sales Tax';
+  } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
     vat = (declaredValue + importDuty) * profile.vatRate;
   }
-
-  const totalLandedCost = productPrice + shippingCost + importDuty + vat;
 
   const breakdown: CostBreakdownItem[] = [
     { label: 'Product', amount: round(productPrice) },
@@ -359,11 +400,20 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
 
   if (vat > 0) {
     breakdown.push({
-      label: profile.vatLabel === 'None' ? 'Tax' : profile.vatLabel,
+      label: effectiveVatLabelSync === 'None' ? 'Tax' : effectiveVatLabelSync,
       amount: round(vat),
-      note: `${(profile.vatRate * 100).toFixed(1)}%`,
+      note: `${(effectiveVatRateSync * 100).toFixed(1)}%`,
     });
   }
+
+  // US MPF
+  let mpf = 0;
+  if (profile.code === 'US' && !isDomestic && !deMinimisApplied) {
+    mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+    breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+  }
+
+  const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf;
 
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' : originCountry === 'CN' ? 'CN' : 'OTHER';
@@ -372,17 +422,17 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     productPrice: round(productPrice),
     shippingCost: round(shippingCost),
     importDuty: round(importDuty),
-    mpf: 0,
+    mpf: round(mpf),
     salesTax: round(vat),
-    totalLandedCost: round(totalLandedCost),
+    totalLandedCost: round(totalWithMpf),
     type: isDomestic ? 'domestic' : 'global',
     isDutyFree: importDuty === 0,
     originCountry: originClass,
     breakdown,
     destinationCountry: profile.code,
     vat: round(vat),
-    vatLabel: profile.vatLabel,
-    vatRate: profile.vatRate,
+    vatLabel: effectiveVatLabelSync,
+    vatRate: effectiveVatRateSync,
     deMinimisApplied,
     destinationCurrency: profile.currency,
     hsClassification: hsResult,
