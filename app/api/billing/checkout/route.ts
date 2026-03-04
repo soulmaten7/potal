@@ -64,8 +64,8 @@ export async function POST(req: NextRequest) {
 
     // Get seller profile
     const { data: seller } = await (supabase.from('sellers') as any)
-      .select('id, email, company_name')
-      .eq('id', user.id)
+      .select('id, user_id, contact_email, company_name')
+      .eq('user_id', user.id)
       .single();
 
     if (!seller) {
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     // Get or create Stripe customer
     const customerId = await getOrCreateStripeCustomer(
       seller.id,
-      seller.email,
+      seller.contact_email,
       seller.company_name
     );
 

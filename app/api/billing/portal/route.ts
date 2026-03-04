@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
 
     // Get seller
     const { data: seller } = await (supabase.from('sellers') as any)
-      .select('id, email, company_name, stripe_customer_id')
-      .eq('id', user.id)
+      .select('id, user_id, contact_email, company_name, stripe_customer_id')
+      .eq('user_id', user.id)
       .single();
 
     if (!seller) {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     // Get or create Stripe customer
     const customerId = seller.stripe_customer_id ||
-      await getOrCreateStripeCustomer(seller.id, seller.email, seller.company_name);
+      await getOrCreateStripeCustomer(seller.id, seller.contact_email, seller.company_name);
 
     // Create portal session
     const stripe = getStripe();
