@@ -73,6 +73,16 @@ export function zipcodeToState(zipcode: string): string | null {
   if (!zipcode || zipcode.length < 3) return null;
   const prefix = parseInt(zipcode.substring(0, 3), 10);
 
+  // New England (prefix 010-069)
+  if (prefix >= 10 && prefix <= 27) return 'MA';
+  if (prefix >= 28 && prefix <= 29) return 'RI';
+  if (prefix >= 30 && prefix <= 38) return 'NH';
+  if (prefix >= 39 && prefix <= 49) return 'ME';
+  if (prefix >= 50 && prefix <= 54) return 'VT';
+  if (prefix >= 60 && prefix <= 69) return 'CT';
+  // Puerto Rico (006-009)
+  if (prefix >= 6 && prefix <= 9) return 'PR';
+
   if (prefix >= 100 && prefix <= 149) return 'NY';
   if (prefix >= 150 && prefix <= 196) return 'PA';
   if (prefix >= 197 && prefix <= 199) return 'DE';
