@@ -140,10 +140,10 @@ describe('calculateGlobalLandedCost', () => {
     expect(result.vatLabel).toBe('Sales Tax');
   });
 
-  test('UK destination with VAT', () => {
+  test('UK destination with VAT (above de minimis)', () => {
     const input: CostInput = {
-      price: 100,
-      shippingPrice: 10,
+      price: 200,
+      shippingPrice: 20,
       origin: 'CN',
       destinationCountry: 'GB',
     };
@@ -152,9 +152,10 @@ describe('calculateGlobalLandedCost', () => {
     expect(result.destinationCountry).toBe('GB');
     expect(result.vatLabel).toBe('VAT');
     expect(result.vatRate).toBe(0.20);
+    // £135 ≈ $170 de minimis; $220 is above → duty applies
     expect(result.importDuty).toBeGreaterThan(0);
     expect(result.vat).toBeGreaterThan(0);
-    expect(result.totalLandedCost).toBeGreaterThan(110);
+    expect(result.totalLandedCost).toBeGreaterThan(220);
   });
 
   test('Germany de minimis for low-value goods', () => {
