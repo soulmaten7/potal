@@ -46,7 +46,7 @@ export default function BlogPage() {
   );
 
   return (
-    <div style={{ backgroundColor: '#02122c' }} className="w-full min-h-screen pb-28">
+    <div style={{ backgroundColor: '#ffffff' }} className="w-full min-h-screen pb-28">
       {/* JSON-LD Schema for Blog Collection */}
       <script
         type="application/ld+json"
@@ -73,8 +73,9 @@ export default function BlogPage() {
         }}
       />
 
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
       {/* Hero Section */}
-      <div style={{ padding: '80px 24px 48px', textAlign: 'center' }}>
+      <div style={{ padding: '80px 0 48px', textAlign: 'center' }}>
         <div
           style={{
             display: 'inline-block',
@@ -101,7 +102,7 @@ export default function BlogPage() {
           style={{
             fontSize: '32px',
             fontWeight: 800,
-            color: '#ffffff',
+            color: '#02122c',
             marginBottom: '16px',
             lineHeight: '1.2',
           }}
@@ -111,7 +112,7 @@ export default function BlogPage() {
         <p
           style={{
             fontSize: '16px',
-            color: 'rgba(255,255,255,0.6)',
+            color: '#64748b',
             lineHeight: '1.7',
             maxWidth: '480px',
             margin: '0 auto',
@@ -123,7 +124,7 @@ export default function BlogPage() {
 
       {/* Featured Post */}
       {sortedPosts.length > 0 && (
-        <div style={{ padding: '0 20px 40px' }}>
+        <div style={{ padding: '0 40px' }}>
           <Link href={`/blog/${sortedPosts[0].slug}`} style={{ textDecoration: 'none' }}>
             <div
               style={{
@@ -159,7 +160,7 @@ export default function BlogPage() {
                 style={{
                   fontSize: '22px',
                   fontWeight: 800,
-                  color: '#ffffff',
+                  color: '#02122c',
                   marginBottom: '12px',
                   lineHeight: '1.3',
                 }}
@@ -169,7 +170,7 @@ export default function BlogPage() {
               <p
                 style={{
                   fontSize: '15px',
-                  color: 'rgba(255,255,255,0.6)',
+                  color: '#64748b',
                   lineHeight: '1.6',
                   marginBottom: '16px',
                 }}
@@ -181,7 +182,7 @@ export default function BlogPage() {
                   display: 'flex',
                   gap: '16px',
                   fontSize: '13px',
-                  color: 'rgba(255,255,255,0.5)',
+                  color: '#94a3b8',
                 }}
               >
                 <span>{sortedPosts[0].date}</span>
@@ -196,7 +197,7 @@ export default function BlogPage() {
       )}
 
       {/* Blog Posts Grid */}
-      <div style={{ padding: '0 20px' }}>
+      <div style={{ padding: '0' }}>
         <h2
           style={{
             fontWeight: 700,
@@ -205,7 +206,7 @@ export default function BlogPage() {
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             fontSize: '13px',
-            color: 'rgba(255,255,255,0.5)',
+            color: '#94a3b8',
           } as React.CSSProperties}
         >
           All Articles
@@ -222,8 +223,8 @@ export default function BlogPage() {
             <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
               <div
                 style={{
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
                   borderRadius: '14px',
                   padding: '20px',
                   cursor: 'pointer',
@@ -258,7 +259,7 @@ export default function BlogPage() {
                   style={{
                     fontSize: '18px',
                     fontWeight: 700,
-                    color: '#ffffff',
+                    color: '#02122c',
                     marginBottom: '10px',
                     lineHeight: '1.4',
                   }}
@@ -270,7 +271,7 @@ export default function BlogPage() {
                 <p
                   style={{
                     fontSize: '14px',
-                    color: 'rgba(255,255,255,0.5)',
+                    color: '#64748b',
                     lineHeight: '1.6',
                     marginBottom: '12px',
                   }}
@@ -284,7 +285,7 @@ export default function BlogPage() {
                     display: 'flex',
                     gap: '12px',
                     fontSize: '12px',
-                    color: 'rgba(255,255,255,0.4)',
+                    color: '#94a3b8',
                     alignItems: 'center',
                   }}
                 >
@@ -307,8 +308,8 @@ export default function BlogPage() {
       >
         <div
           style={{
-            background: 'rgba(255,255,255,0.06)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
             borderRadius: '16px',
             padding: '32px 24px',
             textAlign: 'center',
@@ -318,7 +319,7 @@ export default function BlogPage() {
             style={{
               fontSize: '22px',
               fontWeight: 800,
-              color: '#ffffff',
+              color: '#02122c',
               marginBottom: '12px',
             }}
           >
@@ -327,7 +328,7 @@ export default function BlogPage() {
           <p
             style={{
               fontSize: '14px',
-              color: 'rgba(255,255,255,0.5)',
+              color: '#94a3b8',
               marginBottom: '20px',
               lineHeight: '1.6',
             }}
@@ -350,6 +351,7 @@ export default function BlogPage() {
             Start Comparing Prices
           </a>
         </div>
+      </div>
       </div>
     </div>
   );

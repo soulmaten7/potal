@@ -221,7 +221,7 @@ export function SearchWidget({
       {/* ═══════════════════════════════════════════════════ */}
       <div className="md:hidden">
         {/* 검색 폼 — 화이트 배경, 라운드 카드 */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.2)] overflow-visible relative z-50">
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-200 overflow-visible relative z-50">
           {/* Market Tabs — 폼 상단에 통합 */}
           <div className="flex bg-slate-100 rounded-t-2xl p-1">
             {marketTabs.map((tab) => (
@@ -309,7 +309,7 @@ export function SearchWidget({
               {/* Input */}
               <input
                 ref={mSearchInputRef}
-                type="text"
+                type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onFocus={handleSearchInputFocus}
@@ -383,7 +383,7 @@ export function SearchWidget({
         {/* Box 1: Deliver to */}
         <div
           ref={dZipRef}
-          className={`w-[280px] flex-none bg-white rounded-lg shadow-xl h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeZip ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'}`}
+          className={`w-[280px] flex-none bg-white rounded-lg shadow-xl h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeZip ? 'animate-shake border-2 border-red-500' : 'border border-slate-200'}`}
         >
           <label className="text-[11px] font-bold uppercase tracking-wider" style={{ color: zipInfo ? '#059669' : isZipInvalid ? '#ef4444' : '#6b7280' }}>
             {zipInfo ? `${zipInfo.city}, ${zipInfo.stateCode}` : isZipInvalid ? 'Invalid ZIP code' : 'Deliver to'}
@@ -421,7 +421,7 @@ export function SearchWidget({
         {/* Box 2: Search Input — [📷][input][❌] */}
         <div
           ref={dSearchRef}
-          className={`flex-[3] bg-white rounded-lg shadow-xl min-h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeQuery ? 'animate-shake border-2 border-red-500' : 'border-2 border-transparent'} z-30`}
+          className={`flex-[3] bg-white rounded-lg shadow-xl min-h-[68px] flex flex-col justify-center px-4 relative transition-[box-shadow,border-color] ${shakeQuery ? 'animate-shake border-2 border-red-500' : 'border border-slate-200'} z-30`}
         >
           <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Search products</label>
           <div className="relative flex items-center gap-2 mt-1">
@@ -441,7 +441,7 @@ export function SearchWidget({
             {/* Input */}
             <input
               ref={dSearchInputRef}
-              type="text"
+              type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onFocus={handleSearchInputFocus}

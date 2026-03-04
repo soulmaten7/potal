@@ -161,7 +161,7 @@ export function StickyHeader({
   const isBusy = loading || analyzing;
 
   return (
-    <header className="sticky top-0 z-[2000] shadow-md" style={{ backgroundColor: '#02122c', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+    <header className="sticky top-0 z-[2000] shadow-md" style={{ backgroundColor: '#ffffff', borderBottom: '1px solid #e2e8f0' }}>
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
 
         <form onSubmit={handleSubmit} className="w-full relative">
@@ -178,9 +178,9 @@ export function StickyHeader({
                 onClick={() => router.push('/')}
                 className="absolute left-0 p-0.5"
               >
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+                <svg className="w-5 h-5 text-[#02122c]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
               </button>
-              <span className="text-[15px] font-extrabold text-white">Search</span>
+              <span className="text-[15px] font-extrabold text-[#02122c]">Search</span>
             </div>
             {/* All / Domestic / Global 텍스트 탭 — 스카이스캐너 스타일 왼쪽 정렬 */}
             {setMarket && (
@@ -196,7 +196,7 @@ export function StickyHeader({
                     onClick={() => { setMarket(tab.id); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className="text-[13px] py-0.5 transition-all"
                     style={{
-                      color: market === tab.id ? '#ffffff' : 'rgba(255,255,255,0.4)',
+                      color: market === tab.id ? '#02122c' : '#94a3b8',
                       fontWeight: market === tab.id ? 800 : 500,
                       borderBottom: market === tab.id ? '2px solid #F59E0B' : '2px solid transparent',
                     }}
@@ -207,9 +207,9 @@ export function StickyHeader({
               </div>
             )}
             {/* 검색 입력바 */}
-            <div className="flex items-center gap-1.5 mt-1" style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: '12px', padding: '6px 8px' }}>
+            <div className="flex items-center gap-1.5 mt-1" style={{ backgroundColor: '#f1f5f9', borderRadius: '12px', padding: '6px 8px', border: '1px solid #e2e8f0' }}>
               {/* ZIP 입력 — 작은 영역 + State 코드 표시 */}
-              <div ref={zipRef} className="relative flex items-center gap-1 shrink-0" style={{ borderRight: '1px solid rgba(255,255,255,0.15)', paddingRight: '8px' }}>
+              <div ref={zipRef} className="relative flex items-center gap-1 shrink-0" style={{ borderRight: '1px solid #e2e8f0', paddingRight: '8px' }}>
                 <MapPinIcon className="w-3.5 h-3.5 shrink-0" style={{ color: zipInfo ? '#059669' : '#F59E0B' }} />
                 <input
                   type="text"
@@ -220,7 +220,7 @@ export function StickyHeader({
                   onFocus={handleZipInputFocus}
                   onClick={handleZipInputFocus}
                   placeholder="ZIP"
-                  className="w-[52px] text-[13px] font-bold text-white outline-none border-0 focus:ring-0 bg-transparent placeholder:text-white/30 p-0"
+                  className="w-[52px] text-[13px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-400 p-0"
                 />
                 {showZipDropdown && recentZips.length > 0 && (
                   <div className="absolute top-[calc(100%+12px)] left-0 w-[200px] bg-white rounded-xl shadow-2xl border border-slate-100 z-[3000] overflow-hidden">
@@ -243,7 +243,7 @@ export function StickyHeader({
               </div>
 
               {/* 🔍 돋보기 (왼쪽) — Amazon 스타일 */}
-              <Icons.Search className="w-4 h-4 shrink-0" style={{ color: 'rgba(255,255,255,0.5)' }} />
+              <Icons.Search className="w-4 h-4 shrink-0" style={{ color: '#94a3b8' }} />
 
               {/* Search 입력 — 메인 영역 */}
               <div ref={searchRef} className="flex-1 flex items-center gap-1.5 min-w-0 relative">
@@ -257,17 +257,17 @@ export function StickyHeader({
                 )}
                 <input
                   ref={searchInputRef}
-                  type="text"
+                  type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onFocus={handleSearchInputFocus}
                   onClick={handleSearchInputFocus}
                   placeholder="Search products"
-                  className="flex-1 min-w-0 text-[13px] font-bold text-white outline-none border-0 focus:ring-0 bg-transparent placeholder:text-white/30 p-0"
+                  className="flex-1 min-w-0 text-[13px] font-bold text-[#02122c] outline-none border-0 focus:ring-0 bg-transparent placeholder:text-slate-400 p-0"
                 />
                 {query.trim() && (
                   <button type="button" onClick={() => { setQuery(''); searchInputRef.current?.focus(); }} className="p-0.5 shrink-0">
-                    <Icons.X className="w-3.5 h-3.5 text-white/40" />
+                    <Icons.X className="w-3.5 h-3.5 text-slate-400" />
                   </button>
                 )}
                 {/* Recent Searches dropdown (mobile) */}
@@ -303,14 +303,14 @@ export function StickyHeader({
                 >
                   <Icons.Microphone
                     className={`w-4 h-4 ${isListening ? 'animate-pulse' : ''}`}
-                    style={{ color: isListening ? '#ef4444' : 'rgba(255,255,255,0.5)' }}
+                    style={{ color: isListening ? '#ef4444' : '#94a3b8' }}
                   />
                 </button>
               )}
 
               {/* 📷 카메라 아이콘 (오른쪽) — OS 기본 picker 호출 */}
               <button type="button" onClick={() => fileInputRef.current?.click()} className="shrink-0 p-0.5">
-                <Icons.Camera className="w-4 h-4" style={{ color: imagePreview ? '#F59E0B' : 'rgba(255,255,255,0.5)' }} />
+                <Icons.Camera className="w-4 h-4" style={{ color: imagePreview ? '#F59E0B' : '#94a3b8' }} />
               </button>
             </div>
           </div>
@@ -320,7 +320,7 @@ export function StickyHeader({
             {/* 1. Zipcode Box */}
             <div
               ref={zipRef}
-              className="flex-none w-[280px] bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative cursor-text"
+              className="flex-none w-[280px] bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative cursor-text border border-slate-200"
               onClick={() => { const input = zipRef.current?.querySelector('input'); input?.focus(); }}
             >
               <label className="text-[11px] font-bold uppercase tracking-wider leading-none mb-1" style={{ color: zipInfo ? '#059669' : '#6b7280' }}>
@@ -361,7 +361,7 @@ export function StickyHeader({
             <div className="flex-1 flex gap-2 relative">
               <div
                 ref={searchRef}
-                className="flex-1 bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative z-[2500] cursor-text"
+                className="flex-1 bg-white rounded-lg shadow-xl h-[60px] flex flex-col justify-center px-4 relative z-[2500] cursor-text border border-slate-200"
                 onClick={() => searchInputRef.current?.focus()}
               >
                 <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider leading-none mb-1">Search products</label>
@@ -376,7 +376,7 @@ export function StickyHeader({
                   )}
                   <input
                     ref={searchInputRef}
-                    type="text"
+                    type="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onFocus={handleSearchInputFocus}

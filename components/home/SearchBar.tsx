@@ -42,7 +42,7 @@ export function SearchBar() {
       </div>
 
       <input
-        type="text"
+        type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         aria-label="Search products across all retailers"

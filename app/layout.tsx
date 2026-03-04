@@ -96,7 +96,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="theme-color" content="#02122c" />
+        <meta name="theme-color" content="#ffffff" />
         <meta name="mobile-web-app-capable" content="yes" />
         {/* viewport: iOS 네이티브(TabletViewController)에서 태블릿 1440px 강제 처리 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />

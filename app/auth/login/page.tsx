@@ -73,16 +73,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full flex-grow flex flex-col justify-center items-center bg-[#02122c] py-20">
+    <div className="w-full flex-grow flex flex-col justify-center items-center bg-white py-20">
 
       {/* Login Card */}
-      <div className="w-full max-w-[400px] bg-[#0a192f] border border-gray-800 rounded-3xl p-8 shadow-2xl">
+      <div className="w-full max-w-[400px] bg-white border border-slate-200 rounded-3xl p-8 shadow-xl">
         {/* Logo & Header */}
         <div className="text-center mb-10">
-          <Link href="/" className="text-4xl font-black text-white tracking-tighter mb-4 inline-block">
+          <Link href="/" className="text-4xl font-black text-[#02122c] tracking-tighter mb-4 inline-block">
             POTAL
           </Link>
-          <p className="text-gray-400 text-sm mt-2">
+          <p className="text-slate-500 text-sm mt-2">
             Sign in to start smart shopping with AI.
           </p>
         </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               disabled={loading}
-              className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] transition-all disabled:opacity-50"
+              className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] transition-all disabled:opacity-50"
             />
           </div>
           <div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               disabled={loading}
-              className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] transition-all disabled:opacity-50"
+              className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] transition-all disabled:opacity-50"
             />
           </div>
 
@@ -137,9 +137,9 @@ export default function LoginPage() {
 
         {/* Social Divider */}
         <div className="flex items-center my-8">
-          <div className="flex-1 h-[1px] bg-gray-800"></div>
-          <span className="px-4 text-xs text-gray-600 font-bold">OR</span>
-          <div className="flex-1 h-[1px] bg-gray-800"></div>
+          <div className="flex-1 h-[1px] bg-slate-200"></div>
+          <span className="px-4 text-xs text-slate-400 font-bold">OR</span>
+          <div className="flex-1 h-[1px] bg-slate-200"></div>
         </div>
 
         {/* Google Login */}
@@ -170,7 +170,7 @@ export default function LoginPage() {
 
       {/* Trust Message */}
       <div className="mt-8 text-center">
-        <p className="text-gray-600 text-[11px] leading-relaxed max-w-[300px]">
+        <p className="text-slate-400 text-[11px] leading-relaxed max-w-[300px]">
           By signing in, you agree to POTAL&apos;s Terms of Service and Privacy Policy. Our AI agent uses data to recommend the best products for you.
         </p>
       </div>

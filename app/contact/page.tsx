@@ -60,12 +60,12 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] pb-20">
+    <div className="min-h-screen bg-white pb-20">
       {/* Hero */}
-      <section className="bg-[#02122c] text-white pt-32 pb-16">
+      <section className="bg-white text-[#02122c] pt-32 pb-16">
         <div className="max-w-[800px] mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Contact Us</h1>
-          <p className="text-slate-300 text-lg">Have a question, partnership idea, or feedback? We'd love to hear from you.</p>
+          <p className="text-slate-500 text-lg">Have a question, partnership idea, or feedback? We'd love to hear from you.</p>
         </div>
       </section>
 

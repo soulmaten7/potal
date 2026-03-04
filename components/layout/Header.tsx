@@ -69,7 +69,7 @@ export function Header() {
     <>
       {/* 모바일 검색 페이지에서는 헤더 숨김 — StickyHeader가 대신 역할 */}
       {/* 모바일: 항상 헤더 숨김 (로고 불필요, 바텀탭이 네비 역할) / 데스크톱: 항상 표시 */}
-      <header className="bg-[#02122c] text-white w-full border-b border-white/5 relative z-[5000] hidden md:block">
+      <header className="bg-white text-[#02122c] w-full border-b border-slate-200 relative z-[5000] hidden md:block">
         <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
           
           {/* 로고: P + 오렌지O + TAL */}
@@ -78,21 +78,21 @@ export function Header() {
             className="hover:opacity-90 focus:outline-none cursor-pointer flex items-center"
           >
             <span className="text-[22px] sm:text-[28px] font-extrabold tracking-tight">
-              <span className="text-white">P</span>
+              <span className="text-[#02122c]">P</span>
               <span className="text-[#F59E0B]">O</span>
-              <span className="text-white">TAL</span>
+              <span className="text-[#02122c]">TAL</span>
             </span>
           </button>
 
           {/* 데스크톱: 풀 네비게이션 / 모바일: 로고만 (하단 탭바가 대체) */}
-          <div className="hidden md:flex items-center gap-6 text-white">
-            <Link href="/help" className="text-sm font-bold hover:text-slate-200 cursor-pointer">HELP</Link>
+          <div className="hidden md:flex items-center gap-6 text-[#02122c]">
+            <Link href="/help" className="text-sm font-bold hover:text-[#F59E0B] cursor-pointer">HELP</Link>
             
             <div className="relative" ref={currencyDropdownRef}>
               {/* [수정] 지구본 아이콘 버튼에 cursor-pointer 추가 */}
               <button 
                 onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-                className="flex items-center gap-2 hover:text-slate-200 focus:outline-none cursor-pointer"
+                className="flex items-center gap-2 hover:text-[#F59E0B] focus:outline-none cursor-pointer"
               >
                 <Icons.Globe className="w-5 h-5" />
                 <span className="text-sm font-bold hidden sm:inline">
@@ -120,7 +120,7 @@ export function Header() {
               )}
             </div>
 
-            <Link href="/wishlist" className="hover:text-slate-200 relative p-1 group cursor-pointer">
+            <Link href="/wishlist" className="hover:text-[#F59E0B] relative p-1 group cursor-pointer">
               <Icons.Heart className="w-6 h-6 group-hover:scale-110 transition-transform" />
               {wishlist.length > 0 && (
                 <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] flex items-center justify-center animate-in zoom-in">
@@ -134,7 +134,7 @@ export function Header() {
                 // [수정] 로그인 된 프로필 아이콘에 cursor-pointer 추가
                 <button 
                   onClick={() => setShowUserDropdown(!showUserDropdown)} 
-                  className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-sm font-bold shadow-lg ring-2 ring-white hover:ring-offset-2 hover:ring-offset-[#02122c] transition-all cursor-pointer"
+                  className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-sm font-bold text-white shadow-lg ring-2 ring-slate-200 hover:ring-offset-2 hover:ring-offset-white transition-all cursor-pointer"
                 >
                   {userInitial}
                 </button>
@@ -142,7 +142,7 @@ export function Header() {
                 // [수정] 비로그인 사람 아이콘에 cursor-pointer 추가
                 <button 
                   onClick={() => setShowLoginModal(true)} 
-                  className="hover:text-slate-200 p-1 cursor-pointer"
+                  className="hover:text-[#F59E0B] p-1 cursor-pointer"
                 >
                   <Icons.User className="w-6 h-6" />
                 </button>

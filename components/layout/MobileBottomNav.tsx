@@ -28,12 +28,10 @@ export function MobileBottomNav() {
     >
       <nav
         style={{
-          background: 'rgba(255, 255, 255, 0.12)',
-          backdropFilter: 'blur(40px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+          background: '#ffffff',
           borderRadius: '9999px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.2)',
-          border: '1px solid rgba(255,255,255,0.18)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+          border: '1px solid #e2e8f0',
         }}
       >
         <div className="flex items-center justify-around" style={{ height: '58px', padding: '0 24px' }}>
@@ -51,13 +49,13 @@ export function MobileBottomNav() {
                   justifyContent: 'center',
                   padding: active ? '6px 18px' : '6px 16px',
                   borderRadius: active ? '9999px' : '0',
-                  background: active ? 'rgba(255,255,255,0.15)' : 'transparent',
+                  background: active ? 'rgba(2,18,44,0.08)' : 'transparent',
                   transition: 'all 0.2s ease',
                   textDecoration: 'none',
                 }}
               >
                 <div className="relative">
-                  <IconComponent style={{ width: '22px', height: '22px', color: active ? '#F59E0B' : '#ffffff' }} />
+                  <IconComponent style={{ width: '22px', height: '22px', color: active ? '#F59E0B' : '#1e293b' }} />
                   {tab.id === 'wishlist' && wishlist.length > 0 && (
                     <span className="absolute -top-1.5 -right-2.5 bg-red-500 text-white text-[9px] font-bold min-w-[14px] h-[14px] flex items-center justify-center rounded-full">
                       {wishlist.length > 99 ? '99+' : wishlist.length}
@@ -65,10 +63,10 @@ export function MobileBottomNav() {
                   )}
                 </div>
                 <span style={{
-                  fontSize: '10px',
+                  fontSize: '11px',
                   marginTop: '3px',
-                  fontWeight: 900,
-                  color: active ? '#F59E0B' : '#ffffff',
+                  fontWeight: 800,
+                  color: active ? '#F59E0B' : '#1e293b',
                   letterSpacing: '0.02em',
                 }}>{tab.label}</span>
               </Link>

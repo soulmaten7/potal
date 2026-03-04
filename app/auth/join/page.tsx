@@ -101,16 +101,16 @@ export default function JoinPage() {
   // Success state
   if (success) {
     return (
-      <div className="min-h-screen bg-[#02122c] flex flex-col justify-center items-center px-4 py-12">
-        <div className="w-full max-w-[480px] bg-[#0a192f] border border-gray-800 rounded-3xl p-8 shadow-2xl text-center">
+      <div className="min-h-screen bg-white flex flex-col justify-center items-center px-4 py-12">
+        <div className="w-full max-w-[480px] bg-white border border-slate-200 rounded-3xl p-8 shadow-xl text-center">
           <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Check your email</h2>
-          <p className="text-gray-400 text-sm mb-6">
-            We sent a confirmation link to <span className="text-white font-semibold">{email}</span>. Click the link to activate your account.
+          <h2 className="text-xl font-bold text-[#02122c] mb-2">Check your email</h2>
+          <p className="text-slate-500 text-sm mb-6">
+            We sent a confirmation link to <span className="text-[#02122c] font-semibold">{email}</span>. Click the link to activate your account.
           </p>
           <Link href="/auth/login" className="text-[#F59E0B] font-bold text-sm hover:underline">
             Back to Sign In
@@ -121,17 +121,17 @@ export default function JoinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#02122c] flex flex-col justify-center items-center px-4 py-12">
+    <div className="min-h-screen bg-white flex flex-col justify-center items-center px-4 py-12">
       {/* Join Card */}
-      <div className="w-full max-w-[480px] bg-[#0a192f] border border-gray-800 rounded-3xl p-8 shadow-2xl">
+      <div className="w-full max-w-[480px] bg-white border border-slate-200 rounded-3xl p-8 shadow-xl">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="text-3xl font-black text-white tracking-tighter mb-2 inline-block">
+          <Link href="/" className="text-3xl font-black text-[#02122c] tracking-tighter mb-2 inline-block">
             POTAL
           </Link>
-          <h1 className="text-xl font-bold text-white">Create your account</h1>
-          <p className="text-gray-400 text-sm mt-1">
+          <h1 className="text-xl font-bold text-[#02122c]">Create your account</h1>
+          <p className="text-slate-500 text-sm mt-1">
             Join POTAL to get AI-powered shopping insights.
           </p>
         </div>
@@ -158,7 +158,7 @@ export default function JoinPage() {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 disabled={loading}
-                className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
+                className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
               />
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function JoinPage() {
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 disabled={loading}
-                className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
+                className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function JoinPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               disabled={loading}
-              className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
+              className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
             />
           </div>
 
@@ -199,7 +199,7 @@ export default function JoinPage() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
               disabled={loading}
-              className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
+              className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
             />
             <p className="text-[10px] text-gray-500 mt-1 ml-1">Minimum 6 characters.</p>
           </div>
@@ -218,7 +218,7 @@ export default function JoinPage() {
               inputMode="numeric"
               maxLength={5}
               disabled={loading}
-              className="w-full bg-[#02122c] border border-gray-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
+              className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-3 text-[#02122c] focus:outline-none focus:border-[#F59E0B] disabled:opacity-50"
             />
             <p className="text-[10px] text-gray-500 mt-1 ml-1">Used to calculate accurate shipping and delivery dates.</p>
           </div>
@@ -231,14 +231,14 @@ export default function JoinPage() {
                 id="terms"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
-                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-gray-600 bg-[#02122c] checked:border-[#F59E0B] checked:bg-[#F59E0B] transition-all"
+                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-slate-300 bg-white checked:border-[#F59E0B] checked:bg-[#F59E0B] transition-all"
               />
               <svg className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 stroke-[#02122c] opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 14 14" fill="none">
                 <path d="M3 7L5.5 9.5L11 4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <label htmlFor="terms" className="text-xs text-gray-400 leading-snug cursor-pointer select-none">
-              I agree to POTAL's <Link href="/legal/terms" className="text-white hover:underline">Terms of Service</Link> and <Link href="/legal/privacy" className="text-white hover:underline">Privacy Policy</Link>.
+            <label htmlFor="terms" className="text-xs text-slate-500 leading-snug cursor-pointer select-none">
+              I agree to POTAL's <Link href="/legal/terms" className="text-[#02122c] hover:underline">Terms of Service</Link> and <Link href="/legal/privacy" className="text-[#02122c] hover:underline">Privacy Policy</Link>.
             </label>
           </div>
 
@@ -253,9 +253,9 @@ export default function JoinPage() {
 
         {/* Social Divider */}
         <div className="flex items-center my-8">
-          <div className="flex-1 h-[1px] bg-gray-800"></div>
-          <span className="px-4 text-xs text-gray-600 font-bold">OR JOIN WITH</span>
-          <div className="flex-1 h-[1px] bg-gray-800"></div>
+          <div className="flex-1 h-[1px] bg-slate-200"></div>
+          <span className="px-4 text-xs text-slate-400 font-bold">OR JOIN WITH</span>
+          <div className="flex-1 h-[1px] bg-slate-200"></div>
         </div>
 
         {/* Social Login */}

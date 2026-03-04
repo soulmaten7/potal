@@ -8,19 +8,19 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <article style={{ backgroundColor: "#02122c", color: "#ffffff" }} className="min-h-screen py-12 px-4 sm:px-6">
+    <article style={{ backgroundColor: "#ffffff", color: "#02122c" }} className="min-h-screen py-12 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <h1 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "8px" }}>
           Privacy Policy
         </h1>
-        <p style={{ color: "rgba(255,255,255,0.5)", marginBottom: "32px" }}>
+        <p style={{ color: "#64748b", marginBottom: "32px" }}>
           Last updated: February 2026
         </p>
 
-        <div style={{ lineHeight: "1.7", color: "rgba(255,255,255,0.85)" }} className="space-y-8">
+        <div style={{ lineHeight: "1.7", color: "#334155" }} className="space-y-8">
           {/* 1. Introduction */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               1. Introduction
             </h2>
             <p>
@@ -30,7 +30,7 @@ export default function PrivacyPage() {
 
           {/* 2. Information We Collect */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               2. Information We Collect
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -60,7 +60,7 @@ export default function PrivacyPage() {
 
           {/* 3. How We Use Your Information */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               3. How We Use Your Information
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -79,7 +79,7 @@ export default function PrivacyPage() {
 
           {/* 4. Data Storage and Technology Partners */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               4. Data Storage and Technology Partners
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
 
           {/* 5. Third-Party Retailers and Affiliate Links */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               5. Third-Party Retailers and Affiliate Links
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
 
           {/* 6. Cookies and Tracking Technologies */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               6. Cookies and Tracking Technologies
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -134,7 +134,7 @@ export default function PrivacyPage() {
 
           {/* 7. Data Security */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               7. Data Security
             </h2>
             <p>
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
 
           {/* 8. Data Retention */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               8. Data Retention
             </h2>
             <p>
@@ -154,7 +154,7 @@ export default function PrivacyPage() {
 
           {/* 9. Data Sharing and Third Parties */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               9. Data Sharing and Third Parties
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -172,7 +172,7 @@ export default function PrivacyPage() {
 
           {/* 10. Mobile App (WebView) */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               10. Mobile App and WebView
             </h2>
             <p>
@@ -182,7 +182,7 @@ export default function PrivacyPage() {
 
           {/* 11. User Rights and Choices */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               11. User Rights and Choices
             </h2>
             <p style={{ marginBottom: "12px" }}>
@@ -202,7 +202,7 @@ export default function PrivacyPage() {
 
           {/* 12. Children's Privacy */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               12. Children&apos;s Privacy
             </h2>
             <p>
@@ -212,7 +212,7 @@ export default function PrivacyPage() {
 
           {/* 13. Changes to This Privacy Policy */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               13. Changes to This Privacy Policy
             </h2>
             <p>
@@ -222,15 +222,15 @@ export default function PrivacyPage() {
 
           {/* 14. Contact Us */}
           <section>
-            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#ffffff" }}>
+            <h2 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "12px", color: "#02122c" }}>
               14. Contact Us
             </h2>
             <p style={{ marginBottom: "12px" }}>
               If you have questions, concerns, or requests regarding this Privacy Policy or our privacy practices, please contact us at:
             </p>
             <div style={{
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.12)",
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
               borderRadius: "8px",
               padding: "16px",
               marginTop: "12px"
@@ -243,7 +243,7 @@ export default function PrivacyPage() {
                   contact@potal.app
                 </a>
               </p>
-              <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.6)", marginTop: "8px" }}>
+              <p style={{ fontSize: "13px", color: "#64748b", marginTop: "8px" }}>
                 We will respond to all inquiries within 30 days.
               </p>
             </div>
@@ -251,11 +251,11 @@ export default function PrivacyPage() {
 
           {/* Footer */}
           <div style={{
-            borderTop: "1px solid rgba(255,255,255,0.1)",
+            borderTop: "1px solid #e2e8f0",
             paddingTop: "24px",
             marginTop: "32px",
             fontSize: "12px",
-            color: "rgba(255,255,255,0.4)"
+            color: "#94a3b8"
           }}>
             <p>
               This Privacy Policy is provided in English. If you access POTAL from outside the United States, please be aware that your information may be transferred to, stored in, and processed in the United States and other countries that may have different data protection laws than your country of residence.

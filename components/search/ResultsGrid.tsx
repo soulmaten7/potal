@@ -179,8 +179,8 @@ export function ResultsGrid({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
         </div>
-        <h3 className="text-lg font-bold md:text-slate-800" style={{ color: 'rgba(255,255,255,0.9)' }}>Search temporarily unavailable</h3>
-        <p className="text-sm text-center max-w-sm md:text-slate-500" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <h3 className="text-lg font-bold md:text-slate-800" style={{ color: '#1e293b' }}>Search temporarily unavailable</h3>
+        <p className="text-sm text-center max-w-sm md:text-slate-500" style={{ color: '#64748b' }}>
           We couldn&apos;t reach our product providers right now. This is usually temporary — please try again.
         </p>
         {onRetry && (
@@ -199,7 +199,7 @@ export function ResultsGrid({
         {/* 애니메이션 스피너 — 데스크톱(밝은 배경) + 모바일(다크 배경) */}
         <div className="relative w-16 h-16">
           <div className="absolute inset-0 rounded-full hidden md:block" style={{ border: '4px solid rgba(0,0,0,0.08)' }} />
-          <div className="absolute inset-0 rounded-full md:hidden" style={{ border: '4px solid rgba(255,255,255,0.1)' }} />
+          <div className="absolute inset-0 rounded-full md:hidden" style={{ border: '4px solid rgba(0,0,0,0.08)' }} />
           <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#F59E0B] animate-spin" />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-xl">🔍</span>
@@ -210,11 +210,11 @@ export function ResultsGrid({
         <div className="text-center space-y-2">
           <h3 className="text-lg font-extrabold" style={{ color: '#02122c' }}>
             <span className="md:inline hidden">Searching across retailers...</span>
-            <span className="md:hidden" style={{ color: 'rgba(255,255,255,0.95)' }}>Searching across retailers...</span>
+            <span className="md:hidden" style={{ color: '#1e293b' }}>Searching across retailers...</span>
           </h3>
           <p className="text-sm max-w-sm" style={{ color: '#64748b' }}>
             <span className="md:inline hidden">Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.</span>
-            <span className="md:hidden" style={{ color: 'rgba(255,255,255,0.5)' }}>Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.</span>
+            <span className="md:hidden" style={{ color: '#64748b' }}>Comparing prices from Amazon, Walmart, eBay, Target, and AliExpress. This usually takes 10-15 seconds.</span>
           </p>
         </div>
 
@@ -229,12 +229,12 @@ export function ResultsGrid({
         </div>
         <div className="w-full mt-4 md:hidden grid grid-cols-2 gap-2 opacity-40">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="rounded-lg overflow-hidden animate-pulse" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
-              <div className="aspect-square" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }} />
+            <div key={i} className="rounded-lg overflow-hidden animate-pulse" style={{ backgroundColor: '#f1f5f9' }}>
+              <div className="aspect-square" style={{ backgroundColor: '#e2e8f0' }} />
               <div className="p-2 space-y-2">
-                <div className="h-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', width: '80%' }} />
-                <div className="h-2 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.08)', width: '60%' }} />
-                <div className="h-3 rounded" style={{ backgroundColor: 'rgba(255,255,255,0.1)', width: '40%' }} />
+                <div className="h-2 rounded" style={{ backgroundColor: '#e2e8f0', width: '80%' }} />
+                <div className="h-2 rounded" style={{ backgroundColor: '#e2e8f0', width: '60%' }} />
+                <div className="h-3 rounded" style={{ backgroundColor: '#e2e8f0', width: '40%' }} />
               </div>
             </div>
           ))}
@@ -254,16 +254,16 @@ export function ResultsGrid({
     return (
       <div className="flex-1 flex flex-col items-center justify-center py-16 gap-5">
         {/* 아이콘 */}
-        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: '#f1f5f9' }}>
           <span className="text-3xl">🔍</span>
         </div>
 
         {/* 메인 메시지 */}
         <div className="text-center space-y-2">
-          <h3 className="text-lg font-extrabold md:text-slate-800" style={{ color: 'rgba(255,255,255,0.9)' }}>
+          <h3 className="text-lg font-extrabold md:text-slate-800" style={{ color: '#1e293b' }}>
             No results found for &quot;{query}&quot;
           </h3>
-          <p className="text-sm max-w-sm md:text-slate-500" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-sm max-w-sm md:text-slate-500" style={{ color: '#64748b' }}>
             We searched across all retailers but couldn&apos;t find matching products.
           </p>
         </div>
@@ -279,7 +279,7 @@ export function ResultsGrid({
 
         {/* 제안 */}
         <div className="flex flex-col items-center gap-3 mt-2">
-          <p className="text-xs font-bold md:text-slate-500" style={{ color: 'rgba(255,255,255,0.4)' }}>Try these suggestions:</p>
+          <p className="text-xs font-bold md:text-slate-500" style={{ color: '#94a3b8' }}>Try these suggestions:</p>
           <div className="flex flex-wrap justify-center gap-2">
             {suggestedQuery && (
               <a
@@ -293,12 +293,12 @@ export function ResultsGrid({
             <button
               onClick={() => window.history.back()}
               className="px-3 py-1.5 rounded-full text-xs font-bold transition-colors"
-              style={{ backgroundColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}
+              style={{ backgroundColor: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0' }}
             >
               ← Go back
             </button>
           </div>
-          <ul className="text-[11px] space-y-1 mt-1 md:text-slate-400" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <ul className="text-[11px] space-y-1 mt-1 md:text-slate-400" style={{ color: '#94a3b8' }}>
             <li>• Check your spelling</li>
             <li>• Try more general keywords</li>
             <li>• Use fewer words in your search</li>
@@ -317,7 +317,7 @@ export function ResultsGrid({
       <div className="md:hidden flex flex-col gap-2">
 
         {/* ── Best / Cheapest / Fastest 정렬 탭 ── */}
-        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0' }}>
           <div className="grid grid-cols-3 gap-0">
             {[
               { key: 'best' as const, label: 'Best', data: tabSummary?.best },
@@ -332,7 +332,7 @@ export function ResultsGrid({
                   backgroundColor: sortBy === tab.key ? '#ffffff' : 'transparent',
                 }}
               >
-                <span className="text-[14px] font-extrabold" style={{ color: sortBy === tab.key ? '#02122c' : 'rgba(255,255,255,0.7)' }}>{tab.label}</span>
+                <span className="text-[14px] font-extrabold" style={{ color: sortBy === tab.key ? '#02122c' : '#64748b' }}>{tab.label}</span>
               </button>
             ))}
           </div>
@@ -342,24 +342,17 @@ export function ResultsGrid({
         <div className="flex items-center justify-between px-1">
           {/* 왼쪽: 결과 수 + 정렬 기준 */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.6)' }}>
-              <span className="font-extrabold text-white">{filteredResultCount}</span> results sorted by <span className="text-[#F59E0B] capitalize">{sortBy}</span>
+            <span className="text-[11px] font-bold" style={{ color: '#64748b' }}>
+              <span className="font-extrabold text-[#02122c]">{filteredResultCount}</span> results
             </span>
-            {sortBy === 'best' && (
-              <button
-                onClick={(e) => { e.stopPropagation(); setActiveTooltipId(activeTooltipId === 'mobile-best-info' ? null : 'mobile-best-info'); }}
-                className="inline-flex items-center justify-center w-4 h-4 rounded-full"
-                style={{ border: '1px solid rgba(255,255,255,0.3)' }}
-              >
-                <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>?</span>
-              </button>
-            )}
           </div>
+          {/* 오른쪽: 카드 터치 힌트 */}
+          <span className="text-[9px] font-medium" style={{ color: '#94a3b8' }}>Tap card for details</span>
 
           {/* 오른쪽: Then By 세컨더리 정렬 (cheapest/fastest 일 때만) */}
           {(sortBy === 'cheapest' || sortBy === 'fastest') && setSecondarySort && (
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.35)' }}>then</span>
+              <span className="text-[11px] font-bold" style={{ color: '#94a3b8' }}>then</span>
               <div className="flex gap-1">
                 {(sortBy === 'fastest'
                   ? [
@@ -376,11 +369,11 @@ export function ResultsGrid({
                     onClick={() => setSecondarySort(opt.key)}
                     className="px-2 py-[3px] rounded transition-all"
                     style={{
-                      backgroundColor: secondarySort === opt.key ? '#ffffff' : 'rgba(255,255,255,0.06)',
-                      border: `1px solid ${secondarySort === opt.key ? '#ffffff' : 'rgba(255,255,255,0.1)'}`,
+                      backgroundColor: secondarySort === opt.key ? '#02122c' : '#f1f5f9',
+                      border: `1px solid ${secondarySort === opt.key ? '#02122c' : '#e2e8f0'}`,
                     }}
                   >
-                    <span className="text-[11px] font-bold" style={{ color: secondarySort === opt.key ? '#02122c' : '#ffffff' }}>
+                    <span className="text-[11px] font-bold" style={{ color: secondarySort === opt.key ? '#ffffff' : '#475569' }}>
                       {opt.label}
                     </span>
                   </button>
@@ -392,44 +385,19 @@ export function ResultsGrid({
 
         {/* ── 부분 실패 배너 (모바일) — 제거: 사용자 경험상 불필요, 신뢰도 저하 방지 ── */}
 
-        {/* Best scoring info tooltip (모바일) */}
-        {activeTooltipId === 'mobile-best-info' && (
-          <div className="mx-1 rounded-xl p-3 text-left" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-[11px] font-extrabold text-white">How POTAL Ranks &quot;Best&quot;</h4>
-              <button onClick={() => setActiveTooltipId(null)} className="p-0.5"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
-            </div>
-            <div className="space-y-1.5">
-              {[
-                { label: 'Total Price', pct: 35, color: '#10B981' },
-                { label: 'Delivery Speed', pct: 25, color: '#3B82F6' },
-                { label: 'Seller Trust', pct: 20, color: '#8B5CF6' },
-                { label: 'Match Accuracy', pct: 15, color: '#F59E0B' },
-                { label: 'Return Policy', pct: 5, color: '#94A3B8' },
-              ].map(item => (
-                <div key={item.label} className="flex items-center gap-2">
-                  <span className="text-[9px] font-bold w-[80px]" style={{ color: 'rgba(255,255,255,0.7)' }}>{item.label}</span>
-                  <div className="flex-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}>
-                    <div className="h-full rounded-full" style={{ width: `${item.pct}%`, backgroundColor: item.color }} />
-                  </div>
-                  <span className="text-[9px] font-extrabold text-white w-[28px] text-right">{item.pct}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
 
         {/* Sales Tax Info 팝업 (모바일) */}
         {isDomesticTaxOpen && (
-          <div className="mx-1 rounded-xl p-3 max-h-[50vh] overflow-y-auto" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="mx-1 rounded-xl p-3 max-h-[50vh] overflow-y-auto" style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[11px] font-extrabold text-white">🇺🇸 US Sales Tax</span>
-              <button onClick={() => setIsDomesticTaxOpen(false)}><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+              <span className="text-[11px] font-extrabold text-[#02122c]">🇺🇸 US Sales Tax</span>
+              <button onClick={() => setIsDomesticTaxOpen(false)}><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="#94a3b8"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
-            <p className="text-[9px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>Tax = Product Price × State+Local Rate. Estimated using your ZIP code.</p>
+            <p className="text-[9px] leading-relaxed mb-2" style={{ color: '#64748b' }}>Tax = Product Price × State+Local Rate. Estimated using your ZIP code.</p>
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[9px]">
               {[['California','8.75%'],['New York','8.00%'],['Texas','8.25%'],['Florida','7.00%'],['Washington','8.92%'],['Illinois','8.82%']].map(([s,r]) => (
-                <div key={s} className="flex justify-between"><span style={{ color: 'rgba(255,255,255,0.5)' }}>{s}</span><span className="font-bold text-white">{r}</span></div>
+                <div key={s} className="flex justify-between"><span style={{ color: '#64748b' }}>{s}</span><span className="font-bold text-[#02122c]">{r}</span></div>
               ))}
             </div>
             <div className="mt-1.5 text-[8px] rounded px-2 py-1" style={{ backgroundColor: 'rgba(16,185,129,0.1)', color: '#10B981' }}>
@@ -440,16 +408,16 @@ export function ResultsGrid({
 
         {/* Import Tax Info 팝업 (모바일) */}
         {isGlobalInfoOpen && (
-          <div className="mx-1 rounded-xl p-3 max-h-[50vh] overflow-y-auto" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div className="mx-1 rounded-xl p-3 max-h-[50vh] overflow-y-auto" style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[11px] font-extrabold text-white">🌏 Import Tax</span>
-              <button onClick={() => setIsGlobalInfoOpen(false)}><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+              <span className="text-[11px] font-extrabold text-[#02122c]">🌏 Import Tax</span>
+              <button onClick={() => setIsGlobalInfoOpen(false)}><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="#94a3b8"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
-            <p className="text-[9px] leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>POTAL calculates Total Landed Cost — product + shipping + import duties + fees.</p>
+            <p className="text-[9px] leading-relaxed mb-2" style={{ color: '#64748b' }}>POTAL calculates Total Landed Cost — product + shipping + import duties + fees.</p>
             <div className="space-y-1.5 text-[9px]">
               <div className="rounded px-2 py-1.5" style={{ backgroundColor: 'rgba(239,68,68,0.08)' }}>
                 <span className="font-bold" style={{ color: '#EF4444' }}>🇨🇳 China (Ali/Temu/Shein): ~20% duty</span>
-                <p className="text-[8px] mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>$800 de minimis eliminated Aug 2025</p>
+                <p className="text-[8px] mt-0.5" style={{ color: '#94a3b8' }}>$800 de minimis eliminated Aug 2025</p>
               </div>
               <div className="rounded px-2 py-1.5" style={{ backgroundColor: 'rgba(59,130,246,0.08)' }}>
                 <span className="font-bold" style={{ color: '#3B82F6' }}>🇰🇷🇯🇵 Korea/Japan: Duty free under $800</span>
@@ -464,27 +432,21 @@ export function ResultsGrid({
         {/* (M3) Domestic / Global 컬럼 헤더 + 세금 정보 버튼 (오른쪽 정렬) */}
         <div className={`grid gap-1.5 mt-0.5 ${showDomestic && showGlobal ? 'grid-cols-2' : 'grid-cols-1'}`}>
           {showDomestic && (
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center px-1">
               <div className="flex items-center gap-1">
                 <span className="text-xs">🇺🇸</span>
-                <span className="text-[10px] font-extrabold" style={{ color: 'rgba(255,255,255,0.8)' }}>Domestic</span>
-                <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.35)' }}>({domesticProducts.length})</span>
+                <span className="text-[10px] font-extrabold" style={{ color: '#1e293b' }}>Domestic</span>
+                <span className="text-[9px] font-bold" style={{ color: '#94a3b8' }}>({domesticProducts.length})</span>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); window.location.href = '/tax-info?type=sales'; }} className="flex items-center gap-0.5 text-[9px] font-bold text-[#F59E0B]">
-                <InfoIcon className="w-2.5 h-2.5" /> Sales Tax
-              </button>
             </div>
           )}
           {showGlobal && (
-            <div className="flex items-center justify-between px-1">
+            <div className="flex items-center px-1">
               <div className="flex items-center gap-1">
                 <span className="text-xs">🌍</span>
-                <span className="text-[10px] font-extrabold" style={{ color: 'rgba(255,255,255,0.8)' }}>Global</span>
-                <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.35)' }}>({globalProducts.length})</span>
+                <span className="text-[10px] font-extrabold" style={{ color: '#1e293b' }}>Global</span>
+                <span className="text-[9px] font-bold" style={{ color: '#94a3b8' }}>({globalProducts.length})</span>
               </div>
-              <button onClick={(e) => { e.stopPropagation(); window.location.href = '/tax-info?type=import'; }} className="flex items-center gap-0.5 text-[9px] font-bold text-[#F59E0B]">
-                <InfoIcon className="w-2.5 h-2.5" /> Import Tax
-              </button>
             </div>
           )}
         </div>
@@ -501,8 +463,8 @@ export function ResultsGrid({
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center py-8 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
-                  <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>No domestic results</span>
+                <div className="flex items-center justify-center py-8 rounded-lg" style={{ backgroundColor: '#f8fafc' }}>
+                  <span className="text-[11px]" style={{ color: '#94a3b8' }}>No domestic results</span>
                 </div>
               )}
             </div>
@@ -517,8 +479,8 @@ export function ResultsGrid({
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center py-8 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
-                  <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>No global results</span>
+                <div className="flex items-center justify-center py-8 rounded-lg" style={{ backgroundColor: '#f8fafc' }}>
+                  <span className="text-[11px]" style={{ color: '#94a3b8' }}>No global results</span>
                 </div>
               )}
             </div>
@@ -531,7 +493,7 @@ export function ResultsGrid({
         )}
         {filteredMaxCount <= visibleCount && filteredMaxCount > 0 && (
           <div className="py-4 text-center">
-            <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.3)' }}>All {filteredResultCount} results loaded</span>
+            <span className="text-[11px] font-bold" style={{ color: '#94a3b8' }}>All {filteredResultCount} results loaded</span>
           </div>
         )}
       </div>
@@ -947,8 +909,8 @@ function MobileInfiniteScrollSentinel({ onVisible }: { onVisible: () => void }) 
 
   return (
     <div ref={sentinelRef} className="w-full py-6 flex items-center justify-center gap-2">
-      <div className="w-4 h-4 rounded-full border-2 border-t-[#F59E0B] animate-spin" style={{ borderColor: 'rgba(255,255,255,0.15)', borderTopColor: '#F59E0B' }} />
-      <span className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>Loading more...</span>
+      <div className="w-4 h-4 rounded-full border-2 border-t-[#F59E0B] animate-spin" style={{ borderColor: '#e2e8f0', borderTopColor: '#F59E0B' }} />
+      <span className="text-[11px] font-bold" style={{ color: '#94a3b8' }}>Loading more...</span>
     </div>
   );
 }

@@ -150,16 +150,16 @@ export function AiSmartSuggestionBox({
   // 공통 하단 네비바 (다크테마)
   // ═══════════════════════════════════════════════════════════════
   const renderSheetBottomNav = (onClose: () => void) => (
-    <div className="flex items-center justify-around h-14 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)', backgroundColor: '#02122c' }}>
-      <button onClick={onClose} className="flex flex-col items-center gap-0.5 py-1.5 px-3 text-indigo-400">
+    <div className="flex items-center justify-around h-14 border-t" style={{ borderColor: '#e2e8f0', backgroundColor: '#ffffff' }}>
+      <button onClick={onClose} className="flex flex-col items-center gap-0.5 py-1.5 px-3 text-[#02122c]">
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" /></svg>
         <span className="text-[10px] font-medium">Search</span>
       </button>
-      <button onClick={() => { onClose(); router.push('/saved'); }} className="flex flex-col items-center gap-0.5 py-1.5 px-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
+      <button onClick={() => { onClose(); router.push('/saved'); }} className="flex flex-col items-center gap-0.5 py-1.5 px-3" style={{ color: '#94a3b8' }}>
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
         <span className="text-[10px] font-medium">Wishlist</span>
       </button>
-      <button onClick={() => { onClose(); router.push('/settings'); }} className="flex flex-col items-center gap-0.5 py-1.5 px-3" style={{ color: 'rgba(255,255,255,0.4)' }}>
+      <button onClick={() => { onClose(); router.push('/settings'); }} className="flex flex-col items-center gap-0.5 py-1.5 px-3" style={{ color: '#94a3b8' }}>
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
         <span className="text-[10px] font-medium">Profile</span>
       </button>
@@ -172,10 +172,10 @@ export function AiSmartSuggestionBox({
   const DarkCheckbox = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) => (
     <label className="flex items-center gap-2.5 cursor-pointer py-1.5 px-1 rounded transition-colors" style={{ backgroundColor: checked ? 'rgba(245,158,11,0.08)' : 'transparent' }}>
       <div className="relative flex items-center justify-center w-[18px] h-[18px] shrink-0">
-        <input type="checkbox" checked={checked} onChange={onChange} className="peer appearance-none w-[18px] h-[18px] border-2 rounded-[3px] bg-transparent transition-all" style={{ borderColor: checked ? '#F59E0B' : 'rgba(255,255,255,0.3)', backgroundColor: checked ? '#F59E0B' : 'transparent' }} />
+        <input type="checkbox" checked={checked} onChange={onChange} className="peer appearance-none w-[18px] h-[18px] border-2 rounded-[3px] bg-transparent transition-all" style={{ borderColor: checked ? '#F59E0B' : '#cbd5e1', backgroundColor: checked ? '#F59E0B' : 'transparent' }} />
         <Icons.Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
       </div>
-      <span className="text-[14px] font-bold whitespace-nowrap" style={{ color: checked ? '#F59E0B' : 'rgba(255,255,255,0.8)' }}>{label}</span>
+      <span className="text-[14px] font-bold whitespace-nowrap" style={{ color: checked ? '#F59E0B' : '#1e293b' }}>{label}</span>
     </label>
   );
 
@@ -186,15 +186,15 @@ export function AiSmartSuggestionBox({
     if (!mobileAiSheetOpen || !mounted) return null;
     return createPortal(
       <div className="md:hidden fixed inset-0 z-[10001]">
-        <div className="absolute inset-0 flex flex-col" style={{ backgroundColor: '#02122c' }}>
+        <div className="absolute inset-0 flex flex-col" style={{ backgroundColor: '#ffffff' }}>
           {/* Header — ← 뒤로가기 + 중앙 "AI Suggestion" 타이틀 */}
-          <div className="relative flex items-center justify-center px-4 py-3.5 border-b shrink-0" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="relative flex items-center justify-center px-4 py-3.5 border-b shrink-0" style={{ borderColor: '#e2e8f0' }}>
             <button onClick={() => setMobileAiSheetOpen(false)} className="absolute left-3 p-1">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+              <svg className="w-5 h-5 text-[#02122c]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
             </button>
             <div className="flex items-center gap-1.5">
               <Icons.Sparkles className="w-4 h-4 text-[#F59E0B]" />
-              <span className="text-[15px] font-extrabold text-white">POTAL Filter</span>
+              <span className="text-[15px] font-extrabold text-[#02122c]">POTAL Filter</span>
             </div>
             {checkedValues.size > 0 && (
               <span className="absolute right-4 text-[12px] font-bold text-[#F59E0B]">{checkedValues.size} selected</span>
@@ -206,14 +206,14 @@ export function AiSmartSuggestionBox({
             {/* 질문형: 카테고리 선택 */}
             {isQuestionQuery && suggestedProducts && suggestedProducts.length > 0 && (
               <div>
-                <p className="text-[13px] font-extrabold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>Select a category</p>
+                <p className="text-[13px] font-extrabold uppercase tracking-wider mb-3" style={{ color: '#94a3b8' }}>Select a category</p>
                 <div className="flex flex-wrap gap-2.5">
                   {suggestedProducts.map(p => (
                     <button key={p} onClick={() => { onCategoryClick(p); setMobileAiSheetOpen(false); }}
                       className="group flex items-center gap-2 px-4 py-2.5 text-[14px] font-bold rounded-lg transition-all"
-                      style={{ border: '1px solid rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.06)', color: 'white' }}>
+                      style={{ border: '1px solid #e2e8f0', backgroundColor: '#f8fafc', color: '#02122c' }}>
                       <span className="capitalize">{p}</span>
-                      <Icons.ArrowRight className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                      <Icons.ArrowRight className="w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
                     </button>
                   ))}
                 </div>
@@ -224,10 +224,10 @@ export function AiSmartSuggestionBox({
             {brands.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-[13px] font-extrabold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.5)' }}>Top Brands</p>
+                  <p className="text-[13px] font-extrabold uppercase tracking-wider" style={{ color: '#94a3b8' }}>Top Brands</p>
                   {checkedValues.size > 0 && (
                     <div className="flex items-center gap-3">
-                      <button onClick={handleClear} className="text-[12px] font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>Clear</button>
+                      <button onClick={handleClear} className="text-[12px] font-bold" style={{ color: '#94a3b8' }}>Clear</button>
                       <button onClick={() => { handleApply(); setMobileAiSheetOpen(false); }} className="text-[12px] font-bold text-[#F59E0B]">Apply ({checkedValues.size})</button>
                     </div>
                   )}
@@ -243,7 +243,7 @@ export function AiSmartSuggestionBox({
             {/* Row 2: Related Axes — 확장형 토글 (PC와 동일) */}
             {effectiveAxes.length > 0 && (
               <div>
-                <p className="text-[13px] font-extrabold uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>Related Filters</p>
+                <p className="text-[13px] font-extrabold uppercase tracking-wider mb-3" style={{ color: '#94a3b8' }}>Related Filters</p>
                 <div className="space-y-2">
                   {effectiveAxes.map(axis => (
                     <div key={axis.name}>
@@ -252,17 +252,17 @@ export function AiSmartSuggestionBox({
                         onClick={() => toggleAxis(axis.name)}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all"
                         style={{
-                          backgroundColor: expandedAxes.has(axis.name) ? 'rgba(245,158,11,0.1)' : 'rgba(255,255,255,0.06)',
-                          border: expandedAxes.has(axis.name) ? '1px solid rgba(245,158,11,0.3)' : '1px solid rgba(255,255,255,0.08)',
+                          backgroundColor: expandedAxes.has(axis.name) ? 'rgba(245,158,11,0.1)' : '#f8fafc',
+                          border: expandedAxes.has(axis.name) ? '1px solid rgba(245,158,11,0.3)' : '1px solid #e2e8f0',
                         }}
                       >
                         <div className="flex items-center gap-2">
-                          <span className="text-[14px] font-bold text-white">{axis.name}</span>
-                          <span className="text-[11px] font-bold" style={{ color: expandedAxes.has(axis.name) ? '#F59E0B' : 'rgba(255,255,255,0.4)' }}>
+                          <span className="text-[14px] font-bold text-[#02122c]">{axis.name}</span>
+                          <span className="text-[11px] font-bold" style={{ color: expandedAxes.has(axis.name) ? '#F59E0B' : '#94a3b8' }}>
                             {axis.values.length}
                           </span>
                         </div>
-                        <Icons.ChevronDown className={`w-4 h-4 transition-transform ${expandedAxes.has(axis.name) ? 'rotate-180 text-[#F59E0B]' : ''}`} style={{ color: expandedAxes.has(axis.name) ? '#F59E0B' : 'rgba(255,255,255,0.4)' }} />
+                        <Icons.ChevronDown className={`w-4 h-4 transition-transform ${expandedAxes.has(axis.name) ? 'rotate-180 text-[#F59E0B]' : ''}`} style={{ color: expandedAxes.has(axis.name) ? '#F59E0B' : '#94a3b8' }} />
                       </button>
                       {/* 펼쳐진 세부값 — 체크박스 */}
                       {expandedAxes.has(axis.name) && (
@@ -279,14 +279,14 @@ export function AiSmartSuggestionBox({
             )}
 
             {!hasAnySuggestions && !isQuestionQuery && (
-              <p className="text-[13px] text-center py-8" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <p className="text-[13px] text-center py-8" style={{ color: '#94a3b8' }}>
                 {aiSuggestions === null ? 'AI is analyzing results...' : 'No suggestions available'}
               </p>
             )}
           </div>
 
           {/* Bottom — Apply 버튼 + 하단 네비바 */}
-          <div className="shrink-0 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)', backgroundColor: '#02122c' }}>
+          <div className="shrink-0 border-t" style={{ borderColor: '#e2e8f0', backgroundColor: '#ffffff' }}>
             <div className="px-4 py-3">
               <button
                 onClick={() => { if (checkedValues.size > 0) { onApplyFilters(Array.from(checkedValues)); } setMobileAiSheetOpen(false); }}
@@ -296,7 +296,7 @@ export function AiSmartSuggestionBox({
                 {checkedValues.size > 0 ? `Apply ${checkedValues.size} Filters · ${totalResults} results` : `Show ${totalResults} results`}
               </button>
               {checkedValues.size > 0 && (
-                <button onClick={handleClear} className="w-full mt-2 py-2 text-[13px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                <button onClick={handleClear} className="w-full mt-2 py-2 text-[13px] font-bold" style={{ color: '#94a3b8' }}>
                   Clear All
                 </button>
               )}
@@ -316,15 +316,15 @@ export function AiSmartSuggestionBox({
     if (!mobileFilterSheetOpen || !mounted) return null;
     return createPortal(
       <div className="md:hidden fixed inset-0 z-[10001]">
-        <div className="absolute inset-0 flex flex-col" style={{ backgroundColor: '#02122c' }}>
+        <div className="absolute inset-0 flex flex-col" style={{ backgroundColor: '#ffffff' }}>
           {/* Header — ← 뒤로가기 + 중앙 "Filters" 타이틀 */}
-          <div className="relative flex items-center justify-center px-4 py-3.5 border-b shrink-0" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+          <div className="relative flex items-center justify-center px-4 py-3.5 border-b shrink-0" style={{ borderColor: '#e2e8f0' }}>
             <button onClick={() => setMobileFilterSheetOpen(false)} className="absolute left-3 p-1">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+              <svg className="w-5 h-5 text-[#02122c]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
             </button>
             <div className="flex items-center gap-1.5">
-              <Icons.Filter className="w-4 h-4 text-white/70" />
-              <span className="text-[15px] font-extrabold text-white">Filters</span>
+              <Icons.Filter className="w-4 h-4 text-[#02122c]/70" />
+              <span className="text-[15px] font-extrabold text-[#02122c]">Filters</span>
             </div>
           </div>
 
@@ -333,40 +333,40 @@ export function AiSmartSuggestionBox({
 
             {/* ── PRICE RANGE ── */}
             {setPriceMax && (
-              <div className="pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                <h3 className="text-[14px] font-extrabold uppercase tracking-wide text-white mb-3">Price Range</h3>
-                <input type="range" min="0" max="2000" step="50" value={priceMax} onChange={(e) => setPriceMax(Number(e.target.value))} className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ background: 'rgba(255,255,255,0.2)' }} />
+              <div className="pb-5" style={{ borderBottom: '1px solid #e2e8f0' }}>
+                <h3 className="text-[14px] font-extrabold uppercase tracking-wide text-[#02122c] mb-3">Price Range</h3>
+                <input type="range" min="0" max="2000" step="50" value={priceMax} onChange={(e) => setPriceMax(Number(e.target.value))} className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ background: '#e2e8f0' }} />
                 <div className="flex justify-between text-[13px] font-bold mt-2">
-                  <span style={{ color: 'rgba(255,255,255,0.5)' }}>$0</span>
-                  <span className="text-white">${priceMax}{priceMax === 2000 ? '+' : ''}</span>
+                  <span style={{ color: '#94a3b8' }}>$0</span>
+                  <span className="text-[#02122c]">${priceMax}{priceMax === 2000 ? '+' : ''}</span>
                 </div>
               </div>
             )}
 
             {/* ── ARRIVAL DATE ── */}
-            <div className="pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-              <h3 className="text-[14px] font-extrabold uppercase tracking-wide text-white mb-3">Arrival Date</h3>
-              <input type="range" min="1" max="30" step="1" value={maxDeliveryDays} onChange={(e) => setMaxDeliveryDays?.(Number(e.target.value))} className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ background: 'rgba(255,255,255,0.2)' }} />
+            <div className="pb-5" style={{ borderBottom: '1px solid #e2e8f0' }}>
+              <h3 className="text-[14px] font-extrabold uppercase tracking-wide text-[#02122c] mb-3">Arrival Date</h3>
+              <input type="range" min="1" max="30" step="1" value={maxDeliveryDays} onChange={(e) => setMaxDeliveryDays?.(Number(e.target.value))} className="w-full h-1.5 rounded-lg appearance-none cursor-pointer" style={{ background: '#e2e8f0' }} />
               <div className="flex justify-between text-[13px] font-bold mt-2">
-                <span style={{ color: 'rgba(255,255,255,0.5)' }}>Today</span>
-                <span className="text-white">{maxDeliveryDays} Days{maxDeliveryDays === 30 ? '+' : ''}</span>
+                <span style={{ color: '#94a3b8' }}>Today</span>
+                <span className="text-[#02122c]">{maxDeliveryDays} Days{maxDeliveryDays === 30 ? '+' : ''}</span>
               </div>
             </div>
 
             {/* ── RETAILERS (Domestic 그룹) ── */}
             {setSelectedRetailers && (
-              <div className="pb-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <div className="pb-5" style={{ borderBottom: '1px solid #e2e8f0' }}>
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-[14px] font-extrabold uppercase tracking-wide text-white">Retailers</h3>
+                  <h3 className="text-[14px] font-extrabold uppercase tracking-wide text-[#02122c]">Retailers</h3>
                   <div className="flex gap-3 text-[12px] font-extrabold">
                     <button onClick={() => setSelectedRetailers(() => new Set(allRetailers))} className="text-[#F59E0B]">Select All</button>
-                    <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
-                    <button onClick={() => setSelectedRetailers(() => new Set())} style={{ color: 'rgba(255,255,255,0.4)' }}>Clear</button>
+                    <span style={{ color: '#e2e8f0' }}>|</span>
+                    <button onClick={() => setSelectedRetailers(() => new Set())} style={{ color: '#94a3b8' }}>Clear</button>
                   </div>
                 </div>
 
                 {/* Domestic */}
-                <p className="text-[12px] font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Domestic</p>
+                <p className="text-[12px] font-bold uppercase tracking-wider mb-2" style={{ color: '#94a3b8' }}>Domestic</p>
                 <div className="flex flex-col gap-0.5 mb-4">
                   {US_MAJOR_RETAILERS.map(r => {
                     const programs = MEMBERSHIP_MAP.get(r);
@@ -383,8 +383,8 @@ export function AiSmartSuggestionBox({
                               className="ml-auto shrink-0 text-[10px] font-bold px-2 py-[3px] rounded-full border transition-all"
                               style={{
                                 backgroundColor: isActive ? prog.badgeBg : 'transparent',
-                                color: isActive ? prog.badgeColor : 'rgba(255,255,255,0.3)',
-                                borderColor: isActive ? 'transparent' : 'rgba(255,255,255,0.15)',
+                                color: isActive ? prog.badgeColor : '#94a3b8',
+                                borderColor: isActive ? 'transparent' : '#e2e8f0',
                               }}
                             >
                               {prog.badge}
@@ -397,7 +397,7 @@ export function AiSmartSuggestionBox({
                 </div>
 
                 {/* Global */}
-                <p className="text-[12px] font-bold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Global</p>
+                <p className="text-[12px] font-bold uppercase tracking-wider mb-2" style={{ color: '#94a3b8' }}>Global</p>
                 <div className="flex flex-col gap-0.5">
                   {GLOBAL_RETAILERS.map(r => (
                     <div key={r} className="flex items-center py-1 px-1 rounded transition-colors" style={{ backgroundColor: selectedRetailers?.has(r) ? 'rgba(245,158,11,0.06)' : 'transparent' }}>
@@ -410,7 +410,7 @@ export function AiSmartSuggestionBox({
           </div>
 
           {/* Bottom — Show results + 하단 네비바 */}
-          <div className="shrink-0 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)', backgroundColor: '#02122c' }}>
+          <div className="shrink-0 border-t" style={{ borderColor: '#e2e8f0', backgroundColor: '#ffffff' }}>
             <div className="px-4 py-3">
               <button onClick={() => setMobileFilterSheetOpen(false)} className="w-full py-3 rounded-xl text-[14px] font-extrabold" style={{ backgroundColor: '#F59E0B', color: '#02122c' }}>
                 Show {totalResults} results
@@ -435,7 +435,7 @@ export function AiSmartSuggestionBox({
           className="flex items-center gap-1.5 py-1 transition-all"
         >
           <Icons.Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-          <span className="text-[13px] font-extrabold" style={{ color: 'rgba(255,255,255,0.6)' }}>POTAL Filter</span>
+          <span className="text-[13px] font-extrabold" style={{ color: '#64748b' }}>POTAL Filter</span>
           {checkedValues.size > 0 && (
             <span className="text-[9px] font-bold px-1.5 rounded-full" style={{ backgroundColor: '#F59E0B', color: '#02122c' }}>{checkedValues.size}</span>
           )}
@@ -445,7 +445,13 @@ export function AiSmartSuggestionBox({
           className="flex items-center gap-1.5 py-1 transition-all"
         >
           <Icons.Filter className="w-3.5 h-3.5 text-[#F59E0B]" />
-          <span className="text-[13px] font-extrabold" style={{ color: 'rgba(255,255,255,0.6)' }}>Filters</span>
+          <span className="text-[13px] font-extrabold" style={{ color: '#64748b' }}>Filters</span>
+        </button>
+        <button
+          onClick={() => window.location.href = '/search/info'}
+          className="flex items-center py-1 transition-all ml-auto"
+        >
+          <span className="text-[13px] font-extrabold" style={{ color: '#F59E0B' }}>Info</span>
         </button>
       </div>
       {renderMobileAiSheet()}

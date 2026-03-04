@@ -379,27 +379,27 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
              </div>
 
              {/* 비용 breakdown — Shipping → Tax/Duty → Product → Total */}
-             <div className="w-full flex-1 px-3 pb-3 flex flex-col items-end justify-center gap-[3px]">
+             <div className="w-full flex-1 px-3 pb-3 flex flex-col items-end justify-center gap-[4px]">
                  {/* Shipping */}
                  <div className="flex items-center gap-1.5">
-                   <span className="text-[10px] text-slate-400">Shipping</span>
+                   <span className="text-[11px] text-slate-400">Shipping</span>
                    {isShipFree ? (
-                     <span className="text-[11px] font-bold text-emerald-600">Free</span>
+                     <span className="text-[13px] font-extrabold text-emerald-600">Free</span>
                    ) : (
-                     <span className="text-[11px] font-bold text-slate-500">{shipCostDisplay}</span>
+                     <span className="text-[13px] font-bold text-slate-600">{shipCostDisplay}</span>
                    )}
                  </div>
 
                  {/* Tax or Duty+MPF — 항상 1줄 (PC: 팝업, 모바일: 페이지 이동) */}
                  <div className="flex items-center gap-1.5 relative">
-                   <span className="text-[10px] text-slate-400">{isGlobal ? 'Duty+MPF' : 'Est. Tax'}</span>
+                   <span className="text-[11px] text-slate-400">{isGlobal ? 'Duty+MPF' : 'Est. Tax'}</span>
                    <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTaxPopup(!showTaxPopup); }} className="p-0 border-0 bg-transparent cursor-pointer">
                      <Icons.Info className="w-2.5 h-2.5 text-slate-300 hover:text-[#F59E0B]" />
                    </button>
                    {isGlobal ? (
-                     <span className="text-[11px] font-bold text-red-500">+${(extraFees > 0 ? extraFees : ((priceNum || 0) * 0.20) + 5.50).toFixed(2)}</span>
+                     <span className="text-[13px] font-bold text-red-500">+${(extraFees > 0 ? extraFees : ((priceNum || 0) * 0.20) + 5.50).toFixed(2)}</span>
                    ) : (
-                     <span className="text-[11px] font-bold text-slate-500">+${(extraFees > 0 ? extraFees : (priceNum || 0) * 0.07).toFixed(2)}</span>
+                     <span className="text-[13px] font-bold text-slate-600">+${(extraFees > 0 ? extraFees : (priceNum || 0) * 0.07).toFixed(2)}</span>
                    )}
 
                    {/* PC Tax Info 팝업 — 외부 클릭 시 닫힘 */}
@@ -413,21 +413,21 @@ export function ProductCard({ product, type = "domestic" }: ProductCardProps) {
 
                  {/* Product */}
                  <div className="flex items-center gap-1.5">
-                   <span className="text-[10px] text-slate-400">Product</span>
-                   <span className="text-[11px] font-bold text-slate-500">{displayPrice}</span>
+                   <span className="text-[11px] text-slate-400">Product</span>
+                   <span className="text-[13px] font-bold text-slate-600">{displayPrice}</span>
                  </div>
 
                  {/* 가격 범위 경고 */}
                  {hasPriceRange && (
-                   <span className="text-[9px] text-amber-600 font-medium">⚠ Price varies by option</span>
+                   <span className="text-[10px] text-amber-600 font-medium">⚠ Price varies by option</span>
                  )}
 
                  {/* Divider + Total — Total Landed Cost 위, 가격 아래 */}
                  <div className="w-full border-t border-dashed border-slate-200 my-0.5" />
-                 <span className="text-[9px] font-bold text-emerald-600">Total Landed Cost{hasPriceRange ? ' (est.)' : ''}</span>
-                 <div className="text-[20px] font-extrabold text-[#02122c] leading-none">{finalTotal}</div>
+                 <span className="text-[10px] font-bold text-emerald-600">Total Landed Cost{hasPriceRange ? ' (est.)' : ''}</span>
+                 <div className="text-[24px] font-extrabold text-[#02122c] leading-none">{finalTotal}</div>
 
-                 <button onClick={handleViewDeal} className="w-full h-[30px] mt-1.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[13px] font-extrabold rounded-[4px] flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
+                 <button onClick={handleViewDeal} className="w-full h-[32px] mt-1.5 bg-[#02122c] hover:bg-[#F59E0B] text-white text-[13px] font-extrabold rounded-[4px] flex items-center justify-center gap-1 transition-colors shadow-sm cursor-pointer">
                     Select <Icons.ArrowRight className="w-3 h-3" />
                  </button>
              </div>

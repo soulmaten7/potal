@@ -54,10 +54,10 @@ function MainAccordion({ title, children }: { title: string, children: React.Rea
   return (
      <div className="w-full mb-1"> 
         <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between py-2 group cursor-pointer">
-           <span className={`text-[15px] font-extrabold transition-colors text-left ${isOpen ? 'text-[#F59E0B]' : 'text-white group-hover:text-[#F59E0B]'}`}>
+           <span className={`text-[15px] font-extrabold transition-colors text-left ${isOpen ? 'text-[#F59E0B]' : 'text-[#02122c] group-hover:text-[#F59E0B]'}`}>
              {title}
            </span>
-           <Icons.ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#F59E0B]" : "text-white/50"}`} />
+           <Icons.ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#F59E0B]" : "text-slate-400"}`} />
         </button>
         <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-[1000px] opacity-100 pb-2" : "max-h-0 opacity-0"}`}>
            {children}
@@ -71,7 +71,7 @@ function SubAccordion({ title, children }: { title: string, children: React.Reac
   return (
      <div className="w-full ml-1 mb-1">
         <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between py-2 group cursor-pointer">
-           <span className={`text-[13px] font-bold transition-colors text-left ${isOpen ? 'text-[#F59E0B]' : 'text-slate-400 group-hover:text-white'}`}>
+           <span className={`text-[13px] font-bold transition-colors text-left ${isOpen ? 'text-[#F59E0B]' : 'text-slate-500 group-hover:text-[#02122c]'}`}>
              {title}
            </span>
            <Icons.ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isOpen ? "rotate-180 text-[#F59E0B]" : "text-slate-500"}`} />
@@ -84,7 +84,7 @@ function SubAccordion({ title, children }: { title: string, children: React.Reac
 }
 
 const StaticLink = ({ href, children, onClick }: { href?: string, children: React.ReactNode, onClick?: () => void }) => {
-    const baseClass = "text-[15px] font-extrabold text-white hover:text-[#F59E0B] transition-colors cursor-pointer block py-2"; 
+    const baseClass = "text-[15px] font-extrabold text-[#02122c] hover:text-[#F59E0B] transition-colors cursor-pointer block py-2";
     if (onClick) return <button onClick={onClick} className={`${baseClass} text-left w-full`}>{children}</button>;
     return <Link href={href || "#"} className={baseClass}>{children}</Link>;
 };
@@ -131,7 +131,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-[#02122c] text-white py-10 mt-auto w-full z-10 relative">
+    <footer className="bg-white text-[#02122c] py-10 mt-auto w-full z-10 relative border-t border-slate-200">
       
       {toastMsg && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-[#F59E0B] text-[#02122c] px-6 py-3 rounded-full font-bold shadow-xl z-50 animate-bounce">
@@ -143,13 +143,13 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 items-start">
           
           <div className="flex flex-col items-start gap-4 pt-1"> 
-            <Link href="/" className="text-3xl font-extrabold text-white tracking-tight cursor-pointer">POTAL</Link>
+            <Link href="/" className="text-3xl font-extrabold tracking-tight cursor-pointer"><span className="text-[#02122c]">P</span><span className="text-[#F59E0B]">O</span><span className="text-[#02122c]">TAL</span></Link>
             
             {/* [업그레이드] 통화 변경 버튼 (위로 열리는 드롭다운) */}
             <div className="relative" ref={currencyRef}>
               <button 
                 onClick={() => setShowCurrencyMenu(!showCurrencyMenu)} 
-                className="flex items-center gap-2 hover:bg-white/10 font-bold text-[13px] border border-white/30 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                className="flex items-center gap-2 hover:bg-slate-100 font-bold text-[13px] border border-slate-300 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
               >
                 <Icons.Globe className="w-3.5 h-3.5" /> 
                 {currency === 'USD' ? 'US · en-US · $ USD' : 'KR · ko-KR · ₩ KRW'}
@@ -198,7 +198,7 @@ export function Footer() {
                         <ul className="grid grid-cols-2 gap-2 pl-2">
                             {item.keywords.map(kw => (
                             <li key={kw}>
-                                <Link href={`/search?q=${encodeURIComponent(kw)}`} className="text-[13px] text-slate-400 hover:text-white hover:underline transition-colors block cursor-pointer py-1">
+                                <Link href={`/search?q=${encodeURIComponent(kw)}`} className="text-[13px] text-slate-500 hover:text-[#02122c] hover:underline transition-colors block cursor-pointer py-1">
                                 {kw}
                                 </Link>
                             </li>
@@ -213,7 +213,7 @@ export function Footer() {
                 <ul className="flex flex-col gap-1 pl-2">
                     {COMPANY_LINKS.map((item) => (
                     <li key={item.label}>
-                        <Link href={item.href} className="text-[13px] text-slate-400 hover:text-white hover:underline transition-colors block cursor-pointer py-1">
+                        <Link href={item.href} className="text-[13px] text-slate-500 hover:text-[#02122c] hover:underline transition-colors block cursor-pointer py-1">
                         {item.label}
                         </Link>
                     </li>
@@ -225,7 +225,7 @@ export function Footer() {
                 <ul className="flex flex-col gap-1 pl-2">
                     {PARTNER_LINKS.map((item) => (
                     <li key={item.label}>
-                        <Link href={item.href} className="text-[13px] text-slate-400 hover:text-white hover:underline transition-colors block cursor-pointer py-1">
+                        <Link href={item.href} className="text-[13px] text-slate-500 hover:text-[#02122c] hover:underline transition-colors block cursor-pointer py-1">
                         {item.label}
                         </Link>
                     </li>
@@ -246,7 +246,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 text-center pt-8 opacity-40">
-           <div className="text-[11px] text-white font-bold">
+           <div className="text-[11px] text-slate-500 font-bold">
               &copy; 2026 POTAL Inc. All rights reserved. <br/>
               <span className="font-normal">POTAL is a global shopping search engine. We do not sell products directly.</span>
            </div>

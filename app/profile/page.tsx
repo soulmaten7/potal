@@ -109,12 +109,12 @@ export default function ProfilePage() {
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px 20px 12px' }}>
       <button onClick={closeSubPage} style={{
         width: '36px', height: '36px', borderRadius: '9999px',
-        background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center',
         border: 'none', cursor: 'pointer',
       }}>
-        <Icons.ChevronLeft style={{ width: '20px', height: '20px', color: '#ffffff' }} />
+        <Icons.ChevronLeft style={{ width: '20px', height: '20px', color: '#02122c' }} />
       </button>
-      <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#ffffff' }}>{title}</h2>
+      <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#02122c' }}>{title}</h2>
     </div>
   );
 
@@ -124,26 +124,26 @@ export default function ProfilePage() {
       <SubPageHeader title="Account" />
       <div style={{ padding: '8px 20px' }} className="space-y-3">
         {/* 유저 정보 카드 */}
-        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', padding: '20px' }}>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '20px' }}>
           <div className="flex items-center gap-4">
             <div style={{
               width: '56px', height: '56px', borderRadius: '9999px',
-              background: session ? 'linear-gradient(135deg, #F59E0B, #f97316)' : 'rgba(255,255,255,0.1)',
+              background: session ? 'linear-gradient(135deg, #F59E0B, #f97316)' : '#f1f5f9',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '22px', fontWeight: 800, color: '#ffffff',
             }}>
-              {session ? userInitial : <Icons.User style={{ width: '28px', height: '28px', color: 'rgba(255,255,255,0.4)' }} />}
+              {session ? userInitial : <Icons.User style={{ width: '28px', height: '28px', color: '#cbd5e1' }} />}
             </div>
             <div>
               {session ? (
                 <>
-                  <p style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff' }}>{userEmail}</p>
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>POTAL Member</p>
+                  <p style={{ fontSize: '16px', fontWeight: 800, color: '#02122c' }}>{userEmail}</p>
+                  <p style={{ fontSize: '13px', color: '#94a3b8' }}>POTAL Member</p>
                 </>
               ) : (
                 <>
-                  <p style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff' }}>Guest</p>
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>Log in to sync your data</p>
+                  <p style={{ fontSize: '16px', fontWeight: 800, color: '#02122c' }}>Guest</p>
+                  <p style={{ fontSize: '13px', color: '#94a3b8' }}>Log in to sync your data</p>
                 </>
               )}
             </div>
@@ -151,19 +151,19 @@ export default function ProfilePage() {
         </div>
 
         {/* ── Primary Zipcode (읽기 전용 — Saved Locations에서 Set Primary로 변경) ── */}
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', padding: '16px 20px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Primary Zipcode</p>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '16px 20px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Primary Zipcode</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               width: '40px', height: '40px', borderRadius: '10px',
-              background: primaryZip ? (zipSuccess === primaryZip ? 'rgba(52,211,153,0.2)' : 'rgba(245,158,11,0.15)') : 'rgba(255,255,255,0.06)',
+              background: primaryZip ? (zipSuccess === primaryZip ? 'rgba(52,211,153,0.2)' : 'rgba(245,158,11,0.15)') : '#f1f5f9',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.3s',
             }}>
-              <Icons.MapPin style={{ width: '20px', height: '20px', color: primaryZip ? (zipSuccess === primaryZip ? '#34d399' : '#F59E0B') : 'rgba(255,255,255,0.25)' }} />
+              <Icons.MapPin style={{ width: '20px', height: '20px', color: primaryZip ? (zipSuccess === primaryZip ? '#34d399' : '#F59E0B') : '#cbd5e1' }} />
             </div>
             <div>
-              <span style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff', fontFamily: 'monospace', display: 'block' }}>
+              <span style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', fontFamily: 'monospace', display: 'block' }}>
                 {primaryZip || 'Not set'}
               </span>
               {zipSuccess === primaryZip && primaryZip ? (
@@ -171,17 +171,17 @@ export default function ProfilePage() {
               ) : primaryZip && lookupZip(primaryZip) ? (
                 <span style={{ fontSize: '11px', color: '#F59E0B', fontWeight: 700 }}>{lookupZip(primaryZip)!.city}, {lookupZip(primaryZip)!.state}</span>
               ) : !primaryZip ? (
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>Add a location below to set</span>
+                <span style={{ fontSize: '11px', color: '#94a3b8' }}>Add a location below to set</span>
               ) : null}
             </div>
           </div>
         </div>
 
         {/* ── Add New Location ── */}
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
           {showAddInput ? (
             <div style={{ padding: '16px 20px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Add New Location</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Add New Location</p>
               <input
                 type="text"
                 inputMode="numeric"
@@ -192,9 +192,9 @@ export default function ProfilePage() {
                 autoFocus
                 style={{
                   width: '100%', padding: '12px 14px', borderRadius: '10px', fontSize: '16px', fontWeight: 700,
-                  background: 'rgba(255,255,255,0.1)',
-                  border: zipError ? '1px solid #ef4444' : inputZip.length === 5 && lookupZip(inputZip) ? '1px solid #34d399' : '1px solid rgba(255,255,255,0.2)',
-                  color: '#ffffff', outline: 'none', fontFamily: 'monospace', marginBottom: '4px',
+                  background: '#f1f5f9',
+                  border: zipError ? '1px solid #ef4444' : inputZip.length === 5 && lookupZip(inputZip) ? '1px solid #34d399' : '1px solid #e2e8f0',
+                  color: '#02122c', outline: 'none', fontFamily: 'monospace', marginBottom: '4px',
                   boxSizing: 'border-box',
                 }}
               />
@@ -213,14 +213,14 @@ export default function ProfilePage() {
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handleAddZipcode} disabled={!inputZip.trim()} style={{
                   flex: 1, padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: 700,
-                  background: inputZip.trim() ? '#F59E0B' : 'rgba(255,255,255,0.08)',
-                  border: 'none', color: inputZip.trim() ? '#ffffff' : 'rgba(255,255,255,0.25)',
+                  background: inputZip.trim() ? '#F59E0B' : '#f1f5f9',
+                  border: 'none', color: inputZip.trim() ? '#ffffff' : '#cbd5e1',
                   cursor: inputZip.trim() ? 'pointer' : 'not-allowed',
                 }}>Add</button>
                 <button onClick={() => { setShowAddInput(false); setInputZip(''); }} style={{
                   flex: 1, padding: '12px', borderRadius: '10px', fontSize: '14px', fontWeight: 700,
-                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: 'rgba(255,255,255,0.5)', cursor: 'pointer',
+                  background: '#f1f5f9', border: '1px solid #e2e8f0',
+                  color: '#64748b', cursor: 'pointer',
                 }}>Cancel</button>
               </div>
             </div>
@@ -231,29 +231,29 @@ export default function ProfilePage() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Icons.Plus style={{ width: '20px', height: '20px', color: '#F59E0B' }} />
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff' }}>Add New Location</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#02122c' }}>Add New Location</span>
               </div>
-              <Icons.ChevronRight style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.25)' }} />
+              <Icons.ChevronRight style={{ width: '16px', height: '16px', color: '#cbd5e1' }} />
             </button>
           )}
         </div>
 
         {/* ── Saved Locations ── */}
         {savedZips.length > 0 && (
-          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+          <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
             <div style={{ padding: '12px 20px 4px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                 Saved Locations ({savedZips.length})
               </p>
             </div>
             {savedZips.map((zip, idx) => (
               <React.Fragment key={zip}>
-                {idx > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 20px' }} />}
+                {idx > 0 && <div style={{ height: '1px', background: '#e2e8f0', margin: '0 20px' }} />}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff', fontFamily: 'monospace' }}>{zip}</span>
+                    <span style={{ fontSize: '16px', fontWeight: 800, color: '#02122c', fontFamily: 'monospace' }}>{zip}</span>
                     {lookupZip(zip) && (
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.4)' }}>{lookupZip(zip)!.city}, {lookupZip(zip)!.stateCode}</span>
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8' }}>{lookupZip(zip)!.city}, {lookupZip(zip)!.stateCode}</span>
                     )}
                     {primaryZip === zip && (
                       <span style={{
@@ -271,10 +271,10 @@ export default function ProfilePage() {
                     )}
                     <button onClick={() => handleDeleteZip(zip)} style={{
                       width: '28px', height: '28px', borderRadius: '8px',
-                      background: 'rgba(255,255,255,0.06)', border: 'none', cursor: 'pointer',
+                      background: '#f1f5f9', border: 'none', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
-                      <Icons.X style={{ width: '14px', height: '14px', color: 'rgba(255,255,255,0.3)' }} />
+                      <Icons.X style={{ width: '14px', height: '14px', color: '#94a3b8' }} />
                     </button>
                   </div>
                 </div>
@@ -286,12 +286,12 @@ export default function ProfilePage() {
         {/* Saved Locations 비어있을 때 */}
         {savedZips.length === 0 && (
           <div style={{
-            background: 'rgba(255,255,255,0.04)', borderRadius: '16px',
-            border: '1px dashed rgba(255,255,255,0.1)', padding: '20px', textAlign: 'center',
+            background: '#fafafa', borderRadius: '16px',
+            border: '1px dashed #e2e8f0', padding: '20px', textAlign: 'center',
           }}>
-            <Icons.Globe style={{ width: '24px', height: '24px', color: 'rgba(255,255,255,0.2)', margin: '0 auto 8px' }} />
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>No saved locations yet</p>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '4px' }}>Add a zipcode above to get started</p>
+            <Icons.Globe style={{ width: '24px', height: '24px', color: '#cbd5e1', margin: '0 auto 8px' }} />
+            <p style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>No saved locations yet</p>
+            <p style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '4px' }}>Add a zipcode above to get started</p>
           </div>
         )}
 
@@ -299,7 +299,7 @@ export default function ProfilePage() {
         {session ? (
           <button onClick={handleLogout} style={{
             width: '100%', padding: '14px', borderRadius: '16px', fontSize: '14px', fontWeight: 700,
-            background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)',
+            background: '#f1f5f9', border: '1px solid #e2e8f0',
             color: '#f87171', cursor: 'pointer',
           }}>
             Log out
@@ -322,16 +322,16 @@ export default function ProfilePage() {
       <SubPageHeader title="Settings" />
       <div style={{ padding: '8px 20px' }} className="space-y-3">
         {/* Language & Currency */}
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
           <div style={{ padding: '16px 20px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Language & Currency</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Language & Currency</p>
             <div className="space-y-2">
               <button onClick={() => handleCurrencyChange('USD')} style={{
                 width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: '12px', fontSize: '14px', fontWeight: 700,
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: currency === 'USD' ? '#F59E0B' : 'rgba(255,255,255,0.08)',
-                color: currency === 'USD' ? '#ffffff' : 'rgba(255,255,255,0.6)',
-                border: currency === 'USD' ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                background: currency === 'USD' ? '#F59E0B' : '#f1f5f9',
+                color: currency === 'USD' ? '#ffffff' : '#475569',
+                border: currency === 'USD' ? 'none' : '1px solid #e2e8f0',
                 cursor: 'pointer',
               }}>
                 <span>🇺🇸 English (USD)</span>
@@ -340,24 +340,24 @@ export default function ProfilePage() {
               <div style={{
                 width: '100%', textAlign: 'left', padding: '12px 16px', borderRadius: '12px', fontSize: '14px', fontWeight: 700,
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.25)',
-                border: '1px solid rgba(255,255,255,0.04)', cursor: 'not-allowed',
+                background: '#fafafa', color: '#cbd5e1',
+                border: '1px solid #f1f5f9', cursor: 'not-allowed',
               }}>
                 <span>🇰🇷 한국어 (KRW)</span>
-                <span style={{ fontSize: '10px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>Soon</span>
+                <span style={{ fontSize: '10px', background: '#f1f5f9', color: '#94a3b8', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>Soon</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Notifications placeholder */}
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
           <div className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-3">
-              <Icons.Bell style={{ width: '20px', height: '20px', color: 'rgba(255,255,255,0.5)' }} />
-              <span style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff' }}>Notifications</span>
+              <Icons.Bell style={{ width: '20px', height: '20px', color: '#64748b' }} />
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#02122c' }}>Notifications</span>
             </div>
-            <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>Soon</span>
+            <span style={{ fontSize: '12px', background: '#f1f5f9', color: '#94a3b8', padding: '2px 8px', borderRadius: '6px', fontWeight: 700 }}>Soon</span>
           </div>
         </div>
       </div>
@@ -369,31 +369,31 @@ export default function ProfilePage() {
     <div>
       <SubPageHeader title="Help" />
       <div style={{ padding: '8px 20px' }} className="space-y-3">
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
           {[
             { href: '/help', icon: Icons.Info, label: 'Help Center', desc: 'Get answers to common questions' },
             { href: '/partners', icon: Icons.Box, label: 'Affiliate Disclosure', desc: 'How POTAL earns revenue' },
             { href: '/about', icon: Icons.Star, label: 'About POTAL', desc: 'Our mission and team' },
           ].map((item, idx) => (
             <React.Fragment key={item.href}>
-              {idx > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 20px' }} />}
-              <Link href={item.href} className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors">
+              {idx > 0 && <div style={{ height: '1px', background: '#e2e8f0', margin: '0 20px' }} />}
+              <Link href={item.href} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors">
                 <div className="flex items-center gap-3">
                   <item.icon style={{ width: '20px', height: '20px', color: '#F59E0B' }} />
                   <div>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff', display: 'block' }}>{item.label}</span>
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>{item.desc}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#02122c', display: 'block' }}>{item.label}</span>
+                    <span style={{ fontSize: '12px', color: '#94a3b8' }}>{item.desc}</span>
                   </div>
                 </div>
-                <Icons.ChevronRight style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.25)' }} />
+                <Icons.ChevronRight style={{ width: '16px', height: '16px', color: '#cbd5e1' }} />
               </Link>
             </React.Fragment>
           ))}
         </div>
 
         {/* Contact */}
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', padding: '20px', textAlign: 'center' }}>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>Need more help?</p>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '20px', textAlign: 'center' }}>
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '8px' }}>Need more help?</p>
           <a href="mailto:support@potal.app" style={{ fontSize: '14px', fontWeight: 700, color: '#F59E0B', textDecoration: 'none' }}>
             support@potal.app
           </a>
@@ -407,7 +407,7 @@ export default function ProfilePage() {
     <div>
       <SubPageHeader title="Legal" />
       <div style={{ padding: '8px 20px' }} className="space-y-3">
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
           {[
             { href: '/legal/terms', label: 'Terms of Service' },
             { href: '/legal/privacy', label: 'Privacy Policy' },
@@ -415,16 +415,16 @@ export default function ProfilePage() {
             { href: '/legal/privacy-settings', label: 'Privacy Settings' },
           ].map((item, idx) => (
             <React.Fragment key={item.href}>
-              {idx > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.06)', margin: '0 20px' }} />}
-              <Link href={item.href} className="flex items-center justify-between px-5 py-4 hover:bg-white/5 transition-colors">
-                <span style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{item.label}</span>
-                <Icons.ChevronRight style={{ width: '16px', height: '16px', color: 'rgba(255,255,255,0.2)' }} />
+              {idx > 0 && <div style={{ height: '1px', background: '#e2e8f0', margin: '0 20px' }} />}
+              <Link href={item.href} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors">
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#475569' }}>{item.label}</span>
+                <Icons.ChevronRight style={{ width: '16px', height: '16px', color: '#cbd5e1' }} />
               </Link>
             </React.Fragment>
           ))}
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.25)', paddingTop: '8px' }}>
+        <p style={{ textAlign: 'center', fontSize: '11px', color: '#cbd5e1', paddingTop: '8px' }}>
           POTAL v1.0 · © 2026 POTAL Inc.
         </p>
       </div>
@@ -440,8 +440,8 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div style={{ backgroundColor: '#02122c', overflow: 'hidden', position: 'relative' }} className="min-h-screen pb-28">
-
+    <div style={{ backgroundColor: '#ffffff', overflow: 'hidden', position: 'relative' }} className="min-h-screen pb-28">
+      <div className="max-w-[1440px] mx-auto">
       {/* ═══ 메인 페이지 ═══ */}
       <div style={{
         transition: 'transform 0.3s ease, opacity 0.3s ease',
@@ -451,7 +451,7 @@ export default function ProfilePage() {
       }}>
         {/* 타이틀 */}
         <div style={{ padding: '24px 20px 16px' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.02em' }}>Profile</h1>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#02122c', letterSpacing: '-0.02em' }}>Profile</h1>
         </div>
 
         {/* 로그인 배너 (비로그인 시) */}
@@ -460,8 +460,8 @@ export default function ProfilePage() {
             <button
               onClick={() => setShowLoginModal(true)}
               style={{
-                width: '100%', background: 'rgba(255,255,255,0.08)', borderRadius: '16px',
-                border: '1px solid rgba(255,255,255,0.1)', padding: '16px 20px',
+                width: '100%', background: '#f8fafc', borderRadius: '16px',
+                border: '1px solid #e2e8f0', padding: '16px 20px',
                 textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '14px',
               }}
             >
@@ -472,8 +472,8 @@ export default function ProfilePage() {
                 <Icons.User style={{ width: '22px', height: '22px', color: '#F59E0B' }} />
               </div>
               <div>
-                <p style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff', marginBottom: '2px' }}>Log in or sign up</p>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>Sync your data across devices</p>
+                <p style={{ fontSize: '15px', fontWeight: 800, color: '#02122c', marginBottom: '2px' }}>Log in or sign up</p>
+                <p style={{ fontSize: '12px', color: '#94a3b8' }}>Sync your data across devices</p>
               </div>
             </button>
           </div>
@@ -483,8 +483,8 @@ export default function ProfilePage() {
         {session && (
           <div style={{ padding: '0 20px 16px' }}>
             <div style={{
-              background: 'rgba(255,255,255,0.08)', borderRadius: '16px',
-              border: '1px solid rgba(255,255,255,0.1)', padding: '16px 20px',
+              background: '#f8fafc', borderRadius: '16px',
+              border: '1px solid #e2e8f0', padding: '16px 20px',
               display: 'flex', alignItems: 'center', gap: '14px',
             }}>
               <div style={{
@@ -496,8 +496,8 @@ export default function ProfilePage() {
                 {userInitial}
               </div>
               <div>
-                <p style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff' }}>{userEmail}</p>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>POTAL Member</p>
+                <p style={{ fontSize: '15px', fontWeight: 800, color: '#02122c' }}>{userEmail}</p>
+                <p style={{ fontSize: '12px', color: '#94a3b8' }}>POTAL Member</p>
               </div>
             </div>
           </div>
@@ -512,9 +512,9 @@ export default function ProfilePage() {
                 key={tile.id}
                 onClick={() => openSubPage(tile.id)}
                 style={{
-                  background: 'rgba(255,255,255,0.06)',
+                  background: '#f8fafc',
                   borderRadius: '16px',
-                  border: '1px solid rgba(255,255,255,0.08)',
+                  border: '1px solid #e2e8f0',
                   padding: '20px 16px',
                   textAlign: 'left',
                   cursor: 'pointer',
@@ -532,8 +532,8 @@ export default function ProfilePage() {
                   <IconComp style={{ width: '20px', height: '20px', color: tile.color }} />
                 </div>
                 <div>
-                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#ffffff', marginBottom: '2px' }}>{tile.label}</p>
-                  <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: '1.3' }}>{tile.desc}</p>
+                  <p style={{ fontSize: '15px', fontWeight: 800, color: '#02122c', marginBottom: '2px' }}>{tile.label}</p>
+                  <p style={{ fontSize: '11px', color: '#94a3b8', lineHeight: '1.3' }}>{tile.desc}</p>
                 </div>
               </button>
             );
@@ -541,7 +541,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Version */}
-        <p style={{ textAlign: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '24px' }}>
+        <p style={{ textAlign: 'center', fontSize: '11px', color: '#cbd5e1', marginTop: '24px' }}>
           POTAL v1.0 · © 2026 POTAL Inc.
         </p>
       </div>
@@ -551,7 +551,7 @@ export default function ProfilePage() {
         <div style={{
           position: 'absolute',
           top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: '#02122c',
+          backgroundColor: '#ffffff',
           transition: 'transform 0.3s ease',
           transform: slideIn ? 'translateX(0)' : 'translateX(100%)',
           overflowY: 'auto',
@@ -566,6 +566,7 @@ export default function ProfilePage() {
       )}
 
       <LoginModal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)} onSuccess={() => setShowLoginModal(false)} />
+      </div>
     </div>
   );
 }

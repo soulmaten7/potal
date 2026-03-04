@@ -23,10 +23,10 @@ function PartnerBox({ name }: { name: string }) {
     <div style={{ width: '50%', padding: '4px', boxSizing: 'border-box' }}>
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '44px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)',
+        height: '44px', background: '#f1f5f9', border: '1px solid #e2e8f0',
         borderRadius: '10px', cursor: 'default',
       }}>
-        <span style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>{name}</span>
+        <span style={{ fontSize: '13px', fontWeight: 700, color: '#02122c' }}>{name}</span>
       </div>
     </div>
   );
@@ -34,24 +34,25 @@ function PartnerBox({ name }: { name: string }) {
 
 export default function PartnersPage() {
   return (
-    <div style={{ backgroundColor: '#02122c' }} className="w-full min-h-screen pb-28">
+    <div style={{ backgroundColor: '#ffffff' }} className="w-full min-h-screen pb-28">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
 
       {/* 1. Hero Section */}
-      <div style={{ padding: '80px 24px 24px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#ffffff', marginBottom: '8px' }}>
+      <div style={{ padding: '80px 0 24px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>
           Partners & Affiliate
         </h1>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>
+        <p style={{ fontSize: '14px', color: '#64748b' }}>
           Direct integration for accurate pricing & shipping.
         </p>
       </div>
 
       {/* 2. Partner Lists */}
-      <div style={{ padding: '0 20px' }}>
+      <div style={{ padding: '0' }}>
 
         {/* Domestic */}
         <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Domestic</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Domestic</p>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {PARTNERS_DOMESTIC.map((partner) => (
               <PartnerBox key={partner.name} name={partner.name} />
@@ -61,7 +62,7 @@ export default function PartnersPage() {
 
         {/* Global */}
         <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Global</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Global</p>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
             {PARTNERS_GLOBAL.map((partner) => (
               <PartnerBox key={partner.name} name={partner.name} />
@@ -71,11 +72,11 @@ export default function PartnersPage() {
 
         {/* CTA */}
         <div style={{
-          background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)',
+          background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0',
           padding: '24px', textAlign: 'center', marginTop: '16px',
         }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#ffffff', marginBottom: '8px' }}>Are you a retailer?</h2>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginBottom: '16px' }}>Join our network to reach global shoppers.</p>
+          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Are you a retailer?</h2>
+          <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>Join our network to reach global shoppers.</p>
           <a href="/help?topic=sell" style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '10px 24px', background: '#F59E0B', color: '#ffffff',
@@ -86,9 +87,10 @@ export default function PartnersPage() {
         </div>
 
         {/* Disclosure */}
-        <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '11px', color: 'rgba(255,255,255,0.25)', lineHeight: '1.6' }}>
+        <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '11px', color: '#94a3b8', lineHeight: '1.6' }}>
           * POTAL may earn an affiliate commission from qualifying purchases. This does not affect our ranking algorithm or the price you pay.
         </p>
+      </div>
       </div>
     </div>
   );

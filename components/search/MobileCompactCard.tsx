@@ -1,13 +1,13 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icons, InfoIcon } from '../icons';
 import { useWishlist } from '@/app/context/WishlistContext';
 import { getRetailerConfig, matchShippingProgram } from '@/app/lib/retailerConfig';
 import type { Product } from './ResultsGrid';
 
-/** ═══ 모바일 컴팩트 세로형 카드 ═══ */
+/** ═══ 모바일 컴팩트 세로형 카드 (간소화 + 아코디언) ═══ */
 const MOBILE_PLATFORM_COLORS: Record<string, string> = {
   amazon: '#FF9900', walmart: '#0071ce', target: '#CC0000',
   'best buy': '#003b64', bestbuy: '#003b64', ebay: '#e53238',
@@ -31,6 +31,7 @@ function twToHex(tw: string, fallback: string): string {
 export function MobileCompactCard({ product, type }: { product: Product; type: 'domestic' | 'global' }) {
   const router = useRouter();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [expanded, setExpanded] = useState(false);
   const isSaved = isInWishlist(String(product.id));
   const displayTitle = product.title || 'Untitled';
   const displayImage = product.thumb || '';
@@ -45,12 +46,9 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
   const hasTotal = product.totalPrice != null && product.totalPrice > 0 && product.totalPrice !== priceNum;
   const finalTotal = hasTotal ? `$${product.totalPrice!.toFixed(2)}` : displayPrice;
   const taxAmount = hasTotal ? (product.totalPrice! - priceNum - (shippingPrice || 0)) : 0;
-  const taxLabel = taxAmount > 0.5 ? `Est.${isGlobal ? 'Duty' : 'Tax'} +$${taxAmount.toFixed(2)}` : '';
+  const hasFreeShipping = shippingPrice === 0 || shippingPrice == null;
 
-  // ── 멤버십 뱃지 결정 (3단계 우선순위) ──
-  // 1순위: ScoringEngine이 미리 계산한 membershipBadge (가장 정확)
-  // 2순위: retailerConfig 기반 matchShippingProgram (데이터 매칭)
-  // 3순위: is_prime fallback (Amazon 전용)
+  // ── 멤버십 뱃지 결정 ──
   const mBadge = product.membershipBadge;
   const retailerConf = getRetailerConfig(displaySeller);
   const shippingProg = retailerConf ? matchShippingProgram(retailerConf, {
@@ -59,37 +57,33 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
     deliveryDays: product.arrives,
     shipping: product.shipping,
   }) : null;
-  const hasFreeShipping = shippingPrice === 0 || shippingPrice == null;
 
-  // 뱃지 렌더링 데이터 결정
   let badgeLabel: string | null = null;
   let badgeBg = '#333';
   let badgeColor = '#fff';
 
   if (mBadge) {
-    // 1순위: membershipBadge (ScoringEngine 제공) — Tailwind 클래스→hex 변환
     badgeLabel = mBadge.label;
     badgeBg = twToHex(mBadge.badgeBg, platformColor);
     badgeColor = twToHex(mBadge.badgeColor, '#fff');
   } else if (shippingProg) {
-    // 2순위: retailerConfig 매칭
     badgeLabel = shippingProg.badge;
     badgeBg = twToHex(shippingProg.badgeBg, '#333');
     badgeColor = twToHex(shippingProg.badgeColor, '#fff');
   } else if (product.is_prime) {
-    // 3순위: Amazon Prime fallback
     badgeLabel = 'Prime';
     badgeBg = '#232F3E';
     badgeColor = '#00A8E1';
   } else if (product.appliedMembership) {
-    // 4순위: appliedMembership 이름 직접 표시
     const label = product.appliedMembership.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     badgeLabel = label;
     badgeBg = platformColor;
     badgeColor = '#fff';
   }
 
-  const handleClick = () => {
+  const handleViewDeal = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     const url = product.link || '#';
     if (url !== '#') window.open(url, '_blank', 'noopener,noreferrer');
   };
@@ -101,9 +95,7 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
     if (navigator.share) {
       navigator.share({ title: displayTitle, url }).catch(() => {});
     } else {
-      navigator.clipboard.writeText(url).then(() => {
-        // 간단한 피드백 (alert 대신 조용히 복사)
-      }).catch(() => {});
+      navigator.clipboard.writeText(url).then(() => {}).catch(() => {});
     }
   };
 
@@ -136,13 +128,19 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
     else addToWishlist(wishProduct);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpanded(!expanded);
+  };
+
   return (
     <div
-      onClick={handleClick}
+      onClick={handleCardClick}
       className="rounded-lg overflow-hidden cursor-pointer transition-all active:scale-[0.98] flex flex-col"
-      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+      style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0' }}
     >
-      {/* 상단: 왼쪽 셀러뱃지 ←→ 오른쪽 별점 */}
+      {/* 상단: 셀러뱃지 ←→ 별점 */}
       <div className="flex items-center justify-between px-1.5 pt-1.5 pb-0.5 flex-shrink-0">
         <div className="px-1.5 py-[2px] rounded text-[9px] font-extrabold uppercase" style={{ backgroundColor: platformColor, color: '#fff' }}>
           {displaySeller.length > 8 ? displaySeller.slice(0, 8) : displaySeller}
@@ -151,25 +149,25 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
           {(product as any).sellerFeedbackPercent ? (
             <>
               <span className="text-[9px] font-bold" style={{ color: '#10B981' }}>{(product as any).sellerFeedbackPercent}%</span>
-              <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.35)' }}>pos.</span>
+              <span className="text-[8px]" style={{ color: '#94a3b8' }}>pos.</span>
             </>
           ) : (
             <>
               <span className="text-[10px]" style={{ color: '#F59E0B' }}>★</span>
-              <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
+              <span className="text-[10px] font-bold" style={{ color: '#475569' }}>{product.rating || 0}</span>
               {product.reviewCount > 0 && (
-                <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.35)' }}>({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})</span>
+                <span className="text-[9px]" style={{ color: '#94a3b8' }}>({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})</span>
               )}
             </>
           )}
         </div>
       </div>
 
-      {/* 이미지 — 고정 비율 컨테이너 + 우측상단 공유/하트 */}
+      {/* 이미지 */}
       <div
         className="relative w-full overflow-hidden"
         style={{
-          backgroundColor: 'rgba(255,255,255,0.03)',
+          backgroundColor: '#f8fafc',
           flexShrink: 0,
           flexGrow: 0,
           flexBasis: 'auto',
@@ -177,7 +175,7 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
           paddingBottom: '125%',
         }}
       >
-        {/* 공유 + 하트 아이콘 (이미지 우측 상단) — 배경 없이, 드롭섀도우로 가독성 확보 */}
+        {/* 공유 + 하트 */}
         <div className="absolute top-1.5 right-1 z-10 flex items-center" style={{ gap: '2px' }}>
           <button onClick={handleShare} className="transition-transform active:scale-90" style={{ padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.6))' }}>
             <Icons.Share className="w-4 h-4 text-white" />
@@ -207,71 +205,81 @@ export function MobileCompactCard({ product, type }: { product: Product; type: '
         )}
       </div>
 
-      {/* 정보 영역 */}
-      <div className="px-2 py-2 flex flex-col gap-1.5">
-        {/* 상품명 — 3줄 고정 높이 (레이아웃 통일) */}
-        <p className="text-[12px] font-medium leading-snug line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '4.2em' }}>
+      {/* ── 제목 + 구분선 + (아코디언 상세) + Total Cost + (View Deal) ── */}
+      <div className="px-2 py-2 flex flex-col gap-1">
+        <p className="text-[12px] font-medium leading-snug line-clamp-3" style={{ color: '#000000', minHeight: '4.2em' }}>
           {displayTitle}
         </p>
 
         {/* 구분선 */}
-        <div className="w-full h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
+        <div className="w-full h-px" style={{ backgroundColor: '#e2e8f0' }} />
 
-        {/* ── 비용 breakdown — PC와 동일 4줄 구조 ── */}
-        <div className="flex flex-col gap-[3px]">
-          {/* 1줄: 멤버십 뱃지 + 배송일 */}
-          <div className="flex items-center gap-0.5" style={{ flexWrap: 'nowrap', overflow: 'hidden' }}>
-            {badgeLabel && (
-              <span className="text-[8px] font-extrabold px-1 py-[0.5px] rounded shrink-0" style={{ backgroundColor: badgeBg, color: badgeColor }}>
-                {badgeLabel}
+        {/* 아코디언 상세 (펼쳤을 때 Total Cost 위에 나타남) */}
+        {expanded && (
+          <div className="flex flex-col gap-[3px]">
+            {/* 멤버십 뱃지 + 배송일 */}
+            <div className="flex items-center gap-0.5 mt-0.5" style={{ flexWrap: 'nowrap', overflow: 'hidden' }}>
+              {badgeLabel && (
+                <span className="text-[9px] font-extrabold px-1.5 py-[1px] rounded shrink-0" style={{ backgroundColor: badgeBg, color: badgeColor }}>
+                  {badgeLabel}
+                </span>
+              )}
+              <span className="text-[9px] shrink-0">🚀</span>
+              <span className="text-[10px] font-bold shrink-0" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
+                {product.arrives || (isGlobal ? '7-15 Days' : '1-2 Days')}
               </span>
-            )}
-            <span className="text-[9px] shrink-0">🚀</span>
-            <span className="text-[8px] font-bold shrink-0" style={{ color: isGlobal ? '#FB7701' : '#10B981' }}>
-              {product.arrives || (isGlobal ? '7-15 Days' : '1-2 Days')}
-            </span>
-          </div>
+            </div>
 
-          {/* 2줄: Shipping */}
-          <div className="flex items-center justify-between">
-            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Shipping</span>
-            <span className="text-[9px] font-bold" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.6)' }}>
-              {hasFreeShipping ? 'Free' : shippingLabel}
-            </span>
-          </div>
+            {/* Product price */}
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium" style={{ color: '#64748b' }}>Product</span>
+              <span className="text-[11px] font-bold" style={{ color: '#000000' }}>{displayPrice}</span>
+            </div>
 
-          {/* 3줄: Tax/Duty + (i) 아이콘 — 항상 1줄 (Domestic/Global 높이 통일) */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-0.5">
-              <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {/* Shipping */}
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium" style={{ color: '#64748b' }}>Shipping</span>
+              <span className="text-[11px] font-bold" style={{ color: hasFreeShipping ? '#10B981' : '#000000' }}>
+                {hasFreeShipping ? 'Free' : shippingLabel}
+              </span>
+            </div>
+
+            {/* Tax/Duty */}
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium" style={{ color: '#64748b' }}>
                 {isGlobal ? 'Duty+MPF' : 'Est. Tax'}
               </span>
-              <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(isGlobal ? '/tax-info?type=import' : '/tax-info?type=sales'); }} className="p-0 border-0 bg-transparent cursor-pointer">
-                <InfoIcon className="w-2.5 h-2.5" style={{ color: 'rgba(255,255,255,0.3)' }} />
-              </button>
+              <span className="text-[11px] font-bold" style={{ color: isGlobal ? '#EF4444' : '#000000' }}>
+                {isGlobal
+                  ? `+$${(taxAmount > 0.5 ? taxAmount : (priceNum * 0.20) + 5.50).toFixed(2)}`
+                  : `+$${(taxAmount > 0.5 ? taxAmount : priceNum * 0.07).toFixed(2)}`
+                }
+              </span>
             </div>
-            <span className="text-[9px] font-bold" style={{ color: isGlobal ? '#EF4444' : 'rgba(255,255,255,0.5)' }}>
-              {isGlobal
-                ? `+$${(taxAmount > 0.5 ? taxAmount : (priceNum * 0.20) + 5.50).toFixed(2)}`
-                : `+$${(taxAmount > 0.5 ? taxAmount : priceNum * 0.07).toFixed(2)}`
-              }
-            </span>
-          </div>
 
-          {/* 4줄: Product */}
-          <div className="flex items-center justify-between">
-            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Product</span>
-            <span className="text-[9px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>{displayPrice}</span>
+            {/* 구분선 (상세 ↔ Total) */}
+            <div className="w-full my-0.5" style={{ borderTop: '1px dashed #e2e8f0' }} />
           </div>
+        )}
 
-          {/* 구분선 + Total */}
-          <div className="w-full h-px my-0.5" style={{ borderTop: '1px dashed rgba(255,255,255,0.1)' }} />
-          <div className="flex items-center justify-between">
-            <span className="text-[8px] font-bold" style={{ color: '#10B981' }}>Total Landed Cost</span>
-            <span className="text-[16px] font-extrabold leading-none text-white">{finalTotal}</span>
-          </div>
+        {/* Total Cost — 항상 표시, 펼치면 상세 아래로 밀려남 */}
+        <div className="flex items-center justify-between">
+          <span className="text-[12px] font-bold" style={{ color: '#10B981' }}>Total Cost</span>
+          <span className="text-[16px] font-extrabold leading-none text-[#000000]">{finalTotal}</span>
         </div>
+
+        {/* View Deal 버튼 (펼쳤을 때만) */}
+        {expanded && (
+          <button
+            onClick={handleViewDeal}
+            className="w-full mt-1 py-2.5 rounded-lg text-[13px] font-extrabold transition-colors"
+            style={{ backgroundColor: '#02122c', color: '#ffffff' }}
+          >
+            View Deal →
+          </button>
+        )}
       </div>
+
     </div>
   );
 }

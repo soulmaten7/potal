@@ -139,32 +139,32 @@ export default function LegalPage({ params }: { params: Promise<{ slug: string }
   }
 
   return (
-    <div style={{ backgroundColor: '#02122c' }} className="min-h-screen pb-28">
+    <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen pb-28">
       {/* Header */}
       <div style={{ padding: '80px 24px 32px' }}>
         <div className="max-w-[800px] mx-auto">
-          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#ffffff', marginBottom: '4px' }}>{doc.title}</h1>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)' }}>Last updated: {doc.lastUpdated}</p>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#02122c', marginBottom: '4px' }}>{doc.title}</h1>
+          <p style={{ fontSize: '13px', color: '#94a3b8' }}>Last updated: {doc.lastUpdated}</p>
         </div>
       </div>
 
       {/* Content */}
       <div className="max-w-[800px] mx-auto px-6">
-        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)', padding: '24px' }} className="space-y-6">
+        <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '24px' }} className="space-y-6">
           {doc.sections.map((section, idx) => (
             <div key={idx}>
-              <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', marginBottom: '8px' }}>{section.heading}</h2>
-              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.7', whiteSpace: 'pre-line' }}>{section.body}</p>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: '#02122c', marginBottom: '8px' }}>{section.heading}</h2>
+              <p style={{ fontSize: '14px', color: '#475569', lineHeight: '1.7', whiteSpace: 'pre-line' }}>{section.body}</p>
             </div>
           ))}
         </div>
 
         {/* Footer */}
         <div style={{ marginTop: '24px', textAlign: 'center' }}>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }}>
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '12px' }}>
             Questions? <a href="mailto:legal@potal.com" style={{ color: '#F59E0B', fontWeight: 700, textDecoration: 'none' }}>Contact us</a>
           </p>
-          <a href="/profile" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>← Back to Profile</a>
+          <a href="/profile" style={{ fontSize: '13px', color: '#94a3b8', textDecoration: 'none' }}>← Back to Profile</a>
         </div>
       </div>
     </div>

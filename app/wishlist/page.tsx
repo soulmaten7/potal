@@ -114,7 +114,7 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
     <div
       onClick={handleClick}
       className="rounded-lg overflow-hidden cursor-pointer transition-all active:scale-[0.98] flex flex-col"
-      style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}
+      style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}
     >
       {/* 상단: 셀러뱃지 ↔ 별점 */}
       <div className="flex items-center justify-between px-1.5 pt-1.5 pb-0.5" style={{ flexShrink: 0 }}>
@@ -123,9 +123,9 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
         </div>
         <div className="flex items-center gap-0.5">
           <span className="text-[10px]" style={{ color: '#F59E0B' }}>★</span>
-          <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.7)' }}>{product.rating || 0}</span>
+          <span className="text-[10px] font-bold" style={{ color: '#475569' }}>{product.rating || 0}</span>
           {product.reviewCount > 0 && (
-            <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <span className="text-[9px]" style={{ color: '#94a3b8' }}>
               ({product.reviewCount > 999 ? `${(product.reviewCount / 1000).toFixed(1)}K` : product.reviewCount})
             </span>
           )}
@@ -135,7 +135,7 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
       {/* 이미지 — 고정 비율 + 우측상단 공유/삭제 */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ backgroundColor: 'rgba(255,255,255,0.03)', flexShrink: 0, flexGrow: 0, height: 0, paddingBottom: '125%' }}
+        style={{ backgroundColor: '#f1f5f9', flexShrink: 0, flexGrow: 0, height: 0, paddingBottom: '125%' }}
       >
         {/* 공유 + 삭제(하트 대신) — 배경 없이, 드롭섀도우로 가독성 확보 */}
         <div className="absolute top-1.5 right-1 z-10 flex items-center" style={{ gap: '2px' }}>
@@ -159,12 +159,12 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
       {/* 정보 영역 */}
       <div className="px-2 py-2 flex flex-col gap-1.5">
         {/* 상품명 — 3줄 고정 */}
-        <p className="text-[12px] font-medium leading-snug line-clamp-3" style={{ color: 'rgba(255,255,255,0.85)', minHeight: '4.2em' }}>
+        <p className="text-[12px] font-medium leading-snug line-clamp-3" style={{ color: '#1e293b', minHeight: '4.2em' }}>
           {displayTitle}
         </p>
 
         {/* 구분선 */}
-        <div className="w-full h-px" style={{ backgroundColor: 'rgba(255,255,255,0.08)' }} />
+        <div className="w-full h-px" style={{ backgroundColor: '#e2e8f0' }} />
 
         {/* 가격 3줄 구조 */}
         <div className="flex gap-1">
@@ -176,7 +176,7 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
                   {badgeLabel}
                 </span>
               )}
-              <span className="text-[8px] font-bold shrink-0" style={{ color: hasFreeShipping ? '#10B981' : 'rgba(255,255,255,0.5)' }}>
+              <span className="text-[8px] font-bold shrink-0" style={{ color: hasFreeShipping ? '#10B981' : '#64748b' }}>
                 {hasFreeShipping ? 'Free' : shippingLabel}
               </span>
               <span className="text-[9px] shrink-0">🚀</span>
@@ -185,18 +185,18 @@ function WishlistMobileCard({ product, onRemove }: { product: any; onRemove: () 
               </span>
             </div>
             {/* 2줄: Est. Tax */}
-            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <span className="text-[10px] font-bold" style={{ color: '#64748b' }}>
               {taxLabel || (isGlobal ? 'Est.Duty —' : 'Est.Tax —')}
             </span>
             {/* 3줄: Product 가격 */}
-            <span className="text-[10px] font-bold" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <span className="text-[10px] font-bold" style={{ color: '#64748b' }}>
               Product {displayPrice}
             </span>
           </div>
           {/* 오른쪽: total */}
           <div className="flex flex-col items-end justify-between shrink-0 py-0.5">
             <span className="text-[9px] font-bold px-1.5 py-[1px] rounded" style={{ backgroundColor: 'rgba(245,158,11,0.12)', color: '#F59E0B' }}>total</span>
-            <span className="text-[18px] font-extrabold leading-none text-white">{finalTotal}</span>
+            <span className="text-[18px] font-extrabold leading-none text-[#02122c]">{finalTotal}</span>
           </div>
         </div>
       </div>
@@ -209,7 +209,8 @@ export default function WishlistPage() {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   return (
-    <main style={{ backgroundColor: '#02122c' }} className="min-h-screen pb-28">
+    <main style={{ backgroundColor: '#ffffff' }} className="min-h-screen pb-28">
+      <div className="max-w-[1440px] mx-auto px-3 sm:px-6">
       {/* ─── Clear 확인 바텀시트 ─── */}
       {showClearConfirm && (
         <div className="fixed inset-0 z-[10002]" onClick={() => setShowClearConfirm(false)}>
@@ -218,22 +219,22 @@ export default function WishlistPage() {
           {/* 바텀시트 */}
           <div
             className="absolute bottom-0 left-0 right-0 rounded-t-2xl px-5 pt-6 pb-8"
-            style={{ backgroundColor: '#0a1e3d' }}
+            style={{ backgroundColor: '#ffffff' }}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col items-center text-center">
               <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(239,68,68,0.12)' }}>
                 <TrashIcon className="w-7 h-7 text-red-400" />
               </div>
-              <h3 className="text-[18px] font-extrabold text-white mb-1.5">Clear all saved items?</h3>
-              <p className="text-[13px] mb-6" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <h3 className="text-[18px] font-extrabold text-[#02122c] mb-1.5">Clear all saved items?</h3>
+              <p className="text-[13px] mb-6" style={{ color: '#64748b' }}>
                 This will remove all {wishlist.length} item{wishlist.length !== 1 ? 's' : ''} from your saved list. This action cannot be undone.
               </p>
               <div className="flex gap-3 w-full">
                 <button
                   onClick={() => setShowClearConfirm(false)}
-                  className="flex-1 py-3.5 rounded-xl text-[14px] font-bold text-white transition-colors"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  className="flex-1 py-3.5 rounded-xl text-[14px] font-bold text-[#02122c] transition-colors"
+                  style={{ backgroundColor: '#f1f5f9', border: '1px solid #e2e8f0' }}
                 >
                   Cancel
                 </button>
@@ -247,19 +248,19 @@ export default function WishlistPage() {
               </div>
             </div>
             {/* 하단 핸들 바 */}
-            <div className="w-10 h-1 rounded-full mx-auto mt-5" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} />
+            <div className="w-10 h-1 rounded-full mx-auto mt-5" style={{ backgroundColor: '#cbd5e1' }} />
           </div>
         </div>
       )}
 
       {/* 헤더 */}
-      <div className="px-5 pt-6 pb-2">
+      <div className="pt-6 pb-2">
         <div className="flex items-center justify-between">
-          <h1 className="text-[28px] font-extrabold text-white tracking-tight">Saved Items</h1>
+          <h1 className="text-[28px] font-extrabold text-[#02122c] tracking-tight">Saved Items</h1>
           {wishlist.length > 0 && (
             <button
               onClick={() => setShowClearConfirm(true)}
-              className="flex items-center gap-1.5 text-white/40 hover:text-red-400 transition-colors text-sm font-bold"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 transition-colors text-sm font-bold"
             >
               <TrashIcon className="w-4 h-4" />
               Clear
@@ -267,24 +268,24 @@ export default function WishlistPage() {
           )}
         </div>
         {wishlist.length > 0 && (
-          <p className="text-white/40 text-sm mt-1">{wishlist.length} item{wishlist.length !== 1 ? 's' : ''} saved</p>
+          <p className="text-slate-400 text-sm mt-1">{wishlist.length} item{wishlist.length !== 1 ? 's' : ''} saved</p>
         )}
       </div>
 
       {/* 컨텐츠 */}
-      <div className="px-5 pt-4">
+      <div className="pt-4">
         {wishlist.length === 0 ? (
           /* ─── 빈 상태: 스카이스캐너 스타일 ─── */
           <div className="flex flex-col items-center justify-center pt-20 text-center">
             <div className="relative mb-8">
-              <div style={{ width: '120px', height: '120px', borderRadius: '9999px', background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: '80px', height: '80px', borderRadius: '9999px', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '120px', height: '120px', borderRadius: '9999px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: '80px', height: '80px', borderRadius: '9999px', background: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Icons.Heart style={{ width: '36px', height: '36px', color: 'rgba(245,158,11,0.6)' }} />
                 </div>
               </div>
             </div>
-            <h2 className="text-xl font-extrabold text-white mb-2">No saved items yet</h2>
-            <p className="text-white/40 text-[14px] leading-relaxed max-w-[260px] mb-8">
+            <h2 className="text-xl font-extrabold text-[#02122c] mb-2">No saved items yet</h2>
+            <p className="text-slate-400 text-[14px] leading-relaxed max-w-[260px] mb-8">
               Search for products and tap the heart icon to save deals you love.
             </p>
             <Link
@@ -325,6 +326,7 @@ export default function WishlistPage() {
             </div>
           </>
         )}
+      </div>
       </div>
     </main>
   );

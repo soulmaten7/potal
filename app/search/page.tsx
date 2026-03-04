@@ -532,9 +532,9 @@ function SearchContent() {
   // }, [lastSearchId]);
 
   return (
-    <div className="min-h-screen font-sans flex flex-col relative" style={{ backgroundColor: '#02122c' }} onClick={closeAllDropdowns}>
-      {/* 데스크톱: 기존 밝은 배경 유지 */}
-      <div className="hidden md:block fixed inset-0 z-0" style={{ backgroundColor: '#f1f2f8' }} />
+    <div className="min-h-screen font-sans flex flex-col relative" style={{ backgroundColor: '#ffffff' }} onClick={closeAllDropdowns}>
+      {/* 데스크톱: 밝은 배경 */}
+      <div className="hidden md:block fixed inset-0 z-0" style={{ backgroundColor: '#ffffff' }} />
       <style jsx global>{`
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #02122c; cursor: pointer; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); margin-top: -6px; }
         input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; }

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POTAL AI Agent Operations Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0e1a;
+    color: #e0e6ed;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99,179,237,0.3), transparent);
+  }
+  .logo {
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: #63b3ed;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .title {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #63b3ed, #b794f6, #f687b3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #718096;
+    letter-spacing: 1px;
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 24px 20px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .stat-value.green { color: #68d391; }
+  .stat-value.blue { color: #63b3ed; }
+  .stat-value.orange { color: #f6ad55; }
+  .stat-value.red { color: #fc8181; }
+  .stat-value.purple { color: #b794f6; }
+  .stat-label {
+    font-size: 11px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 4px;
+  }
+
+  /* CEO Node */
+  .ceo-section {
+    display: flex;
+    justify-content: center;
+    padding: 16px 20px 8px;
+    position: relative;
+  }
+  .ceo-node {
+    background: linear-gradient(135deg, #1a1f3a, #2d2b55);
+    border: 2px solid #805ad5;
+    border-radius: 16px;
+    padding: 16px 32px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 30px rgba(128,90,213,0.15);
+  }
+  .ceo-node .role { font-size: 11px; color: #b794f6; letter-spacing: 2px; text-transform: uppercase; }
+  .ceo-node .name { font-size: 20px; font-weight: 700; color: #fff; margin-top: 2px; }
+  .ceo-node .desc { font-size: 12px; color: #a0aec0; margin-top: 4px; }
+
+  /* Connector line from CEO */
+  .connector-down {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+    height: 40px;
+    position: relative;
+  }
+  .connector-down::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, #805ad5, rgba(99,179,237,0.3));
+  }
+
+  /* Horizontal connector */
+  .h-connector {
+    display: flex;
+    justify-content: center;
+    padding: 0 60px;
+    height: 2px;
+    position: relative;
+  }
+  .h-connector-line {
+    width: 85%;
+    max-width: 1100px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(72,187,120,0.4), rgba(237,137,54,0.4), rgba(66,153,225,0.4), rgba(245,101,101,0.4), rgba(159,122,234,0.4));
+  }
+
+  /* Departments Grid */
+  .departments {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 24px 32px;
+    flex-wrap: wrap;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  /* Department Card */
+  .dept {
+    flex: 1;
+    min-width: 220px;
+    max-width: 240px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  .dept::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  /* Color variants */
+  .dept.growth { background: linear-gradient(180deg, #1a2f1a 0%, #111a11 100%); border: 1px solid rgba(72,187,120,0.25); }
+  .dept.growth::before { background: linear-gradient(90deg, #48bb78, #38a169); }
+  .dept.revenue { background: linear-gradient(180deg, #2f2415 0%, #1a1510 100%); border: 1px solid rgba(237,137,54,0.25); }
+  .dept.revenue::before { background: linear-gradient(90deg, #ed8936, #dd6b20); }
+  .dept.product { background: linear-gradient(180deg, #152030 0%, #101820 100%); border: 1px solid rgba(66,153,225,0.25); }
+  .dept.product::before { background: linear-gradient(90deg, #4299e1, #3182ce); }
+  .dept.legal { background: linear-gradient(180deg, #2f1515 0%, #1a1010 100%); border: 1px solid rgba(245,101,101,0.25); }
+  .dept.legal::before { background: linear-gradient(90deg, #f56565, #e53e3e); }
+  .dept.intel { background: linear-gradient(180deg, #231530 0%, #161020 100%); border: 1px solid rgba(159,122,234,0.25); }
+  .dept.intel::before { background: linear-gradient(90deg, #9f7aea, #805ad5); }
+
+  .dept-header {
+    padding: 16px 16px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dept-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .growth .dept-icon { background: rgba(72,187,120,0.15); }
+  .revenue .dept-icon { background: rgba(237,137,54,0.15); }
+  .product .dept-icon { background: rgba(66,153,225,0.15); }
+  .legal .dept-icon { background: rgba(245,101,101,0.15); }
+  .intel .dept-icon { background: rgba(159,122,234,0.15); }
+
+  .dept-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .dept-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .growth .dept-name { color: #68d391; }
+  .revenue .dept-name { color: #f6ad55; }
+  .product .dept-name { color: #63b3ed; }
+  .legal .dept-name { color: #fc8181; }
+  .intel .dept-name { color: #b794f6; }
+
+  /* Progress bar */
+  .dept-progress {
+    padding: 0 16px;
+    margin-bottom: 12px;
+  }
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+  }
+  .progress-done {
+    height: 100%;
+    border-radius: 2px 0 0 2px;
+  }
+  .progress-wip {
+    height: 100%;
+  }
+  .growth .progress-done { background: #48bb78; }
+  .growth .progress-wip { background: rgba(72,187,120,0.3); }
+  .revenue .progress-done { background: #ed8936; }
+  .revenue .progress-wip { background: rgba(237,137,54,0.3); }
+  .product .progress-done { background: #4299e1; }
+  .product .progress-wip { background: rgba(66,153,225,0.3); }
+  .legal .progress-done { background: #f56565; }
+  .legal .progress-wip { background: rgba(245,101,101,0.3); }
+  .intel .progress-done { background: #9f7aea; }
+  .intel .progress-wip { background: rgba(159,122,234,0.3); }
+
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #718096;
+    margin-top: 4px;
+  }
+
+  /* Sub agents */
+  .sub-agents {
+    padding: 0 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sub-agent {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  .sub-agent:hover {
+    background: rgba(255,255,255,0.06);
+  }
+  .agent-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .growth .agent-dot { background: #48bb78; box-shadow: 0 0 6px rgba(72,187,120,0.4); }
+  .revenue .agent-dot { background: #ed8936; box-shadow: 0 0 6px rgba(237,137,54,0.4); }
+  .product .agent-dot { background: #4299e1; box-shadow: 0 0 6px rgba(66,153,225,0.4); }
+  .legal .agent-dot { background: #f56565; box-shadow: 0 0 6px rgba(245,101,101,0.4); }
+  .intel .agent-dot { background: #9f7aea; box-shadow: 0 0 6px rgba(159,122,234,0.4); }
+
+  .agent-info { flex: 1; }
+  .agent-name { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+  .agent-tasks { font-size: 11px; color: #718096; margin-top: 2px; }
+  .agent-risk {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .risk-high { background: rgba(245,101,101,0.15); color: #fc8181; }
+  .risk-med { background: rgba(237,137,54,0.15); color: #f6ad55; }
+  .risk-none { background: rgba(72,187,120,0.1); color: #68d391; }
+
+  /* Agent count badge */
+  .agent-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .growth .agent-count { background: rgba(72,187,120,0.15); color: #68d391; }
+  .revenue .agent-count { background: rgba(237,137,54,0.15); color: #f6ad55; }
+  .product .agent-count { background: rgba(66,153,225,0.15); color: #63b3ed; }
+  .legal .agent-count { background: rgba(245,101,101,0.15); color: #fc8181; }
+  .intel .agent-count { background: rgba(159,122,234,0.15); color: #b794f6; }
+
+  /* Make.com strip */
+  .make-strip {
+    margin: 0 24px 32px;
+    max-width: 1252px;
+    margin-left: auto;
+    margin-right: auto;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(99,179,237,0.15);
+    border-radius: 16px;
+    padding: 20px 24px;
+  }
+  .make-title {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #63b3ed;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .make-scenarios {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .scenario {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #a0aec0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  .scenario-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .scenario-dot.urgent { background: #f56565; }
+  .scenario-dot.normal { background: #f6ad55; }
+  .scenario-dot.later { background: #68d391; }
+
+  /* Risk Alert */
+  .risk-alert {
+    margin: 0 24px 32px;
+    max-width: 1252px;
+    margin-left: auto;
+    margin-right: auto;
+    background: linear-gradient(135deg, #2d1515 0%, #1a1010 100%);
+    border: 1px solid rgba(245,101,101,0.2);
+    border-radius: 16px;
+    padding: 20px 24px;
+  }
+  .risk-title {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #fc8181;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .risk-items {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .risk-item {
+    background: rgba(245,101,101,0.06);
+    border: 1px solid rgba(245,101,101,0.12);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #feb2b2;
+  }
+  .risk-item.med {
+    background: rgba(237,137,54,0.06);
+    border-color: rgba(237,137,54,0.12);
+    color: #fbd38d;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: #4a5568;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">POTAL</div>
+  <div class="title">AI Agent Operations</div>
+  <div class="subtitle">5 Departments &middot; 14 Sub-Agents &middot; 12 Automation Scenarios</div>
+</div>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-value">138</div>
+    <div class="stat-label">Total Tasks</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value green">42</div>
+    <div class="stat-label">Completed</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value blue">15</div>
+    <div class="stat-label">In Progress</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value orange">81</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value red">12</div>
+    <div class="stat-label">High Risk</div>
+  </div>
+  <div class="stat">
+    <div class="stat-value purple">83</div>
+    <div class="stat-label">Automatable</div>
+  </div>
+</div>
+
+<!-- CEO Node -->
+<div class="ceo-section">
+  <div class="ceo-node">
+    <div class="role">Founder & CEO</div>
+    <div class="name">장은태 (Euntae Jang)</div>
+    <div class="desc">확인 &middot; 판단 &middot; 최종 승인</div>
+  </div>
+</div>
+
+<div class="connector-down"></div>
+<div class="h-connector"><div class="h-connector-line"></div></div>
+
+<!-- 5 Departments -->
+<div class="departments">
+
+  <!-- ① Growth -->
+  <div class="dept growth">
+    <div class="dept-header">
+      <div class="dept-icon">📈</div>
+      <div>
+        <div class="dept-title">Department ①</div>
+        <div class="dept-name">Growth</div>
+      </div>
+    </div>
+    <div class="dept-progress">
+      <div class="progress-bar">
+        <div class="progress-done" style="width:23%"></div>
+        <div class="progress-wip" style="width:10%"></div>
+      </div>
+      <div class="progress-text"><span>7/30 완료</span><span>3 에이전트</span></div>
+    </div>
+    <div class="sub-agents">
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">SEO 에이전트</div>
+          <div class="agent-tasks">GSC 등록, JSON-LD, 블로그 확장, Core Web Vitals</div>
+        </div>
+        <div class="agent-count">12</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">SNS/Community 에이전트</div>
+          <div class="agent-tasks">Facebook 12그룹, Reddit, LinkedIn, X</div>
+        </div>
+        <div class="agent-count">10</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Ads/Paid 에이전트</div>
+          <div class="agent-tasks">Google Ads 리서치, Product Hunt</div>
+        </div>
+        <div class="agent-count">8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② Revenue -->
+  <div class="dept revenue">
+    <div class="dept-header">
+      <div class="dept-icon">💰</div>
+      <div>
+        <div class="dept-title">Department ②</div>
+        <div class="dept-name">Revenue</div>
+      </div>
+    </div>
+    <div class="dept-progress">
+      <div class="progress-bar">
+        <div class="progress-done" style="width:36%"></div>
+        <div class="progress-wip" style="width:15%"></div>
+      </div>
+      <div class="progress-text"><span>12/33 완료</span><span>3 에이전트</span></div>
+    </div>
+    <div class="sub-agents">
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Affiliate 에이전트</div>
+          <div class="agent-tasks">Amazon, eBay, Temu, AliExpress, FTC 공시</div>
+        </div>
+        <div class="agent-count">14</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Partnership 에이전트</div>
+          <div class="agent-tasks">29곳 응답 트래킹, Best Buy, Target</div>
+        </div>
+        <div class="agent-count">11</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">B2B/Data 에이전트</div>
+          <div class="agent-tasks">B2B 리포트, API 서비스 설계</div>
+        </div>
+        <div class="agent-count">8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ Product -->
+  <div class="dept product">
+    <div class="dept-header">
+      <div class="dept-icon">🛠</div>
+      <div>
+        <div class="dept-title">Department ③</div>
+        <div class="dept-name">Product</div>
+      </div>
+    </div>
+    <div class="dept-progress">
+      <div class="progress-bar">
+        <div class="progress-done" style="width:50%"></div>
+        <div class="progress-wip" style="width:12%"></div>
+      </div>
+      <div class="progress-text"><span>17/34 완료</span><span>3 에이전트</span></div>
+    </div>
+    <div class="sub-agents">
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">API/Backend 에이전트</div>
+          <div class="agent-tasks">RapidAPI 전환, 키 보안, CostEngine</div>
+          <div class="agent-risk risk-high">HIGH RISK 3</div>
+        </div>
+        <div class="agent-count">15</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Frontend/UX 에이전트</div>
+          <div class="agent-tasks">iOS 심사, Android 빌드, Cookie Consent</div>
+        </div>
+        <div class="agent-count">10</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">QA/Monitoring 에이전트</div>
+          <div class="agent-tasks">GA4 검증, API 에러율, Lighthouse</div>
+        </div>
+        <div class="agent-count">9</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ Legal/IR -->
+  <div class="dept legal">
+    <div class="dept-header">
+      <div class="dept-icon">⚖️</div>
+      <div>
+        <div class="dept-title">Department ④</div>
+        <div class="dept-name">Legal / IR</div>
+      </div>
+    </div>
+    <div class="dept-progress">
+      <div class="progress-bar">
+        <div class="progress-done" style="width:20%"></div>
+        <div class="progress-wip" style="width:10%"></div>
+      </div>
+      <div class="progress-text"><span>4/20 완료</span><span>2 에이전트</span></div>
+    </div>
+    <div class="sub-agents">
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Compliance 에이전트</div>
+          <div class="agent-tasks">API ToS, FTC, Cookie, CCPA, 세금 면책</div>
+          <div class="agent-risk risk-high">HIGH RISK 5</div>
+        </div>
+        <div class="agent-count">12</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">IR/Investor 에이전트</div>
+          <div class="agent-tasks">피치덱 관리, 원페이저, 투자자 팔로업</div>
+        </div>
+        <div class="agent-count">8</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ Intel -->
+  <div class="dept intel">
+    <div class="dept-header">
+      <div class="dept-icon">🔍</div>
+      <div>
+        <div class="dept-title">Department ⑤</div>
+        <div class="dept-name">Intel</div>
+      </div>
+    </div>
+    <div class="dept-progress">
+      <div class="progress-bar">
+        <div class="progress-done" style="width:10%"></div>
+        <div class="progress-wip" style="width:5%"></div>
+      </div>
+      <div class="progress-text"><span>2/21 완료</span><span>3 에이전트</span></div>
+    </div>
+    <div class="sub-agents">
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Market Intel 에이전트</div>
+          <div class="agent-tasks">크로스보더 시장, 관세 정책, 점유율</div>
+        </div>
+        <div class="agent-count">7</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Competitor Watch 에이전트</div>
+          <div class="agent-tasks">Google Shopping, Temu/Shein 가격</div>
+        </div>
+        <div class="agent-count">6</div>
+      </div>
+      <div class="sub-agent">
+        <div class="agent-dot"></div>
+        <div class="agent-info">
+          <div class="agent-name">Internal Analytics 에이전트</div>
+          <div class="agent-tasks">GA4 대시보드, 검색 쿼리, Provider CTR</div>
+        </div>
+        <div class="agent-count">8</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Critical Risks -->
+<div class="risk-alert">
+  <div class="risk-title">⚠️ Critical Risks — 즉시 대응 필요</div>
+  <div class="risk-items">
+    <div class="risk-item">🔑 API 키 Git 노출 (.env.local)</div>
+    <div class="risk-item">📜 RapidAPI 비공식 래퍼 ToS 위반 (21개)</div>
+    <div class="risk-item">📋 FTC Affiliate Disclosure 누락</div>
+    <div class="risk-item med">🍪 Cookie Consent 미구현 (GA4)</div>
+    <div class="risk-item med">💰 CostEngine 세금 면책조항 없음</div>
+    <div class="risk-item med">📧 ToS 이메일 불일치</div>
+  </div>
+</div>
+
+<!-- Make.com Automation -->
+<div class="make-strip">
+  <div class="make-title">⚡ Make.com Automation — 12 Scenarios</div>
+  <div class="make-scenarios">
+    <div class="scenario"><div class="scenario-dot urgent"></div>파트너십 이메일 응답 감지</div>
+    <div class="scenario"><div class="scenario-dot urgent"></div>GA4 일일 리포트</div>
+    <div class="scenario"><div class="scenario-dot urgent"></div>Provider 상태 모니터링</div>
+    <div class="scenario"><div class="scenario-dot urgent"></div>관세 정책 변경 알림</div>
+    <div class="scenario"><div class="scenario-dot normal"></div>SEO 성과 리포트</div>
+    <div class="scenario"><div class="scenario-dot normal"></div>Facebook 게시 스케줄러</div>
+    <div class="scenario"><div class="scenario-dot normal"></div>Affiliate 수익 리포트</div>
+    <div class="scenario"><div class="scenario-dot normal"></div>App Store 심사 알림</div>
+    <div class="scenario"><div class="scenario-dot normal"></div>API 키 만료 알림</div>
+    <div class="scenario"><div class="scenario-dot later"></div>블로그 글 파이프라인</div>
+    <div class="scenario"><div class="scenario-dot later"></div>경쟁사 변화 알림</div>
+    <div class="scenario"><div class="scenario-dot later"></div>session-context 자동 업데이트</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  POTAL AI Agent Operations Dashboard &middot; Last Updated: 2026-03-02 &middot; Compare Every Store on Earth.
+</div>
+
+</body>
+</html>
