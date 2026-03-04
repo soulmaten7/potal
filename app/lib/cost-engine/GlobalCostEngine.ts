@@ -2,7 +2,8 @@
  * POTAL Global Cost Engine
  *
  * Multi-country Total Landed Cost calculation.
- * Uses country-data.ts for VAT/GST rates, duty averages, and de minimis thresholds.
+ * Uses HS Code classification for accurate duty rates + FTA discounts.
+ * Falls back to country averages when HS Code data unavailable.
  *
  * Supports 58+ destination countries.
  * Falls back to US-specific logic (CostEngine.ts) when destination is US.
@@ -11,6 +12,9 @@
 import type { CostInput, LandedCost, CostBreakdownItem } from './types';
 import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber } from './CostEngine';
 import { getCountryProfile, type CountryTaxProfile } from './country-data';
+import { classifyWithOverride, getEffectiveDutyRate, getDutyRate, hasCountryDutyData } from './hs-code';
+import { applyFtaRate } from './hs-code/fta';
+import type { HsClassificationResult, FtaResult } from './hs-code';
 
 // ─── Origin Detection (simplified for global) ───────
 
@@ -30,12 +34,23 @@ function detectOriginForGlobal(input: CostInput): string {
   // Shipping type hint
   const shippingType = (input.shippingType || '').toLowerCase();
   if (shippingType.includes('domestic')) return input.destinationCountry?.toUpperCase() || 'US';
-  if (shippingType.includes('international') || shippingType.includes('global')) return 'CN'; // assume CN if international
+  if (shippingType.includes('international') || shippingType.includes('global')) return 'CN';
 
   return 'US'; // default: domestic
 }
 
-// ─── Global Landed Cost Calculator ──────────────────
+// ─── Extended Input (with HS Code support) ──────────
+
+export interface GlobalCostInput extends CostInput {
+  /** Product name for HS Code classification */
+  productName?: string;
+  /** Product category hint (e.g. 'electronics', 'apparel') */
+  productCategory?: string;
+  /** HS Code override (if seller knows it) */
+  hsCode?: string;
+}
+
+// ─── Global Landed Cost Result ──────────────────────
 
 export interface GlobalLandedCost extends LandedCost {
   /** Destination country ISO code */
@@ -50,77 +65,133 @@ export interface GlobalLandedCost extends LandedCost {
   deMinimisApplied: boolean;
   /** Currency of destination */
   destinationCurrency: string;
+  /** HS Code classification result (if available) */
+  hsClassification?: HsClassificationResult;
+  /** FTA applied (if any) */
+  ftaApplied?: FtaResult;
+  /** Section 301 or other additional tariff note */
+  additionalTariffNote?: string;
 }
 
 /**
  * Calculate Total Landed Cost for any destination country.
  *
- * For US destinations, delegates to the US-specific engine (with state tax support).
- * For all other countries, uses country-data.ts profiles.
+ * Priority for duty rate:
+ * 1. HS Code-specific rate (if product name or HS code provided)
+ * 2. FTA preferential rate (if applicable)
+ * 3. Country average rate (fallback)
  */
-export function calculateGlobalLandedCost(input: CostInput): GlobalLandedCost {
+export function calculateGlobalLandedCost(input: GlobalCostInput): GlobalLandedCost {
   const destination = (input.destinationCountry || 'US').toUpperCase();
 
   // US destination → use existing US-specific engine (state sales tax, etc.)
   if (destination === 'US') {
     const usResult = calculateUSLandedCost(input);
+    // Still try to classify HS Code for informational purposes
+    const hsResult = (input.productName || input.hsCode)
+      ? classifyWithOverride(input.productName || '', input.hsCode, input.productCategory)
+      : undefined;
+
     return {
       ...usResult,
       destinationCountry: 'US',
       vat: usResult.salesTax,
       vatLabel: 'Sales Tax',
-      vatRate: 0, // state-level, varies
+      vatRate: 0,
       deMinimisApplied: false,
       destinationCurrency: 'USD',
+      hsClassification: hsResult,
     };
   }
 
   // Non-US destination
   const profile = getCountryProfile(destination);
   if (!profile) {
-    // Unknown country — use conservative defaults
     return calculateWithDefaults(input, destination);
   }
 
   return calculateWithProfile(input, profile);
 }
 
-// ─── Calculate with Country Profile ─────────────────
+// ─── Calculate with Country Profile + HS Code ───────
 
-function calculateWithProfile(input: CostInput, profile: CountryTaxProfile): GlobalLandedCost {
+function calculateWithProfile(input: GlobalCostInput, profile: CountryTaxProfile): GlobalLandedCost {
   const productPrice = parsePriceToNumber(input.price);
   const shippingCost = input.shippingPrice ?? 0;
   const originCountry = detectOriginForGlobal(input);
   const declaredValue = productPrice + shippingCost;
 
-  // Determine if domestic
   const isDomestic = originCountry === profile.code;
 
-  // De minimis check (duty exemption for low-value goods)
-  const deMinimisApplied = !isDomestic && declaredValue > 0 && declaredValue <= profile.deMinimisUsd && profile.deMinimisUsd > 0;
-
-  // Import duty calculation
-  let importDuty = 0;
-  if (!isDomestic && !deMinimisApplied) {
-    importDuty = declaredValue * profile.avgDutyRate;
+  // ── Step 1: HS Code Classification ──
+  let hsResult: HsClassificationResult | undefined;
+  if (input.productName || input.hsCode) {
+    hsResult = classifyWithOverride(input.productName || '', input.hsCode, input.productCategory);
   }
 
-  // VAT/GST calculation (usually on declared value + duty)
+  // ── Step 2: Determine Duty Rate ──
+  let dutyRate = profile.avgDutyRate; // fallback
+  let dutyNote = `~${(profile.avgDutyRate * 100).toFixed(1)}% avg`;
+  let additionalTariffNote: string | undefined;
+  let ftaResult: FtaResult | undefined;
+
+  if (hsResult && hsResult.hsCode !== '9999') {
+    const hsChapter = hsResult.hsCode.substring(0, 2);
+
+    // Try HS Code-specific rate
+    if (hasCountryDutyData(profile.code)) {
+      const specificRate = getEffectiveDutyRate(hsResult.hsCode, profile.code, originCountry);
+      if (specificRate >= 0) {
+        dutyRate = specificRate;
+        dutyNote = `HS ${hsResult.hsCode} (${(specificRate * 100).toFixed(1)}%)`;
+
+        // Check for additional tariffs (e.g. Section 301)
+        const rateInfo = getDutyRate(hsResult.hsCode, profile.code, originCountry);
+        if (rateInfo?.additionalTariff) {
+          additionalTariffNote = rateInfo.notes;
+        }
+      }
+    }
+
+    // ── Step 3: Apply FTA ──
+    if (!isDomestic) {
+      const ftaCalc = applyFtaRate(dutyRate, originCountry, profile.code, hsChapter);
+      ftaResult = ftaCalc.fta;
+      if (ftaCalc.fta.hasFta && ftaCalc.rate < dutyRate) {
+        dutyNote += ` → ${(ftaCalc.rate * 100).toFixed(1)}% (${ftaCalc.fta.ftaCode})`;
+        dutyRate = ftaCalc.rate;
+      }
+    }
+  } else if (!isDomestic) {
+    // No HS Code — still check FTA with average rate
+    const ftaCalc = applyFtaRate(dutyRate, originCountry, profile.code);
+    ftaResult = ftaCalc.fta;
+    if (ftaCalc.fta.hasFta && ftaCalc.rate < dutyRate) {
+      dutyNote += ` → ${(ftaCalc.rate * 100).toFixed(1)}% (${ftaCalc.fta.ftaCode})`;
+      dutyRate = ftaCalc.rate;
+    }
+  }
+
+  // ── Step 4: De Minimis Check ──
+  const deMinimisApplied = !isDomestic && declaredValue > 0 && declaredValue <= profile.deMinimisUsd && profile.deMinimisUsd > 0;
+
+  // ── Step 5: Calculate Duty ──
+  let importDuty = 0;
+  if (!isDomestic && !deMinimisApplied) {
+    importDuty = declaredValue * dutyRate;
+  }
+
+  // ── Step 6: VAT/GST ──
   let vat = 0;
   if (isDomestic) {
-    // Domestic: VAT on product + shipping
     vat = declaredValue * profile.vatRate;
   } else {
-    // Import: VAT typically on (declared value + duty)
     vat = (declaredValue + importDuty) * profile.vatRate;
   }
 
-  // China-specific MPF for US (already handled in US engine, but just in case)
-  const mpf = 0;
+  const totalLandedCost = productPrice + shippingCost + importDuty + vat;
 
-  const totalLandedCost = productPrice + shippingCost + importDuty + mpf + vat;
-
-  // Build breakdown
+  // ── Build Breakdown ──
   const breakdown: CostBreakdownItem[] = [
     { label: 'Product', amount: round(productPrice) },
     { label: 'Shipping', amount: round(shippingCost), note: shippingCost === 0 ? 'Free' : undefined },
@@ -137,7 +208,21 @@ function calculateWithProfile(input: CostInput, profile: CountryTaxProfile): Glo
       breakdown.push({
         label: 'Import Duty',
         amount: round(importDuty),
-        note: `~${(profile.avgDutyRate * 100).toFixed(1)}% avg`,
+        note: dutyNote,
+      });
+    } else {
+      breakdown.push({
+        label: 'Import Duty',
+        amount: 0,
+        note: 'Duty-free',
+      });
+    }
+
+    if (additionalTariffNote) {
+      breakdown.push({
+        label: 'Additional Tariff',
+        amount: 0,
+        note: additionalTariffNote,
       });
     }
   }
@@ -150,7 +235,6 @@ function calculateWithProfile(input: CostInput, profile: CountryTaxProfile): Glo
     });
   }
 
-  // Determine origin country classification for compatibility
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' :
     originCountry === 'CN' ? 'CN' : 'OTHER';
@@ -159,8 +243,8 @@ function calculateWithProfile(input: CostInput, profile: CountryTaxProfile): Glo
     productPrice: round(productPrice),
     shippingCost: round(shippingCost),
     importDuty: round(importDuty),
-    mpf,
-    salesTax: round(vat), // maps to VAT for backward compat
+    mpf: 0,
+    salesTax: round(vat),
     totalLandedCost: round(totalLandedCost),
     type: isDomestic ? 'domestic' : 'global',
     isDutyFree: importDuty === 0,
@@ -173,17 +257,19 @@ function calculateWithProfile(input: CostInput, profile: CountryTaxProfile): Glo
     vatRate: profile.vatRate,
     deMinimisApplied,
     destinationCurrency: profile.currency,
+    hsClassification: hsResult,
+    ftaApplied: ftaResult,
+    additionalTariffNote,
   };
 }
 
 // ─── Fallback for Unknown Countries ─────────────────
 
-function calculateWithDefaults(input: CostInput, destination: string): GlobalLandedCost {
+function calculateWithDefaults(input: GlobalCostInput, destination: string): GlobalLandedCost {
   const productPrice = parsePriceToNumber(input.price);
   const shippingCost = input.shippingPrice ?? 0;
   const declaredValue = productPrice + shippingCost;
 
-  // Conservative defaults
   const dutyRate = 0.10;
   const vatRate = 0.15;
   const importDuty = declaredValue * dutyRate;
@@ -220,7 +306,7 @@ function calculateWithDefaults(input: CostInput, destination: string): GlobalLan
 // ─── Batch Global Calculator ────────────────────────
 
 export function calculateGlobalBatchLandedCosts(
-  items: (CostInput & { id: string })[]
+  items: (GlobalCostInput & { id: string })[]
 ): Map<string, GlobalLandedCost> {
   const costMap = new Map<string, GlobalLandedCost>();
   for (const item of items) {

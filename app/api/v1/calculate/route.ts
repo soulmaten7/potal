@@ -18,7 +18,8 @@
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
-import { calculateGlobalLandedCost, type CostInput } from '@/app/lib/cost-engine';
+import { calculateGlobalLandedCost } from '@/app/lib/cost-engine';
+import type { GlobalCostInput } from '@/app/lib/cost-engine/GlobalCostEngine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
 // ─── POST Handler ───────────────────────────────────
@@ -54,8 +55,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     }
   }
 
-  // 5. Build CostInput
-  const costInput: CostInput = {
+  // 5. Build CostInput (with HS Code classification support)
+  const costInput: GlobalCostInput = {
     price: body.price as string | number,
     shippingPrice: body.shippingPrice !== undefined ? Number(body.shippingPrice) : undefined,
     origin: typeof body.origin === 'string' ? body.origin : undefined,
@@ -63,6 +64,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     zipcode: typeof body.zipcode === 'string' ? body.zipcode : undefined,
     hsCode: typeof body.hsCode === 'string' ? body.hsCode : undefined,
     destinationCountry: typeof body.destinationCountry === 'string' ? body.destinationCountry : undefined,
+    productName: typeof body.productName === 'string' ? body.productName : undefined,
+    productCategory: typeof body.productCategory === 'string' ? body.productCategory : undefined,
   };
 
   // 6. Calculate (global engine — supports 58+ countries)

@@ -27,12 +27,12 @@
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
-import { calculateGlobalLandedCost, type CostInput, type GlobalLandedCost } from '@/app/lib/cost-engine';
+import { calculateGlobalLandedCost, type GlobalCostInput, type GlobalLandedCost } from '@/app/lib/cost-engine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
 const MAX_BATCH_SIZE = 100;
 
-interface BatchItem extends CostInput {
+interface BatchItem extends GlobalCostInput {
   id: string;
 }
 
@@ -97,8 +97,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       continue;
     }
 
-    // Build CostInput with defaults
-    const costInput: CostInput = {
+    // Build CostInput with defaults (includes HS Code classification)
+    const costInput: GlobalCostInput = {
       price: item.price as string | number,
       shippingPrice: item.shippingPrice !== undefined ? Number(item.shippingPrice) : undefined,
       origin: (typeof item.origin === 'string' ? item.origin : defaults.origin) || undefined,
@@ -108,6 +108,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       destinationCountry: (typeof item.destinationCountry === 'string'
         ? item.destinationCountry
         : defaults.destinationCountry) || undefined,
+      productName: typeof item.productName === 'string' ? item.productName : undefined,
+      productCategory: typeof item.productCategory === 'string' ? item.productCategory : undefined,
     };
 
     const result = calculateGlobalLandedCost(costInput);
