@@ -30,9 +30,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (password.length < 8) {
+    if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
       return NextResponse.json(
-        { success: false, error: { message: 'Password must be at least 8 characters.' } },
+        { success: false, error: { message: 'Password must be at least 8 characters with letters and numbers.' } },
         { status: 400 }
       );
     }

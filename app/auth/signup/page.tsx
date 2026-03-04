@@ -12,6 +12,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,6 +26,19 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Validate password
+    if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
+      setError('Password must be at least 8 characters with letters and numbers.');
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch('/api/v1/sellers/register', {
@@ -368,6 +382,76 @@ export default function SignupPage() {
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+            {/* Password requirements */}
+            {password.length > 0 && (
+              <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {[
+                  { label: '8 characters minimum', met: password.length >= 8 },
+                  { label: 'Contains a letter', met: /[a-zA-Z]/.test(password) },
+                  { label: 'Contains a number', met: /[0-9]/.test(password) },
+                ].map((rule) => (
+                  <div key={rule.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <div style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 9,
+                      fontWeight: 700,
+                      background: rule.met ? '#dcfce7' : '#f1f5f9',
+                      color: rule.met ? '#16a34a' : '#94a3b8',
+                    }}>
+                      {rule.met ? '✓' : '·'}
+                    </div>
+                    <span style={{
+                      fontSize: 12,
+                      color: rule.met ? '#16a34a' : '#94a3b8',
+                      fontWeight: 500,
+                    }}>
+                      {rule.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Re-enter your password"
+              required
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: 10,
+                border: `2px solid ${confirmPassword.length > 0 && password !== confirmPassword ? '#fca5a5' : '#e5e7eb'}`,
+                fontSize: 14,
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
+              onBlur={(e) => e.target.style.borderColor = confirmPassword.length > 0 && password !== confirmPassword ? '#fca5a5' : '#e5e7eb'}
+            />
+            {confirmPassword.length > 0 && password !== confirmPassword && (
+              <span style={{ fontSize: 12, color: '#dc2626', marginTop: 4, display: 'block' }}>
+                Passwords do not match
+              </span>
+            )}
+            {confirmPassword.length > 0 && password === confirmPassword && (
+              <span style={{ fontSize: 12, color: '#16a34a', marginTop: 4, display: 'block' }}>
+                Passwords match
+              </span>
+            )}
           </div>
 
           {/* Error */}
