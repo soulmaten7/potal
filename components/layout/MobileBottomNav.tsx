@@ -4,21 +4,20 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/icons';
-import { useWishlist } from '@/app/context/WishlistContext';
 
 export function MobileBottomNav() {
   const pathname = usePathname();
-  const { wishlist } = useWishlist();
 
   const tabs = [
-    { id: 'home', label: 'Search', icon: Icons.Search, href: '/' },
-    { id: 'wishlist', label: 'Wishlist', icon: Icons.Heart, href: '/wishlist' },
-    { id: 'profile', label: 'Profile', icon: Icons.User, href: '/profile' },
+    { id: 'home', label: 'Home', icon: Icons.Globe, href: '/' },
+    { id: 'developers', label: 'Docs', icon: Icons.Box, href: '/developers' },
+    { id: 'dashboard', label: 'Dashboard', icon: Icons.Shield, href: '/dashboard' },
+    { id: 'pricing', label: 'Pricing', icon: Icons.Coins, href: '/pricing' },
   ];
 
   const isActive = (href: string) => {
-    if (href === '/') return pathname === '/' || pathname === '/search';
-    return pathname.startsWith(href);
+    if (href === '/') return pathname === '/';
+    return pathname?.startsWith(href) || false;
   };
 
   return (
@@ -54,14 +53,7 @@ export function MobileBottomNav() {
                   textDecoration: 'none',
                 }}
               >
-                <div className="relative">
-                  <IconComponent style={{ width: '22px', height: '22px', color: active ? '#F59E0B' : '#1e293b' }} />
-                  {tab.id === 'wishlist' && wishlist.length > 0 && (
-                    <span className="absolute -top-1.5 -right-2.5 bg-red-500 text-white text-[9px] font-bold min-w-[14px] h-[14px] flex items-center justify-center rounded-full">
-                      {wishlist.length > 99 ? '99+' : wishlist.length}
-                    </span>
-                  )}
-                </div>
+                <IconComponent style={{ width: '22px', height: '22px', color: active ? '#F59E0B' : '#1e293b' }} />
                 <span style={{
                   fontSize: '11px',
                   marginTop: '3px',
