@@ -1,15 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 
 export default function AuthPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { supabase } = useSupabase();
 
-  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const initialMode = searchParams.get('mode') === 'signup' ? 'signup' : 'login';
+  const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [companyName, setCompanyName] = useState('');

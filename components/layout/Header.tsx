@@ -180,13 +180,13 @@ export function Header() {
           ) : (
             <div className="flex items-center gap-3">
               <Link
-                href="/auth"
+                href="/auth?mode=login"
                 className="text-sm font-bold text-[#02122c] hover:text-[#F59E0B] transition-colors cursor-pointer"
               >
                 {t('nav.signIn')}
               </Link>
               <Link
-                href="/auth"
+                href="/auth?mode=signup"
                 className="bg-[#F59E0B] text-[#02122c] px-5 py-2 rounded-full text-sm font-bold hover:bg-[#e8930a] transition-colors cursor-pointer"
               >
                 {t('nav.signUp')}
