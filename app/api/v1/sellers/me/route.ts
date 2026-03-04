@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     // Get seller record
     const { data: seller, error: sellerError } = await (supabase
       .from('sellers') as any)
-      .select('id, email, company_name, plan_id, subscription_status, created_at')
+      .select('id, email, company_name, plan_id, subscription_status, stripe_customer_id, stripe_subscription_id, current_period_end, created_at')
       .eq('id', user.id)
       .single();
 
@@ -75,11 +75,11 @@ export async function GET(req: NextRequest) {
     const s = seller as any;
 
     const planLimits: Record<string, number> = {
-      starter: 1000,
+      starter: 5000,
       growth: 50000,
       enterprise: -1,
     };
-    const limit = planLimits[s.plan_id] ?? 1000;
+    const limit = planLimits[s.plan_id] ?? 5000;
     const used = usageLogs?.length || 0;
 
     return NextResponse.json({
@@ -91,6 +91,9 @@ export async function GET(req: NextRequest) {
           companyName: s.company_name,
           plan: s.plan_id,
           subscriptionStatus: s.subscription_status,
+          stripeCustomerId: s.stripe_customer_id || null,
+          stripeSubscriptionId: s.stripe_subscription_id || null,
+          currentPeriodEnd: s.current_period_end || null,
           createdAt: s.created_at,
         },
         keys: (keys || []).map((k: any) => ({

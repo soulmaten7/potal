@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 
@@ -23,6 +23,9 @@ interface SellerProfile {
   companyName: string | null;
   plan: string;
   subscriptionStatus: string;
+  stripeCustomerId?: string | null;
+  stripeSubscriptionId?: string | null;
+  currentPeriodEnd?: string | null;
   createdAt: string;
 }
 
@@ -34,20 +37,76 @@ interface UsageData {
   usagePercent: number;
 }
 
-type TabId = 'overview' | 'keys' | 'widget' | 'usage';
+type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'billing';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '📊' },
   { id: 'keys', label: 'API Keys', icon: '🔑' },
   { id: 'widget', label: 'Widget', icon: '🧩' },
   { id: 'usage', label: 'Usage', icon: '📈' },
+  { id: 'billing', label: 'Billing', icon: '💳' },
+];
+
+// Plan display config (mirrors stripe.ts PLAN_CONFIG)
+const PLANS = [
+  {
+    id: 'starter' as const,
+    name: 'Starter',
+    price: 'Free',
+    priceNote: 'Forever',
+    calls: '5,000',
+    features: [
+      '5,000 API calls / month',
+      'Widget embed (light theme)',
+      '139 countries supported',
+      'Community support',
+    ],
+  },
+  {
+    id: 'growth' as const,
+    name: 'Growth',
+    price: '$49',
+    priceNote: '/ month',
+    calls: '50,000',
+    popular: true,
+    features: [
+      '50,000 API calls / month',
+      'Widget embed (all themes)',
+      'Custom widget branding',
+      'HS Code classification API',
+      'Priority email support',
+      'Advanced analytics',
+    ],
+  },
+  {
+    id: 'enterprise' as const,
+    name: 'Enterprise',
+    price: 'Custom',
+    priceNote: 'Contact us',
+    calls: 'Unlimited',
+    features: [
+      'Unlimited API calls',
+      'White-label widget',
+      'Dedicated infrastructure',
+      'SSO & team management',
+      'SLA guarantee (99.99%)',
+      'Custom integrations',
+    ],
+  },
 ];
 
 export default function DashboardPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { supabase, session } = useSupabase();
 
-  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  // Handle checkout redirect
+  const checkoutStatus = searchParams.get('checkout');
+  const checkoutPlan = searchParams.get('plan');
+
+  const [activeTab, setActiveTab] = useState<TabId>(
+    checkoutStatus ? 'billing' : 'overview'
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +121,9 @@ export default function DashboardPage() {
   const [widgetProductName, setWidgetProductName] = useState('');
   const [widgetPrice, setWidgetPrice] = useState('');
   const [widgetShipping, setWidgetShipping] = useState('');
+
+  // Billing
+  const [billingLoading, setBillingLoading] = useState(false);
 
   // New key creation
   const [newKeyName, setNewKeyName] = useState('');
@@ -180,6 +242,60 @@ export default function DashboardPage() {
       await loadData();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to revoke key');
+    }
+  };
+
+  // ─── Billing: Upgrade ────────────────────────────
+  const handleUpgrade = async (planId: string) => {
+    if (!session) return;
+    setBillingLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/billing/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ planId }),
+      });
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to create checkout');
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Checkout failed');
+    } finally {
+      setBillingLoading(false);
+    }
+  };
+
+  // ─── Billing: Manage (Customer Portal) ──────────
+  const handleManageBilling = async () => {
+    if (!session) return;
+    setBillingLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/billing/portal', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to open portal');
+
+      // Redirect to Stripe Customer Portal
+      window.location.href = data.data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Portal failed');
+    } finally {
+      setBillingLoading(false);
     }
   };
 
@@ -318,6 +434,26 @@ export default function DashboardPage() {
             <div style={{ background: '#fef2f2', color: '#dc2626', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
               {error}
               <button onClick={() => setError(null)} style={{ float: 'right', background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontWeight: 700 }}>x</button>
+            </div>
+          )}
+
+          {checkoutStatus === 'success' && (
+            <div style={{ background: '#ecfdf5', border: '1px solid #6ee7b7', padding: '16px 20px', borderRadius: 12, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 24 }}>&#127881;</span>
+              <div>
+                <div style={{ fontWeight: 700, color: '#047857', fontSize: 15 }}>
+                  Welcome to {checkoutPlan ? checkoutPlan.charAt(0).toUpperCase() + checkoutPlan.slice(1) : ''} Plan!
+                </div>
+                <div style={{ fontSize: 13, color: '#065f46', marginTop: 2 }}>
+                  Your 14-day free trial has started. You can manage your subscription anytime.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {checkoutStatus === 'canceled' && (
+            <div style={{ background: '#fef3c7', border: '1px solid #fde68a', padding: '14px 20px', borderRadius: 12, marginBottom: 16, fontSize: 13, color: '#92400e' }}>
+              Checkout was canceled. No charges were made. You can upgrade anytime from the Billing tab.
             </div>
           )}
 
@@ -543,6 +679,247 @@ export default function DashboardPage() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+          {/* ── Billing ── */}
+          {activeTab === 'billing' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700 }}>Billing & Plans</h2>
+                {seller?.stripeCustomerId && (
+                  <button
+                    onClick={handleManageBilling}
+                    disabled={billingLoading}
+                    style={{
+                      padding: '10px 20px',
+                      borderRadius: 10,
+                      border: '1px solid #e5e7eb',
+                      background: 'white',
+                      color: '#333',
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: billingLoading ? 'not-allowed' : 'pointer',
+                      opacity: billingLoading ? 0.6 : 1,
+                    }}
+                  >
+                    {billingLoading ? 'Loading...' : 'Manage Subscription'}
+                  </button>
+                )}
+              </div>
+
+              {/* Current Plan Banner */}
+              <div style={{
+                background: 'white',
+                borderRadius: 12,
+                padding: 20,
+                border: '1px solid #e5e7eb',
+                marginBottom: 24,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
+                <div>
+                  <div style={{ fontSize: 13, color: '#888', fontWeight: 600, marginBottom: 4 }}>CURRENT PLAN</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: '#02122c' }}>
+                    {(seller?.plan || 'starter').charAt(0).toUpperCase() + (seller?.plan || 'starter').slice(1)}
+                  </div>
+                  <div style={{ fontSize: 13, color: '#666', marginTop: 4 }}>
+                    Status:{' '}
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: 4,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      background:
+                        seller?.subscriptionStatus === 'active' ? '#dcfce7' :
+                        seller?.subscriptionStatus === 'trialing' ? '#dbeafe' :
+                        seller?.subscriptionStatus === 'past_due' ? '#fef3c7' :
+                        '#f3f4f6',
+                      color:
+                        seller?.subscriptionStatus === 'active' ? '#16a34a' :
+                        seller?.subscriptionStatus === 'trialing' ? '#2563eb' :
+                        seller?.subscriptionStatus === 'past_due' ? '#d97706' :
+                        '#666',
+                    }}>
+                      {seller?.subscriptionStatus || 'active'}
+                    </span>
+                  </div>
+                  {seller?.currentPeriodEnd && (
+                    <div style={{ fontSize: 12, color: '#999', marginTop: 6 }}>
+                      {seller.subscriptionStatus === 'trialing' ? 'Trial ends' : 'Renews'}: {new Date(seller.currentPeriodEnd).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>API Calls</div>
+                  <div style={{ fontSize: 20, fontWeight: 700 }}>
+                    {usage ? `${usage.used.toLocaleString()} / ${typeof usage.limit === 'number' ? usage.limit.toLocaleString() : usage.limit}` : '—'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Plan Cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+                {PLANS.map((plan) => {
+                  const isCurrent = (seller?.plan || 'starter') === plan.id;
+                  const isUpgrade = plan.id === 'growth' && (seller?.plan || 'starter') === 'starter';
+                  const isEnterprise = plan.id === 'enterprise';
+
+                  return (
+                    <div
+                      key={plan.id}
+                      style={{
+                        background: 'white',
+                        borderRadius: 16,
+                        padding: 28,
+                        border: isCurrent ? '2px solid #F59E0B' : plan.popular ? '2px solid #02122c' : '1px solid #e5e7eb',
+                        position: 'relative',
+                      }}
+                    >
+                      {plan.popular && !isCurrent && (
+                        <div style={{
+                          position: 'absolute',
+                          top: -12,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: '#02122c',
+                          color: 'white',
+                          padding: '4px 14px',
+                          borderRadius: 20,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          letterSpacing: 0.5,
+                        }}>
+                          MOST POPULAR
+                        </div>
+                      )}
+                      {isCurrent && (
+                        <div style={{
+                          position: 'absolute',
+                          top: -12,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: '#F59E0B',
+                          color: '#02122c',
+                          padding: '4px 14px',
+                          borderRadius: 20,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          letterSpacing: 0.5,
+                        }}>
+                          CURRENT PLAN
+                        </div>
+                      )}
+
+                      <div style={{ marginBottom: 20, marginTop: 4 }}>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: '#02122c', marginBottom: 8 }}>
+                          {plan.name}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                          <span style={{ fontSize: 36, fontWeight: 800, color: '#02122c' }}>{plan.price}</span>
+                          <span style={{ fontSize: 14, color: '#888' }}>{plan.priceNote}</span>
+                        </div>
+                        <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>
+                          {plan.calls} API calls / month
+                        </div>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 16, marginBottom: 20 }}>
+                        {plan.features.map((feature, i) => (
+                          <div key={i} style={{
+                            fontSize: 13,
+                            color: '#555',
+                            padding: '6px 0',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                          }}>
+                            <span style={{ color: '#10b981', fontWeight: 700 }}>&#10003;</span>
+                            {feature}
+                          </div>
+                        ))}
+                      </div>
+
+                      {isCurrent ? (
+                        <button
+                          disabled
+                          style={{
+                            width: '100%',
+                            padding: '12px 0',
+                            borderRadius: 10,
+                            border: '1px solid #e5e7eb',
+                            background: '#f8fafc',
+                            color: '#999',
+                            fontSize: 14,
+                            fontWeight: 600,
+                            cursor: 'default',
+                          }}
+                        >
+                          Current Plan
+                        </button>
+                      ) : isEnterprise ? (
+                        <a
+                          href="mailto:hello@potal.io?subject=Enterprise%20Plan%20Inquiry"
+                          style={{
+                            display: 'block',
+                            width: '100%',
+                            padding: '12px 0',
+                            borderRadius: 10,
+                            border: '2px solid #02122c',
+                            background: 'white',
+                            color: '#02122c',
+                            fontSize: 14,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            textDecoration: 'none',
+                            boxSizing: 'border-box',
+                          }}
+                        >
+                          Contact Sales
+                        </a>
+                      ) : (
+                        <button
+                          onClick={() => handleUpgrade(plan.id)}
+                          disabled={billingLoading}
+                          style={{
+                            width: '100%',
+                            padding: '12px 0',
+                            borderRadius: 10,
+                            border: 'none',
+                            background: isUpgrade ? '#F59E0B' : '#02122c',
+                            color: isUpgrade ? '#02122c' : 'white',
+                            fontSize: 14,
+                            fontWeight: 700,
+                            cursor: billingLoading ? 'not-allowed' : 'pointer',
+                            opacity: billingLoading ? 0.6 : 1,
+                          }}
+                        >
+                          {billingLoading ? 'Processing...' : isUpgrade ? 'Start 14-Day Free Trial' : `Upgrade to ${plan.name}`}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Billing Info */}
+              <div style={{
+                background: '#f8fafc',
+                borderRadius: 12,
+                padding: 20,
+                marginTop: 24,
+                border: '1px solid #e5e7eb',
+                fontSize: 13,
+                color: '#666',
+              }}>
+                <strong style={{ color: '#333' }}>Billing FAQ:</strong>
+                <div style={{ marginTop: 8, lineHeight: 1.8 }}>
+                  All plans come with a <strong>14-day free trial</strong>. You can cancel anytime before the trial ends and you won&apos;t be charged.
+                  After the trial, you&apos;ll be billed monthly. You can manage your subscription, update payment method, or cancel at any time
+                  through the <span style={{ color: '#F59E0B', fontWeight: 600, cursor: 'pointer' }} onClick={handleManageBilling}>Manage Subscription</span> portal.
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-04 (세션 12 — Phase 1 API 구축 진행 중)
+> 마지막 업데이트: 2026-03-04 (세션 14 — Phase 1 완료, Phase 2 LLM 커스텀 앱 진입)
 
 ---
 
@@ -12,6 +12,12 @@
 - **⚠️ session-context.md에 없는 숫자/진행률을 임의로 만들지 말 것** (예: "70% 완료" 같은 근거 없는 수치 금지)
 - **⚠️ 완료(✅)와 대기 중(⏳)을 명확히 구분할 것**
 
+### 🔥 실행 지침 (세션 15~)
+- **한 번에 하나의 작업만 실행**. 멀티태스킹 금지.
+- 각 작업에 **최대한 많은 생각과 정확성**을 기해서 디테일하게 실행.
+- 은태님이 빠르게 확인/답변 → Claude가 다음 작업 즉시 실행. 이 루프가 가장 빠름.
+- 24시간 내 Phase 2 → 4 → 5 완료 목표. Phase 3(Shopify)은 모든 기능 완비 후 마지막에 제출.
+
 ---
 
 ## 0. POTAL 개요
@@ -21,7 +27,7 @@
 **POTAL은 B2C 가격비교 서비스에서 B2B Total Landed Cost 인프라 플랫폼으로 피벗했습니다.**
 
 - 상세 전략 문서: `POTAL-B2B-Strategy-Roadmap.docx`
-- **현재 집중: B2B Phase 1** (Phase 0 완료, 핵심 API 구축 단계)
+- **현재 집중: B2B Phase 2** (Phase 0~1 완료, LLM 커스텀 앱 등록 단계)
 
 ### 서비스 정의 (B2B)
 
@@ -72,13 +78,16 @@ LLM 커스텀 앱 등록 → 사용 데이터 축적 → 데이터 기반 셀러
 ### Roadmap (2026-03-03 확정)
 
 ```
-Phase 0 (1주): B2C 코드 백업 + CostEngine 모듈화 + Supabase B2B 스키마 ← ✅ 완료
-Phase 1 (2~5주): 핵심 API + API 키 시스템 + OpenAPI 스펙 ← 현재 위치 (1-01~1-15 완료)
-Phase 2 (3~5주, 병행): 각 LLM 자체 앱 등록 (Custom GPT, Gemini Extension, Copilot Plugin) → 사용 데이터 축적
-Phase 3 (5~8주): Shopify App + JS 임베드 위젯 + 데이터 기반 셀러 영업
-Phase 4 (8~10주): Stripe 결제 + 셀러 대시보드 (AI 플랫폼별 노출 데이터 포함) → 수익 시작
-Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
+Phase 0: B2C 코드 백업 + CostEngine 모듈화 + Supabase B2B 스키마 ← ✅ 완료 (하루 이내)
+Phase 1: 핵심 API + 셀러 인증 + i18n + 프로덕션 배포 ← ✅ 완료 (하루 이내)
+Phase 2: 각 LLM 커스텀 앱 등록 ← ✅ 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
+  - 나머지 3개: Copilot(비즈니스계정필요), Meta AI(지역제한), Grok(스토어없음) → 파일 준비 후 대기
+Phase 4: Stripe 결제 + 셀러 대시보드 (AI 플랫폼별 노출 데이터 포함) → 수익 구조 완성 ← 🟡 현재 위치
+Phase 5: HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화 → 정확도 향상
+Phase 3: Shopify App + 데이터 기반 셀러 영업 ← 마지막 (심사 7~14일, 모든 기능 완비 후 제출)
 ```
+
+**⚠️ Phase 3을 마지막으로 변경한 이유**: Shopify App Store = 셀러가 들어오는 문. 셀러가 왔을 때 결제(Phase 4), 정확한 관세 계산(Phase 5), LLM 사용 데이터(Phase 2)가 모두 준비되어 있어야 이탈 없음. 심사 7~14일 소요되므로 모든 기능 완비 후 제출.
 
 ### 경쟁 환경
 - **Zonos** ($15M revenue, $69M raised) — 주문당 $2 + 관세 10%. Enterprise 이동 중 = SMB 공백
@@ -86,16 +95,16 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 - **Enterprise**: Global-e (Nasdaq), Avalara — 대형 브랜드 전용
 - **POTAL 포지셔닝**: 월 정액 + SMB 크로스보더 셀러 + AI 에이전트 인프라 = 빈 의자
 
-### AI 쇼핑 에이전트 4파전
+### AI 쇼핑 에이전트 6파전 (Phase 2 실행 계획)
 
-| 플랫폼 | 프로토콜 | POTAL 진입 방법 |
-|--------|---------|----------------|
-| ChatGPT | ACP | Custom GPT로 GPT Store 등록 → 카테고리 장악 |
-| Google Gemini | UCP | Gemini Extension으로 등록 |
-| Meta AI | TBD | 프로토콜 발표 시 즉시 진입 |
-| MS Copilot | Plugin | Partner Center 플러그인 등록 |
-| Claude | MCP | MCP 서버로 등록 |
-| Grok | TBD | X 커머스 연동 시 진입 |
+| # | 플랫폼 | 프로토콜 | POTAL 진입 방법 | Phase 2 상태 |
+|---|--------|---------|----------------|-------------|
+| 2-01 | ChatGPT (OpenAI) | ACP / GPT Actions | Custom GPT — GPT Store 등록, 9개 언어 conversation starters | ✅ 완료 |
+| 2-02 | Claude (Anthropic) | MCP | MCP 서버 구축, TypeScript, 2개 Tool, Claude Desktop 연결 확인 | ✅ 완료 |
+| 2-03 | Gemini (Google) | Gems | Gem 생성, 지침 + 40개국 CSV 데이터 업로드 | ✅ 완료 |
+| 2-04 | Copilot (Microsoft) | Plugin | ⏸ Microsoft 365 Business 계정 필요 (Personal 불가) | ⏸ 대기 |
+| 2-05 | Meta AI | AI Studio | ⏸ 지역 제한 (VPN+거주지 변경 실패). **매 세션 재확인** | ⏸ 대기 |
+| 2-06 | Grok (xAI) | — | ❌ 커스텀 앱 스토어 없음. API만 존재 | ⏸ 대기 |
 
 ---
 
@@ -134,7 +143,7 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 | 2 | CostEngine.ts를 독립 모듈로 분리 | ✅ `app/lib/cost-engine/` 새 모듈 생성, B2C 호환 래퍼 유지 |
 | 3 | Supabase B2B 테이블 스키마 설계 | ✅ `supabase/migrations/003_b2b_schema.sql` 생성 (⚠️ Supabase SQL Editor에서 실행 필요) |
 
-### 🟡 B2B Phase 1 (진행 중 — 핵심 API)
+### ✅ B2B Phase 1 (완료 — 핵심 API + 셀러 인증 + UI)
 
 | # | 항목 | 상태 |
 |---|------|------|
@@ -148,10 +157,34 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 | 1-12 | GlobalCostEngine (다국가 TLC 계산) | ✅ 완료 |
 | 1-13 | `/api/v1/countries` 지원국가 목록 API | ✅ 완료 |
 | 1-14 | `/api/v1/sellers/usage` 사용량 조회 API | ✅ 완료 |
-| 1-15 | 테스트 파일 작성 (Jest 설치 후 실행 필요) | ✅ 작성 완료 |
-| ⏳ | Jest 설치 + 테스트 실행 | 대기 |
-| ⏳ | `npm run build` 검증 (Mac 터미널) | 대기 |
-| ⏳ | git push | 대기 |
+| 1-15 | 테스트 파일 작성 | ✅ 완료 |
+| 1-16 | 세션 기반 키 생성/폐기 API (`/api/v1/sellers/keys/create`, `/revoke`) | ✅ 완료 |
+| 1-17 | 셀러 인증 시스템 — Supabase Auth (이메일+비밀번호, Google OAuth) | ✅ 완료 |
+| 1-18 | 로그인/회원가입 분리 페이지 (`/auth/login`, `/auth/signup`) | ✅ 완료 |
+| 1-19 | 비밀번호 강도 검증 (8자+, 영문+숫자, 확인 필드, 실시간 UI) | ✅ 완료 |
+| 1-20 | Google OAuth 연동 (Continue with Google 버튼) | ✅ 완료 |
+| 1-21 | Header에 Sign In/Sign Up 버튼 + 로그인 시 아바타/드롭다운 | ✅ 완료 |
+| 1-22 | i18n 다국어 시스템 — 6개 언어 (EN, KO, JA, ZH, ES, DE), 125개 키 | ✅ 완료 |
+| 1-23 | Footer, MobileBottomNav 다국어 적용 | ✅ 완료 |
+| 1-24 | TLC 위젯 임베드 시스템 | ✅ 완료 |
+| 1-25 | Developer 문서 페이지 | ✅ 완료 |
+| 1-26 | 프로덕션 배포 (Vercel — potal-x1vl.vercel.app) | ✅ 완료 |
+| 1-27 | Google OAuth redirect URL 설정 (Supabase URL Configuration) | ✅ 완료 — Site URL + Redirect URLs 프로덕션 URL로 변경 |
+
+### 🟡 B2B Phase 2 (진행 중 — LLM 커스텀 앱 등록)
+
+> **목표**: 쇼핑 시장의 모든 주요 LLM 플랫폼에 POTAL TLC 커스텀 앱을 등록하여 사용 데이터 축적 시작
+
+| # | 플랫폼 | 앱 형태 | 상태 |
+|---|--------|---------|------|
+| 2-01 | **OpenAI (ChatGPT)** | Custom GPT — GPT Store 등록 완료. 9개 언어 conversation starters | ✅ 완료 |
+| 2-02 | **Anthropic (Claude)** | MCP 서버 구축 완료 — `mcp-server/`, TypeScript, 2개 Tool, API 호출 테스트 통과, Claude Desktop 연결 확인 | ✅ 완료 |
+| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv 업로드 | ✅ 완료 |
+| 2-04 | **Microsoft (Copilot)** | ⏸ 파일 준비됨. Microsoft 365 Business 계정 필요 (Personal로는 불가). Developer Program 무료 가입 옵션 있음 | ⏸ 대기 |
+| 2-05 | **Meta AI** | ⏸ `meta-ai/` 파일 준비됨. AI Studio 지역 제한으로 접속 불가 (VPN+거주지 변경도 실패). **⚠️ 매 세션마다 재확인 필요 — 지역 제한 풀리면 즉시 등록** | ⏸ 대기 |
+| 2-06 | **xAI (Grok)** | ❌ 커스텀 앱 스토어 자체 없음. API만 존재. 스토어 출시 시 즉시 진입 | ⏸ 대기 |
+
+**Phase 2 전략**: 각 LLM 플랫폼의 쇼핑 에이전트 시장을 장악. 사용자가 "이 상품 일본에 보내면 관세 얼마야?" 같은 질문을 하면 POTAL API를 호출하여 즉시 답변. 사용 데이터 축적 → 셀러 영업 근거로 활용.
 
 ### 🔴 즉시 — RapidAPI 구독 전체 취소
 
@@ -159,6 +192,19 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 |---|------|------|
 | 1 | RapidAPI 유료 구독 전부 취소 | Amazon(PRO $25/mo), Walmart, eBay, AliExpress 등 모든 유료 플랜 해지. B2B 전환으로 당장 불필요. 나중에 B2C 데모/쇼룸 필요 시 그때 재구독 |
 | 2 | RapidAPI 환불 (#130604) | 신원 확인 후 환불 진행 중 |
+
+### 🟠 필수 — ITIN 발급 (Stripe Live mode 활성화 필수)
+
+| # | 항목 | 상세 |
+|---|------|------|
+| 1 | **IRS ITIN 신청** | SSN 없는 외국인용 미국 세금번호. Stripe Live mode 결제 수금에 필수 |
+| 2 | 준비물 | Form W-7 + Form 1040-NR (세금 신고서) + 여권 사본 (공증 필요) |
+| 3 | 여권 공증 | 주한 미국대사관 또는 IRS Acceptance Agent (한국 내 공인기관)에서 공증 |
+| 4 | 제출처 | IRS (우편): Austin, TX 73301-0215 |
+| 5 | 소요기간 | 7~11주 |
+| 6 | 비용 | 무료 (IRS 수수료 없음. 공증비만 발생) |
+| 7 | 신청 자격 | 미국 비거주자로서 미국 소득 발생 시 가능 (Stripe SaaS 판매 = 미국 소득) |
+| 8 | 현재 상태 | ⏳ 미착수. Stripe 가입 완료 (SSN 임시값 입력). Test mode로 개발 진행 중. ITIN 확보 후 Live mode 전환 예정 |
 
 ### 🟢 장기
 
@@ -187,10 +233,19 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### B2B Phase 1 — API 구축 진행 중
-- Phase 0 완료 (세션 11), Phase 1 핵심 API 구축 진행 중 (세션 11~12)
-- 1-01~1-15 완료: API 인증, 엔드포인트 5개, 글로벌 엔진, 테스트 파일
-- 남은 작업: Jest 설치, `npm run build` 검증, git push (은태님 Mac 터미널 필요)
+### 24시간 스프린트 — Phase 2 → 4 → 5 → 3
+- Phase 0~1 완료 (세션 11~14)
+- Phase 2 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
+- **현재**: Phase 4 Stripe 결제 + 대시보드 — 백엔드 코드 완료, Stripe 계정 가입 완료
+- **다음**: Phase 5 HS Code 고도화 + 세율 정밀도
+- **마지막**: Phase 3 Shopify App 제출 (심사 7~14일)
+- **블로커**: Stripe Live mode 활성화에 ITIN 필요 (개발은 Test mode로 진행 가능)
+
+### 경쟁사 기술 분석 완료 (세션 14)
+- ✅ `POTAL_vs_Competitors_Analysis.md` 생성 — Zonos/Avalara/Global-e/Easyship/Dutify 상세 비교
+- POTAL 강점: 가격(10배 저렴), AI 에이전트 시장 선점(경쟁사 전무)
+- POTAL 약점: HS Code 분류(1/1000 커버리지), 관세율 정밀도(±7% vs ±1%), 반덤핑관세 누락
+- 전략 결론: 65% 정확도로도 LLM 시장 선점이 우선. 정확도는 Phase 5에서 개선
 
 ---
 
@@ -203,6 +258,18 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
   - `potal-b2c-snapshot` 브랜치 생성
   - `app/lib/cost-engine/` 독립 모듈 생성 (CostEngine.ts + types.ts + adapters.ts + index.ts)
   - `supabase/migrations/003_b2b_schema.sql` 생성 (5 테이블 + 1 뷰)
+- ✅ Phase 1 완료 (세션 12~14, 2026-03-04):
+  - API 키 시스템 + 5개 엔드포인트 + 글로벌 엔진 58개국
+  - 셀러 인증 (Supabase Auth — 이메일/비밀번호 + Google OAuth)
+  - 로그인/회원가입 분리 페이지 + 비밀번호 강도 검증
+  - i18n 다국어 시스템 (6개 언어 × 125키)
+  - TLC 위젯 + Developer 문서 + 프로덕션 배포
+  - Google OAuth redirect URL 프로덕션 설정 (Supabase URL Configuration)
+- ✅ 경쟁사 기술 분석 (세션 14, 2026-03-04):
+  - POTAL 코드베이스 전수 분석 (5,500줄 코어 코드)
+  - Zonos/Avalara/Global-e/Easyship/Dutify 6개 경쟁사 상세 비교
+  - `POTAL_vs_Competitors_Analysis.md` 생성
+  - 기술 분석 문서 4종 생성 (TECHNICAL_SUMMARY, TECHNICAL_INVENTORY, PRODUCTION_READINESS, QUICK_REFERENCE)
 
 ### B2C 기간 완료 작업 (참조용)
 - ✅ iOS Build 3 재제출 (세션 6) — 거절 4가지 수정
@@ -300,6 +367,13 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 | `app/api/v1/sellers/usage/route.ts` | 사용량 조회 API |
 | `app/api/v1/countries/route.ts` | 지원국가 목록 API |
 | `app/api/v1/docs/route.ts` | OpenAPI 3.0 스펙 서빙 |
+| `app/api/v1/sellers/keys/create/route.ts` | 세션 기반 API 키 생성 |
+| `app/api/v1/sellers/keys/revoke/route.ts` | 세션 기반 API 키 폐기 |
+| `app/auth/login/page.tsx` | 로그인 페이지 (이메일 + Google OAuth) |
+| `app/auth/signup/page.tsx` | 회원가입 페이지 (Google OAuth + 비밀번호 검증) |
+| `app/auth/callback/route.ts` | OAuth 콜백 핸들러 |
+| `app/context/I18nProvider.tsx` | i18n React Context Provider |
+| `app/i18n/translations/` | 6개 언어 번역 파일 (en, ko, ja, zh, es, de) |
 | `__tests__/api/cost-engine.test.ts` | CostEngine 유닛 테스트 |
 | `app/lib/search/CostEngine.ts` | B2C 호환 래퍼 (cost-engine 모듈 re-export) |
 | `app/lib/search/SearchService.ts` | B2C 검색 파이프라인 |
@@ -311,6 +385,22 @@ Phase 5 (10주+): HS Code 고도화 + EU/JP/KR/AU 세율 + 다국 통화
 ### Supabase B2B 테이블 (003_b2b_schema.sql — SQL Editor 실행 필요)
 plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
 
+### 프로덕션 환경 & 인증 정보
+
+| 항목 | 값 |
+|------|-----|
+| 프로덕션 URL | https://potal-x1vl.vercel.app |
+| 도메인 (예정) | https://potal.app |
+| 테스트 셀러 ID | a565a5af-141a-4289-af00-fd5e620b2771 |
+| pk_live_ | (Vercel 환경변수 참조) |
+| sk_live_ | (Vercel 환경변수 참조) |
+| Admin Key | (Vercel 환경변수 참조) |
+| Stripe (Test) | sk_test_... / whsec_... (.env.local 참조) |
+| API 엔드포인트 | https://potal.app/api/v1/calculate |
+
+### ⚠️ 현재 블로커
+- 없음 — Google OAuth redirect 설정 완료 (2026-03-04, Supabase URL Configuration에서 Site URL → `https://potal-x1vl.vercel.app`, Redirect URLs에 `https://potal-x1vl.vercel.app/**` 추가)
+
 ---
 
 ## 9. 📁 파일 인덱스
@@ -320,6 +410,7 @@ plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
 |------|------|
 | `POTAL-B2B-Strategy-Roadmap.docx` | B2B 피벗 전략 전체 문서 |
 | `session-context.md` | 이 파일 (프로젝트 맥락) |
+| `POTAL_vs_Competitors_Analysis.md` | 경쟁사 기술 비교 분석 (Zonos/Avalara/Global-e/Easyship/Dutify) |
 
 ### B2C 보존 문서
 | 파일 | 역할 |
@@ -341,6 +432,9 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-04 | 15+ | **Phase 2 핵심 완료**: Custom GPT 언어 수정 (9개 언어 conversation starters, 글로벌 크로스보더 시장 데이터 기반 언어 우선순위), Claude MCP 서버 구축+빌드+테스트+Claude Desktop 연결 확인, Gemini Gem 생성 (지침+40개국 CSV), Meta AI Studio 시도(지역제한 실패→파일 준비), Copilot(비즈니스계정 필요→대기), Grok(스토어 없음→대기). Phase 4 진입 준비 |
+| 03-04 | 14 | **Phase 2 진입**: Google OAuth 블로커 해결, LLM 커스텀 앱 계획 확정 (6개 플랫폼), 경쟁사 기술 분석 (Zonos/Avalara/Global-e/Easyship/Dutify), 로드맵 순서 변경 (Phase 3→마지막), 24시간 스프린트 시작 |
+| 03-04 | 13 | **셀러 인증 완료**: 로그인/회원가입 분리, Google OAuth, 비밀번호 검증, i18n 6개 언어(EN/KO/JA/ZH/ES/DE) |
 | 03-04 | 12 | **Phase 1 API 구축**: 인증시스템(1-01~05), API 엔드포인트 5개(1-06~14), 글로벌 엔진 58개국, OpenAPI 스펙, 테스트 파일 |
 | 03-04 | 11 | **Phase 0 완료**: B2C 백업 브랜치, CostEngine 모듈화, Supabase B2B 스키마 |
 | 03-03 | 10+ | **B2B 피벗 결정**, 전략 문서 생성, AI 4파전 분석, 경쟁사 조사 |
