@@ -2,8 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useI18n } from '@/app/i18n';
 
 export function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="bg-[#02122c] text-white py-12 mt-auto w-full z-10 relative">
       <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
@@ -19,53 +22,52 @@ export function Footer() {
               <span className="text-white">TAL</span>
             </Link>
             <p className="text-sm text-slate-400 leading-relaxed">
-              The infrastructure for global commerce.
-              Total landed cost API for 139 countries.
+              {t('footer.tagline')}
             </p>
           </div>
 
           {/* Product */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Product</h4>
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('footer.product')}</h4>
             <Link href="/developers" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Integration Hub
+              {t('nav.developers')}
             </Link>
             <Link href="/developers/docs" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              API Documentation
+              {t('footer.documentation')}
             </Link>
             <Link href="/developers/playground" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               Widget Playground
             </Link>
             <Link href="/pricing" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Pricing
+              {t('nav.pricing')}
             </Link>
             <Link href="/dashboard" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Dashboard
+              {t('nav.dashboard')}
             </Link>
           </div>
 
           {/* Resources */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Resources</h4>
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('footer.resources')}</h4>
             <Link href="/help" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Help Center
+              {t('footer.helpCenter')}
             </Link>
             <Link href="/widget/demo" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               Widget Demo
             </Link>
             <Link href="/contact" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Contact Us
+              {t('footer.contact')}
             </Link>
           </div>
 
           {/* Legal */}
           <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Legal</h4>
+            <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{t('footer.legal')}</h4>
             <Link href="/terms" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Terms of Service
+              {t('footer.terms')}
             </Link>
             <Link href="/privacy" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Privacy Policy
+              {t('footer.privacy')}
             </Link>
           </div>
         </div>

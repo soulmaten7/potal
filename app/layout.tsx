@@ -12,10 +12,10 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
-// ViewportManager 제거됨 — 태블릿 viewport는 iOS 네이티브(TabletViewController)에서 처리
 import { WishlistProvider } from "./context/WishlistContext";
 import { UserPreferenceProvider } from "./context/UserPreferenceContext";
 import { SupabaseProvider } from "./context/SupabaseProvider";
+import { I18nProvider } from "./context/I18nProvider";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -32,11 +32,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://potal.app"),
   title: {
-    default: "POTAL - Global Best Price vs Local Fast Delivery",
+    default: "POTAL - Total Landed Cost API for Cross-Border Commerce",
     template: "%s | POTAL",
   },
-  description: "Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu. AI-powered shopping agent finds the best deal instantly.",
-  keywords: ["price comparison", "shopping agent", "best price", "AI shopping", "Amazon", "Walmart", "eBay", "AliExpress", "Temu", "Shein", "best deal", "online shopping"],
+  description: "Calculate duties, taxes, and shipping for 139 countries in real-time. The infrastructure for global e-commerce — embed our widget or REST API.",
+  keywords: ["total landed cost", "cross-border commerce", "duty calculator", "tax API", "e-commerce API", "international shipping", "customs duty", "import tax", "landed cost calculator"],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -49,8 +49,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "POTAL",
-    title: "POTAL - Compare Real Total Cost, Domestic vs Global",
-    description: "Compare real total cost across Amazon, Walmart, Target, eBay, Costco & AliExpress. Domestic vs Global side by side.",
+    title: "POTAL - Total Landed Cost API for Cross-Border Commerce",
+    description: "Calculate duties, taxes, and shipping for 139 countries in real-time. The infrastructure for global e-commerce.",
     url: "https://potal.app",
     locale: "en_US",
     images: [
@@ -58,14 +58,14 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "POTAL - AI Shopping Comparison Agent",
+        alt: "POTAL - Total Landed Cost API",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "POTAL - Compare Real Total Cost, Domestic vs Global",
-    description: "Compare real total cost across Amazon, Walmart, Target, eBay, Costco & AliExpress. Domestic vs Global side by side.",
+    title: "POTAL - Total Landed Cost API for Cross-Border Commerce",
+    description: "Calculate duties, taxes, and shipping for 139 countries in real-time. The infrastructure for global e-commerce.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -111,7 +111,7 @@ export default function RootLayout({
               "@type": "WebSite",
               name: "POTAL",
               url: "https://potal.app",
-              description: "AI-powered global shopping comparison agent. Compare prices across Amazon, Walmart, eBay, BestBuy, Target, AliExpress & Temu.",
+              description: "Total Landed Cost API for cross-border commerce. Calculate duties, taxes, and shipping for 139 countries.",
               potentialAction: {
                 "@type": "SearchAction",
                 target: {
@@ -149,6 +149,7 @@ export default function RootLayout({
         />
         
         <SupabaseProvider>
+          <I18nProvider>
           <UserPreferenceProvider>
             <WishlistProvider>
               
@@ -174,6 +175,7 @@ export default function RootLayout({
               
             </WishlistProvider>
           </UserPreferenceProvider>
+          </I18nProvider>
         </SupabaseProvider>
       </body>
     </html>

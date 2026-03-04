@@ -4,15 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/icons';
+import { useI18n } from '@/app/i18n';
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const { t } = useI18n();
 
   const tabs = [
     { id: 'home', label: 'Home', icon: Icons.Globe, href: '/' },
-    { id: 'developers', label: 'Docs', icon: Icons.Box, href: '/developers' },
-    { id: 'dashboard', label: 'Dashboard', icon: Icons.Shield, href: '/dashboard' },
-    { id: 'pricing', label: 'Pricing', icon: Icons.Coins, href: '/pricing' },
+    { id: 'developers', label: t('nav.developers'), icon: Icons.Box, href: '/developers' },
+    { id: 'dashboard', label: t('nav.dashboard'), icon: Icons.Shield, href: '/dashboard' },
+    { id: 'pricing', label: t('nav.pricing'), icon: Icons.Coins, href: '/pricing' },
   ];
 
   const isActive = (href: string) => {
