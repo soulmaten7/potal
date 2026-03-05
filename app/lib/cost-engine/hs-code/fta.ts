@@ -145,6 +145,244 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
     preferentialMultiplier: 0.0,
     isActive: true,
   },
+
+  // ─── EU-Vietnam FTA ───
+  {
+    name: 'EU-Vietnam Free Trade Agreement',
+    code: 'EVFTA',
+    members: [
+      'VN',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'], // Tobacco excluded
+    isActive: true,
+  },
+
+  // ─── EU-Canada (CETA) ───
+  {
+    name: 'Comprehensive Economic and Trade Agreement',
+    code: 'CETA',
+    members: [
+      'CA',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── EU-Singapore FTA ───
+  {
+    name: 'EU-Singapore Free Trade Agreement',
+    code: 'EU-SG',
+    members: [
+      'SG',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── EU-Mexico FTA ───
+  {
+    name: 'EU-Mexico Free Trade Agreement',
+    code: 'EU-MX',
+    members: [
+      'MX',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── EU-Mercosur (pending but partially active) ───
+  {
+    name: 'EU-Mercosur Association Agreement',
+    code: 'EU-MERCOSUR',
+    members: [
+      'AR', 'BR', 'PY', 'UY',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.3, // Partially active, negotiation ongoing
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Israel FTA ───
+  {
+    name: 'United States-Israel Free Trade Agreement',
+    code: 'US-IL',
+    members: ['US', 'IL'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── US-Singapore FTA ───
+  {
+    name: 'United States-Singapore Free Trade Agreement',
+    code: 'US-SG',
+    members: ['US', 'SG'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── US-Chile FTA ───
+  {
+    name: 'United States-Chile Free Trade Agreement',
+    code: 'US-CL',
+    members: ['US', 'CL'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Colombia TPA ───
+  {
+    name: 'United States-Colombia Trade Promotion Agreement',
+    code: 'US-CO',
+    members: ['US', 'CO'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Korea-Vietnam FTA ───
+  {
+    name: 'Korea-Vietnam Free Trade Agreement',
+    code: 'KR-VN',
+    members: ['KR', 'VN'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Korea-ASEAN FTA ───
+  {
+    name: 'Korea-ASEAN Free Trade Agreement',
+    code: 'AKFTA',
+    members: ['KR', 'SG', 'MY', 'TH', 'VN', 'PH', 'ID', 'BN', 'KH', 'LA', 'MM'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── India-ASEAN FTA ───
+  {
+    name: 'India-ASEAN Free Trade Agreement',
+    code: 'AIFTA',
+    members: ['IN', 'SG', 'MY', 'TH', 'VN', 'PH', 'ID', 'BN', 'KH', 'LA', 'MM'],
+    preferentialMultiplier: 0.5, // Partial implementation
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Japan-India CEPA ───
+  {
+    name: 'Japan-India Comprehensive Economic Partnership Agreement',
+    code: 'JP-IN',
+    members: ['JP', 'IN'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── China-New Zealand FTA ───
+  {
+    name: 'China-New Zealand Free Trade Agreement',
+    code: 'CN-NZ',
+    members: ['CN', 'NZ'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Pacific Alliance ───
+  {
+    name: 'Pacific Alliance Free Trade Area',
+    code: 'PA',
+    members: ['MX', 'CL', 'CO', 'PE'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── GCC (Gulf Cooperation Council) ───
+  {
+    name: 'Gulf Cooperation Council Customs Union',
+    code: 'GCC',
+    members: ['AE', 'SA', 'QA', 'BH', 'KW', 'OM'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── EFTA (European Free Trade Association) ───
+  {
+    name: 'European Free Trade Association',
+    code: 'EFTA',
+    members: ['CH', 'NO', 'IS', 'LI'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── EFTA-Korea FTA ───
+  {
+    name: 'EFTA-Korea Free Trade Agreement',
+    code: 'EFTA-KR',
+    members: ['CH', 'NO', 'IS', 'LI', 'KR'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Turkey-EU Customs Union ───
+  {
+    name: 'Turkey-EU Customs Union',
+    code: 'TR-EU',
+    members: [
+      'TR',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.0, // For manufactured goods
+    excludedChapters: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15'], // Agricultural exclusions
+    isActive: true,
+  },
+
+  // ─── UK-New Zealand FTA ───
+  {
+    name: 'UK-New Zealand Free Trade Agreement',
+    code: 'UK-NZ',
+    members: ['GB', 'NZ'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── AfCFTA (African Continental Free Trade Area) ───
+  {
+    name: 'African Continental Free Trade Area',
+    code: 'AfCFTA',
+    members: [
+      'DZ', 'AO', 'BJ', 'BW', 'BF', 'BI', 'CM', 'CV', 'CF', 'TD', 'KM', 'CG', 'CD', 'CI', 'DJ', 'EG', 'GQ', 'ER', 'ET', 'GA', 'GM', 'GH', 'GN', 'GW', 'KE', 'LS', 'LR', 'LY', 'MG', 'MW', 'ML', 'MR', 'MU', 'MA', 'MZ', 'NA', 'NE', 'NG', 'RW', 'ST', 'SN', 'SC', 'SL', 'SO', 'ZA', 'SS', 'SD', 'SZ', 'TZ', 'TG', 'TN', 'UG', 'ZM', 'ZW',
+    ],
+    preferentialMultiplier: 0.7, // Partial implementation across continent
+    excludedChapters: ['24'],
+    isActive: true,
+  },
 ];
 
 // ─── Public API ────────────────────────────────────────────────
