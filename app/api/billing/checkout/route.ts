@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     if (!planId || !PLAN_CONFIG[planId]) {
       return NextResponse.json(
-        { success: false, error: 'Invalid plan ID. Must be: growth or enterprise' },
+        { success: false, error: 'Invalid plan ID. Must be: starter, growth, or enterprise' },
         { status: 400 }
       );
     }

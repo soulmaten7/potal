@@ -39,13 +39,20 @@ export function getAiClassifierConfig(): AiClassifierConfig {
 
 // ─── AI Classification Prompt ─────────────────────
 
-const SYSTEM_PROMPT = `You are an expert in Harmonized System (HS) product classification, trained on WCO HS 2022 Edition standards.
+const SYSTEM_PROMPT = `You are an expert in Harmonized System (HS) product classification, trained on WCO HS 2022 Edition standards and country-specific tariff schedules (US HTS, UK Trade Tariff, EU TARIC).
 
-Your job: Given a product name/description, return the most accurate HS Code classification.
+Your job: Given a product name/description, return the most accurate HS Code classification at the MAXIMUM possible precision level.
 
 Rules:
-1. Return HS Code up to 6 digits (international standard). Use dots for readability (e.g., "6404.11").
+1. Return HS Code up to 10 digits whenever possible. Use dots for readability (e.g., "6404.11.00.90").
+   - First 6 digits: international HS standard (mandatory)
+   - Digits 7-8: subheading (provide if you can determine)
+   - Digits 9-10: tariff line (provide if you can determine)
+   - If uncertain about country-specific digits (7-10), return 6 digits and set confidence accordingly.
 2. Provide confidence score from 0.0 to 1.0 based on how certain you are.
+   - 0.9+: Exact product match to known tariff line
+   - 0.7-0.9: Strong match at 6-digit level, uncertain about deeper digits
+   - 0.5-0.7: Reasonable classification but product is ambiguous
 3. Provide up to 3 alternative HS codes if the product could fall under multiple categories.
 4. Use the latest HS 2022 nomenclature.
 5. For ambiguous products, prefer the most commonly used classification in international trade.
@@ -60,13 +67,13 @@ function buildUserPrompt(productName: string, category?: string): string {
   }
   prompt += `\n\nRespond in this exact JSON format:
 {
-  "hsCode": "XXXX.XX",
+  "hsCode": "XXXX.XX.XX.XX",
   "description": "HS Code description",
   "confidence": 0.95,
   "chapter": "XX",
   "chapterDescription": "Chapter description",
   "alternatives": [
-    {"hsCode": "YYYY.YY", "description": "Alt description", "confidence": 0.80}
+    {"hsCode": "YYYY.YY.YY.YY", "description": "Alt description", "confidence": 0.80}
   ]
 }`;
   return prompt;

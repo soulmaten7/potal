@@ -24,6 +24,9 @@ import { classifyWithOverrideAsync } from './ai-classifier';
 // External tariff API (async, with DB caching + circuit breaker)
 import { fetchDutyRateWithFallback, getFtaRateFromLiveDb } from './tariff-api';
 
+// Real-time exchange rates
+import { convertCurrency, type CurrencyConversion } from './exchange-rate';
+
 // DB-backed modules (async, with cache + hardcoded fallback)
 import { getCountryProfileFromDb } from './db/country-data-db';
 import { getDutyRateFromDb, getEffectiveDutyRateFromDb, hasCountryDutyDataFromDb } from './db/duty-rates-db';
@@ -76,6 +79,19 @@ export interface GlobalLandedCost extends LandedCost {
   classificationSource?: string;
   /** Where the duty rate came from: 'hardcoded' | 'db' | 'live_db' | 'external_api' */
   dutyRateSource?: string;
+  /** Local currency conversion (if destination currency != USD) */
+  localCurrency?: {
+    /** Total landed cost in local currency */
+    totalLandedCost: number;
+    /** Exchange rate USD → local */
+    exchangeRate: number;
+    /** Currency code */
+    currency: string;
+    /** Rate source */
+    rateSource: string;
+    /** Last updated timestamp */
+    lastUpdated: string;
+  };
 }
 
 // ════════════════════════════════════════════════════
@@ -311,6 +327,23 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' : originCountry === 'CN' ? 'CN' : 'OTHER';
 
+  // 환율 변환 (목적지 통화가 USD가 아니면 현지 통화로 변환)
+  let localCurrency: GlobalLandedCost['localCurrency'];
+  if (profile.currency !== 'USD') {
+    try {
+      const conversion = await convertCurrency(round(totalWithMpf), 'USD', profile.currency);
+      localCurrency = {
+        totalLandedCost: conversion.convertedAmount,
+        exchangeRate: conversion.rate,
+        currency: profile.currency,
+        rateSource: 'live',
+        lastUpdated: conversion.lastUpdated,
+      };
+    } catch (error) {
+      console.warn('[POTAL FX] Currency conversion failed:', error);
+    }
+  }
+
   return {
     productPrice: round(productPrice),
     shippingCost: round(shippingCost),
@@ -333,6 +366,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     additionalTariffNote,
     classificationSource,
     dutyRateSource,
+    localCurrency,
   };
 }
 

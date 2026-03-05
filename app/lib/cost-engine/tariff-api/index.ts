@@ -1,5 +1,11 @@
 /**
  * POTAL Tariff API — Public Exports
+ *
+ * 국가별 정부 API를 통한 실시간 관세율 조회:
+ * - USITC (미국, 무료)
+ * - UK Trade Tariff (영국, 무료)
+ * - EU TARIC (EU 27개국, 무료)
+ * - WTO/Dutify (기타 국가, 폴백)
  */
 
 export {
@@ -12,3 +18,8 @@ export {
 } from './tariff-api-client';
 
 export type { TariffApiConfig } from './tariff-api-client';
+
+// Individual providers (for direct use if needed)
+export { fetchUsitcDutyRate } from './usitc-provider';
+export { fetchUkTariffDutyRate } from './uk-tariff-provider';
+export { fetchEuTaricDutyRate, isEuMemberState } from './eu-taric-provider';

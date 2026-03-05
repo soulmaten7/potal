@@ -5,18 +5,17 @@ import { useState } from 'react';
 
 const PLANS = [
   {
-    name: 'Starter',
-    price: 'Free',
+    name: 'Free',
+    price: '$0',
     priceNote: 'forever',
-    description: 'Perfect for testing and small stores',
+    description: 'Try POTAL with basic features',
     highlight: false,
     features: [
-      '1,000 API calls / month',
+      '500 API calls / month',
       'Widget embed (light theme)',
-      '139 countries supported',
-      'Sub-national tax (US/CA/BR)',
+      '180+ countries supported',
+      'AI-powered HS Code classification',
       'Community support',
-      'Basic analytics',
     ],
     limitations: [
       'POTAL branding on widget',
@@ -26,19 +25,34 @@ const PLANS = [
     ctaLink: '/developers',
   },
   {
+    name: 'Starter',
+    price: '$9',
+    priceNote: '/ month',
+    description: 'For small stores getting started',
+    highlight: false,
+    features: [
+      '5,000 API calls / month',
+      'Widget embed (all themes)',
+      '10-digit HS Code precision',
+      'Real-time exchange rates',
+      'Sub-national tax (US/CA/BR)',
+      'Email support',
+    ],
+    limitations: [],
+    cta: 'Start Free Trial',
+    ctaLink: '/developers',
+  },
+  {
     name: 'Growth',
-    price: '$49',
+    price: '$29',
     priceNote: '/ month',
     description: 'For growing e-commerce businesses',
     highlight: true,
     features: [
-      '50,000 API calls / month',
-      'Widget embed (all themes)',
-      '139 countries supported',
-      'Sub-national tax (US/CA/BR)',
-      'HS Code classification API',
-      'FTA & De Minimis detection',
+      '25,000 API calls / month',
       'Custom widget branding',
+      'FTA & preferential rate detection',
+      'Batch API (100 items)',
       'Priority email support',
       'Advanced analytics dashboard',
       'Webhook notifications',
@@ -56,7 +70,7 @@ const PLANS = [
     features: [
       'Unlimited API calls',
       'Dedicated infrastructure',
-      '139 countries + custom rules',
+      '180+ countries + custom rules',
       'All sub-national tax engines',
       'Custom HS Code models',
       'White-label widget',
@@ -328,43 +342,43 @@ export default function PricingPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
             <thead>
               <tr style={{ background: '#f8fafc' }}>
-                <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 600, color: '#666', width: '40%' }}>Feature</th>
-                <th style={{ textAlign: 'center', padding: '16px 20px', fontWeight: 700, width: '20%' }}>Starter</th>
-                <th style={{ textAlign: 'center', padding: '16px 20px', fontWeight: 700, width: '20%', color: '#F59E0B' }}>Growth</th>
-                <th style={{ textAlign: 'center', padding: '16px 20px', fontWeight: 700, width: '20%' }}>Enterprise</th>
+                <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 600, color: '#666', width: '28%' }}>Feature</th>
+                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Free</th>
+                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Starter</th>
+                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%', color: '#F59E0B' }}>Growth</th>
+                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Enterprise</th>
               </tr>
             </thead>
             <tbody>
               {[
-                ['API Calls / Month', '1,000', '50,000', 'Unlimited'],
-                ['Countries Supported', '139', '139', '139 + Custom'],
-                ['Sub-national Tax (US/CA/BR)', '&#10003;', '&#10003;', '&#10003;'],
-                ['HS Code Classification', '&#10003;', '&#10003;', '&#10003;'],
-                ['FTA Detection', '&#10003;', '&#10003;', '&#10003;'],
-                ['De Minimis Detection', '&#10003;', '&#10003;', '&#10003;'],
-                ['Widget Embed', 'Light only', 'All themes', 'White-label'],
-                ['Custom Branding', '&#10007;', '&#10003;', '&#10003;'],
-                ['Analytics Dashboard', 'Basic', 'Advanced', 'Full + Export'],
-                ['Webhooks', '&#10007;', '&#10003;', '&#10003;'],
-                ['Team Members', '1', '5', 'Unlimited'],
-                ['Domains', '1', '10', 'Unlimited'],
-                ['Support', 'Community', 'Priority Email', 'Dedicated Manager'],
-                ['SLA', '&#8212;', '99.9%', '99.99%'],
-                ['Bulk Calculation', '&#10007;', '&#10007;', '&#10003;'],
-                ['Audit Logs', '&#10007;', '&#10007;', '&#10003;'],
-              ].map(([feature, starter, growth, enterprise], i) => (
+                ['API Calls / Month', '500', '5,000', '25,000', 'Unlimited'],
+                ['Countries Supported', '180+', '180+', '180+', '180+ + Custom'],
+                ['HS Code Precision', '6-digit', '10-digit', '10-digit', '10-digit'],
+                ['AI HS Classification', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
+                ['Real-time FX Rates', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
+                ['FTA Detection', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
+                ['Widget Embed', 'Light only', 'All themes', 'Custom brand', 'White-label'],
+                ['Batch API', '&#10007;', '&#10007;', '100 items', 'Unlimited'],
+                ['Analytics', 'Basic', 'Basic', 'Advanced', 'Full + Export'],
+                ['Support', 'Community', 'Email', 'Priority', 'Dedicated'],
+                ['SLA', '&#8212;', '&#8212;', '99.9%', '99.99%'],
+              ].map(([feature, free, starter, growth, enterprise], i) => (
                 <tr key={i} style={{ borderTop: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '14px 20px', color: '#444' }}>{feature}</td>
                   <td
-                    style={{ textAlign: 'center', padding: '14px 20px', color: '#666' }}
+                    style={{ textAlign: 'center', padding: '14px 12px', color: '#888' }}
+                    dangerouslySetInnerHTML={{ __html: free }}
+                  />
+                  <td
+                    style={{ textAlign: 'center', padding: '14px 12px', color: '#666' }}
                     dangerouslySetInnerHTML={{ __html: starter }}
                   />
                   <td
-                    style={{ textAlign: 'center', padding: '14px 20px', color: '#444', fontWeight: 500 }}
+                    style={{ textAlign: 'center', padding: '14px 12px', color: '#444', fontWeight: 500 }}
                     dangerouslySetInnerHTML={{ __html: growth }}
                   />
                   <td
-                    style={{ textAlign: 'center', padding: '14px 20px', color: '#444' }}
+                    style={{ textAlign: 'center', padding: '14px 12px', color: '#444' }}
                     dangerouslySetInnerHTML={{ __html: enterprise }}
                   />
                 </tr>

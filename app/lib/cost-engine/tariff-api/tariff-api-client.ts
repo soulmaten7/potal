@@ -15,6 +15,9 @@
 
 import { createClient } from '@supabase/supabase-js';
 import type { HsCodeDutyRate } from '../hs-code/types';
+import { fetchUsitcDutyRate } from './usitc-provider';
+import { fetchUkTariffDutyRate } from './uk-tariff-provider';
+import { fetchEuTaricDutyRate, isEuMemberState } from './eu-taric-provider';
 
 // ─── Configuration ────────────────────────────────
 
@@ -313,16 +316,38 @@ export async function fetchDutyRateWithFallback(
   }
 
   try {
-    const result = await openTradeProvider.fetchDutyRate(hsCode, destinationCountry, originCountry);
+    // ━━━ 국가별 API 라우팅 ━━━
+    // 목적지에 따라 가장 정확한 정부 API를 선택
+    const dest = destinationCountry.toUpperCase();
+    let result: HsCodeDutyRate | null = null;
+    let providerName = 'unknown';
+
+    if (dest === 'US') {
+      // 미국: USITC HTS API (무료, 10자리, 인증 불요)
+      result = await fetchUsitcDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'usitc';
+    } else if (dest === 'GB') {
+      // 영국: UK Trade Tariff API (무료, 10자리, 인증 불요)
+      result = await fetchUkTariffDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'uk-trade-tariff';
+    } else if (isEuMemberState(dest)) {
+      // EU 27개국: EU TARIC via XI endpoint (무료, 10자리)
+      result = await fetchEuTaricDutyRate(hsCode, dest, originCountry, config.timeoutMs);
+      providerName = 'eu-taric';
+    } else {
+      // 기타 국가: 기존 WTO/Dutify 프로바이더 사용
+      result = await openTradeProvider.fetchDutyRate(hsCode, destinationCountry, originCountry);
+      providerName = openTradeProvider.name;
+    }
 
     if (result) {
       recordSuccess();
 
       // DB에 저장 (다음 요청부터 API 호출 없이 DB 리턴)
-      await saveDutyRateToLiveDb(hsCode, destinationCountry, result, openTradeProvider.name);
+      await saveDutyRateToLiveDb(hsCode, destinationCountry, result, providerName);
 
-      console.log(`[POTAL Tariff] External API: ${hsCode} → ${destinationCountry} = ${result.mfnRate}`);
-      return { rate: result, source: `external_${openTradeProvider.name}` };
+      console.log(`[POTAL Tariff] External API (${providerName}): ${hsCode} → ${destinationCountry} = ${result.mfnRate}`);
+      return { rate: result, source: `external_${providerName}` };
     }
 
     recordFailure();
