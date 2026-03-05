@@ -28,3 +28,9 @@ export type { CountryTaxProfile } from './country-data';
 
 // B2C adapters
 export { toCostInput, toCostInputBatch } from './adapters';
+
+// AI Classification (async, with DB caching)
+export { classifyProductAsync, classifyWithOverrideAsync } from './ai-classifier';
+
+// External Tariff API (with DB caching + circuit breaker)
+export { fetchDutyRateWithFallback, invalidateAllLiveCache } from './tariff-api';

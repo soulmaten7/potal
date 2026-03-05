@@ -18,6 +18,12 @@ import { classifyWithOverride } from './hs-code';
 import type { HsClassificationResult } from './hs-code';
 import type { FtaResult } from './hs-code/fta';
 
+// AI-powered classification (async, with DB caching)
+import { classifyWithOverrideAsync } from './ai-classifier';
+
+// External tariff API (async, with DB caching + circuit breaker)
+import { fetchDutyRateWithFallback, getFtaRateFromLiveDb } from './tariff-api';
+
 // DB-backed modules (async, with cache + hardcoded fallback)
 import { getCountryProfileFromDb } from './db/country-data-db';
 import { getDutyRateFromDb, getEffectiveDutyRateFromDb, hasCountryDutyDataFromDb } from './db/duty-rates-db';
@@ -66,6 +72,10 @@ export interface GlobalLandedCost extends LandedCost {
   hsClassification?: HsClassificationResult;
   ftaApplied?: FtaResult;
   additionalTariffNote?: string;
+  /** How the HS code was classified: 'cache' | 'keyword' | 'ai' | 'manual' | 'keyword_fallback' */
+  classificationSource?: string;
+  /** Where the duty rate came from: 'hardcoded' | 'db' | 'live_db' | 'external_api' */
+  dutyRateSource?: string;
 }
 
 // ════════════════════════════════════════════════════
@@ -118,26 +128,46 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   const declaredValue = productPrice + shippingCost;
   const isDomestic = originCountry === profile.code;
 
-  // HS Code Classification (local, no DB needed)
+  // HS Code Classification — AI-powered async (DB 캐시 → 키워드 → AI 폴백)
   let hsResult: HsClassificationResult | undefined;
+  let classificationSource: string | undefined;
   if (input.productName || input.hsCode) {
-    hsResult = classifyWithOverride(input.productName || '', input.hsCode, input.productCategory);
+    const asyncResult = await classifyWithOverrideAsync(
+      input.productName || '',
+      input.hsCode,
+      input.productCategory,
+    );
+    hsResult = asyncResult;
+    classificationSource = asyncResult.classificationSource;
   }
 
-  // Determine Duty Rate from DB
+  // Determine Duty Rate — DB → 외부 API → 하드코딩 폴백
   let dutyRate = profile.avgDutyRate;
   let dutyNote = `~${(profile.avgDutyRate * 100).toFixed(1)}% avg`;
   let additionalTariffNote: string | undefined;
   let ftaResult: FtaResult | undefined;
+  let dutyRateSource: string = 'hardcoded';
 
   if (hsResult && hsResult.hsCode !== '9999') {
     const hsChapter = hsResult.hsCode.substring(0, 2);
 
-    if (await hasCountryDutyDataFromDb(profile.code)) {
+    // 1차: 외부 API 캐시(duty_rates_live) 조회
+    const liveRate = await fetchDutyRateWithFallback(hsResult.hsCode, profile.code, originCountry);
+    if (liveRate) {
+      dutyRate = liveRate.rate.mfnRate + (liveRate.rate.additionalTariff || 0);
+      dutyNote = `HS ${hsResult.hsCode} (${(dutyRate * 100).toFixed(1)}%)`;
+      dutyRateSource = liveRate.source;
+      if (liveRate.rate.additionalTariff) {
+        additionalTariffNote = liveRate.rate.notes;
+      }
+    }
+    // 2차: 기존 DB 조회
+    else if (await hasCountryDutyDataFromDb(profile.code)) {
       const specificRate = await getEffectiveDutyRateFromDb(hsResult.hsCode, profile.code, originCountry);
       if (specificRate >= 0) {
         dutyRate = specificRate;
         dutyNote = `HS ${hsResult.hsCode} (${(specificRate * 100).toFixed(1)}%)`;
+        dutyRateSource = 'db';
 
         const rateInfo = await getDutyRateFromDb(hsResult.hsCode, profile.code, originCountry);
         if (rateInfo?.additionalTariff) {
@@ -146,13 +176,25 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
       }
     }
 
-    // FTA from DB
+    // FTA: Live DB → 기존 DB 폴백
     if (!isDomestic) {
-      const ftaCalc = await applyFtaRateFromDb(dutyRate, originCountry, profile.code, hsChapter);
-      ftaResult = ftaCalc.fta;
-      if (ftaCalc.fta.hasFta && ftaCalc.rate < dutyRate) {
-        dutyNote += ` → ${(ftaCalc.rate * 100).toFixed(1)}% (${ftaCalc.fta.ftaCode})`;
-        dutyRate = ftaCalc.rate;
+      const liveFta = await getFtaRateFromLiveDb(originCountry, profile.code, hsChapter);
+      if (liveFta && liveFta.preferentialRate < dutyRate) {
+        ftaResult = {
+          hasFta: true,
+          ftaName: liveFta.ftaName,
+          ftaCode: liveFta.ftaName,
+          preferentialMultiplier: liveFta.preferentialRate / (dutyRate || 1),
+        };
+        dutyNote += ` → ${(liveFta.preferentialRate * 100).toFixed(1)}% (${liveFta.ftaName})`;
+        dutyRate = liveFta.preferentialRate;
+      } else {
+        const ftaCalc = await applyFtaRateFromDb(dutyRate, originCountry, profile.code, hsChapter);
+        ftaResult = ftaCalc.fta;
+        if (ftaCalc.fta.hasFta && ftaCalc.rate < dutyRate) {
+          dutyNote += ` → ${(ftaCalc.rate * 100).toFixed(1)}% (${ftaCalc.fta.ftaCode})`;
+          dutyRate = ftaCalc.rate;
+        }
       }
     }
   } else if (!isDomestic) {
@@ -289,6 +331,8 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     hsClassification: hsResult,
     ftaApplied: ftaResult,
     additionalTariffNote,
+    classificationSource,
+    dutyRateSource,
   };
 }
 
