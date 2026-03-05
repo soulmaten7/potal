@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
       : 60;
 
     const result = await createApiKey(supabase as any, {
-      sellerId: user.id,
+      sellerId: seller.id,
       type,
       name,
       rateLimitPerMinute,
