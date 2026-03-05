@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 22 완료 — 가격 불일치 수정 + 코드 정리 + B2C→B2B 페이지 전환 20개+ + SEO/메타/법적 문서 B2B 전환 + 위젯/API 프로덕션 검증)
+> 마지막 업데이트: 2026-03-06 (세션 23 완료 — layout.tsx B2C Context 정리 + Footer/sw.js/MobileBottomNav B2B 확인 + B2C→B2B 전환 최종 완료)
 
 ---
 
@@ -108,6 +108,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 앱 리스팅 작성 ✅ (앱 설명, 스크린샷 3장, Feature media, 카테고리, Free 플랜, Support/Privacy)
   - 예비 단계 8/9 완료 ✅ (임베디드 앱 확인만 대기 — 2시간 내 자동 확인)
   - ⏳ 남은 작업: 임베디드 앱 확인 통과 → "검토를 위해 제출" 클릭 (심사 7~14일)
+세션 23: layout.tsx B2C Context 정리 + Footer/sw.js/MobileBottomNav 확인 → B2C→B2B 전환 최종 완료
 세션 22: B2C→B2B 전환 마무리 + 코드 정리 + SEO/법적 문서 전환
   - 가격 불일치 수정 ✅ (랜딩페이지/pricing/sellers-me/sellers-usage 4파일 동기화)
   - 코드 정리 ✅ (console.log 6개 제거, unused imports 제거, let→const, unused catch vars)
@@ -368,6 +369,15 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 대시보드 더블 헤더 수정 (Header/Footer에 /dashboard 경로 체크 추가)
   - Supabase migration 004_stripe_billing.sql 실행 (current_period_end, updated_at 컬럼 추가)
 
+- ✅ 세션 23 B2C 잔여 코드 정리 + layout 최종 완료 (2026-03-06):
+  - layout.tsx에서 WishlistProvider, UserPreferenceProvider 제거 (B2C Context 의존성 완전 제거)
+  - Footer.tsx B2B 확인 완료 (수정 불필요 — 이미 B2B)
+  - sw.js B2C 캐시 경로 확인 완료 (수정 불필요 — 깨끗함)
+  - MobileBottomNav B2B 확인 완료 (Home/Developers/Dashboard/Pricing)
+  - data.ts B2C 데이터 보존 확인 (page.b2c-backup.tsx에서만 사용 — B2C 보존 원칙)
+  - session-context.md "다음 세션" TODO 7개 중 5개 ✅ 완료 처리
+  - npm run build 통과 확인
+
 - ✅ 세션 22 B2C→B2B 사이트 전환 (2026-03-05~06):
   - 가격 불일치 수정: 랜딩페이지/pricing/sellers-me/sellers-usage 4파일 동기화 (Free 500, Growth $29/25K)
   - 코드 정리: console.log 6개 제거, unused imports 8파일, let→const, unused catch vars
@@ -565,6 +575,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-06 | 23 | **B2C 잔여 코드 정리 + layout 최종 완료**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료, data.ts B2C 보존 결정. B2C→B2B 전환 사실상 최종 완료 (잔여: lib/search/ 등 B2C 백엔드만 보존) |
 | 03-05~06 | 22 | **B2C→B2B 사이트 전환 완료 + 코드 정리**: 가격 불일치 수정 4파일 (Free 500/Growth $29 25K), 코드 정리 8파일 (console.log/imports/let/catch), B2C→B2B 페이지 전환 20+파일 (about/terms/help/opengraph/blog/partners/contact/auth/join), B2C redirect 4개 (search/wishlist/tax-info→/), SEO B2B (sitemap/robots/JSON-LD), manifest.json B2B, legal/[slug] B2B 재작성, 위젯/API 프로덕션 검증 완료 |
 | 03-05 | 21 | **Shopify App Store 심사 제출 준비 완료**: Theme Extension 배포 (potal-3, presets 제거+locales 추가), Shopify CLI 설치+config link, App Store $19 결제, 앱 리스팅 전체 작성 (설명/스크린샷3장/Feature media/카테고리/Free플랜/Support/Privacy), 예비 단계 8/9 완료 (임베디드 확인 대기) |
 | 03-05 | 20 | **E2E 검증 + USITC 버그 수정**: 외부 관세 API 3개(USITC/UK/EU) 직접 curl 테스트, USITC API URL 버그 수정 (`/api/search?query=` → `/reststop/search?keyword=`), indent 타입 수정 (string→Number() 변환), UK/EU MFN 파싱 정상 확인, 환율 API 2개 모두 정상, 전체 코드 리뷰 (10+ 파일), npm run build 통과 |

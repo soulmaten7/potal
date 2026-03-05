@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-06 (세션 22 — B2B 전환 완료)
+# 마지막 업데이트: 2026-03-06 (세션 23 — layout B2C Context 정리 + B2C→B2B 전환 최종 완료)
 
 ## 0. 프로젝트 개요
 
@@ -31,6 +31,7 @@
 ## 2. Anti-Amnesia (Do Not Forget / Zombie Ideas)
 - **B2C 작업 금지**: search, wishlist, ProductCard 등 B2C 컴포넌트/페이지 수정 금지. 보존만
 - **B2C 페이지 redirect 완료**: /search, /search/info, /wishlist, /tax-info → / 리다이렉트됨
+- **layout.tsx B2C Context 제거 완료**: WishlistProvider, UserPreferenceProvider 제거됨 (세션 23). 다시 추가하지 마라
 - **요금제 정확한 숫자**: Free 500 / Starter $9 5K / Growth $29 25K / Enterprise custom
 - **Shopify 심사 대기**: 임베디드 앱 확인 → "검토를 위해 제출" 클릭 → 7~14일 심사
 - **ITIN 블로커**: Stripe Live mode에 ITIN 필요. Test mode로 개발 진행 중
@@ -112,7 +113,9 @@
 | `app/lib/agent/` | B2C AI 에이전트 |
 | `components/search/` | B2C 검색 컴포넌트 |
 | `app/lib/ai/prompts/` | B2C AI 프롬프트 |
-| `app/data.ts` | B2C 카테고리/Footer 데이터 |
+| `app/data.ts` | B2C 카테고리/Footer 데이터 (page.b2c-backup.tsx에서만 사용) |
+| `app/context/WishlistContext.tsx` | B2C Wishlist Context (layout에서 제거됨) |
+| `app/context/UserPreferenceContext.tsx` | B2C 사용자 설정 Context (layout에서 제거됨) |
 
 ## 5. 프로덕션 환경
 | 항목 | 값 |
