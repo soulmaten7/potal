@@ -1,0 +1,12 @@
+{
+  "potal": {
+    "widget": {
+      "title": "Landed Cost Calculator",
+      "description": "Calculate total import costs including duties and taxes"
+    },
+    "banner": {
+      "title": "Import Cost Banner",
+      "description": "Show estimated import duties and taxes on cart page"
+    }
+  }
+}

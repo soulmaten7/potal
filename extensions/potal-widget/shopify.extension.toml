@@ -6,6 +6,7 @@
 api_version = "2024-10"
 
 [[extensions]]
+uid = "6fa5a3d1-3a0d-204d-b30d-a3fc0f3a6a0669fbcaae"
 type = "theme"
 name = "POTAL Landed Cost Widget"
 handle = "potal-widget"

@@ -1,26 +1,26 @@
-# POTAL — Shopify App Configuration
-#
-# Shopify CLI로 앱 배포/관리 시 사용되는 설정 파일
-# shopify app deploy 명령으로 앱 업데이트
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
+client_id = "2fa34ed65342ffb7fac08dd916f470b8"
 name = "POTAL"
-client_id = "" # Shopify Partner Dashboard에서 생성 후 입력
-
-[access_scopes]
-scopes = "read_products,read_themes,write_themes,write_script_tags"
-
-[auth]
-redirect_urls = [
-  "https://www.potal.app/api/shopify/callback"
-]
+application_url = "https://www.potal.app"
+embedded = true
 
 [webhooks]
-api_version = "2024-10"
+api_version = "2026-01"
 
   [webhooks.privacy_compliance]
-  customer_data_request_url = "https://www.potal.app/api/shopify/webhooks"
   customer_deletion_url = "https://www.potal.app/api/shopify/webhooks"
+  customer_data_request_url = "https://www.potal.app/api/shopify/webhooks"
   shop_deletion_url = "https://www.potal.app/api/shopify/webhooks"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_orders,read_products,read_shipping"
+optional_scopes = [ ]
+use_legacy_install_flow = false
+
+[auth]
+redirect_urls = [ "https://www.potal.app/api/shopify/callback" ]
 
 [app_proxy]
 url = "https://www.potal.app/api/v1"
@@ -29,6 +29,3 @@ prefix = "apps"
 
 [pos]
 embedded = false
-
-[build]
-automatically_update_urls_on_dev = true
