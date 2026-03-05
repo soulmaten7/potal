@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 23 완료 — layout.tsx B2C Context 정리 + Footer/sw.js/MobileBottomNav B2B 확인 + B2C→B2B 전환 최종 완료)
+> 마지막 업데이트: 2026-03-06 (세션 24 완료 — Swagger UI API 문서 + Product Hunt 런치 플랜 + HS Code DB 확장 + OpenAPI URL 수정)
 
 ---
 
@@ -313,7 +313,13 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 - **세션 22 완료 (Round 2)**: SEO B2B 전환 (sitemap/robots), manifest.json B2B 전환, legal/[slug] B2B 재작성, tax-info redirect, layout.tsx JSON-LD 정리
 - **세션 23**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료
 - **B2C→B2B 전환 상태**: 사용자 노출 페이지 + layout 전체 완료. 잔여: B2C 백엔드 코드만 (lib/search/, lib/agent/, components/search/ — 보존)
-- **다음**: 임베디드 확인 → "검토를 위해 제출" 클릭 → 심사 7~14일
+- **세션 24**: Swagger UI 인터랙티브 API 문서 + Product Hunt 런치 플랜 + HS Code DB 확장 + URL 수정
+  - `/developers/docs` 전면 재구축: 6개 엔드포인트 인터랙티브 문서 (Try it, cURL/JS/Python 예제)
+  - Product Hunt 런치 플랜 문서 생성 (`PRODUCT_HUNT_LAUNCH_PLAN.md`)
+  - HS Code DB 확장: 409 → 443개 (+34개, 이커머스 핵심 카테고리)
+  - OpenAPI URL 수정: potal.io → potal.app, widget URL vercel → potal.app
+  - npm run build 통과 ✅
+- **다음**: Shopify 임베디드 확인 → "검토를 위해 제출" 클릭 → 심사 7~14일
 - **블로커**: Stripe Live mode에 ITIN 필요 (개발은 Test mode로 진행 가능)
 
 ### 경쟁사 가격/기능 분석 완료 (세션 17)
@@ -368,6 +374,13 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - Supabase sellers 레코드 생성 (soulmaten7@gmail.com / starter / active)
   - 대시보드 더블 헤더 수정 (Header/Footer에 /dashboard 경로 체크 추가)
   - Supabase migration 004_stripe_billing.sql 실행 (current_period_end, updated_at 컬럼 추가)
+
+- ✅ 세션 24 API 문서 + PH 런치 + HS Code 확장 (2026-03-06):
+  - `/developers/docs` Swagger UI 스타일 재구축 (6개 엔드포인트, 인터랙티브 Try it, cURL/JS/Python 코드 예제)
+  - `PRODUCT_HUNT_LAUNCH_PLAN.md` 생성 (Tagline/Description/First Comment/체크리스트/타이밍/성공지표)
+  - HS Code DB 확장: 409 → 443개 (+34개 이커머스 핵심: 노트북, 태블릿, 드론, 스마트홈, 폰케이스, 펫, 베이비, 보충제, 커피머신, 공기청정기, 전동공구, 스킨케어, 메이크업, 웨어러블)
+  - OpenAPI URL 수정 (potal.io → potal.app), widget URL 수정 (vercel → potal.app)
+  - npm run build 통과 ✅
 
 - ✅ 세션 23 B2C 잔여 코드 정리 + layout 최종 완료 (2026-03-06):
   - layout.tsx에서 WishlistProvider, UserPreferenceProvider 제거 (B2C Context 의존성 완전 제거)
@@ -554,6 +567,7 @@ plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
 | `POTAL-B2B-Strategy-Roadmap.docx` | B2B 피벗 전략 전체 문서 |
 | `session-context.md` | 이 파일 (프로젝트 맥락) |
 | `POTAL_vs_Competitors_Analysis.md` | 경쟁사 기술 비교 분석 (Zonos/Avalara/Global-e/Easyship/Dutify) |
+| `PRODUCT_HUNT_LAUNCH_PLAN.md` | Product Hunt 런치 준비 문서 (Tagline/체크리스트/타이밍/성공지표) |
 
 ### B2C 보존 문서
 | 파일 | 역할 |
@@ -575,6 +589,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |
 | 03-06 | 23 | **B2C 잔여 코드 정리 + layout 최종 완료**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료, data.ts B2C 보존 결정. B2C→B2B 전환 사실상 최종 완료 (잔여: lib/search/ 등 B2C 백엔드만 보존) |
 | 03-05~06 | 22 | **B2C→B2B 사이트 전환 완료 + 코드 정리**: 가격 불일치 수정 4파일 (Free 500/Growth $29 25K), 코드 정리 8파일 (console.log/imports/let/catch), B2C→B2B 페이지 전환 20+파일 (about/terms/help/opengraph/blog/partners/contact/auth/join), B2C redirect 4개 (search/wishlist/tax-info→/), SEO B2B (sitemap/robots/JSON-LD), manifest.json B2B, legal/[slug] B2B 재작성, 위젯/API 프로덕션 검증 완료 |
 | 03-05 | 21 | **Shopify App Store 심사 제출 준비 완료**: Theme Extension 배포 (potal-3, presets 제거+locales 추가), Shopify CLI 설치+config link, App Store $19 결제, 앱 리스팅 전체 작성 (설명/스크린샷3장/Feature media/카테고리/Free플랜/Support/Privacy), 예비 단계 8/9 완료 (임베디드 확인 대기) |

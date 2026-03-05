@@ -6,7 +6,7 @@ export default function DevelopersPage() {
   const [copied, setCopied] = useState(false);
 
   const embedCode = `<!-- POTAL Widget -->
-<script src="https://potal-x1vl.vercel.app/widget/potal-widget.js"></script>
+<script src="https://www.potal.app/widget/potal-widget.js"></script>
 
 <!-- Embed the widget with your API key -->
 <div

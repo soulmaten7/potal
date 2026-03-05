@@ -941,6 +941,98 @@ export const HS_DATABASE: HsCodeEntry[] = [
   { code: '970700', description: 'Coins & medals', chapter: '97', category: 'collectibles',
     keywords: ['coin', 'medal', 'rare coin', 'commemorative', 'numismatic'] },
 
+  // ═══ CRITICAL E-COMMERCE ADDITIONS (Session 24) ═══
+
+  // Laptops & Computers (Ch 84 — most traded cross-border electronics)
+  { code: '847130', description: 'Portable computers (laptops)', chapter: '84', category: 'electronics',
+    keywords: ['laptop', 'notebook', 'macbook', 'chromebook', 'ultrabook', 'portable computer', 'gaming laptop', 'dell', 'lenovo', 'hp laptop', 'thinkpad'] },
+  { code: '847141', description: 'Desktop computers', chapter: '84', category: 'electronics',
+    keywords: ['desktop', 'desktop computer', 'pc', 'workstation', 'imac', 'all-in-one', 'gaming pc', 'tower pc', 'mini pc'] },
+  { code: '847150', description: 'Computer processing units', chapter: '84', category: 'electronics',
+    keywords: ['cpu', 'processor', 'gpu', 'graphics card', 'intel', 'amd', 'nvidia', 'ram', 'computer memory'] },
+  { code: '847160', description: 'Computer peripherals (keyboard, mouse)', chapter: '84', category: 'electronics',
+    keywords: ['keyboard', 'mouse', 'trackpad', 'computer mouse', 'mechanical keyboard', 'wireless mouse', 'gaming mouse', 'gaming keyboard'] },
+  { code: '847130', description: 'Tablets & e-readers', chapter: '84', category: 'electronics',
+    keywords: ['tablet', 'ipad', 'samsung tab', 'kindle', 'e-reader', 'fire tablet', 'android tablet', 'drawing tablet', 'wacom'] },
+  { code: '844332', description: 'Printers', chapter: '84', category: 'electronics',
+    keywords: ['printer', 'inkjet', 'laser printer', 'multifunction printer', 'scanner', 'copier', '3d printer', 'label printer'] },
+
+  // Drones (Ch 88)
+  { code: '880211', description: 'Drones & unmanned aircraft', chapter: '88', category: 'electronics',
+    keywords: ['drone', 'quadcopter', 'dji', 'mavic', 'fpv drone', 'camera drone', 'racing drone', 'uav'] },
+
+  // Networking & Smart Home
+  { code: '851762', description: 'Network equipment (routers)', chapter: '85', category: 'electronics',
+    keywords: ['router', 'wifi router', 'mesh wifi', 'network switch', 'access point', 'modem', 'wifi extender'] },
+  { code: '852691', description: 'Smart home devices', chapter: '85', category: 'electronics',
+    keywords: ['smart speaker', 'alexa', 'echo', 'google home', 'smart display', 'smart hub', 'nest'] },
+  { code: '853180', description: 'Smart doorbells & security cameras', chapter: '85', category: 'electronics',
+    keywords: ['ring doorbell', 'security camera', 'ip camera', 'baby monitor', 'doorbell camera', 'smart lock'] },
+  { code: '852849', description: 'VR headsets & AR glasses', chapter: '85', category: 'electronics',
+    keywords: ['vr headset', 'virtual reality', 'oculus', 'meta quest', 'ar glasses', 'vr goggles'] },
+
+  // Phone Cases & Accessories
+  { code: '392690', description: 'Phone cases (plastic)', chapter: '39', category: 'accessories',
+    keywords: ['phone case', 'iphone case', 'samsung case', 'phone cover', 'protective case', 'silicone case', 'popsocket'] },
+  { code: '854442', description: 'Cables & connectors', chapter: '85', category: 'electronics',
+    keywords: ['usb cable', 'usb-c', 'lightning cable', 'hdmi cable', 'charging cable', 'aux cable', 'thunderbolt'] },
+  { code: '854140', description: 'LED lighting devices', chapter: '85', category: 'electronics',
+    keywords: ['led bulb', 'led strip', 'led light', 'smart bulb', 'rgb light', 'fairy lights', 'string lights', 'grow light'] },
+
+  // Pet Products
+  { code: '230910', description: 'Pet food (dog)', chapter: '23', category: 'pet',
+    keywords: ['dog food', 'pet food', 'kibble', 'dog treat', 'puppy food'] },
+  { code: '230920', description: 'Pet food (cat)', chapter: '23', category: 'pet',
+    keywords: ['cat food', 'cat treat', 'kitten food', 'wet cat food'] },
+  { code: '420100', description: 'Pet collars & leashes', chapter: '42', category: 'pet',
+    keywords: ['dog collar', 'pet leash', 'cat collar', 'pet harness', 'dog harness'] },
+
+  // Baby Products
+  { code: '871500', description: 'Baby strollers', chapter: '87', category: 'baby',
+    keywords: ['stroller', 'baby stroller', 'pram', 'carriage', 'pushchair', 'jogger stroller'] },
+  { code: '940171', description: 'Baby car seats', chapter: '94', category: 'baby',
+    keywords: ['car seat', 'baby car seat', 'infant car seat', 'booster seat', 'child seat'] },
+  { code: '611120', description: 'Baby clothing', chapter: '61', category: 'baby',
+    keywords: ['baby clothes', 'onesie', 'baby bodysuit', 'infant clothing', 'baby romper'] },
+
+  // Supplements & Vitamins
+  { code: '210690', description: 'Food supplements & vitamins', chapter: '21', category: 'health',
+    keywords: ['vitamin', 'supplement', 'protein powder', 'creatine', 'omega-3', 'multivitamin', 'probiotic', 'collagen', 'whey protein', 'fish oil', 'pre-workout'] },
+
+  // Coffee Machines, Air Purifiers, Power Tools
+  { code: '841912', description: 'Coffee machines', chapter: '84', category: 'appliances',
+    keywords: ['coffee maker', 'espresso machine', 'nespresso', 'keurig', 'french press', 'pour over', 'drip coffee'] },
+  { code: '842139', description: 'Air purifiers', chapter: '84', category: 'appliances',
+    keywords: ['air purifier', 'hepa filter', 'air cleaner', 'ionizer'] },
+  { code: '842199', description: 'Humidifiers & dehumidifiers', chapter: '84', category: 'appliances',
+    keywords: ['humidifier', 'dehumidifier', 'essential oil diffuser', 'aroma diffuser'] },
+  { code: '846721', description: 'Electric drills', chapter: '84', category: 'tools',
+    keywords: ['drill', 'cordless drill', 'impact driver', 'power drill', 'hammer drill'] },
+  { code: '846789', description: 'Power tools (saws, sanders)', chapter: '84', category: 'tools',
+    keywords: ['circular saw', 'jigsaw', 'sander', 'orbital sander', 'angle grinder', 'rotary tool', 'dremel'] },
+
+  // Personal Care Electronics
+  { code: '851020', description: 'Electric shavers & trimmers', chapter: '85', category: 'beauty',
+    keywords: ['electric shaver', 'trimmer', 'beard trimmer', 'hair clipper', 'grooming kit', 'epilator'] },
+  { code: '851010', description: 'Electric toothbrushes', chapter: '85', category: 'health',
+    keywords: ['electric toothbrush', 'sonic toothbrush', 'oral-b', 'sonicare', 'water flosser'] },
+  { code: '851631', description: 'Hair styling tools', chapter: '85', category: 'beauty',
+    keywords: ['hair straightener', 'flat iron', 'curling iron', 'hair curler', 'hair wand', 'styling tool'] },
+
+  // Skincare & Makeup (more specific)
+  { code: '330499', description: 'Skincare products', chapter: '33', category: 'beauty',
+    keywords: ['moisturizer', 'serum', 'face cream', 'cleanser', 'toner', 'sunscreen', 'retinol', 'hyaluronic acid', 'face mask', 'eye cream'] },
+  { code: '330420', description: 'Makeup & cosmetics', chapter: '33', category: 'beauty',
+    keywords: ['foundation', 'concealer', 'mascara', 'lipstick', 'blush', 'eyeshadow', 'eyeliner', 'primer', 'lip gloss', 'bronzer'] },
+
+  // Car Accessories, Camping, Wearables
+  { code: '870899', description: 'Car accessories', chapter: '87', category: 'automotive',
+    keywords: ['car accessory', 'car mat', 'seat cover', 'car charger', 'dash cam', 'dashcam', 'car organizer'] },
+  { code: '630612', description: 'Camping tents', chapter: '63', category: 'sports',
+    keywords: ['tent', 'camping tent', 'backpacking tent', 'pop-up tent', 'canopy'] },
+  { code: '901920', description: 'Fitness trackers & wearables', chapter: '90', category: 'electronics',
+    keywords: ['fitness tracker', 'fitbit', 'activity tracker', 'smart band', 'smart ring', 'oura ring'] },
+
   // ═══ ADDITIONAL ENTRIES FOR COVERAGE ═══
   { code: '050110', description: 'Animal hair', chapter: '05', category: 'textiles',
     keywords: ['animal hair', 'alpaca', 'mohair', 'cashmere'] },
