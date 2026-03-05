@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     const { data: seller } = await (supabase
       .from('sellers') as any)
       .select('id')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
 
     if (!seller) {

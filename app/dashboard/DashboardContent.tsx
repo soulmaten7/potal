@@ -189,17 +189,7 @@ export default function DashboardContent() {
     setCreatedKey(null);
 
     try {
-      // Find an active secret key to use for key management
-      const activeSecretKey = keys.find(k => k.type === 'secret' && k.isActive);
-
-      if (!activeSecretKey) {
-        setError('No active secret key found. Cannot create new keys.');
-        setLoading(false);
-        return;
-      }
-
-      // We need the full secret key which we don't have — use session-based approach
-      // For now, use the register endpoint pattern but with session auth
+      // Session-based key creation — no existing key needed
       const res = await fetch('/api/v1/sellers/keys/create', {
         method: 'POST',
         headers: {
