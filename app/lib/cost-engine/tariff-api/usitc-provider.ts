@@ -3,7 +3,7 @@
  *
  * 미국 HTS (Harmonized Tariff Schedule) 10자리 코드 + 관세율 조회
  *
- * API: https://hts.usitc.gov/api/search
+ * API: https://hts.usitc.gov/reststop/search
  * - 무료, 인증 불요
  * - HTS 코드로 검색 → general duty rate 반환
  * - 10자리까지 정밀한 관세율 제공
@@ -17,7 +17,7 @@
 
 import type { HsCodeDutyRate } from '../hs-code/types';
 
-const USITC_API_BASE = 'https://hts.usitc.gov/api';
+const USITC_API_BASE = 'https://hts.usitc.gov/reststop';
 
 /**
  * USITC API 응답 타입
@@ -29,7 +29,7 @@ interface UsitcSearchResult {
   special: string;       // Special rates (FTA, GSP, etc.)
   other: string;         // Column 2 rate
   units: string;
-  indent: number;
+  indent: number | string;  // API returns string, e.g. "2"
 }
 
 /**
@@ -51,7 +51,7 @@ export async function fetchUsitcDutyRate(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
-    const url = `${USITC_API_BASE}/search?query=${encodeURIComponent(searchCode)}`;
+    const url = `${USITC_API_BASE}/search?keyword=${encodeURIComponent(searchCode)}`;
 
     const response = await fetch(url, {
       signal: controller.signal,
@@ -152,7 +152,7 @@ function findBestMatch(results: UsitcSearchResult[], targetHsCode: string): Usit
     .map(r => {
       const htsDigits = r.htsno.replace(/\./g, '');
       const matchLen = getMatchLength(targetDigits, htsDigits);
-      const hasRate = r.general && r.general.trim() !== '' && r.indent >= 1;
+      const hasRate = r.general && r.general.trim() !== '' && Number(r.indent) >= 1;
       return { result: r, matchLen, hasRate, htsLen: htsDigits.length };
     })
     .filter(s => s.matchLen >= 4 && s.hasRate) // 최소 4자리(heading) 매칭
