@@ -43,7 +43,6 @@ function decodeBase64(str: string): string {
  */
 function extractShopFromHost(host: string): string | null {
   const decoded = decodeBase64(host);
-  console.log('[POTAL Shopify] Decoded host:', decoded);
 
   // "admin.shopify.com/store/potal-test-store" 패턴 매칭
   const storeMatch = decoded.match(/\/store\/([a-zA-Z0-9-]+)/);
@@ -61,18 +60,9 @@ export async function GET(req: NextRequest) {
   const hmac = params.hmac as string | undefined;
   const host = params.host as string | undefined;
 
-  console.log('[POTAL Shopify Callback] Params:', JSON.stringify({
-    shop: shop || 'MISSING',
-    code: code ? 'EXISTS' : 'MISSING',
-    hmac: hmac ? 'EXISTS' : 'MISSING',
-    host: host ? 'EXISTS' : 'MISSING',
-    state: state || 'MISSING',
-  }));
-
   // ━━━ 1. host에서 shop 추출 (Shopify 새 설치 방식 지원) ━━━
   if (!shop && host) {
     shop = extractShopFromHost(host) ?? undefined;
-    console.log('[POTAL Shopify] Extracted shop from host:', shop);
   }
 
   // ━━━ 2. 파라미터 검증 ━━━
@@ -106,7 +96,6 @@ export async function GET(req: NextRequest) {
 
   // ━━━ 3. HMAC 검증 (경고만, 블로킹하지 않음) ━━━
   // Shopify 새 설치 방식에서는 HMAC 파라미터 구성이 다를 수 있음
-  console.log('[POTAL Shopify] HMAC verification skipped for compatibility');
 
   // ━━━ 4. Nonce (state) 검증 — CSRF 방지 ━━━
   const cookieStore = await cookies();
@@ -122,7 +111,6 @@ export async function GET(req: NextRequest) {
   cookieStore.delete('shopify_nonce');
 
   // ━━━ 5. Access Token 교환 ━━━
-  console.log('[POTAL Shopify] Exchanging code for token, shop:', shop);
   const tokenResult = await exchangeCodeForToken(shop, code);
 
   if (!tokenResult) {
@@ -131,8 +119,6 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
-
-  console.log('[POTAL Shopify] Token exchange successful for:', shop);
 
   // ━━━ 6. DB에 저장 ━━━
   const saved = await saveShopToken(shop, tokenResult.accessToken, tokenResult.scope);
@@ -147,6 +133,5 @@ export async function GET(req: NextRequest) {
   redirectUrl.searchParams.set('shopify', 'installed');
   redirectUrl.searchParams.set('shop', shop);
 
-  console.log('[POTAL Shopify] Redirecting to:', redirectUrl.toString());
   return NextResponse.redirect(redirectUrl.toString());
 }

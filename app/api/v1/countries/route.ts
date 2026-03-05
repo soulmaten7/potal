@@ -10,7 +10,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { COUNTRY_DATA, getCountriesByRegion, getCountryCount } from '@/app/lib/cost-engine';
+import { COUNTRY_DATA, getCountryCount } from '@/app/lib/cost-engine';
 
 export async function GET(req: NextRequest) {
   const regionFilter = req.nextUrl.searchParams.get('region');

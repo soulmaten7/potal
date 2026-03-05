@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
         rateLimitPerMinute: 60,
       });
       secretKey = skResult;
-    } catch (keyError) {
+    } catch {
       // Keys failed but account created — user can generate keys later
       return NextResponse.json({
         success: true,
@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
         },
       },
     });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { success: false, error: { message: 'Internal server error.' } },
       { status: 500 }

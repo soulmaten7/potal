@@ -1,11 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Icons, StarIcon, InfoIcon, ChevronDownIcon } from '../icons';
+import React, { useEffect, useRef } from 'react';
+import { InfoIcon } from '../icons';
 import { ProductCard as RealProductCard, ProductCardSkeleton } from '@/components/search/ProductCard';
-import { getRetailerConfig, matchShippingProgram } from '@/app/lib/retailerConfig';
-import { useWishlist } from '@/app/context/WishlistContext';
 import { MobileCompactCard } from './MobileCompactCard';
 
 export interface Product {

@@ -10,7 +10,7 @@
  */
 
 import { NextRequest } from 'next/server';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { createApiKey, revokeApiKey, type KeyType } from '@/app/lib/api-auth/keys';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
