@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-05 (세션 21 — Shopify Theme Extension 배포 + App Store 리스팅 작성 + 심사 제출 준비)
+> 마지막 업데이트: 2026-03-05 (세션 22 — 가격 불일치 수정 + 코드 정리 + B2C→B2B 페이지 전환 12개+ + 위젯/API 프로덕션 검증)
 
 ---
 
@@ -69,7 +69,7 @@
 
 ### 비즈니스 모델
 
-**Layer 1: 셀러 위젯 SaaS** — Starter $29/mo, Growth $79/mo, Enterprise $199+/mo. 14일 무료 체험
+**Layer 1: 셀러 위젯 SaaS** — Free $0/500 calls, Starter $9/5K, Growth $29/25K, Enterprise custom
 **Layer 2: AI 에이전트 API** — 각 LLM 커스텀 앱 + 직접 API 호출 과금
 
 ### Data Flywheel (세션 11 수정)
@@ -108,6 +108,13 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 앱 리스팅 작성 ✅ (앱 설명, 스크린샷 3장, Feature media, 카테고리, Free 플랜, Support/Privacy)
   - 예비 단계 8/9 완료 ✅ (임베디드 앱 확인만 대기 — 2시간 내 자동 확인)
   - ⏳ 남은 작업: 임베디드 앱 확인 통과 → "검토를 위해 제출" 클릭 (심사 7~14일)
+세션 22: B2C→B2B 전환 마무리 + 코드 정리
+  - 가격 불일치 수정 ✅ (랜딩페이지/pricing/sellers-me/sellers-usage 4파일 동기화)
+  - 코드 정리 ✅ (console.log 6개 제거, unused imports 제거, let→const, unused catch vars)
+  - B2C→B2B 페이지 전환 12개+ ✅ (about/terms/help/opengraph/blog/partners/contact/auth/join)
+  - B2C 페이지 redirect ✅ (search/search-info/wishlist → 홈으로 리다이렉트)
+  - Privacy Policy 페이지 확인 ✅ (https://www.potal.app/privacy 정상)
+  - 위젯/API 프로덕션 검증 ✅ (widget.js HTTP 200 + CORS, calculate API 401 정상, countries API 정상)
 ```
 
 **⚠️ Phase 3을 마지막으로 변경한 이유**: Shopify App Store = 셀러가 들어오는 문. 셀러가 왔을 때 결제(Phase 4), 정확한 관세 계산(Phase 5), LLM 사용 데이터(Phase 2)가 모두 준비되어 있어야 이탈 없음. 심사 7~14일 소요되므로 모든 기능 완비 후 제출.
@@ -284,7 +291,8 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - App Store 등록 $19 결제 완료 (Mastercard 8359, 개인, 제주 주소)
   - 앱 리스팅 전체 작성: App name(POTAL), Category(Shipping rates/Customer-based), Introduction, Details, Features 3개, Free 플랜, Support(contact@potal.app), Privacy policy, Subtitle, Search terms 5개, SEO tags, Screenshots 3장 + Feature media 1장 업로드
   - 예비 단계 8/9 ✅ 완료 (임베디드 앱 확인만 자동 대기 중 — 최대 2시간)
-  - Privacy Policy 페이지 생성 필요 (https://www.potal.app/privacy)
+  - Privacy Policy 페이지 ✅ 확인 완료 (https://www.potal.app/privacy 정상 동작)
+- **세션 22 완료**: 가격 불일치 수정 (4파일), 코드 정리 (8파일), B2C→B2B 페이지 전환 (12+파일), 위젯/API 프로덕션 검증
 - **다음**: 임베디드 확인 → "검토를 위해 제출" 클릭 → 심사 7~14일
 - **블로커**: Stripe Live mode에 ITIN 필요 (개발은 Test mode로 진행 가능)
 
@@ -470,7 +478,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | `app/api/billing/portal/route.ts` | Stripe Customer Portal API |
 | `app/lib/billing/stripe.ts` | Stripe 싱글톤 + PLAN_CONFIG |
 | `app/lib/billing/subscription.ts` | 구독 라이프사이클 관리 |
-| `app/blog/` | SEO 블로그 (5개 글) |
+| `app/blog/` | SEO 블로그 (3개 B2B 글 — TLC 가이드, HS Code 분류, De Minimis) |
 
 ### Supabase B2B 테이블 (003_b2b_schema.sql — SQL Editor 실행 필요)
 plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
@@ -528,6 +536,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-05 | 22 | **B2C→B2B 전환 마무리 + 코드 정리**: 가격 불일치 수정 4파일 (Free 500/Growth $29 25K 동기화), 코드 정리 8파일 (console.log 제거, unused imports, let→const), B2C→B2B 페이지 전환 12+ (about/terms/help/opengraph/blog 3포스트/partners/contact/auth/join), B2C 페이지 redirect 3개 (search/wishlist→/), Privacy Policy 정상 확인, 위젯/API 프로덕션 검증 (widget.js CORS OK, calculate 401 OK, countries OK) |
 | 03-05 | 21 | **Shopify App Store 심사 제출 준비 완료**: Theme Extension 배포 (potal-3, presets 제거+locales 추가), Shopify CLI 설치+config link, App Store $19 결제, 앱 리스팅 전체 작성 (설명/스크린샷3장/Feature media/카테고리/Free플랜/Support/Privacy), 예비 단계 8/9 완료 (임베디드 확인 대기) |
 | 03-05 | 20 | **E2E 검증 + USITC 버그 수정**: 외부 관세 API 3개(USITC/UK/EU) 직접 curl 테스트, USITC API URL 버그 수정 (`/api/search?query=` → `/reststop/search?keyword=`), indent 타입 수정 (string→Number() 변환), UK/EU MFN 파싱 정상 확인, 환율 API 2개 모두 정상, 전체 코드 리뷰 (10+ 파일), npm run build 통과 |
 | 03-05 | 19 | **Shopify 환경설정 완료**: Partner Dashboard 앱 등록 (POTAL v1.0.0 릴리스), Client ID/Secret → Vercel 환경변수, Supabase shopify_stores 테이블 생성, Redeploy 완료, 개발 스토어 앱 설치 성공, OAuth managed install flow 대응 |
