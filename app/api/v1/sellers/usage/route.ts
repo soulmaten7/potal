@@ -90,11 +90,12 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
 
   // Plan limits
   const planLimits: Record<string, number> = {
+    free: 500,
     starter: 5000,
     growth: 25000,
     enterprise: -1, // unlimited
   };
-  const limit = planLimits[context.planId] ?? 5000;
+  const limit = planLimits[context.planId] ?? 500;
 
   return apiSuccess({
     period: `${year}-${String(month).padStart(2, '0')}`,

@@ -75,11 +75,12 @@ export async function GET(req: NextRequest) {
     const s = seller as any;
 
     const planLimits: Record<string, number> = {
+      free: 500,
       starter: 5000,
-      growth: 50000,
+      growth: 25000,
       enterprise: -1,
     };
-    const limit = planLimits[s.plan_id] ?? 5000;
+    const limit = planLimits[s.plan_id] ?? 500;
     const used = usageLogs?.length || 0;
 
     return NextResponse.json({
