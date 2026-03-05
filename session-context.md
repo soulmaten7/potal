@@ -85,15 +85,19 @@ Phase 2: 각 LLM 커스텀 앱 등록 ← ✅ 핵심 3개 완료 (GPT + Claude M
 Phase 4: Stripe 결제 + 셀러 대시보드 ← ✅ 완료 (Billing UI, 대시보드, Stripe Test mode 연동)
 Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (370+ HS코드, 21개국 관세율, 27개 FTA)
 Phase 5.5: AI 분류 + DB 캐싱 ← ✅ 완료 (GPT-4o-mini AI 분류, DB 캐시 플라이휠 E2E 검증)
-Phase 6: 외부 관세 API 연동 ← 🔄 진행 중 (USITC/UK/EU 무료 API → 10자리 HS Code + 실시간 관세율)
-  - 6-1: USITC API (미국, 무료)
-  - 6-2: UK Trade Tariff API (영국, 무료)
-  - 6-3: EU TARIC API (유럽, 무료)
-  - 6-4: AI 프롬프트 10자리 변경
-  - 6-5: 실시간 환율 API
-Phase 3: Shopify App ← 대기 (모든 기능 완비 후 제출, 심사 7~14일)
-  - 체크아웃 연동 포함
-  - 요금제 구조 변경 (Free 500 / Starter $9 / Growth $29 / Enterprise custom)
+Phase 6: 외부 관세 API + 환율 + 요금제 ← ✅ 완료
+  - 6-1: USITC API (미국, 무료) ✅
+  - 6-2: UK Trade Tariff API (영국, 무료) ✅
+  - 6-3: EU TARIC API (유럽, 무료) ✅
+  - 6-4: AI 프롬프트 10자리 변경 ✅
+  - 6-5: 실시간 환율 API ✅
+  - 6-6: 요금제 변경 (Free 500 / Starter $9 / Growth $29 / Enterprise) ✅
+Phase 3: Shopify App ← ✅ 코드 완료 (Shopify Partner Dashboard 등록 + 심사 제출 필요)
+  - OAuth 인증 플로우 ✅
+  - GDPR 필수 웹훅 ✅
+  - Theme App Extension 3개 블록 ✅ (상품위젯, 장바구니배너, 앱임베드)
+  - shopify_stores 테이블 마이그레이션 ✅
+  - ⏳ 남은 작업: Shopify Partner Dashboard 앱 등록 → API Key/Secret 설정 → Supabase migration 실행 → 앱 제출
 ```
 
 **⚠️ Phase 3을 마지막으로 변경한 이유**: Shopify App Store = 셀러가 들어오는 문. 셀러가 왔을 때 결제(Phase 4), 정확한 관세 계산(Phase 5), LLM 사용 데이터(Phase 2)가 모두 준비되어 있어야 이탈 없음. 심사 7~14일 소요되므로 모든 기능 완비 후 제출.
@@ -415,6 +419,16 @@ Phase 3: Shopify App ← 대기 (모든 기능 완비 후 제출, 심사 7~14일
 | `app/lib/cost-engine/ai-classifier/claude-classifier.ts` | AI 분류 서비스 (GPT-4o-mini, Claude 지원) |
 | `app/lib/cost-engine/ai-classifier/ai-classifier-wrapper.ts` | AI 분류 오케스트레이터 (DB캐시→키워드→AI→폴백) |
 | `app/lib/cost-engine/ai-classifier/index.ts` | AI 분류 모듈 exports |
+| `app/lib/cost-engine/exchange-rate/exchange-rate-service.ts` | 실시간 환율 서비스 (무료 API 이중 폴백) |
+| `app/lib/cost-engine/tariff-api/usitc-provider.ts` | USITC 미국 관세율 API |
+| `app/lib/cost-engine/tariff-api/uk-tariff-provider.ts` | UK Trade Tariff 영국 관세율 API |
+| `app/lib/cost-engine/tariff-api/eu-taric-provider.ts` | EU TARIC 유럽 관세율 API |
+| `app/lib/shopify/shopify-auth.ts` | Shopify OAuth + HMAC + 토큰 관리 |
+| `app/api/shopify/auth/route.ts` | Shopify 앱 설치 (OAuth 시작) |
+| `app/api/shopify/callback/route.ts` | Shopify OAuth 콜백 |
+| `app/api/shopify/webhooks/route.ts` | Shopify 필수 웹훅 (GDPR) |
+| `extensions/potal-widget/` | Shopify Theme App Extension (3개 블록) |
+| `shopify.app.toml` | Shopify 앱 설정 파일 |
 | `__tests__/api/cost-engine.test.ts` | CostEngine 유닛 테스트 |
 | `app/lib/search/CostEngine.ts` | B2C 호환 래퍼 (cost-engine 모듈 re-export) |
 | `app/lib/search/SearchService.ts` | B2C 검색 파이프라인 |
@@ -484,6 +498,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-05 | 18 | **Phase 6 + Shopify 완료**: USITC/UK/EU 3개 정부 관세 API 프로바이더 추가, AI 10자리 HS Code 변경, 실시간 환율 API (ExchangeRate-API + Fawaz CDN), 요금제 변경 (Free 500/Starter $9/Growth $29), Shopify 앱 (OAuth + GDPR 웹훅 + Theme Extension 3블록) |
 | 03-05 | 17+ | **AI 분류 E2E 완료 + 외부 API 연동 시작**: API키 FK 버그 수정 (user.id→seller.id), 키워드 partial match 버그 수정 ("air"→"chair" false positive), DB 캐시 unique index 수정, AI 분류 E2E 성공 (640411 Sports footwear, confidence 0.95), 캐시 플라이휠 검증 (1차 ai→2차 cache). 경쟁사 가격/기능 분석 (POTAL ~40-45% of Zonos, 30-75x cheaper per call). POTAL-Target-Analysis.xlsx 4시트 생성. 요금제 변경안 도출 (Free 500/Starter $9/Growth $29). 외부 관세 API 조사 완료 (USITC/UK/EU 무료) |
 | 03-05 | 16+ | **Phase 4 완료 + Phase 5 완료**: Phase 4 — Vercel 빌드 에러 3건 수정, sellers 레코드 생성, 더블 헤더 수정, Billing 업그레이드 Stripe Checkout E2E 테스트 성공. Phase 5 — HS Code DB 62→370+ (6자리), 관세율 8→21개국/19→44챕터, FTA 12→27개 협정, 빌드 성공 확인 |
 | 03-05 | 16 | **Phase 4 대시보드 완료**: Vercel 빌드 에러 3건 수정 (mcp-server exclude, useSearchParams Suspense 분리, sellers API 컬럼명), Supabase sellers 레코드 생성, 더블 헤더 수정 (Header/Footer에 /dashboard 경로 체크), 대시보드 Overview/Billing 정상 작동 확인 |
