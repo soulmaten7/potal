@@ -12,8 +12,6 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
-import { WishlistProvider } from "./context/WishlistContext";
-import { UserPreferenceProvider } from "./context/UserPreferenceContext";
 import { SupabaseProvider } from "./context/SupabaseProvider";
 import { I18nProvider } from "./context/I18nProvider";
 
@@ -142,19 +140,17 @@ export default function RootLayout({
         
         <SupabaseProvider>
           <I18nProvider>
-          <UserPreferenceProvider>
-            <WishlistProvider>
-              
+
               <div className="flex flex-col min-h-screen relative">
-                
+
                 {/* 헤더 */}
                 <Header />
-                
+
                 {/* 메인 컨텐츠 */}
                 <main className="flex-grow w-full">
                   {children}
                 </main>
-                
+
                 {/* 푸터 — 데스크톱만 */}
                 <div className="hidden md:block">
                   <Footer />
@@ -162,11 +158,9 @@ export default function RootLayout({
 
                 {/* 모바일 하단 네비게이션 바 */}
                 <MobileBottomNav />
-                
+
               </div>
-              
-            </WishlistProvider>
-          </UserPreferenceProvider>
+
           </I18nProvider>
         </SupabaseProvider>
       </body>

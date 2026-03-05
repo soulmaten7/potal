@@ -241,17 +241,17 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | 8 | 현재 상태 | ⏳ 미착수. Stripe 가입 완료 (SSN 임시값 입력). Test mode로 개발 진행 중. ITIN 확보 후 Live mode 전환 예정 |
 | 9 | 대안 검토 | ITIN 발급 어려울 경우 **Paddle** (MoR 모델, ITIN 불필요) 또는 **Lemon Squeezy**로 전환 검토. 제주도 거주라 서울 방문 없이 ITIN 대행 세무사 알아보기 (50~100만원) |
 
-### 🟡 다음 세션 — B2C 잔여 코드 정리 + 사이트 품질 개선
+### 🟡 다음 세션 — Shopify 심사 + 사이트 품질 개선
 
 | # | 항목 | 상세 |
 |---|------|------|
 | 1 | Shopify 임베디드 확인 + 심사 제출 | Partner Dashboard에서 확인 → "검토를 위해 제출" 클릭 |
-| 2 | .cursorrules B2B 전환 | 현재 B2C 전용 내용 → B2B 맥락으로 전면 재작성 |
-| 3 | Footer 컴포넌트 B2B 전환 점검 | Footer 내 링크/텍스트 확인 |
-| 4 | sw.js (Service Worker) 점검 | B2C 캐시 경로가 남아있을 수 있음 |
+| 2 | ~~.cursorrules B2B 전환~~ | ✅ 세션 22에서 완료 |
+| 3 | ~~Footer 컴포넌트 B2B 전환 점검~~ | ✅ 세션 23에서 확인 완료 — 이미 B2B |
+| 4 | ~~sw.js (Service Worker) 점검~~ | ✅ 세션 23에서 확인 완료 — B2C 잔여 없음 |
 | 5 | B2C 백엔드 코드 정리 (낮은 우선순위) | lib/search/, lib/agent/, components/search/ — 빌드에 영향 없으나 불필요한 코드 |
-| 6 | WishlistContext/UserPreferenceContext 정리 | layout.tsx에서 여전히 import 중. 사용처 확인 후 제거 가능 |
-| 7 | data.ts B2C 데이터 정리 | FOOTER_ACCORDIONS, MAIN_CATEGORIES 등 B2C 데이터 |
+| 6 | ~~WishlistContext/UserPreferenceContext 정리~~ | ✅ 세션 23에서 layout.tsx에서 Provider 제거 완료 |
+| 7 | ~~data.ts B2C 데이터 정리~~ | ✅ 세션 23 확인 — page.b2c-backup.tsx에서만 사용. B2C 보존 원칙에 따라 유지 |
 
 ### 🟢 장기
 
@@ -310,7 +310,8 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - Privacy Policy 페이지 ✅ 확인 완료 (https://www.potal.app/privacy 정상 동작)
 - **세션 22 완료 (Round 1)**: 가격 불일치 수정 (4파일), 코드 정리 (8파일), B2C→B2B 페이지 전환 (12+파일), 위젯/API 프로덕션 검증
 - **세션 22 완료 (Round 2)**: SEO B2B 전환 (sitemap/robots), manifest.json B2B 전환, legal/[slug] B2B 재작성, tax-info redirect, layout.tsx JSON-LD 정리
-- **B2C→B2B 전환 상태**: 사용자 노출 페이지 거의 완료. 잔여: .cursorrules, Footer 점검, sw.js, WishlistContext, data.ts, B2C 백엔드 코드
+- **세션 23**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료
+- **B2C→B2B 전환 상태**: 사용자 노출 페이지 + layout 전체 완료. 잔여: B2C 백엔드 코드만 (lib/search/, lib/agent/, components/search/ — 보존)
 - **다음**: 임베디드 확인 → "검토를 위해 제출" 클릭 → 심사 7~14일
 - **블로커**: Stripe Live mode에 ITIN 필요 (개발은 Test mode로 진행 가능)
 
