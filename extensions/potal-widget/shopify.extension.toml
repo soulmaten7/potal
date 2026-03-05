@@ -1,0 +1,15 @@
+# POTAL Widget — Shopify Theme App Extension Configuration
+#
+# 이 파일은 Shopify CLI로 앱 배포 시 사용됩니다.
+# 셀러의 Shopify 스토어 테마에 POTAL TLC 위젯 블록을 추가합니다.
+
+api_version = "2024-10"
+
+[[extensions]]
+type = "theme"
+name = "POTAL Landed Cost Widget"
+handle = "potal-widget"
+
+  [[extensions.targeting]]
+  module = "./blocks/potal-tlc-widget.liquid"
+  target = "section"

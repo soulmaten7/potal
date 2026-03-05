@@ -1,0 +1,121 @@
+{% comment %}
+  POTAL App Embed Block
+  — Shopify Theme App Extension: App Embed
+
+  테마 에디터에서 "App embeds" 토글을 켜면 모든 페이지에 적용됩니다.
+  POTAL 위젯 스크립트를 자동으로 로드하고,
+  상품 페이지에서 자동으로 위젯을 표시합니다.
+{% endcomment %}
+
+<!-- POTAL Widget Global Script -->
+<script
+  src="https://www.potal.app/widget/potal-widget.js"
+  data-api-key="{{ block.settings.api_key }}"
+  data-origin="{{ block.settings.origin_country }}"
+  data-theme="{{ block.settings.theme }}"
+  defer
+></script>
+
+{% if template.name == 'product' and block.settings.auto_show %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof PotalWidget === 'undefined') {
+      setTimeout(arguments.callee, 200);
+      return;
+    }
+
+    // 상품 페이지에서 자동으로 위젯 표시
+    // "Add to cart" 버튼 근처에 삽입
+    var targets = [
+      '.product-form__buttons',
+      '.product-form__submit',
+      '[data-add-to-cart]',
+      'form[action="/cart/add"] button[type="submit"]',
+      '.shopify-payment-button',
+    ];
+
+    var insertAfter = null;
+    for (var i = 0; i < targets.length; i++) {
+      insertAfter = document.querySelector(targets[i]);
+      if (insertAfter) break;
+    }
+
+    if (!insertAfter) return;
+
+    // 위젯 컨테이너 생성
+    var container = document.createElement('div');
+    container.id = 'potal-auto-widget';
+    container.style.marginTop = '16px';
+
+    // insertAfter의 부모에 삽입
+    var parent = insertAfter.parentElement;
+    if (parent) {
+      parent.insertBefore(container, insertAfter.nextSibling);
+    }
+
+    // 현재 상품 정보 추출
+    var productName = '';
+    var price = 0;
+
+    // Shopify meta 태그에서 상품 정보 추출
+    var metaProduct = document.querySelector('meta[property="og:title"]');
+    if (metaProduct) productName = metaProduct.content;
+
+    var metaPrice = document.querySelector('meta[property="product:price:amount"]');
+    if (metaPrice) price = parseFloat(metaPrice.content) || 0;
+
+    PotalWidget.init({ apiKey: '{{ block.settings.api_key }}' });
+    PotalWidget.show(container, {
+      productName: productName,
+      price: price,
+      origin: '{{ block.settings.origin_country }}',
+    });
+  });
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "POTAL Widget",
+  "target": "head",
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_key",
+      "label": "POTAL API Key",
+      "info": "Your POTAL API key from [potal.app/dashboard](https://www.potal.app/dashboard)"
+    },
+    {
+      "type": "select",
+      "id": "origin_country",
+      "label": "Shipping Origin",
+      "default": "CN",
+      "options": [
+        { "value": "CN", "label": "China" },
+        { "value": "US", "label": "United States" },
+        { "value": "GB", "label": "United Kingdom" },
+        { "value": "DE", "label": "Germany" },
+        { "value": "JP", "label": "Japan" },
+        { "value": "KR", "label": "South Korea" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "Widget Theme",
+      "default": "light",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_show",
+      "label": "Auto-show on product pages",
+      "default": true,
+      "info": "Automatically display widget near the Add to Cart button"
+    }
+  ]
+}
+{% endschema %}

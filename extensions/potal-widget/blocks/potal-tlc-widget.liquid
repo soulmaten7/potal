@@ -1,0 +1,154 @@
+{% comment %}
+  POTAL Total Landed Cost Widget
+  — Shopify Theme App Extension Block
+
+  셀러가 Shopify 테마 에디터에서 상품 페이지에 드래그앤드롭으로 추가할 수 있는 블록입니다.
+  POTAL API를 호출하여 실시간 관세+세금+배송비 = Total Landed Cost를 표시합니다.
+
+  설정 가능 항목:
+  - api_key: POTAL API 키
+  - origin_country: 배송 원산지 국가 코드
+  - theme: 테마 (light/dark)
+  - show_breakdown: 비용 분석 표시 여부
+{% endcomment %}
+
+<div
+  id="potal-widget-{{ block.id }}"
+  class="potal-shopify-widget"
+  data-potal-api-key="{{ block.settings.api_key }}"
+  data-potal-origin="{{ block.settings.origin_country }}"
+  data-potal-theme="{{ block.settings.theme }}"
+  data-potal-breakdown="{{ block.settings.show_breakdown }}"
+  data-potal-product-name="{{ product.title | escape }}"
+  data-potal-price="{{ product.selected_or_first_available_variant.price | money_without_currency | remove: ',' }}"
+  data-potal-currency="{{ shop.currency }}"
+  style="margin: 16px 0;"
+>
+  <!-- 위젯이 로드되기 전 표시되는 플레이스홀더 -->
+  <div class="potal-loading" style="
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+  ">
+    Calculating landed cost...
+  </div>
+</div>
+
+<!-- POTAL Widget Script -->
+<script src="https://www.potal.app/widget/potal-widget.js" defer></script>
+
+<script>
+  (function() {
+    // 위젯 스크립트 로드 후 초기화
+    function initPotalWidget() {
+      var container = document.getElementById('potal-widget-{{ block.id }}');
+      if (!container || typeof PotalWidget === 'undefined') return;
+
+      var apiKey = container.getAttribute('data-potal-api-key');
+      var origin = container.getAttribute('data-potal-origin') || 'CN';
+      var theme = container.getAttribute('data-potal-theme') || 'light';
+      var showBreakdown = container.getAttribute('data-potal-breakdown') === 'true';
+      var productName = container.getAttribute('data-potal-product-name');
+      var price = parseFloat(container.getAttribute('data-potal-price') || '0');
+
+      if (!apiKey) {
+        container.innerHTML = '<p style="color: #ef4444; font-size: 13px;">POTAL API key not configured. Go to app settings.</p>';
+        return;
+      }
+
+      // 플레이스홀더 제거
+      container.innerHTML = '';
+
+      // POTAL 위젯 초기화
+      PotalWidget.init({
+        apiKey: apiKey,
+        theme: theme,
+      });
+
+      PotalWidget.show(container, {
+        productName: productName,
+        price: price,
+        origin: origin,
+        showBreakdown: showBreakdown,
+      });
+    }
+
+    // Script 로드 대기
+    if (typeof PotalWidget !== 'undefined') {
+      initPotalWidget();
+    } else {
+      document.addEventListener('DOMContentLoaded', function() {
+        // 약간의 딜레이 후 재시도 (스크립트 로드 대기)
+        setTimeout(initPotalWidget, 500);
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "POTAL Landed Cost",
+  "target": "section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "api_key",
+      "label": "POTAL API Key",
+      "info": "Your POTAL API key (starts with pk_live_ or sk_live_). Get it from your [POTAL Dashboard](https://www.potal.app/dashboard)."
+    },
+    {
+      "type": "select",
+      "id": "origin_country",
+      "label": "Shipping Origin",
+      "default": "CN",
+      "options": [
+        { "value": "CN", "label": "China" },
+        { "value": "US", "label": "United States" },
+        { "value": "GB", "label": "United Kingdom" },
+        { "value": "DE", "label": "Germany" },
+        { "value": "JP", "label": "Japan" },
+        { "value": "KR", "label": "South Korea" },
+        { "value": "IN", "label": "India" },
+        { "value": "VN", "label": "Vietnam" },
+        { "value": "TW", "label": "Taiwan" },
+        { "value": "IT", "label": "Italy" },
+        { "value": "FR", "label": "France" },
+        { "value": "TH", "label": "Thailand" },
+        { "value": "MX", "label": "Mexico" },
+        { "value": "TR", "label": "Turkey" },
+        { "value": "BD", "label": "Bangladesh" }
+      ],
+      "info": "Where your products ship from"
+    },
+    {
+      "type": "select",
+      "id": "theme",
+      "label": "Widget Theme",
+      "default": "light",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breakdown",
+      "label": "Show cost breakdown",
+      "default": true,
+      "info": "Display detailed breakdown (duty, tax, shipping)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "POTAL Landed Cost Calculator",
+      "category": "Commerce"
+    }
+  ]
+}
+{% endschema %}
