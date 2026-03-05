@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/settings", "/saved", "/wishlist", "/account"],
+        disallow: ["/api/", "/auth/", "/dashboard", "/settings", "/profile"],
       },
     ],
     sitemap: "https://potal.app/sitemap.xml",

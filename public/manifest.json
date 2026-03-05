@@ -1,7 +1,7 @@
 {
-  "name": "POTAL — AI Shopping Comparison",
+  "name": "POTAL — Total Landed Cost API",
   "short_name": "POTAL",
-  "description": "Compare prices across Amazon, Walmart, eBay, Target & AliExpress. AI-powered shopping agent finds the best deal instantly.",
+  "description": "Calculate duties, taxes, and shipping for 139 countries. The infrastructure API for cross-border e-commerce.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#02122c",
@@ -9,7 +9,7 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
-  "categories": ["shopping", "lifestyle", "utilities"],
+  "categories": ["business", "developer-tools", "utilities"],
   "icons": [
     {
       "src": "/favicon-32x32.png",
@@ -52,21 +52,21 @@
       "sizes": "1200x630",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "POTAL Home — Compare Every Store on Earth"
+      "label": "POTAL — Total Landed Cost API for Global Commerce"
     }
   ],
   "shortcuts": [
     {
-      "name": "Search Products",
-      "short_name": "Search",
-      "url": "/search?q=",
-      "description": "Start a new product search"
+      "name": "API Docs",
+      "short_name": "Docs",
+      "url": "/developers/docs",
+      "description": "View API documentation"
     },
     {
-      "name": "My Wishlist",
-      "short_name": "Wishlist",
-      "url": "/wishlist",
-      "description": "View your saved products"
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard",
+      "description": "Manage API keys and usage"
     }
   ]
 }

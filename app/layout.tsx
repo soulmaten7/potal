@@ -112,14 +112,6 @@ export default function RootLayout({
               name: "POTAL",
               url: "https://potal.app",
               description: "Total Landed Cost API for cross-border commerce. Calculate duties, taxes, and shipping for 139 countries.",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: {
-                  "@type": "EntryPoint",
-                  urlTemplate: "https://potal.app/search?q={search_term_string}",
-                },
-                "query-input": "required name=search_term_string",
-              },
             }),
           }}
         />
