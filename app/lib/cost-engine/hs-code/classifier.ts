@@ -55,8 +55,10 @@ function calculateScore(tokens: string[], keywords: string[]): number {
     }
 
     // Partial match: token contains keyword or keyword contains token
+    // Require minimum 4 chars for substring matching to avoid false positives
+    // (e.g. "air" matching "chair", "max" matching "wax")
     for (const token of tokens) {
-      if (token.includes(kw) || kw.includes(token)) {
+      if (token.length >= 4 && kw.length >= 4 && (token.includes(kw) || kw.includes(token))) {
         score += 5;
         matchedKeywords++;
         break;
