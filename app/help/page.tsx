@@ -10,9 +10,9 @@ import { ContactForm } from '@/components/help/ContactForm';
 const FAQ_CATEGORIES = [
   { id: 'all', label: 'All Topics' },
   { id: 'about', label: 'About POTAL' },
-  { id: 'account', label: 'Account & Security' },
-  { id: 'prices', label: 'Prices & Shipping' },
-  { id: 'partners', label: 'Advertising & Partners' },
+  { id: 'account', label: 'Account & API' },
+  { id: 'pricing', label: 'Pricing & Plans' },
+  { id: 'shopify', label: 'Shopify App' },
 ];
 
 const FAQ_ITEMS = [
@@ -20,31 +20,43 @@ const FAQ_ITEMS = [
     id: '1',
     category: 'about',
     question: 'What is POTAL?',
-    answer: 'POTAL is an AI-powered search agent, not a retailer. We scan hundreds of global sites (Amazon, Walmart, AliExpress, etc.) to find you the best balance between price and shipping speed. We do not sell products directly; we connect you to the best deals.'
+    answer: 'POTAL is a Total Landed Cost API and Shopify app. We help e-commerce sellers calculate and display import duties, taxes, and fees for international orders — covering 139+ countries with AI-powered HS Code classification.'
   },
   {
     id: '2',
-    category: 'prices',
-    question: 'How accurate are the shipping estimates?',
-    answer: 'We analyze real-time logistics data based on your Zipcode. "Domestic" items usually arrive in 1-5 days, while "Global" items take 7-15 days. However, final delivery dates are confirmed by the retailer at checkout.'
+    category: 'about',
+    question: 'How accurate are the duty calculations?',
+    answer: 'Our calculations are based on official tariff schedules, trade agreements (FTAs), and de minimis thresholds. While we provide highly accurate estimates, actual customs charges may vary based on the destination country\'s customs authority assessment. We recommend consulting a licensed customs broker for binding classifications.'
   },
   {
     id: '3',
-    category: 'partners',
-    question: 'How do I advertise with POTAL?',
-    answer: 'We offer various advertising placements for retailers and brands. Please fill out the form below with "Advertising Inquiry" selected.'
+    category: 'shopify',
+    question: 'How do I install the POTAL Shopify app?',
+    answer: 'Search for "POTAL" in the Shopify App Store, click Install, and approve the required permissions (read_products, read_orders, read_shipping). The widget will automatically appear on your product pages via the theme app extension.'
   },
   {
     id: '4',
     category: 'account',
-    question: 'How do I sign out?',
-    answer: 'Click your User Profile icon in the top right corner of the header and select "Sign Out".'
+    question: 'How do I get my API key?',
+    answer: 'Sign up at potal.app, then go to your Dashboard. Your API keys are generated automatically. You can manage and rotate keys from the Dashboard at any time.'
   },
   {
     id: '5',
-    category: 'partners',
-    question: 'Do you offer an API for developers?',
-    answer: 'Yes, we have a search API available for enterprise partners. Contact us via the support form below for documentation.'
+    category: 'pricing',
+    question: 'What happens if I exceed my plan\'s API call limit?',
+    answer: 'On the Free and Starter plans, API calls will return a 429 rate limit error once you exceed your monthly limit. On the Growth plan, overage is billed at $0.002 per additional call. Enterprise plans have no limits. You can upgrade your plan anytime from the Dashboard.'
+  },
+  {
+    id: '6',
+    category: 'pricing',
+    question: 'Is there a free plan?',
+    answer: 'Yes! Our Free plan includes 500 API calls per month — enough to test the integration and serve small stores. No credit card required.'
+  },
+  {
+    id: '7',
+    category: 'shopify',
+    question: 'What data does the Shopify app access?',
+    answer: 'The app only accesses read_products (to classify items), read_orders (to track calculation usage), and read_shipping (to include shipping in landed cost). We never modify your store data.'
   }
 ];
 

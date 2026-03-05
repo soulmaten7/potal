@@ -2,29 +2,29 @@
 
 import React from 'react';
 
-// [DATA] Tech Metrics
+// [DATA] Platform Metrics
 const STATS = [
-  { value: "7", label: "Retail Partners", description: "Amazon, Walmart, eBay, BestBuy, Target, AliExpress, Temu" },
-  { value: "0.5s", label: "Query Latency", description: "Average search response time" },
-  { value: "100%", label: "Data Neutrality", description: "Unbiased algorithm ranking" },
-  { value: "24/7", label: "Price Monitoring", description: "Automated deal detection" },
+  { value: "139", label: "Countries", description: "Global duty & tax coverage" },
+  { value: "120ms", label: "Avg Response", description: "Real-time API calculations" },
+  { value: "99.9%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
+  { value: "50+", label: "HS Categories", description: "AI-powered classification" },
 ];
 
 // [DATA] Core Values
 const VALUES = [
   {
-    title: "Algorithmic Transparency",
-    description: "We don't hide shipping costs or taxes. Our engine calculates the 'True Landed Cost' instantly, so you never click on fake deals.",
+    title: "Transparency First",
+    description: "Hidden import fees kill conversion. We show buyers the exact duties, taxes, and fees before checkout — no surprises at the border.",
     icon: "🔍"
   },
   {
-    title: "Data Sovereignty",
-    description: "Commerce data shouldn't be fragmented. We aggregate Amazon, Walmart, eBay, BestBuy, Target, AliExpress, and Temu into a single, unified search layer.",
+    title: "Global by Default",
+    description: "Cross-border commerce shouldn't be complex. One API call returns landed costs for 139 countries, with FTA detection and de minimis rules built in.",
     icon: "🌐"
   },
   {
-    title: "Speed is a Feature",
-    description: "Time is money. We removed the clutter—no banners, no popups, no ads. Just the raw data you need to make a decision in seconds.",
+    title: "Built for Speed",
+    description: "Every millisecond counts at checkout. Our engine calculates duties, taxes, and shipping in under 120ms — fast enough for real-time widget rendering.",
     icon: "⚡"
   }
 ];
@@ -43,10 +43,10 @@ export default function AboutPage() {
           <span style={{ fontSize: '11px', fontWeight: 700, color: '#F59E0B', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Our Mission</span>
         </div>
         <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#02122c', marginBottom: '12px', lineHeight: '1.2' }}>
-          Search Less,<br />Buy Better.
+          Make Cross-Border<br />Commerce Transparent.
         </h1>
-        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: '1.7', maxWidth: '360px', margin: '0 auto' }}>
-          POTAL is not a store. It is a decision engine. We de-fragment the global marketplace.
+        <p style={{ fontSize: '14px', color: '#64748b', lineHeight: '1.7', maxWidth: '400px', margin: '0 auto' }}>
+          POTAL is a Total Landed Cost API that helps e-commerce sellers show buyers the true cost of international orders — duties, taxes, and fees included.
         </p>
       </div>
 
@@ -64,7 +64,7 @@ export default function AboutPage() {
         ))}
       </div>
 
-      {/* 3. Manifesto */}
+      {/* 3. Story */}
       <div style={{ padding: '0 20px' }}>
         <div style={{
           background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0',
@@ -72,7 +72,7 @@ export default function AboutPage() {
         }}>
           <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Why we built this.</h2>
           <p style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.7' }}>
-            The internet promised open commerce, but today it&apos;s walled gardens. Amazon hides Walmart, AliExpress hides shipping times. We built the bridge.
+            International shoppers abandon carts when unexpected fees show up at delivery. Sellers lose revenue and trust. We built POTAL so merchants can show the full landed cost upfront — turning cross-border friction into conversion.
           </p>
         </div>
 
@@ -95,13 +95,13 @@ export default function AboutPage() {
           background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0',
           padding: '24px', textAlign: 'center', marginTop: '16px',
         }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Built for efficiency, not for ads.</h2>
-          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>We are indexing the world&apos;s products in real-time.</p>
-          <a href="/help?topic=sell" style={{
+          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Start showing true landed costs today.</h2>
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>Free plan available. No credit card required.</p>
+          <a href="/developers" style={{
             display: 'inline-block', padding: '10px 24px', background: '#F59E0B', color: '#ffffff',
             fontSize: '14px', fontWeight: 700, borderRadius: '10px', textDecoration: 'none',
           }}>
-            Partner with POTAL
+            Get Started — Free
           </a>
         </div>
       </div>
