@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.description,
-    keywords: [post.category, 'price comparison', 'shopping guide', 'POTAL'],
+    keywords: [post.category, 'total landed cost', 'cross-border commerce', 'POTAL'],
     authors: [{ name: post.author }],
     openGraph: {
       type: 'article',
@@ -243,7 +243,7 @@ export default async function BlogPostPage({ params }: Props) {
               marginBottom: '12px',
             }}
           >
-            Compare Prices Like a Pro
+            Ready to show true landed costs?
           </h2>
           <p
             style={{
@@ -253,10 +253,10 @@ export default async function BlogPostPage({ params }: Props) {
               lineHeight: '1.6',
             }}
           >
-            Stop wasting time comparing prices manually. Use POTAL to instantly see the true total cost across Amazon, Walmart, Best Buy, eBay, and AliExpress—including all duties, taxes, and shipping.
+            Use POTAL to calculate duties, taxes, and fees for 139 countries. Embed our widget on your product page or integrate via REST API — free plan available.
           </p>
           <a
-            href="/"
+            href="/developers"
             style={{
               display: 'inline-block',
               padding: '12px 32px',
@@ -268,7 +268,7 @@ export default async function BlogPostPage({ params }: Props) {
               textDecoration: 'none',
             }}
           >
-            Search with POTAL
+            Get Started Free
           </a>
         </div>
       </div>

@@ -3,31 +3,40 @@
 import React from 'react';
 import { Icons } from '@/components/icons';
 
-// [DATA]
-const PARTNERS_DOMESTIC = [
-  { name: "Amazon" }, { name: "Walmart" }, { name: "Target" }, { name: "Best Buy" }, { name: "Costco" },
-  { name: "eBay" }, { name: "Home Depot" }, { name: "Lowe's" }, { name: "Macy's" }, { name: "Apple" },
-  { name: "Nike" }, { name: "Kohl's" }, { name: "Sephora" }, { name: "Chewy" }, { name: "Kroger" },
-  { name: "Wayfair" },
+// [DATA] Platform Integrations
+const PLATFORMS = [
+  { name: "Shopify", status: "Live" },
+  { name: "WooCommerce", status: "Coming Soon" },
+  { name: "Magento", status: "Coming Soon" },
+  { name: "BigCommerce", status: "Coming Soon" },
+  { name: "Custom Stores", status: "REST API" },
 ];
 
-const PARTNERS_GLOBAL = [
-  { name: "AliExpress" }, { name: "Temu" }, { name: "iHerb" }, { name: "DHgate" },
-  { name: "YesStyle" }, { name: "Farfetch" }, { name: "ASOS" }, { name: "Uniqlo" }, { name: "Etsy" },
-  { name: "MyTheresa" }, { name: "Olive Young" }, { name: "Mercari" },
+// [DATA] Technology Partners
+const TECH_PARTNERS = [
+  { name: "Supabase", role: "Database & Auth" },
+  { name: "Vercel", role: "Hosting & Edge" },
+  { name: "Stripe", role: "Billing" },
+  { name: "OpenAI", role: "HS Code AI" },
 ];
 
-// [COMPONENT] Partner Box — Dark Theme
-function PartnerBox({ name }: { name: string }) {
+function PlatformBox({ name, status }: { name: string; status: string }) {
+  const isLive = status === "Live" || status === "REST API";
   return (
-    <div style={{ width: '50%', padding: '4px', boxSizing: 'border-box' }}>
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '44px', background: '#f1f5f9', border: '1px solid #e2e8f0',
-        borderRadius: '10px', cursor: 'default',
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '16px 20px', background: '#f8fafc', border: '1px solid #e2e8f0',
+      borderRadius: '12px', marginBottom: '8px',
+    }}>
+      <span style={{ fontSize: '15px', fontWeight: 700, color: '#02122c' }}>{name}</span>
+      <span style={{
+        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
+        padding: '4px 10px', borderRadius: '6px',
+        background: isLive ? 'rgba(16,185,129,0.1)' : 'rgba(148,163,184,0.15)',
+        color: isLive ? '#10B981' : '#94a3b8',
       }}>
-        <span style={{ fontSize: '13px', fontWeight: 700, color: '#02122c' }}>{name}</span>
-      </div>
+        {status}
+      </span>
     </div>
   );
 }
@@ -40,34 +49,39 @@ export default function PartnersPage() {
       {/* 1. Hero Section */}
       <div style={{ padding: '80px 0 24px', textAlign: 'center' }}>
         <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>
-          Partners & Affiliate
+          Integrations & Partners
         </h1>
         <p style={{ fontSize: '14px', color: '#64748b' }}>
-          Direct integration for accurate pricing & shipping.
+          Platforms and technologies that power POTAL.
         </p>
       </div>
 
-      {/* 2. Partner Lists */}
-      <div style={{ padding: '0' }}>
-
-        {/* Domestic */}
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Domestic</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {PARTNERS_DOMESTIC.map((partner) => (
-              <PartnerBox key={partner.name} name={partner.name} />
-            ))}
-          </div>
+      {/* 2. Platform Integrations */}
+      <div style={{ padding: '0 20px', maxWidth: '600px', margin: '0 auto' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
+            E-Commerce Platforms
+          </p>
+          {PLATFORMS.map((platform) => (
+            <PlatformBox key={platform.name} name={platform.name} status={platform.status} />
+          ))}
         </div>
 
-        {/* Global */}
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>Global</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {PARTNERS_GLOBAL.map((partner) => (
-              <PartnerBox key={partner.name} name={partner.name} />
-            ))}
-          </div>
+        {/* 3. Technology Partners */}
+        <div style={{ marginBottom: '32px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
+            Technology Partners
+          </p>
+          {TECH_PARTNERS.map((partner) => (
+            <div key={partner.name} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '16px 20px', background: '#f8fafc', border: '1px solid #e2e8f0',
+              borderRadius: '12px', marginBottom: '8px',
+            }}>
+              <span style={{ fontSize: '15px', fontWeight: 700, color: '#02122c' }}>{partner.name}</span>
+              <span style={{ fontSize: '12px', color: '#64748b' }}>{partner.role}</span>
+            </div>
+          ))}
         </div>
 
         {/* CTA */}
@@ -75,21 +89,16 @@ export default function PartnersPage() {
           background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0',
           padding: '24px', textAlign: 'center', marginTop: '16px',
         }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Are you a retailer?</h2>
-          <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>Join our network to reach global shoppers.</p>
-          <a href="/help?topic=sell" style={{
+          <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Want to integrate POTAL?</h2>
+          <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>Build a plugin, embed our widget, or use our REST API.</p>
+          <a href="/developers" style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '10px 24px', background: '#F59E0B', color: '#ffffff',
             fontSize: '14px', fontWeight: 700, borderRadius: '10px', textDecoration: 'none',
           }}>
-            Become a Partner <Icons.ArrowRight style={{ width: '14px', height: '14px' }} />
+            View Developer Docs <Icons.ArrowRight style={{ width: '14px', height: '14px' }} />
           </a>
         </div>
-
-        {/* Disclosure */}
-        <p style={{ marginTop: '20px', textAlign: 'center', fontSize: '11px', color: '#94a3b8', lineHeight: '1.6' }}>
-          * POTAL may earn an affiliate commission from qualifying purchases. This does not affect our ranking algorithm or the price you pay.
-        </p>
       </div>
       </div>
     </div>

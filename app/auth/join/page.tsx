@@ -132,7 +132,7 @@ export default function JoinPage() {
           </Link>
           <h1 className="text-xl font-bold text-[#02122c]">Create your account</h1>
           <p className="text-slate-500 text-sm mt-1">
-            Join POTAL to get AI-powered shopping insights.
+            Join POTAL to calculate landed costs for 139+ countries.
           </p>
         </div>
 

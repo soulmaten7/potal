@@ -148,7 +148,7 @@ export default function ContactPage() {
           </button>
 
           <p className="text-xs text-slate-400 text-center">
-            By submitting, you agree to our <a href="/legal/privacy" className="underline hover:text-[#02122c]">Privacy Policy</a>.
+            By submitting, you agree to our <a href="/privacy" className="underline hover:text-[#02122c]">Privacy Policy</a>.
           </p>
         </form>
       </section>

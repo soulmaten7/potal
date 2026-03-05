@@ -3,21 +3,21 @@ import Link from 'next/link';
 import { blogPosts } from './posts';
 
 export const metadata: Metadata = {
-  title: 'POTAL Blog - Smart Shopping Tips & Price Comparison Guides',
-  description: 'Learn how to save money on online shopping. Discover price comparison strategies, cross-border shopping guides, and tips for finding the best deals across Amazon, Walmart, eBay, and AliExpress.',
+  title: 'POTAL Blog - Cross-Border Commerce Guides for Sellers',
+  description: 'Learn about total landed cost, HS Code classification, import duties, and strategies for selling internationally. Expert guides for e-commerce sellers.',
   keywords: [
-    'price comparison blog',
-    'shopping guides',
-    'cross-border shopping',
-    'import duties',
-    'online shopping tips',
-    'best price comparison',
+    'total landed cost',
+    'HS code classification',
+    'import duties guide',
+    'cross-border commerce',
+    'e-commerce seller guide',
+    'international trade',
   ],
   openGraph: {
     type: 'website',
     url: 'https://potal.app/blog',
-    title: 'POTAL Blog - Smart Shopping Tips & Price Comparison Guides',
-    description: 'Learn how to save money on online shopping with expert guides on price comparison, cross-border purchases, and international shipping costs.',
+    title: 'POTAL Blog - Cross-Border Commerce Guides for Sellers',
+    description: 'Expert guides on total landed cost, HS Code classification, and international trade strategies for e-commerce sellers.',
     siteName: 'POTAL',
     images: [
       {
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'POTAL Blog - Smart Shopping Tips & Price Comparison Guides',
-    description: 'Learn how to save money on online shopping with expert guides on price comparison, cross-border purchases, and international shipping costs.',
+    title: 'POTAL Blog - Cross-Border Commerce Guides for Sellers',
+    description: 'Expert guides on total landed cost, HS Code classification, and international trade strategies for e-commerce sellers.',
     images: ['/og-image.png'],
   },
   alternates: {
@@ -40,14 +40,12 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  // Sort posts by date (newest first)
   const sortedPosts = [...blogPosts].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
   return (
     <div style={{ backgroundColor: '#ffffff' }} className="w-full min-h-screen pb-28">
-      {/* JSON-LD Schema for Blog Collection */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -57,7 +55,7 @@ export default function BlogPage() {
             name: 'POTAL Blog',
             url: 'https://potal.app/blog',
             description:
-              'Price comparison guides, shopping tips, and cross-border shopping strategies for smart shoppers.',
+              'Cross-border commerce guides, HS Code classification tips, and total landed cost strategies for e-commerce sellers.',
             publisher: {
               '@type': 'Organization',
               name: 'POTAL',
@@ -107,7 +105,7 @@ export default function BlogPage() {
             lineHeight: '1.2',
           }}
         >
-          Smart Shopping<br />Made Simple
+          Cross-Border Commerce<br />Made Simple
         </h1>
         <p
           style={{
@@ -118,7 +116,7 @@ export default function BlogPage() {
             margin: '0 auto',
           }}
         >
-          Expert guides on price comparison, cross-border shopping, import duties, and finding the real cheapest deals.
+          Expert guides on total landed cost, HS Code classification, import duties, and strategies for selling internationally.
         </p>
       </div>
 
@@ -186,9 +184,9 @@ export default function BlogPage() {
                 }}
               >
                 <span>{sortedPosts[0].date}</span>
-                <span>•</span>
+                <span>&bull;</span>
                 <span>{sortedPosts[0].readingTime} min read</span>
-                <span>•</span>
+                <span>&bull;</span>
                 <span>{sortedPosts[0].category}</span>
               </div>
             </div>
@@ -212,14 +210,8 @@ export default function BlogPage() {
           All Articles
         </h2>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr',
-            gap: '16px',
-          }}
-        >
-          {sortedPosts.map((post, index) => (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+          {sortedPosts.map((post) => (
             <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: 'none' }}>
               <div
                 style={{
@@ -230,7 +222,6 @@ export default function BlogPage() {
                   cursor: 'pointer',
                 }}
               >
-                {/* Category Badge */}
                 <div
                   style={{
                     display: 'inline-block',
@@ -254,7 +245,6 @@ export default function BlogPage() {
                   </span>
                 </div>
 
-                {/* Title */}
                 <h3
                   style={{
                     fontSize: '18px',
@@ -267,7 +257,6 @@ export default function BlogPage() {
                   {post.title}
                 </h3>
 
-                {/* Description */}
                 <p
                   style={{
                     fontSize: '14px',
@@ -279,7 +268,6 @@ export default function BlogPage() {
                   {post.description}
                 </p>
 
-                {/* Meta Info */}
                 <div
                   style={{
                     display: 'flex',
@@ -290,7 +278,7 @@ export default function BlogPage() {
                   }}
                 >
                   <span>{post.date}</span>
-                  <span>•</span>
+                  <span>&bull;</span>
                   <span>{post.readingTime} min read</span>
                 </div>
               </div>
@@ -300,12 +288,7 @@ export default function BlogPage() {
       </div>
 
       {/* CTA Section */}
-      <div
-        style={{
-          padding: '40px 20px',
-          marginTop: '40px',
-        }}
-      >
+      <div style={{ padding: '40px 20px', marginTop: '40px' }}>
         <div
           style={{
             background: '#f8fafc',
@@ -323,7 +306,7 @@ export default function BlogPage() {
               marginBottom: '12px',
             }}
           >
-            Ready to find the cheapest deal?
+            Ready to show true landed costs?
           </h2>
           <p
             style={{
@@ -333,10 +316,10 @@ export default function BlogPage() {
               lineHeight: '1.6',
             }}
           >
-            Use POTAL to compare prices across Amazon, Walmart, Best Buy, eBay, and AliExpress. Get the true total cost including taxes, duties, and shipping—all in one search.
+            Use POTAL to calculate duties, taxes, and fees for 139 countries. Embed our widget or integrate via REST API — free plan available.
           </p>
           <a
-            href="/"
+            href="/developers"
             style={{
               display: 'inline-block',
               padding: '12px 32px',
@@ -348,7 +331,7 @@ export default function BlogPage() {
               textDecoration: 'none',
             }}
           >
-            Start Comparing Prices
+            Get Started Free
           </a>
         </div>
       </div>
