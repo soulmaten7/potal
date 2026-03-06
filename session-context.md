@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 26 완료 — PH 런치 3/7 스케줄 + 셀러 온보딩 페이지 + Stripe→LS 문서 정리)
+> 마지막 업데이트: 2026-03-06 (세션 27 완료 — 240개국 확장 + CN CBEC/MX IEPS + 7개 언어 + 교차검증 448테스트 + 커스텀 LLM 전체 업데이트)
 
 ---
 
@@ -83,7 +83,7 @@ Phase 1: 핵심 API + 셀러 인증 + i18n + 프로덕션 배포 ← ✅ 완료 
 Phase 2: 각 LLM 커스텀 앱 등록 ← ✅ 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
   - 나머지 3개: Copilot(비즈니스계정필요), Meta AI(지역제한), Grok(스토어없음) → 파일 준비 후 대기
 Phase 4: Stripe 결제 + 셀러 대시보드 ← ✅ 완료 (Billing UI, 대시보드, Stripe Test mode 연동)
-Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (443+ HS코드, 97 HS챕터×29개국 관세율, 63개 FTA, 181개국)
+Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (443+ HS코드, 97 HS챕터×29개국 관세율, 63개 FTA, 240개국)
 Phase 5.5: AI 분류 + DB 캐싱 ← ✅ 완료 (GPT-4o-mini AI 분류, DB 캐시 플라이휠 E2E 검증)
 Phase 6: 외부 관세 API + 환율 + 요금제 ← ✅ 완료
   - 6-1: USITC API (미국, 무료) ✅
@@ -219,9 +219,9 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 |---|--------|---------|------|
 | 2-01 | **OpenAI (ChatGPT)** | Custom GPT — GPT Store 등록 완료. 9개 언어 conversation starters | ✅ 완료 |
 | 2-02 | **Anthropic (Claude)** | MCP 서버 구축 완료 — `mcp-server/`, TypeScript, 2개 Tool, API 호출 테스트 통과, Claude Desktop 연결 확인 | ✅ 완료 |
-| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv (181개국) 업로드 | ✅ 완료 |
+| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv (240개국) 업로드. ⚠️ Gem 설정에서 설명 "139→240" 수정 + 요청사항 재복붙 + CSV 재업로드 필요 | ✅ 완료 (파일 준비, 수동 업데이트 필요) |
 | 2-04 | **Microsoft (Copilot)** | ⏸ 파일 준비됨. Microsoft 365 Business 계정 필요 (Personal로는 불가). Developer Program 무료 가입 옵션 있음 | ⏸ 대기 |
-| 2-05 | **Meta AI** | ⏸ `meta-ai/` 파일 준비됨. AI Studio 지역 제한으로 접속 불가 (VPN+거주지 변경도 실패). **⚠️ 매 세션마다 재확인 필요 — 지역 제한 풀리면 즉시 등록** | ⏸ 대기 |
+| 2-05 | **Meta AI** | ⏸ `meta-ai/ai-studio-instructions.md` 240개국 버전 준비됨. AI Studio 지역 제한으로 접속 불가 (VPN+거주지 변경도 실패). **⚠️ 매 세션마다 재확인 필요 — 지역 제한 풀리면 즉시 등록** | ⏸ 대기 |
 | 2-06 | **xAI (Grok)** | ❌ 커스텀 앱 스토어 자체 없음. API만 존재. 스토어 출시 시 즉시 진입 | ⏸ 대기 |
 
 **Phase 2 전략**: 각 LLM 플랫폼의 쇼핑 에이전트 시장을 장악. 사용자가 "이 상품 일본에 보내면 관세 얼마야?" 같은 질문을 하면 POTAL API를 호출하여 즉시 답변. 사용 데이터 축적 → 셀러 영업 근거로 활용.
@@ -282,7 +282,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — 181개국 업그레이드 완료, Shopify 임베디드 확인 대기, 결제 전환 필요
+### 현재 스프린트 — 240개국 업그레이드 완료, Shopify 임베디드 확인 대기, LS 결제 승인 대기
 - Phase 0~1 완료 (세션 11~14)
 - Phase 2 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
 - Phase 4 Stripe Billing ✅ 완료 (세션 15~16)
@@ -354,6 +354,20 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 셀러 온보딩 페이지 구현: signup에 website/platform 필드 추가, Quick Start 가이드 신규 생성
   - Supabase 마이그레이션 006 실행 완료 (sellers 테이블 website/platform 컬럼)
   - Stripe→LemonSqueezy 문서 전체 업데이트 (12+ 파일, i18n 5개 언어 포함)
+- **세션 27**: 240개국 확장 + CN CBEC/MX IEPS + 교차검증 + 커스텀 LLM 전체 업데이트
+  - country-data.ts 181→240개국 (59개 추가: 카리브해/태평양/아프리카/유럽영토)
+  - CostEngine.ts: CN CBEC 세금 (9.1% composite/정식수입 VAT 13%+소비세), MX IEPS (주류/담배/설탕음료)
+  - GlobalCostEngine.ts: CN/MX/SG/BR processing fee 추가 (총 12개국)
+  - country-i18n.ts 신규: 7개 언어(EN/KO/JA/ZH/ES/FR/DE) × 240개국 100% 커버리지
+  - countries/route.ts: `?lang=` 다국어 파라미터 추가
+  - 교차검증 테스트 399건 신규 (full-country-cross-validation.test.ts) + API 테스트 49건 = 448건 전체 통과
+  - 사이트 전체 "181개국" → "240개국" 텍스트 업데이트 (25+ 파일)
+  - 커스텀 LLM 전체 업데이트 (9개 파일): GPT Instructions ×2, OpenAPI Actions ×2, Gemini Gem Instructions + CSV (240개국), Meta AI Instructions, OpenAPI docs spec, MCP Server
+  - npm run build ✅ 통과
+- **⚠️ 수동 업데이트 필요**:
+  - ChatGPT GPT Settings → Instructions 복붙 + Actions Schema 복붙
+  - Gemini Gem → 설명 "139→240" 변경 + 요청사항 복붙 + CSV 재업로드
+  - Meta AI Studio → 지역 제한 풀리면 ai-studio-instructions.md 복붙
 - **다음**: LS 신원 확인 승인 → Product 생성 → Variant ID/API Key/Webhook 설정 → Vercel 환경변수 → Shopify 임베디드 확인 통과 → 심사 제출
 - **블로커**: ~~Stripe 계정 정지~~ → **LemonSqueezy 전환 완료, 신원 확인 승인 대기 중**
 
@@ -540,9 +554,9 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 | 파일 | 역할 |
 |------|------|
-| `app/lib/cost-engine/` | Total Landed Cost 계산 **(B2B 독립 모듈, 181개국 지원)** |
+| `app/lib/cost-engine/` | Total Landed Cost 계산 **(B2B 독립 모듈, 240개국 지원)** |
 | `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (181개국, India/Brazil 특수 세금) |
-| `app/lib/cost-engine/country-data.ts` | 181개국 VAT/GST/관세/de minimis 데이터 |
+| `app/lib/cost-engine/country-data.ts` | 240개국 VAT/GST/관세/de minimis 데이터 |
 | `app/lib/api-auth/` | API 인증 시스템 (키 생성/검증/미들웨어/rate-limit) |
 | `app/api/v1/calculate/route.ts` | 단건 TLC 계산 API |
 | `app/api/v1/calculate/batch/route.ts` | 배치 TLC 계산 API (최대 100건) |
@@ -656,6 +670,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-06 | 27 | **240개국 확장 + 커스텀 LLM 업데이트**: 181→240개국 (경쟁사 Zonos 235 초과). CN CBEC 세금 (9.1% composite/정식수입), MX IEPS 특별소비세 (주류/담배/설탕). 12개국 processing fee (CN $30/MX 0.8%/SG $10/BR $36 추가). 7개 언어 국가명 240/240 100%. 교차검증 399건+API 49건=448건 통과. 커스텀 LLM 9파일 업데이트 (GPT/Gemini/Meta/MCP/OpenAPI). country-duty-reference.csv 181→240개국 |
 | 03-06 | 26 | **PH 런치 + 셀러 온보딩 + Stripe→LS 문서 정리 + App Bridge + 181개국 + PH 에셋 + LS 전환**: Stripe→LS 문서 전체 업데이트 (12+ 파일, i18n 5개 언어). **PH 런치 3/7 토 스케줄 완료** (potalapp.producthunt.com, 프로모 PRODUCTHUNT). **셀러 온보딩**: signup에 website/platform 추가, Quick Start 가이드 3탭 신규 (Shopify/Widget/API), DB migration 006. 이전: App Bridge push + 임베디드 확인 대기. GPT/Gemini/MCP 181개국 업데이트. PH 에셋 5장 제작. **LS 전환 완료**: stripe SDK 삭제, lemonsqueezy.ts/subscription/checkout/webhook/portal 재작성, DB migration 005, LS 스토어 생성, 신원확인 제출 |
 | 03-06 | 25 | **Cost Engine 대규모 업그레이드**: 4개 신규 관세 API Provider (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) 추가 → 총 7개 정부 API. country-data.ts 137→181개국 확장. HS 챕터 56→97개(전체 커버). FTA 27→63개 협정. India 세금 계산 (BCD+SWS+IGST 캐스케이딩). Section 301 tariffs 2025/2026 업데이트. 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee). Batch calculation Promise.allSettled 병렬화. 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일) |
 | 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |

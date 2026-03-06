@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://potal-x1vl.vercel.app/api/v1"
+      "url": "https://www.potal.app/api/v1"
     }
   ],
   "paths": {
