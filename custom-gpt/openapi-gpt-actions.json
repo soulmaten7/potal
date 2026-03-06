@@ -139,7 +139,7 @@
       "get": {
         "operationId": "listSupportedCountries",
         "summary": "Get a list of all supported countries with their tax and duty information",
-        "description": "Returns all 139 supported countries with VAT/GST rates, average duty rates, de minimis thresholds, and currency information. Use this to check if a country is supported or to compare tax rates across countries.",
+        "description": "Returns all 181 supported countries with VAT/GST rates, average duty rates, de minimis thresholds, and currency information. Use this to check if a country is supported or to compare tax rates across countries.",
         "parameters": [],
         "responses": {
           "200": {
@@ -150,6 +150,7 @@
     }
   },
   "components": {
+    "schemas": {},
     "securitySchemes": {
       "ApiKeyAuth": {
         "type": "apiKey",

@@ -23,8 +23,8 @@ interface SellerProfile {
   companyName: string | null;
   plan: string;
   subscriptionStatus: string;
-  stripeCustomerId?: string | null;
-  stripeSubscriptionId?: string | null;
+  billingCustomerId?: string | null;
+  billingSubscriptionId?: string | null;
   currentPeriodEnd?: string | null;
   createdAt: string;
 }
@@ -47,7 +47,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'billing', label: 'Billing', icon: '💳' },
 ];
 
-// Plan display config (mirrors stripe.ts PLAN_CONFIG)
+// Plan display config (mirrors lemonsqueezy.ts PLAN_CONFIG)
 const PLANS = [
   {
     id: 'free' as const,
@@ -269,7 +269,7 @@ export default function DashboardContent() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to create checkout');
 
-      // Redirect to Stripe Checkout
+      // Redirect to LemonSqueezy Checkout
       window.location.href = data.data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Checkout failed');
@@ -295,7 +295,7 @@ export default function DashboardContent() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to open portal');
 
-      // Redirect to Stripe Customer Portal
+      // Redirect to LemonSqueezy Customer Portal
       window.location.href = data.data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Portal failed');
@@ -691,7 +691,7 @@ export default function DashboardContent() {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                 <h2 style={{ fontSize: 22, fontWeight: 700 }}>Billing & Plans</h2>
-                {seller?.stripeCustomerId && (
+                {seller?.billingCustomerId && (
                   <button
                     onClick={handleManageBilling}
                     disabled={billingLoading}

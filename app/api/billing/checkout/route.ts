@@ -1,18 +1,18 @@
 /**
  * POTAL Billing — POST /api/billing/checkout
  *
- * Creates a Stripe Checkout session for plan upgrade.
+ * Creates a LemonSqueezy Checkout session for plan upgrade.
  * Requires Supabase auth token (Bearer).
  *
- * Body: { planId: "growth" | "enterprise" }
+ * Body: { planId: "starter" | "growth" | "enterprise" }
  *
- * Returns: { url: "https://checkout.stripe.com/..." }
+ * Returns: { url: "https://potal.lemonsqueezy.com/checkout/..." }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getStripe, PLAN_CONFIG, type PlanId } from '@/app/lib/billing/stripe';
-import { getOrCreateStripeCustomer } from '@/app/lib/billing/subscription';
+import { createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
+import { initLemonSqueezy, PLAN_CONFIG, getStoreId, type PlanId } from '@/app/lib/billing/lemonsqueezy';
 
 function getServiceClient() {
   return createClient(
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     }
 
     const plan = PLAN_CONFIG[planId];
-    if (!plan.stripePriceId) {
+    if (!plan.variantId) {
       return NextResponse.json(
         { success: false, error: 'This plan does not require payment (free or custom)' },
         { status: 400 }
@@ -75,47 +75,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get or create Stripe customer
-    const customerId = await getOrCreateStripeCustomer(
-      seller.id,
-      seller.contact_email,
-      seller.company_name
-    );
-
-    // Create Checkout session
-    const stripe = getStripe();
+    // Initialize LemonSqueezy
+    initLemonSqueezy();
+    const storeId = getStoreId();
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://potal-x1vl.vercel.app';
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'subscription',
-      line_items: [
-        {
-          price: plan.stripePriceId,
-          quantity: 1,
-        },
-      ],
-      subscription_data: {
-        trial_period_days: 14,
-        metadata: {
+    // Create LemonSqueezy Checkout
+    const { data: checkout, error: checkoutError } = await createCheckout(storeId, plan.variantId, {
+      checkoutData: {
+        email: seller.contact_email,
+        name: seller.company_name || seller.contact_email,
+        custom: {
           potal_seller_id: seller.id,
           potal_plan_id: planId,
         },
       },
-      success_url: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
-      cancel_url: `${baseUrl}/dashboard?checkout=canceled`,
-      metadata: {
-        potal_seller_id: seller.id,
-        potal_plan_id: planId,
+      productOptions: {
+        redirectUrl: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
+        receiptButtonText: 'Go to POTAL Dashboard',
+        receiptLinkUrl: `${baseUrl}/dashboard`,
+      },
+      checkoutOptions: {
+        embed: false,
       },
     });
 
+    if (checkoutError || !checkout) {
+      return NextResponse.json(
+        { success: false, error: `Failed to create checkout: ${checkoutError?.message || 'Unknown error'}` },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
-      data: { url: session.url },
+      data: { url: checkout.data.attributes.url },
     });
   } catch (err) {
-    console.error('Checkout error:', err);
     return NextResponse.json(
       { success: false, error: 'Failed to create checkout session' },
       { status: 500 }

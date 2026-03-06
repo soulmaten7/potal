@@ -1,44 +1,56 @@
 /**
- * POTAL Billing — Stripe Client
+ * POTAL Billing — LemonSqueezy Client
  *
- * Singleton Stripe instance for server-side usage.
- * Requires STRIPE_SECRET_KEY in environment.
+ * Initializes LemonSqueezy SDK for server-side usage.
+ * Requires LEMONSQUEEZY_API_KEY in environment.
+ *
+ * Replaces Stripe (account suspended). LemonSqueezy = MoR (Merchant of Record).
+ * No ITIN/SSN required. 5% + $0.50 per transaction.
  */
 
-import Stripe from 'stripe';
+import {
+  lemonSqueezySetup,
+  type Checkout,
+} from '@lemonsqueezy/lemonsqueezy.js';
 
-let stripeInstance: Stripe | null = null;
+let initialized = false;
 
-export function getStripe(): Stripe {
-  if (!stripeInstance) {
-    const key = process.env.STRIPE_SECRET_KEY;
+export function initLemonSqueezy() {
+  if (!initialized) {
+    const key = process.env.LEMONSQUEEZY_API_KEY;
     if (!key) {
-      throw new Error('STRIPE_SECRET_KEY is not set in environment variables');
+      throw new Error('LEMONSQUEEZY_API_KEY is not set in environment variables');
     }
-    stripeInstance = new Stripe(key, {
-      typescript: true,
-    });
+    lemonSqueezySetup({ apiKey: key });
+    initialized = true;
   }
-  return stripeInstance;
+}
+
+export function getStoreId(): string {
+  const storeId = process.env.LEMONSQUEEZY_STORE_ID;
+  if (!storeId) {
+    throw new Error('LEMONSQUEEZY_STORE_ID is not set in environment variables');
+  }
+  return storeId;
 }
 
 /**
- * POTAL Plans — Stripe Price IDs
+ * POTAL Plans — LemonSqueezy Variant IDs
  *
- * 요금제 구조 (2026-03-05 변경):
+ * 요금제 구조 (2026-03-06):
  * - Free: 500 calls/month (무료, 전환율 최적화를 위해 축소)
  * - Starter: $9/month, 5,000 calls (소규모 셀러/개발자 진입점)
  * - Growth: $29/month, 25,000 calls (성장하는 셀러)
  * - Enterprise: Custom pricing, unlimited (대형 고객)
  *
- * Stripe Price IDs는 환경변수로 관리 (test/live 모드 전환 용이)
+ * LemonSqueezy Variant IDs는 환경변수로 관리 (test/live 모드 전환 용이)
  */
 export const PLAN_CONFIG = {
   free: {
     name: 'Free',
     priceMonthly: 0,
     apiCallsPerMonth: 500,
-    stripePriceId: null, // Free plan
+    variantId: null, // Free plan — no payment
     features: [
       '500 API calls / month',
       'Widget embed (light theme)',
@@ -51,7 +63,7 @@ export const PLAN_CONFIG = {
     name: 'Starter',
     priceMonthly: 9,
     apiCallsPerMonth: 5000,
-    stripePriceId: process.env.STRIPE_PRICE_STARTER || null,
+    variantId: process.env.LEMONSQUEEZY_VARIANT_STARTER || null,
     features: [
       '5,000 API calls / month',
       'Widget embed (all themes)',
@@ -64,7 +76,7 @@ export const PLAN_CONFIG = {
     name: 'Growth',
     priceMonthly: 29,
     apiCallsPerMonth: 25000,
-    stripePriceId: process.env.STRIPE_PRICE_GROWTH || null,
+    variantId: process.env.LEMONSQUEEZY_VARIANT_GROWTH || null,
     features: [
       '25,000 API calls / month',
       'Custom widget branding',
@@ -78,7 +90,7 @@ export const PLAN_CONFIG = {
     name: 'Enterprise',
     priceMonthly: null, // Custom pricing
     apiCallsPerMonth: -1, // Unlimited
-    stripePriceId: process.env.STRIPE_PRICE_ENTERPRISE || null,
+    variantId: process.env.LEMONSQUEEZY_VARIANT_ENTERPRISE || null,
     features: [
       'Unlimited API calls',
       'White-label widget',
@@ -91,3 +103,5 @@ export const PLAN_CONFIG = {
 } as const;
 
 export type PlanId = keyof typeof PLAN_CONFIG;
+
+export type { Checkout };

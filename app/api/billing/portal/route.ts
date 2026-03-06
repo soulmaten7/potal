@@ -1,7 +1,7 @@
 /**
  * POTAL Billing — POST /api/billing/portal
  *
- * Creates a Stripe Customer Portal session.
+ * Returns the LemonSqueezy Customer Portal URL.
  * Allows sellers to manage their subscription:
  *   - View invoices
  *   - Update payment method
@@ -13,8 +13,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getStripe } from '@/app/lib/billing/stripe';
-import { getOrCreateStripeCustomer } from '@/app/lib/billing/subscription';
+import { getSubscription } from '@lemonsqueezy/lemonsqueezy.js';
+import { initLemonSqueezy } from '@/app/lib/billing/lemonsqueezy';
 
 function getServiceClient() {
   return createClient(
@@ -44,9 +44,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get seller
+    // Get seller with billing info
     const { data: seller } = await (supabase.from('sellers') as any)
-      .select('id, user_id, contact_email, company_name, stripe_customer_id')
+      .select('id, billing_customer_id, billing_subscription_id')
       .eq('user_id', user.id)
       .single();
 
@@ -57,27 +57,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get or create Stripe customer
-    const customerId = seller.stripe_customer_id ||
-      await getOrCreateStripeCustomer(seller.id, seller.contact_email, seller.company_name);
+    if (!seller.billing_subscription_id) {
+      return NextResponse.json(
+        { success: false, error: 'No active subscription found. Please upgrade first.' },
+        { status: 400 }
+      );
+    }
 
-    // Create portal session
-    const stripe = getStripe();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://potal-x1vl.vercel.app';
+    // Get subscription to retrieve customer portal URL
+    initLemonSqueezy();
+    const { data: subscription, error: subError } = await getSubscription(
+      seller.billing_subscription_id
+    );
 
-    const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: `${baseUrl}/dashboard`,
-    });
+    if (subError || !subscription) {
+      return NextResponse.json(
+        { success: false, error: 'Failed to retrieve subscription details' },
+        { status: 500 }
+      );
+    }
+
+    // LemonSqueezy provides customer portal URL in subscription attributes
+    const portalUrl = (subscription.data.attributes as any).urls?.customer_portal;
+
+    if (!portalUrl) {
+      return NextResponse.json(
+        { success: false, error: 'Customer portal URL not available' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
-      data: { url: session.url },
+      data: { url: portalUrl },
     });
-  } catch (err) {
-    console.error('Portal error:', err);
+  } catch {
     return NextResponse.json(
-      { success: false, error: 'Failed to create portal session' },
+      { success: false, error: 'Failed to get portal URL' },
       { status: 500 }
     );
   }

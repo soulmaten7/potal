@@ -4,11 +4,20 @@
  * Handles subscription lifecycle:
  *   trialing → active → past_due → canceled
  *
- * Syncs Stripe subscription status to Supabase sellers table.
+ * Syncs LemonSqueezy subscription status to Supabase sellers table.
+ * (Migrated from Stripe — 세션 26, Stripe 계정 정지)
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { getStripe, type PlanId } from './stripe';
+import {
+  initLemonSqueezy,
+  type PlanId,
+} from './lemonsqueezy';
+import {
+  createCustomer,
+  cancelSubscription as lsCancelSubscription,
+  updateSubscription as lsUpdateSubscription,
+} from '@lemonsqueezy/lemonsqueezy.js';
 
 function getServiceClient() {
   return createClient(
@@ -18,21 +27,25 @@ function getServiceClient() {
 }
 
 /**
- * Map Stripe subscription status to POTAL subscription status
+ * Map LemonSqueezy subscription status to POTAL subscription status
+ *
+ * LS statuses: on_trial, active, paused, past_due, unpaid, cancelled, expired
  */
-export function mapStripeStatus(
-  stripeStatus: string
+export function mapLSStatus(
+  lsStatus: string
 ): 'trialing' | 'active' | 'past_due' | 'canceled' | 'inactive' {
-  switch (stripeStatus) {
-    case 'trialing':
+  switch (lsStatus) {
+    case 'on_trial':
       return 'trialing';
     case 'active':
       return 'active';
+    case 'paused':
+      return 'active'; // Treat paused as active (keeps access until period end)
     case 'past_due':
     case 'unpaid':
       return 'past_due';
-    case 'canceled':
-    case 'incomplete_expired':
+    case 'cancelled':
+    case 'expired':
       return 'canceled';
     default:
       return 'inactive';
@@ -40,12 +53,13 @@ export function mapStripeStatus(
 }
 
 /**
- * Map Stripe Price ID to POTAL Plan ID
+ * Map LemonSqueezy Variant ID to POTAL Plan ID
  */
-export function mapPriceToPlan(priceId: string): PlanId {
-  if (priceId === process.env.STRIPE_PRICE_GROWTH) return 'growth';
-  if (priceId === process.env.STRIPE_PRICE_ENTERPRISE) return 'enterprise';
-  return 'starter';
+export function mapVariantToPlan(variantId: string): PlanId {
+  if (variantId === process.env.LEMONSQUEEZY_VARIANT_STARTER) return 'starter';
+  if (variantId === process.env.LEMONSQUEEZY_VARIANT_GROWTH) return 'growth';
+  if (variantId === process.env.LEMONSQUEEZY_VARIANT_ENTERPRISE) return 'enterprise';
+  return 'starter'; // Default fallback
 }
 
 /**
@@ -53,8 +67,8 @@ export function mapPriceToPlan(priceId: string): PlanId {
  */
 export async function updateSellerSubscription(params: {
   sellerId?: string;
-  stripeCustomerId?: string;
-  stripeSubscriptionId?: string;
+  billingCustomerId?: string;
+  billingSubscriptionId?: string;
   planId: PlanId;
   subscriptionStatus: string;
   currentPeriodEnd?: Date;
@@ -67,11 +81,11 @@ export async function updateSellerSubscription(params: {
     updated_at: new Date().toISOString(),
   };
 
-  if (params.stripeCustomerId) {
-    updateData.stripe_customer_id = params.stripeCustomerId;
+  if (params.billingCustomerId) {
+    updateData.billing_customer_id = params.billingCustomerId;
   }
-  if (params.stripeSubscriptionId) {
-    updateData.stripe_subscription_id = params.stripeSubscriptionId;
+  if (params.billingSubscriptionId) {
+    updateData.billing_subscription_id = params.billingSubscriptionId;
   }
   if (params.currentPeriodEnd) {
     updateData.current_period_end = params.currentPeriodEnd.toISOString();
@@ -83,75 +97,86 @@ export async function updateSellerSubscription(params: {
     query = (supabase.from('sellers') as any)
       .update(updateData)
       .eq('id', params.sellerId);
-  } else if (params.stripeCustomerId) {
+  } else if (params.billingCustomerId) {
     query = (supabase.from('sellers') as any)
       .update(updateData)
-      .eq('stripe_customer_id', params.stripeCustomerId);
+      .eq('billing_customer_id', params.billingCustomerId);
   } else {
-    throw new Error('Either sellerId or stripeCustomerId required');
+    throw new Error('Either sellerId or billingCustomerId required');
   }
 
   const { error } = await query;
   if (error) {
-    console.error('Failed to update seller subscription:', error);
-    throw error;
+    throw new Error(`Failed to update seller subscription: ${error.message}`);
   }
 }
 
 /**
- * Create or retrieve Stripe Customer for a seller
+ * Create or retrieve LemonSqueezy Customer for a seller
  */
-export async function getOrCreateStripeCustomer(
+export async function getOrCreateBillingCustomer(
   sellerId: string,
   email: string,
   companyName?: string
 ): Promise<string> {
   const supabase = getServiceClient();
-  const stripe = getStripe();
+  initLemonSqueezy();
 
-  // Check if seller already has a Stripe customer ID
+  // Check if seller already has a billing customer ID
   const { data: seller } = await (supabase.from('sellers') as any)
-    .select('stripe_customer_id')
+    .select('billing_customer_id')
     .eq('id', sellerId)
     .single();
 
-  if (seller?.stripe_customer_id) {
-    return seller.stripe_customer_id;
+  if (seller?.billing_customer_id) {
+    return seller.billing_customer_id;
   }
 
-  // Create new Stripe customer
-  const customer = await stripe.customers.create({
-    email,
+  // Create new LemonSqueezy customer
+  const storeId = process.env.LEMONSQUEEZY_STORE_ID;
+  if (!storeId) {
+    throw new Error('LEMONSQUEEZY_STORE_ID is not set');
+  }
+
+  const { data: customer, error } = await createCustomer(storeId, {
     name: companyName || email,
-    metadata: {
-      potal_seller_id: sellerId,
-    },
+    email,
   });
 
-  // Save Stripe customer ID to Supabase
+  if (error || !customer) {
+    throw new Error(`Failed to create LemonSqueezy customer: ${error?.message || 'Unknown error'}`);
+  }
+
+  const customerId = customer.data.id;
+
+  // Save customer ID to Supabase
   await (supabase.from('sellers') as any)
-    .update({ stripe_customer_id: customer.id })
+    .update({ billing_customer_id: customerId })
     .eq('id', sellerId);
 
-  return customer.id;
+  return customerId;
 }
 
 /**
  * Cancel a subscription (at period end)
  */
-export async function cancelSubscription(stripeSubscriptionId: string) {
-  const stripe = getStripe();
-  return stripe.subscriptions.update(stripeSubscriptionId, {
-    cancel_at_period_end: true,
-  });
+export async function cancelSubscription(subscriptionId: string) {
+  initLemonSqueezy();
+  const { error } = await lsCancelSubscription(subscriptionId);
+  if (error) {
+    throw new Error(`Failed to cancel subscription: ${error.message}`);
+  }
 }
 
 /**
- * Reactivate a subscription that was set to cancel
+ * Resume/reactivate a cancelled subscription (if still within billing period)
  */
-export async function reactivateSubscription(stripeSubscriptionId: string) {
-  const stripe = getStripe();
-  return stripe.subscriptions.update(stripeSubscriptionId, {
-    cancel_at_period_end: false,
+export async function reactivateSubscription(subscriptionId: string) {
+  initLemonSqueezy();
+  const { error } = await lsUpdateSubscription(subscriptionId, {
+    cancelled: false,
   });
+  if (error) {
+    throw new Error(`Failed to reactivate subscription: ${error.message}`);
+  }
 }
