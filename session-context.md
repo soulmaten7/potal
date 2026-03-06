@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 25 완료 — Cost Engine 대규모 업그레이드: 181개국, 97 HS챕터, 63 FTA, 7개 정부 관세 API, India/Brazil 세금 계산, Section 301 업데이트)
+> 마지막 업데이트: 2026-03-06 (세션 26 완료 — Shopify App Bridge 임베디드 확인 + GPT/Gemini/MCP 181개국 업데이트 + Product Hunt 에셋 제작 + Stripe→Paddle 대안 확정)
 
 ---
 
@@ -140,7 +140,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 |---|--------|---------|----------------|-------------|
 | 2-01 | ChatGPT (OpenAI) | ACP / GPT Actions | Custom GPT — GPT Store 등록, 9개 언어 conversation starters | ✅ 완료 |
 | 2-02 | Claude (Anthropic) | MCP | MCP 서버 구축, TypeScript, 2개 Tool, Claude Desktop 연결 확인 | ✅ 완료 |
-| 2-03 | Gemini (Google) | Gems | Gem 생성, 지침 + 40개국 CSV 데이터 업로드 | ✅ 완료 |
+| 2-03 | Gemini (Google) | Gems | Gem 생성, 지침 + 181개국 CSV 데이터 업로드 | ✅ 완료 |
 | 2-04 | Copilot (Microsoft) | Plugin | ⏸ Microsoft 365 Business 계정 필요 (Personal 불가) | ⏸ 대기 |
 | 2-05 | Meta AI | AI Studio | ⏸ 지역 제한 (VPN+거주지 변경 실패). **매 세션 재확인** | ⏸ 대기 |
 | 2-06 | Grok (xAI) | — | ❌ 커스텀 앱 스토어 없음. API만 존재 | ⏸ 대기 |
@@ -218,7 +218,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 |---|--------|---------|------|
 | 2-01 | **OpenAI (ChatGPT)** | Custom GPT — GPT Store 등록 완료. 9개 언어 conversation starters | ✅ 완료 |
 | 2-02 | **Anthropic (Claude)** | MCP 서버 구축 완료 — `mcp-server/`, TypeScript, 2개 Tool, API 호출 테스트 통과, Claude Desktop 연결 확인 | ✅ 완료 |
-| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv 업로드 | ✅ 완료 |
+| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv (181개국) 업로드 | ✅ 완료 |
 | 2-04 | **Microsoft (Copilot)** | ⏸ 파일 준비됨. Microsoft 365 Business 계정 필요 (Personal로는 불가). Developer Program 무료 가입 옵션 있음 | ⏸ 대기 |
 | 2-05 | **Meta AI** | ⏸ `meta-ai/` 파일 준비됨. AI Studio 지역 제한으로 접속 불가 (VPN+거주지 변경도 실패). **⚠️ 매 세션마다 재확인 필요 — 지역 제한 풀리면 즉시 등록** | ⏸ 대기 |
 | 2-06 | **xAI (Grok)** | ❌ 커스텀 앱 스토어 자체 없음. API만 존재. 스토어 출시 시 즉시 진입 | ⏸ 대기 |
@@ -232,19 +232,15 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | 1 | RapidAPI 유료 구독 전부 취소 | Amazon(PRO $25/mo), Walmart, eBay, AliExpress 등 모든 유료 플랜 해지. B2B 전환으로 당장 불필요. 나중에 B2C 데모/쇼룸 필요 시 그때 재구독 |
 | 2 | RapidAPI 환불 (#130604) | 신원 확인 후 환불 진행 중 |
 
-### 🟠 필수 — ITIN 발급 (Stripe Live mode 활성화 필수)
+### 🔴 필수 — 결제 수단 전환 (Stripe 계정 정지 → Paddle/LemonSqueezy)
 
 | # | 항목 | 상세 |
 |---|------|------|
-| 1 | **IRS ITIN 신청** | SSN 없는 외국인용 미국 세금번호. Stripe Live mode 결제 수금에 필수 |
-| 2 | 준비물 | Form W-7 + Form 1040-NR (세금 신고서) + 여권 사본 (공증 필요) |
-| 3 | 여권 공증 | 주한 미국대사관 또는 IRS Acceptance Agent (한국 내 공인기관)에서 공증 |
-| 4 | 제출처 | IRS (우편): Austin, TX 73301-0215 |
-| 5 | 소요기간 | 7~11주 |
-| 6 | 비용 | 무료 (IRS 수수료 없음. 공증비만 발생) |
-| 7 | 신청 자격 | 미국 비거주자로서 미국 소득 발생 시 가능 (Stripe SaaS 판매 = 미국 소득) |
-| 8 | 현재 상태 | ⏳ 미착수. Stripe 가입 완료 (SSN 임시값 입력). Test mode로 개발 진행 중. ITIN 확보 후 Live mode 전환 예정 |
-| 9 | 대안 검토 | ITIN 발급 어려울 경우 **Paddle** (MoR 모델, ITIN 불필요) 또는 **Lemon Squeezy**로 전환 검토. 제주도 거주라 서울 방문 없이 ITIN 대행 세무사 알아보기 (50~100만원) |
+| 1 | **⚠️ Stripe 계정 정지됨** | 세션 26에서 확인. Stripe가 계정을 정지(suspended)함. Live mode 전환 불가 |
+| 2 | **대안: Paddle (1순위)** | MoR(Merchant of Record) 모델 — ITIN 불필요, 세금 신고 Paddle이 대행. SaaS에 최적화 |
+| 3 | **대안: LemonSqueezy (2순위)** | Paddle과 유사한 MoR 모델. ITIN 불필요. 더 간단한 셋업 |
+| 4 | 이전 계획 (ITIN) | ~~IRS ITIN 신청~~ → Stripe 정지로 ITIN 발급 자체가 무의미해짐. Paddle/LS로 전환 |
+| 5 | 현재 상태 | ⏳ Paddle 또는 LemonSqueezy 가입 + 연동 필요. 기존 Stripe Billing 코드를 새 결제 시스템으로 교체 예정 |
 
 ### 🟡 다음 세션 — Shopify 심사 + 사이트 품질 개선
 
@@ -262,7 +258,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 | # | 항목 |
 |---|------|
-| 1 | Product Hunt 런치 |
+| 1 | Product Hunt 런치 — 에셋 완료 (갤러리 4장 + 썸네일), 런치 대기 |
 | 2 | 투자자 피치 원페이저 PDF (숫자 생긴 후) |
 | 3 | 글로벌 확장 (US 시장 장악 후) |
 
@@ -285,7 +281,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — B2C→B2B 전환 거의 완료, Shopify 심사 제출 대기
+### 현재 스프린트 — 181개국 업그레이드 완료, Shopify 임베디드 확인 대기, 결제 전환 필요
 - Phase 0~1 완료 (세션 11~14)
 - Phase 2 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
 - Phase 4 Stripe Billing ✅ 완료 (세션 15~16)
@@ -333,9 +329,20 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee)
   - Batch calculation Promise.allSettled 병렬화
   - 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일)
-  - npm run build ⏳ (검증 예정)
-- **다음**: Shopify 임베디드 확인 → "검토를 위해 제출" 클릭 → 심사 7~14일
-- **블로커**: Stripe Live mode에 ITIN 필요 (개발은 Test mode로 진행 가능)
+  - npm run build ✅ 통과 (세션 26에서 확인)
+- **세션 26**: Shopify App Bridge 임베디드 확인 + GPT/Gemini/MCP 181개국 업데이트 + PH 에셋 제작
+  - Shopify potal-test-store에 POTAL 앱 설치 확인 ✅, App Bridge 4.x CDN + 세션 토큰 인증 코드 push 완료
+  - 임베디드 앱 확인 대기 중 (자동 확인, 최대 2시간) → 통과 후 "검토를 위해 제출" 클릭
+  - Custom GPT OpenAPI schema 181개국 업데이트 + schemas:{} 수정 (ChatGPT 검증 에러 해결)
+  - Gemini Gem CSV 44→181개국 업데이트 (country-duty-reference.csv 재생성 + 수동 재업로드)
+  - MCP 서버 리빌드 (이미 181개국, tsc 재컴파일)
+  - manifest.json, widget.js, openapi-gpt-actions.json 등 잔여 "139" 참조 전부 181로 업데이트
+  - Product Hunt 에셋 5장 제작 (갤러리 4장 1270x760 + 썸네일 240x240)
+  - PRODUCT_HUNT_LAUNCH_PLAN.md 에셋 상태 업데이트 (⏳→✅)
+  - **Stripe 계정 정지 확인** → Paddle/LemonSqueezy 대안 확정 (ITIN 불필요)
+  - Supabase 마이그레이션 정상 확인 (Table Editor + SQL Editor 검증)
+- **다음**: Shopify 임베디드 확인 통과 → "검토를 위해 제출" 클릭 → 심사 7~14일
+- **블로커**: ~~Stripe Live mode에 ITIN 필요~~ → **Stripe 계정 정지됨. Paddle/LemonSqueezy로 전환 필요**
 
 ### 경쟁사 가격/기능 분석 완료 (세션 17)
 - ✅ `POTAL-Target-Analysis.xlsx` 생성 — 4시트 (타겟 세그먼트, 매출 시뮬레이션, 경쟁사 절감, 핵심 인사이트)
@@ -389,6 +396,18 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - Supabase sellers 레코드 생성 (soulmaten7@gmail.com / starter / active)
   - 대시보드 더블 헤더 수정 (Header/Footer에 /dashboard 경로 체크 추가)
   - Supabase migration 004_stripe_billing.sql 실행 (current_period_end, updated_at 컬럼 추가)
+
+- ✅ 세션 26 Shopify App Bridge + 181개국 업데이트 + PH 에셋 (2026-03-06):
+  - Shopify potal-test-store에 POTAL 앱 설치 확인, App Bridge 4.x CDN + 세션 토큰 인증 push 완료
+  - Custom GPT OpenAPI schema: 139→181개국 업데이트 + `"schemas": {}` 추가 (ChatGPT 검증 에러 해결)
+  - Gemini Gem CSV: 44→181개국 country-duty-reference.csv 재생성 + 수동 재업로드 완료
+  - MCP 서버: tsc 재빌드 (build/index.js 재생성)
+  - 잔여 "139 countries" 참조 전부 181로 업데이트: manifest.json, widget.js, openapi-gpt-actions.json (2개)
+  - Product Hunt 에셋 5장 제작: gallery-1-hero, gallery-2-dashboard, gallery-3-integrations, gallery-4-pricing, thumbnail-240x240
+  - PRODUCT_HUNT_LAUNCH_PLAN.md 에셋 상태 ⏳→✅ 업데이트
+  - Stripe 계정 정지 확인 → Paddle/LemonSqueezy 대안 확정
+  - Supabase 마이그레이션 정상 확인 (Table Editor + SQL Editor 스크린샷 검증)
+  - npm run build 통과 ✅
 
 - ✅ 세션 24 API 문서 + PH 런치 + HS Code 확장 (2026-03-06):
   - `/developers/docs` Swagger UI 스타일 재구축 (6개 엔드포인트, 인터랙티브 Try it, cURL/JS/Python 코드 예제)
@@ -535,7 +554,10 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | `app/api/shopify/callback/route.ts` | Shopify OAuth 콜백 |
 | `app/api/shopify/webhooks/route.ts` | Shopify 필수 웹훅 (GDPR) |
 | `extensions/potal-widget/` | Shopify Theme App Extension (3개 블록) |
+| `components/shopify/ShopifyAppBridge.tsx` | Shopify App Bridge 4.x 초기화 (임베디드 앱 내 자동 로드) |
+| `app/api/shopify/session/route.ts` | Shopify 세션 토큰 인증 API |
 | `shopify.app.toml` | Shopify 앱 설정 파일 |
+| `product-hunt-assets/` | PH 런치 에셋 (갤러리 4장 + 썸네일) |
 | `__tests__/api/cost-engine.test.ts` | CostEngine 유닛 테스트 |
 | `app/lib/search/CostEngine.ts` | B2C 호환 래퍼 (cost-engine 모듈 re-export) |
 | `app/lib/search/SearchService.ts` | B2C 검색 파이프라인 |
@@ -573,8 +595,9 @@ plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
 - OPENAI_API_KEY, AI_CLASSIFIER_ENABLED 등 AI 관련 변수도 양쪽에 설정 확인
 
 ### ⚠️ 현재 블로커
-- **ITIN 미발급**: Stripe Live mode 결제 수금 불가. Test mode로 개발 진행 중. (섹션 2 TODO 참조)
+- **~~ITIN 미발급~~** → **Stripe 계정 정지됨** (세션 26 확인). Paddle 또는 LemonSqueezy로 결제 시스템 전환 필요 (섹션 2 TODO 참조)
 - Google OAuth redirect 설정 완료 (2026-03-04)
+- Shopify 임베디드 앱 확인 대기 중 (App Bridge + 세션 토큰)
 
 ---
 
@@ -608,6 +631,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-06 | 26 | **Shopify App Bridge + 181개국 통합 업데이트 + PH 에셋**: Shopify potal-test-store 앱 설치 확인 + App Bridge 4.x CDN/세션 토큰 push. Custom GPT OpenAPI 181개국 + schemas 수정. Gemini CSV 44→181개국 재생성. MCP 리빌드. manifest/widget/openapi 잔여 139→181 업데이트. PH 에셋 5장 제작 (갤러리4+썸네일1). Stripe 정지→Paddle/LS 대안 확정. Supabase 마이그레이션 검증 |
 | 03-06 | 25 | **Cost Engine 대규모 업그레이드**: 4개 신규 관세 API Provider (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) 추가 → 총 7개 정부 API. country-data.ts 137→181개국 확장. HS 챕터 56→97개(전체 커버). FTA 27→63개 협정. India 세금 계산 (BCD+SWS+IGST 캐스케이딩). Section 301 tariffs 2025/2026 업데이트. 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee). Batch calculation Promise.allSettled 병렬화. 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일) |
 | 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |
 | 03-06 | 23 | **B2C 잔여 코드 정리 + layout 최종 완료**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료, data.ts B2C 보존 결정. B2C→B2B 전환 사실상 최종 완료 (잔여: lib/search/ 등 B2C 백엔드만 보존) |

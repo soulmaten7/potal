@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-06 (세션 23 — layout B2C Context 정리 + B2C→B2B 전환 최종 완료)
+# 마지막 업데이트: 2026-03-06 (세션 26 — Shopify App Bridge 임베디드 확인 + GPT/Gemini/MCP 181개국 + PH 에셋 + Stripe→Paddle)
 
 ## 0. 프로젝트 개요
 
@@ -33,8 +33,9 @@
 - **B2C 페이지 redirect 완료**: /search, /search/info, /wishlist, /tax-info → / 리다이렉트됨
 - **layout.tsx B2C Context 제거 완료**: WishlistProvider, UserPreferenceProvider 제거됨 (세션 23). 다시 추가하지 마라
 - **요금제 정확한 숫자**: Free 500 / Starter $9 5K / Growth $29 25K / Enterprise custom
-- **Shopify 심사 대기**: 임베디드 앱 확인 → "검토를 위해 제출" 클릭 → 7~14일 심사
-- **ITIN 블로커**: Stripe Live mode에 ITIN 필요. Test mode로 개발 진행 중
+- **Shopify 심사 대기**: App Bridge 4.x CDN + 세션 토큰 push 완료, 임베디드 확인 대기 → 통과 후 "검토를 위해 제출"
+- **Stripe 계정 정지됨**: ~~ITIN 블로커~~ → Stripe 자체가 suspended. **Paddle 또는 LemonSqueezy로 전환 필요** (MoR 모델, ITIN 불필요)
+- **App Bridge 추가됨 (세션 26)**: layout.tsx에 App Bridge CDN script, components/shopify/ShopifyAppBridge.tsx, app/api/shopify/session/route.ts
 - **Git push는 Mac 터미널에서**: VM에서 push 불가. `npm run build` 확인 후 push 명령 제공
 - **console.log 금지**: 프로덕션 코드에 console.log 남기지 마라. 디버깅 후 반드시 제거
 - **Inline Styles 우선**: Tailwind CSS v4 캐싱 이슈로 시각적 핵심 요소는 `style={{}}` 인라인 스타일 사용
@@ -56,13 +57,13 @@
 ### B2B 핵심 — API & 엔진
 | 파일 | 역할 |
 |------|------|
-| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (139개국) |
-| `app/lib/cost-engine/country-data.ts` | 139개국 VAT/GST/관세/de minimis 데이터 |
+| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (181개국, India/Brazil 특수 세금) |
+| `app/lib/cost-engine/country-data.ts` | 181개국 VAT/GST/관세/de minimis 데이터 |
 | `app/lib/cost-engine/ai-classifier/` | AI HS Code 분류 (GPT-4o-mini + DB캐시 + 키워드) |
-| `app/lib/cost-engine/tariff-api/` | 외부 관세 API (USITC/UK/EU 3개 정부 API) |
+| `app/lib/cost-engine/tariff-api/` | 외부 관세 API (USITC/UK/EU/CA/AU/JP/KR 7개 정부 API) |
 | `app/lib/cost-engine/exchange-rate/` | 실시간 환율 (ExchangeRate-API + Fawaz CDN 이중 폴백) |
-| `app/lib/cost-engine/hs-code/` | HS Code DB (370+ 6자리 코드) |
-| `app/lib/cost-engine/duty-rates/` | 21개국 관세율, 27개 FTA |
+| `app/lib/cost-engine/hs-code/` | HS Code DB (443+ 6자리 코드) |
+| `app/lib/cost-engine/duty-rates/` | 29개국×97 HS챕터 관세율, 63개 FTA |
 | `app/lib/api-auth/` | API 인증 (키 생성/검증/rate-limit/plan-check) |
 
 ### B2B 핵심 — API 라우트
@@ -82,8 +83,10 @@
 | `app/api/shopify/auth/route.ts` | Shopify 앱 설치 (OAuth 시작) |
 | `app/api/shopify/callback/route.ts` | Shopify OAuth 콜백 (managed install flow) |
 | `app/api/shopify/webhooks/route.ts` | Shopify GDPR 필수 웹훅 |
+| `app/api/shopify/session/route.ts` | Shopify 세션 토큰 인증 API |
+| `components/shopify/ShopifyAppBridge.tsx` | Shopify App Bridge 4.x 초기화 |
 | `extensions/potal-widget/` | Theme App Extension (3개 블록) |
-| `public/widget/potal-widget.js` | 임베드 위젯 (v2, Shadow DOM, 60+ countries) |
+| `public/widget/potal-widget.js` | 임베드 위젯 (v2, Shadow DOM, 181 countries) |
 
 ### B2B 핵심 — Billing & Dashboard
 | 파일 | 역할 |
@@ -98,7 +101,7 @@
 | 파일 | 역할 |
 |------|------|
 | `app/page.tsx` | 랜딩 페이지 (B2B — TLC API 소개) |
-| `app/about/page.tsx` | About (139개국, 120ms, 99.9% Uptime) |
+| `app/about/page.tsx` | About (181개국, 120ms, 99.9% Uptime) |
 | `app/terms/page.tsx` | 이용약관 (API/Shopify/정확도) |
 | `app/privacy/page.tsx` | 개인정보처리방침 |
 | `app/help/page.tsx` | FAQ (API/Shopify/요금제) |

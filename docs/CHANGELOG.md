@@ -1,5 +1,83 @@
 # POTAL Development Changelog
 
+## [2026-03-06] 세션 26 — Shopify App Bridge + 181개국 통합 업데이트 + Product Hunt 에셋
+
+### 🔧 Shopify App Bridge 임베디드 확인
+- potal-test-store.myshopify.com에 POTAL 앱 설치 확인
+- App Bridge 4.x CDN script (`layout.tsx`에 추가) + `ShopifyAppBridge.tsx` 컴포넌트 push
+- `app/api/shopify/session/route.ts` 세션 토큰 인증 API push
+- 임베디드 앱 확인 대기 중 (자동 확인, 최대 2시간)
+
+### 🌍 GPT/Gemini/MCP 181개국 업데이트
+- Custom GPT OpenAPI schema: `custom-gpt/openapi-gpt-actions.json` 139→181개국, `"schemas": {}` 추가 (ChatGPT 검증 에러 해결)
+- Root `openapi-gpt-actions.json` 동기화 (139→181)
+- Gemini Gem CSV: `gemini-gem/country-duty-reference.csv` 44→181개국 재생성 (country-data.ts 기반)
+- MCP 서버: `mcp-server/build/index.js` tsc 재빌드
+- `public/manifest.json`: 139→181개국
+- `public/widget/potal-widget.js`: 139→181개국
+
+### 🚀 Product Hunt 에셋 제작
+- `product-hunt-assets/` 디렉토리 생성
+- gallery-1-hero.png (1270x760) — API 데모
+- gallery-2-dashboard.png (1270x760) — 셀러 대시보드
+- gallery-3-integrations.png (1270x760) — 통합 + 경쟁사 비교
+- gallery-4-pricing.png (1270x760) — 요금제 + PH 프로모
+- thumbnail-240x240.png — POTAL 로고
+- `PRODUCT_HUNT_LAUNCH_PLAN.md` 에셋 상태 ⏳→✅
+
+### ⚠️ Stripe 계정 정지
+- Stripe 계정 suspended 확인
+- Paddle / LemonSqueezy (MoR 모델, ITIN 불필요) 대안 확정
+
+### ✅ 기타
+- Supabase 마이그레이션 정상 확인 (Table Editor + SQL Editor)
+- npm run build 통과 ✅
+
+---
+
+## [2026-03-06] 세션 25 — Cost Engine 대규모 업그레이드
+
+### 🌐 4개 신규 관세 API Provider
+- Canada CBSA, Australia ABF, Japan Customs, Korea KCS → 총 7개 정부 API
+- `app/lib/cost-engine/tariff-api/` 하위 4개 파일 추가
+
+### 📊 데이터 확장
+- country-data.ts: 137→181개국 (Oceania, Americas, Africa, Europe, Middle East, Asia 전역)
+- duty-rates.ts: 56→97 HS 챕터 (29개국×97챕터 = 2,813개 관세율)
+- fta.ts: 27→63 FTA 협정
+- HS Code DB: 409→443개 (세션 24에서 확장)
+
+### 🇮🇳 India/Brazil 특수 세금
+- India: BCD + SWS(10%) + IGST(5-28%) 캐스케이딩
+- Section 301 tariffs 2025/2026 업데이트 (List 1-4A + 2024 USTR 확장)
+- 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity 등)
+
+### ⚡ 성능
+- Batch calculation Promise.allSettled 병렬화
+- Frontend/docs/i18n country count 139→181 업데이트 (50+파일)
+
+---
+
+## [2026-03-06] 세션 22~24 — B2C→B2B 전환 완료 + API 문서 + HS Code 확장
+
+### 세션 24 — Swagger UI + PH 런치 + HS Code
+- `/developers/docs` Swagger UI 스타일 재구축 (6개 엔드포인트, Try it, cURL/JS/Python)
+- `PRODUCT_HUNT_LAUNCH_PLAN.md` 생성
+- HS Code DB 409→443개 (+34개 이커머스 핵심)
+- OpenAPI URL 수정 (potal.io→potal.app)
+
+### 세션 23 — layout.tsx B2C Context 정리
+- WishlistProvider/UserPreferenceProvider 제거
+- Footer/sw.js/MobileBottomNav B2B 확인 완료
+
+### 세션 22 — B2C→B2B 사이트 전환
+- 가격 불일치 수정 4파일, 코드 정리 8파일
+- B2C→B2B 페이지 전환 20+파일
+- SEO/manifest/legal 전체 B2B 전환
+- 위젯/API 프로덕션 검증 완료
+
+---
+
 ## [2026-02-25] iOS 앱 빌드 (Capacitor) — 진행 중
 
 ### 📱 Xcode 설치 및 프로젝트 설정
