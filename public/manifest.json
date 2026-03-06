@@ -1,7 +1,7 @@
 {
   "name": "POTAL — Total Landed Cost API",
   "short_name": "POTAL",
-  "description": "Calculate duties, taxes, and shipping for 139 countries. The infrastructure API for cross-border e-commerce.",
+  "description": "Calculate duties, taxes, and shipping for 181 countries. The infrastructure API for cross-border e-commerce.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#02122c",

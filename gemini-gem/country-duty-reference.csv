@@ -1,43 +1,182 @@
 country_code,country_name,language,vat_gst_rate,avg_duty_rate,de_minimis_usd,currency,notes
-US,United States,English,0%,0-37%,800,USD,No federal VAT; state sales tax 0-10.25% varies by state. MPF 0.3464% (min $31.67)
-GB,United Kingdom,English,20%,0-12%,135 GBP (~170),GBP,Brexit changed EU trade terms. Low value consignment relief £135
-DE,Germany,German,19%,0-12%,150 EUR (~160),EUR,EU common external tariff applies. IOSS for <€150
-FR,France,French,20%,0-12%,150 EUR (~160),EUR,EU common external tariff. VAT always applies on imports
-JP,Japan,Japanese,10%,0-30%,16666 JPY (~115),JPY,Consumption tax 10%. Duty-free below ¥16666
-KR,South Korea,Korean,10%,0-13%,150000 KRW (~115),KRW,VAT 10%. FTA with US (KORUS) reduces many duties
-CA,Canada,English/French,5% GST,0-25%,20 CAD (~15),CAD,Very low de minimis. Provincial taxes additional 0-10%
-AU,Australia,English,10% GST,0-10%,1000 AUD (~650),AUD,GST applies to all imports. High de minimis threshold
-IT,Italy,Italian,22%,0-12%,150 EUR (~160),EUR,EU common external tariff. Highest VAT in major EU
-ES,Spain,Spanish,21%,0-12%,150 EUR (~160),EUR,EU common external tariff
-MX,Mexico,Spanish,16%,0-35%,50 USD,MXN,USMCA benefits for US/CA origin. DTA 8% on most goods
-BR,Brazil,Portuguese,varies,0-60%,50 USD,BRL,ICMS ~17-25%. Very high import costs. Simplified tax 60% for most imports
-PT,Portugal,Portuguese,23%,0-12%,150 EUR (~160),EUR,EU common external tariff. High VAT rate
-NL,Netherlands,Dutch,21%,0-12%,150 EUR (~160),EUR,Major EU import hub
-SE,Sweden,Swedish,25%,0-12%,150 EUR (~160),SEK,One of highest VAT rates in EU
-CH,Switzerland,German/French/Italian,8.1%,0-15%,65 CHF (~70),CHF,Not EU member. Low VAT rate
-AT,Austria,German,20%,0-12%,150 EUR (~160),EUR,EU common external tariff
-BE,Belgium,Dutch/French,21%,0-12%,150 EUR (~160),EUR,EU common external tariff
-SG,Singapore,English,9% GST,0-5%,400 SGD (~300),SGD,Very low duties. Major trade hub
-IN,India,English/Hindi,18% GST,0-100%,varies,INR,Complex duty structure. High duties on many consumer goods
-TH,Thailand,Thai,7%,0-80%,1500 THB (~42),THB,High duties on luxury goods
-AE,United Arab Emirates,Arabic,5%,0-5%,300 AED (~82),AED,Low tax environment. Dubai duty-free zone
-SA,Saudi Arabia,Arabic,15%,5-25%,1000 SAR (~267),SAR,VAT increased to 15% in 2020
-NZ,New Zealand,English,15% GST,0-10%,1000 NZD (~600),NZD,Similar to Australia. High de minimis
-PH,Philippines,Filipino/English,12%,0-30%,10000 PHP (~180),PHP,Moderate duty rates
-MY,Malaysia,Malay/English,varies,0-60%,500 MYR (~105),MYR,Sales tax 5-10%. Selective duties
-VN,Vietnam,Vietnamese,10%,0-50%,1000000 VND (~40),VND,Growing ecommerce market
-TW,Taiwan,Chinese,5%,0-30%,2000 TWD (~65),TWD,Low VAT rate. Moderate duties
-HK,Hong Kong,Chinese/English,0%,0%,unlimited,HKD,Free port — no import duties or VAT on most goods
-CL,Chile,Spanish,19%,6%,30 USD,CLP,Flat 6% duty on most goods. FTA with many countries
-CO,Colombia,Spanish,19%,0-35%,200 USD,COP,High VAT rate
-PL,Poland,Polish,23%,0-12%,150 EUR (~160),PLN,EU common external tariff. Growing ecommerce market
-NO,Norway,Norwegian,25%,0-15%,350 NOK (~33),NOK,Not EU. Low de minimis threshold
-DK,Denmark,Danish,25%,0-12%,150 EUR (~160),DKK,EU member but uses DKK
-FI,Finland,Finnish,25.5%,0-12%,150 EUR (~160),EUR,Highest VAT in EU
-IE,Ireland,English,23%,0-12%,150 EUR (~160),EUR,EU common external tariff
-IL,Israel,Hebrew,17%,0-80%,75 USD,ILS,High duties on some categories. Purchase tax additional
-TR,Turkey,Turkish,20%,0-50%,150 EUR (~160),TRY,High duties and additional special consumption tax
-ZA,South Africa,English/Afrikaans,15%,0-45%,500 ZAR (~27),ZAR,Complex tariff schedule
-NG,Nigeria,English,7.5%,5-35%,varies,NGN,Growing market. Port surcharges common
-EG,Egypt,Arabic,14%,0-60%,varies,EGP,High duties on luxury goods
-AR,Argentina,Spanish,21%,0-35%,50 USD,ARS,Very high total import costs. Additional surcharges
+AD,Andorra,Catalan,4.5%,0-10%,0,EUR,
+AE,United Arab Emirates,Arabic/English,5.0%,0-10%,272,AED,De minimis threshold $272.
+AF,Afghanistan,Pashto/Dari,0%,0-20%,0,AFN,
+AL,Albania,Albanian,20.0%,0-20%,0,ALL,
+AM,Armenia,Armenian,20.0%,0-20%,0,AMD,
+AO,Angola,Portuguese,14.0%,0-24%,0,AOA,
+AR,Argentina,Spanish,21.0%,0-36%,50,ARS,Additional perception taxes on imports.
+AT,Austria,German,20.0%,0-8%,160,EUR,De minimis threshold $160.
+AU,Australia,English,10.0%,0-10%,650,AUD,ChAFTA with China. GST on all imports. Duty de minimis AUD 1000.
+AW,Aruba,Papiamento/Dutch,7.0%,0-16%,0,AWG,
+AZ,Azerbaijan,Azerbaijani,18.0%,0-20%,0,AZN,
+BA,Bosnia,Bosnian,17.0%,0-20%,0,BAM,
+BB,Barbados,English,17.5%,0-20%,0,BBD,
+BD,Bangladesh,Bengali,15.0%,0-30%,0,BDT,
+BE,Belgium,Dutch/French,21.0%,0-8%,160,EUR,De minimis threshold $160.
+BF,Burkina Faso,French,18.0%,0-24%,0,XOF,
+BG,Bulgaria,Bulgarian,20.0%,0-9%,0,BGN,
+BH,Bahrain,Arabic,10.0%,0-10%,800,BHD,De minimis threshold $800.
+BJ,Benin,French,18.0%,0-24%,0,XOF,
+BM,Bermuda,English,0%,0-44%,0,BMD,"No income tax, no VAT. Import duty averages 22%."
+BN,Brunei,Malay/English,0%,0-6%,0,BND,
+BO,Bolivia,Spanish/Quechua,13.0%,0-20%,0,BOB,
+BR,Brazil,Portuguese,17.0%,0-40%,50,BRL,Complex tax: II + IPI + ICMS + PIS/COFINS. Remessa Conforme program.
+BS,Bahamas,English,12.0%,0-30%,0,BSD,
+BT,Bhutan,Dzongkha,5.0%,0-20%,0,BTN,
+BW,Botswana,English/Setswana,14.0%,0-20%,0,BWP,
+BY,Belarus,Belarusian,20.0%,0-20%,22,BYN,De minimis threshold $22.
+BZ,Belize,English,12.5%,0-20%,0,BZD,
+CA,Canada,English/French,5.0%,0-16%,15,CAD,GST 5% federal + PST/HST varies by province (0-10%).
+CD,DR Congo,French,16%,0-30%,0,CDF,
+CG,Republic of Congo,French,18.5%,0-30%,0,XAF,
+CH,Switzerland,German/French/Italian,8.1%,0-6%,5,CHF,"De minimis based on duty amount, not goods value."
+CI,Ivory Coast,French,18.0%,0-24%,0,XOF,
+CL,Chile,Spanish,19.0%,0-12%,30,CLP,De minimis threshold $30.
+CM,Cameroon,French/English,19.2%,0-30%,0,XAF,
+CN,China,Mandarin Chinese,13.0%,0-19%,7,CNY,Cross-border e-commerce has separate tax regime (9.1% composite).
+CO,Colombia,Spanish,19.0%,0-20%,200,COP,De minimis threshold $200.
+CR,Costa Rica,Spanish,13.0%,0-20%,0,CRC,
+CU,Cuba,Spanish,20.0%,0-30%,0,CUP,
+CW,Curaçao,Papiamento/Dutch,6.0%,0-16%,0,ANG,
+CY,Cyprus,Greek,19.0%,0-9%,0,EUR,
+CZ,Czech Republic,Czech,21.0%,0-8%,160,CZK,De minimis threshold $160.
+DE,Germany,German,19.0%,0-8%,160,EUR,EU IOSS for goods ≤€150. VAT always applies.
+DJ,Djibouti,French/Arabic,10.0%,0-24%,0,DJF,
+DK,Denmark,Danish,25.0%,0-8%,160,DKK,De minimis threshold $160.
+DO,Dominican Republic,Spanish,18.0%,0-20%,200,DOP,De minimis threshold $200.
+DZ,Algeria,Arabic/French,19.0%,0-30%,0,DZD,
+EC,Ecuador,Spanish,12.0%,0-24%,400,USD,De minimis threshold $400.
+EE,Estonia,Estonian,22.0%,0-9%,0,EUR,
+EG,Egypt,Arabic,14.0%,0-30%,0,EGP,
+ER,Eritrea,Tigrinya,5.0%,0-20%,0,ERN,
+ES,Spain,Spanish,21.0%,0-8%,160,EUR,De minimis threshold $160.
+ET,Ethiopia,Amharic,15.0%,0-30%,0,ETB,
+FI,Finland,Finnish,25.5%,0-8%,160,EUR,De minimis threshold $160.
+FJ,Fiji,English/Fijian,15.0%,0-20%,0,FJD,
+FR,France,French,20.0%,0-8%,160,EUR,De minimis threshold $160.
+GA,Gabon,French,18.0%,0-30%,0,XAF,
+GB,United Kingdom,English,20.0%,0-8%,170,GBP,VAT collected at point of sale for goods ≤£135.
+GE,Georgia,Georgian,18.0%,0-10%,100,GEL,De minimis threshold $100.
+GH,Ghana,English,15.0%,0-24%,0,GHS,
+GN,Guinea,French,18.0%,0-24%,0,GNF,
+GR,Greece,Greek,24.0%,0-8%,160,EUR,De minimis threshold $160.
+GT,Guatemala,Spanish,12.0%,0-20%,0,GTQ,
+GY,Guyana,English,14.0%,0-20%,0,GYD,
+HK,Hong Kong,Cantonese/English,0%,0%,0,HKD,"Free port. No customs duty, no VAT/GST."
+HN,Honduras,Spanish,15.0%,0-20%,0,HNL,
+HR,Croatia,Croatian,25.0%,0-9%,0,EUR,
+HT,Haiti,French/Haitian Creole,10.0%,0-20%,0,HTG,
+HU,Hungary,Hungarian,27.0%,0-8%,160,HUF,De minimis threshold $160.
+ID,Indonesia,Indonesian,11.0%,0-20%,3,IDR,Very low de minimis (USD 3). VAT on all imports.
+IE,Ireland,English,23.0%,0-8%,160,EUR,De minimis threshold $160.
+IL,Israel,Hebrew,17.0%,0-16%,75,ILS,De minimis threshold $75.
+IN,India,Hindi/English,18.0%,0-40%,0,INR,No de minimis. IGST on all imports. BCD varies widely.
+IQ,Iraq,Arabic,15.0%,0-20%,0,IQD,
+IR,Iran,Persian,9.0%,0-30%,0,IRR,
+IS,Iceland,Icelandic,24.0%,0-6%,0,ISK,
+IT,Italy,Italian,22.0%,0-8%,160,EUR,De minimis threshold $160.
+JM,Jamaica,English,15.0%,0-24%,0,JMD,
+JO,Jordan,Arabic,16%,0-20%,0,JOD,
+JP,Japan,Japanese,10.0%,0-10%,67,JPY,"RCEP member. De minimis ¥10,000 for customs duty."
+KE,Kenya,English/Swahili,16%,0-24%,0,KES,
+KG,Kyrgyzstan,Kyrgyz,12.0%,0-20%,200,KGS,De minimis threshold $200.
+KH,Cambodia,Khmer,10.0%,0-20%,0,KHR,
+KR,South Korea,Korean,10.0%,0-16%,150,KRW,FTA with China. De minimis $150 USD.
+KW,Kuwait,Arabic,0%,0-10%,0,KWD,
+KY,Cayman Islands,English,0%,0-44%,0,KYD,"No income tax, no VAT. Import duty is main revenue source."
+KZ,Kazakhstan,Kazakh/Russian,12.0%,0-20%,200,KZT,De minimis threshold $200.
+LA,Laos,Lao,10.0%,0-14%,0,LAK,
+LB,Lebanon,Arabic,11.0%,0-10%,0,LBP,
+LI,Liechtenstein,German,8.1%,0-6%,5,CHF,Swiss customs union. Same tariff as Switzerland.
+LK,Sri Lanka,Sinhala/Tamil,15.0%,0-24%,0,LKR,
+LR,Liberia,English,10.0%,0-20%,0,LRD,
+LS,Lesotho,English/Sotho,15.0%,0-20%,0,LSL,
+LT,Lithuania,Lithuanian,21.0%,0-9%,0,EUR,
+LU,Luxembourg,Luxembourgish/French/German,17.0%,0-9%,0,EUR,
+LV,Latvia,Latvian,21.0%,0-9%,0,EUR,
+LY,Libya,Arabic,0%,0-20%,0,LYD,
+MA,Morocco,Arabic/French,20.0%,0-30%,0,MAD,
+MC,Monaco,French,20.0%,0-8%,160,EUR,French customs territory. Same tariff as France/EU.
+MD,Moldova,Romanian,20.0%,0-20%,0,MDL,
+ME,Montenegro,Montenegrin,21.0%,0-20%,0,EUR,
+MG,Madagascar,Malagasy/French,20.0%,0-24%,0,MGA,
+MK,North Macedonia,Macedonian,18.0%,0-20%,0,MKD,
+ML,Mali,French,18.0%,0-24%,0,XOF,
+MM,Myanmar,Burmese,5.0%,0-10%,0,MMK,
+MN,Mongolia,Mongolian,10.0%,0-10%,0,MNT,
+MO,Macau,Cantonese/Mandarin,0%,0%,0,MOP,"Free port. No customs duty, no VAT/GST (like Hong Kong)."
+MR,Mauritania,Arabic/French,16%,0-24%,0,MRU,
+MT,Malta,Maltese/English,18.0%,0-9%,0,EUR,
+MU,Mauritius,English/French,15.0%,0-20%,0,MUR,
+MV,Maldives,Dhivehi,8%,0-20%,0,MVR,
+MW,Malawi,English,16.5%,0-24%,0,MWK,
+MX,Mexico,Spanish,16%,0-30%,50,MXN,De minimis threshold $50.
+MY,Malaysia,Malay/English,8%,0-16%,110,MYR,De minimis threshold $110.
+MZ,Mozambique,Portuguese,17.0%,0-24%,0,MZN,
+NA,Namibia,English,15.0%,0-20%,0,NAD,
+NE,Niger,French,19.0%,0-24%,0,XOF,
+NG,Nigeria,English,7.5%,0-30%,0,NGN,
+NI,Nicaragua,Spanish,15.0%,0-20%,0,NIO,
+NL,Netherlands,Dutch,21.0%,0-8%,160,EUR,De minimis threshold $160.
+NO,Norway,Norwegian,25.0%,0-10%,33,NOK,VOEC scheme: VAT at point of sale for ≤NOK 3000.
+NP,Nepal,Nepali,13.0%,0-20%,0,NPR,
+NZ,New Zealand,English,15.0%,0-10%,600,NZD,FTA with China. GST collected at border.
+OM,Oman,Arabic,5.0%,0-10%,390,OMR,De minimis threshold $390.
+PA,Panama,Spanish/English,7.0%,0-20%,0,PAB,
+PE,Peru,Spanish,18.0%,0-12%,200,PEN,De minimis threshold $200.
+PG,Papua New Guinea,English,10.0%,0-20%,0,PGK,
+PH,Philippines,Filipino/English,12.0%,0-20%,175,PHP,De minimis threshold $175.
+PK,Pakistan,Urdu/English,17.0%,0-30%,0,PKR,
+PL,Poland,Polish,23.0%,0-8%,160,PLN,De minimis threshold $160.
+PR,Puerto Rico,Spanish/English,11.5%,0-10%,800,USD,De minimis threshold $800.
+PS,Palestine,Arabic,16%,0-20%,0,ILS,
+PT,Portugal,Portuguese,23.0%,0-8%,160,EUR,De minimis threshold $160.
+PY,Paraguay,Spanish/Guarani,10.0%,0-20%,0,PYG,
+QA,Qatar,Arabic,0%,0-10%,0,QAR,No VAT. Customs duty 5% on most goods.
+RO,Romania,Romanian,19.0%,0-8%,160,RON,De minimis threshold $160.
+RS,Serbia,Serbian,20.0%,0-20%,50,RSD,De minimis threshold $50.
+RW,Rwanda,Kinyarwanda/English,18.0%,0-24%,0,RWF,
+SA,Saudi Arabia,Arabic,15.0%,0-10%,267,SAR,De minimis threshold $267.
+SC,Seychelles,Seychellois Creole/English,15.0%,0-20%,0,SCR,
+SD,Sudan,Arabic,17.0%,0-30%,0,SDG,
+SE,Sweden,Swedish,25.0%,0-8%,160,SEK,De minimis threshold $160.
+SG,Singapore,English/Mandarin,9.0%,0%,300,SGD,Zero customs duty on most goods. GST on imports >$400 SGD.
+SI,Slovenia,Slovenian,22.0%,0-9%,0,EUR,
+SK,Slovakia,Slovak,20.0%,0-9%,0,EUR,
+SL,Sierra Leone,English,15.0%,0-24%,0,SLE,
+SM,San Marino,Italian,17.0%,0-8%,0,EUR,EU customs union agreement.
+SN,Senegal,French,18.0%,0-24%,0,XOF,
+SO,Somalia,Somali/Arabic,5.0%,0-20%,0,SOS,
+SR,Suriname,Dutch,10.0%,0-20%,0,SRD,
+SS,South Sudan,English,18.0%,0-20%,0,SSP,
+SV,El Salvador,Spanish,13.0%,0-20%,0,USD,
+SY,Syria,Arabic,0%,0-30%,0,SYP,
+SZ,Eswatini,English/Swati,15.0%,0-20%,0,SZL,
+TD,Chad,French/Arabic,18.0%,0-30%,0,XAF,
+TG,Togo,French,18.0%,0-24%,0,XOF,
+TH,Thailand,Thai,7.0%,0-20%,43,THB,De minimis threshold $43.
+TJ,Tajikistan,Tajik,15.0%,0-20%,0,TJS,
+TL,Timor-Leste,Tetum/Portuguese,2.5%,0-10%,0,USD,
+TM,Turkmenistan,Turkmen,15.0%,0-20%,0,TMT,
+TN,Tunisia,Arabic/French,19.0%,0-30%,0,TND,
+TO,Tonga,Tongan/English,15.0%,0-20%,0,TOP,
+TR,Turkey,Turkish,20.0%,0-24%,160,TRY,De minimis threshold $160.
+TT,Trinidad,English,12.5%,0-20%,0,TTD,
+TW,Taiwan,Mandarin Chinese,5.0%,0-13%,63,TWD,De minimis threshold $63.
+TZ,Tanzania,Swahili/English,18.0%,0-24%,0,TZS,
+UA,Ukraine,Ukrainian,20.0%,0-20%,100,UAH,De minimis threshold $100.
+UG,Uganda,English/Swahili,18.0%,0-24%,0,UGX,
+US,United States,English,0% (Sales Tax varies by state),0-10%,0,USD,State sales tax varies 0-10.25%. China de minimis eliminated Aug 2025.
+UY,Uruguay,Spanish,22.0%,0-24%,200,UYU,De minimis threshold $200.
+UZ,Uzbekistan,Uzbek,12.0%,0-20%,0,UZS,
+VE,Venezuela,Spanish,16%,0-30%,0,VES,
+VG,British Virgin Islands,English,0%,0-20%,0,USD,
+VN,Vietnam,Vietnamese,10.0%,0-20%,40,VND,De minimis threshold $40.
+VU,Vanuatu,Bislama/English,15.0%,0-16%,0,VUV,
+WS,Samoa,Samoan/English,15.0%,0-20%,0,WST,
+XK,Kosovo,Albanian,18.0%,0-20%,0,EUR,
+YE,Yemen,Arabic,5.0%,0-20%,0,YER,
+ZA,South Africa,English/Afrikaans,15.0%,0-20%,27,ZAR,De minimis threshold $27.
+ZM,Zambia,English,16%,0-24%,0,ZMW,
+ZW,Zimbabwe,English,15.0%,0-30%,0,ZWL,

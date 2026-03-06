@@ -1,6 +1,6 @@
 # POTAL — Product Hunt Launch Plan
 
-> 작성일: 2026-03-06 | 상태: 준비 중
+> 작성일: 2026-03-06 | 상태: 에셋 완료, 런치 대기
 
 ---
 
@@ -28,11 +28,11 @@
 
 | 에셋 | 사이즈 | 상태 |
 |------|--------|------|
-| Thumbnail (로고) | 240 x 240px, JPG/PNG/GIF, max 3MB | ⏳ 제작 필요 |
-| Gallery Image 1: API Demo | 1270 x 760px | ⏳ 제작 필요 |
-| Gallery Image 2: Dashboard | 1270 x 760px | ⏳ 제작 필요 |
-| Gallery Image 3: Shopify Integration | 1270 x 760px | ⏳ 제작 필요 |
-| Gallery Image 4: Pricing | 1270 x 760px | ⏳ 제작 필요 |
+| Thumbnail (로고) | 240 x 240px, JPG/PNG/GIF, max 3MB | ✅ `product-hunt-assets/thumbnail-240x240.png` |
+| Gallery Image 1: API Demo | 1270 x 760px | ✅ `product-hunt-assets/gallery-1-hero.png` |
+| Gallery Image 2: Dashboard | 1270 x 760px | ✅ `product-hunt-assets/gallery-2-dashboard.png` |
+| Gallery Image 3: Integrations | 1270 x 760px | ✅ `product-hunt-assets/gallery-3-integrations.png` |
+| Gallery Image 4: Pricing | 1270 x 760px | ✅ `product-hunt-assets/gallery-4-pricing.png` |
 
 > 최소 2장 필요. 4장 권장.
 

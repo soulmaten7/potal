@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "POTAL - Total Landed Cost Calculator",
-    "description": "Calculate the true total cost of cross-border purchases including import duties, taxes, and shipping fees for 139 countries. Helps shoppers understand exactly how much they'll pay when buying products from another country.",
+    "description": "Calculate the true total cost of cross-border purchases including import duties, taxes, and shipping fees for 181 countries. Helps shoppers understand exactly how much they'll pay when buying products from another country.",
     "version": "1.0.0"
   },
   "servers": [
