@@ -12,6 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
+import { ShopifyAppBridge } from "@/components/shopify/ShopifyAppBridge";
 import { SupabaseProvider } from "./context/SupabaseProvider";
 import { I18nProvider } from "./context/I18nProvider";
 
@@ -98,6 +99,8 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         {/* viewport: iOS 네이티브(TabletViewController)에서 태블릿 1440px 강제 처리 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Shopify App Bridge — loaded from Shopify CDN for embedded app verification */}
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" defer></script>
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
         {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
@@ -138,6 +141,7 @@ export default function RootLayout({
           }}
         />
         
+        <ShopifyAppBridge />
         <SupabaseProvider>
           <I18nProvider>
 

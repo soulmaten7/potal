@@ -38,6 +38,16 @@ body {
   border: 1px solid #e2e8f0;
 }
 
+/* Shopify embedded mode — hide header/footer when loaded inside Shopify admin */
+body.shopify-embedded header,
+body.shopify-embedded footer,
+body.shopify-embedded nav[aria-label="mobile-bottom-nav"] {
+  display: none !important;
+}
+body.shopify-embedded main {
+  padding-top: 0 !important;
+}
+
 /* Hide scrollbar while keeping scroll (모바일 필터 바 등) */
 .scrollbar-hide {
   -webkit-overflow-scrolling: touch;
