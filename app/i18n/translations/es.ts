@@ -10,7 +10,7 @@ export const es = {
   'nav.language': 'Idioma',
 
   // Hero Section
-  'hero.title': 'Stripe para el comercio transfronterizo',
+  'hero.title': 'La infraestructura para el comercio transfronterizo',
   'hero.subtitle': 'Muestra a los compradores el costo total al destino al instante',
   'hero.description': 'Calcula aranceles, impuestos y envío para 181 países en tiempo real. Integra nuestro widget o API para reducir la fricción en el pago y aumentar las ventas internacionales.',
   'hero.cta': 'Comenzar gratis',
@@ -73,7 +73,7 @@ export const es = {
   'pricing.faq.q3': '¿Ofrecen prueba gratuita?',
   'pricing.faq.a3': 'Sí, el plan Starter es completamente gratis con hasta 100 cálculos por mes.',
   'pricing.faq.q4': '¿Qué métodos de pago aceptan?',
-  'pricing.faq.a4': 'Aceptamos todas las tarjetas de crédito principales, transferencias bancarias y pagos digitales a través de Stripe.',
+  'pricing.faq.a4': 'Aceptamos todas las tarjetas de crédito principales, transferencias bancarias y pagos digitales a través de nuestro socio de pagos seguro.',
 
   // Auth Page
   'auth.signIn.title': 'Iniciar sesión en POTAL',

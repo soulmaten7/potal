@@ -10,7 +10,7 @@ export const en = {
   'nav.language': 'Language',
 
   // Hero Section
-  'hero.title': 'Stripe for Cross-Border Commerce',
+  'hero.title': 'The Infrastructure for Cross-Border Commerce',
   'hero.subtitle': 'Show buyers the total landed cost instantly',
   'hero.description': 'Calculate duties, taxes, and shipping for 181 countries in real-time. Embed our widget or API to reduce checkout friction and increase international sales.',
   'hero.cta': 'Get Started Free',
@@ -73,7 +73,7 @@ export const en = {
   'pricing.faq.q3': 'Do you offer a free trial?',
   'pricing.faq.a3': 'Yes, the Starter plan is completely free with up to 100 calculations per month.',
   'pricing.faq.q4': 'What payment methods do you accept?',
-  'pricing.faq.a4': 'We accept all major credit cards, wire transfers, and digital payment methods through Stripe.',
+  'pricing.faq.a4': 'We accept all major credit cards, wire transfers, and digital payment methods through our secure payment partner.',
 
   // Auth Page
   'auth.signIn.title': 'Sign In to POTAL',
@@ -111,7 +111,7 @@ export const en = {
   'dashboard.activeIntegrations': 'Active Integrations',
 
   // Footer
-  'footer.tagline': 'Stripe for cross-border commerce',
+  'footer.tagline': 'The infrastructure for cross-border commerce',
   'footer.product': 'Product',
   'footer.resources': 'Resources',
   'footer.legal': 'Legal',

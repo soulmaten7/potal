@@ -10,7 +10,7 @@ export const zh = {
   'nav.language': '语言',
 
   // Hero Section
-  'hero.title': '跨境电商的 Stripe',
+  'hero.title': '跨境电商基础设施',
   'hero.subtitle': '即时向买家展示总到岸成本',
   'hero.description': '实时计算181个国家的关税、税费和运费。嵌入我们的组件或API，减少结账摩擦，提升国际销售额。',
   'hero.cta': '免费开始',

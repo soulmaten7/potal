@@ -10,7 +10,7 @@ export const de = {
   'nav.language': 'Sprache',
 
   // Hero Section
-  'hero.title': 'Stripe für grenzüberschreitenden Handel',
+  'hero.title': 'Die Infrastruktur für grenzüberschreitenden Handel',
   'hero.subtitle': 'Zeigen Sie Käufern sofort die Gesamtkosten',
   'hero.description': 'Berechnen Sie Zölle, Steuern und Versandkosten für 181 Länder in Echtzeit. Integrieren Sie unser Widget oder API, um die Reibung beim Checkout zu reduzieren und den internationalen Umsatz zu steigern.',
   'hero.cta': 'Kostenlos starten',
@@ -73,7 +73,7 @@ export const de = {
   'pricing.faq.q3': 'Gibt es eine kostenlose Testversion?',
   'pricing.faq.a3': 'Ja, der Starter-Plan ist mit bis zu 100 Berechnungen pro Monat völlig kostenlos.',
   'pricing.faq.q4': 'Welche Zahlungsmethoden akzeptieren Sie?',
-  'pricing.faq.a4': 'Wir akzeptieren alle gängigen Kreditkarten, Banküberweisungen und digitale Zahlungsmethoden über Stripe.',
+  'pricing.faq.a4': 'Wir akzeptieren alle gängigen Kreditkarten, Banküberweisungen und digitale Zahlungsmethoden über unseren sicheren Zahlungspartner.',
 
   // Auth Page
   'auth.signIn.title': 'Bei POTAL anmelden',

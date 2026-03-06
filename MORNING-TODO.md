@@ -34,13 +34,15 @@ git push origin main
 
 ---
 
-## 4. ITIN 신청 (Stripe Live mode 필수)
+## 4. ~~ITIN 신청~~ → LemonSqueezy 전환 완료 (세션 26)
 
-- [ ] IRS Acceptance Agent 또는 제주도 세무사 알아보기
-- [ ] 여권 공증 준비
-- [ ] Form W-7 + Form 1040-NR 작성
-- [ ] 제출: IRS Austin, TX 73301-0215 (우편) 또는 대행 세무사
-- 소요: 7~11주
+- [x] ~~Stripe 계정 정지~~ → LemonSqueezy (MoR) 전환 완료
+- [x] LemonSqueezy Store 생성: potalapp.lemonsqueezy.com (#308025)
+- [ ] LemonSqueezy 신원 확인 승인 대기 (2~3 영업일)
+- [ ] 승인 후: Products 3개 생성 (Starter $9, Growth $29, Enterprise)
+- [ ] Variant ID → Vercel 환경변수 설정
+- [ ] Webhook 엔드포인트 등록 + API Key 생성
+- ITIN 불필요 (LemonSqueezy = Merchant of Record)
 
 ---
 

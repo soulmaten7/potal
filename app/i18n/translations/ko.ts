@@ -10,7 +10,7 @@ export const ko = {
   'nav.language': '언어',
 
   // Hero Section
-  'hero.title': '국제 전자상거래를 위한 Stripe',
+  'hero.title': '국제 전자상거래를 위한 인프라',
   'hero.subtitle': '구매자에게 총 착륙 비용을 즉시 표시하세요',
   'hero.description': '181개국에 대한 관세, 세금, 배송료를 실시간으로 계산하세요. 당사의 위젯이나 API를 임베드하여 결제 마찰을 줄이고 국제 판매를 증대하세요.',
   'hero.cta': '무료로 시작하기',
@@ -111,7 +111,7 @@ export const ko = {
   'dashboard.activeIntegrations': '활성 통합',
 
   // Footer
-  'footer.tagline': '국제 전자상거래를 위한 Stripe',
+  'footer.tagline': '국제 전자상거래를 위한 인프라',
   'footer.product': '제품',
   'footer.resources': '리소스',
   'footer.legal': '법률',

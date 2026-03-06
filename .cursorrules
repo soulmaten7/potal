@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-06 (세션 26 — Shopify App Bridge 임베디드 확인 + GPT/Gemini/MCP 181개국 + PH 에셋 + Stripe→Paddle)
+# 마지막 업데이트: 2026-03-06 (세션 26 — Shopify App Bridge + 181개국 + PH 에셋 + Stripe→LemonSqueezy 결제 전환)
 
 ## 0. 프로젝트 개요
 
@@ -11,11 +11,11 @@
 ### 핵심 서비스
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/500 | Starter $9/5K | Growth $29/25K | Enterprise
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
-- **One-line Pitch**: "POTAL is to cross-border commerce what Stripe is to payments"
+- **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 
 ### 기술 스택
 - Next.js 14+ App Router + TypeScript
-- Supabase (Auth + DB), Vercel (배포), Stripe (결제)
+- Supabase (Auth + DB), Vercel (배포), LemonSqueezy (결제, MoR 모델)
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션 URL: https://www.potal.app
 - 프로젝트 경로 (Mac): ~/portal/
@@ -34,7 +34,7 @@
 - **layout.tsx B2C Context 제거 완료**: WishlistProvider, UserPreferenceProvider 제거됨 (세션 23). 다시 추가하지 마라
 - **요금제 정확한 숫자**: Free 500 / Starter $9 5K / Growth $29 25K / Enterprise custom
 - **Shopify 심사 대기**: App Bridge 4.x CDN + 세션 토큰 push 완료, 임베디드 확인 대기 → 통과 후 "검토를 위해 제출"
-- **Stripe 계정 정지됨**: ~~ITIN 블로커~~ → Stripe 자체가 suspended. **Paddle 또는 LemonSqueezy로 전환 필요** (MoR 모델, ITIN 불필요)
+- **✅ Stripe→LemonSqueezy 전환 완료 (세션 26)**: Stripe 계정 정지 → LemonSqueezy (MoR) 전환 완료. 코드 8개 파일 수정, DB 마이그레이션 완료. LS 신원 확인 승인 대기 중
 - **App Bridge 추가됨 (세션 26)**: layout.tsx에 App Bridge CDN script, components/shopify/ShopifyAppBridge.tsx, app/api/shopify/session/route.ts
 - **Git push는 Mac 터미널에서**: VM에서 push 불가. `npm run build` 확인 후 push 명령 제공
 - **console.log 금지**: 프로덕션 코드에 console.log 남기지 마라. 디버깅 후 반드시 제거
@@ -91,10 +91,11 @@
 ### B2B 핵심 — Billing & Dashboard
 | 파일 | 역할 |
 |------|------|
-| `app/api/billing/checkout/route.ts` | Stripe Checkout 세션 생성 |
-| `app/api/billing/webhook/route.ts` | Stripe Webhook (6개 이벤트) |
-| `app/api/billing/portal/route.ts` | Stripe Customer Portal |
-| `app/lib/billing/stripe.ts` | Stripe 싱글톤 + PLAN_CONFIG |
+| `app/api/billing/checkout/route.ts` | LemonSqueezy Checkout (createCheckout, 14일 trial) |
+| `app/api/billing/webhook/route.ts` | LemonSqueezy Webhook (HMAC SHA-256, 6개 이벤트) |
+| `app/api/billing/portal/route.ts` | LemonSqueezy Customer Portal URL |
+| `app/lib/billing/lemonsqueezy.ts` | LemonSqueezy SDK 초기화 + PLAN_CONFIG (variantId) |
+| `app/lib/billing/subscription.ts` | 구독 상태 매핑 + DB 업데이트 (billing_* 컬럼) |
 | `app/dashboard/DashboardContent.tsx` | 대시보드 (Overview/API Keys/Widget/Usage/Billing) |
 
 ### B2B 핵심 — 프론트엔드 (B2B 전환 완료)
@@ -128,10 +129,10 @@
 | 테스트 스토어 | potal-test-store.myshopify.com |
 | Supabase URL | https://zyurflkhiregundhisky.supabase.co |
 | API 엔드포인트 | https://www.potal.app/api/v1/calculate |
-| Stripe | Test mode (.env.local 참조) |
+| LemonSqueezy | potalapp.lemonsqueezy.com (Store #308025, 신원 확인 대기) |
 
 ## 6. Supabase 테이블
-- **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
+- **B2B (활성)**: plans, sellers (billing_customer_id, billing_subscription_id, billing_provider), api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

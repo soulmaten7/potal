@@ -16,7 +16,7 @@ const PLATFORMS = [
 const TECH_PARTNERS = [
   { name: "Supabase", role: "Database & Auth" },
   { name: "Vercel", role: "Hosting & Edge" },
-  { name: "Stripe", role: "Billing" },
+  { name: "LemonSqueezy", role: "Billing (MoR)" },
   { name: "OpenAI", role: "HS Code AI" },
 ];
 

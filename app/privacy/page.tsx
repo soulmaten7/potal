@@ -47,7 +47,7 @@ export default function PrivacyPage() {
                 <strong>Shopify Store Data:</strong> When you install our Shopify app, we receive your store domain, access tokens, and basic store information through Shopify&apos;s OAuth process. We store this securely to provide our service to your store.
               </li>
               <li>
-                <strong>Billing Information:</strong> Payment processing is handled by Stripe. We do not store credit card numbers or full payment details on our servers. Stripe may collect billing address and payment method information.
+                <strong>Billing Information:</strong> Payment processing is handled by LemonSqueezy. We do not store credit card numbers or full payment details on our servers. LemonSqueezy may collect billing address and payment method information.
               </li>
               <li>
                 <strong>Device and Usage Data:</strong> We automatically collect information about your device (type, OS, browser), IP address, pages visited, and usage analytics to improve our platform.
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
               <li>To provide, maintain, and improve the Service including Total Landed Cost calculations</li>
               <li>To process API requests and deliver accurate duty, tax, and fee calculations</li>
               <li>To manage your merchant account and API keys</li>
-              <li>To process billing and subscription management through Stripe</li>
+              <li>To process billing and subscription management through LemonSqueezy</li>
               <li>To monitor API usage and enforce rate limits per your subscription plan</li>
               <li>To improve HS code classification accuracy through aggregated, anonymized usage patterns</li>
               <li>To detect, prevent, and address fraudulent activity and security issues</li>
@@ -111,7 +111,7 @@ export default function PrivacyPage() {
                 <strong>Vercel:</strong> Application hosting and deployment with edge network delivery.
               </li>
               <li>
-                <strong>Stripe:</strong> Payment processing and subscription management. PCI DSS Level 1 compliant.
+                <strong>LemonSqueezy:</strong> Payment processing and subscription management (Merchant of Record). PCI DSS compliant.
               </li>
               <li>
                 <strong>Shopify:</strong> E-commerce platform integration via OAuth and API.
@@ -151,7 +151,7 @@ export default function PrivacyPage() {
               <strong>We do not sell your personal data to third parties.</strong> We may share information with:
             </p>
             <ul style={{ listStyleType: "disc", paddingLeft: "24px", marginBottom: "12px" }} className="space-y-2">
-              <li><strong>Service Providers:</strong> Supabase, Vercel, Stripe, and OpenAI who process data on our behalf under strict confidentiality obligations</li>
+              <li><strong>Service Providers:</strong> Supabase, Vercel, LemonSqueezy, and OpenAI who process data on our behalf under strict confidentiality obligations</li>
               <li><strong>Legal Compliance:</strong> Government authorities when required by law or to protect our rights and safety</li>
               <li><strong>Business Transitions:</strong> In the event of merger, acquisition, or sale of assets, your data may be transferred as part of that transaction</li>
             </ul>

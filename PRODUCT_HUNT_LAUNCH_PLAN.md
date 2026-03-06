@@ -8,7 +8,7 @@
 
 ### Tagline (60자 이내, 택1)
 
-1. **"The Stripe of cross-border landed costs"** (40자) — 가장 직관적
+1. **"The infrastructure for cross-border landed costs"** (48자) — 가장 직관적
 2. **"Know your true import costs instantly"** (37자) — 결과 중심
 3. **"Instant duty & tax API for global sellers"** (43자) — 타겟+기능
 

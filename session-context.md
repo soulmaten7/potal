@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 26 완료 — Shopify App Bridge 임베디드 확인 + GPT/Gemini/MCP 181개국 업데이트 + Product Hunt 에셋 제작 + Stripe→Paddle 대안 확정)
+> 마지막 업데이트: 2026-03-06 (세션 26 완료 — Shopify App Bridge + 181개국 업데이트 + PH 에셋 + Stripe→LemonSqueezy 전환 완료 + LS 스토어 생성)
 
 ---
 
@@ -232,15 +232,15 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | 1 | RapidAPI 유료 구독 전부 취소 | Amazon(PRO $25/mo), Walmart, eBay, AliExpress 등 모든 유료 플랜 해지. B2B 전환으로 당장 불필요. 나중에 B2C 데모/쇼룸 필요 시 그때 재구독 |
 | 2 | RapidAPI 환불 (#130604) | 신원 확인 후 환불 진행 중 |
 
-### 🔴 필수 — 결제 수단 전환 (Stripe 계정 정지 → Paddle/LemonSqueezy)
+### ✅ 완료 — 결제 수단 전환 (Stripe → LemonSqueezy)
 
 | # | 항목 | 상세 |
 |---|------|------|
-| 1 | **⚠️ Stripe 계정 정지됨** | 세션 26에서 확인. Stripe가 계정을 정지(suspended)함. Live mode 전환 불가 |
-| 2 | **대안: Paddle (1순위)** | MoR(Merchant of Record) 모델 — ITIN 불필요, 세금 신고 Paddle이 대행. SaaS에 최적화 |
-| 3 | **대안: LemonSqueezy (2순위)** | Paddle과 유사한 MoR 모델. ITIN 불필요. 더 간단한 셋업 |
-| 4 | 이전 계획 (ITIN) | ~~IRS ITIN 신청~~ → Stripe 정지로 ITIN 발급 자체가 무의미해짐. Paddle/LS로 전환 |
-| 5 | 현재 상태 | ⏳ Paddle 또는 LemonSqueezy 가입 + 연동 필요. 기존 Stripe Billing 코드를 새 결제 시스템으로 교체 예정 |
+| 1 | **⚠️ Stripe 계정 정지됨** | 세션 26에서 확인. Stripe가 계정을 정지(suspended)함 |
+| 2 | **✅ LemonSqueezy 전환 완료** | MoR(Merchant of Record) 모델 — ITIN 불필요. 코드 전환 + DB 마이그레이션 + 빌드 통과 |
+| 3 | **✅ LS 스토어 생성** | potalapp.lemonsqueezy.com (#308025). 은행 정보 + 신원 확인 제출 완료. 승인 대기 (2~3 영업일) |
+| 4 | **✅ 코드 변경** | stripe.ts 삭제 → lemonsqueezy.ts 신규. checkout/webhook/portal 라우트 LS API로 재작성. DB 컬럼 billing_* 으로 rename |
+| 5 | 현재 상태 | LS 신원 확인 승인 대기 → 승인 후 Product 3개 생성 (Starter/Growth/Enterprise) → Variant ID + API Key + Webhook 설정 → Vercel 환경변수 업데이트 |
 
 ### 🟡 다음 세션 — Shopify 심사 + 사이트 품질 개선
 
@@ -339,10 +339,14 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - manifest.json, widget.js, openapi-gpt-actions.json 등 잔여 "139" 참조 전부 181로 업데이트
   - Product Hunt 에셋 5장 제작 (갤러리 4장 1270x760 + 썸네일 240x240)
   - PRODUCT_HUNT_LAUNCH_PLAN.md 에셋 상태 업데이트 (⏳→✅)
-  - **Stripe 계정 정지 확인** → Paddle/LemonSqueezy 대안 확정 (ITIN 불필요)
+  - **Stripe 계정 정지 확인** → **LemonSqueezy 전환 완료**
   - Supabase 마이그레이션 정상 확인 (Table Editor + SQL Editor 검증)
-- **다음**: Shopify 임베디드 확인 통과 → "검토를 위해 제출" 클릭 → 심사 7~14일
-- **블로커**: ~~Stripe Live mode에 ITIN 필요~~ → **Stripe 계정 정지됨. Paddle/LemonSqueezy로 전환 필요**
+  - Stripe→LemonSqueezy 코드 전환: stripe SDK 삭제, lemonsqueezy.ts/subscription.ts/checkout/webhook/portal 재작성
+  - DB 마이그레이션 005: stripe_* → billing_* 컬럼 rename, billing_provider 추가
+  - LS 스토어 생성 (potalapp.lemonsqueezy.com) + 은행 정보 + 신원 확인 제출 (승인 대기 2~3일)
+  - npm run build 통과 ✅
+- **다음**: LS 신원 확인 승인 → Product 생성 → Variant ID/API Key/Webhook 설정 → Vercel 환경변수 → Shopify 임베디드 확인 통과 → 심사 제출
+- **블로커**: ~~Stripe 계정 정지~~ → **LemonSqueezy 전환 완료, 신원 확인 승인 대기 중**
 
 ### 경쟁사 가격/기능 분석 완료 (세션 17)
 - ✅ `POTAL-Target-Analysis.xlsx` 생성 — 4시트 (타겟 세그먼트, 매출 시뮬레이션, 경쟁사 절감, 핵심 인사이트)
@@ -405,7 +409,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 잔여 "139 countries" 참조 전부 181로 업데이트: manifest.json, widget.js, openapi-gpt-actions.json (2개)
   - Product Hunt 에셋 5장 제작: gallery-1-hero, gallery-2-dashboard, gallery-3-integrations, gallery-4-pricing, thumbnail-240x240
   - PRODUCT_HUNT_LAUNCH_PLAN.md 에셋 상태 ⏳→✅ 업데이트
-  - Stripe 계정 정지 확인 → Paddle/LemonSqueezy 대안 확정
+  - Stripe 계정 정지 확인 → **LemonSqueezy 전환 완료** (코드 + DB + LS 스토어 생성)
   - Supabase 마이그레이션 정상 확인 (Table Editor + SQL Editor 스크린샷 검증)
   - npm run build 통과 ✅
 
@@ -566,10 +570,11 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | `app/api/delete-account/route.ts` | 계정 삭제 API |
 | `app/dashboard/page.tsx` | 대시보드 서버 컴포넌트 (Suspense 래퍼) |
 | `app/dashboard/DashboardContent.tsx` | 대시보드 클라이언트 컴포넌트 (Overview/API Keys/Widget/Usage/Billing 탭) |
-| `app/api/billing/checkout/route.ts` | Stripe Checkout 세션 생성 API |
-| `app/api/billing/webhook/route.ts` | Stripe Webhook 핸들러 (6개 이벤트) |
-| `app/api/billing/portal/route.ts` | Stripe Customer Portal API |
-| `app/lib/billing/stripe.ts` | Stripe 싱글톤 + PLAN_CONFIG |
+| `app/api/billing/checkout/route.ts` | LemonSqueezy Checkout 세션 생성 API |
+| `app/api/billing/webhook/route.ts` | LemonSqueezy Webhook 핸들러 (6개 이벤트) |
+| `app/api/billing/portal/route.ts` | LemonSqueezy Customer Portal API |
+| `app/lib/billing/lemonsqueezy.ts` | LemonSqueezy SDK 초기화 + PLAN_CONFIG (variantId) |
+| `app/lib/billing/subscription.ts` | 구독 상태 관리 (mapLSStatus, billing_* 컬럼) |
 | `app/lib/billing/subscription.ts` | 구독 라이프사이클 관리 |
 | `app/blog/` | SEO 블로그 (3개 B2B 글 — TLC 가이드, HS Code 분류, De Minimis) |
 
@@ -595,7 +600,7 @@ plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
 - OPENAI_API_KEY, AI_CLASSIFIER_ENABLED 등 AI 관련 변수도 양쪽에 설정 확인
 
 ### ⚠️ 현재 블로커
-- **~~ITIN 미발급~~** → **Stripe 계정 정지됨** (세션 26 확인). Paddle 또는 LemonSqueezy로 결제 시스템 전환 필요 (섹션 2 TODO 참조)
+- **~~ITIN 미발급~~** → **~~Stripe 계정 정지~~** → **LemonSqueezy 전환 완료** (세션 26). LS 신원 확인 승인 대기 중 (2~3 영업일)
 - Google OAuth redirect 설정 완료 (2026-03-04)
 - Shopify 임베디드 앱 확인 대기 중 (App Bridge + 세션 토큰)
 
@@ -631,7 +636,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
-| 03-06 | 26 | **Shopify App Bridge + 181개국 통합 업데이트 + PH 에셋**: Shopify potal-test-store 앱 설치 확인 + App Bridge 4.x CDN/세션 토큰 push. Custom GPT OpenAPI 181개국 + schemas 수정. Gemini CSV 44→181개국 재생성. MCP 리빌드. manifest/widget/openapi 잔여 139→181 업데이트. PH 에셋 5장 제작 (갤러리4+썸네일1). Stripe 정지→Paddle/LS 대안 확정. Supabase 마이그레이션 검증 |
+| 03-06 | 26 | **Shopify App Bridge + 181개국 업데이트 + PH 에셋 + Stripe→LemonSqueezy 전환**: App Bridge push + 임베디드 확인 대기. GPT/Gemini/MCP 181개국 업데이트. PH 에셋 5장 제작. **Stripe→LemonSqueezy 전환 완료**: stripe SDK 삭제, lemonsqueezy.ts/subscription/checkout/webhook/portal 재작성, DB 마이그레이션 005 (billing_* 컬럼), LS 스토어 생성 (potalapp.lemonsqueezy.com), 신원확인 제출 |
 | 03-06 | 25 | **Cost Engine 대규모 업그레이드**: 4개 신규 관세 API Provider (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) 추가 → 총 7개 정부 API. country-data.ts 137→181개국 확장. HS 챕터 56→97개(전체 커버). FTA 27→63개 협정. India 세금 계산 (BCD+SWS+IGST 캐스케이딩). Section 301 tariffs 2025/2026 업데이트. 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee). Batch calculation Promise.allSettled 병렬화. 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일) |
 | 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |
 | 03-06 | 23 | **B2C 잔여 코드 정리 + layout 최종 완료**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료, data.ts B2C 보존 결정. B2C→B2B 전환 사실상 최종 완료 (잔여: lib/search/ 등 B2C 백엔드만 보존) |

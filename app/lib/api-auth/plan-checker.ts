@@ -13,7 +13,7 @@ interface PlanLimits {
   };
 }
 
-// Plan limits (mirrors PLAN_CONFIG in stripe.ts — cached here to avoid DB call every request)
+// Plan limits (mirrors PLAN_CONFIG in lemonsqueezy.ts — cached here to avoid DB call every request)
 const PLAN_LIMITS: PlanLimits = {
   free: { maxCalculationsMonthly: 500 },
   starter: { maxCalculationsMonthly: 5000 },
