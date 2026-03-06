@@ -5,7 +5,7 @@
  *
  * Provides Total Landed Cost calculation tools for Claude.
  * Calculates import duties, taxes (VAT/GST), customs fees, and shipping
- * for cross-border purchases across 181 countries.
+ * for cross-border purchases across 240 countries and territories.
  *
  * Tools:
  *   - calculate_landed_cost: Calculate total cost for international purchases
@@ -134,7 +134,9 @@ server.tool(
   "calculate_landed_cost",
   "Calculate the total landed cost for a product being shipped internationally. " +
     "Returns a detailed breakdown of import duties, VAT/GST, customs fees, and " +
-    "the final total price the buyer will pay. Supports 181 countries.",
+    "the final total price the buyer will pay. Supports 240 countries and territories. " +
+    "Includes China CBEC tax, Mexico IEPS, Brazil cascading tax, India IGST, " +
+    "and processing fees for 12 countries.",
   {
     price: z.number().describe("Product price in USD. Example: 49.99"),
     origin: z
@@ -230,7 +232,7 @@ server.tool(
 
 server.tool(
   "list_supported_countries",
-  "Get a list of all 181 supported countries with their VAT/GST rates, " +
+  "Get a list of all 240 supported countries with their VAT/GST rates, " +
     "average duty rates, de minimis thresholds, and currency information. " +
     "Use this to check if a country is supported or to compare tax rates.",
   {},

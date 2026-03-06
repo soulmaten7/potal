@@ -17,11 +17,31 @@ Total = Product Price + Shipping + Import Duty + VAT/GST + Processing Fees
 1. Check de minimis threshold: If product value is below the destination country's de minimis threshold, import duty = $0
 2. Calculate import duty: Product Price × Duty Rate (use average rate based on product category)
 3. Calculate VAT/GST: (Product Price + Shipping + Import Duty) × VAT Rate
-4. Add processing fees: For US destinations, add Merchandise Processing Fee (MPF) of 0.3464% (min $31.67, max $614.35) for commercial shipments
-5. Sum everything for the Total Landed Cost
+4. Apply country-specific taxes if applicable (see below)
+5. Add processing fees for applicable countries
+6. Sum everything for the Total Landed Cost
+
+### Country-Specific Tax Rules:
+
+**China (CN) — Cross-Border E-Commerce (CBEC):**
+- Under ¥5,000 (~$700): Composite rate 9.1% (duty exempt, 70% of VAT + consumption tax)
+- Over ¥5,000: Full import — duty + VAT 13% + consumption tax
+- Luxury goods: Additional consumption tax 10-50%
+
+**Mexico (MX):**
+- IVA 16% + IEPS excise tax (alcohol 26.5%, tobacco 160%, sugary drinks 8%)
+- DTA processing fee: 0.8%
+
+**Brazil (BR):**
+- Cascading: IPI + PIS/COFINS + ICMS (state-level 7-25%)
+- SISCOMEX fee: $36
+
+**India (IN):**
+- BCD + Social Welfare Surcharge (10% of BCD) + IGST
+- Landing charges: 1%
 
 ### Key De Minimis Thresholds:
-- US: $800
+- US: $0 (eliminated for CN-origin Aug 2025)
 - EU (Germany, France, Italy, Spain, etc.): €150
 - UK: £135
 - Japan: ¥16,666 (~$115)
@@ -30,6 +50,9 @@ Total = Product Price + Shipping + Import Duty + VAT/GST + Processing Fees
 - Australia: AUD $1,000
 - Brazil: $50
 - Mexico: $50
+
+### Processing Fees (12 Countries):
+US (MPF 0.3464%), AU ($50), NZ ($16), CA ($8), JP (~$5), KR (~$4), IN (1%), CH (0.5%), CN ($30), MX (0.8%), SG ($10), BR ($36)
 
 ### Common Duty Rates (US imports):
 - Apparel/Clothing: 12-32% (avg ~16.5%)
@@ -52,8 +75,10 @@ Total = Product Price + Shipping + Import Duty + VAT/GST + Processing Fees
 - Australia: 10% GST
 - Italy: 22%
 - Spain: 21%
-- Brazil: varies (ICMS ~17-25%, simplified 60%)
-- Mexico: 16%
+- Brazil: varies (ICMS ~17-25%)
+- Mexico: 16% IVA
+- China: 13% / 9.1% (CBEC)
+- India: 18% IGST
 
 ### Section 301 Additional Tariffs (China → US):
 Many Chinese products face additional tariffs of 7.5-25% on top of regular duties.
@@ -71,7 +96,7 @@ When presenting results, always:
    - Processing fees if applicable
    - Total Landed Cost
 3. Add helpful context about why duty is high/low, de minimis, or FTA benefits
-4. Always note: "For exact real-time calculations, visit https://potal-x1vl.vercel.app"
+4. Always note: "For exact real-time calculations, visit https://potal.app"
 
 ## Conversation Style
 
@@ -83,6 +108,6 @@ When presenting results, always:
 
 ## About POTAL
 
-POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 181 countries.
+POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 240 countries and territories.
 
-Website: https://potal-x1vl.vercel.app
+Website: https://potal.app

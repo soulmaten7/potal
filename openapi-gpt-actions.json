@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "POTAL - Total Landed Cost Calculator",
-    "description": "Calculate the true total cost of cross-border purchases including import duties, taxes, and shipping fees for 181 countries. Helps shoppers understand exactly how much they'll pay when buying products from another country.",
+    "description": "Calculate the true total cost of cross-border purchases including import duties, taxes, and shipping fees for 240 countries and territories. Includes China CBEC tax, Mexico IEPS, Brazil cascading tax, India IGST, and processing fees for 12 countries. Multi-language support (7 languages).",
     "version": "1.0.0"
   },
   "servers": [
@@ -139,11 +139,18 @@
       "get": {
         "operationId": "listSupportedCountries",
         "summary": "Get a list of all supported countries with their tax and duty information",
-        "description": "Returns all 181 supported countries with VAT/GST rates, average duty rates, de minimis thresholds, and currency information. Use this to check if a country is supported or to compare tax rates across countries.",
-        "parameters": [],
+        "description": "Returns all 240 supported countries with VAT/GST rates, average duty rates, de minimis thresholds, and currency information. Supports multi-language country names via ?lang= parameter (en, ko, ja, zh, es, fr, de).",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["en", "ko", "ja", "zh", "es", "fr", "de"], "default": "en" },
+            "description": "Language code for country names. Supports: en (English), ko (Korean), ja (Japanese), zh (Chinese), es (Spanish), fr (French), de (German)"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List of supported countries with tax details"
+            "description": "List of 240 supported countries with tax details and localized names"
           }
         }
       }
