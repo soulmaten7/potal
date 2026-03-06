@@ -7,12 +7,12 @@
  * 1. DB (Supabase) — duty rates, FTA, country profiles (async, cached)
  * 2. Hardcoded fallback — if DB unavailable
  *
- * Supports 181 destination countries.
+ * Supports 220+ destination countries.
  * Delegates to US-specific engine for US destinations.
  */
 
 import type { CostInput, LandedCost, CostBreakdownItem } from './types';
-import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes, calculateIndiaImportTaxes, getIndiaIgstRate } from './CostEngine';
+import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes, calculateIndiaImportTaxes, getIndiaIgstRate, calculateChinaCBECTaxes, calculateMexicoImportTaxes, getMexicoIepsRate } from './CostEngine';
 import { getCountryProfile, type CountryTaxProfile } from './country-data';
 import { classifyWithOverride } from './hs-code';
 import type { HsClassificationResult } from './hs-code';
@@ -279,6 +279,20 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     vat = inTaxes.totalTax;
     effectiveVatRate = inTaxes.effectiveRate;
     effectiveVatLabel = 'IGST+SWS';
+  } else if (profile.code === 'CN' && !isDomestic && !deMinimisApplied) {
+    // China: CBEC tax regime (9.1% composite) or regular import (VAT 13% + consumption tax)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const cnTaxes = calculateChinaCBECTaxes(declaredValue, importDuty, hsChapter);
+    vat = cnTaxes.totalTax;
+    effectiveVatRate = cnTaxes.effectiveRate;
+    effectiveVatLabel = cnTaxes.isCBEC ? 'CBEC Tax' : 'VAT+CT';
+  } else if (profile.code === 'MX' && !isDomestic && !deMinimisApplied) {
+    // Mexico: IVA 16% + IEPS (excise tax on certain goods)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const mxTaxes = calculateMexicoImportTaxes(declaredValue, importDuty, hsChapter);
+    vat = mxTaxes.totalTax;
+    effectiveVatRate = mxTaxes.effectiveRate;
+    effectiveVatLabel = mxTaxes.ieps > 0 ? 'IVA+IEPS' : 'IVA';
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -322,6 +336,26 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     const inTaxes = calculateIndiaImportTaxes(declaredValue, importDuty, igstRate);
     breakdown.push({ label: 'SWS', amount: round(inTaxes.sws), note: '10% of BCD' });
     breakdown.push({ label: 'IGST', amount: round(inTaxes.igst), note: `${(igstRate * 100).toFixed(0)}% integrated GST` });
+  } else if (profile.code === 'CN' && !isDomestic && !deMinimisApplied && vat > 0) {
+    // China: CBEC or regular import tax breakdown
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const cnTaxes = calculateChinaCBECTaxes(declaredValue, importDuty, hsChapter);
+    if (cnTaxes.isCBEC) {
+      breakdown.push({ label: 'CBEC Tax', amount: round(cnTaxes.totalTax), note: `${(cnTaxes.effectiveRate * 100).toFixed(1)}% composite` });
+    } else {
+      breakdown.push({ label: 'VAT', amount: round(cnTaxes.vat), note: '13% (standard)' });
+      if (cnTaxes.consumptionTax > 0) {
+        breakdown.push({ label: 'Consumption Tax', amount: round(cnTaxes.consumptionTax), note: 'Luxury/excise' });
+      }
+    }
+  } else if (profile.code === 'MX' && !isDomestic && !deMinimisApplied && vat > 0) {
+    // Mexico: IVA + IEPS breakdown
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const mxTaxes = calculateMexicoImportTaxes(declaredValue, importDuty, hsChapter);
+    breakdown.push({ label: 'IVA', amount: round(mxTaxes.iva), note: '16%' });
+    if (mxTaxes.ieps > 0) {
+      breakdown.push({ label: 'IEPS', amount: round(mxTaxes.ieps), note: 'Excise tax' });
+    }
   } else if (vat > 0) {
     breakdown.push({
       label: effectiveVatLabel === 'None' ? 'Tax' : effectiveVatLabel,
@@ -367,6 +401,22 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
       // Switzerland: Statistical fee CHF 15 (~$17)
       mpf = 17;
       breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Statistical fee' });
+    } else if (profile.code === 'CN') {
+      // China: Customs inspection fee + broker ~¥200-500 (~$30-70)
+      mpf = 30;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Customs clearance est.' });
+    } else if (profile.code === 'MX') {
+      // Mexico: DTA (Derecho de Trámite Aduanero) 0.8% of goods value, min ~$36
+      mpf = Math.max(declaredValue * 0.008, 36);
+      breakdown.push({ label: 'DTA', amount: round(mpf), note: '0.8% customs processing' });
+    } else if (profile.code === 'SG') {
+      // Singapore: Permit fee SGD 2.88 + handling ~SGD 10 (~$10)
+      mpf = 10;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'TradeNet permit est.' });
+    } else if (profile.code === 'BR') {
+      // Brazil: SISCOMEX fee BRL 185 (~$36)
+      mpf = 36;
+      breakdown.push({ label: 'SISCOMEX', amount: round(mpf), note: 'Import registration fee' });
     }
     // EU & UK: No separate customs processing fee for standard imports
     // (brokerage is private, not government-imposed)
@@ -562,6 +612,20 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     vat = inTaxes.totalTax;
     effectiveVatRateSync = inTaxes.effectiveRate;
     effectiveVatLabelSync = 'IGST+SWS';
+  } else if (profile.code === 'CN' && !isDomestic && !deMinimisApplied) {
+    // China: CBEC tax regime (9.1% composite) or regular import
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const cnTaxes = calculateChinaCBECTaxes(declaredValue, importDuty, hsChapter);
+    vat = cnTaxes.totalTax;
+    effectiveVatRateSync = cnTaxes.effectiveRate;
+    effectiveVatLabelSync = cnTaxes.isCBEC ? 'CBEC Tax' : 'VAT+CT';
+  } else if (profile.code === 'MX' && !isDomestic && !deMinimisApplied) {
+    // Mexico: IVA 16% + IEPS (excise tax on certain goods)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const mxTaxes = calculateMexicoImportTaxes(declaredValue, importDuty, hsChapter);
+    vat = mxTaxes.totalTax;
+    effectiveVatRateSync = mxTaxes.effectiveRate;
+    effectiveVatLabelSync = mxTaxes.ieps > 0 ? 'IVA+IEPS' : 'IVA';
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -594,12 +658,29 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     breakdown.push({ label: 'PIS/COFINS', amount: round(brTaxes.pisCofins), note: '11.75% federal' });
     breakdown.push({ label: 'ICMS', amount: round(brTaxes.icms), note: `${(icmsRate * 100).toFixed(1)}% ${brState || 'avg'}` });
   } else if (profile.code === 'IN' && !isDomestic && !deMinimisApplied && vat > 0) {
-    // India: detailed tax breakdown (SWS + IGST)
     const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
     const igstRate = hsChapter ? getIndiaIgstRate(hsChapter) : 0.18;
     const inTaxes = calculateIndiaImportTaxes(declaredValue, importDuty, igstRate);
     breakdown.push({ label: 'SWS', amount: round(inTaxes.sws), note: '10% of BCD' });
     breakdown.push({ label: 'IGST', amount: round(inTaxes.igst), note: `${(igstRate * 100).toFixed(0)}% integrated GST` });
+  } else if (profile.code === 'CN' && !isDomestic && !deMinimisApplied && vat > 0) {
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const cnTaxes = calculateChinaCBECTaxes(declaredValue, importDuty, hsChapter);
+    if (cnTaxes.isCBEC) {
+      breakdown.push({ label: 'CBEC Tax', amount: round(cnTaxes.totalTax), note: `${(cnTaxes.effectiveRate * 100).toFixed(1)}% composite` });
+    } else {
+      breakdown.push({ label: 'VAT', amount: round(cnTaxes.vat), note: '13% (standard)' });
+      if (cnTaxes.consumptionTax > 0) {
+        breakdown.push({ label: 'Consumption Tax', amount: round(cnTaxes.consumptionTax), note: 'Luxury/excise' });
+      }
+    }
+  } else if (profile.code === 'MX' && !isDomestic && !deMinimisApplied && vat > 0) {
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const mxTaxes = calculateMexicoImportTaxes(declaredValue, importDuty, hsChapter);
+    breakdown.push({ label: 'IVA', amount: round(mxTaxes.iva), note: '16%' });
+    if (mxTaxes.ieps > 0) {
+      breakdown.push({ label: 'IEPS', amount: round(mxTaxes.ieps), note: 'Excise tax' });
+    }
   } else if (vat > 0) {
     breakdown.push({
       label: effectiveVatLabelSync === 'None' ? 'Tax' : effectiveVatLabelSync,
@@ -635,6 +716,18 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     } else if (profile.code === 'CH') {
       mpf = 17;
       breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Statistical fee' });
+    } else if (profile.code === 'CN') {
+      mpf = 30;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Customs clearance est.' });
+    } else if (profile.code === 'MX') {
+      mpf = Math.max(declaredValue * 0.008, 36);
+      breakdown.push({ label: 'DTA', amount: round(mpf), note: '0.8% customs processing' });
+    } else if (profile.code === 'SG') {
+      mpf = 10;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'TradeNet permit est.' });
+    } else if (profile.code === 'BR') {
+      mpf = 36;
+      breakdown.push({ label: 'SISCOMEX', amount: round(mpf), note: 'Import registration fee' });
     }
   }
 

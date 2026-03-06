@@ -5,7 +5,7 @@
  * Creates Supabase auth user + sellers row + auto-generates API keys.
  *
  * POST /api/v1/sellers/register
- * Body: { email, password, companyName? }
+ * Body: { email, password, companyName?, website?, platform? }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -21,7 +21,7 @@ function getServiceClient() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, password, companyName } = body;
+    const { email, password, companyName, website, platform } = body;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -47,6 +47,8 @@ export async function POST(req: NextRequest) {
       user_metadata: {
         role: 'seller',
         company_name: companyName || '',
+        website: website || '',
+        platform: platform || '',
       },
     });
 
@@ -73,6 +75,8 @@ export async function POST(req: NextRequest) {
         id: userId,
         email,
         company_name: companyName || null,
+        website: website || null,
+        platform: platform || null,
         plan_id: 'starter',
         subscription_status: 'active',
       })

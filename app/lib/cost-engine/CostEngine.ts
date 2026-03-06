@@ -254,6 +254,128 @@ export function calculateIndiaImportTaxes(
   return { sws, igst, totalTax, effectiveRate };
 }
 
+// ─── China CBEC (Cross-Border E-Commerce) Tax ──────
+
+/**
+ * China Cross-Border E-Commerce (CBEC / 跨境电商) Tax Regime
+ *
+ * For imports via registered CBEC platforms (Tmall Global, JD Worldwide, etc.):
+ * - Single transaction limit: ¥5,000
+ * - Annual limit per person: ¥26,000
+ * - Within limits: duty exempted, VAT & consumption tax at 70% of statutory rates
+ * - Standard VAT: 13% (most goods), 9% (some food/books)
+ * - Consumption tax: 0% (most), 15-50% (luxury/tobacco/alcohol)
+ *
+ * Composite CBEC tax rate for most goods:
+ * = (0% duty + 13% VAT + 0% consumption) × 70% = 9.1%
+ *
+ * Regular imports (over limits or non-CBEC):
+ * - Full duty (avg 9.8%) + VAT 13% + consumption tax
+ */
+const CHINA_VAT_STANDARD = 0.13;
+const CHINA_VAT_REDUCED = 0.09; // food, books, agricultural products
+const CHINA_CBEC_DISCOUNT = 0.70;
+const CHINA_CBEC_SINGLE_LIMIT_USD = 700; // ~¥5,000 / 7.1 exchange rate
+const CHINA_CBEC_ANNUAL_LIMIT_USD = 3660; // ~¥26,000
+
+/** Consumption tax rates by HS chapter (luxury/excise goods) */
+const CHINA_CONSUMPTION_TAX: Record<string, number> = {
+  '22': 0.10, // Beverages, spirits, vinegar
+  '24': 0.36, // Tobacco
+  '33': 0.15, // Cosmetics (high-end)
+  '71': 0.10, // Jewelry
+  '87': 0.05, // Vehicles (under 2.0L)
+  '91': 0.20, // Watches (luxury, >¥10k)
+};
+
+export function getChinaConsumptionTaxRate(hsChapter: string): number {
+  return CHINA_CONSUMPTION_TAX[hsChapter] ?? 0;
+}
+
+export function calculateChinaCBECTaxes(
+  declaredValue: number,
+  importDuty: number,
+  hsChapter: string,
+  isCBEC: boolean = true,
+): { vat: number; consumptionTax: number; totalTax: number; effectiveRate: number; isCBEC: boolean } {
+  const consumptionTaxRate = getChinaConsumptionTaxRate(hsChapter);
+  const vatRate = ['01','02','03','04','05','06','07','08','09','10','11','12','49'].includes(hsChapter)
+    ? CHINA_VAT_REDUCED
+    : CHINA_VAT_STANDARD;
+
+  if (isCBEC && declaredValue <= CHINA_CBEC_SINGLE_LIMIT_USD) {
+    // CBEC regime: duty exempted, VAT & consumption at 70%
+    const effectiveVat = vatRate * CHINA_CBEC_DISCOUNT;
+    const effectiveConsumption = consumptionTaxRate * CHINA_CBEC_DISCOUNT;
+    // Formula: tax = (price / (1 - consumptionTaxRate*0.7)) * (VAT*0.7 + consumptionTax*0.7)
+    const taxBase = consumptionTaxRate > 0
+      ? declaredValue / (1 - effectiveConsumption)
+      : declaredValue;
+    const vat = taxBase * effectiveVat;
+    const consumptionTax = taxBase * effectiveConsumption;
+    const totalTax = vat + consumptionTax;
+    return {
+      vat,
+      consumptionTax,
+      totalTax,
+      effectiveRate: declaredValue > 0 ? totalTax / declaredValue : 0,
+      isCBEC: true,
+    };
+  }
+
+  // Regular import: full duty + VAT + consumption tax
+  const dutyPlusValue = declaredValue + importDuty;
+  const taxBase = consumptionTaxRate > 0
+    ? dutyPlusValue / (1 - consumptionTaxRate)
+    : dutyPlusValue;
+  const vat = taxBase * vatRate;
+  const consumptionTax = taxBase * consumptionTaxRate;
+  const totalTax = vat + consumptionTax;
+  return {
+    vat,
+    consumptionTax,
+    totalTax,
+    effectiveRate: declaredValue > 0 ? totalTax / declaredValue : 0,
+    isCBEC: false,
+  };
+}
+
+// ─── Mexico IEPS (Excise Tax) ──────────────────────
+
+/**
+ * Mexico IEPS (Impuesto Especial sobre Producción y Servicios)
+ * Applied to specific goods: alcohol, tobacco, sugary drinks, etc.
+ * On top of IVA 16%.
+ */
+const MEXICO_IEPS_RATES: Record<string, number> = {
+  '22': 0.265, // Alcoholic beverages (26.5-53% depending on alcohol content)
+  '24': 1.60,  // Tobacco (160%)
+  '20': 0.08,  // Sugary drinks (8% or MXN ~1.4908/L)
+};
+
+export function getMexicoIepsRate(hsChapter: string): number {
+  return MEXICO_IEPS_RATES[hsChapter] ?? 0;
+}
+
+export function calculateMexicoImportTaxes(
+  declaredValue: number,
+  importDuty: number,
+  hsChapter: string,
+): { iva: number; ieps: number; totalTax: number; effectiveRate: number } {
+  const iepsRate = getMexicoIepsRate(hsChapter);
+  const ivaRate = 0.16;
+  const taxBase = declaredValue + importDuty;
+  const ieps = taxBase * iepsRate;
+  const iva = (taxBase + ieps) * ivaRate; // IVA calculated on base + IEPS
+  const totalTax = iva + ieps;
+  return {
+    iva,
+    ieps,
+    totalTax,
+    effectiveRate: declaredValue > 0 ? totalTax / declaredValue : 0,
+  };
+}
+
 // ─── Zipcode to State Mapping (first 3 digits) ──────
 
 export function zipcodeToState(zipcode: string): string | null {

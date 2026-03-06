@@ -82,6 +82,22 @@ export default function DevelopersPage() {
             }}>
               Copy and paste this code snippet into your product page HTML. Our widget will automatically calculate accurate shipping costs and taxes in real-time.
             </p>
+            <a
+              href="/developers/quickstart"
+              style={{
+                display: 'inline-block',
+                marginTop: '12px',
+                padding: '10px 20px',
+                background: '#F59E0B',
+                color: '#02122c',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontSize: '14px',
+                fontWeight: 700,
+              }}
+            >
+              View Full Quick Start Guide &rarr;
+            </a>
           </div>
 
           <div style={{

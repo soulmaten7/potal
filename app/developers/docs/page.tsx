@@ -37,7 +37,7 @@ const ENDPOINTS: EndpointConfig[] = [
     method: 'POST',
     path: '/api/v1/calculate',
     summary: 'Calculate Total Landed Cost (Single)',
-    description: 'Calculate the total landed cost for a single item including import duties, taxes, customs fees, and the final price the buyer will pay. Supports 181+ countries with real-time exchange rates.',
+    description: 'Calculate the total landed cost for a single item including import duties, taxes, customs fees, and the final price the buyer will pay. Supports 240 countries with real-time exchange rates.',
     tag: 'Calculation',
     auth: true,
     fields: [
@@ -187,8 +187,8 @@ const ENDPOINTS: EndpointConfig[] = [
         "currency": "GBP"
       }
     ],
-    "total": 181,
-    "totalSupported": 181
+    "total": 240,
+    "totalSupported": 240
   }
 }`,
     curlExample: `curl https://www.potal.app/api/v1/countries

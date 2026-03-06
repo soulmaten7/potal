@@ -47,7 +47,7 @@ const TotalLandedCostContent = () => (
 
     <h2>How POTAL Helps</h2>
     <p>
-      POTAL calculates the total landed cost in real-time for 181 countries. Our API takes the product
+      POTAL calculates the total landed cost in real-time for 240 countries. Our API takes the product
       details, origin, and destination, then returns the exact duty rate, tax amount, and any applicable
       fees — all in under 120ms. Embed our widget on your product page or integrate via REST API.
     </p>

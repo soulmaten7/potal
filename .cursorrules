@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-06 (세션 26 — PH 런치 3/7 스케줄 + 셀러 온보딩 + Stripe→LS 문서 정리)
+# 마지막 업데이트: 2026-03-06 (세션 27 — 240개국 확장 + CN CBEC/MX IEPS + 7개국어 + 경쟁사 대응)
 
 ## 0. 프로젝트 개요
 
@@ -9,6 +9,7 @@
 - 상세 맥락: `session-context.md` 반드시 먼저 읽을 것
 
 ### 핵심 서비스
+- **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 7개국어, 63개 FTA
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/500 | Starter $9/5K | Growth $29/25K | Enterprise
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
@@ -37,6 +38,11 @@
 - **✅ Stripe→LemonSqueezy 전환 완료 (세션 26)**: Stripe 계정 정지 → LemonSqueezy (MoR) 전환 완료. 코드 8개 파일 수정, DB 마이그레이션 완료. LS 신원 확인 승인 대기 중
 - **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
 - **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
+- **✅ 240개국 확장 (세션 27)**: 181→240개국/영토. Zonos(235) 초과 달성. 카리브해/태평양 섬/아프리카/유럽 영토 59개 추가
+- **✅ CN CBEC 세금 (세션 27)**: 중국 크로스보더 이커머스 세제 (9.1% 복합세율) + 일반 수입 (VAT 13%+소비세) 구현
+- **✅ MX IEPS 세금 (세션 27)**: 멕시코 IVA 16% + IEPS (주류/담배/음료 특별소비세) 구현
+- **✅ Processing Fee 확장 (세션 27)**: CN/MX(DTA)/SG/BR(SISCOMEX) 통관 수수료 추가 (기존 US/AU/NZ/CA/JP/KR/IN/CH에 추가)
+- **✅ 7개국어 지원 (세션 27)**: country-i18n.ts — EN/KO/JA/ZH/ES/FR/DE 국가명. /api/v1/countries?lang=ko 지원
 - **App Bridge 추가됨 (세션 26)**: layout.tsx에 App Bridge CDN script, components/shopify/ShopifyAppBridge.tsx, app/api/shopify/session/route.ts
 - **Git push는 Mac 터미널에서**: VM에서 push 불가. `npm run build` 확인 후 push 명령 제공
 - **console.log 금지**: 프로덕션 코드에 console.log 남기지 마라. 디버깅 후 반드시 제거
@@ -60,7 +66,8 @@
 | 파일 | 역할 |
 |------|------|
 | `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (181개국, India/Brazil 특수 세금) |
-| `app/lib/cost-engine/country-data.ts` | 181개국 VAT/GST/관세/de minimis 데이터 |
+| `app/lib/cost-engine/country-data.ts` | 240개국 VAT/GST/관세/de minimis 데이터 |
+| `app/lib/cost-engine/country-i18n.ts` | 7개국어 국가명 (EN/KO/JA/ZH/ES/FR/DE) |
 | `app/lib/cost-engine/ai-classifier/` | AI HS Code 분류 (GPT-4o-mini + DB캐시 + 키워드) |
 | `app/lib/cost-engine/tariff-api/` | 외부 관세 API (USITC/UK/EU/CA/AU/JP/KR 7개 정부 API) |
 | `app/lib/cost-engine/exchange-rate/` | 실시간 환율 (ExchangeRate-API + Fawaz CDN 이중 폴백) |

@@ -235,7 +235,7 @@ export default function HomePage() {
                 maxWidth: 480,
               }}>
                 Show your buyers the true cost of any product — duties, taxes,
-                and shipping — for 181 countries. Embed in minutes, not months.
+                and shipping — for 240 countries. Embed in minutes, not months.
               </p>
 
               <div style={{ display: 'flex', gap: 14, marginBottom: 48 }}>
@@ -279,7 +279,7 @@ export default function HomePage() {
               {/* Stats */}
               <div style={{ display: 'flex', gap: 40 }}>
                 {[
-                  { value: 181, suffix: '', label: 'Countries' },
+                  { value: 240, suffix: '', label: 'Countries' },
                   { value: 50, suffix: '+', label: 'HS Code Categories' },
                   { value: 120, suffix: 'ms', label: 'Avg Response' },
                 ].map((stat, i) => (
@@ -413,8 +413,8 @@ export default function HomePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             <FeatureCard
               icon="🌍"
-              title="181 Countries"
-              description="Complete duty rates, VAT/GST, de minimis thresholds, and FTA agreements for 181 countries worldwide."
+              title="240 Countries"
+              description="Complete duty rates, VAT/GST, de minimis thresholds, and FTA agreements for 240 countries worldwide."
             />
             <FeatureCard
               icon="🏷"
@@ -640,7 +640,7 @@ export default function HomePage() {
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 36, fontSize: 17, lineHeight: 1.7 }}>
             Join sellers who use POTAL to show transparent pricing
-            to customers in 181 countries.
+            to customers in 240 countries.
           </p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
             <Link

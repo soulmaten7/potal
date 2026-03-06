@@ -20,7 +20,7 @@ const FAQ_ITEMS = [
     id: '1',
     category: 'about',
     question: 'What is POTAL?',
-    answer: 'POTAL is a Total Landed Cost API and Shopify app. We help e-commerce sellers calculate and display import duties, taxes, and fees for international orders — covering 181+ countries with AI-powered HS Code classification.'
+    answer: 'POTAL is a Total Landed Cost API and Shopify app. We help e-commerce sellers calculate and display import duties, taxes, and fees for international orders — covering 240 countries with AI-powered HS Code classification.'
   },
   {
     id: '2',

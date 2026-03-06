@@ -2,7 +2,7 @@
  * POTAL Widget v2 — Embeddable Total Landed Cost Calculator
  *
  * Sellers embed this script on their store. Buyers see real import costs.
- * Supports 181 countries, sub-national tax (US/CA/BR), HS Code classification.
+ * Supports 240 countries, sub-national tax (US/CA/BR), HS Code classification.
  *
  * Usage:
  *   <div id="potal-widget"></div>

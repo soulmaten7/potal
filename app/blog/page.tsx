@@ -316,7 +316,7 @@ export default function BlogPage() {
               lineHeight: '1.6',
             }}
           >
-            Use POTAL to calculate duties, taxes, and fees for 181 countries. Embed our widget or integrate via REST API — free plan available.
+            Use POTAL to calculate duties, taxes, and fees for 240 countries. Embed our widget or integrate via REST API — free plan available.
           </p>
           <a
             href="/developers"

@@ -5,19 +5,27 @@
  * Public endpoint — no authentication required.
  * Useful for client-side country selectors and documentation.
  *
- * GET /api/v1/countries              — All countries
- * GET /api/v1/countries?region=Europe — Filter by region
+ * GET /api/v1/countries                       — All countries (English)
+ * GET /api/v1/countries?region=Europe          — Filter by region
+ * GET /api/v1/countries?lang=ko               — Korean country names
+ * GET /api/v1/countries?lang=ja&region=Asia    — Japanese names, Asia only
+ *
+ * Supported languages: en, ko, ja, zh, es, fr, de
  */
 
 import { NextRequest } from 'next/server';
 import { COUNTRY_DATA, getCountryCount } from '@/app/lib/cost-engine';
+import { getCountryName, SUPPORTED_LANGUAGES, LANGUAGE_LABELS, type SupportedLanguage } from '@/app/lib/cost-engine/country-i18n';
 
 export async function GET(req: NextRequest) {
   const regionFilter = req.nextUrl.searchParams.get('region');
+  const langParam = (req.nextUrl.searchParams.get('lang') || 'en').toLowerCase() as SupportedLanguage;
+  const lang = SUPPORTED_LANGUAGES.includes(langParam) ? langParam : 'en';
 
   let countries = Object.values(COUNTRY_DATA).map(c => ({
     code: c.code,
-    name: c.name,
+    name: lang === 'en' ? c.name : getCountryName(c.code, lang),
+    nameEnglish: c.name,
     region: c.region,
     vatRate: c.vatRate,
     vatLabel: c.vatLabel,
@@ -48,6 +56,8 @@ export async function GET(req: NextRequest) {
         grouped,
         total: countries.length,
         totalSupported: getCountryCount(),
+        language: lang,
+        supportedLanguages: SUPPORTED_LANGUAGES.map(l => ({ code: l, label: LANGUAGE_LABELS[l] })),
       },
       meta: {
         timestamp: new Date().toISOString(),

@@ -55,7 +55,7 @@ export default async function Image() {
             marginBottom: 40,
           }}
         >
-          {["181 Countries", "AI HS Code", "Duties & Taxes", "FTA Detection", "Shopify App"].map(
+          {["240 Countries", "AI HS Code", "Duties & Taxes", "FTA Detection", "Shopify App"].map(
             (name) => (
               <div
                 key={name}

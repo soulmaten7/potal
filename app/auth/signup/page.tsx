@@ -12,6 +12,8 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [website, setWebsite] = useState('');
+  const [platform, setPlatform] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export default function SignupPage() {
       const res = await fetch('/api/v1/sellers/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password, companyName }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), password, companyName, website: website.trim() || undefined, platform: platform || undefined }),
       });
 
       const data = await res.json();
@@ -204,16 +206,33 @@ export default function SignupPage() {
           </div>
 
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/developers/quickstart')}
             style={{
               width: '100%',
               padding: '14px',
               borderRadius: 12,
               border: 'none',
-              background: '#02122c',
-              color: 'white',
+              background: '#F59E0B',
+              color: '#02122c',
               fontSize: 15,
               fontWeight: 700,
+              cursor: 'pointer',
+              marginBottom: 10,
+            }}
+          >
+            Start Setup Guide
+          </button>
+          <button
+            onClick={() => router.push('/dashboard')}
+            style={{
+              width: '100%',
+              padding: '14px',
+              borderRadius: 12,
+              border: '2px solid #e5e7eb',
+              background: 'white',
+              color: '#374151',
+              fontSize: 14,
+              fontWeight: 600,
               cursor: 'pointer',
             }}
           >
@@ -329,6 +348,65 @@ export default function SignupPage() {
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
+          </div>
+
+          {/* Website */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+              Website <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+            </label>
+            <input
+              type="url"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="https://your-store.com"
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: 10,
+                border: '2px solid #e5e7eb',
+                fontSize: 14,
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s',
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            />
+          </div>
+
+          {/* Platform */}
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
+              Platform <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
+            </label>
+            <select
+              value={platform}
+              onChange={(e) => setPlatform(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: 10,
+                border: '2px solid #e5e7eb',
+                fontSize: 14,
+                outline: 'none',
+                boxSizing: 'border-box',
+                transition: 'border-color 0.2s',
+                background: 'white',
+                color: platform ? '#374151' : '#94a3b8',
+                cursor: 'pointer',
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            >
+              <option value="" disabled>Select your platform</option>
+              <option value="shopify">Shopify</option>
+              <option value="woocommerce">WooCommerce</option>
+              <option value="magento">Magento</option>
+              <option value="bigcommerce">BigCommerce</option>
+              <option value="custom">Custom / Headless</option>
+              <option value="other">Other</option>
+            </select>
           </div>
 
           {/* Email */}

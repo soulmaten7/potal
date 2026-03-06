@@ -2,7 +2,7 @@
  * POTAL Cost Engine — Global Country Data
  *
  * VAT/GST rates, import duty averages, de minimis thresholds,
- * and currency info for 180+ countries.
+ * and currency info for 220+ countries and territories.
  *
  * Sources: WTO, WCO, national customs authorities
  * Last updated: 2026-03
@@ -1178,6 +1178,395 @@ export const COUNTRY_DATA: Record<string, CountryTaxProfile> = {
     deMinimis: 0, deMinimsCurrency: 'ANG', deMinimisUsd: 0,
     currency: 'ANG', hasFtaWithChina: false,
   },
+
+  // ═══ ADDITIONAL CARIBBEAN & AMERICAS ═══
+  AG: {
+    code: 'AG', name: 'Antigua and Barbuda', region: 'Americas',
+    vatRate: 0.15, vatLabel: 'ABST', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  DM: {
+    code: 'DM', name: 'Dominica', region: 'Americas',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  GD: {
+    code: 'GD', name: 'Grenada', region: 'Americas',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  KN: {
+    code: 'KN', name: 'Saint Kitts and Nevis', region: 'Americas',
+    vatRate: 0.17, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  LC: {
+    code: 'LC', name: 'Saint Lucia', region: 'Americas',
+    vatRate: 0.125, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  VC: {
+    code: 'VC', name: 'Saint Vincent and the Grenadines', region: 'Americas',
+    vatRate: 0.16, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  TC: {
+    code: 'TC', name: 'Turks and Caicos Islands', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+    notes: 'No VAT/GST. Revenue from import duties.',
+  },
+  AI: {
+    code: 'AI', name: 'Anguilla', region: 'Americas',
+    vatRate: 0.13, vatLabel: 'GST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  MS: {
+    code: 'MS', name: 'Montserrat', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XCD', deMinimisUsd: 0,
+    currency: 'XCD', hasFtaWithChina: false,
+  },
+  SX: {
+    code: 'SX', name: 'Sint Maarten', region: 'Americas',
+    vatRate: 0.05, vatLabel: 'TOT', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'ANG', deMinimisUsd: 0,
+    currency: 'ANG', hasFtaWithChina: false,
+  },
+  VI: {
+    code: 'VI', name: 'US Virgin Islands', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.06,
+    deMinimis: 800, deMinimsCurrency: 'USD', deMinimisUsd: 800,
+    currency: 'USD', hasFtaWithChina: false,
+    notes: 'US customs territory. Same de minimis as US mainland.',
+  },
+  FK: {
+    code: 'FK', name: 'Falkland Islands', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'FKP', deMinimisUsd: 0,
+    currency: 'FKP', hasFtaWithChina: false,
+  },
+  GL: {
+    code: 'GL', name: 'Greenland', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'DKK', deMinimisUsd: 0,
+    currency: 'DKK', hasFtaWithChina: false,
+    notes: 'Not part of EU. Danish territory with separate customs.',
+  },
+  GF: {
+    code: 'GF', name: 'French Guiana', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'French overseas department. Exempt from EU VAT but EU customs.',
+  },
+  GP: {
+    code: 'GP', name: 'Guadeloupe', region: 'Americas',
+    vatRate: 0.085, vatLabel: 'TVA', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'French overseas department. Reduced VAT rate.',
+  },
+  MQ: {
+    code: 'MQ', name: 'Martinique', region: 'Americas',
+    vatRate: 0.085, vatLabel: 'TVA', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'French overseas department. Reduced VAT rate.',
+  },
+  PM: {
+    code: 'PM', name: 'Saint Pierre and Miquelon', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    currency: 'EUR', hasFtaWithChina: false,
+  },
+  BQ: {
+    code: 'BQ', name: 'Bonaire, Sint Eustatius and Saba', region: 'Americas',
+    vatRate: 0.08, vatLabel: 'ABB', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  MF: {
+    code: 'MF', name: 'Saint Martin (French)', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    currency: 'EUR', hasFtaWithChina: false,
+  },
+  BL: {
+    code: 'BL', name: 'Saint Barthélemy', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    currency: 'EUR', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL EUROPE (TERRITORIES) ═══
+  FO: {
+    code: 'FO', name: 'Faroe Islands', region: 'Europe',
+    vatRate: 0.25, vatLabel: 'MVG', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'DKK', deMinimisUsd: 0,
+    currency: 'DKK', hasFtaWithChina: false,
+    notes: 'Danish territory. Not part of EU.',
+  },
+  GI: {
+    code: 'GI', name: 'Gibraltar', region: 'Europe',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'GIP', deMinimisUsd: 0,
+    currency: 'GIP', hasFtaWithChina: false,
+    notes: 'British Overseas Territory. Not part of EU customs union.',
+  },
+  GG: {
+    code: 'GG', name: 'Guernsey', region: 'Europe',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.0,
+    deMinimis: 0, deMinimsCurrency: 'GBP', deMinimisUsd: 0,
+    currency: 'GBP', hasFtaWithChina: false,
+    notes: 'Crown dependency. No VAT, no customs duty on most goods.',
+  },
+  JE: {
+    code: 'JE', name: 'Jersey', region: 'Europe',
+    vatRate: 0.05, vatLabel: 'GST', avgDutyRate: 0.0,
+    deMinimis: 135, deMinimsCurrency: 'GBP', deMinimisUsd: 170,
+    currency: 'GBP', hasFtaWithChina: false,
+    notes: 'Crown dependency. 5% GST since 2008.',
+  },
+  IM: {
+    code: 'IM', name: 'Isle of Man', region: 'Europe',
+    vatRate: 0.20, vatLabel: 'VAT', avgDutyRate: 0.04,
+    deMinimis: 135, deMinimsCurrency: 'GBP', deMinimisUsd: 170,
+    currency: 'GBP', hasFtaWithChina: false,
+    notes: 'Crown dependency. UK VAT and customs territory.',
+  },
+  AX: {
+    code: 'AX', name: 'Åland Islands', region: 'Europe',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'Finnish autonomy. EU customs but VAT-exempt for imports.',
+  },
+  SJ: {
+    code: 'SJ', name: 'Svalbard and Jan Mayen', region: 'Europe',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.0,
+    deMinimis: 0, deMinimsCurrency: 'NOK', deMinimisUsd: 0,
+    currency: 'NOK', hasFtaWithChina: false,
+    notes: 'Norwegian territory. Tax-free zone, no customs duty.',
+  },
+
+  // ═══ ADDITIONAL AFRICA ═══
+  CV: {
+    code: 'CV', name: 'Cape Verde', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'IVA', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'CVE', deMinimisUsd: 0,
+    currency: 'CVE', hasFtaWithChina: false,
+  },
+  GM: {
+    code: 'GM', name: 'Gambia', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'GMD', deMinimisUsd: 0,
+    currency: 'GMD', hasFtaWithChina: false,
+  },
+  GW: {
+    code: 'GW', name: 'Guinea-Bissau', region: 'Africa',
+    vatRate: 0.17, vatLabel: 'IVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XOF', deMinimisUsd: 0,
+    currency: 'XOF', hasFtaWithChina: false,
+  },
+  CF: {
+    code: 'CF', name: 'Central African Republic', region: 'Africa',
+    vatRate: 0.19, vatLabel: 'TVA', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'XAF', deMinimisUsd: 0,
+    currency: 'XAF', hasFtaWithChina: false,
+  },
+  BI: {
+    code: 'BI', name: 'Burundi', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'BIF', deMinimisUsd: 0,
+    currency: 'BIF', hasFtaWithChina: false,
+  },
+  KM: {
+    code: 'KM', name: 'Comoros', region: 'Africa',
+    vatRate: 0.10, vatLabel: 'TCA', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'KMF', deMinimisUsd: 0,
+    currency: 'KMF', hasFtaWithChina: false,
+  },
+  ST: {
+    code: 'ST', name: 'São Tomé and Príncipe', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'IVA', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'STN', deMinimisUsd: 0,
+    currency: 'STN', hasFtaWithChina: false,
+  },
+  GQ: {
+    code: 'GQ', name: 'Equatorial Guinea', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'IVA', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'XAF', deMinimisUsd: 0,
+    currency: 'XAF', hasFtaWithChina: false,
+  },
+  RE: {
+    code: 'RE', name: 'Réunion', region: 'Africa',
+    vatRate: 0.085, vatLabel: 'TVA', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'French overseas department. Reduced VAT. EU customs territory.',
+  },
+  YT: {
+    code: 'YT', name: 'Mayotte', region: 'Africa',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'French overseas department. Exempt from EU VAT.',
+  },
+  SH: {
+    code: 'SH', name: 'Saint Helena', region: 'Africa',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SHP', deMinimisUsd: 0,
+    currency: 'SHP', hasFtaWithChina: false,
+  },
+
+  // ═══ PACIFIC ISLANDS ═══
+  SB: {
+    code: 'SB', name: 'Solomon Islands', region: 'Oceania',
+    vatRate: 0.10, vatLabel: 'GST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SBD', deMinimisUsd: 0,
+    currency: 'SBD', hasFtaWithChina: false,
+  },
+  NC: {
+    code: 'NC', name: 'New Caledonia', region: 'Oceania',
+    vatRate: 0.11, vatLabel: 'TGC', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XPF', deMinimisUsd: 0,
+    currency: 'XPF', hasFtaWithChina: false,
+    notes: 'French territory. Not part of EU. Own customs/tax system.',
+  },
+  PF: {
+    code: 'PF', name: 'French Polynesia', region: 'Oceania',
+    vatRate: 0.16, vatLabel: 'TVA', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'XPF', deMinimisUsd: 0,
+    currency: 'XPF', hasFtaWithChina: false,
+  },
+  GU: {
+    code: 'GU', name: 'Guam', region: 'Oceania',
+    vatRate: 0.04, vatLabel: 'GRT', avgDutyRate: 0.05,
+    deMinimis: 800, deMinimsCurrency: 'USD', deMinimisUsd: 800,
+    currency: 'USD', hasFtaWithChina: false,
+    notes: 'US territory. 4% GRT (Gross Receipts Tax).',
+  },
+  AS: {
+    code: 'AS', name: 'American Samoa', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+    notes: 'US territory. Not part of US customs territory.',
+  },
+  MP: {
+    code: 'MP', name: 'Northern Mariana Islands', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 800, deMinimsCurrency: 'USD', deMinimisUsd: 800,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  CK: {
+    code: 'CK', name: 'Cook Islands', region: 'Oceania',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'NZD', deMinimisUsd: 0,
+    currency: 'NZD', hasFtaWithChina: false,
+  },
+  KI: {
+    code: 'KI', name: 'Kiribati', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'AUD', deMinimisUsd: 0,
+    currency: 'AUD', hasFtaWithChina: false,
+  },
+  MH: {
+    code: 'MH', name: 'Marshall Islands', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  FM: {
+    code: 'FM', name: 'Micronesia', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  PW: {
+    code: 'PW', name: 'Palau', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  NR: {
+    code: 'NR', name: 'Nauru', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'AUD', deMinimisUsd: 0,
+    currency: 'AUD', hasFtaWithChina: false,
+  },
+  TV: {
+    code: 'TV', name: 'Tuvalu', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'AUD', deMinimisUsd: 0,
+    currency: 'AUD', hasFtaWithChina: false,
+  },
+  NU: {
+    code: 'NU', name: 'Niue', region: 'Oceania',
+    vatRate: 0.125, vatLabel: 'GST', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'NZD', deMinimisUsd: 0,
+    currency: 'NZD', hasFtaWithChina: false,
+  },
+  WF: {
+    code: 'WF', name: 'Wallis and Futuna', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'XPF', deMinimisUsd: 0,
+    currency: 'XPF', hasFtaWithChina: false,
+  },
+  TK: {
+    code: 'TK', name: 'Tokelau', region: 'Oceania',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'NZD', deMinimisUsd: 0,
+    currency: 'NZD', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL INDIAN OCEAN ═══
+  IO: {
+    code: 'IO', name: 'British Indian Ocean Territory', region: 'Asia',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.0,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  CX: {
+    code: 'CX', name: 'Christmas Island', region: 'Oceania',
+    vatRate: 0.10, vatLabel: 'GST', avgDutyRate: 0.05,
+    deMinimis: 1000, deMinimsCurrency: 'AUD', deMinimisUsd: 650,
+    currency: 'AUD', hasFtaWithChina: false,
+    notes: 'Australian territory. Same customs/GST as Australia.',
+  },
+  CC: {
+    code: 'CC', name: 'Cocos (Keeling) Islands', region: 'Oceania',
+    vatRate: 0.10, vatLabel: 'GST', avgDutyRate: 0.05,
+    deMinimis: 1000, deMinimsCurrency: 'AUD', deMinimisUsd: 650,
+    currency: 'AUD', hasFtaWithChina: false,
+    notes: 'Australian territory. Same customs/GST as Australia.',
+  },
+  NF: {
+    code: 'NF', name: 'Norfolk Island', region: 'Oceania',
+    vatRate: 0.10, vatLabel: 'GST', avgDutyRate: 0.05,
+    deMinimis: 1000, deMinimsCurrency: 'AUD', deMinimisUsd: 650,
+    currency: 'AUD', hasFtaWithChina: false,
+    notes: 'Australian territory. Same customs/GST as Australia.',
+  },
+
+  // ═══ ADDITIONAL ASIA ═══
+  KP: {
+    code: 'KP', name: 'North Korea', region: 'Asia',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'KPW', deMinimisUsd: 0,
+    currency: 'KPW', hasFtaWithChina: false,
+    notes: 'Subject to international sanctions. Trade heavily restricted.',
+  },
+
 };
 
 // ─── Helper Functions ────────────────────────────────
