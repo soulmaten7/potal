@@ -54,6 +54,10 @@
     locale: 'en',
     onCalculate: null,
     onError: null,
+    // Custom theme overrides (from widget_configs or PotalWidget.init)
+    primaryColor: '',
+    borderRadius: '',
+    fontFamily: '',
   };
 
   // ─── Country Data (embedded for instant load) ───────
@@ -214,14 +218,16 @@
     var subtext = isDark ? '#a6adc8' : '#64748b';
     var border = isDark ? '#45475a' : '#e2e8f0';
     var inputBg = isDark ? '#313244' : '#f8fafc';
-    var accent = '#3b82f6';
-    var accentHover = '#2563eb';
+    var accent = config.primaryColor || '#3b82f6';
+    var accentHover = accent;
     var totalBg = isDark ? '#313244' : '#eff6ff';
+    var radius = config.borderRadius || '12px';
+    var font = config.fontFamily || '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
 
     return '\
       * { box-sizing: border-box; margin: 0; padding: 0; }\
-      :host { display: block; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }\
-      .pw-root { background: ' + bg + '; color: ' + text + '; border: 1px solid ' + border + '; border-radius: 12px; padding: 20px; max-width: 360px; font-size: 14px; line-height: 1.5; }\
+      :host { display: block; font-family: ' + font + '; }\
+      .pw-root { background: ' + bg + '; color: ' + text + '; border: 1px solid ' + border + '; border-radius: ' + radius + '; padding: 20px; max-width: 360px; font-size: 14px; line-height: 1.5; }\
       .pw-header { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; margin-bottom: 16px; }\
       .pw-header-icon { font-size: 18px; }\
       .pw-controls { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }\
@@ -465,6 +471,30 @@
     };
   }
 
+  // ─── Fetch seller's custom theme from widget_configs ──
+  function fetchThemeConfig(callback) {
+    if (!config.apiKey) { callback(); return; }
+    fetch(API_BASE + '/widget/config', {
+      method: 'GET',
+      headers: { 'X-API-Key': config.apiKey },
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (json) {
+      if (json.success && json.data) {
+        var d = json.data;
+        var t = d.theme || {};
+        if (t.mode) config.theme = t.mode;
+        if (t.primaryColor) config.primaryColor = t.primaryColor;
+        if (t.borderRadius) config.borderRadius = t.borderRadius;
+        if (t.fontFamily) config.fontFamily = t.fontFamily;
+        if (d.defaultOrigin) config.origin = d.defaultOrigin;
+        if (typeof d.showPoweredBy === 'boolean') config.showPoweredBy = d.showPoweredBy;
+      }
+      callback();
+    })
+    .catch(function () { callback(); });
+  }
+
   // ─── Auto-init from script tag ──────────────────────
   function autoInit() {
     if (!scriptEl) return;
@@ -476,22 +506,27 @@
     config.containerId = scriptEl.getAttribute('data-container') || 'potal-widget';
     config.productName = scriptEl.getAttribute('data-product-name') || '';
     config.showPoweredBy = scriptEl.getAttribute('data-powered-by') !== 'false';
+    config.primaryColor = scriptEl.getAttribute('data-primary-color') || '';
+    config.borderRadius = scriptEl.getAttribute('data-border-radius') || '';
+    config.fontFamily = scriptEl.getAttribute('data-font-family') || '';
 
     var priceAttr = scriptEl.getAttribute('data-price');
     var shipAttr = scriptEl.getAttribute('data-shipping');
     if (priceAttr) config.price = parseFloat(priceAttr);
     if (shipAttr) config.shippingPrice = parseFloat(shipAttr);
 
-    // Wait for DOM ready, then render
+    // Wait for DOM ready, then fetch theme config + render
     function boot() {
       var container = document.getElementById(config.containerId);
       if (container && config.apiKey && config.price > 0) {
-        createWidget(container, {
-          price: config.price,
-          shippingPrice: config.shippingPrice,
-          origin: config.origin,
-          destination: config.destination,
-          productName: config.productName,
+        fetchThemeConfig(function () {
+          createWidget(container, {
+            price: config.price,
+            shippingPrice: config.shippingPrice,
+            origin: config.origin,
+            destination: config.destination,
+            productName: config.productName,
+          });
         });
       }
     }
@@ -512,6 +547,14 @@
         if (opts.hasOwnProperty(key) && config.hasOwnProperty(key)) {
           config[key] = opts[key];
         }
+      }
+      // Support nested theme object: { theme: { mode, primaryColor, borderRadius, fontFamily } }
+      if (opts && opts.theme && typeof opts.theme === 'object') {
+        var t = opts.theme;
+        if (t.mode) config.theme = t.mode;
+        if (t.primaryColor) config.primaryColor = t.primaryColor;
+        if (t.borderRadius) config.borderRadius = t.borderRadius;
+        if (t.fontFamily) config.fontFamily = t.fontFamily;
       }
     },
 

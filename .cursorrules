@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-06 (세션 26 — Shopify App Bridge + 181개국 + PH 에셋 + Stripe→LemonSqueezy 결제 전환)
+# 마지막 업데이트: 2026-03-06 (세션 26 — PH 런치 3/7 스케줄 + 셀러 온보딩 + Stripe→LS 문서 정리)
 
 ## 0. 프로젝트 개요
 
@@ -35,6 +35,8 @@
 - **요금제 정확한 숫자**: Free 500 / Starter $9 5K / Growth $29 25K / Enterprise custom
 - **Shopify 심사 대기**: App Bridge 4.x CDN + 세션 토큰 push 완료, 임베디드 확인 대기 → 통과 후 "검토를 위해 제출"
 - **✅ Stripe→LemonSqueezy 전환 완료 (세션 26)**: Stripe 계정 정지 → LemonSqueezy (MoR) 전환 완료. 코드 8개 파일 수정, DB 마이그레이션 완료. LS 신원 확인 승인 대기 중
+- **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
+- **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
 - **App Bridge 추가됨 (세션 26)**: layout.tsx에 App Bridge CDN script, components/shopify/ShopifyAppBridge.tsx, app/api/shopify/session/route.ts
 - **Git push는 Mac 터미널에서**: VM에서 push 불가. `npm run build` 확인 후 push 명령 제공
 - **console.log 금지**: 프로덕션 코드에 console.log 남기지 마라. 디버깅 후 반드시 제거
@@ -73,6 +75,7 @@
 | `app/api/v1/calculate/batch/route.ts` | 배치 TLC 계산 (최대 100건) |
 | `app/api/v1/sellers/keys/route.ts` | API 키 관리 (CRUD) |
 | `app/api/v1/sellers/usage/route.ts` | 사용량 조회 API |
+| `app/api/v1/sellers/analytics/route.ts` | 분석 API (countries/platforms/logs) |
 | `app/api/v1/countries/route.ts` | 지원국가 목록 API |
 | `app/api/v1/docs/route.ts` | OpenAPI 3.0 스펙 서빙 |
 
@@ -132,7 +135,7 @@
 | LemonSqueezy | potalapp.lemonsqueezy.com (Store #308025, 신원 확인 대기) |
 
 ## 6. Supabase 테이블
-- **B2B (활성)**: plans, sellers (billing_customer_id, billing_subscription_id, billing_provider), api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
+- **B2B (활성)**: plans, sellers (website, platform, billing_customer_id, billing_subscription_id, billing_provider), api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

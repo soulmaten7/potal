@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 26 완료 — Shopify App Bridge + 181개국 업데이트 + PH 에셋 + Stripe→LemonSqueezy 전환 완료 + LS 스토어 생성)
+> 마지막 업데이트: 2026-03-06 (세션 26 완료 — PH 런치 3/7 스케줄 + 셀러 온보딩 페이지 + Stripe→LS 문서 정리)
 
 ---
 
@@ -209,6 +209,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | 1-25 | Developer 문서 페이지 | ✅ 완료 |
 | 1-26 | 프로덕션 배포 (Vercel — potal-x1vl.vercel.app) | ✅ 완료 |
 | 1-27 | Google OAuth redirect URL 설정 (Supabase URL Configuration) | ✅ 완료 — Site URL + Redirect URLs 프로덕션 URL로 변경 |
+| 1-28 | 셀러 온보딩 개선 — 가입 시 website/platform 수집, Quick Start 가이드 | ✅ 완료 (세션 26) |
 
 ### 🟡 B2B Phase 2 (진행 중 — LLM 커스텀 앱 등록)
 
@@ -258,7 +259,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 | # | 항목 |
 |---|------|
-| 1 | Product Hunt 런치 — 에셋 완료 (갤러리 4장 + 썸네일), 런치 대기 |
+| 1 | ✅ Product Hunt 런치 — 2026-03-07 (토) 스케줄 완료. potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료, 6/6 만료) |
 | 2 | 투자자 피치 원페이저 PDF (숫자 생긴 후) |
 | 3 | 글로벌 확장 (US 시장 장악 후) |
 
@@ -345,6 +346,14 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - DB 마이그레이션 005: stripe_* → billing_* 컬럼 rename, billing_provider 추가
   - LS 스토어 생성 (potalapp.lemonsqueezy.com) + 은행 정보 + 신원 확인 제출 (승인 대기 2~3일)
   - npm run build 통과 ✅
+- **세션 26 (계속)**: Product Hunt 런치 스케줄 + 셀러 온보딩 + Stripe→LS 문서 정리
+  - Product Hunt 런치 스케줄 완료 (2026-03-07 토요일, potalapp.producthunt.com)
+  - PH 프로필 설정: "Euntae Jang", Headline "Founder of POTAL. Built with AI."
+  - PH 프로모 코드: PRODUCTHUNT (3개월 Starter 무료, 2026-06-06 만료)
+  - First Comment 작성 완료 (메이커 스토리)
+  - 셀러 온보딩 페이지 구현: signup에 website/platform 필드 추가, Quick Start 가이드 신규 생성
+  - Supabase 마이그레이션 006 실행 완료 (sellers 테이블 website/platform 컬럼)
+  - Stripe→LemonSqueezy 문서 전체 업데이트 (12+ 파일, i18n 5개 언어 포함)
 - **다음**: LS 신원 확인 승인 → Product 생성 → Variant ID/API Key/Webhook 설정 → Vercel 환경변수 → Shopify 임베디드 확인 통과 → 심사 제출
 - **블로커**: ~~Stripe 계정 정지~~ → **LemonSqueezy 전환 완료, 신원 확인 승인 대기 중**
 
@@ -401,16 +410,22 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 대시보드 더블 헤더 수정 (Header/Footer에 /dashboard 경로 체크 추가)
   - Supabase migration 004_stripe_billing.sql 실행 (current_period_end, updated_at 컬럼 추가)
 
-- ✅ 세션 26 Shopify App Bridge + 181개국 업데이트 + PH 에셋 (2026-03-06):
+- ✅ 세션 26 전체 (2026-03-06):
   - Shopify potal-test-store에 POTAL 앱 설치 확인, App Bridge 4.x CDN + 세션 토큰 인증 push 완료
   - Custom GPT OpenAPI schema: 139→181개국 업데이트 + `"schemas": {}` 추가 (ChatGPT 검증 에러 해결)
   - Gemini Gem CSV: 44→181개국 country-duty-reference.csv 재생성 + 수동 재업로드 완료
   - MCP 서버: tsc 재빌드 (build/index.js 재생성)
   - 잔여 "139 countries" 참조 전부 181로 업데이트: manifest.json, widget.js, openapi-gpt-actions.json (2개)
   - Product Hunt 에셋 5장 제작: gallery-1-hero, gallery-2-dashboard, gallery-3-integrations, gallery-4-pricing, thumbnail-240x240
-  - PRODUCT_HUNT_LAUNCH_PLAN.md 에셋 상태 ⏳→✅ 업데이트
   - Stripe 계정 정지 확인 → **LemonSqueezy 전환 완료** (코드 + DB + LS 스토어 생성)
-  - Supabase 마이그레이션 정상 확인 (Table Editor + SQL Editor 스크린샷 검증)
+  - Supabase 마이그레이션 005 정상 확인
+  - **Stripe→LemonSqueezy 문서 전체 업데이트**: .cursorrules, privacy, partners, plan-checker, i18n 5개 언어, MORNING-TODO, PH 런치 플랜 등 12+ 파일
+  - **Product Hunt 런치 스케줄**: 2026-03-07 (토) 스케줄 완료, First Comment 작성, 프로모 PRODUCTHUNT
+  - **셀러 온보딩 페이지**: signup에 website/platform 필드 추가, Quick Start 가이드 신규 (3탭: Shopify/Widget/API), developers 페이지에 링크 추가
+  - Supabase 마이그레이션 006 실행 완료 (sellers 테이블 website/platform 컬럼)
+  - **API 통합 테스트 (1-38)**: __tests__/api/api-v1-integration.test.ts 신규. 9 describe, 49 tests 전부 통과
+  - **위젯 커스텀 테마 (3-08)**: potal-widget.js에 primaryColor/borderRadius/fontFamily 커스텀 + widget_configs 자동 패치
+  - **대시보드 확장 (4-08/4-09/4-11)**: Countries/Platforms/Logs 3개 탭 + /api/v1/sellers/analytics API 신규
   - npm run build 통과 ✅
 
 - ✅ 세션 24 API 문서 + PH 런치 + HS Code 확장 (2026-03-06):
@@ -538,7 +553,8 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | `app/api/v1/sellers/keys/create/route.ts` | 세션 기반 API 키 생성 |
 | `app/api/v1/sellers/keys/revoke/route.ts` | 세션 기반 API 키 폐기 |
 | `app/auth/login/page.tsx` | 로그인 페이지 (이메일 + Google OAuth) |
-| `app/auth/signup/page.tsx` | 회원가입 페이지 (Google OAuth + 비밀번호 검증) |
+| `app/auth/signup/page.tsx` | 회원가입 페이지 (Google OAuth + 비밀번호 검증 + website/platform) |
+| `app/developers/quickstart/page.tsx` | Quick Start 가이드 (Shopify/JS Widget/REST API 3탭) |
 | `app/auth/callback/route.ts` | OAuth 콜백 핸들러 |
 | `app/context/I18nProvider.tsx` | i18n React Context Provider |
 | `app/i18n/translations/` | 6개 언어 번역 파일 (en, ko, ja, zh, es, de) |
@@ -578,8 +594,12 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | `app/lib/billing/subscription.ts` | 구독 라이프사이클 관리 |
 | `app/blog/` | SEO 블로그 (3개 B2B 글 — TLC 가이드, HS Code 분류, De Minimis) |
 
-### Supabase B2B 테이블 (003_b2b_schema.sql — SQL Editor 실행 필요)
-plans, sellers, api_keys, widget_configs, usage_logs + seller_monthly_usage VIEW
+### Supabase B2B 테이블
+plans, sellers (website, platform, billing_*), api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
+- 003_b2b_schema.sql: 기본 테이블 ✅
+- 004_stripe_billing.sql: current_period_end, updated_at ✅
+- 005_ls_billing.sql: stripe_*→billing_* rename, billing_provider ✅
+- 006_seller_onboarding.sql: website, platform 컬럼 ✅
 
 ### 프로덕션 환경 & 인증 정보
 
@@ -636,7 +656,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
-| 03-06 | 26 | **Shopify App Bridge + 181개국 업데이트 + PH 에셋 + Stripe→LemonSqueezy 전환**: App Bridge push + 임베디드 확인 대기. GPT/Gemini/MCP 181개국 업데이트. PH 에셋 5장 제작. **Stripe→LemonSqueezy 전환 완료**: stripe SDK 삭제, lemonsqueezy.ts/subscription/checkout/webhook/portal 재작성, DB 마이그레이션 005 (billing_* 컬럼), LS 스토어 생성 (potalapp.lemonsqueezy.com), 신원확인 제출 |
+| 03-06 | 26 | **PH 런치 + 셀러 온보딩 + Stripe→LS 문서 정리 + App Bridge + 181개국 + PH 에셋 + LS 전환**: Stripe→LS 문서 전체 업데이트 (12+ 파일, i18n 5개 언어). **PH 런치 3/7 토 스케줄 완료** (potalapp.producthunt.com, 프로모 PRODUCTHUNT). **셀러 온보딩**: signup에 website/platform 추가, Quick Start 가이드 3탭 신규 (Shopify/Widget/API), DB migration 006. 이전: App Bridge push + 임베디드 확인 대기. GPT/Gemini/MCP 181개국 업데이트. PH 에셋 5장 제작. **LS 전환 완료**: stripe SDK 삭제, lemonsqueezy.ts/subscription/checkout/webhook/portal 재작성, DB migration 005, LS 스토어 생성, 신원확인 제출 |
 | 03-06 | 25 | **Cost Engine 대규모 업그레이드**: 4개 신규 관세 API Provider (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) 추가 → 총 7개 정부 API. country-data.ts 137→181개국 확장. HS 챕터 56→97개(전체 커버). FTA 27→63개 협정. India 세금 계산 (BCD+SWS+IGST 캐스케이딩). Section 301 tariffs 2025/2026 업데이트. 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee). Batch calculation Promise.allSettled 병렬화. 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일) |
 | 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |
 | 03-06 | 23 | **B2C 잔여 코드 정리 + layout 최종 완료**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료, data.ts B2C 보존 결정. B2C→B2B 전환 사실상 최종 완료 (잔여: lib/search/ 등 B2C 백엔드만 보존) |

@@ -37,13 +37,38 @@ interface UsageData {
   usagePercent: number;
 }
 
-type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'billing';
+interface CountryAnalytics {
+  country: string;
+  requests: number;
+  successRate: number;
+  avgResponseMs: number;
+}
+
+interface PlatformAnalytics {
+  endpoint: string;
+  requests: number;
+  successRate: number;
+}
+
+interface ApiLogEntry {
+  endpoint: string;
+  method: string;
+  statusCode: number;
+  responseTimeMs: number;
+  destinationCountry: string;
+  timestamp: string;
+}
+
+type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '📊' },
   { id: 'keys', label: 'API Keys', icon: '🔑' },
   { id: 'widget', label: 'Widget', icon: '🧩' },
   { id: 'usage', label: 'Usage', icon: '📈' },
+  { id: 'countries', label: 'Countries', icon: '🌍' },
+  { id: 'platforms', label: 'Platforms', icon: '🤖' },
+  { id: 'logs', label: 'Logs', icon: '📋' },
   { id: 'billing', label: 'Billing', icon: '💳' },
 ];
 
@@ -146,6 +171,12 @@ export default function DashboardContent() {
   const [createdKey, setCreatedKey] = useState<string | null>(null);
   const [showCreateKey, setShowCreateKey] = useState(false);
 
+  // Analytics (4-08, 4-09, 4-11)
+  const [countryData, setCountryData] = useState<CountryAnalytics[]>([]);
+  const [platformData, setPlatformData] = useState<PlatformAnalytics[]>([]);
+  const [logData, setLogData] = useState<ApiLogEntry[]>([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+
   // ─── Load Data ────────────────────────────────────
   const loadData = useCallback(async () => {
     if (!session) return;
@@ -189,6 +220,33 @@ export default function DashboardContent() {
     }
     loadData();
   }, [session, loadData, router]);
+
+  // ─── Load Analytics (lazy — only when tab is selected) ──
+  const loadAnalytics = useCallback(async (type: 'countries' | 'platforms' | 'logs') => {
+    if (!session) return;
+    setAnalyticsLoading(true);
+    try {
+      const limit = type === 'logs' ? '100' : '';
+      const url = `/api/v1/sellers/analytics?type=${type}${limit ? `&limit=${limit}` : ''}`;
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (type === 'countries') setCountryData(data.data.countries || []);
+        else if (type === 'platforms') setPlatformData(data.data.platforms || []);
+        else if (type === 'logs') setLogData(data.data.logs || []);
+      }
+    } catch { /* silent fail */ }
+    finally { setAnalyticsLoading(false); }
+  }, [session]);
+
+  // Load analytics when tab changes
+  useEffect(() => {
+    if (activeTab === 'countries' && countryData.length === 0) loadAnalytics('countries');
+    if (activeTab === 'platforms' && platformData.length === 0) loadAnalytics('platforms');
+    if (activeTab === 'logs' && logData.length === 0) loadAnalytics('logs');
+  }, [activeTab, countryData.length, platformData.length, logData.length, loadAnalytics]);
 
   // ─── Create Key (uses secret key from keys list) ──
   const getSecretKey = () => {
@@ -686,6 +744,170 @@ export default function DashboardContent() {
               )}
             </div>
           )}
+          {/* ── Countries (4-08) ── */}
+          {activeTab === 'countries' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700 }}>Country Traffic</h2>
+                <button onClick={() => loadAnalytics('countries')} disabled={analyticsLoading} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white', color: '#333', fontSize: 13, cursor: 'pointer' }}>
+                  {analyticsLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              </div>
+              {analyticsLoading && countryData.length === 0 ? (
+                <div style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading analytics...</div>
+              ) : countryData.length === 0 ? (
+                <div style={{ background: 'white', borderRadius: 12, padding: 40, border: '1px solid #e5e7eb', textAlign: 'center', color: '#999' }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🌍</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No traffic data yet</div>
+                  <div style={{ fontSize: 14 }}>Country analytics will appear once API calls are made.</div>
+                </div>
+              ) : (
+                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: 600, color: '#666' }}>#</th>
+                        <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: 600, color: '#666' }}>Country</th>
+                        <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: 600, color: '#666' }}>Requests</th>
+                        <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: 600, color: '#666' }}>Success</th>
+                        <th style={{ textAlign: 'right', padding: '12px 16px', fontWeight: 600, color: '#666' }}>Avg Speed</th>
+                        <th style={{ textAlign: 'left', padding: '12px 16px', fontWeight: 600, color: '#666', width: '30%' }}>Distribution</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {countryData.slice(0, 20).map((row, i) => {
+                        const maxReq = countryData[0]?.requests || 1;
+                        const pct = Math.round((row.requests / maxReq) * 100);
+                        return (
+                          <tr key={row.country} style={{ borderTop: '1px solid #f0f0f0' }}>
+                            <td style={{ padding: '10px 16px', color: '#999', fontSize: 13 }}>{i + 1}</td>
+                            <td style={{ padding: '10px 16px', fontWeight: 600 }}>{row.country}</td>
+                            <td style={{ padding: '10px 16px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{row.requests.toLocaleString()}</td>
+                            <td style={{ padding: '10px 16px', textAlign: 'right' }}>
+                              <span style={{ color: row.successRate >= 95 ? '#16a34a' : row.successRate >= 80 ? '#d97706' : '#dc2626' }}>{row.successRate}%</span>
+                            </td>
+                            <td style={{ padding: '10px 16px', textAlign: 'right', color: '#666', fontSize: 13 }}>{row.avgResponseMs}ms</td>
+                            <td style={{ padding: '10px 16px' }}>
+                              <div style={{ background: '#f0f0f0', borderRadius: 4, height: 8, overflow: 'hidden' }}>
+                                <div style={{ background: '#3b82f6', height: '100%', width: `${pct}%`, borderRadius: 4 }} />
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Platforms (4-09) ── */}
+          {activeTab === 'platforms' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700 }}>Platform Analytics</h2>
+                <button onClick={() => loadAnalytics('platforms')} disabled={analyticsLoading} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white', color: '#333', fontSize: 13, cursor: 'pointer' }}>
+                  {analyticsLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              </div>
+              {analyticsLoading && platformData.length === 0 ? (
+                <div style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading analytics...</div>
+              ) : platformData.length === 0 ? (
+                <div style={{ background: 'white', borderRadius: 12, padding: 40, border: '1px solid #e5e7eb', textAlign: 'center', color: '#999' }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>🤖</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No platform data yet</div>
+                  <div style={{ fontSize: 14 }}>Platform analytics will appear once API calls come from different endpoints.</div>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginBottom: 24 }}>
+                    {platformData.map((p) => {
+                      const totalReqs = platformData.reduce((s, x) => s + x.requests, 0);
+                      const pct = totalReqs > 0 ? Math.round((p.requests / totalReqs) * 100) : 0;
+                      const label = p.endpoint.includes('calculate') ? 'Calculate API'
+                        : p.endpoint.includes('classify') ? 'Classify API'
+                        : p.endpoint.includes('countries') ? 'Countries API'
+                        : p.endpoint.includes('widget') ? 'Widget Config'
+                        : p.endpoint.includes('rates') ? 'Rates API'
+                        : p.endpoint;
+                      return (
+                        <div key={p.endpoint} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                          <div style={{ fontSize: 13, color: '#888', fontWeight: 600, marginBottom: 4 }}>{label}</div>
+                          <div style={{ fontSize: 11, color: '#bbb', fontFamily: 'monospace', marginBottom: 12 }}>{p.endpoint}</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                            <div style={{ fontSize: 28, fontWeight: 800 }}>{p.requests.toLocaleString()}</div>
+                            <div style={{ fontSize: 14, color: '#888' }}>{pct}%</div>
+                          </div>
+                          <div style={{ background: '#f0f0f0', borderRadius: 4, height: 6, overflow: 'hidden', marginBottom: 8 }}>
+                            <div style={{ background: '#F59E0B', height: '100%', width: `${pct}%`, borderRadius: 4 }} />
+                          </div>
+                          <div style={{ fontSize: 12, color: p.successRate >= 95 ? '#16a34a' : '#d97706' }}>
+                            {p.successRate}% success rate
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Logs (4-11) ── */}
+          {activeTab === 'logs' && (
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700 }}>API Logs</h2>
+                <button onClick={() => loadAnalytics('logs')} disabled={analyticsLoading} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white', color: '#333', fontSize: 13, cursor: 'pointer' }}>
+                  {analyticsLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              </div>
+              {analyticsLoading && logData.length === 0 ? (
+                <div style={{ padding: 40, textAlign: 'center', color: '#999' }}>Loading logs...</div>
+              ) : logData.length === 0 ? (
+                <div style={{ background: 'white', borderRadius: 12, padding: 40, border: '1px solid #e5e7eb', textAlign: 'center', color: '#999' }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>📋</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>No logs yet</div>
+                  <div style={{ fontSize: 14 }}>API request logs will appear here once calls are made.</div>
+                </div>
+              ) : (
+                <div style={{ background: 'white', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th style={{ textAlign: 'left', padding: '10px 14px', fontWeight: 600, color: '#666' }}>Time</th>
+                        <th style={{ textAlign: 'left', padding: '10px 14px', fontWeight: 600, color: '#666' }}>Method</th>
+                        <th style={{ textAlign: 'left', padding: '10px 14px', fontWeight: 600, color: '#666' }}>Endpoint</th>
+                        <th style={{ textAlign: 'center', padding: '10px 14px', fontWeight: 600, color: '#666' }}>Status</th>
+                        <th style={{ textAlign: 'center', padding: '10px 14px', fontWeight: 600, color: '#666' }}>Country</th>
+                        <th style={{ textAlign: 'right', padding: '10px 14px', fontWeight: 600, color: '#666' }}>Speed</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {logData.map((log, i) => (
+                        <tr key={i} style={{ borderTop: '1px solid #f0f0f0' }}>
+                          <td style={{ padding: '8px 14px', color: '#888', fontSize: 12, whiteSpace: 'nowrap' }}>
+                            {new Date(log.timestamp).toLocaleString()}
+                          </td>
+                          <td style={{ padding: '8px 14px' }}>
+                            <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700, fontFamily: 'monospace', background: log.method === 'POST' ? '#dbeafe' : '#f0fdf4', color: log.method === 'POST' ? '#2563eb' : '#16a34a' }}>{log.method}</span>
+                          </td>
+                          <td style={{ padding: '8px 14px', fontFamily: 'monospace', fontSize: 12, color: '#555' }}>{log.endpoint}</td>
+                          <td style={{ padding: '8px 14px', textAlign: 'center' }}>
+                            <span style={{ padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, background: log.statusCode < 400 ? '#dcfce7' : log.statusCode < 500 ? '#fef3c7' : '#fee2e2', color: log.statusCode < 400 ? '#16a34a' : log.statusCode < 500 ? '#d97706' : '#dc2626' }}>{log.statusCode}</span>
+                          </td>
+                          <td style={{ padding: '8px 14px', textAlign: 'center', fontSize: 12 }}>{log.destinationCountry || '—'}</td>
+                          <td style={{ padding: '8px 14px', textAlign: 'right', fontSize: 12, color: log.responseTimeMs > 500 ? '#d97706' : '#16a34a', fontVariantNumeric: 'tabular-nums' }}>{log.responseTimeMs}ms</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ── Billing ── */}
           {activeTab === 'billing' && (
             <div>

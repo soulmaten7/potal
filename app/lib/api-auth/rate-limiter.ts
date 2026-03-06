@@ -82,3 +82,8 @@ export function checkRateLimit(
     resetAt: now + WINDOW_MS,
   };
 }
+
+/** Reset all rate limit entries — for testing only */
+export function _resetAllForTesting(): void {
+  store.clear();
+}
