@@ -15,7 +15,7 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
       },
       {
         heading: '2. Service Description',
-        body: 'POTAL provides an API and embeddable widget that calculates import duties, taxes, and fees for international shipments across 139+ countries. The Service includes REST API endpoints, a Shopify App, and related developer tools. POTAL does not guarantee the accuracy of duty/tax calculations, as rates may change based on trade policy updates.',
+        body: 'POTAL provides an API and embeddable widget that calculates import duties, taxes, and fees for international shipments across 181+ countries. The Service includes REST API endpoints, a Shopify App, and related developer tools. POTAL does not guarantee the accuracy of duty/tax calculations, as rates may change based on trade policy updates.',
       },
       {
         heading: '3. API Usage and Rate Limits',

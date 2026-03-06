@@ -188,6 +188,72 @@ export function calculateBrazilImportTaxes(
   return { ipi, pisCofins, icms, totalTax, effectiveRate };
 }
 
+// ─── India Import Tax Constants ──────────────────────
+
+/** India Social Welfare Surcharge — 10% of Basic Customs Duty */
+export const INDIA_SWS_RATE = 0.10;
+
+/** India standard IGST rate (most goods) */
+export const INDIA_IGST_STANDARD = 0.18;
+
+/** India IGST rates by category (simplified) */
+export const INDIA_IGST_RATES: Record<string, number> = {
+  // 5% — essential goods
+  '01': 0.05, '02': 0.05, '03': 0.05, '04': 0.05, '07': 0.05,
+  '08': 0.05, '09': 0.05, '10': 0.05, '11': 0.05, '12': 0.05,
+  '19': 0.05, '23': 0.05,
+  // 12%
+  '15': 0.12, '16': 0.12, '17': 0.12, '20': 0.12, '21': 0.12,
+  '22': 0.12, '33': 0.12, '34': 0.12,
+  // 18% — standard (most manufactured goods)
+  '28': 0.18, '29': 0.18, '30': 0.18, '32': 0.18, '38': 0.18,
+  '39': 0.18, '40': 0.18, '42': 0.18, '44': 0.18, '48': 0.18,
+  '49': 0.18, '54': 0.18, '55': 0.18, '56': 0.18, '59': 0.18,
+  '61': 0.18, '62': 0.18, '63': 0.18, '64': 0.18, '68': 0.18,
+  '69': 0.18, '70': 0.18, '72': 0.18, '73': 0.18, '74': 0.18,
+  '76': 0.18, '82': 0.18, '83': 0.18, '84': 0.18, '85': 0.18,
+  '87': 0.18, '90': 0.18, '94': 0.18, '96': 0.18,
+  // 28% — luxury / demerit goods
+  '24': 0.28, '71': 0.28, '95': 0.28,
+  // Note: '87' (vehicles) is in 18% bracket above; luxury vehicles may attract 28% + cess but simplified to 18%
+};
+
+/**
+ * Get IGST rate for an HS chapter.
+ * Defaults to 18% (standard rate) if chapter not found.
+ */
+export function getIndiaIgstRate(hsChapter: string): number {
+  return INDIA_IGST_RATES[hsChapter] ?? INDIA_IGST_STANDARD;
+}
+
+/**
+ * Calculate India cascading import taxes.
+ *
+ * India import duty structure:
+ * 1. Basic Customs Duty (BCD) — varies by HS code (already calculated as importDuty)
+ * 2. Social Welfare Surcharge (SWS) = 10% of BCD
+ * 3. IGST = rate × (Assessable Value + BCD + SWS)
+ *
+ * Assessable Value = CIF value (product + shipping + insurance)
+ */
+export function calculateIndiaImportTaxes(
+  declaredValue: number,
+  importDuty: number,
+  igstRate: number
+): { sws: number; igst: number; totalTax: number; effectiveRate: number } {
+  // Social Welfare Surcharge = 10% of Basic Customs Duty
+  const sws = importDuty * INDIA_SWS_RATE;
+
+  // IGST base = CIF + BCD + SWS
+  const igstBase = declaredValue + importDuty + sws;
+  const igst = igstBase * igstRate;
+
+  const totalTax = sws + igst;
+  const effectiveRate = declaredValue > 0 ? totalTax / declaredValue : 0;
+
+  return { sws, igst, totalTax, effectiveRate };
+}
+
 // ─── Zipcode to State Mapping (first 3 digits) ──────
 
 export function zipcodeToState(zipcode: string): string | null {

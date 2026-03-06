@@ -1,6 +1,6 @@
 # POTAL MCP Server
 
-Calculate the total landed cost of cross-border purchases directly in Claude. Get instant breakdowns of import duties, taxes (VAT/GST), customs fees, and shipping for 139 countries.
+Calculate the total landed cost of cross-border purchases directly in Claude. Get instant breakdowns of import duties, taxes (VAT/GST), customs fees, and shipping for 181 countries.
 
 ## Tools
 
@@ -18,7 +18,7 @@ Calculate the total cost for a product being shipped internationally.
 - `hsCode` — Harmonized System code if known
 
 ### `list_supported_countries`
-Get all 139 supported countries with VAT/GST rates, duty rates, and de minimis thresholds.
+Get all 181 supported countries with VAT/GST rates, duty rates, and de minimis thresholds.
 
 ## Setup
 
@@ -107,6 +107,6 @@ Once connected, ask Claude:
 
 ## About POTAL
 
-POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 139 countries and cover duties, taxes, and fees.
+POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 181 countries and cover duties, taxes, and fees.
 
 Website: [potal-x1vl.vercel.app](https://potal-x1vl.vercel.app)

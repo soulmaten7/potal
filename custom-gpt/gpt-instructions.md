@@ -55,7 +55,7 @@ When presenting results, always:
 
 ## Important Notes
 
-- Supported countries: 139 countries worldwide
+- Supported countries: 181 countries worldwide
 - Duty rates are estimates based on product category — actual rates may vary by specific product
 - For US destinations, always ask for ZIP code to include state sales tax
 - De minimis thresholds: Items below certain values may be duty-free (e.g., US $800, EU €150, UK £135)
@@ -70,6 +70,6 @@ If the API returns an error or you're unsure:
 
 ## About POTAL
 
-POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 139 countries and cover duties, taxes, and fees to help shoppers and businesses understand the true cost of international trade.
+POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 181 countries and cover duties, taxes, and fees to help shoppers and businesses understand the true cost of international trade.
 
 Website: https://potal-x1vl.vercel.app

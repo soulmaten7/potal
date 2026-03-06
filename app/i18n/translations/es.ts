@@ -12,14 +12,14 @@ export const es = {
   // Hero Section
   'hero.title': 'Stripe para el comercio transfronterizo',
   'hero.subtitle': 'Muestra a los compradores el costo total al destino al instante',
-  'hero.description': 'Calcula aranceles, impuestos y envío para 139 países en tiempo real. Integra nuestro widget o API para reducir la fricción en el pago y aumentar las ventas internacionales.',
+  'hero.description': 'Calcula aranceles, impuestos y envío para 181 países en tiempo real. Integra nuestro widget o API para reducir la fricción en el pago y aumentar las ventas internacionales.',
   'hero.cta': 'Comenzar gratis',
   'hero.tryCta': 'Probar demo',
 
   // Features Section
   'features.title': 'Por qué elegir POTAL',
   'features.realTime.title': 'Cálculos en tiempo real',
-  'features.realTime.description': 'Cálculo instantáneo de aranceles, impuestos y envío para los 139 países',
+  'features.realTime.description': 'Cálculo instantáneo de aranceles, impuestos y envío para los 181 países',
   'features.reliable.title': 'Alta fiabilidad',
   'features.reliable.description': 'Basado en experiencia probada en comercio transfronterizo con 99.9% de disponibilidad',
   'features.easyIntegration.title': 'Fácil integración',

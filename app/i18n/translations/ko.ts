@@ -12,14 +12,14 @@ export const ko = {
   // Hero Section
   'hero.title': '국제 전자상거래를 위한 Stripe',
   'hero.subtitle': '구매자에게 총 착륙 비용을 즉시 표시하세요',
-  'hero.description': '139개국에 대한 관세, 세금, 배송료를 실시간으로 계산하세요. 당사의 위젯이나 API를 임베드하여 결제 마찰을 줄이고 국제 판매를 증대하세요.',
+  'hero.description': '181개국에 대한 관세, 세금, 배송료를 실시간으로 계산하세요. 당사의 위젯이나 API를 임베드하여 결제 마찰을 줄이고 국제 판매를 증대하세요.',
   'hero.cta': '무료로 시작하기',
   'hero.tryCta': '데모 시연',
 
   // Features Section
   'features.title': 'POTAL을 선택해야 하는 이유',
   'features.realTime.title': '실시간 계산',
-  'features.realTime.description': '139개 국가 모두에 대한 즉각적인 관세, 세금, 배송료 계산',
+  'features.realTime.description': '181개 국가 모두에 대한 즉각적인 관세, 세금, 배송료 계산',
   'features.reliable.title': '높은 신뢰성',
   'features.reliable.description': '검증된 국제 전자상거래 전문 지식 기반의 99.9% 가용성',
   'features.easyIntegration.title': '쉬운 통합',

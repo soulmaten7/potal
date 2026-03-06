@@ -4,7 +4,7 @@ import React from 'react';
 
 // [DATA] Platform Metrics
 const STATS = [
-  { value: "139", label: "Countries", description: "Global duty & tax coverage" },
+  { value: "181", label: "Countries", description: "Global duty & tax coverage" },
   { value: "120ms", label: "Avg Response", description: "Real-time API calculations" },
   { value: "99.9%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
   { value: "50+", label: "HS Categories", description: "AI-powered classification" },
@@ -19,7 +19,7 @@ const VALUES = [
   },
   {
     title: "Global by Default",
-    description: "Cross-border commerce shouldn't be complex. One API call returns landed costs for 139 countries, with FTA detection and de minimis rules built in.",
+    description: "Cross-border commerce shouldn't be complex. One API call returns landed costs for 181 countries, with FTA detection and de minimis rules built in.",
     icon: "🌐"
   },
   {

@@ -35,7 +35,7 @@ export default function TermsPage() {
             POTAL is a Total Landed Cost API and Shopify app that helps
             e-commerce sellers calculate and display import duties, taxes, and
             fees for international orders. Our service provides real-time
-            calculations covering 139+ countries using AI-powered HS Code
+            calculations covering 181+ countries using AI-powered HS Code
             classification, FTA detection, and de minimis rules. We provide
             calculation tools and data — actual customs charges are determined
             by the destination country&apos;s customs authority.

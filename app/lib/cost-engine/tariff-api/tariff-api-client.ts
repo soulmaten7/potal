@@ -18,6 +18,10 @@ import type { HsCodeDutyRate } from '../hs-code/types';
 import { fetchUsitcDutyRate } from './usitc-provider';
 import { fetchUkTariffDutyRate } from './uk-tariff-provider';
 import { fetchEuTaricDutyRate, isEuMemberState } from './eu-taric-provider';
+import { fetchCanadaCbsaDutyRate } from './canada-cbsa-provider';
+import { fetchAustraliaDutyRate } from './australia-abf-provider';
+import { fetchKoreaDutyRate } from './korea-kcs-provider';
+import { fetchJapanDutyRate } from './japan-customs-provider';
 
 // ─── Configuration ────────────────────────────────
 
@@ -334,6 +338,22 @@ export async function fetchDutyRateWithFallback(
       // EU 27개국: EU TARIC via XI endpoint (무료, 10자리)
       result = await fetchEuTaricDutyRate(hsCode, dest, originCountry, config.timeoutMs);
       providerName = 'eu-taric';
+    } else if (dest === 'CA') {
+      // 캐나다: CBSA Tariff Schedule (하드코딩 + FTA 적용)
+      result = await fetchCanadaCbsaDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'canada-cbsa';
+    } else if (dest === 'AU') {
+      // 호주: ABF Customs Tariff (하드코딩 + FTA 적용)
+      result = await fetchAustraliaDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'australia-abf';
+    } else if (dest === 'JP') {
+      // 일본: Japan Customs Tariff (하드코딩 + FTA 적용)
+      result = await fetchJapanDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'japan-customs';
+    } else if (dest === 'KR') {
+      // 한국: KCS Customs Tariff (하드코딩 + FTA 적용)
+      result = await fetchKoreaDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'korea-kcs';
     } else {
       // 기타 국가: 기존 WTO/Dutify 프로바이더 사용
       result = await openTradeProvider.fetchDutyRate(hsCode, destinationCountry, originCountry);

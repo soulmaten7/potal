@@ -7,12 +7,12 @@
  * 1. DB (Supabase) — duty rates, FTA, country profiles (async, cached)
  * 2. Hardcoded fallback — if DB unavailable
  *
- * Supports 58+ destination countries.
+ * Supports 181 destination countries.
  * Delegates to US-specific engine for US destinations.
  */
 
 import type { CostInput, LandedCost, CostBreakdownItem } from './types';
-import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes } from './CostEngine';
+import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes, calculateIndiaImportTaxes, getIndiaIgstRate } from './CostEngine';
 import { getCountryProfile, type CountryTaxProfile } from './country-data';
 import { classifyWithOverride } from './hs-code';
 import type { HsClassificationResult } from './hs-code';
@@ -271,6 +271,14 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     vat = brTaxes.totalTax;
     effectiveVatRate = brTaxes.effectiveRate;
     effectiveVatLabel = brState ? `ICMS ${brState}` : 'Import Taxes';
+  } else if (profile.code === 'IN' && !isDomestic && !deMinimisApplied) {
+    // India: BCD + SWS (10% of BCD) + IGST (on CIF + BCD + SWS)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const igstRate = hsChapter ? getIndiaIgstRate(hsChapter) : 0.18;
+    const inTaxes = calculateIndiaImportTaxes(declaredValue, importDuty, igstRate);
+    vat = inTaxes.totalTax;
+    effectiveVatRate = inTaxes.effectiveRate;
+    effectiveVatLabel = 'IGST+SWS';
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -307,6 +315,13 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     breakdown.push({ label: 'IPI', amount: round(brTaxes.ipi), note: '~10% industrial tax' });
     breakdown.push({ label: 'PIS/COFINS', amount: round(brTaxes.pisCofins), note: '11.75% federal' });
     breakdown.push({ label: 'ICMS', amount: round(brTaxes.icms), note: `${(icmsRate * 100).toFixed(1)}% ${brState || 'avg'}` });
+  } else if (profile.code === 'IN' && !isDomestic && !deMinimisApplied && vat > 0) {
+    // India: detailed tax breakdown (SWS + IGST)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const igstRate = hsChapter ? getIndiaIgstRate(hsChapter) : 0.18;
+    const inTaxes = calculateIndiaImportTaxes(declaredValue, importDuty, igstRate);
+    breakdown.push({ label: 'SWS', amount: round(inTaxes.sws), note: '10% of BCD' });
+    breakdown.push({ label: 'IGST', amount: round(inTaxes.igst), note: `${(igstRate * 100).toFixed(0)}% integrated GST` });
   } else if (vat > 0) {
     breakdown.push({
       label: effectiveVatLabel === 'None' ? 'Tax' : effectiveVatLabel,
@@ -315,11 +330,46 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     });
   }
 
-  // US MPF (Merchandise Processing Fee) for non-domestic
+  // Country-specific processing / customs handling fees
   let mpf = 0;
-  if (profile.code === 'US' && !isDomestic && !deMinimisApplied) {
-    mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
-    breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+  if (!isDomestic && !deMinimisApplied) {
+    if (profile.code === 'US') {
+      // US CBP Merchandise Processing Fee: 0.3464%, min $31.67, max $614.35
+      mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+    } else if (profile.code === 'AU') {
+      // Australia Import Processing Charge (IPC): AUD 88 (~$56 USD) for standard entries
+      mpf = 56;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'ABF IPC ~AUD 88' });
+    } else if (profile.code === 'NZ') {
+      // New Zealand Biosecurity System Entry Levy: NZD 33.32 (~$20 USD)
+      // + MPI Transitional Facility Operator levy if applicable
+      mpf = 20;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'MPI Biosecurity Levy' });
+    } else if (profile.code === 'CA') {
+      // Canada CBSA: No explicit MPF for most shipments, but customs broker fee ~$10-25
+      // We estimate a modest broker/handling fee
+      mpf = 10;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBSA handling est.' });
+    } else if (profile.code === 'JP') {
+      // Japan: Customs examination fee ¥200 (~$1.30) + broker ~¥3000 (~$20)
+      mpf = 20;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Customs broker est.' });
+    } else if (profile.code === 'KR') {
+      // Korea: Customs clearance fee ~KRW 10,000-30,000 (~$8-23)
+      mpf = 15;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'KCS clearance est.' });
+    } else if (profile.code === 'IN') {
+      // India: Landing charges 1% of CIF + CESS (varies)
+      mpf = declaredValue * 0.01;
+      breakdown.push({ label: 'Landing Charges', amount: round(mpf), note: '1% of CIF' });
+    } else if (profile.code === 'CH') {
+      // Switzerland: Statistical fee CHF 15 (~$17)
+      mpf = 17;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Statistical fee' });
+    }
+    // EU & UK: No separate customs processing fee for standard imports
+    // (brokerage is private, not government-imposed)
   }
 
   const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf;
@@ -504,6 +554,14 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     vat = brTaxes.totalTax;
     effectiveVatRateSync = brTaxes.effectiveRate;
     effectiveVatLabelSync = brState ? `ICMS ${brState}` : 'Import Taxes';
+  } else if (profile.code === 'IN' && !isDomestic && !deMinimisApplied) {
+    // India: BCD + SWS (10% of BCD) + IGST (on CIF + BCD + SWS)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const igstRate = hsChapter ? getIndiaIgstRate(hsChapter) : 0.18;
+    const inTaxes = calculateIndiaImportTaxes(declaredValue, importDuty, igstRate);
+    vat = inTaxes.totalTax;
+    effectiveVatRateSync = inTaxes.effectiveRate;
+    effectiveVatLabelSync = 'IGST+SWS';
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -535,6 +593,13 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     breakdown.push({ label: 'IPI', amount: round(brTaxes.ipi), note: '~10% industrial tax' });
     breakdown.push({ label: 'PIS/COFINS', amount: round(brTaxes.pisCofins), note: '11.75% federal' });
     breakdown.push({ label: 'ICMS', amount: round(brTaxes.icms), note: `${(icmsRate * 100).toFixed(1)}% ${brState || 'avg'}` });
+  } else if (profile.code === 'IN' && !isDomestic && !deMinimisApplied && vat > 0) {
+    // India: detailed tax breakdown (SWS + IGST)
+    const hsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const igstRate = hsChapter ? getIndiaIgstRate(hsChapter) : 0.18;
+    const inTaxes = calculateIndiaImportTaxes(declaredValue, importDuty, igstRate);
+    breakdown.push({ label: 'SWS', amount: round(inTaxes.sws), note: '10% of BCD' });
+    breakdown.push({ label: 'IGST', amount: round(inTaxes.igst), note: `${(igstRate * 100).toFixed(0)}% integrated GST` });
   } else if (vat > 0) {
     breakdown.push({
       label: effectiveVatLabelSync === 'None' ? 'Tax' : effectiveVatLabelSync,
@@ -543,11 +608,34 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
     });
   }
 
-  // US MPF
+  // Country-specific processing / customs handling fees
   let mpf = 0;
-  if (profile.code === 'US' && !isDomestic && !deMinimisApplied) {
-    mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
-    breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+  if (!isDomestic && !deMinimisApplied) {
+    if (profile.code === 'US') {
+      mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+    } else if (profile.code === 'AU') {
+      mpf = 56;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'ABF IPC ~AUD 88' });
+    } else if (profile.code === 'NZ') {
+      mpf = 20;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'MPI Biosecurity Levy' });
+    } else if (profile.code === 'CA') {
+      mpf = 10;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBSA handling est.' });
+    } else if (profile.code === 'JP') {
+      mpf = 20;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Customs broker est.' });
+    } else if (profile.code === 'KR') {
+      mpf = 15;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'KCS clearance est.' });
+    } else if (profile.code === 'IN') {
+      mpf = declaredValue * 0.01;
+      breakdown.push({ label: 'Landing Charges', amount: round(mpf), note: '1% of CIF' });
+    } else if (profile.code === 'CH') {
+      mpf = 17;
+      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'Statistical fee' });
+    }
   }
 
   const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf;
@@ -618,13 +706,32 @@ function calculateWithDefaults(input: GlobalCostInput, destination: string): Glo
 
 // ─── Batch Calculators ──────────────────────────────
 
+/**
+ * Async batch calculator — runs all items in parallel using Promise.allSettled.
+ * Failed items are silently skipped (logged to console.warn).
+ * Concurrency: unlimited (Promise.allSettled). For rate-limited APIs,
+ * the individual providers already have circuit breakers.
+ */
 export async function calculateGlobalBatchLandedCostsAsync(
   items: (GlobalCostInput & { id: string })[]
 ): Promise<Map<string, GlobalLandedCost>> {
   const costMap = new Map<string, GlobalLandedCost>();
-  for (const item of items) {
-    costMap.set(item.id, await calculateGlobalLandedCostAsync(item));
+
+  const results = await Promise.allSettled(
+    items.map(async (item) => ({
+      id: item.id,
+      result: await calculateGlobalLandedCostAsync(item),
+    }))
+  );
+
+  for (const settled of results) {
+    if (settled.status === 'fulfilled') {
+      costMap.set(settled.value.id, settled.value.result);
+    } else {
+      console.warn('[POTAL Batch] Item failed:', settled.reason);
+    }
   }
+
   return costMap;
 }
 

@@ -102,7 +102,7 @@ const FAQS = [
   },
   {
     q: 'Do you support all countries?',
-    a: 'Yes — POTAL supports 139 countries with accurate duty rates, VAT/GST, de minimis thresholds, and FTA detection. The US, Canada, and Brazil also have state/province-level tax calculations.',
+    a: 'Yes — POTAL supports 181 countries with accurate duty rates, VAT/GST, de minimis thresholds, and FTA detection. The US, Canada, and Brazil also have state/province-level tax calculations.',
   },
   {
     q: 'Is there a free trial for Growth?',
@@ -158,7 +158,7 @@ export default function PricingPage() {
             Pay only for what you use
           </h1>
           <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', maxWidth: 600, margin: '0 auto 32px' }}>
-            Start free, scale as you grow. All plans include 139-country coverage
+            Start free, scale as you grow. All plans include 181-country coverage
             with real-time duty, tax, and shipping calculations.
           </p>
 

@@ -24,7 +24,7 @@ export default function PrivacyPage() {
               1. Introduction
             </h2>
             <p>
-              POTAL (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is a Total Landed Cost calculation infrastructure platform operated by EUNTAE JANG. We help e-commerce merchants and AI shopping agents calculate accurate import duties, taxes, and fees for international orders across 139 countries. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website at potal.app, our Shopify app, our API services, and all related services, features, and functionality (collectively, the &quot;Service&quot;).
+              POTAL (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is a Total Landed Cost calculation infrastructure platform operated by EUNTAE JANG. We help e-commerce merchants and AI shopping agents calculate accurate import duties, taxes, and fees for international orders across 181 countries. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website at potal.app, our Shopify app, our API services, and all related services, features, and functionality (collectively, the &quot;Service&quot;).
             </p>
           </section>
 

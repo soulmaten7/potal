@@ -12,14 +12,14 @@ export const de = {
   // Hero Section
   'hero.title': 'Stripe für grenzüberschreitenden Handel',
   'hero.subtitle': 'Zeigen Sie Käufern sofort die Gesamtkosten',
-  'hero.description': 'Berechnen Sie Zölle, Steuern und Versandkosten für 139 Länder in Echtzeit. Integrieren Sie unser Widget oder API, um die Reibung beim Checkout zu reduzieren und den internationalen Umsatz zu steigern.',
+  'hero.description': 'Berechnen Sie Zölle, Steuern und Versandkosten für 181 Länder in Echtzeit. Integrieren Sie unser Widget oder API, um die Reibung beim Checkout zu reduzieren und den internationalen Umsatz zu steigern.',
   'hero.cta': 'Kostenlos starten',
   'hero.tryCta': 'Demo testen',
 
   // Features Section
   'features.title': 'Warum POTAL wählen',
   'features.realTime.title': 'Echtzeit-Berechnungen',
-  'features.realTime.description': 'Sofortige Zoll-, Steuer- und Versandkostenberechnung für alle 139 Länder',
+  'features.realTime.description': 'Sofortige Zoll-, Steuer- und Versandkostenberechnung für alle 181 Länder',
   'features.reliable.title': 'Hohe Zuverlässigkeit',
   'features.reliable.description': 'Basierend auf bewährter Cross-Border-Expertise mit 99,9% Verfügbarkeit',
   'features.easyIntegration.title': 'Einfache Integration',

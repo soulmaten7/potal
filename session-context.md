@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 24 완료 — Swagger UI API 문서 + Product Hunt 런치 플랜 + HS Code DB 확장 + OpenAPI URL 수정)
+> 마지막 업데이트: 2026-03-06 (세션 25 완료 — Cost Engine 대규모 업그레이드: 181개국, 97 HS챕터, 63 FTA, 7개 정부 관세 API, India/Brazil 세금 계산, Section 301 업데이트)
 
 ---
 
@@ -83,12 +83,16 @@ Phase 1: 핵심 API + 셀러 인증 + i18n + 프로덕션 배포 ← ✅ 완료 
 Phase 2: 각 LLM 커스텀 앱 등록 ← ✅ 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
   - 나머지 3개: Copilot(비즈니스계정필요), Meta AI(지역제한), Grok(스토어없음) → 파일 준비 후 대기
 Phase 4: Stripe 결제 + 셀러 대시보드 ← ✅ 완료 (Billing UI, 대시보드, Stripe Test mode 연동)
-Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (370+ HS코드, 21개국 관세율, 27개 FTA)
+Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (443+ HS코드, 97 HS챕터×29개국 관세율, 63개 FTA, 181개국)
 Phase 5.5: AI 분류 + DB 캐싱 ← ✅ 완료 (GPT-4o-mini AI 분류, DB 캐시 플라이휠 E2E 검증)
 Phase 6: 외부 관세 API + 환율 + 요금제 ← ✅ 완료
   - 6-1: USITC API (미국, 무료) ✅
   - 6-2: UK Trade Tariff API (영국, 무료) ✅
   - 6-3: EU TARIC API (유럽, 무료) ✅
+  - 6-3b: Canada CBSA Provider (캐나다) ✅
+  - 6-3c: Australia ABF Provider (호주) ✅
+  - 6-3d: Japan Customs Provider (일본) ✅
+  - 6-3e: Korea KCS Provider (한국) ✅
   - 6-4: AI 프롬프트 10자리 변경 ✅
   - 6-5: 실시간 환율 API ✅
   - 6-6: 요금제 변경 (Free 500 / Starter $9 / Growth $29 / Enterprise) ✅
@@ -319,6 +323,17 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - HS Code DB 확장: 409 → 443개 (+34개, 이커머스 핵심 카테고리)
   - OpenAPI URL 수정: potal.io → potal.app, widget URL vercel → potal.app
   - npm run build 통과 ✅
+- **세션 25**: Cost Engine 대규모 업그레이드 (경쟁사 수준으로 끌어올리기)
+  - 4개 신규 관세 API Provider 추가 (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) → 총 7개 정부 API
+  - country-data.ts: 137 → 181개국 확장 (Oceania, Americas, Africa, Europe, Middle East, Asia 전역)
+  - duty-rates.ts: 56 → 97 HS 챕터 (전체 HS 챕터 커버, 29개국×97챕터 = 2,813개 관세율 데이터)
+  - fta.ts: 27 → 63 FTA 협정 (글로벌 주요 무역 협정 포괄)
+  - India 세금 계산 추가: BCD + SWS(10%) + IGST(5-28%) 캐스케이딩 (Brazil 패턴 따라 구현)
+  - Section 301 tariffs 2025/2026 업데이트 (List 1-4A + 2024 USTR 확장: EVs, 배터리, 태양전지, 의료기기)
+  - 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee)
+  - Batch calculation Promise.allSettled 병렬화
+  - 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일)
+  - npm run build ⏳ (검증 예정)
 - **다음**: Shopify 임베디드 확인 → "검토를 위해 제출" 클릭 → 심사 7~14일
 - **블로커**: Stripe Live mode에 ITIN 필요 (개발은 Test mode로 진행 가능)
 
@@ -487,9 +502,9 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 | 파일 | 역할 |
 |------|------|
-| `app/lib/cost-engine/` | Total Landed Cost 계산 **(B2B 독립 모듈, 58개국 지원)** |
-| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 |
-| `app/lib/cost-engine/country-data.ts` | 58개국 VAT/GST/관세/de minimis 데이터 |
+| `app/lib/cost-engine/` | Total Landed Cost 계산 **(B2B 독립 모듈, 181개국 지원)** |
+| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (181개국, India/Brazil 특수 세금) |
+| `app/lib/cost-engine/country-data.ts` | 181개국 VAT/GST/관세/de minimis 데이터 |
 | `app/lib/api-auth/` | API 인증 시스템 (키 생성/검증/미들웨어/rate-limit) |
 | `app/api/v1/calculate/route.ts` | 단건 TLC 계산 API |
 | `app/api/v1/calculate/batch/route.ts` | 배치 TLC 계산 API (최대 100건) |
@@ -511,6 +526,10 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | `app/lib/cost-engine/tariff-api/usitc-provider.ts` | USITC 미국 관세율 API |
 | `app/lib/cost-engine/tariff-api/uk-tariff-provider.ts` | UK Trade Tariff 영국 관세율 API |
 | `app/lib/cost-engine/tariff-api/eu-taric-provider.ts` | EU TARIC 유럽 관세율 API |
+| `app/lib/cost-engine/tariff-api/canada-cbsa-provider.ts` | Canada CBSA 캐나다 관세율 |
+| `app/lib/cost-engine/tariff-api/australia-abf-provider.ts` | Australia ABF 호주 관세율 |
+| `app/lib/cost-engine/tariff-api/japan-customs-provider.ts` | Japan Customs 일본 관세율 |
+| `app/lib/cost-engine/tariff-api/korea-kcs-provider.ts` | Korea KCS 한국 관세율 |
 | `app/lib/shopify/shopify-auth.ts` | Shopify OAuth + HMAC + 토큰 관리 |
 | `app/api/shopify/auth/route.ts` | Shopify 앱 설치 (OAuth 시작) |
 | `app/api/shopify/callback/route.ts` | Shopify OAuth 콜백 |
@@ -589,6 +608,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-06 | 25 | **Cost Engine 대규모 업그레이드**: 4개 신규 관세 API Provider (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) 추가 → 총 7개 정부 API. country-data.ts 137→181개국 확장. HS 챕터 56→97개(전체 커버). FTA 27→63개 협정. India 세금 계산 (BCD+SWS+IGST 캐스케이딩). Section 301 tariffs 2025/2026 업데이트. 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee). Batch calculation Promise.allSettled 병렬화. 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일) |
 | 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |
 | 03-06 | 23 | **B2C 잔여 코드 정리 + layout 최종 완료**: layout.tsx에서 WishlistProvider/UserPreferenceProvider 제거, Footer/sw.js/MobileBottomNav B2B 확인 완료, data.ts B2C 보존 결정. B2C→B2B 전환 사실상 최종 완료 (잔여: lib/search/ 등 B2C 백엔드만 보존) |
 | 03-05~06 | 22 | **B2C→B2B 사이트 전환 완료 + 코드 정리**: 가격 불일치 수정 4파일 (Free 500/Growth $29 25K), 코드 정리 8파일 (console.log/imports/let/catch), B2C→B2B 페이지 전환 20+파일 (about/terms/help/opengraph/blog/partners/contact/auth/join), B2C redirect 4개 (search/wishlist/tax-info→/), SEO B2B (sitemap/robots/JSON-LD), manifest.json B2B, legal/[slug] B2B 재작성, 위젯/API 프로덕션 검증 완료 |

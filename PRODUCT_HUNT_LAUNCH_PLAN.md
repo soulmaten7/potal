@@ -14,7 +14,7 @@
 
 ### Description (260자)
 
-> POTAL is the Total Landed Cost API for cross-border commerce. Calculate import duties, VAT/GST, and customs fees for 139+ countries in milliseconds. REST API, Shopify app, and AI agent integrations (GPT, Claude, Gemini). Free tier included. Built by a solo founder with AI.
+> POTAL is the Total Landed Cost API for cross-border commerce. Calculate import duties, VAT/GST, and customs fees for 181+ countries in milliseconds. REST API, Shopify app, and AI agent integrations (GPT, Claude, Gemini). Free tier included. Built by a solo founder with AI.
 
 ### Tags (최대 3개)
 
@@ -37,7 +37,7 @@
 > 최소 2장 필요. 4장 권장.
 
 ### Gallery 이미지 아이디어
-1. **Hero** — "Calculate landed costs for 139+ countries" + API 응답 스크린샷
+1. **Hero** — "Calculate landed costs for 181+ countries" + API 응답 스크린샷
 2. **Dashboard** — 셀러 대시보드 (API Keys, Usage, Billing 탭)
 3. **Integration** — Shopify 위젯 + API 코드 스니펫 + AI agents (GPT/Claude/Gemini 로고)
 4. **Pricing** — Free → Starter → Growth → Enterprise 비교
@@ -60,7 +60,7 @@ Cross-border e-commerce is a $1.2T market growing to $9T+ by 2033. But 48% of sh
 Enterprise tools like Zonos charge $2+ per order. Spreadsheets get outdated instantly. Manual calculations don't scale.
 
 **What POTAL does:**
-One API call → instant breakdown of import duties, VAT/GST, customs fees for 139+ countries.
+One API call → instant breakdown of import duties, VAT/GST, customs fees for 181+ countries.
 
 - REST API with <100ms response time
 - Shopify Theme App Extension (1-click install)

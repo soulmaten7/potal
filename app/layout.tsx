@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     default: "POTAL - Total Landed Cost API for Cross-Border Commerce",
     template: "%s | POTAL",
   },
-  description: "Calculate duties, taxes, and shipping for 139 countries in real-time. The infrastructure for global e-commerce — embed our widget or REST API.",
+  description: "Calculate duties, taxes, and shipping for 181 countries in real-time. The infrastructure for global e-commerce — embed our widget or REST API.",
   keywords: ["total landed cost", "cross-border commerce", "duty calculator", "tax API", "e-commerce API", "international shipping", "customs duty", "import tax", "landed cost calculator"],
   manifest: "/manifest.json",
   appleWebApp: {
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "POTAL",
     title: "POTAL - Total Landed Cost API for Cross-Border Commerce",
-    description: "Calculate duties, taxes, and shipping for 139 countries in real-time. The infrastructure for global e-commerce.",
+    description: "Calculate duties, taxes, and shipping for 181 countries in real-time. The infrastructure for global e-commerce.",
     url: "https://potal.app",
     locale: "en_US",
     images: [
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "POTAL - Total Landed Cost API for Cross-Border Commerce",
-    description: "Calculate duties, taxes, and shipping for 139 countries in real-time. The infrastructure for global e-commerce.",
+    description: "Calculate duties, taxes, and shipping for 181 countries in real-time. The infrastructure for global e-commerce.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -109,7 +109,7 @@ export default function RootLayout({
               "@type": "WebSite",
               name: "POTAL",
               url: "https://potal.app",
-              description: "Total Landed Cost API for cross-border commerce. Calculate duties, taxes, and shipping for 139 countries.",
+              description: "Total Landed Cost API for cross-border commerce. Calculate duties, taxes, and shipping for 181 countries.",
             }),
           }}
         />

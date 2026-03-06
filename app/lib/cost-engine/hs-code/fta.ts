@@ -383,6 +383,309 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
     excludedChapters: ['24'],
     isActive: true,
   },
+
+  // ─── US-Peru TPA ───
+  {
+    name: 'United States-Peru Trade Promotion Agreement',
+    code: 'US-PE',
+    members: ['US', 'PE'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Morocco FTA ───
+  {
+    name: 'United States-Morocco Free Trade Agreement',
+    code: 'US-MA',
+    members: ['US', 'MA'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Jordan FTA ───
+  {
+    name: 'United States-Jordan Free Trade Agreement',
+    code: 'US-JO',
+    members: ['US', 'JO'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Bahrain FTA ───
+  {
+    name: 'United States-Bahrain Free Trade Agreement',
+    code: 'US-BH',
+    members: ['US', 'BH'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Oman FTA ───
+  {
+    name: 'United States-Oman Free Trade Agreement',
+    code: 'US-OM',
+    members: ['US', 'OM'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── US-Panama TPA ───
+  {
+    name: 'United States-Panama Trade Promotion Agreement',
+    code: 'US-PA',
+    members: ['US', 'PA'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── DR-CAFTA ───
+  {
+    name: 'Dominican Republic-Central America Free Trade Agreement',
+    code: 'DR-CAFTA',
+    members: ['US', 'DO', 'CR', 'SV', 'GT', 'HN', 'NI'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── UK-Canada FTA (Continuity) ───
+  {
+    name: 'UK-Canada Trade Continuity Agreement',
+    code: 'UK-CA',
+    members: ['GB', 'CA'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── UK-Korea FTA ───
+  {
+    name: 'UK-Korea Free Trade Agreement',
+    code: 'UK-KR',
+    members: ['GB', 'KR'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── UK-Singapore FTA ───
+  {
+    name: 'UK-Singapore Free Trade Agreement',
+    code: 'UK-SG',
+    members: ['GB', 'SG'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── UK-Vietnam FTA ───
+  {
+    name: 'UK-Vietnam Free Trade Agreement',
+    code: 'UK-VN',
+    members: ['GB', 'VN'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Japan-ASEAN EPA ───
+  {
+    name: 'Japan-ASEAN Comprehensive Economic Partnership',
+    code: 'JACEPA',
+    members: ['JP', 'SG', 'MY', 'TH', 'VN', 'PH', 'ID', 'BN', 'KH', 'LA', 'MM'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['10', '24'], // Rice and tobacco excluded
+    isActive: true,
+  },
+
+  // ─── Japan-Switzerland FTA ───
+  {
+    name: 'Japan-Switzerland Economic Partnership Agreement',
+    code: 'JP-CH',
+    members: ['JP', 'CH'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['10', '24'],
+    isActive: true,
+  },
+
+  // ─── Korea-India CEPA ───
+  {
+    name: 'Korea-India Comprehensive Economic Partnership Agreement',
+    code: 'KR-IN',
+    members: ['KR', 'IN'],
+    preferentialMultiplier: 0.5, // Partial coverage
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Korea-Turkey FTA ───
+  {
+    name: 'Korea-Turkey Free Trade Agreement',
+    code: 'KR-TR',
+    members: ['KR', 'TR'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['01', '02', '03', '04', '24'], // Agricultural exclusions
+    isActive: true,
+  },
+
+  // ─── SACU (Southern African Customs Union) ───
+  {
+    name: 'Southern African Customs Union',
+    code: 'SACU',
+    members: ['ZA', 'BW', 'LS', 'NA', 'SZ'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── SADC (Southern African Development Community) ───
+  {
+    name: 'Southern African Development Community FTA',
+    code: 'SADC',
+    members: ['ZA', 'BW', 'LS', 'NA', 'SZ', 'MZ', 'TZ', 'ZM', 'ZW', 'MG', 'MU', 'MW', 'CD', 'AO'],
+    preferentialMultiplier: 0.5, // Partial implementation
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── EAC (East African Community) ───
+  {
+    name: 'East African Community Customs Union',
+    code: 'EAC',
+    members: ['KE', 'TZ', 'UG', 'RW', 'SS', 'CD'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── ECOWAS (West African Economic Community) ───
+  {
+    name: 'Economic Community of West African States',
+    code: 'ECOWAS',
+    members: ['NG', 'GH', 'CI', 'SN', 'ML', 'BF', 'NE', 'BJ', 'TG', 'GN', 'SL', 'LR', 'GM'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── India-Japan CEPA ─── (already exists but verify)
+  // Already defined above as JP-IN
+
+  // ─── China-Singapore FTA ───
+  {
+    name: 'China-Singapore Free Trade Agreement',
+    code: 'CN-SG',
+    members: ['CN', 'SG'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── India-Singapore CECA ───
+  {
+    name: 'India-Singapore Comprehensive Economic Cooperation Agreement',
+    code: 'IN-SG',
+    members: ['IN', 'SG'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Australia-India ECTA ───
+  {
+    name: 'Australia-India Economic Cooperation and Trade Agreement',
+    code: 'AU-IN',
+    members: ['AU', 'IN'],
+    preferentialMultiplier: 0.5, // Phased implementation
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── MERCOSUR Internal ───
+  {
+    name: 'MERCOSUR Internal Free Trade',
+    code: 'MERCOSUR',
+    members: ['BR', 'AR', 'PY', 'UY'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── Chile-China FTA ───
+  {
+    name: 'Chile-China Free Trade Agreement',
+    code: 'CL-CN',
+    members: ['CL', 'CN'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Peru-China FTA ───
+  {
+    name: 'Peru-China Free Trade Agreement',
+    code: 'PE-CN',
+    members: ['PE', 'CN'],
+    preferentialMultiplier: 0.0,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── Israel-EU Association Agreement ───
+  {
+    name: 'EU-Israel Association Agreement',
+    code: 'EU-IL',
+    members: [
+      'IL',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0.0, // Industrial goods duty-free
+    excludedChapters: ['01', '02', '03', '04', '24'], // Agricultural exclusions
+    isActive: true,
+  },
+
+  // ─── EFTA-Singapore FTA ───
+  {
+    name: 'EFTA-Singapore Free Trade Agreement',
+    code: 'EFTA-SG',
+    members: ['CH', 'NO', 'IS', 'LI', 'SG'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── EFTA-Hong Kong FTA ───
+  {
+    name: 'EFTA-Hong Kong Free Trade Agreement',
+    code: 'EFTA-HK',
+    members: ['CH', 'NO', 'IS', 'LI', 'HK'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
+  // ─── EU-Turkey Customs Union for Agricultural goods ───
+  // Already defined as TR-EU (manufactured goods)
+  // Agricultural products excluded but covered under separate protocol
+
+  // ─── China-Pakistan FTA ───
+  {
+    name: 'China-Pakistan Free Trade Agreement',
+    code: 'CN-PK',
+    members: ['CN', 'PK'],
+    preferentialMultiplier: 0.3,
+    excludedChapters: ['24'],
+    isActive: true,
+  },
+
+  // ─── India-Thailand FTA ───
+  {
+    name: 'India-Thailand Framework Agreement',
+    code: 'IN-TH',
+    members: ['IN', 'TH'],
+    preferentialMultiplier: 0.5, // Limited coverage (82 items)
+    excludedChapters: ['24'],
+    isActive: true,
+  },
 ];
 
 // ─── Public API ────────────────────────────────────────────────

@@ -2,7 +2,7 @@
  * POTAL Cost Engine — Global Country Data
  *
  * VAT/GST rates, import duty averages, de minimis thresholds,
- * and currency info for 130+ countries.
+ * and currency info for 180+ countries.
  *
  * Sources: WTO, WCO, national customs authorities
  * Last updated: 2026-03
@@ -895,6 +895,288 @@ export const COUNTRY_DATA: Record<string, CountryTaxProfile> = {
     vatRate: 0.15, vatLabel: 'VAGST', avgDutyRate: 0.10,
     deMinimis: 0, deMinimsCurrency: 'WST', deMinimisUsd: 0,
     currency: 'WST', hasFtaWithChina: false,
+  },
+  TO: {
+    code: 'TO', name: 'Tonga', region: 'Oceania',
+    vatRate: 0.15, vatLabel: 'CT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'TOP', deMinimisUsd: 0,
+    currency: 'TOP', hasFtaWithChina: false,
+  },
+  VU: {
+    code: 'VU', name: 'Vanuatu', region: 'Oceania',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'VUV', deMinimisUsd: 0,
+    currency: 'VUV', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL AMERICAS ═══
+  HT: {
+    code: 'HT', name: 'Haiti', region: 'Americas',
+    vatRate: 0.10, vatLabel: 'TCA', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'HTG', deMinimisUsd: 0,
+    currency: 'HTG', hasFtaWithChina: false,
+  },
+  BS: {
+    code: 'BS', name: 'Bahamas', region: 'Americas',
+    vatRate: 0.12, vatLabel: 'VAT', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'BSD', deMinimisUsd: 0,
+    currency: 'BSD', hasFtaWithChina: false,
+  },
+  BB: {
+    code: 'BB', name: 'Barbados', region: 'Americas',
+    vatRate: 0.175, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'BBD', deMinimisUsd: 0,
+    currency: 'BBD', hasFtaWithChina: false,
+  },
+  BZ: {
+    code: 'BZ', name: 'Belize', region: 'Americas',
+    vatRate: 0.125, vatLabel: 'GST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'BZD', deMinimisUsd: 0,
+    currency: 'BZD', hasFtaWithChina: false,
+  },
+  GY: {
+    code: 'GY', name: 'Guyana', region: 'Americas',
+    vatRate: 0.14, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'GYD', deMinimisUsd: 0,
+    currency: 'GYD', hasFtaWithChina: false,
+  },
+  SR: {
+    code: 'SR', name: 'Suriname', region: 'Americas',
+    vatRate: 0.10, vatLabel: 'BTW', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SRD', deMinimisUsd: 0,
+    currency: 'SRD', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL AFRICA ═══
+  ZM: {
+    code: 'ZM', name: 'Zambia', region: 'Africa',
+    vatRate: 0.16, vatLabel: 'VAT', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'ZMW', deMinimisUsd: 0,
+    currency: 'ZMW', hasFtaWithChina: false,
+  },
+  MW: {
+    code: 'MW', name: 'Malawi', region: 'Africa',
+    vatRate: 0.165, vatLabel: 'VAT', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'MWK', deMinimisUsd: 0,
+    currency: 'MWK', hasFtaWithChina: false,
+  },
+  BJ: {
+    code: 'BJ', name: 'Benin', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XOF', deMinimisUsd: 0,
+    currency: 'XOF', hasFtaWithChina: false,
+  },
+  BF: {
+    code: 'BF', name: 'Burkina Faso', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XOF', deMinimisUsd: 0,
+    currency: 'XOF', hasFtaWithChina: false,
+  },
+  ML: {
+    code: 'ML', name: 'Mali', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XOF', deMinimisUsd: 0,
+    currency: 'XOF', hasFtaWithChina: false,
+  },
+  NE: {
+    code: 'NE', name: 'Niger', region: 'Africa',
+    vatRate: 0.19, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XOF', deMinimisUsd: 0,
+    currency: 'XOF', hasFtaWithChina: false,
+  },
+  TG: {
+    code: 'TG', name: 'Togo', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'XOF', deMinimisUsd: 0,
+    currency: 'XOF', hasFtaWithChina: false,
+  },
+  GA: {
+    code: 'GA', name: 'Gabon', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'XAF', deMinimisUsd: 0,
+    currency: 'XAF', hasFtaWithChina: false,
+  },
+  CG: {
+    code: 'CG', name: 'Republic of Congo', region: 'Africa',
+    vatRate: 0.185, vatLabel: 'TVA', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'XAF', deMinimisUsd: 0,
+    currency: 'XAF', hasFtaWithChina: false,
+  },
+  GN: {
+    code: 'GN', name: 'Guinea', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'GNF', deMinimisUsd: 0,
+    currency: 'GNF', hasFtaWithChina: false,
+  },
+  SL: {
+    code: 'SL', name: 'Sierra Leone', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'GST', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'SLE', deMinimisUsd: 0,
+    currency: 'SLE', hasFtaWithChina: false,
+  },
+  LR: {
+    code: 'LR', name: 'Liberia', region: 'Africa',
+    vatRate: 0.10, vatLabel: 'GST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'LRD', deMinimisUsd: 0,
+    currency: 'LRD', hasFtaWithChina: false,
+  },
+  MR: {
+    code: 'MR', name: 'Mauritania', region: 'Africa',
+    vatRate: 0.16, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'MRU', deMinimisUsd: 0,
+    currency: 'MRU', hasFtaWithChina: false,
+  },
+  TD: {
+    code: 'TD', name: 'Chad', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'TVA', avgDutyRate: 0.15,
+    deMinimis: 0, deMinimsCurrency: 'XAF', deMinimisUsd: 0,
+    currency: 'XAF', hasFtaWithChina: false,
+  },
+  SZ: {
+    code: 'SZ', name: 'Eswatini', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SZL', deMinimisUsd: 0,
+    currency: 'SZL', hasFtaWithChina: false,
+  },
+  LS: {
+    code: 'LS', name: 'Lesotho', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'LSL', deMinimisUsd: 0,
+    currency: 'LSL', hasFtaWithChina: false,
+  },
+  SC: {
+    code: 'SC', name: 'Seychelles', region: 'Africa',
+    vatRate: 0.15, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SCR', deMinimisUsd: 0,
+    currency: 'SCR', hasFtaWithChina: false,
+  },
+  DJ: {
+    code: 'DJ', name: 'Djibouti', region: 'Africa',
+    vatRate: 0.10, vatLabel: 'TVA', avgDutyRate: 0.12,
+    deMinimis: 0, deMinimsCurrency: 'DJF', deMinimisUsd: 0,
+    currency: 'DJF', hasFtaWithChina: false,
+  },
+  SO: {
+    code: 'SO', name: 'Somalia', region: 'Africa',
+    vatRate: 0.05, vatLabel: 'ST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SOS', deMinimisUsd: 0,
+    currency: 'SOS', hasFtaWithChina: false,
+  },
+  ER: {
+    code: 'ER', name: 'Eritrea', region: 'Africa',
+    vatRate: 0.05, vatLabel: 'ST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'ERN', deMinimisUsd: 0,
+    currency: 'ERN', hasFtaWithChina: false,
+  },
+  SS: {
+    code: 'SS', name: 'South Sudan', region: 'Africa',
+    vatRate: 0.18, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'SSP', deMinimisUsd: 0,
+    currency: 'SSP', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL EUROPE ═══
+  LI: {
+    code: 'LI', name: 'Liechtenstein', region: 'Europe',
+    vatRate: 0.081, vatLabel: 'MWST', avgDutyRate: 0.03,
+    deMinimis: 5, deMinimsCurrency: 'CHF', deMinimisUsd: 5.60,
+    currency: 'CHF', hasFtaWithChina: false,
+    notes: 'Swiss customs union. Same tariff as Switzerland.'
+  },
+  MC: {
+    code: 'MC', name: 'Monaco', region: 'Europe',
+    vatRate: 0.20, vatLabel: 'TVA', avgDutyRate: 0.042,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'French customs territory. Same tariff as France/EU.'
+  },
+  AD: {
+    code: 'AD', name: 'Andorra', region: 'Europe',
+    vatRate: 0.045, vatLabel: 'IGI', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    currency: 'EUR', hasFtaWithChina: false,
+  },
+  SM: {
+    code: 'SM', name: 'San Marino', region: 'Europe',
+    vatRate: 0.17, vatLabel: 'VAT', avgDutyRate: 0.042,
+    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    currency: 'EUR', hasFtaWithChina: false,
+    notes: 'EU customs union agreement.'
+  },
+  XK: {
+    code: 'XK', name: 'Kosovo', region: 'Europe',
+    vatRate: 0.18, vatLabel: 'TVSH', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    currency: 'EUR', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL MIDDLE EAST ═══
+  PS: {
+    code: 'PS', name: 'Palestine', region: 'Middle East',
+    vatRate: 0.16, vatLabel: 'VAT', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'ILS', deMinimisUsd: 0,
+    currency: 'ILS', hasFtaWithChina: false,
+  },
+
+  // ═══ ADDITIONAL ASIA ═══
+  MV: {
+    code: 'MV', name: 'Maldives', region: 'Asia',
+    vatRate: 0.08, vatLabel: 'GST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'MVR', deMinimisUsd: 0,
+    currency: 'MVR', hasFtaWithChina: false,
+  },
+  BT: {
+    code: 'BT', name: 'Bhutan', region: 'Asia',
+    vatRate: 0.05, vatLabel: 'BST', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'BTN', deMinimisUsd: 0,
+    currency: 'BTN', hasFtaWithChina: false,
+  },
+  TL: {
+    code: 'TL', name: 'Timor-Leste', region: 'Asia',
+    vatRate: 0.025, vatLabel: 'ST', avgDutyRate: 0.05,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  MO: {
+    code: 'MO', name: 'Macau', region: 'Asia',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.0,
+    deMinimis: 0, deMinimsCurrency: 'MOP', deMinimisUsd: 0,
+    currency: 'MOP', hasFtaWithChina: true,
+    notes: 'Free port. No customs duty, no VAT/GST (like Hong Kong).'
+  },
+
+  // ═══ CARIBBEAN ISLANDS ═══
+  KY: {
+    code: 'KY', name: 'Cayman Islands', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.22,
+    deMinimis: 0, deMinimsCurrency: 'KYD', deMinimisUsd: 0,
+    currency: 'KYD', hasFtaWithChina: false,
+    notes: 'No income tax, no VAT. Import duty is main revenue source.'
+  },
+  BM: {
+    code: 'BM', name: 'Bermuda', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.22,
+    deMinimis: 0, deMinimsCurrency: 'BMD', deMinimisUsd: 0,
+    currency: 'BMD', hasFtaWithChina: false,
+    notes: 'No income tax, no VAT. Import duty averages 22%.'
+  },
+  VG: {
+    code: 'VG', name: 'British Virgin Islands', region: 'Americas',
+    vatRate: 0.0, vatLabel: 'None', avgDutyRate: 0.10,
+    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0,
+    currency: 'USD', hasFtaWithChina: false,
+  },
+  AW: {
+    code: 'AW', name: 'Aruba', region: 'Americas',
+    vatRate: 0.07, vatLabel: 'BBO', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'AWG', deMinimisUsd: 0,
+    currency: 'AWG', hasFtaWithChina: false,
+  },
+  CW: {
+    code: 'CW', name: 'Curaçao', region: 'Americas',
+    vatRate: 0.06, vatLabel: 'OB', avgDutyRate: 0.08,
+    deMinimis: 0, deMinimsCurrency: 'ANG', deMinimisUsd: 0,
+    currency: 'ANG', hasFtaWithChina: false,
   },
 };
 

@@ -83,6 +83,6 @@ When presenting results, always:
 
 ## About POTAL
 
-POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 139 countries.
+POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 181 countries.
 
 Website: https://potal-x1vl.vercel.app

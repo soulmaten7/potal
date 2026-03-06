@@ -12,14 +12,14 @@ export const ja = {
   // Hero Section
   'hero.title': '越境ECのためのStripe',
   'hero.subtitle': '購入者に総着地コストを即座に表示',
-  'hero.description': '139カ国の関税、税金、送料をリアルタイムで計算。ウィジェットやAPIを組み込んで、決済の摩擦を軽減し、海外売上を拡大しましょう。',
+  'hero.description': '181カ国の関税、税金、送料をリアルタイムで計算。ウィジェットやAPIを組み込んで、決済の摩擦を軽減し、海外売上を拡大しましょう。',
   'hero.cta': '無料で始める',
   'hero.tryCta': 'デモを試す',
 
   // Features Section
   'features.title': 'POTALが選ばれる理由',
   'features.realTime.title': 'リアルタイム計算',
-  'features.realTime.description': '139カ国すべてに対応した即時の関税・税金・送料計算',
+  'features.realTime.description': '181カ国すべてに対応した即時の関税・税金・送料計算',
   'features.reliable.title': '高い信頼性',
   'features.reliable.description': '実績のある越境EC専門知識に基づく99.9%の稼働率',
   'features.easyIntegration.title': '簡単な統合',

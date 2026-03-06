@@ -23,3 +23,7 @@ export type { TariffApiConfig } from './tariff-api-client';
 export { fetchUsitcDutyRate } from './usitc-provider';
 export { fetchUkTariffDutyRate } from './uk-tariff-provider';
 export { fetchEuTaricDutyRate, isEuMemberState } from './eu-taric-provider';
+export { fetchCanadaCbsaDutyRate } from './canada-cbsa-provider';
+export { fetchAustraliaDutyRate } from './australia-abf-provider';
+export { fetchKoreaDutyRate } from './korea-kcs-provider';
+export { fetchJapanDutyRate } from './japan-customs-provider';

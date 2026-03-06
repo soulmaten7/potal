@@ -15,7 +15,7 @@ POTAL — Cross-Border Shopping Calculator
 
 ### Description (설명):
 ```
-Calculate the true total cost of buying products from other countries. Get instant breakdowns of import duties, taxes, VAT/GST, and customs fees for 139 countries. Know exactly what you'll pay before you buy.
+Calculate the true total cost of buying products from other countries. Get instant breakdowns of import duties, taxes, VAT/GST, and customs fees for 181 countries. Know exactly what you'll pay before you buy.
 ```
 
 ### Instructions (지침):

@@ -11,7 +11,7 @@ export const openApiSpec = {
     title: 'POTAL API',
     version: '1.0.0',
     description:
-      'Total Landed Cost calculation API for cross-border commerce. Calculate import duties, taxes, and fees for 58+ countries.',
+      'Total Landed Cost calculation API for cross-border commerce. Calculate import duties, taxes, and fees for 181 countries.',
     contact: {
       name: 'POTAL Support',
       url: 'https://www.potal.app',
