@@ -1,0 +1,92 @@
+# CLAUDE.md — POTAL 프로젝트 Claude Code 지침
+# 마지막 업데이트: 2026-03-08 (세션 33)
+
+## 프로젝트 개요
+POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
+
+## 반드시 먼저 읽을 파일
+1. `session-context.md` — 프로젝트 전체 맥락 (히스토리, TODO, 완료 내역, 인증정보)
+2. `.cursorrules` — 코딩 표준, 파일 매핑, 프로덕션 환경
+
+## 기술 스택
+- Next.js 14+ App Router + TypeScript
+- Supabase (Auth + PostgreSQL DB), Vercel (배포), LemonSqueezy (결제, MoR)
+- Shopify Theme App Extension (OAuth + GDPR 웹훅)
+- 프로덕션: https://www.potal.app
+
+## 핵심 수치 (세션 33 기준)
+- 240개국/영토, 7개국어, 63개 FTA, 12개국 특수세금
+- HS Code: 5,371 (WCO HS 2022 6자리)
+- MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
+- MIN 관세율: ~5.4M/130M행 임포트 진행중 (macmap_min_rates)
+- AGR 관세율: 148M행 대기 (macmap_agr_rates)
+- 무역협정: 1,319건 (macmap_trade_agreements)
+- 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
+- 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
+
+## 절대 규칙
+1. **B2C 코드 수정 금지** — lib/search/, lib/agent/, components/search/ 등. 보존만
+2. **npm run build 확인 후 push** — 빌드 깨진 코드 push 금지
+3. **session-context.md에 없는 숫자 만들기 금지** — "70% 완료" 같은 근거 없는 수치 사용 금지
+4. **console.log 금지** — 프로덕션 코드에 남기지 않기
+5. **한 번에 하나의 작업만** — 멀티태스킹 금지
+6. **Git push는 Mac 터미널에서** — VM/EC2에서 push 불가
+
+## Supabase 연결 방법 (세션 32 확인)
+- **직접 PostgreSQL**: ❌ 포트 5432 차단 (VM/EC2에서)
+- **REST API (PostgREST)**: ✅ CRUD 가능, DDL 불가
+- **Pooler**: ❌ 비밀번호 인증 실패 (원인 미확인)
+- **Management API**: ✅ SQL 실행 가능 (curl만, urllib은 Cloudflare 차단)
+  ```bash
+  curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query \
+    -H "Authorization: Bearer sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a" \
+    -H "Content-Type: application/json" \
+    -d '{"query": "SELECT count(*) FROM macmap_min_rates;"}'
+  ```
+
+## Supabase 관세 데이터 테이블 현황
+| 테이블 | 행 수 | 상태 |
+|--------|-------|------|
+| countries | 240 | ✅ |
+| vat_gst_rates | 240 | ✅ |
+| de_minimis_thresholds | 240 | ✅ |
+| customs_fees | 240 | ✅ |
+| macmap_trade_agreements | 1,319 | ✅ |
+| macmap_ntlc_rates | 537,894 | ✅ (MFN 009) |
+| macmap_min_rates | ~5.4M/130M | 🔄 진행중 |
+| macmap_agr_rates | 0/148M | ⏳ 대기 |
+| trade_remedy_cases | 10,999 | ✅ (세션 33) |
+| trade_remedy_products | 55,259 | ✅ (세션 33) |
+| trade_remedy_duties | 37,513 | ✅ (세션 33) |
+| safeguard_exemptions | 15,935 | ✅ (세션 33) |
+
+## MIN 임포트 재개 방법
+```bash
+# 진행 상태 확인
+cat min_import_progress.json
+
+# 재개 (이전 진행 이어서)
+python3 import_min_via_api.py
+```
+- 스크립트: `import_min_via_api.py` (40K행/배치, ON CONFLICT DO NOTHING)
+- 진행 파일: `min_import_progress.json` (completed_countries + total_rows)
+- 속도: ~7,200행/초, 전체 ~5시간
+
+## 주요 인증 정보
+| 항목 | 값 |
+|------|-----|
+| Supabase Project ID | zyurflkhiregundhisky |
+| Supabase DB Password | PotalReview2026! |
+| Supabase Secret Key | sb_secret_***REDACTED*** |
+| Management API Token | sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a |
+| WTO API Key | e6b00ecdb5b34e09aabe15e68ab71d1d |
+| Groq API Key | gsk_***REDACTED*** |
+| AWS Account | 920263653804 |
+| EC2 Instance | i-0c114c6176439b9cb |
+
+## 은태님 스타일 (코딩 초보자)
+- 기술 설명은 간결하게, 작업은 직접 해줘야 함
+- 정확성 최우선, 추정치보다 실제 데이터
+- "빠르게 확인 → 다음 작업" 루프 선호
+- 한국어 소통, 코드/기술 용어는 영어 그대로
+- 과장 표현 싫어함

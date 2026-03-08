@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-06 (세션 27 완료 — 240개국 확장 + CN CBEC/MX IEPS + 7개 언어 + 교차검증 448테스트 + 커스텀 LLM 전체 업데이트)
+> 마지막 업데이트: 2026-03-08 (세션 33 — 반덤핑/상계관세/세이프가드 데이터 TTBD 다운로드+Supabase 임포트 완료 119,706행, MIN 벌크 임포트 ~5.4M/130M행 진행중)
 
 ---
 
@@ -69,8 +69,21 @@
 
 ### 비즈니스 모델
 
-**Layer 1: 셀러 위젯 SaaS** — Free $0/500 calls, Starter $9/5K, Growth $29/25K, Enterprise custom
+**⚠️ 요금제 전략 변경 (2026-03-06, 세션 28 확정)**
+
+> Alex Hormozi 전략: "극소수에게 비싸게 팔거나, 모두에게 싸게 팔아라. 중간은 죽음이다."
+> POTAL 선택: **"모두에게 싸게" + 압도적 기능** → AI 원가 구조 덕분에 가능
+> **⚠️ 코드 내 요금제 숫자는 아직 구버전 (Free 500/Starter $9/Growth $29)**: LS 승인 후 plan-checker/pricing/dashboard/page.tsx/help/docs/i18n 전체 업데이트 필요. 그 전까지 코드에서 구 요금제 숫자를 보더라도 정상임.
+
+**Layer 1: 셀러 위젯 SaaS** — Free $0/100 calls, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
 **Layer 2: AI 에이전트 API** — 각 LLM 커스텀 앱 + 직접 API 호출 과금
+
+| 플랜 | 가격 | 할당량 | 타겟 | 포함 기능 수 |
+|------|------|--------|------|------------|
+| Free | $0 | 100건/월 | 체험/Hobby | 20/33 |
+| Basic | $20 | 2,000건/월 | Small~Medium 셀러 (1K-3K 주문) | 33/33 기본 |
+| Pro | $80 | 10,000건/월 | Large 셀러 (3K-10K 주문) | 33/33 + 이미지분류/체크아웃/반덤핑 |
+| Enterprise | $300+ | 50,000건+ | Mid-Market (10K+ 주문) | 전체 + 물류 애드온 + 보증 협상 |
 
 ### Data Flywheel (세션 11 수정)
 LLM 커스텀 앱 등록 → 사용 데이터 축적 → 데이터 기반 셀러 영업 → 셀러 위젯 설치 → 상품 가격+HS Code 제공 → POTAL 데이터 축적 → AI API 정확도 향상 → 더 많은 사용자 → **데이터 해자(moat)**
@@ -83,8 +96,11 @@ Phase 1: 핵심 API + 셀러 인증 + i18n + 프로덕션 배포 ← ✅ 완료 
 Phase 2: 각 LLM 커스텀 앱 등록 ← ✅ 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
   - 나머지 3개: Copilot(비즈니스계정필요), Meta AI(지역제한), Grok(스토어없음) → 파일 준비 후 대기
 Phase 4: Stripe 결제 + 셀러 대시보드 ← ✅ 완료 (Billing UI, 대시보드, Stripe Test mode 연동)
-Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (443+ HS코드, 97 HS챕터×29개국 관세율, 63개 FTA, 240개국)
+Phase 5: HS Code 고도화 + 세율 + FTA ← ✅ 완료 (5,371 HS코드, 97 HS챕터×29개국 관세율, 63개 FTA, 240개국)
 Phase 5.5: AI 분류 + DB 캐싱 ← ✅ 완료 (GPT-4o-mini AI 분류, DB 캐시 플라이휠 E2E 검증)
+Phase 5.6: 관세 데이터 벌크 수집 ← ✅ 완료 (WITS+WTO 1,027,674건 186개국, TFAD 137개국, HS Code 5,371→6,350)
+Phase 5.7: HS Code 분류 DB 전략 + 대량 상품명 확보 + MacMap 벌크 임포트 ← 🔄 진행중 (Supabase 마이그레이션 010-016 완료, MFN 009 537,894행 완료, MIN 벌크 임포트 ~5.4M/130M행 진행중, AGR 148M행 대기)
+Phase 5.8: 반덤핑/상계관세/세이프가드 데이터 ← ✅ 완료 (TTBD 36개국 AD + 19개국 CVD + WTO SG → Supabase 4개 테이블 119,706행)
 Phase 6: 외부 관세 API + 환율 + 요금제 ← ✅ 완료
   - 6-1: USITC API (미국, 무료) ✅
   - 6-2: UK Trade Tariff API (영국, 무료) ✅
@@ -128,11 +144,26 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 **⚠️ Phase 3을 마지막으로 변경한 이유**: Shopify App Store = 셀러가 들어오는 문. 셀러가 왔을 때 결제(Phase 4), 정확한 관세 계산(Phase 5), LLM 사용 데이터(Phase 2)가 모두 준비되어 있어야 이탈 없음. 심사 7~14일 소요되므로 모든 기능 완비 후 제출.
 
-### 경쟁 환경
-- **Zonos** ($15M revenue, $69M raised) — 주문당 $2 + 관세 10%. Enterprise 이동 중 = SMB 공백
-- **Easyship** — 배송 중심, 위젯 약함 / **Dutify** — Shopify 전용, 소규모
-- **Enterprise**: Global-e (Nasdaq), Avalara — 대형 브랜드 전용
-- **POTAL 포지셔닝**: 월 정액 + SMB 크로스보더 셀러 + AI 에이전트 인프라 = 빈 의자
+### 핵심 전략: "33개 기능 업계 최고" (2026-03-06 확정)
+
+> **"싸면서 기능이 부족하면 = 싸구려. 싸면서 기능이 압도적이면 = 가격 파괴자."**
+
+47개 경쟁사 기능 중 14개는 POTAL 스코프 밖 (물류 5개, 결제 1개, VAT 신고, 보증, 전담매니저 등).
+나머지 **33개 기능 모두에서 경쟁사 최고 수준 이상**으로 구현하는 것이 목표.
+AI 기반 원가 구조 덕분에 가능 — 건당 $0.008 이하로 33개 기능 제공 가능.
+
+**스코프 IN (33개)**: 핵심 계산 10, HS Code 분류 5, 데이터 커버리지 4, 위젯 2, 컴플라이언스 2(제한물품+통관서류), 플랫폼 통합 5, AI/LLM 연동 5
+**스코프 OUT (14개)**: 배송/물류 5, 현지결제수단, VAT 신고, Landed Cost 보증, 전담매니저, 사기방지, 3PL 등 → Enterprise 협상 or 파트너십 or 스코프 밖
+**자동화 가능 (Make 등)**: 관세 변동 알림, 원산지 자동 감지 → AI 프롬프트/Make로 빠르게 구현
+
+### 경쟁 환경 (세션 28 업데이트)
+
+**경쟁사 10곳 상세 분석 완료** (Competitor_Feature_Matrix.xlsx, Competitor_Pricing_Analysis.xlsx, POTAL_vs_Competitors_v2.xlsx):
+- **Tier 1 Enterprise**: Avalara (5,000+ 직원, $1,500+/월), Global-e (Nasdaq, GMV 6-6.5%)
+- **Tier 2 Mid**: Zonos ($2/주문+10%, $15M revenue), Hurricane (비공개), DHL ($50/200건)
+- **Tier 3 SMB**: Easyship ($29/2K, 배송 중심), SimplyDuty (£9.99/100건), Dutify ($15/200건), TaxJar ($99, US세금 중심)
+- **POTAL 포지셔닝**: $20/2K + 33개 기능 업계 최고 + AI 에이전트 유일 = **"AI가 만든 가격 파괴자"**
+- **왜 가능**: AI 원가 $0.001/건 (vs 경쟁사 인력 기반 $50-100/시간). 캐시 플라이휠로 시간이 갈수록 원가 하락
 
 ### AI 쇼핑 에이전트 6파전 (Phase 2 실행 계획)
 
@@ -219,7 +250,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 |---|--------|---------|------|
 | 2-01 | **OpenAI (ChatGPT)** | Custom GPT — GPT Store 등록 완료. 9개 언어 conversation starters | ✅ 완료 |
 | 2-02 | **Anthropic (Claude)** | MCP 서버 구축 완료 — `mcp-server/`, TypeScript, 2개 Tool, API 호출 테스트 통과, Claude Desktop 연결 확인 | ✅ 완료 |
-| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv (240개국) 업로드. ⚠️ Gem 설정에서 설명 "139→240" 수정 + 요청사항 재복붙 + CSV 재업로드 필요 | ✅ 완료 (파일 준비, 수동 업데이트 필요) |
+| 2-03 | **Google (Gemini)** | Gem 생성 완료 — 지침 + country-duty-reference.csv (240개국) 업로드. 설명 240개국 + 요청사항 + CSV 재업로드 완료 | ✅ 완료 |
 | 2-04 | **Microsoft (Copilot)** | ⏸ 파일 준비됨. Microsoft 365 Business 계정 필요 (Personal로는 불가). Developer Program 무료 가입 옵션 있음 | ⏸ 대기 |
 | 2-05 | **Meta AI** | ⏸ `meta-ai/ai-studio-instructions.md` 240개국 버전 준비됨. AI Studio 지역 제한으로 접속 불가 (VPN+거주지 변경도 실패). **⚠️ 매 세션마다 재확인 필요 — 지역 제한 풀리면 즉시 등록** | ⏸ 대기 |
 | 2-06 | **xAI (Grok)** | ❌ 커스텀 앱 스토어 자체 없음. API만 존재. 스토어 출시 시 즉시 진입 | ⏸ 대기 |
@@ -255,13 +286,44 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | 6 | ~~WishlistContext/UserPreferenceContext 정리~~ | ✅ 세션 23에서 layout.tsx에서 Provider 제거 완료 |
 | 7 | ~~data.ts B2C 데이터 정리~~ | ✅ 세션 23 확인 — page.b2c-backup.tsx에서만 사용. B2C 보존 원칙에 따라 유지 |
 
+### 🔴 즉시 — 33개 기능 업계 최고 달성 (세션 28 확정)
+
+> **"부족한 기능이 있으면 '싸니까 이 정도지'밖에 안 된다. 33개 모두 최고여야 '이걸 안 쓰면 안 돼!'가 된다."**
+
+| # | 기능 | 현재 상태 | 경쟁사 최고 | 목표 |
+|---|------|----------|-----------|------|
+| 1 | **HS Code DB 규모** | 5,371 코드 + 1,027,674 관세율 (186개국) | Avalara 3,000만+ | ✅ WITS+WTO 벌크 수집 완료. 국가별 확장(8-12자리) + Supabase Pro 전환 필요 |
+| 2 | **반덤핑/세이프가드 관세** | ✅ TTBD 119,706행 임포트 완료 | Avalara/Zonos ✅ | ✅ 세션 33: TTBD 36개국 AD + 19개국 CVD + WTO SG → Supabase 4개 테이블 (케이스 10,999 + 제품 55,259 + 관세율 37,513 + 면제국 15,935) |
+| 3 | **이미지 기반 HS 분류** | ❌ 미구현 | Zonos ✅ 멀티모달AI | GPT-4o-mini 비전 API 연동 |
+| 4 | **다국어 분류 50개+** | 7개 언어 | Zonos 50개 | AI 프롬프트 다국어 확장 (비용 $0) |
+| 5 | **관세율 DB 실시간 업데이트** | 7개국 API + 186개국 MFN DB | Avalara 실시간 포괄적 | ✅ WITS+WTO 벌크 완료. Make.com 정기 업데이트 자동화 필요 |
+| 6 | **제한 물품 검사** | ⏳ WTO QR API 차단 | Zonos Restrict ✅ | WTO QR API 403 차단 (인프라 문제). MacMap NTM 데이터 또는 대체 소스 필요 |
+| 7 | **통관서류 자동생성** | ❌ 미구현 | Zonos Clear ✅ | AI로 Commercial Invoice/Packing List 생성 |
+| 8 | **체크아웃 통합 (DDP)** | ❌ 미구현 | Zonos/Global-e ✅ | Stripe 연동 DDP 체크아웃 (Pro+) |
+| 9 | **다중 통화 표시** | ❌ 미구현 | Global-e 30+ | 환율API 이미 있음, 프론트 로직 추가 |
+| 10 | **WooCommerce 플러그인** | ⏳ 계획 | Zonos/Easyship ✅ | WordPress 플러그인 개발 |
+| 11 | **BigCommerce/Magento** | ❌ 미구현 | Avalara ✅ | 플러그인 개발 (Pro+) |
+| 12 | **원산지 자동 감지** | ❌ 미구현 | Zonos Classify ✅ | AI 프롬프트에 한 줄 추가 (비용 $0) |
+| 13 | **관세 변동 알림** | ❌ 미구현 | Avalara ✅ | Make + Cron 자동화 |
+| 14 | **AI 에이전트 프레임워크** | ❌ 미구현 | Avalara ALFA ✅ | POTAL 전용 에이전트 SDK |
+
+### 🟡 LemonSqueezy 설정 (신원 확인 승인 후)
+
+| # | 항목 | 상세 |
+|---|------|------|
+| 1 | LS Dashboard 설정 변경 | Currency: KRW → USD, Contact email: → contact@potal.app |
+| 2 | LS Product 생성 | **새 요금제 기준**: Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+ |
+| 3 | Variant ID → Vercel 환경변수 | PLAN_CONFIG 업데이트 |
+| 4 | Webhook 설정 | LS Dashboard에서 webhook URL 등록 |
+
 ### 🟢 장기
 
 | # | 항목 |
 |---|------|
-| 1 | ✅ Product Hunt 런치 — 2026-03-07 (토) 스케줄 완료. potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료, 6/6 만료) |
-| 2 | 투자자 피치 원페이저 PDF (숫자 생긴 후) |
-| 3 | 글로벌 확장 (US 시장 장악 후) |
+| 1 | ✅ Product Hunt 런치 — 2026-03-07 (토) 스케줄 완료. potalapp.producthunt.com, 프로모 PRODUCTHUNT |
+| 2 | 코드 내 요금제 숫자 업데이트 (Free 500→100, Starter $9→Basic $20 등) — LS 승인 후 |
+| 3 | 투자자 피치 원페이저 PDF (숫자 생긴 후) |
+| 4 | 글로벌 확장 (US 시장 장악 후) |
 
 ---
 
@@ -282,7 +344,7 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — 240개국 업그레이드 완료, Shopify 임베디드 확인 대기, LS 결제 승인 대기
+### 현재 스프린트 — Supabase 마이그레이션 010-016 완료, MacMap MIN/AGR 벌크 임포트 진행중, WDC EC2 다운로드 진행중, 33개 기능 구현 착수, LS 결제 승인 대기
 - Phase 0~1 완료 (세션 11~14)
 - Phase 2 핵심 3개 완료 (GPT + Claude MCP + Gemini Gem)
 - Phase 4 Stripe Billing ✅ 완료 (세션 15~16)
@@ -364,12 +426,86 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
   - 사이트 전체 "181개국" → "240개국" 텍스트 업데이트 (25+ 파일)
   - 커스텀 LLM 전체 업데이트 (9개 파일): GPT Instructions ×2, OpenAPI Actions ×2, Gemini Gem Instructions + CSV (240개국), Meta AI Instructions, OpenAPI docs spec, MCP Server
   - npm run build ✅ 통과
-- **⚠️ 수동 업데이트 필요**:
-  - ChatGPT GPT Settings → Instructions 복붙 + Actions Schema 복붙
-  - Gemini Gem → 설명 "139→240" 변경 + 요청사항 복붙 + CSV 재업로드
-  - Meta AI Studio → 지역 제한 풀리면 ai-studio-instructions.md 복붙
-- **다음**: LS 신원 확인 승인 → Product 생성 → Variant ID/API Key/Webhook 설정 → Vercel 환경변수 → Shopify 임베디드 확인 통과 → 심사 제출
-- **블로커**: ~~Stripe 계정 정지~~ → **LemonSqueezy 전환 완료, 신원 확인 승인 대기 중**
+- **✅ 수동 업데이트 완료**:
+  - ChatGPT GPT Settings → Instructions + Actions Schema + API 키 + Privacy URL ✅
+  - Gemini Gem → 설명 240개국 + 요청사항 + CSV 재업로드 ✅
+  - ⏸ Meta AI Studio → 지역 제한 풀리면 ai-studio-instructions.md 복붙
+- **세션 28**: 경쟁사 비교 분석 + 요금제 전략 재설계 + 45기능 원가 분석 + "33개 기능 업계 최고" 전략 확정
+  - 경쟁사 비교 분석 4종 엑셀 생성: POTAL_vs_Competitors_v2.xlsx, Competitor_Pricing_Analysis.xlsx, Competitor_Feature_Matrix.xlsx, POTAL_Cost_Analysis_45Features.xlsx
+  - Alex Hormozi 전략 적용: "중간은 죽음" → POTAL = "모두에게 싸게 + 압도적 기능"
+  - 요금제 재설계: Free 100 / Basic $20 2K / Pro $80 10K / Enterprise $300+ 50K+
+  - 45개(실제 47개) 기능별 원가 분석: 33개 POTAL 스코프, 14개 스코프 밖
+  - 원가 결론: AI 기반이므로 33개 기능 전부 넣어도 건당 $0.008 이하. $20/2K 유지 가능
+  - **핵심 결정**: "33개 기능 모두 경쟁사 최고 수준 이상으로 구현" — 부족하면 "싸구려", 압도적이면 "가격 파괴자"
+  - HS Code DB: 443→50만+ 목표 (공개 데이터 대량 import + Supabase Pro 전환)
+  - LemonSqueezy: 신원 확인 "In Review" 대기 중. Currency KRW→USD, Contact→contact@potal.app 변경 필요
+  - 스코프 정리: 배송/물류(5개), 현지결제수단, VAT 신고, 보증, 전담매니저 등 14개 = 스코프 밖 or Enterprise 협상
+  - 부가서비스 (관세변동알림/원산지감지): Make 자동화 or AI 프롬프트로 빠르게 해결 가능
+- **세션 29**: 관세 데이터 벌크 수집 + TFAD 통관절차 데이터
+  - HS Code DB: 443→5,371 코드 (WCO HS 2022 전체 6자리 서브헤딩 기반)
+  - WITS (World Bank) 벌크 다운로드: 175개국, 962,729건 MFN 관세율
+  - WTO Timeseries API 벌크 다운로드: 114개국, 618,016건 (API 키: e6b00ecdb5b34e09aabe15e68ab71d1d)
+  - WITS + WTO 통합: **1,027,674건, 186개국, 6,350 HS코드** (WTO 우선 적용, 교차검증 95-98.5% 일치)
+  - EU 멤버 27개국 관세율 복제 포함
+  - TFAD 통관절차 데이터: 137개국 (tfadatabase.org 웹 스크래핑)
+  - WTO QR API: 403 Forbidden (CloudFront 차단, WTO 인프라 문제)
+  - WTO ePing API: members만 작동, SearchNotifications 엔드포인트 미제공
+  - ITC MacMap: 계정 활성화 에러 → ITC에 이메일 문의 (marketanalysis@intracen.org)
+  - 프로젝트 적용 파일: `data/duty_rates_merged.csv` (54MB), `migrations/008_merged_duty_rates.sql` (81MB), `data/tfad_members.json` (60KB)
+  - Spot Check 9/9 통과 (US 16.5%, JP 3.5%, KR 13%, CN 14%, BR 35%, AU 5%, DE 0%, CA 18%)
+  - npm run build 통과 ✅
+- **세션 30**: HS Code 분류 DB 전략 수립 + 대량 상품명 확보 시작
+  - **AI 분류 테스트 6종**: Groq Llama 8B(30%), 8B+few-shot(30%), 70B(50-60%), 8B+RAG(50%), 70B+RAG(27%), Hierarchical(37%)
+  - **Enrichment 테스트 3종**: Generic enrichment→70B(50%), HS-aware single(40%), CoT+hints(20%) — enrichment가 오히려 정확도 하락 발견
+  - **핵심 발견**: 6자리 HS 코드 분류에서 병목은 입력 품질이 아니라 모델의 HS 지식 자체. Llama 모델은 HS 법적 구분 학습 부족
+  - **전략 전환**: AI 분류 의존 → **상품명 대량 수집 + 정답 매핑 DB 구축** (Avalara 방식)
+  - **4단계 전략 확정**: (1) HS 코드 50만~80만개 전부 확보 (2) 자동 업데이트 (3) 상품명 5~8억 DB화 (4) 상품명→HS 코드 매핑
+  - **Web Data Commons (WDC)**: 5.95억 상품 데이터 (⚠️ 세션 31 수정: Product 카테고리 실제 179파일×~1.4GB=257GB. 1,899는 전체 WDC, Product만 179개)
+  - **WDC part_0 검증**: 238,249개 상품명 추출 성공 (카테고리 1,824개, 브랜드 1,392개, GTIN 2,033개 포함)
+  - **AWS 계정 생성**: POTAL (920263653804), us-east-1 리전, Free Tier ($100 크레딧)
+  - **AWS EC2 자동 실행 중**: m7i-flex.large, Instance i-0c114c6176439b9cb, S3: potal-wdc-920263653804
+  - ~~**다운로드+추출→S3 업로드→자동종료** 파이프라인 구동 중~~ (⚠️ 세션 31: user-data 미실행 확인. download_wdc_v2.sh 수동 실행으로 대체)
+  - 추가 데이터소스 확인: Stanford Amazon 940만, MAVE 220만(속성 포함), Google Taxonomy 5,596 카테고리
+  - Groq API Key: gsk_***REDACTED***
+  - 스크립트: `scripts/download_wdc_products.sh`, `scripts/extract_products_detailed.py`
+- **세션 31**: EC2 WDC 다운로드 문제 진단+수정 + ITC MacMap 53개국 MFN 관세율 수집 완료
+  - **EC2 WDC 문제 진단**: S3 버킷 비어있음 확인 → user-data 스크립트 미실행 (cloud-init 6초 종료) → SSH 접속 (SG에 SSH 규칙 추가) → 수동 스크립트 생성
+  - **WDC 다운로드 수정**: 올바른 URL 확인 (`data.dws.informatik.uni-mannheim.de/structureddata/2022-12/quads/classspecific/Product/`) → **179파일 (part_0.gz~part_178.gz, 257GB 총)**, download_wdc_v2.sh 작성 + nohup 실행 중
+  - **EC2 인스턴스 정보 수정**: 올바른 Instance ID = `i-0c114c6176439b9cb` (세션 30의 `i-0c114c6176439b9cb`는 오타)
+  - **WITS API 자동화 시도 실패**: 50개국 전부 FAILED (API가 스크립트 접속 차단)
+  - **정부 직접 다운로드 시도 실패**: US HTS/EU TARIC/UK 등 대부분 0바이트 (wget/curl 차단)
+  - **ITC MacMap 수동 벌크 다운로드**: 53개국 MFN 관세율 수집 완료
+    - 국가: ARE, ARG, AUS, BGD, BHR, BRA, CAN, CHE, CHL, CHN, COL, CRI, DOM, DZA, ECU, EGY, EUR, GBR, GHA, HKG, IDN, IND, ISR, JOR, JPN, KAZ, KEN, KOR, KWT, LKA, MAR, MEX, MYS, NGA, NOR, NZL, OMN, PAK, PER, PHL, PRY, QAT, RUS, SAU, SGP, THA, TUN, TUR, TWN, UKR, URY, USA, VNM
+    - 73개 데이터 파일, 721,582건 관세율, 191MB
+    - MacMap 설정: TARIFF → APPLIED TARIFFS → MFN → NTLC (National Tariff Line Code, 8-12자리)
+    - 데이터 형식: Tab-separated .txt (Revision, ReportingCountry, Year, ProductCode, Nav_flag, AvDuty, NavDuty, Source)
+  - **파일 정리**: `data/itc_macmap/by_country/{ISO3}/` 구조로 53개국 폴더 정리. BulkDownloadResult 폴더 4개 + zip 6개 + 중복 파일 전체 삭제
+- **세션 32**: Supabase 마이그레이션 실행 + MacMap 벌크 데이터 임포트 시작
+  - **itc_macmap 폴더 정리**: BulkDownloadResult 폴더 4개 + zip 6개 + 개별파일 삭제 → by_country/ 53개국만 남김 (16GB)
+  - **MacMap 데이터 분석**: MIN(130M행, 6.4GB) + AGR(148M행, 8.3GB) 파일 구조 분석, M49→ISO2 매핑 생성 (237개국)
+  - **016_macmap_bulk_tables.sql 생성**: macmap_min_rates, macmap_agr_rates, macmap_trade_agreements 3개 테이블 + lookup_duty_rate_v2() 4단계 폴백 함수 + 1,319개 무역협정 INSERT
+  - **Supabase 연결 방법 탐색**: 직접 PostgreSQL(포트5432 차단) → REST API(DDL 불가) → Pooler(비밀번호 인증 실패) → **Management API 성공** (curl로 SQL 실행)
+  - **마이그레이션 010-016 전체 실행 완료** (Management API 경유):
+    - 010 country_metadata: 240행 (iso_code_3 빈값 6개 수정: BQ→BES, CW→CUW, XK→XKX, BL→BLM, MF→MAF, SX→SXM)
+    - 011 vat_gst_rates: 240행 ✅
+    - 012 de_minimis_thresholds: 240행 ✅
+    - 013 customs_fees: 240행 ✅
+    - 015 (번호 확인): 해당 마이그레이션 ✅
+    - 016 macmap_bulk_tables: 테이블 3개 + 함수 1개 + macmap_trade_agreements 1,319행 ✅
+  - **009 MFN 데이터 임포트 완료**: 131MB SQL 파일, 54개 BEGIN/COMMIT 블록 → 49개 성공 + 5개 413 에러(파일 크기 초과) → 대형 청크 10분할 재시도 → **537,894행 53개국 전체 완료** ✅
+  - **MIN 데이터 벌크 임포트 시작**: 130M행을 Management API로 40,000행/배치 INSERT
+    - 속도: ~7,200~9,200행/초
+    - ON CONFLICT DO UPDATE → DO NOTHING 변경 (M49→ISO2 충돌: 849/850→VI, 488/496→MN)
+    - 진행: ARE 1,859,976행 ✅, ARG 2,436,834행 ✅ (총 ~4.3M행, 세션 종료 시)
+    - 예상 소요: 전체 ~5시간 (다음 세션에서 재개 필요)
+  - **Python 스크립트 생성**:
+    - `import_min_via_api.py`: Management API 기반 MIN 벌크 임포터 (진행 추적, 40K 배치, 413 에러 시 자동 분할)
+    - `import_macmap_bulk.py`: psycopg2 COPY 기반 직접 연결 임포터 (EC2/Mac용)
+    - `import_min_agr_data.py`: 자체 완결형 Mac 임포터 (temp table + COPY + INSERT ON CONFLICT)
+    - `execute_migrations.py`: Management API로 마이그레이션 SQL 실행 (BEGIN/COMMIT 블록 분할)
+    - `m49_to_iso2_full.py`: M49→ISO2 완전 매핑 (237+개국, ITC 특수 코드 포함)
+- **다음**: MIN 임포트 재개 (나머지 ~126M행) → AGR 데이터 임포트 (148M행) → lookup_duty_rate_v2() 검증 → WDC S3 결과물 확인
+- **블로커**: ~~Stripe 계정 정지~~ → **LemonSqueezy 전환 완료, 신원 확인 승인 대기 중** / ~~ITC MacMap 계정 문제~~ → **✅ MacMap 53개국 수집 완료** / ~~Supabase Pro 전환 대기~~ → **✅ Supabase Pro 활성화 확인 (마이그레이션 실행 완료)**
 
 ### 경쟁사 가격/기능 분석 완료 (세션 17)
 - ✅ `POTAL-Target-Analysis.xlsx` 생성 — 4시트 (타겟 세그먼트, 매출 시뮬레이션, 경쟁사 절감, 핵심 인사이트)
@@ -393,6 +529,91 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 ---
 
 ## 5. ✅ 완료된 내용 (DONE)
+
+### 세션 33 — 반덤핑/상계관세/세이프가드 데이터 수집 + Supabase 임포트 (2026-03-08)
+
+- ✅ **MacMap 반덤핑 데이터 확인**: MacMap 다운로드 옵션에 반덤핑/세이프가드 없음 확인
+- ✅ **대안 소스 조사**: USITC, TTBD(World Bank), EU TARIC, WTO Trade Remedies Portal, UNCTAD TRAINS
+- ✅ **TTBD 데이터 다운로드**: 반덤핑 36개국 (5.0MB), 상계관세 19개국 (1.3MB), 세이프가드 WTO 글로벌 (1.1MB), USITC Orders (536KB)
+- ✅ **TTBD 데이터 분석**: 총 226,906행 (AD 106K + CVD 89K + SG 31K + USITC 772)
+  - 유니크 HS 코드 7,022개 (8자리), 기업별 관세율 32,400건
+  - 관세율 유형: AVD (종가세%), SD (종량세), PU (가격약속), DPU, TRQ
+- ❌ **EU TARIC/WTO/UNCTAD**: JavaScript SPA로 직접 다운로드 불가 (하지만 TTBD가 이미 통합 데이터)
+- ✅ **Supabase 4개 테이블 생성**: trade_remedy_cases, trade_remedy_products, trade_remedy_duties, safeguard_exemptions + 인덱스 8개
+- ✅ **전체 데이터 Supabase 임포트 완료** (에러 0):
+  - trade_remedy_cases: **10,999건** (AD 9,278 + CVD 1,263 + SG 458)
+  - trade_remedy_products: **55,259건** (HS 코드 매핑)
+  - trade_remedy_duties: **37,513건** (기업별 관세율)
+  - safeguard_exemptions: **15,935건**
+  - 총: **119,706건**
+- 🔄 **MIN 벌크 임포트 재시작**: ~5.4M/130M행 (AE+AR+AU 3개국 완료)
+- 📝 **문서 업데이트**: session-context.md, CLAUDE.md, .cursorrules, 체크리스트
+
+### 세션 32 — Supabase 마이그레이션 010-016 실행 + MacMap MIN 벌크 임포트 시작 (2026-03-07)
+
+- ✅ **itc_macmap 폴더 정리**: BulkDownloadResult×4, zip×6, 개별파일 삭제 → by_country/ 53개국만 남김 (414 txt, 16GB)
+- ✅ **MacMap 데이터 구조 분석**: MIN(7컬럼, 130M행, 6.4GB), AGR(10컬럼, 148M행, 8.3GB), AGR _tr(Agreement_id→TariffRegime)
+- ✅ **M49→ISO2 완전 매핑 생성**: 237+개국 (ITC 특수 코드 포함: 490→TW, 699→IN, 757→CH, 918→EU, 842→US, 381→IT)
+- ✅ **016_macmap_bulk_tables.sql 생성**: 1,462줄 (3테이블 + lookup_duty_rate_v2() 4단계 폴백 + 1,319 무역협정)
+- ✅ **Supabase 연결 방법 탐색**: 직접 PostgreSQL ❌(포트차단) → REST API ❌(DDL불가) → Pooler ❌(비밀번호실패) → **Management API ✅** (curl + Personal Access Token)
+- ✅ **마이그레이션 010-016 전체 실행**: Management API 경유
+  - 010 country_metadata: 240행 (iso_code_3 빈값 6개 수정: BQ→BES, CW→CUW, XK→XKX, BL→BLM, MF→MAF, SX→SXM)
+  - 011 vat_gst_rates: 240행, 012 de_minimis: 240행, 013 customs_fees: 240행
+  - 016 macmap_bulk_tables: 3테이블 + 함수 + macmap_trade_agreements 1,319행
+- ✅ **009 MFN 데이터 완전 임포트**: 131MB SQL, 54 BEGIN/COMMIT 블록 → 49 성공 + 5 대형 블록(413에러) → 10분할 재시도 전체 성공 → **macmap_ntlc_rates 537,894행 53개국** ✅
+- 🔄 **MIN 데이터 벌크 임포트 시작**: 130M행, 40,000행/배치 Management API INSERT
+  - ON CONFLICT DO UPDATE → DO NOTHING 변경 (M49→ISO2 충돌 해결)
+  - ARE 1,859,976행 ✅ + ARG 2,436,834행 ✅ = ~4.3M행 완료 (세션 종료 시)
+  - 속도: ~7,200행/초, 전체 예상 ~5시간
+- ⏳ **AGR 데이터**: 148M행, MIN 완료 후 진행 예정
+- **Supabase 테이블 현황**: countries 240, vat_gst 240, de_minimis 240, customs_fees 240, trade_agreements 1,319, macmap_ntlc_rates 537,894, macmap_min_rates ~5.4M(진행중), macmap_agr_rates 0(대기), trade_remedy_cases 10,999, trade_remedy_products 55,259, trade_remedy_duties 37,513, safeguard_exemptions 15,935
+
+### 세션 31 — EC2 WDC 다운로드 수정 + ITC MacMap 53개국 MFN 관세율 수집 (2026-03-07)
+
+- ✅ **EC2 WDC 문제 진단+수정**: user-data 스크립트 미실행 → SSH 접속 (SG에 port 22 추가) → 올바른 URL 확인 → download_wdc_v2.sh 수동 실행
+- ✅ **WDC 데이터 정보 수정**: 1,899파일이 아닌 **179파일** (part_0.gz~part_178.gz, 총 257GB). URL: `data.dws.informatik.uni-mannheim.de/structureddata/2022-12/quads/classspecific/Product/`
+- ✅ **EC2 Instance ID 수정**: `i-0c114c6176439b9cb` (세션 30에서 `i-0c114c61764390b9cb`로 오기록됨)
+- ✅ **WITS API 자동 수집 시도**: 50개국 전부 FAILED (API가 스크립트 접근 차단)
+- ✅ **정부 직접 다운로드 시도**: US HTS/EU TARIC/UK 등 대부분 0바이트 반환 (wget/curl 차단)
+- ✅ **ITC MacMap 수동 벌크 다운로드**: **53개국 MFN 관세율 수집 완료**
+  - 73개 데이터 파일, **721,582건** 관세율 데이터, 191MB
+  - NTLC(National Tariff Line Code) 8-12자리 수준 상세 관세율
+  - 설정: TARIFF → APPLIED TARIFFS → MFN → NTLC
+- ✅ **데이터 정리**: `data/itc_macmap/by_country/{ISO3}/` 구조로 53개국 폴더 정리
+  - BulkDownloadResult 폴더 4개 + zip 6개 + 중복 개별 파일 삭제
+  - 국가 목록: ARE~VNM 53개국 (주요 교역국 전체 커버)
+- ⏳ **WDC 다운로드 진행 중**: EC2에서 nohup으로 실행 중 (마지막 확인 시 ~55/179)
+- ⏳ **Supabase Pro 전환**: 결제 완료되었으나 플랜 미활성화 → support 요청 중
+
+### 세션 29 — 관세 데이터 벌크 수집 + TFAD 통관절차 (2026-03-07)
+
+- ✅ **HS Code DB 확장**: 443→5,371 코드 (WCO HS 2022 전체 6자리 서브헤딩)
+- ✅ **WITS (World Bank) 벌크 다운로드**: 175개국, 962,729건 MFN 관세율 (SDMX XML API, 무인증)
+- ✅ **WTO Timeseries API 벌크 다운로드**: 114개국, 618,016건 (22개 실패 분석: 14 EU멤버+8 데이터없음)
+- ✅ **WITS→Supabase 변환**: 1,018,859건 (ISO3→ISO2 매핑, EU 27개국 복제, MFN% → decimal 변환)
+- ✅ **WTO→Supabase 변환**: 609,121건 (141개국, EU 복제 포함)
+- ✅ **WITS+WTO 통합**: **1,027,674건, 186개국, 6,350 HS코드** (WTO 우선, 교차검증 95-98.5%)
+- ✅ **TFAD 통관절차 데이터**: 137개국 (tfadatabase.org 웹 스크래핑, TFA 이행률/비준일/관련 조항)
+- ✅ **WTO API 4개 전수 테스트**: Timeseries ✅ / ePing ⚠️(members만) / QR ❌(403) / TFAD ❌(404→웹 스크래핑)
+- ✅ **프로젝트 적용 파일 생성**: duty_rates_merged.csv (54MB), 008_merged_duty_rates.sql (81MB), tfad_members.json (60KB)
+- ✅ **Spot Check 9/9 통과**: US T-shirt 16.5%, JP salmon 3.5%, KR T-shirt 13%, DE laptop 0% 등
+- ✅ **ITC MacMap MFN 관세율**: 53개국 721,582건 수동 벌크 다운로드 완료 (세션 31). NTLC 8-12자리 상세 관세율
+- ✅ **반덤핑/상계관세/세이프가드**: TTBD (World Bank) 데이터 Supabase 임포트 완료. 케이스 10,999건, 제품 55,259건, 관세율 37,513건, 면제국 15,935건
+- ⏳ **WTO QR API**: 403 CloudFront 차단 (수출입 제한 품목 데이터)
+
+### 세션 28 — 경쟁사 비교 분석 + 요금제 전략 + 기능 원가 분석 (2026-03-06)
+
+- ✅ **경쟁사 비교 분석 4종 엑셀 생성**:
+  - `POTAL_vs_Competitors_v2.xlsx` — 5시트 (종합 비교, 가격 시뮬레이션, 강점약점 매트릭스, POTAL 성장 추적, 전략 인사이트)
+  - `Competitor_Pricing_Analysis.xlsx` — 4시트 (25개 요금제 상세, 건당 단가, 할당량 비교, POTAL 문제점 7개)
+  - `Competitor_Feature_Matrix.xlsx` — 3시트 (9카테고리×45기능×10경쟁사 체크리스트, 가격별 기능 포함, 할당량별 실비용)
+  - `POTAL_Cost_Analysis_45Features.xlsx` — 3시트 (47기능별 원가 유형/건당비용/월고정비, 요금제별 손익 시뮬레이션, 티어별 기능 배분 전략)
+- ✅ **Alex Hormozi 요금 전략 분석**: "극소수에게 비싸게 or 모두에게 싸게. 중간은 죽음" → POTAL 기존 요금($0/5K, $9, $29, $99)은 "중간" → 재설계
+- ✅ **요금제 재설계 확정**: Free 100건 / Basic $20 2K / Pro $80 10K / Enterprise $300+ 50K+
+- ✅ **45기능 원가 분석 완료**: 6가지 원가 유형 분류 (A:AI+코드, B:DB/캐시, C:외부API, D:인프라, E:인력/보증, F:물류/외부)
+- ✅ **"33개 기능 업계 최고" 전략 확정**: 47개 중 14개 스코프 밖, 33개 POTAL 스코프 내에서 경쟁사 최고 이상 목표
+- ✅ **Golden Circle 프레임워크 정립**: WHY(LLM이 쇼핑 장악) → HOW(LLM에 디테일 제공) → WHAT(POTAL이 쇼핑 관련 모든 부품 제공)
+- ✅ **비용 지속 가능성 확인**: AI 원가 구조 덕분에 33개 기능 전부 넣어도 건당 $0.008 이하, $20/2K 마진 양호
 
 ### B2B 전환
 - ✅ B2B 피벗 전략 대화 + 결정 (세션 10+, 2026-03-03)
@@ -555,8 +776,26 @@ Phase 3: Shopify App ← ✅ 앱스토어 리스팅 작성 완료, 심사 제출
 | 파일 | 역할 |
 |------|------|
 | `app/lib/cost-engine/` | Total Landed Cost 계산 **(B2B 독립 모듈, 240개국 지원)** |
-| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (181개국, India/Brazil 특수 세금) |
+| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (240개국, India/Brazil/China/Mexico 특수 세금, 12개국 processing fee) |
 | `app/lib/cost-engine/country-data.ts` | 240개국 VAT/GST/관세/de minimis 데이터 |
+| `app/lib/cost-engine/CostEngine.ts` | 핵심 계산 엔진 (CN CBEC 세금, MX IEPS 특별소비세 포함) |
+| `app/lib/cost-engine/country-i18n.ts` | 7개 언어 국가명 번역 (EN/KO/JA/ZH/ES/FR/DE × 240개국) |
+| `__tests__/cross-validation/full-country-cross-validation.test.ts` | 교차검증 399건 (240개국 × 세금/관세/처리비 전체 검증) |
+| `app/lib/cost-engine/hs-code/hs-database.ts` | HS Code DB (5,371 코드, WCO HS 2022, getHsEntry/getChapterEntries/getCategoryEntries) |
+| `data/duty_rates_merged.csv` | WITS+WTO 통합 MFN 관세율 (1,027,674건, 186개국, 6,350 HS코드, 54MB) |
+| `data/tfad_members.json` | TFAD 통관절차 이행 데이터 (137개국, 비준일/이행률/조항) |
+| `data/merge_summary.json` | 관세 데이터 통합 요약 (소스별 건수/국가수) |
+| `supabase/migrations/008_merged_duty_rates.sql` | WITS+WTO 관세율 Supabase INSERT (1,027,674건, 81MB) |
+| `data/itc_macmap/by_country/` | ITC MacMap MFN 관세율 53개국 (721,582건, 191MB, NTLC 8-12자리) |
+| `data/itc_macmap/by_country/{ISO3}/MAcMap-{ISO3}_{YEAR}_Tariff_NTLC_mfn.txt` | 개별 국가 관세율 데이터 (Tab-separated) |
+| `data/itc_macmap/by_country/{ISO3}/*_min.txt` | MIN(최소적용) 관세율 by 파트너국 (세션 32) |
+| `data/itc_macmap/by_country/{ISO3}/*_agr.txt` | 무역협정별 관세율 (세션 32) |
+| `supabase/migrations/010_country_metadata.sql` | 국가 메타데이터 240행 (iso_code_3 6개 수정, 세션 32) |
+| `supabase/migrations/016_macmap_bulk_tables.sql` | MacMap 벌크 테이블 3개 + lookup_duty_rate_v2() + 1,319 무역협정 (세션 32) |
+| `scripts/import_macmap_bulk.py` | psycopg2 COPY 기반 벌크 임포터 (EC2/Mac용, 세션 32) |
+| `scripts/import_min_agr_data.py` | Mac용 자체 완결 임포터 (temp table + COPY, 세션 32) |
+| `import_trade_remedies.py` | TTBD → Supabase 반덤핑/상계관세/세이프가드 임포터 (세션 33) |
+| `SESSION_33_ANTIDUMPING_REPORT.md` | 반덤핑 데이터 다운로드 결과 + 통합 방안 보고서 (세션 33) |
 | `app/lib/api-auth/` | API 인증 시스템 (키 생성/검증/미들웨어/rate-limit) |
 | `app/api/v1/calculate/route.ts` | 단건 TLC 계산 API |
 | `app/api/v1/calculate/batch/route.ts` | 배치 TLC 계산 API (최대 100건) |
@@ -614,6 +853,29 @@ plans, sellers (website, platform, billing_*), api_keys, widget_configs, usage_l
 - 004_stripe_billing.sql: current_period_end, updated_at ✅
 - 005_ls_billing.sql: stripe_*→billing_* rename, billing_provider ✅
 - 006_seller_onboarding.sql: website, platform 컬럼 ✅
+- 008_merged_duty_rates.sql: WITS+WTO MFN 관세율 (아직 미실행 — 81MB, 별도 실행 필요)
+- 009_macmap_mfn_ntlc_rates.sql: MacMap MFN NTLC 관세율 537,894행 ✅ (세션 32 Management API)
+- 010_country_metadata.sql: countries 테이블 240행 ✅ (iso_code_3 6개 수정)
+- 011_vat_gst_rates.sql: vat_gst_rates 테이블 240행 ✅
+- 012_de_minimis_thresholds.sql: de_minimis_thresholds 테이블 240행 ✅
+- 013_customs_fees.sql: customs_fees 테이블 240행 ✅
+- 016_macmap_bulk_tables.sql: macmap_min_rates/agr_rates/trade_agreements 테이블 + lookup_duty_rate_v2() + 1,319 무역협정 ✅
+
+### Supabase 관세 데이터 테이블 (세션 32 추가)
+| 테이블 | 행 수 | 상태 | 설명 |
+|--------|-------|------|------|
+| countries | 240 | ✅ 완료 | ISO2/ISO3/M49, 지역, 통화, 경제 지표 |
+| vat_gst_rates | 240 | ✅ 완료 | 국가별 VAT/GST 세율 |
+| de_minimis_thresholds | 240 | ✅ 완료 | 국가별 면세 한도 |
+| customs_fees | 240 | ✅ 완료 | 국가별 통관 수수료 |
+| macmap_trade_agreements | 1,319 | ✅ 완료 | 53개국 무역협정 (FTA 등) |
+| macmap_ntlc_rates | 537,894 | ✅ 완료 | MFN NTLC 관세율 (8-12자리) |
+| macmap_min_rates | ~5.4M/130M | 🔄 진행중 | MIN(최소적용) 관세율 by 파트너국 |
+| macmap_agr_rates | 0/148M | ⏳ 대기 | 무역협정별 관세율 |
+| trade_remedy_cases | 10,999 | ✅ | 반덤핑/상계관세/세이프가드 케이스 (세션 33) |
+| trade_remedy_products | 55,259 | ✅ | 무역구제 대상 HS 코드 (세션 33) |
+| trade_remedy_duties | 37,513 | ✅ | 기업별 무역구제 관세율 (세션 33) |
+| safeguard_exemptions | 15,935 | ✅ | 세이프가드 면제국가 (세션 33) |
 
 ### 프로덕션 환경 & 인증 정보
 
@@ -628,6 +890,18 @@ plans, sellers (website, platform, billing_*), api_keys, widget_configs, usage_l
 | Stripe (Test) | sk_test_... / whsec_... (.env.local 참조) |
 | API 엔드포인트 | https://www.potal.app/api/v1/calculate |
 | Supabase URL | https://zyurflkhiregundhisky.supabase.co |
+| Supabase Project ID | zyurflkhiregundhisky |
+| Supabase DB Password | PotalReview2026! |
+| Supabase DB Direct | postgresql://postgres:[PASSWORD]@db.zyurflkhiregundhisky.supabase.co:5432/postgres |
+| Supabase Pooler (Session) | postgresql://postgres.zyurflkhiregundhisky:[PASSWORD]@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres |
+| Supabase Secret Key | sb_secret_***REDACTED*** |
+| Supabase Management API Token | sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a |
+| Supabase Management API URL | https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query |
+| WTO API Key | e6b00ecdb5b34e09aabe15e68ab71d1d |
+| Groq API Key | gsk_***REDACTED*** |
+| AWS Account ID | 920263653804 |
+| AWS EC2 Instance | i-0c114c6176439b9cb (m7i-flex.large, us-east-1) |
+| AWS S3 Bucket | potal-wdc-920263653804 |
 
 ### ⚠️ Vercel 환경변수 주의사항
 - **Project Settings + All Settings 둘 다 설정 필수** — 하나만 하면 오류 발생 가능
@@ -647,7 +921,11 @@ plans, sellers (website, platform, billing_*), api_keys, widget_configs, usage_l
 |------|------|
 | `POTAL-B2B-Strategy-Roadmap.docx` | B2B 피벗 전략 전체 문서 |
 | `session-context.md` | 이 파일 (프로젝트 맥락) |
-| `POTAL_vs_Competitors_Analysis.md` | 경쟁사 기술 비교 분석 (Zonos/Avalara/Global-e/Easyship/Dutify) |
+| `POTAL_vs_Competitors_Analysis.md` | 경쟁사 기술 비교 분석 v1 (Zonos/Avalara/Global-e/Easyship/Dutify) |
+| `POTAL_vs_Competitors_v2.xlsx` | 경쟁사 비교 v2 엑셀 (5시트, 세션 28) |
+| `Competitor_Feature_Matrix.xlsx` | 경쟁사 기능 체크리스트 매트릭스 (45기능×10경쟁사, 세션 28) |
+| `Competitor_Pricing_Analysis.xlsx` | 경쟁사 가격 분석 (25개 요금제 상세, 세션 28) |
+| `POTAL_Cost_Analysis_45Features.xlsx` | 45기능 원가 분석 (건당비용/손익시뮬레이션/기능배분전략, 세션 28) |
 | `PRODUCT_HUNT_LAUNCH_PLAN.md` | Product Hunt 런치 준비 문서 (Tagline/체크리스트/타이밍/성공지표) |
 
 ### B2C 보존 문서
@@ -670,7 +948,12 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
-| 03-06 | 27 | **240개국 확장 + 커스텀 LLM 업데이트**: 181→240개국 (경쟁사 Zonos 235 초과). CN CBEC 세금 (9.1% composite/정식수입), MX IEPS 특별소비세 (주류/담배/설탕). 12개국 processing fee (CN $30/MX 0.8%/SG $10/BR $36 추가). 7개 언어 국가명 240/240 100%. 교차검증 399건+API 49건=448건 통과. 커스텀 LLM 9파일 업데이트 (GPT/Gemini/Meta/MCP/OpenAPI). country-duty-reference.csv 181→240개국 |
+| 03-07 | 32 | **Supabase 마이그레이션 010-016 + MacMap MIN 벌크 임포트**: itc_macmap 폴더 정리 (BulkDownloadResult×4+zip×6 삭제→53개국 16GB). MIN/AGR 구조 분석 (130M+148M행). M49→ISO2 매핑 237+개국. **016_macmap_bulk_tables.sql 생성** (3테이블+함수+1,319 무역협정). Supabase 연결 탐색: 직접PostgreSQL❌→REST❌→Pooler❌→**Management API✅** (curl). **010-016 마이그레이션 완료** (countries 240, vat 240, de_minimis 240, customs_fees 240, trade_agreements 1,319). **009 MFN 537,894행 완료** (54블록→5개 413에러→10분할 전체 성공). **MIN 임포트 시작**: 40K행/배치, ~7,200행/초, ARE 1.86M+ARG 2.44M=~4.3M행. ON CONFLICT DO UPDATE→DO NOTHING (M49 충돌). Python 스크립트 5개 생성. import_min_via_api.py 작성 |
+| 03-07 | 31 | **EC2 WDC 다운로드 수정 + MacMap 53개국 MFN 수집**: EC2 S3 비어있음 → user-data 미실행 진단 → SSH(SG port22 추가) → WDC 올바른 URL 확인(179파일, 257GB) → download_wdc_v2.sh 실행. WITS API 자동화 실패(50개국 전부 FAILED). 정부 직접 다운로드 실패(0바이트). **ITC MacMap 수동 벌크: 53개국 721,582건 MFN NTLC 관세율 완료** (191MB). `data/itc_macmap/by_country/` 53폴더 정리. 불필요 파일 전체 삭제 (BulkDownloadResult×4, zip×6, 개별파일). Instance ID 수정: i-0c114c6176439b9cb |
+| 03-07 | 30 | **HS Code 분류 DB 전략 + 대량 상품명 확보 시작**: AI 분류 테스트 6종 (Groq Llama 8B 30%/70B 60%/enrichment 50%→오히려 하락). 전략 전환: AI 분류 → 상품명 대량 수집+정답 매핑 DB. 4단계 확정: (1) HS 50만~80만 확보 (2) 자동 업데이트 (3) 상품명 5~8억 DB (4) HS 매핑. **WDC 5.95억 상품 데이터 확보 시작** (AWS EC2 m7i-flex.large, Instance i-0c114c6176439b9cb, S3 potal-wdc-920263653804). part_0 검증: 238,249 상품명+카테고리+브랜드+GTIN 추출 성공. AWS 계정 생성 (Free Tier $100). Google Taxonomy 5,596 카테고리 다운로드. 스크립트 2종 작성 (download_wdc_products.sh, extract_products_detailed.py) |
+| 03-07 | 29 | **관세 데이터 벌크 수집 + TFAD 통관절차**: HS Code DB 443→5,371 (WCO HS 2022). WITS 175개국 962,729건 + WTO 114개국 618,016건 = **통합 1,027,674건 186개국 6,350 HS코드** (WTO 우선). TFAD 137개국 통관절차 웹 스크래핑. WTO API 4개 전수 테스트 (Timeseries ✅/ePing ⚠️/QR ❌403/TFAD ❌404). Spot Check 9/9 통과. ITC MacMap 계정 에러 → ITC 문의 이메일. 프로젝트 적용: duty_rates_merged.csv(54MB), 008_merged_duty_rates.sql(81MB), tfad_members.json(60KB) |
+| 03-06 | 28 | **경쟁사 비교 분석 + 요금제 전략 + "33개 기능 업계 최고" 확정**: 경쟁사 10곳 비교 분석 엑셀 4종 (v2비교/가격분석/기능매트릭스/원가분석). Alex Hormozi 전략 "중간은 죽음" → 요금제 재설계 (Free 100/Basic $20 2K/Pro $80 10K/Enterprise $300+). 45기능 원가 분석 (6유형 분류, 33개 스코프IN, 14개 스코프OUT). Golden Circle: LLM 쇼핑 인프라. AI 원가 $0.008/건으로 33개 기능 전부 구현 가능 확인. HS Code DB 50만+ 확대 결정 (Supabase Pro 전환). LS: Currency USD, Contact email 변경 필요 |
+| 03-06 | 27 | **240개국 확장 + 커스텀 LLM 업데이트**: 181→240개국 (경쟁사 Zonos 235 초과). CN CBEC 세금 (9.1% composite/정식수입), MX IEPS 특별소비세 (주류/담배/설탕). 12개국 processing fee (CN $30/MX 0.8%/SG $10/BR $36 추가). 7개 언어 국가명 240/240 100%. 교차검증 399건+API 49건=448건 통과. 커스텀 LLM 9파일 업데이트 (GPT/Gemini/Meta/MCP/OpenAPI). country-duty-reference.csv 181→240개국. **수동 업데이트 완료**: ChatGPT GPT (Instructions+Actions+API키+Privacy URL) + Gemini Gem (설명+요청사항+CSV) |
 | 03-06 | 26 | **PH 런치 + 셀러 온보딩 + Stripe→LS 문서 정리 + App Bridge + 181개국 + PH 에셋 + LS 전환**: Stripe→LS 문서 전체 업데이트 (12+ 파일, i18n 5개 언어). **PH 런치 3/7 토 스케줄 완료** (potalapp.producthunt.com, 프로모 PRODUCTHUNT). **셀러 온보딩**: signup에 website/platform 추가, Quick Start 가이드 3탭 신규 (Shopify/Widget/API), DB migration 006. 이전: App Bridge push + 임베디드 확인 대기. GPT/Gemini/MCP 181개국 업데이트. PH 에셋 5장 제작. **LS 전환 완료**: stripe SDK 삭제, lemonsqueezy.ts/subscription/checkout/webhook/portal 재작성, DB migration 005, LS 스토어 생성, 신원확인 제출 |
 | 03-06 | 25 | **Cost Engine 대규모 업그레이드**: 4개 신규 관세 API Provider (Canada CBSA, Australia ABF, Japan Customs, Korea KCS) 추가 → 총 7개 정부 API. country-data.ts 137→181개국 확장. HS 챕터 56→97개(전체 커버). FTA 27→63개 협정. India 세금 계산 (BCD+SWS+IGST 캐스케이딩). Section 301 tariffs 2025/2026 업데이트. 8개국 processing fees 추가 (US MPF, AU IPC, NZ Biosecurity, CA CBSA, JP/KR customs, IN landing charges, CH statistical fee). Batch calculation Promise.allSettled 병렬화. 전체 frontend/docs/i18n country count 139→181 업데이트 (50+파일) |
 | 03-06 | 24 | **API 문서 + PH 런치 + HS Code 확장**: Swagger UI 스타일 인터랙티브 API 문서 (`/developers/docs` 재구축, 6개 엔드포인트, Try it, cURL/JS/Python), Product Hunt 런치 플랜 문서, HS Code DB 409→443개 (+34개 이커머스 핵심), OpenAPI/widget URL 수정 (potal.io→potal.app) |
