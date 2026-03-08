@@ -8,10 +8,47 @@ import { useEffect, useState } from 'react';
  * When the app is loaded inside the Shopify admin iframe:
  * 1. Detects via URL params (shop, host) or window.shopify
  * 2. App Bridge auto-initializes from the CDN script in layout.tsx
- * 3. Uses session tokens for authentication
+ *    (requires <meta name="shopify-api-key"> before the script tag)
+ * 3. Uses session tokens (idToken) for authenticated API calls
  *
  * When loaded outside Shopify (normal potal.app), does nothing.
  */
+
+declare global {
+  interface Window {
+    shopify?: {
+      idToken: () => Promise<string>;
+      environment: { embedded: boolean; mobile: boolean };
+    };
+    __potalShopifyToken?: string;
+  }
+}
+
+/**
+ * Get the current Shopify session token.
+ * Use this in fetch() calls for authenticated requests.
+ *
+ * Example:
+ *   const token = getShopifySessionToken();
+ *   fetch('/api/shopify/session', {
+ *     headers: { Authorization: `Bearer ${token}` }
+ *   });
+ */
+export function getShopifySessionToken(): string | null {
+  if (typeof window !== 'undefined') {
+    return window.__potalShopifyToken || null;
+  }
+  return null;
+}
+
+/**
+ * Check if app is running inside Shopify admin iframe.
+ */
+export function isShopifyEmbedded(): boolean {
+  if (typeof window === 'undefined') return false;
+  return !!window.shopify?.environment?.embedded;
+}
+
 export function ShopifyAppBridge() {
   const [isEmbedded, setIsEmbedded] = useState(false);
 
@@ -25,51 +62,46 @@ export function ShopifyAppBridge() {
     if (shop && host) {
       setIsEmbedded(true);
 
+      let retryCount = 0;
+      const MAX_RETRIES = 10;
+
       // Wait for App Bridge to be available
       const initAppBridge = () => {
-        if (typeof window !== 'undefined' && (window as any).shopify) {
-          const shopify = (window as any).shopify;
+        if (window.shopify) {
+          // Request session token for authentication
+          window.shopify.idToken().then((token: string) => {
+            if (token) {
+              window.__potalShopifyToken = token;
+            }
+          }).catch(() => {
+            // Token request failed — App Bridge may not be fully ready
+          });
 
-          // Request session token to verify embedded auth works
-          if (shopify.idToken) {
-            shopify.idToken().then((token: string) => {
-              // Store the session token for API calls
-              if (token) {
-                sessionStorage.setItem('shopify_session_token', token);
-                console.log('[POTAL] Shopify App Bridge initialized, session token obtained');
-              }
-            }).catch((err: Error) => {
-              console.warn('[POTAL] Session token request failed:', err);
-            });
-          }
-
-          // Set up token refresh interval (tokens expire every 1 minute)
+          // Refresh token every 50 seconds (tokens expire after 60s)
           const refreshInterval = setInterval(() => {
-            if (shopify.idToken) {
-              shopify.idToken().then((token: string) => {
+            if (window.shopify) {
+              window.shopify.idToken().then((token: string) => {
                 if (token) {
-                  sessionStorage.setItem('shopify_session_token', token);
+                  window.__potalShopifyToken = token;
                 }
               }).catch(() => {});
             }
-          }, 50000); // Refresh every 50 seconds
+          }, 50000);
 
           return () => clearInterval(refreshInterval);
-        } else {
-          // Retry after a short delay (App Bridge CDN might still be loading)
+        } else if (retryCount < MAX_RETRIES) {
+          retryCount++;
           setTimeout(initAppBridge, 500);
         }
       };
 
-      // Start initialization
       initAppBridge();
     }
   }, []);
 
-  // When embedded in Shopify, we might want to hide certain UI elements
+  // When embedded in Shopify, hide certain UI elements
   useEffect(() => {
     if (isEmbedded) {
-      // Add a class to body so CSS can conditionally hide header/footer
       document.body.classList.add('shopify-embedded');
     }
     return () => {
@@ -77,6 +109,5 @@ export function ShopifyAppBridge() {
     };
   }, [isEmbedded]);
 
-  // This component doesn't render anything visible
   return null;
 }

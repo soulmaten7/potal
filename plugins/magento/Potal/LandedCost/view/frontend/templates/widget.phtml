@@ -1,0 +1,16 @@
+<?php
+/**
+ * POTAL Landed Cost Widget Template
+ * @var \Potal\LandedCost\Block\Widget $block
+ */
+if (!$block->isEnabled()) return;
+?>
+
+<div id="potal-widget-container"
+     data-product-name="<?= $block->escapeHtmlAttr($block->getProductName()) ?>"
+     data-price="<?= $block->escapeHtmlAttr($block->getProductPrice()) ?>"
+     data-origin="<?= $block->escapeHtmlAttr($block->getOriginCountry()) ?>"
+     data-seller-id="<?= $block->escapeHtmlAttr($block->getSellerId()) ?>">
+</div>
+
+<script src="<?= $block->escapeUrl($block->getWidgetScriptUrl()) ?>" async></script>

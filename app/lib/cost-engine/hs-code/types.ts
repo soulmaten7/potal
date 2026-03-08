@@ -54,4 +54,6 @@ export interface HsClassificationResult {
   method: 'keyword' | 'category' | 'ai' | 'manual';
   /** Alternative matches */
   alternatives?: { hsCode: string; description: string; confidence: number }[];
+  /** AI-detected country of origin (ISO 2-letter code, e.g. "CN", "US", "DE") */
+  countryOfOrigin?: string;
 }

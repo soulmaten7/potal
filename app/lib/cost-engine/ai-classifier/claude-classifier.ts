@@ -57,6 +57,17 @@ Rules:
 4. Use the latest HS 2022 nomenclature.
 5. For ambiguous products, prefer the most commonly used classification in international trade.
 6. Always include the chapter description in your response.
+7. Detect the most likely country of origin based on the product name, brand, or description.
+   - Use 2-letter ISO country code (e.g., "CN" for China, "US" for USA, "DE" for Germany).
+   - If the brand is well-known, use its manufacturing country (e.g., Samsung → KR, Apple → CN, Bosch → DE).
+   - If uncertain, return "CN" as default (most common in cross-border e-commerce).
+8. MULTILINGUAL: Accept product names in ANY language. You must correctly classify products described in:
+   - East Asian: 中文, 日本語, 한국어, ภาษาไทย, Tiếng Việt, Bahasa Indonesia, Bahasa Melayu, Filipino
+   - European: English, Español, Português, Français, Deutsch, Italiano, Nederlands, Polski, Русский, Українська, Română, Čeština, Magyar, Ελληνικά, Svenska, Norsk, Dansk, Suomi, Türkçe
+   - Middle Eastern/South Asian: العربية, עברית, فارسی, हिन्दी, বাংলা, தமிழ், తెలుగు, ಕನ್ನಡ, മലയാളം, ไทย, မြန်မာ, සිංහල, اردو
+   - African: Kiswahili, Amharic, Yoruba, Igbo, Zulu
+   - And any other language not listed above.
+   Always return the HS Code description in English regardless of the input language.
 
 Respond ONLY in valid JSON format. No markdown, no code blocks, no explanation outside JSON.`;
 
@@ -72,6 +83,7 @@ function buildUserPrompt(productName: string, category?: string): string {
   "confidence": 0.95,
   "chapter": "XX",
   "chapterDescription": "Chapter description",
+  "countryOfOrigin": "CN",
   "alternatives": [
     {"hsCode": "YYYY.YY.YY.YY", "description": "Alt description", "confidence": 0.80}
   ]
@@ -229,6 +241,7 @@ interface AiParsedClassification {
   description: string;
   confidence: number;
   alternatives: { hsCode: string; description: string; confidence: number }[];
+  countryOfOrigin?: string;
   tokensUsed: number;
   estimatedCostUsd: number;
   provider: string;
@@ -264,11 +277,16 @@ function parseAiResponse(raw: AiRawResponse): AiParsedClassification | null {
       }))
       .filter((alt: any) => alt.hsCode.length >= 4);
 
+    // Parse country of origin (validate ISO 2-letter code)
+    const rawOrigin = (parsed.countryOfOrigin || '').toUpperCase().trim();
+    const countryOfOrigin = /^[A-Z]{2}$/.test(rawOrigin) ? rawOrigin : undefined;
+
     return {
       hsCode,
       description: parsed.description || parsed.chapterDescription || 'AI classified',
       confidence: Math.min(Math.max(parseFloat(parsed.confidence) || 0.5, 0), 1),
       alternatives,
+      countryOfOrigin,
       tokensUsed: raw.tokensUsed,
       estimatedCostUsd: raw.estimatedCostUsd,
       provider: raw.provider,
@@ -337,6 +355,7 @@ export async function classifyWithAi(
       confidence: parsed.confidence,
       method: 'ai',
       alternatives: parsed.alternatives,
+      countryOfOrigin: parsed.countryOfOrigin,
     },
     meta: {
       tokensUsed: parsed.tokensUsed,
@@ -344,4 +363,221 @@ export async function classifyWithAi(
       provider: parsed.provider,
     },
   };
+}
+
+// ─── Image-based Classification (Vision) ──────────
+
+const VISION_SYSTEM_PROMPT = `You are an expert in product identification and Harmonized System (HS) classification.
+Given an image of a product, identify what the product is and classify it to the most accurate HS Code.
+
+Rules:
+1. First identify the product from the image (material, type, function, intended use).
+2. Return HS Code up to 10 digits. Use dots for readability (e.g., "6404.11.00.90").
+3. Provide confidence 0.0-1.0 based on image clarity and classification certainty.
+4. Provide up to 3 alternative HS codes if the product could fall under multiple categories.
+5. Detect country of origin if visible (labels, tags, brand). Otherwise return best guess.
+6. Use WCO HS 2022 nomenclature.
+
+Respond ONLY in valid JSON format:
+{
+  "productName": "detected product name",
+  "hsCode": "XXXX.XX.XX.XX",
+  "description": "HS Code description",
+  "confidence": 0.85,
+  "chapter": "XX",
+  "chapterDescription": "Chapter description",
+  "countryOfOrigin": "CN",
+  "alternatives": [{"hsCode": "YYYY.YY", "description": "Alt", "confidence": 0.70}]
+}`;
+
+/**
+ * Classify a product from an image using Vision AI.
+ *
+ * Accepts base64-encoded image or image URL.
+ * Uses OpenAI GPT-4o-mini (vision-capable) with Anthropic Claude as fallback.
+ *
+ * @param imageData - base64 encoded image OR URL
+ * @param productHint - optional text hint about the product
+ * @returns Classification result or null
+ */
+export async function classifyWithVision(
+  imageData: string,
+  productHint?: string,
+): Promise<{
+  result: HsClassificationResult & { detectedProductName?: string };
+  meta: { tokensUsed: number; estimatedCostUsd: number; provider: string };
+} | null> {
+  const config = getAiClassifierConfig();
+  if (!config.enabled) return null;
+
+  // Determine if imageData is URL or base64
+  const isUrl = imageData.startsWith('http://') || imageData.startsWith('https://');
+
+  // Build user prompt
+  let textContent = 'Identify and classify this product to an HS Code.';
+  if (productHint) {
+    textContent += `\nHint: "${productHint}"`;
+  }
+
+  // Try OpenAI first (GPT-4o-mini has vision)
+  let rawResponse = await classifyImageWithOpenAI(imageData, isUrl, textContent, config.timeoutMs);
+
+  // Fallback to Anthropic Claude (also has vision)
+  if (!rawResponse) {
+    rawResponse = await classifyImageWithAnthropic(imageData, isUrl, textContent, config.timeoutMs);
+  }
+
+  if (!rawResponse) return null;
+
+  const parsed = parseAiResponse(rawResponse);
+  if (!parsed) return null;
+
+  // Extract detected product name from raw response
+  let detectedProductName: string | undefined;
+  try {
+    const rawJson = JSON.parse(rawResponse.rawText.replace(/```(?:json)?\s*([\s\S]*?)```/, '$1').trim());
+    detectedProductName = rawJson.productName;
+  } catch { /* ignore */ }
+
+  return {
+    result: {
+      hsCode: parsed.hsCode,
+      description: parsed.description,
+      confidence: parsed.confidence,
+      method: 'ai',
+      alternatives: parsed.alternatives,
+      countryOfOrigin: parsed.countryOfOrigin,
+      detectedProductName,
+    },
+    meta: {
+      tokensUsed: parsed.tokensUsed,
+      estimatedCostUsd: parsed.estimatedCostUsd,
+      provider: parsed.provider,
+    },
+  };
+}
+
+async function classifyImageWithOpenAI(
+  imageData: string,
+  isUrl: boolean,
+  textContent: string,
+  timeoutMs: number,
+): Promise<AiRawResponse | null> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return null;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const imageContent = isUrl
+      ? { type: 'image_url' as const, image_url: { url: imageData } }
+      : { type: 'image_url' as const, image_url: { url: `data:image/jpeg;base64,${imageData}` } };
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        max_tokens: 500,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: VISION_SYSTEM_PROMPT },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: textContent },
+              imageContent,
+            ],
+          },
+        ],
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) return null;
+
+    const tokensUsed = (data.usage?.prompt_tokens || 0) + (data.usage?.completion_tokens || 0);
+    return {
+      rawText: content,
+      tokensUsed,
+      estimatedCostUsd: tokensUsed * 0.00000015,
+      provider: 'openai',
+    };
+  } catch {
+    clearTimeout(timeout);
+    return null;
+  }
+}
+
+async function classifyImageWithAnthropic(
+  imageData: string,
+  isUrl: boolean,
+  textContent: string,
+  timeoutMs: number,
+): Promise<AiRawResponse | null> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return null;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    // Anthropic requires base64 for images (no URL support in messages API)
+    // If URL provided, skip Anthropic vision (would need to fetch image first)
+    if (isUrl) return null;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        system: VISION_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'image',
+                source: { type: 'base64', media_type: 'image/jpeg', data: imageData },
+              },
+              { type: 'text', text: textContent },
+            ],
+          },
+        ],
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const content = data.content?.[0]?.text;
+    if (!content) return null;
+
+    const tokensUsed = (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0);
+    return {
+      rawText: content,
+      tokensUsed,
+      estimatedCostUsd: tokensUsed * 0.000003,
+      provider: 'anthropic',
+    };
+  } catch {
+    clearTimeout(timeout);
+    return null;
+  }
 }

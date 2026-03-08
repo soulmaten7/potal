@@ -79,6 +79,8 @@ export interface GlobalLandedCost extends LandedCost {
   classificationSource?: string;
   /** Where the duty rate came from: 'hardcoded' | 'db' | 'live_db' | 'external_api' */
   dutyRateSource?: string;
+  /** AI-detected origin country ISO code (when seller didn't provide origin) */
+  detectedOriginCountry?: string;
   /** Local currency conversion (if destination currency != USD) */
   localCurrency?: {
     /** Total landed cost in local currency */
@@ -140,9 +142,8 @@ export async function calculateGlobalLandedCostAsync(input: GlobalCostInput): Pr
 async function calculateWithProfileAsync(input: GlobalCostInput, profile: CountryTaxProfile): Promise<GlobalLandedCost> {
   const productPrice = parsePriceToNumber(input.price);
   const shippingCost = input.shippingPrice ?? 0;
-  const originCountry = detectOriginForGlobal(input);
+  let originCountry = detectOriginForGlobal(input);
   const declaredValue = productPrice + shippingCost;
-  const isDomestic = originCountry === profile.code;
 
   // HS Code Classification — AI-powered async (DB 캐시 → 키워드 → AI 폴백)
   let hsResult: HsClassificationResult | undefined;
@@ -155,7 +156,14 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     );
     hsResult = asyncResult;
     classificationSource = asyncResult.classificationSource;
+
+    // Auto-detect origin: if seller didn't provide origin, use AI-detected country
+    if (!input.origin && asyncResult.countryOfOrigin) {
+      originCountry = asyncResult.countryOfOrigin;
+    }
   }
+
+  const isDomestic = originCountry === profile.code;
 
   // Determine Duty Rate — DB → 외부 API → 하드코딩 폴백
   let dutyRate = profile.avgDutyRate;
@@ -466,6 +474,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     additionalTariffNote,
     classificationSource,
     dutyRateSource,
+    detectedOriginCountry: (!input.origin && hsResult?.countryOfOrigin) ? hsResult.countryOfOrigin : undefined,
     localCurrency,
   };
 }

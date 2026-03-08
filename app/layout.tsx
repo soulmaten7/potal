@@ -13,6 +13,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
 import { ShopifyAppBridge } from "@/components/shopify/ShopifyAppBridge";
+import { ShopifyNavMenu } from "@/components/shopify/ShopifyNavMenu";
 import { SupabaseProvider } from "./context/SupabaseProvider";
 import { I18nProvider } from "./context/I18nProvider";
 
@@ -99,8 +100,9 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         {/* viewport: iOS 네이티브(TabletViewController)에서 태블릿 1440px 강제 처리 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        {/* Shopify App Bridge — loaded from Shopify CDN for embedded app verification */}
-        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js" defer></script>
+        {/* Shopify App Bridge — must be FIRST script, meta tag before it */}
+        <meta name="shopify-api-key" content={process.env.NEXT_PUBLIC_SHOPIFY_API_KEY || '2fa34ed65342ffb7fac08dd916f470b8'} />
+        <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
         {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
@@ -142,6 +144,7 @@ export default function RootLayout({
         />
         
         <ShopifyAppBridge />
+        <ShopifyNavMenu />
         <SupabaseProvider>
           <I18nProvider>
 

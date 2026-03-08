@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+ POTAL Landed Cost Module for Magento 2
+ Displays Total Landed Cost on product pages.
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Potal_LandedCost" setup_version="1.0.0">
+        <sequence>
+            <module name="Magento_Catalog"/>
+            <module name="Magento_Checkout"/>
+        </sequence>
+    </module>
+</config>

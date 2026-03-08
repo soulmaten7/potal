@@ -244,7 +244,7 @@
       .pw-row-value { font-weight: 500; font-size: 13px; font-variant-numeric: tabular-nums; }\
       .pw-total { background: ' + totalBg + '; border-radius: 8px; padding: 10px 12px; margin-top: 8px; }\
       .pw-total .pw-row-label { font-weight: 700; font-size: 15px; color: ' + text + '; }\
-      .pw-total .pw-row-value { font-weight: 700; font-size: 17px; color: ' + accent + '; }\
+      .pw-total .pw-row-value { font-weight: 700; font-size: 17px; color: ' + accent + '; text-align: right; line-height: 1.3; }\
       .pw-footer { margin-top: 12px; text-align: right; font-size: 11px; color: ' + subtext + '; }\
       .pw-footer a { color: ' + accent + '; text-decoration: none; }\
       .pw-footer a:hover { text-decoration: underline; }\
@@ -304,6 +304,14 @@
 
     function fmt(n) {
       return '$' + Number(n).toFixed(2);
+    }
+
+    function fmtLocal(n, currency) {
+      try {
+        return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency, maximumFractionDigits: 2 }).format(n);
+      } catch (e) {
+        return currency + ' ' + Number(n).toFixed(2);
+      }
     }
 
     function renderInner() {
@@ -383,8 +391,12 @@
           html += '<div style="padding:4px 0;"><span class="pw-badge pw-badge-deminimis">&#x2705; Duty Free (De Minimis)</span></div>';
         }
 
-        // Total
-        html += '<div class="pw-total"><div class="pw-row"><span class="pw-row-label">Estimated Total</span><span class="pw-row-value">' + fmt(d.totalLandedCost) + '</span></div></div>';
+        // Total (USD + local currency if available)
+        html += '<div class="pw-total"><div class="pw-row"><span class="pw-row-label">Estimated Total</span><span class="pw-row-value">' + fmt(d.totalLandedCost);
+        if (d.localCurrency && d.localCurrency.currency && d.localCurrency.currency !== 'USD') {
+          html += '<br><span style="font-size:13px;opacity:0.8;">' + fmtLocal(d.localCurrency.totalLandedCost, d.localCurrency.currency) + '</span>';
+        }
+        html += '</span></div></div>';
       } else if (state.destination) {
         // No data yet — prompt
         html += '<div class="pw-loading" style="padding:16px;">Select a country to see costs</div>';

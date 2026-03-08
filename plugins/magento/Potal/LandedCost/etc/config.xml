@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <potal>
+            <general>
+                <enabled>1</enabled>
+                <api_key/>
+                <seller_id/>
+                <origin_country>US</origin_country>
+                <widget_position>after_price</widget_position>
+                <enable_ddp>0</enable_ddp>
+            </general>
+        </potal>
+    </default>
+</config>
