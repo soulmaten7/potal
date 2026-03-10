@@ -40,7 +40,8 @@
     "total": 2657632
   },
   "VNM": {
-    "rows_done": 2350000,
-    "status": "in_progress"
+    "rows_done": 2768871,
+    "status": "done",
+    "total": 2768871
   }
 }
