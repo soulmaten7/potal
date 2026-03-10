@@ -1,0 +1,61 @@
+{
+  "country": "Chile",
+  "country_code": "CL",
+  "tariff_system": "Chilean Customs Tariff",
+  "system_type": "HS-based Tariff Schedule",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Chile uses 8-digit tariff codes based on the Harmonized System (HS). 6-digit HS base plus 2 Chilean-specific additional digits.",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 8,000+ codes",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["Database", "PDF"]
+  },
+  "sources": [
+    {
+      "name": "Chile Tariff Schedule - World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/CHL",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Chilean schedules"
+    },
+    {
+      "name": "WTO Tariff & Trade Data - Chile",
+      "url": "https://ttd.wto.org/en/profiles/chile",
+      "type": "International Database",
+      "description": "WTO tariff and trade data for Chile"
+    },
+    {
+      "name": "Chile Tariff Schedule (TPP Final Text)",
+      "url": "https://ustr.gov/sites/default/files/TPP-Final-Text-Chile-Tariff-Elimination-Schedule.pdf",
+      "type": "PDF Document",
+      "description": "Tariff Elimination Schedule from Trans-Pacific Partnership agreement"
+    },
+    {
+      "name": "WTO Tariff Profiles - Chile",
+      "url": "https://www.wto.org/english/res_e/statis_e/daily_update_e/tariff_profiles/cl_e.pdf",
+      "type": "WTO Analysis",
+      "description": "Summary and duty ranges for agricultural and non-agricultural goods"
+    },
+    {
+      "name": "SEAIR HS Code Database",
+      "url": "https://www.seair.co.in/hs-codes/mexico.aspx",
+      "type": "Third-party Database",
+      "description": "Chilean HS codes and trade data"
+    }
+  ],
+  "access_methods": {
+    "method_1": "World Bank WITS database - direct access and download",
+    "method_2": "WTO TTD system - search and reference",
+    "method_3": "Third-party commercial databases"
+  },
+  "data_collection_status": "RESEARCH_COMPLETE",
+  "next_steps": [
+    "Access World Bank WITS for complete Chilean tariff schedules",
+    "Download from WTO TTD for reference",
+    "Compile data from available sources"
+  ],
+  "notes": "Chile tariff data is publicly available through World Bank WITS and WTO systems. No single official Chilean government download link identified, but data accessible through international trade databases."
+}

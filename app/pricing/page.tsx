@@ -7,35 +7,45 @@ const PLANS = [
   {
     name: 'Free',
     price: '$0',
+    priceAnnualMonthly: '$0',
+    priceAnnualTotal: '$0',
     priceNote: 'forever',
     description: 'Try POTAL with basic features',
     highlight: false,
+    overageNote: 'Hard stop at 100 calls',
     features: [
-      '500 API calls / month',
+      '100 API calls / month',
       'Widget embed (light theme)',
-      '180+ countries supported',
+      '240 countries supported',
       'AI-powered HS Code classification',
+      'Basic duty & tax calculation',
       'Community support',
     ],
     limitations: [
       'POTAL branding on widget',
-      'Standard rate limits',
+      'Standard rate limits (30/min)',
     ],
     cta: 'Get Started Free',
     ctaLink: '/developers',
   },
   {
-    name: 'Starter',
-    price: '$9',
+    name: 'Basic',
+    price: '$20',
+    priceAnnualMonthly: '$16',
+    priceAnnualTotal: '$192',
     priceNote: '/ month',
-    description: 'For small stores getting started',
+    description: 'For growing stores with real traffic',
     highlight: false,
+    overageNote: 'Overage: $0.015 / call',
     features: [
-      '5,000 API calls / month',
+      '2,000 API calls / month',
       'Widget embed (all themes)',
       '10-digit HS Code precision',
       'Real-time exchange rates',
-      'Sub-national tax (US/CA/BR)',
+      'FTA & preferential rate detection',
+      'Anti-dumping / CVD duty alerts',
+      'Sub-national tax (12 countries)',
+      '30+ language support',
       'Email support',
     ],
     limitations: [],
@@ -43,19 +53,22 @@ const PLANS = [
     ctaLink: '/developers',
   },
   {
-    name: 'Growth',
-    price: '$29',
+    name: 'Pro',
+    price: '$80',
+    priceAnnualMonthly: '$64',
+    priceAnnualTotal: '$768',
     priceNote: '/ month',
-    description: 'For growing e-commerce businesses',
+    description: 'For serious e-commerce operations',
     highlight: true,
+    overageNote: 'Overage: $0.012 / call',
     features: [
-      '25,000 API calls / month',
+      '10,000 API calls / month',
       'Custom widget branding',
-      'FTA & preferential rate detection',
       'Batch API (100 items)',
-      'Priority email support',
-      'Advanced analytics dashboard',
       'Webhook notifications',
+      'Advanced analytics dashboard',
+      'Priority email support',
+      'All Basic features included',
     ],
     limitations: [],
     cta: 'Start Free Trial',
@@ -63,23 +76,24 @@ const PLANS = [
   },
   {
     name: 'Enterprise',
-    price: 'Custom',
-    priceNote: 'contact us',
+    price: '$300',
+    priceAnnualMonthly: '$240',
+    priceAnnualTotal: '$2,880',
+    priceNote: '/ month',
     description: 'For large-scale operations',
     highlight: false,
+    overageNote: 'Overage: $0.01 / call (100K+ commit: $0.008)',
     features: [
-      'Unlimited API calls',
-      'Dedicated infrastructure',
-      '180+ countries + custom rules',
-      'All sub-national tax engines',
-      'Custom HS Code models',
+      '50,000+ API calls / month',
       'White-label widget',
+      'Dedicated infrastructure',
       'SSO & team management',
-      'Dedicated account manager',
       'SLA guarantee (99.99%)',
       'Custom integrations',
       'Bulk calculation API',
+      'Dedicated account manager',
       'Audit logs & compliance',
+      'All Pro features included',
     ],
     limitations: [],
     cta: 'Contact Sales',
@@ -98,19 +112,19 @@ const FAQS = [
   },
   {
     q: 'What happens if I exceed my monthly limit?',
-    a: 'On the Starter plan, API calls will return a 429 rate limit error. On the Growth plan, overage is billed at $0.002 per additional call. Enterprise plans have no limits.',
+    a: 'For paid plans (Basic, Pro, Enterprise), overage calls are automatically billed at a per-call rate: Basic $0.015, Pro $0.012, Enterprise $0.01 per call. Enterprise customers with 100K+ volume commitments get $0.008 per call. For the Free plan, API calls stop at the 100-call limit.',
   },
   {
     q: 'Do you support all countries?',
-    a: 'Yes — POTAL supports 240 countries with accurate duty rates, VAT/GST, de minimis thresholds, and FTA detection. The US, Canada, and Brazil also have state/province-level tax calculations.',
+    a: 'Yes — POTAL supports 240 countries with accurate duty rates, VAT/GST, de minimis thresholds, and FTA detection. 12 countries have sub-national tax calculations including US, Canada, Brazil, India, Australia, and more.',
   },
   {
-    q: 'Is there a free trial for Growth?',
-    a: 'Yes! Growth comes with a 14-day free trial with full access to all features. No credit card required to start.',
+    q: 'Is there a free trial?',
+    a: 'Yes! Basic and Pro plans come with a 14-day free trial with full access to all features. No credit card required to start.',
   },
   {
-    q: 'Can I use the widget on multiple domains?',
-    a: 'Starter allows one domain. Growth supports up to 10 domains. Enterprise has unlimited domains with per-domain analytics.',
+    q: 'What makes POTAL different from competitors?',
+    a: 'POTAL covers 240 countries with AI-powered HS classification, real-time FTA detection, anti-dumping duty alerts, and 30+ language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
   },
 ];
 
@@ -119,11 +133,8 @@ export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const getPrice = (plan: typeof PLANS[0]) => {
-    if (plan.price === 'Free' || plan.price === 'Custom') return plan.price;
-    const monthly = parseInt(plan.price.replace('$', ''));
-    if (billingCycle === 'annual') {
-      return `$${Math.round(monthly * 0.8)}`;
-    }
+    if (plan.price === '$0') return plan.price;
+    if (billingCycle === 'annual') return plan.priceAnnualMonthly;
     return plan.price;
   };
 
@@ -263,10 +274,20 @@ export default function PricingPage() {
             <div style={{ marginBottom: 24 }}>
               <span style={{ fontSize: 42, fontWeight: 800 }}>{getPrice(plan)}</span>
               <span style={{ fontSize: 14, color: '#888', marginLeft: 4 }}>
-                {plan.price === 'Free' || plan.price === 'Custom'
+                {plan.price === '$0'
                   ? plan.priceNote
                   : billingCycle === 'annual' ? '/ month (billed annually)' : plan.priceNote}
               </span>
+              {billingCycle === 'annual' && plan.price !== '$0' && (
+                <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600, marginTop: 4 }}>
+                  {plan.priceAnnualTotal} / year — Save 20%
+                </div>
+              )}
+              {plan.overageNote && plan.price !== '$0' && (
+                <div style={{ fontSize: 11, color: '#999', marginTop: 6 }}>
+                  {plan.overageNote}
+                </div>
+              )}
             </div>
 
             <Link
@@ -344,25 +365,29 @@ export default function PricingPage() {
               <tr style={{ background: '#f8fafc' }}>
                 <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 600, color: '#666', width: '28%' }}>Feature</th>
                 <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Free</th>
-                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Starter</th>
-                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%', color: '#F59E0B' }}>Growth</th>
+                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Basic</th>
+                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%', color: '#F59E0B' }}>Pro</th>
                 <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Enterprise</th>
               </tr>
             </thead>
             <tbody>
               {[
-                ['API Calls / Month', '500', '5,000', '25,000', 'Unlimited'],
-                ['Countries Supported', '180+', '180+', '180+', '180+ + Custom'],
+                ['API Calls / Month', '100', '2,000', '10,000', '50,000+'],
+                ['Countries Supported', '240', '240', '240', '240 + Custom'],
                 ['HS Code Precision', '6-digit', '10-digit', '10-digit', '10-digit'],
                 ['AI HS Classification', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
                 ['Real-time FX Rates', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
                 ['FTA Detection', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
+                ['Anti-dumping / CVD Alerts', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
+                ['Sub-national Tax', '&#10007;', '12 countries', '12 countries', '12 + Custom'],
                 ['Widget Embed', 'Light only', 'All themes', 'Custom brand', 'White-label'],
+                ['Languages', 'English', '30+', '30+', '30+ + Custom'],
                 ['Batch API', '&#10007;', '&#10007;', '100 items', 'Unlimited'],
                 ['Analytics', 'Basic', 'Basic', 'Advanced', 'Full + Export'],
                 ['Support', 'Community', 'Email', 'Priority', 'Dedicated'],
                 ['SLA', '&#8212;', '&#8212;', '99.9%', '99.99%'],
-              ].map(([feature, free, starter, growth, enterprise], i) => (
+                ['Rate Limit', '30/min', '60/min', '120/min', 'Unlimited'],
+              ].map(([feature, free, basic, pro, enterprise], i) => (
                 <tr key={i} style={{ borderTop: '1px solid #f0f0f0' }}>
                   <td style={{ padding: '14px 20px', color: '#444' }}>{feature}</td>
                   <td
@@ -371,11 +396,11 @@ export default function PricingPage() {
                   />
                   <td
                     style={{ textAlign: 'center', padding: '14px 12px', color: '#666' }}
-                    dangerouslySetInnerHTML={{ __html: starter }}
+                    dangerouslySetInnerHTML={{ __html: basic }}
                   />
                   <td
                     style={{ textAlign: 'center', padding: '14px 12px', color: '#444', fontWeight: 500 }}
-                    dangerouslySetInnerHTML={{ __html: growth }}
+                    dangerouslySetInnerHTML={{ __html: pro }}
                   />
                   <td
                     style={{ textAlign: 'center', padding: '14px 12px', color: '#444' }}

@@ -44,7 +44,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            3. API Usage and Rate Limits
+            3. Subscription Plans and Billing
           </h2>
           <p>
             Access to the POTAL API is governed by your subscription plan.
@@ -67,11 +67,44 @@ export default function TermsPage() {
               <strong>Enterprise Plan:</strong> Custom volume and pricing.
             </li>
           </ul>
+          <p className="mt-3">
+            All paid subscriptions are billed through Paddle.com, our Merchant of
+            Record. By subscribing, you also agree to{" "}
+            <a
+              href="https://www.paddle.com/legal/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-600 hover:underline"
+            >
+              Paddle&apos;s Terms of Service
+            </a>
+            . Paddle handles all payment processing, invoicing, sales tax, and
+            VAT on our behalf. You may cancel your subscription at any time
+            through your POTAL dashboard; cancellation takes effect at the end
+            of the current billing cycle. See our{" "}
+            <a href="/refund" className="text-amber-600 hover:underline">
+              Refund Policy
+            </a>{" "}
+            for details on refunds.
+          </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            4. Shopify App
+            4. Free Trial
+          </h2>
+          <p>
+            Certain paid plans may include a free trial period. You will not be
+            charged during the trial. If you do not cancel before the trial
+            ends, your subscription will automatically convert to a paid plan
+            at the listed price. You may cancel at any time during the trial
+            without charge.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
+            5. Shopify App
           </h2>
           <p>
             If you install the POTAL Shopify app, you grant us access to
@@ -85,7 +118,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            5. Accuracy Disclaimer
+            6. Accuracy Disclaimer
           </h2>
           <p>
             POTAL provides duty and tax estimates based on publicly available
@@ -100,7 +133,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            6. User Conduct
+            7. User Conduct
           </h2>
           <p>
             You agree to use the Service only for lawful purposes. You may not
@@ -112,41 +145,86 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            7. Limitation of Liability
+            8. Service Availability
+          </h2>
+          <p>
+            We aim to maintain high availability of the Service but do not
+            guarantee uninterrupted access. Planned maintenance will be
+            communicated in advance when possible. For Enterprise plan
+            customers, uptime commitments are defined in a separate Service
+            Level Agreement (SLA). POTAL shall not be liable for any downtime
+            or service interruptions beyond our reasonable control.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
+            9. Limitation of Liability
           </h2>
           <p>
             The Service is provided &quot;as is&quot; and &quot;as
-            available.&quot; To the maximum extent permitted by law, POTAL
-            shall not be liable for any indirect, incidental, special,
-            consequential, or punitive damages, including but not limited to
-            incorrect duty calculations, customs delays, or additional charges
-            assessed by customs authorities, arising from your use of the
-            Service.
+            available.&quot; To the maximum extent permitted by law, POTAL&apos;s
+            total aggregate liability for any claims arising from your use of
+            the Service shall not exceed the amount you paid to POTAL in the
+            twelve (12) months preceding the claim. POTAL shall not be liable
+            for any indirect, incidental, special, consequential, or punitive
+            damages, including but not limited to incorrect duty calculations,
+            customs delays, lost profits, or additional charges assessed by
+            customs authorities.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            8. Governing Law
+            10. Termination
           </h2>
           <p>
-            These Terms are governed by the laws of the United States. Any
-            disputes shall be resolved in the courts of competent jurisdiction
-            in the United States, unless otherwise required by applicable law.
+            You may terminate your account at any time by canceling your
+            subscription and deleting your account through the POTAL dashboard.
+            We may suspend or terminate your access if you violate these Terms,
+            engage in fraudulent activity, or abuse the Service. Upon
+            termination, your API keys will be revoked and access to paid
+            features will cease at the end of the current billing period.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            9. Contact
+            11. Intellectual Property
+          </h2>
+          <p>
+            All content, features, and functionality of the Service, including
+            but not limited to tariff data compilations, algorithms, software,
+            APIs, and trademarks, are owned by POTAL and protected by
+            intellectual property laws. Your subscription grants you a limited,
+            non-exclusive, non-transferable license to use the Service for your
+            internal business purposes.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
+            12. Governing Law
+          </h2>
+          <p>
+            These Terms are governed by the laws of the Republic of Korea. Any
+            disputes shall be resolved in the courts of competent jurisdiction
+            in the Republic of Korea, unless otherwise required by applicable
+            law.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
+            13. Contact
           </h2>
           <p>
             For questions about these Terms, contact us at{" "}
             <a
-              href="mailto:support@potal.app"
+              href="mailto:contact@potal.app"
               className="text-amber-600 hover:underline"
             >
-              support@potal.app
+              contact@potal.app
             </a>
             .
           </p>

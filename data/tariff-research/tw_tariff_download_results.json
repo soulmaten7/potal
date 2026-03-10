@@ -1,0 +1,209 @@
+{
+  "title": "Taiwan Complete Tariff Schedule Download Resources",
+  "timestamp": "2026-03-07",
+  "summary": "Comprehensive guide to accessing Taiwan's tariff schedule from multiple authoritative sources",
+  "download_resources": [
+    {
+      "source": "Taiwan Customs Administration - GC453 System",
+      "url": "https://portal.sw.nat.gov.tw/APGQ/GC453",
+      "url_chinese": "https://portal.sw.nat.gov.tw/APGQ/GC453?request_locale=zh_TW",
+      "url_english": "https://portal.sw.nat.gov.tw/APGQ/LoginFree?request_locale=en_US",
+      "description": "Official Taiwan Single Window portal for tariff database downloads (GC453 system)",
+      "content_type": "Database download system",
+      "availability": "Official government portal",
+      "status": "Primary source - may require direct portal access",
+      "notes": "The GC453 system is part of Taiwan's National Customs Authority automated tariff query system"
+    },
+    {
+      "source": "Taiwan Customs Administration - Tariff System Resources",
+      "url": "https://web.customs.gov.tw/en/multiplehtml/3349",
+      "description": "Official tariff system resources and documentation",
+      "content_type": "Multiple documents including tariff rate tables and administrative procedures",
+      "availability": "Publicly available",
+      "documents_available": [
+        "Average Tariff Rates (updated 2026-03-02)",
+        "Administrative Procedures for Amending the Customs Import Tariff in Line with HS Revision (2025-11-14)",
+        "The Evolution of Three-Columned Customs Import Tariff Schedule (2022-11-21)",
+        "LDCs Subject to Tariff Free Treatment on Certain Products (2022-04-20)",
+        "Previous HS Revision Correlation Tables (2020-03-17)",
+        "Flexible Adjustment of Tariff Rates (2020-03-17)",
+        "The Timeline of Adoption of HS (2019-09-26)",
+        "Suggestions on Amendment to Customs Import Tariff Schedule (2019-06-20)"
+      ],
+      "status": "Accessible"
+    },
+    {
+      "source": "Taiwan Customs Administration - Tariff Database Search",
+      "url": "https://web.customs.gov.tw/etaipei/singlehtml/c12340eb38d94fd4bd5f4c8f743a95db",
+      "description": "Taipei Customs Tariff Database Search tool for tariff lookup",
+      "content_type": "Interactive search system",
+      "availability": "Publicly available",
+      "status": "Accessible"
+    },
+    {
+      "source": "WTO Tariff & Trade Data Platform",
+      "url": "https://ttd.wto.org/en/data/cts/chinese-taipei/schedule-notes",
+      "description": "WTO's official Consolidated Tariff Schedule (CTS) for Chinese Taipei (Taiwan)",
+      "content_type": "CTS file download",
+      "schedule_number": "CLIII",
+      "hs_classification": "HS 2012",
+      "last_update": "27 September 2019",
+      "format": "CTS file format",
+      "availability": "Publicly available",
+      "status": "Accessible - official WTO source"
+    },
+    {
+      "source": "WTO Tariff Download Facility",
+      "url": "http://tariffdata.wto.org/",
+      "description": "WTO's general tariff download facility with filtering options",
+      "content_type": "Tariff data in multiple formats",
+      "available_formats": ["Excel", "XML", "CSV"],
+      "tariff_types": "MFN rates (most-favoured nation rates - applied and bound)",
+      "hs_system": "Six-digit Harmonized System codes",
+      "availability": "Publicly available",
+      "status": "Accessible - alternative data source",
+      "access_method": "Select Taiwan in reporters panel, choose years and products, download in preferred format"
+    },
+    {
+      "source": "Taiwan Bureau of Foreign Trade - Commodity Classification System",
+      "url": "https://fbfh.trade.gov.tw/fh/indexE.jsp",
+      "description": "Taiwan's commodity classification and import/export regulations query system",
+      "content_type": "Interactive classification database",
+      "search_methods": [
+        "Individual HS or CCC codes (2-10 digits)",
+        "Code ranges (up to 3 groups)",
+        "Bulk import of CCC codes (up to 100 items via file upload)",
+        "Commodity descriptions (keywords)"
+      ],
+      "classification_types": [
+        "HS codes (2-6 digits for basic classification)",
+        "CCC codes (up to 10 digits - Taiwan's Standard Classification of Commodities)"
+      ],
+      "availability": "Publicly available",
+      "status": "Accessible",
+      "notes": "Supports file uploads and provides downloadable tariff schedule information"
+    },
+    {
+      "source": "WTO Goods Schedules e-Library",
+      "url": "https://goods-schedules.wto.org/member/the-separate-customs-territory-of-taiwan-penghu-kinmen-and-matsu-chinese-taipei",
+      "description": "WTO's comprehensive library of goods schedules legal instruments",
+      "content_type": "Legal documents and tariff schedules",
+      "availability": "Publicly available",
+      "status": "Reference - may require navigation to access Taiwan-specific documents"
+    },
+    {
+      "source": "Taiwan Import Tariff Information",
+      "url": "https://www.trade.gov/country-commercial-guides/taiwan-import-tariffs",
+      "description": "U.S. International Trade Commission (ITC) guide to Taiwan's import tariffs",
+      "content_type": "Government commercial guide",
+      "average_rates_2023": {
+        "industrial_products": "4.8%",
+        "agricultural_products": "16.6%",
+        "overall_average": "6.5%"
+      },
+      "availability": "Publicly available",
+      "status": "Accessible - informational resource"
+    }
+  ],
+  "tariff_structure": {
+    "framework": "Harmonized Commodity Description and Coding System (HS)",
+    "wto_member": true,
+    "wto_membership_date": "2002-01-01",
+    "three_column_system": {
+      "column_I": "Applied to WTO members and reciprocal countries",
+      "column_II": "Applied to certain underdeveloped countries or FTA partners",
+      "column_III": "Applied to other countries"
+    },
+    "classification_system": "Taiwan's Standard Classification of Commodities (CCC) - extends to 10 digits",
+    "special_provisions": {
+      "mainland_china_imports": "Conditional approval codes marked as MXX or NXX designations"
+    }
+  },
+  "key_statistics": {
+    "as_of": "2023",
+    "average_tariff_rates": {
+      "industrial_products": "4.8%",
+      "agricultural_products": "16.6%",
+      "overall": "6.5%"
+    },
+    "commodity_chapters": "98 chapters organized into 21 classes",
+    "classification_categories": [
+      "Living animals and animal products (Chapters 1-5)",
+      "Chemical and industrial goods (Chapters 6-38)",
+      "Plastics and rubber (Chapters 39-40)",
+      "Metals, machinery, and vehicles (Chapters 72-89)",
+      "Instruments, weapons, and collectibles (Chapters 90-97)",
+      "Works of art and antiques (Chapter 98)"
+    ]
+  },
+  "access_instructions": {
+    "preferred_methods": [
+      {
+        "method": 1,
+        "name": "Taiwan Customs GC453 Portal (Primary Official Source)",
+        "steps": [
+          "Visit https://portal.sw.nat.gov.tw/APGQ/GC453",
+          "Navigate to download section",
+          "Select desired format (typically CSV or Excel)",
+          "Download complete tariff schedule"
+        ],
+        "note": "This is the official government source with most current data"
+      },
+      {
+        "method": 2,
+        "name": "WTO Tariff Download Facility (Alternative Authoritative Source)",
+        "steps": [
+          "Visit http://tariffdata.wto.org/",
+          "Select Taiwan from Reporters panel",
+          "Choose desired years",
+          "Filter by HS Chapter, heading, or subheading",
+          "Select download format (Excel, XML, or CSV)",
+          "Download data"
+        ],
+        "note": "Provides standardized MFN tariff rates; may lag official updates"
+      },
+      {
+        "method": 3,
+        "name": "Taiwan Customs Administration Tariff System",
+        "steps": [
+          "Visit https://web.customs.gov.tw/en/multiplehtml/3349",
+          "Review available documents and statistics",
+          "Download Average Tariff Rates document",
+          "Access Tariff Database Search tool",
+          "Look for downloadable resource links"
+        ],
+        "note": "Provides supporting documents and statistics"
+      }
+    ]
+  },
+  "data_characteristics": {
+    "coverage": "Complete tariff schedule with MFN rates and preferential rates",
+    "classification_basis": "Harmonized System 2012",
+    "schedule_number": "CLIII",
+    "language_authentic": "English",
+    "schedule_parts": [
+      "Part A: MFN tariffs",
+      "Part B: Preferential tariffs",
+      "Part C: Non-tariff concessions",
+      "Part D: Agricultural subsidy commitments",
+      "Part E: Export duties"
+    ]
+  },
+  "related_systems": {
+    "tariff_search_system": "GC451 - Interactive search system",
+    "tariff_download_system": "GC453 - Complete database download",
+    "commodity_classification": "Taiwan Bureau of Foreign Trade (fbfh.trade.gov.tw)"
+  },
+  "notes": {
+    "data_formats": "Available in multiple formats including CSV, Excel, XML, and CTS files",
+    "update_frequency": "Taiwan Customs regularly updates tariff schedules in line with HS revisions",
+    "special_considerations": "Taiwan uses extended 10-digit CCC codes for more detailed commodity classification beyond standard 6-digit HS codes",
+    "trade_partners": "Taiwan maintains preferential tariff arrangements with various partners including ECFA with China and multiple FTAs"
+  },
+  "download_status_2026_03_07": {
+    "gc453_portal": "Portal exists and is the official source, but direct automated download may require portal interface navigation",
+    "wto_data": "Confirmed accessible via tariffdata.wto.org",
+    "customs_resources": "Multiple tariff-related documents available on Taiwan Customs website",
+    "chamber_of_commerce_sources": "Official tariff information available through Taipei Economic and Cultural Offices"
+  }
+}

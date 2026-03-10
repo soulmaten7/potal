@@ -1,0 +1,95 @@
+{
+  "country": "Kenya",
+  "country_code": "KE",
+  "tariff_system": "East African Community Common External Tariff (EAC CET)",
+  "system_type": "Harmonized HS-based",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Kenya uses 8-digit HS codes aligned with East African Community (EAC) Common External Tariff. Kenya is part of the EAC Customs Union (Kenya, Uganda, Tanzania, Rwanda, Burundi) with harmonized tariff schedules.",
+  "data_availability": {
+    "complete_tariff_codes": "EAC-wide harmonized schedule",
+    "official_sources": ["Kenya Revenue Authority (KRA)", "EAC Secretariat"],
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["PDF", "Web database"]
+  },
+  "sources": [
+    {
+      "name": "EAC Common External Tariff Portal",
+      "url": "https://www.eac.int/customs/online-tariff-home",
+      "type": "Official Regional Portal",
+      "description": "East African Community Online Customs Tariff database"
+    },
+    {
+      "name": "EAC CET 2022 Version (Updated June 2025)",
+      "url": "https://eabc-online.com/download/eac-common-external-tariff-version-2022-as-updated-june-2025/",
+      "type": "Official Document",
+      "description": "Latest EAC Common External Tariff version with June 2025 updates"
+    },
+    {
+      "name": "Kenya Revenue Authority - EAC CET 2022",
+      "url": "https://www.kra.go.ke/images/publications/EAC-CET-2022-VERSION-30TH-JUNE-Fn.pdf",
+      "type": "PDF Document",
+      "description": "Kenya's published EAC CET 2022 version with all tariff lines and duties"
+    },
+    {
+      "name": "EAC CET Sections & Documents",
+      "url": "https://www.eac.int/component/documentmananger/category/eac-common-external-tariff",
+      "type": "Official Repository",
+      "description": "EAC Common External Tariff documentation and updates"
+    },
+    {
+      "name": "SEAIR HS Code Database - Kenya",
+      "url": "https://www.seair.co.in/kenya-hs-code.aspx",
+      "type": "Third-party Database",
+      "description": "Kenyan HS codes and trade data"
+    },
+    {
+      "name": "Kenya Tariff Schedule - World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/KEN",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Kenyan schedules"
+    },
+    {
+      "name": "EAC AfCFTA Tariff Concessions Schedule",
+      "url": "https://www.kra.go.ke/images/publications/EAC-PROVISIONAL-SCHEDULE-OF-TARIFF-CONCESSIONS-FOR-THE-AFRICAN-CONTINENTAL-FREE-TRADE-AREA-AfCFTA-CATEGORY-A-PRODUCTS.pdf",
+      "type": "Regional Trade Agreement",
+      "description": "EAC provisional tariff schedule for African Continental Free Trade Area"
+    }
+  ],
+  "regional_alignment": {
+    "bloc": "EAC (East African Community)",
+    "member_countries": ["Kenya", "Uganda", "Tanzania", "Rwanda", "Burundi"],
+    "tariff_system": "Harmonized Common External Tariff",
+    "tariff_bands": 4,
+    "band_range": "0%, 10%, 25%, 35%",
+    "note": "Adopted 35% as 4th band in 2022"
+  },
+  "code_structure": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_8": "EAC-specific classification"
+  },
+  "tariff_schedule": {
+    "version": "2022 (Updated June 2025)",
+    "structure": "4-band CET: 0% (raw materials), 10% (intermediate goods), 25% (finished goods), 35% (sensitive items)"
+  },
+  "special_provisions": {
+    "sensitive_items": true,
+    "description": "Special fifth column in tariff schedule for Sensitive Items (SI)",
+    "note": "Sensitive items have higher tariff bands"
+  },
+  "data_collection_status": "COMPLETE",
+  "files_available": [
+    "EAC-CET-2022-VERSION-30TH-JUNE-Fn.pdf (from KRA)",
+    "EAC-PROVISIONAL-SCHEDULE-OF-TARIFF-CONCESSIONS-FOR-THE-AFRICAN-CONTINENTAL-FREE-TRADE-AREA-AfCFTA-CATEGORY-A-PRODUCTS.pdf"
+  ],
+  "next_steps": [
+    "Download EAC CET 2022 (June 2025 version) from KRA or EABC",
+    "Extract all HS codes and duty rates from tariff schedule",
+    "Note special provisions for Sensitive Items",
+    "Cross-reference with AfCFTA schedule for preferential rates"
+  ],
+  "notes": "Kenya uses EAC harmonized tariff system. Best source is Kenya Revenue Authority or EAC Secretariat. Most current version is June 2025 update of 2022 CET. Duty structure: 0% (raw materials), 10% (intermediate), 25% (finished goods), 35% (sensitive items). AfCFTA tariff schedule available for trade within African Continental Free Trade Area."
+}

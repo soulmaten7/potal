@@ -80,7 +80,7 @@ const ENDPOINTS: EndpointConfig[] = [
   },
   "meta": {
     "timestamp": "2026-03-06T12:00:00.000Z",
-    "plan": "starter"
+    "plan": "free"
   }
 }`,
     curlExample: `curl -X POST https://www.potal.app/api/v1/calculate \\
@@ -212,9 +212,9 @@ curl https://www.potal.app/api/v1/countries?region=Europe`,
   "data": {
     "month": "2026-03",
     "totalRequests": 1247,
-    "planLimit": 5000,
-    "remaining": 3753,
-    "plan": "starter"
+    "planLimit": 100,
+    "remaining": 53,
+    "plan": "free"
   }
 }`,
     curlExample: `curl https://www.potal.app/api/v1/sellers/usage \\

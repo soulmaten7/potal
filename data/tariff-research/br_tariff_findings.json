@@ -1,0 +1,76 @@
+{
+  "country": "Brazil",
+  "country_code": "BR",
+  "tariff_system": "NCM (Nomenclatura Comum do Mercosul)",
+  "system_type": "Mercosur Common Nomenclature",
+  "code_digits": 8,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Brazil uses 8-digit NCM codes shared across Mercosur countries (Argentina, Paraguay, Uruguay). NCM is divided into 21 sections and 99 chapters.",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 10,000+ codes",
+    "official_source": "Receita Federal (Brazilian Tax Authority)",
+    "accessible": true,
+    "downloadable": true,
+    "format": "Not directly downloadable as CSV; requires API or manual compilation"
+  },
+  "sources": [
+    {
+      "name": "Portal Único Siscomex",
+      "url": "https://portalunico.siscomex.gov.br/",
+      "type": "Official Government Portal",
+      "description": "Brazil's unified customs portal for NCM information",
+      "accessibility": "Requires registration and login"
+    },
+    {
+      "name": "Receita Federal",
+      "url": "https://www.gov.br/receitafederal/",
+      "type": "Official Tax Authority",
+      "description": "Brazilian tax authority maintaining NCM classifications"
+    },
+    {
+      "name": "Export Genius NCM Database",
+      "url": "https://www.exportgenius.in/hs-code/brazil",
+      "type": "Third-party Commercial Database",
+      "description": "Searchable NCM code database with updated 2026 data"
+    },
+    {
+      "name": "SEAIR HS Code Database",
+      "url": "https://www.seair.co.in/brazil-hs-code.aspx",
+      "type": "Third-party Trade Database",
+      "description": "Brazilian HS codes and trade data"
+    },
+    {
+      "name": "NOVATRADE - NCM Information",
+      "url": "https://novatradebrasil.com/en/classification-and-revision-of-customs-codes/",
+      "type": "Trade Consulting",
+      "description": "Detailed information on NCM classification and revision procedures"
+    }
+  ],
+  "code_structure": {
+    "total_digits": 8,
+    "hierarchy": [
+      {"level": "Section", "codes": 21},
+      {"level": "Chapter", "codes": 99},
+      {"level": "Subheading 2", "digits": "first 4"},
+      {"level": "Subheading 1", "digits": "first 6"},
+      {"level": "Item", "digits": "all 8"}
+    ]
+  },
+  "mercosur_alignment": {
+    "countries": ["Argentina", "Paraguay", "Uruguay"],
+    "shared_classification": true,
+    "note": "First 6 digits are Harmonized System (HS) standard. Digits 7-8 are Mercosur-specific"
+  },
+  "tariff_rates": {
+    "access": "Via MDIC (Ministry of Development, Industry and Foreign Trade) or customs brokers",
+    "note": "Variable by product category and origin. Requires consultation with official sources."
+  },
+  "data_collection_status": "PENDING",
+  "next_steps": [
+    "Contact Receita Federal directly for bulk NCM code export",
+    "Access Portal Único Siscomex with credentials for detailed tariff information",
+    "Compile data from Export Genius or SEAIR commercial databases",
+    "Cross-reference with MDIC tariff database for import duty rates"
+  ],
+  "notes": "Complete 8-digit NCM database is maintained by Receita Federal but not freely available as downloadable CSV. Third-party databases maintain updated copies but may require subscription."
+}

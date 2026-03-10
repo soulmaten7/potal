@@ -1,0 +1,79 @@
+{
+  "country": "Mexico",
+  "country_code": "MX",
+  "tariff_system": "TIGIE (Tarifa de la Ley de los Impuestos Generales de Importación y de Exportación)",
+  "system_type": "General Tariff Schedule for Import and Export",
+  "code_digits": 10,
+  "base_system_digits": 8,
+  "additional_digits": 2,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Mexico uses 10-digit TIGIE codes (8-digit HS base + 2-digit NICO/LIGIE extensions). Total of 12,498 tariff codes organized in 22 sections and 98 chapters.",
+  "code_composition": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_8": "NICO - Mexican additional digits",
+    "digits_9_10": "LIGIE - Optional for special classifications",
+    "total_tariff_codes": 12498,
+    "sections": 22,
+    "chapters": 98,
+    "entries": 1231,
+    "subentries": 5212
+  },
+  "data_availability": {
+    "complete_tariff_codes": 12498,
+    "official_source": "SNICE (Sistema Nacional de Información Comercial Exterior)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["Database", "PDF", "Web interface"]
+  },
+  "sources": [
+    {
+      "name": "SNICE - Official Source",
+      "url": "https://www.snice.gob.mx/",
+      "type": "Official Government System",
+      "description": "Mexican government system for commercial exterior information"
+    },
+    {
+      "name": "SNICE LIGIE Database",
+      "url": "https://www.snice.gob.mx/cs/avi/snice/ligie.info22.html",
+      "type": "Official Tariff Database",
+      "description": "Complete TIGIE tariff codes and LIGIE classifications"
+    },
+    {
+      "name": "SNICE NICO Information",
+      "url": "https://www.snice.gob.mx/cs/avi/snice/nico.ligie.html",
+      "type": "Official Classification Reference",
+      "description": "Mexican additional digit classifications (NICO)"
+    },
+    {
+      "name": "TARIFF SCHEDULE OF MEXICO (OAS)",
+      "url": "http://www.sice.oas.org/tpd/tpp/final_texts/english/MEX_Tariff_Sched.pdf",
+      "type": "International Trade Document",
+      "description": "PDF version of Mexico's tariff schedule"
+    },
+    {
+      "name": "SPARX Logistics",
+      "url": "https://www.sparxlogistics.com/post/tigie-and-ligie-in-mexico-classification-and-tariffs-in-foreign-trade",
+      "type": "Trade Education",
+      "description": "Detailed explanation of TIGIE and LIGIE systems"
+    },
+    {
+      "name": "Veraque Consulting",
+      "url": "https://veraqueconsulting.com/mx/the-use-of-tariff-codes-in-mexico-for-medical-devices/",
+      "type": "Trade Consulting",
+      "description": "TIGIE code application examples (medical devices)"
+    }
+  ],
+  "tariff_rates": {
+    "access": "Via SNICE database",
+    "note": "Duty rates vary by product type and trade agreement status (USMCA, etc.)"
+  },
+  "data_collection_status": "READY_FOR_DOWNLOAD",
+  "download_method": "Access SNICE LIGIE database directly for complete 12,498 codes",
+  "next_steps": [
+    "Access SNICE at https://www.snice.gob.mx/",
+    "Navigate to LIGIE section for complete tariff codes",
+    "Export data in available formats",
+    "Compile duty rates for all codes"
+  ],
+  "notes": "SNICE is the official Mexican government source. Complete 12,498 codes available. May require registration for bulk exports. OAS SICE website provides alternative access to tariff schedule."
+}

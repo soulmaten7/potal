@@ -1,0 +1,49 @@
+{
+  "country": "Morocco",
+  "country_code": "MA",
+  "tariff_system": "Moroccan Customs Tariff",
+  "system_type": "HS-based Tariff Schedule",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "status": "RESEARCH_INCOMPLETE",
+  "summary": "Morocco uses 8-digit tariff codes based on Harmonized System. Official tariff information maintained by Moroccan Ministry of Finance and Customs Authority.",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 8,000+ codes",
+    "official_source": "Moroccan Ministry of Finance / Customs Authority",
+    "accessible": true,
+    "downloadable": "Unknown - requires direct contact",
+    "formats": "Unknown"
+  },
+  "sources": [
+    {
+      "name": "Morocco Tariff Schedule - World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/MAR",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Moroccan schedules"
+    },
+    {
+      "name": "WTO - Morocco Tariff Profile",
+      "url": "https://www.wto.org/",
+      "type": "International Database",
+      "description": "WTO member tariff information for Morocco"
+    }
+  ],
+  "regional_alignment": {
+    "bloc": "UEMOA (Union Economique et Monétaire Ouest Africaine) potential alignment",
+    "note": "Morocco is part of African Union and various regional trade agreements"
+  },
+  "code_structure": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_8": "Moroccan-specific classification"
+  },
+  "data_collection_status": "RESEARCH_INCOMPLETE",
+  "recommendation": "NO DIRECT DOWNLOAD LINK FOUND",
+  "next_steps": [
+    "Access World Bank WITS for Moroccan tariff schedules",
+    "Contact Moroccan Ministry of Finance for official tariff database",
+    "Search for Moroccan Customs Authority (CNDI) official publications",
+    "Consult third-party trade databases for Moroccan tariff information"
+  ],
+  "notes": "Unlike South Africa, Nigeria, and Kenya, Morocco does not have an easily accessible public tariff download portal identified during research. Data is available through World Bank WITS but not directly from official Moroccan government sources online. May require direct contact with Moroccan customs authority for comprehensive tariff schedule."
+}

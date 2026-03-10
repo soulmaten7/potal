@@ -1,0 +1,32 @@
+// Chapter 10: Cereals -- 27 codes
+import type { HsCodeEntry } from '../types';
+
+export const CHAPTER_10: HsCodeEntry[] = [
+  { code: '100111', description: 'Wheat and meslin:Durum wheat<193>:*Seed', chapter: '10', category: 'food', keywords: ['wheat', 'meslindurum', 'wheat193seed'] },
+  { code: '100119', description: 'Wheat and meslin:Durum wheat<193>:*Other', chapter: '10', category: 'food', keywords: ['wheat', 'meslindurum', 'wheat193'] },
+  { code: '100191', description: 'Wheat and meslin:Other:*Seed:**Spelt<896>', chapter: '10', category: 'food', keywords: ['wheat', 'meslinseedspelt896'] },
+  { code: '100199', description: 'Wheat and meslin:Other:*Other', chapter: '10', category: 'food', keywords: ['wheat', 'meslin'] },
+  { code: '100210', description: 'Rye:Seed', chapter: '10', category: 'food', keywords: ['ryeseed'] },
+  { code: '100290', description: 'Rye:Other', chapter: '10', category: 'food', keywords: ['rye'] },
+  { code: '100310', description: 'Barley:Seed', chapter: '10', category: 'food', keywords: ['barleyseed'] },
+  { code: '100390', description: 'Barley:Other', chapter: '10', category: 'food', keywords: ['barley'] },
+  { code: '100410', description: 'Oats:Seed', chapter: '10', category: 'food', keywords: ['oatsseed'] },
+  { code: '100490', description: 'Oats:Other', chapter: '10', category: 'food', keywords: ['oats'] },
+  { code: '100510', description: 'Maize (corn):Seed:*Hybrid<896>:**Three-cross hybrids', chapter: '10', category: 'food', keywords: ['maize', 'corn', 'seedhybrid896three', 'cross', 'hybrids'] },
+  { code: '100590', description: 'Cereals', chapter: '10', category: 'food', keywords: ['grain', 'wheat', 'rice', 'corn', 'barley', 'oat', 'maize'] },
+  { code: '100610', description: 'Rice:Rice in the husk (paddy or rough):*For sowing<896>', chapter: '10', category: 'food', keywords: ['ricerice', 'husk', 'paddy', 'rough', 'for', 'sowing896'] },
+  { code: '100620', description: 'Rice:Husked (brown) rice:*Parboiled:**Round grain', chapter: '10', category: 'food', keywords: ['ricehusked', 'brown', 'riceparboiledround', 'grain'] },
+  { code: '100630', description: 'Rice:Semi-milled or wholly milled rice, whether or not polished or glazed:*Se...', chapter: '10', category: 'food', keywords: ['ricesemi', 'milled', 'wholly', 'rice', 'polished', 'glazedsemi', 'riceparboiledround', 'grain'] },
+  { code: '100640', description: 'Rice:Broken rice', chapter: '10', category: 'food', keywords: ['ricebroken', 'rice'] },
+  { code: '100710', description: 'Grain sorghum:Seed:*Hybrids<896>', chapter: '10', category: 'food', keywords: ['grain', 'sorghumseedhybrids896'] },
+  { code: '100790', description: 'Grain sorghum:Other', chapter: '10', category: 'food', keywords: ['grain', 'sorghum'] },
+  { code: '100810', description: 'Buckwheat, millet and canary seed; other cereals:Buckwheat', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealsbuckwheat'] },
+  { code: '100821', description: 'Buckwheat, millet and canary seed; other cereals:Millet:*Seed', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealsmilletseed'] },
+  { code: '100829', description: 'Buckwheat, millet and canary seed; other cereals:Millet:*Other', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealsmillet'] },
+  { code: '100830', description: 'Buckwheat, millet and canary seed; other cereals:Canary seed', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealscanary'] },
+  { code: '100840', description: 'Buckwheat, millet and canary seed; other cereals:Fonio (Digitaria spp.)', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealsfonio', 'digitaria', 'spp'] },
+  { code: '100850', description: 'Buckwheat, millet and canary seed; other cereals:Quinoa (Chenopodium quinoa)', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealsquinoa', 'chenopodium', 'quinoa'] },
+  { code: '100860', description: 'Buckwheat, millet and canary seed; other cereals:Triticale', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cerealstriticale'] },
+  { code: '100890', description: 'Buckwheat, millet and canary seed; other cereals:Other cereals', chapter: '10', category: 'food', keywords: ['buckwheat', 'millet', 'canary', 'seed', 'cereals', 'cereals'] },
+  { code: '101140', description: 'Rice', chapter: '10', category: 'food', keywords: ['rice', 'white rice', 'brown rice', 'jasmine rice', 'basmati rice'] },
+];

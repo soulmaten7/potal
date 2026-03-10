@@ -1,0 +1,182 @@
+{
+  "title": "Taiwan Tariff Schedule with 11-Digit CCC Codes - Research Findings",
+  "date": "2026-03-07",
+  "status": "Investigation Complete",
+  "tariff_structure": {
+    "total_digits": 11,
+    "digit_breakdown": {
+      "digits_1_8": "Internationally standardized HS (Harmonized System) codes",
+      "digits_9_10": "Chinese Commercial Code (CCC) - Taiwan specific commodity classification",
+      "digits_11": "Commodity description digit"
+    }
+  },
+  "commodity_coverage": {
+    "total_ccc_items": 1065,
+    "agricultural_food_fishery_items": 1800,
+    "categories": [
+      "Industrial products",
+      "Chemical products",
+      "Mechanical products",
+      "Electronics products",
+      "Agricultural products",
+      "Food products",
+      "Fishery products"
+    ]
+  },
+  "official_sources": {
+    "gc451_tariff_database_search": {
+      "name": "GC451 Tariff Database Search System",
+      "url": "https://portal.sw.nat.gov.tw/APGQ/GC451",
+      "type": "Online Search System",
+      "features": [
+        "Query tariff codes",
+        "Look up tariff rates",
+        "Search import/export regulations",
+        "Real-time database access"
+      ],
+      "language": "Chinese and English",
+      "access_method": "Browser-based online portal"
+    },
+    "gc453_tariff_database_download": {
+      "name": "GC453 Tariff Database Download",
+      "url": "https://portal.sw.nat.gov.tw/APGQ/GC453",
+      "type": "Download System",
+      "features": [
+        "Download complete tariff schedules",
+        "Export tariff data",
+        "Bulk downloads available"
+      ],
+      "language": "Chinese primary, English available",
+      "access_method": "Single Window Portal - may require registration",
+      "note": "Browser-based only; direct HTTP download not supported"
+    },
+    "customs_administration_main": {
+      "name": "Taiwan Customs Administration Main Website",
+      "url": "https://web.customs.gov.tw/",
+      "features": [
+        "Tariff System information",
+        "Average Tariff Rates",
+        "Publications and documents",
+        "Advance Tariff Classification Rulings",
+        "HS correlation tables"
+      ]
+    },
+    "tariff_system_overview": {
+      "name": "Tariff System Overview",
+      "url": "https://web.customs.gov.tw/en/multiplehtml/3349",
+      "features": [
+        "Average Tariff Rates (updated March 2026)",
+        "Administrative procedures for HS alignment",
+        "Tariff schedule evolution",
+        "LDC preference information",
+        "Historical HS correlation tables"
+      ]
+    },
+    "ccc_database_portal": {
+      "name": "Bureau of Foreign Trade - CCC Database",
+      "url": "https://fbfh.trade.gov.tw/fh/indexE.jsp",
+      "features": [
+        "Import/Export commodity classification",
+        "CCC code query system",
+        "Bulk code import (up to 100 codes via file)",
+        "Range queries available"
+      ]
+    },
+    "commodity_classification_system": {
+      "name": "Commodity Classification Management System",
+      "url": "https://fbfh.trade.gov.tw/fh/ap/listCCCf.do",
+      "features": [
+        "Browse CCC codes by chapter",
+        "PDF downloads (21 categories / 98 chapters)",
+        "Data export capabilities"
+      ]
+    },
+    "government_open_data": {
+      "name": "Taiwan Government Open Data - Export Goods",
+      "url": "https://data.gov.tw/en/datasets/171772",
+      "features": [
+        "Export goods database",
+        "CCC commodity codes",
+        "Weight and year/month data",
+        "Publicly accessible"
+      ]
+    }
+  },
+  "key_findings": {
+    "direct_download_status": "RESTRICTED - Browser-based access only",
+    "downloadable_content": [
+      {
+        "type": "Commodity Classification PDFs",
+        "source": "fbfh.trade.gov.tw",
+        "structure": "21 categories / 98 chapters",
+        "example": "FHJP010R01.pdf (Chapter 1 - Live Animals)"
+      }
+    ],
+    "tariff_rate_columns": {
+      "column_1": "WTO member countries (MFN rate)",
+      "column_2": "Specific developing countries with trade agreements",
+      "column_3": "All other countries"
+    }
+  },
+  "data_access_methods": [
+    {
+      "method": "GC451 Online Search",
+      "url": "portal.sw.nat.gov.tw/APGQ/GC451",
+      "capability": "Real-time lookup of individual codes",
+      "limitation": "Manual one-by-one lookup"
+    },
+    {
+      "method": "GC453 Database Download",
+      "url": "portal.sw.nat.gov.tw/APGQ/GC453",
+      "capability": "Bulk download via browser",
+      "limitation": "Requires browser interaction, may need login"
+    },
+    {
+      "method": "CCC Commodity Classification System",
+      "url": "fbfh.trade.gov.tw",
+      "capability": "Query by code range or category, bulk file upload",
+      "limitation": "50-100 codes at a time"
+    },
+    {
+      "method": "Government Open Data",
+      "url": "data.gov.tw",
+      "capability": "Public export goods dataset",
+      "limitation": "May contain 2-digit codes only"
+    }
+  ],
+  "scraping_strategy": {
+    "feasibility": "MODERATE",
+    "approaches": [
+      {
+        "approach": "Browser Automation (GC451/GC453)",
+        "requirements": [
+          "Selenium/Puppeteer",
+          "JavaScript rendering",
+          "Session management",
+          "Rate limiting",
+          "CAPTCHA handling possible"
+        ]
+      },
+      {
+        "approach": "Download CCC Chapter PDFs",
+        "requirements": [
+          "Batch download from fbfh.trade.gov.tw",
+          "PDF parsing for extraction"
+        ]
+      },
+      {
+        "approach": "Direct Contact",
+        "contact": "Taiwan Customs Administration",
+        "hours": "8:30 AM - 12:30 PM, 1:30 PM - 5:30 PM (Taiwan time, Mon-Fri)",
+        "expected_format": "Excel or database export"
+      }
+    ]
+  },
+  "summary": {
+    "complete_11digit_tariff_schedule": "Not directly available as single downloadable file via public HTTP",
+    "recommended_approach": "Use GC451 search system for direct lookups or contact Taiwan Customs Administration for bulk export",
+    "alternative_approach": "Download chapter-by-chapter PDFs from fbfh.trade.gov.tw",
+    "data_format_notes": "Official systems use browser-based interfaces; automated access requires web scraping or browser automation"
+  },
+  "last_update": "2026-03-07"
+}

@@ -74,13 +74,16 @@ export function Footer() {
             <Link href="/privacy" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('footer.privacy')}
             </Link>
+            <Link href="/refund" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
+              Refund Policy
+            </Link>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-10 pt-8 border-t border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-500">
-            &copy; 2026 POTAL Inc. All rights reserved.
+            &copy; 2026 POTAL. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <span className="text-xs text-slate-500">

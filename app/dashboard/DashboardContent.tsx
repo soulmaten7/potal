@@ -72,60 +72,62 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'billing', label: 'Billing', icon: '💳' },
 ];
 
-// Plan display config (mirrors lemonsqueezy.ts PLAN_CONFIG)
+// Plan display config (mirrors paddle.ts PLAN_CONFIG — 세션 28 신 요금제)
 const PLANS = [
   {
     id: 'free' as const,
     name: 'Free',
     price: '$0',
     priceNote: 'Forever',
-    calls: '500',
+    calls: '100',
     features: [
-      '500 API calls / month',
+      '100 API calls / month',
       'Widget embed (light theme)',
-      '180+ countries supported',
+      '240 countries supported',
       'AI HS Code classification',
       'Community support',
     ],
   },
   {
-    id: 'starter' as const,
-    name: 'Starter',
-    price: '$9',
+    id: 'basic' as const,
+    name: 'Basic',
+    price: '$20',
     priceNote: '/ month',
-    calls: '5,000',
+    calls: '2,000',
     features: [
-      '5,000 API calls / month',
+      '2,000 API calls / month',
       'Widget embed (all themes)',
       '10-digit HS Code precision',
-      'Real-time exchange rates',
+      'FTA & preferential rate detection',
+      'Anti-dumping / CVD duty alerts',
+      '30+ language support',
       'Email support',
     ],
   },
   {
-    id: 'growth' as const,
-    name: 'Growth',
-    price: '$29',
+    id: 'pro' as const,
+    name: 'Pro',
+    price: '$80',
     priceNote: '/ month',
-    calls: '25,000',
+    calls: '10,000',
     popular: true,
     features: [
-      '25,000 API calls / month',
+      '10,000 API calls / month',
       'Custom widget branding',
-      'FTA/preferential rate detection',
       'Batch API (100 items)',
+      'Webhook notifications',
+      'Advanced analytics dashboard',
       'Priority email support',
-      'Advanced analytics',
     ],
   },
   {
     id: 'enterprise' as const,
     name: 'Enterprise',
-    price: 'Custom',
-    priceNote: 'Contact us',
-    calls: 'Unlimited',
+    price: '$300+',
+    priceNote: '/ month',
+    calls: '50,000+',
     features: [
-      'Unlimited API calls',
+      '50,000+ API calls / month',
       'White-label widget',
       'Dedicated infrastructure',
       'SSO & team management',
@@ -327,7 +329,7 @@ export default function DashboardContent() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to create checkout');
 
-      // Redirect to LemonSqueezy Checkout
+      // Redirect to Paddle Checkout
       window.location.href = data.data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Checkout failed');
@@ -353,7 +355,7 @@ export default function DashboardContent() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to open portal');
 
-      // Redirect to LemonSqueezy Customer Portal
+      // Redirect to Paddle Customer Portal
       window.location.href = data.data.url;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Portal failed');
@@ -438,7 +440,7 @@ export default function DashboardContent() {
           </span>
           <span style={{ color: 'rgba(255,255,255,0.4)' }}>|</span>
           <span style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Plan: <strong style={{ color: '#F59E0B' }}>{seller?.plan || 'starter'}</strong>
+            Plan: <strong style={{ color: '#F59E0B' }}>{seller?.plan || 'free'}</strong>
           </span>
           <Link href="/developers" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 13 }}>
             Docs
@@ -948,7 +950,7 @@ export default function DashboardContent() {
                 <div>
                   <div style={{ fontSize: 13, color: '#888', fontWeight: 600, marginBottom: 4 }}>CURRENT PLAN</div>
                   <div style={{ fontSize: 24, fontWeight: 800, color: '#02122c' }}>
-                    {(seller?.plan || 'starter').charAt(0).toUpperCase() + (seller?.plan || 'starter').slice(1)}
+                    {(seller?.plan || 'free').charAt(0).toUpperCase() + (seller?.plan || 'free').slice(1)}
                   </div>
                   <div style={{ fontSize: 13, color: '#666', marginTop: 4 }}>
                     Status:{' '}
@@ -988,8 +990,8 @@ export default function DashboardContent() {
               {/* Plan Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
                 {PLANS.map((plan) => {
-                  const isCurrent = (seller?.plan || 'starter') === plan.id;
-                  const isUpgrade = plan.id === 'growth' && (seller?.plan || 'starter') === 'starter';
+                  const isCurrent = (seller?.plan || 'free') === plan.id;
+                  const isUpgrade = plan.id === 'pro' && (seller?.plan || 'free') === 'basic';
                   const isEnterprise = plan.id === 'enterprise';
 
                   return (

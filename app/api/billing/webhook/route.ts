@@ -1,29 +1,63 @@
 /**
  * POTAL Billing — POST /api/billing/webhook
  *
- * LemonSqueezy Webhook handler.
- * Receives events from LemonSqueezy and syncs subscription state to Supabase.
+ * Paddle Webhook handler.
+ * Receives events from Paddle and syncs subscription state to Supabase.
  *
  * Events handled:
- *   - subscription_created → Subscription starts (trialing or active)
- *   - subscription_updated → Plan change, trial end, payment status
- *   - subscription_cancelled → Subscription canceled (still active until period end)
- *   - subscription_expired → Subscription fully expired
- *   - subscription_payment_success → Payment confirmed
- *   - subscription_payment_failed → Payment failed (past_due)
+ *   - subscription.created → New subscription
+ *   - subscription.updated → Plan change, status change
+ *   - subscription.canceled → Subscription canceled
+ *   - subscription.past_due → Payment failed
+ *   - subscription.activated → Subscription activated (after trial)
+ *   - transaction.completed → Payment confirmed
  *
- * Signature: HMAC SHA-256 using LEMONSQUEEZY_WEBHOOK_SECRET
+ * Signature: Paddle-Signature header (ts + h1 HMAC SHA-256)
+ * Docs: https://developer.paddle.com/webhooks/signature-verification
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import {
   updateSellerSubscription,
-  mapLSStatus,
-  mapVariantToPlan,
+  mapPaddleStatus,
 } from '@/app/lib/billing/subscription';
+import { mapPriceToPlan } from '@/app/lib/billing/paddle';
 
 export const dynamic = 'force-dynamic';
+
+/**
+ * Verify Paddle webhook signature
+ * Format: ts=1234567890;h1=abc123...
+ */
+function verifyPaddleSignature(
+  rawBody: string,
+  signatureHeader: string,
+  secret: string
+): boolean {
+  try {
+    const parts: Record<string, string> = {};
+    for (const part of signatureHeader.split(';')) {
+      const [key, value] = part.split('=');
+      if (key && value) parts[key] = value;
+    }
+
+    const ts = parts['ts'];
+    const h1 = parts['h1'];
+    if (!ts || !h1) return false;
+
+    const payload = `${ts}:${rawBody}`;
+    const hmac = crypto.createHmac('sha256', secret);
+    const computed = hmac.update(payload).digest('hex');
+
+    return crypto.timingSafeEqual(
+      Buffer.from(h1),
+      Buffer.from(computed)
+    );
+  } catch {
+    return false;
+  }
+}
 
 async function getRawBody(req: NextRequest): Promise<string> {
   const chunks: Uint8Array[] = [];
@@ -39,14 +73,8 @@ async function getRawBody(req: NextRequest): Promise<string> {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-function verifySignature(rawBody: string, signature: string, secret: string): boolean {
-  const hmac = crypto.createHmac('sha256', secret);
-  const digest = hmac.update(rawBody).digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
-}
-
 export async function POST(req: NextRequest) {
-  const webhookSecret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+  const webhookSecret = process.env.PADDLE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
@@ -57,13 +85,13 @@ export async function POST(req: NextRequest) {
 
   try {
     rawBody = await getRawBody(req);
-    const signature = req.headers.get('x-signature');
+    const signature = req.headers.get('paddle-signature');
 
     if (!signature) {
-      return NextResponse.json({ error: 'Missing signature' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing Paddle-Signature header' }, { status: 400 });
     }
 
-    if (!verifySignature(rawBody, signature, webhookSecret)) {
+    if (!verifyPaddleSignature(rawBody, signature, webhookSecret)) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
@@ -72,40 +100,48 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
-  const eventName = event.meta?.event_name;
-  const customData = event.meta?.custom_data || {};
-  const attrs = event.data?.attributes || {};
+  const eventType = event.event_type;
+  const data = event.data || {};
 
   try {
-    switch (eventName) {
-      case 'subscription_created': {
+    switch (eventType) {
+      case 'subscription.created':
+      case 'subscription.activated': {
+        const customData = data.custom_data || {};
         const sellerId = customData.potal_seller_id;
-        const planId = customData.potal_plan_id;
-        const customerId = attrs.customer_id?.toString();
-        const subscriptionId = event.data?.id?.toString();
-        const status = mapLSStatus(attrs.status);
-        const renewsAt = attrs.renews_at ? new Date(attrs.renews_at) : undefined;
+        const customerId = data.customer_id;
+        const subscriptionId = data.id;
+        const status = mapPaddleStatus(data.status);
+        const currentPeriodEnd = data.current_billing_period?.ends_at
+          ? new Date(data.current_billing_period.ends_at)
+          : undefined;
+
+        const priceId = data.items?.[0]?.price?.id;
+        const planId = customData.potal_plan_id || (priceId ? mapPriceToPlan(priceId) : 'basic');
 
         if (sellerId) {
           await updateSellerSubscription({
             sellerId,
             billingCustomerId: customerId,
             billingSubscriptionId: subscriptionId,
-            planId: planId || 'starter',
+            planId,
             subscriptionStatus: status,
-            currentPeriodEnd: renewsAt,
+            currentPeriodEnd,
           });
         }
         break;
       }
 
-      case 'subscription_updated': {
-        const customerId = attrs.customer_id?.toString();
-        const subscriptionId = event.data?.id?.toString();
-        const variantId = attrs.variant_id?.toString();
-        const planId = variantId ? mapVariantToPlan(variantId) : 'starter';
-        const status = mapLSStatus(attrs.status);
-        const renewsAt = attrs.renews_at ? new Date(attrs.renews_at) : undefined;
+      case 'subscription.updated': {
+        const customerId = data.customer_id;
+        const subscriptionId = data.id;
+        const status = mapPaddleStatus(data.status);
+        const currentPeriodEnd = data.current_billing_period?.ends_at
+          ? new Date(data.current_billing_period.ends_at)
+          : undefined;
+
+        const priceId = data.items?.[0]?.price?.id;
+        const planId = priceId ? mapPriceToPlan(priceId) : 'basic';
 
         if (customerId) {
           await updateSellerSubscription({
@@ -113,65 +149,64 @@ export async function POST(req: NextRequest) {
             billingSubscriptionId: subscriptionId,
             planId,
             subscriptionStatus: status,
-            currentPeriodEnd: renewsAt,
+            currentPeriodEnd,
           });
         }
         break;
       }
 
-      case 'subscription_cancelled':
-      case 'subscription_expired': {
-        const customerId = attrs.customer_id?.toString();
+      case 'subscription.canceled': {
+        const customerId = data.customer_id;
 
         if (customerId) {
           await updateSellerSubscription({
             billingCustomerId: customerId,
-            planId: 'starter', // Downgrade to free
+            planId: 'free',
             subscriptionStatus: 'canceled',
           });
         }
         break;
       }
 
-      case 'subscription_payment_success': {
-        const customerId = attrs.customer_id?.toString();
-        const subscriptionId = event.data?.id?.toString();
-        const variantId = attrs.variant_id?.toString();
-        const planId = variantId ? mapVariantToPlan(variantId) : 'starter';
-        const renewsAt = attrs.renews_at ? new Date(attrs.renews_at) : undefined;
+      case 'subscription.past_due': {
+        const customerId = data.customer_id;
+        const priceId = data.items?.[0]?.price?.id;
+        const planId = priceId ? mapPriceToPlan(priceId) : 'basic';
 
         if (customerId) {
           await updateSellerSubscription({
             billingCustomerId: customerId,
-            billingSubscriptionId: subscriptionId,
             planId,
-            subscriptionStatus: 'active',
-            currentPeriodEnd: renewsAt,
-          });
-        }
-        break;
-      }
-
-      case 'subscription_payment_failed': {
-        const customerId = attrs.customer_id?.toString();
-
-        if (customerId) {
-          await updateSellerSubscription({
-            billingCustomerId: customerId,
-            planId: 'growth', // Keep plan but mark past_due
             subscriptionStatus: 'past_due',
           });
         }
         break;
       }
 
+      case 'transaction.completed': {
+        const customerId = data.customer_id;
+        const subscriptionId = data.subscription_id;
+
+        if (customerId && subscriptionId) {
+          const priceId = data.items?.[0]?.price?.id;
+          const planId = priceId ? mapPriceToPlan(priceId) : 'basic';
+
+          await updateSellerSubscription({
+            billingCustomerId: customerId,
+            billingSubscriptionId: subscriptionId,
+            planId,
+            subscriptionStatus: 'active',
+          });
+        }
+        break;
+      }
+
       default:
-        // Unhandled event — just acknowledge
         break;
     }
 
     return NextResponse.json({ received: true });
-  } catch (err) {
+  } catch {
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }

@@ -1,0 +1,110 @@
+{
+  "country": "South Africa",
+  "country_code": "ZA",
+  "tariff_system": "South African Customs & Excise Tariff",
+  "system_type": "HS-based with 8-digit + check digit",
+  "code_digits": "8 + check digit",
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "check_digit": true,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "South Africa uses 8-digit tariff codes (based on HS 6-digit + 2 South African-specific digits) with a check digit. Governed by Customs & Excise Act, 1964. Maintains Schedule 1 (Ordinary duties), Schedule 2 (Anti-dumping duties), Schedule 3 (Rebate items), and Schedule 4 (Additional rebates).",
+  "data_availability": {
+    "complete_tariff_codes": "Comprehensive HS coverage",
+    "official_source": "SARS (South African Revenue Service)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["PDF", "Online database"]
+  },
+  "schedule_structure": {
+    "schedule_1": {
+      "name": "Schedule 1 Part 1",
+      "description": "Ordinary Customs Duties (Normal Import Duties)",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch1P1Chpt1-to-99-Schedule-No-1-Part-1-Chapters-1-to-99.pdf",
+      "status": "Downloaded",
+      "filename": "south_africa_tariff_schedule_s1p1.pdf"
+    },
+    "schedule_1_part_2a": {
+      "name": "Schedule 1 Part 2A",
+      "description": "Excise Duties",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch1P2A-Schedule-No-1-Part-2A.pdf",
+      "status": "Downloaded",
+      "filename": "south_africa_tariff_schedule_s1p2a.pdf"
+    },
+    "schedule_1_part_2b": {
+      "name": "Schedule 1 Part 2B",
+      "description": "Ad Valorem Duties",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch1P2B-Schedule-No-1-Part-2B.pdf",
+      "status": "Available"
+    },
+    "schedule_2": {
+      "name": "Schedule 2",
+      "description": "Anti-dumping (Part 1) and Countervailing Duties (Part 2)",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch2-Schedule-No-2.pdf",
+      "status": "Available"
+    },
+    "schedule_3": {
+      "name": "Schedule 3",
+      "description": "Rebate Items",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch3-Schedule-No-3.pdf",
+      "status": "Available"
+    },
+    "schedule_4": {
+      "name": "Schedule 4",
+      "description": "Additional Rebate Items",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch4-Schedule-No-4.pdf",
+      "status": "Available"
+    }
+  },
+  "sources": [
+    {
+      "name": "SARS - Tariff Page",
+      "url": "https://www.sars.gov.za/customs-and-excise/tariff/",
+      "type": "Official Government",
+      "description": "South African Revenue Service official tariff information page"
+    },
+    {
+      "name": "SARS - Tariff Determination Portal",
+      "url": "https://tdn.sars.gov.za/portal/",
+      "type": "Online Tool",
+      "description": "Tariff Determination Number search engine (launched July 1, 2024)",
+      "features": "Search finalized tariff determinations"
+    },
+    {
+      "name": "Trade Logistics Tariff Code Directory",
+      "url": "https://tradelogistics.co.za/tools-and-calculators/tariff-code-directory/",
+      "type": "Third-party Tool",
+      "description": "South African tariff code search and lookup tool"
+    },
+    {
+      "name": "Import Export License - Tariff Code Lookup",
+      "url": "https://importexportlicense.co.za/calculators/tariff-code-lookup/",
+      "type": "Third-party Tool",
+      "description": "HS code lookup for South African imports/exports"
+    },
+    {
+      "name": "HS Training Material",
+      "url": "https://tfsouthernafrica.org/wp-content/uploads/2023/01/2022-07-28_HS_Training_Session_01_PDF.pdf",
+      "type": "Educational Resource",
+      "description": "Harmonized System (HS) training documentation"
+    }
+  ],
+  "key_features": {
+    "regulation": "Customs & Excise Act, 1964",
+    "tariff_book_scope": "Indicates normal customs duties, excise duties, ad valorem duties, anti-dumping duties, and countervailing duties",
+    "check_digit_system": "Uses check digit validation for HS code accuracy",
+    "sacu_member": true
+  },
+  "data_collection_status": "COMPLETE",
+  "files_downloaded": [
+    "south_africa_tariff_schedule_s1p1.pdf",
+    "south_africa_tariff_schedule_s1p2a.pdf"
+  ],
+  "next_steps": [
+    "Download remaining schedules (1 Part 2B, Schedule 2, 3, 4)",
+    "Extract tariff codes and duty rates from PDF documents",
+    "Create master database with all HS codes and duty rates",
+    "Validate check digit calculations"
+  ],
+  "notes": "South Africa provides the most comprehensive and downloadable tariff data among countries reviewed. All schedules available as PDF from official SARS source. SACU member - coordinates tariffs with Botswana, Lesotho, Namibia, Eswatini."
+}

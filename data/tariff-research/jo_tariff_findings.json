@@ -1,0 +1,163 @@
+{
+  "country": "Jordan",
+  "tariff_system": "Jordanian Customs Tariff",
+  "code_structure": {
+    "current_format": 10,
+    "upcoming_format": 12,
+    "digit_breakdown_10": {
+      "1-6": "Harmonized System (HS) Code",
+      "7-8": "GCC Local Classification",
+      "9-10": "National Subheadings"
+    },
+    "digit_breakdown_12": {
+      "1-6": "Harmonized System (HS) Code",
+      "7-8": "GCC Local Classification",
+      "9-10": "National Subheadings",
+      "11-12": "Additional National Detail"
+    },
+    "base_system": "Harmonized System (HS)"
+  },
+  "implementation_transition": {
+    "current_status": "10-digit system",
+    "transition_date": "January 1, 2026",
+    "future_status": "12-digit system",
+    "mandate": "All commercial shipments must use 12-digit HS codes from January 1, 2026"
+  },
+  "code_count": {
+    "note": "Exact count not specified in available sources",
+    "reference": "Based on GCC Common External Tariff (CET) with national extensions"
+  },
+  "official_sources": {
+    "primary": {
+      "jordan_customs": {
+        "name": "Jordan Customs Department",
+        "website": "https://www.customs.gov.jo/",
+        "description": "Primary government customs authority"
+      },
+      "jcap_portal": {
+        "name": "JCAP - Jordan Customs ASYCUDA Portal",
+        "website": "https://asytrade.customs.gov.jo/customs/tariff?lang=en",
+        "description": "Official online tariff portal",
+        "services": [
+          "CET (Common External Tariff) consultation",
+          "Tariff search engine",
+          "Section-based browsing",
+          "Keyword-based commodity search",
+          "Downloadable tariff sections"
+        ],
+        "languages": ["Arabic", "English"],
+        "accessibility": "Free public access"
+      }
+    },
+    "secondary": {
+      "world_bank_wits": {
+        "name": "World Bank - WITS",
+        "website": "https://wits.worldbank.org/tariff/",
+        "description": "International tariff database with Jordan data"
+      },
+      "wto": {
+        "name": "World Trade Organization",
+        "website": "https://www.wto.org/english/tratop_e/tariffs_e/tariff_profiles_2006_e/jor_e.pdf",
+        "document": "Jordan Part A.1 Tariffs and imports summary"
+      }
+    }
+  },
+  "tariff_structure": {
+    "system_name": "Common External Tariff (CET)",
+    "basis": "GCC Common External Tariff",
+    "organization": "22 sections covering all commodity categories",
+    "update_frequency": "Annual updates",
+    "current_valid_from": "January 1, 2026 (12-digit)"
+  },
+  "data_access_methods": {
+    "method_1": {
+      "name": "JCAP Portal - Chapter/Section Browse",
+      "description": "Navigate CET tariff sections by commodity category",
+      "accessibility": "Online, bilingual (Arabic/English)",
+      "features": [
+        "Browse all 22 sections",
+        "View tariff codes in sections",
+        "Download section PDFs"
+      ]
+    },
+    "method_2": {
+      "name": "JCAP Portal - Tariff Search Engine",
+      "description": "Search tariff by code or keyword",
+      "accessibility": "Online search interface",
+      "features": [
+        "Query by HS code",
+        "Query by product description",
+        "Multi-keyword search",
+        "View duty rates and classifications"
+      ]
+    },
+    "method_3": {
+      "name": "Download Printable Format",
+      "description": "Download complete sections for printing",
+      "accessibility": "PDF format",
+      "scope": "Entire sections or individual chapters"
+    }
+  },
+  "tariff_information_included": [
+    "10-digit (current) or 12-digit (upcoming) tariff codes",
+    "Product descriptions (English and Arabic)",
+    "Customs duty rates",
+    "Special duty treatments",
+    "Exemptions and preferential rates",
+    "VAT/GST treatment",
+    "Statistical codes"
+  ],
+  "gcc_integration_status": {
+    "relationship": "Jordan is a GCC member, part of Customs Union",
+    "tariff_basis": "Based on GCC Common External Tariff (CET)",
+    "harmonization": "Moving to unified 12-digit system with other GCC states",
+    "transition_deadline": "January 1, 2026 - all shipments must use 12-digit codes"
+  },
+  "commodity_sections": {
+    "total_sections": 22,
+    "coverage": "All product categories from animals to manufactured goods"
+  },
+  "key_characteristics": {
+    "tariff_database": [
+      "Comprehensive coverage of traded goods",
+      "Clear duty rate classifications",
+      "Support for bilateral trade agreements",
+      "Integration with GCC customs system"
+    ]
+  },
+  "important_notes": [
+    "Jordan currently uses 10-digit codes (will transition to 12-digit January 1, 2026)",
+    "Part of GCC Customs Union with coordinated tariff structure",
+    "JCAP portal is the official government source",
+    "Both Arabic and English versions available",
+    "Tariff codes align with GCC Common External Tariff (CET)",
+    "Preferential rates available for regional trade partners",
+    "Exemptions apply for certain goods and origins"
+  ],
+  "transition_implications": {
+    "deadline": "January 1, 2026",
+    "requirement": "All commercial shipments must use 12-digit HS codes",
+    "impact": "Businesses must update their coding systems before deadline",
+    "note": "Compatible with other GCC member transitions to 12-digit system"
+  },
+  "bulk_download_status": {
+    "section_downloads": "Available through JCAP portal",
+    "complete_database": "Not explicitly mentioned; may require portal download of all 22 sections",
+    "recommendation": "Contact Jordan Customs for bulk data export requests"
+  },
+  "limitations": [
+    "No direct mention of complete CSV/Excel download",
+    "Section-by-section download required for comprehensive data",
+    "Portal interface is primary access method",
+    "Some data may require direct contact with customs authority",
+    "Transition period may cause data version confusion (10-digit vs 12-digit)"
+  ],
+  "recommended_action": "Verify 12-digit format availability on JCAP portal as of January 1, 2026; current portal may still show 10-digit codes",
+  "research_date": "March 2026",
+  "sources": [
+    "https://www.customs.gov.jo/",
+    "https://asytrade.customs.gov.jo/customs/tariff?lang=en",
+    "https://wits.worldbank.org/tariff/trains/en/country/JOR",
+    "https://www.wto.org/english/res_e/statis_e/daily_update_e/tariff_profiles/"
+  ]
+}

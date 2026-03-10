@@ -2,7 +2,7 @@
  * POTAL API Rate Limiter
  *
  * In-memory sliding window rate limiting per API key.
- * Starter: 60/min, Growth: 120/min, Enterprise: unlimited.
+ * Free: 30/min, Basic: 60/min, Pro: 120/min, Enterprise: unlimited.
  */
 
 interface RateLimitEntry {

@@ -1,7 +1,7 @@
 /**
  * POTAL Billing — POST /api/billing/portal
  *
- * Returns the LemonSqueezy Customer Portal URL.
+ * Returns the Paddle Customer Portal URL.
  * Allows sellers to manage their subscription:
  *   - View invoices
  *   - Update payment method
@@ -9,12 +9,14 @@
  *   - Upgrade/downgrade plan
  *
  * Requires Supabase auth token (Bearer).
+ *
+ * Paddle 방식: Subscription → management_urls.cancel / update_payment_method
+ * 또는 Paddle.js의 Paddle.Checkout.open() + Retain 사용
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getSubscription } from '@lemonsqueezy/lemonsqueezy.js';
-import { initLemonSqueezy } from '@/app/lib/billing/lemonsqueezy';
+import { getPaddleHeaders, getPaddleBaseUrl } from '@/app/lib/billing/paddle';
 
 function getServiceClient() {
   return createClient(
@@ -64,32 +66,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get subscription to retrieve customer portal URL
-    initLemonSqueezy();
-    const { data: subscription, error: subError } = await getSubscription(
-      seller.billing_subscription_id
+    // Get Paddle subscription details (includes management URLs)
+    const res = await fetch(
+      `${getPaddleBaseUrl()}/subscriptions/${seller.billing_subscription_id}`,
+      {
+        method: 'GET',
+        headers: getPaddleHeaders(),
+      }
     );
 
-    if (subError || !subscription) {
+    if (!res.ok) {
       return NextResponse.json(
         { success: false, error: 'Failed to retrieve subscription details' },
         { status: 500 }
       );
     }
 
-    // LemonSqueezy provides customer portal URL in subscription attributes
-    const portalUrl = (subscription.data.attributes as any).urls?.customer_portal;
+    const subscription = await res.json();
+    const managementUrls = subscription.data?.management_urls;
 
-    if (!portalUrl) {
-      return NextResponse.json(
-        { success: false, error: 'Customer portal URL not available' },
-        { status: 500 }
-      );
-    }
+    // Paddle provides update_payment_method and cancel URLs
+    const updatePaymentUrl = managementUrls?.update_payment_method;
+    const cancelUrl = managementUrls?.cancel;
 
     return NextResponse.json({
       success: true,
-      data: { url: portalUrl },
+      data: {
+        updatePaymentUrl: updatePaymentUrl || null,
+        cancelUrl: cancelUrl || null,
+      },
     });
   } catch {
     return NextResponse.json(

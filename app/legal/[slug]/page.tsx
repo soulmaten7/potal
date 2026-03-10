@@ -27,7 +27,7 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
       },
       {
         heading: '5. Intellectual Property',
-        body: 'All content, design, and technology of POTAL are owned by POTAL Inc. or its licensors. You may not reproduce, distribute, or create derivative works from the Service without explicit permission. The API output (duty/tax calculations) may be displayed in your application per your subscription terms.',
+        body: 'All content, design, and technology of POTAL are owned by POTAL or its licensors. You may not reproduce, distribute, or create derivative works from the Service without explicit permission. The API output (duty/tax calculations) may be displayed in your application per your subscription terms.',
       },
       {
         heading: '6. Accuracy Disclaimer',

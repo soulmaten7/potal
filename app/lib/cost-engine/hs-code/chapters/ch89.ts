@@ -1,0 +1,23 @@
+// Chapter 89: Ships -- 18 codes
+import type { HsCodeEntry } from '../types';
+
+export const CHAPTER_89: HsCodeEntry[] = [
+  { code: '890110', description: 'Cruise ships, excursion boats, ferry-boats, cargo ships, barges and similar v...', chapter: '89', category: 'ships', keywords: ['cruise', 'ships', 'excursion', 'boats', 'ferry', 'cargo', 'barges', 'similar', 'vessels', 'transport'] },
+  { code: '890120', description: 'Cruise ships, excursion boats, ferry-boats, cargo ships, barges and similar v...', chapter: '89', category: 'ships', keywords: ['cruise', 'ships', 'excursion', 'boats', 'ferry', 'cargo', 'barges', 'similar', 'vessels', 'transport'] },
+  { code: '890130', description: 'Cruise ships, excursion boats, ferry-boats, cargo ships, barges and similar v...', chapter: '89', category: 'ships', keywords: ['cruise', 'ships', 'excursion', 'boats', 'ferry', 'cargo', 'barges', 'similar', 'vessels', 'transport'] },
+  { code: '890190', description: 'Cruise ships, excursion boats, ferry-boats, cargo ships, barges and similar v...', chapter: '89', category: 'ships', keywords: ['cruise', 'ships', 'excursion', 'boats', 'ferry', 'cargo', 'barges', 'similar', 'vessels', 'transport'] },
+  { code: '890200', description: 'Fishing vessels; factory ships and other vessels for processing or preserving...', chapter: '89', category: 'ships', keywords: ['fishing', 'vessels', 'factory', 'ships', 'processing', 'preserving', 'fishery', 'productssea', 'going'] },
+  { code: '890310', description: 'Yachts and other vessels for pleasure or sports; rowing boats and canoes:Infl...', chapter: '89', category: 'ships', keywords: ['yachts', 'vessels', 'pleasure', 'sports', 'rowing', 'boats', 'canoesinflatableof', '100'] },
+  { code: '890391', description: 'Yachts and other vessels for pleasure or sports; rowing boats and canoes:Othe...', chapter: '89', category: 'ships', keywords: ['yachts', 'vessels', 'pleasure', 'sports', 'rowing', 'boats', 'canoessailboats', 'without', 'auxiliary', 'motorsea'] },
+  { code: '890392', description: 'Yachts and other vessels for pleasure or sports; rowing boats and canoes:Othe...', chapter: '89', category: 'ships', keywords: ['yachts', 'vessels', 'pleasure', 'sports', 'rowing', 'boats', 'canoesmotorboats', 'outboard', 'motorboatssea', 'going'] },
+  { code: '890399', description: 'Yachts and other vessels for pleasure or sports; rowing boats and canoes:Othe...', chapter: '89', category: 'ships', keywords: ['yachts', 'vessels', 'pleasure', 'sports', 'rowing', 'boats', 'canoesof', '100', 'each857'] },
+  { code: '890400', description: 'Tugs and pusher craft:*Tugs', chapter: '89', category: 'ships', keywords: ['tugs', 'pusher', 'crafttugs'] },
+  { code: '890510', description: 'Light-vessels, fire-floats, dredgers, floating cranes, and other vessels the ...', chapter: '89', category: 'ships', keywords: ['light', 'vessels', 'fire', 'floats', 'dredgers', 'floating', 'cranes', 'navigability', 'which', 'subsidiary'] },
+  { code: '890520', description: 'Light-vessels, fire-floats, dredgers, floating cranes, and other vessels the ...', chapter: '89', category: 'ships', keywords: ['light', 'vessels', 'fire', 'floats', 'dredgers', 'floating', 'cranes', 'navigability', 'which', 'subsidiary'] },
+  { code: '890590', description: 'Light-vessels, fire-floats, dredgers, floating cranes, and other vessels the ...', chapter: '89', category: 'ships', keywords: ['light', 'vessels', 'fire', 'floats', 'dredgers', 'floating', 'cranes', 'navigability', 'which', 'subsidiary'] },
+  { code: '890610', description: 'Other vessels, including warships and lifeboats other than rowing boats:Warships', chapter: '89', category: 'ships', keywords: ['vessels', 'warships', 'lifeboats', 'rowing', 'boatswarships'] },
+  { code: '890690', description: 'Other vessels, including warships and lifeboats other than rowing boats:Other...', chapter: '89', category: 'ships', keywords: ['vessels', 'warships', 'lifeboats', 'rowing', 'boatssea', 'going857209'] },
+  { code: '890710', description: 'Other floating structures (for example, rafts, tanks, coffer-dams, landing st...', chapter: '89', category: 'ships', keywords: ['floating', 'structures', 'example', 'rafts', 'tanks', 'coffer', 'dams', 'landing', 'stages', 'buoys'] },
+  { code: '890790', description: 'Other floating structures (for example, rafts, tanks, coffer-dams, landing st...', chapter: '89', category: 'ships', keywords: ['floating', 'structures', 'example', 'rafts', 'tanks', 'coffer', 'dams', 'landing', 'stages', 'buoys'] },
+  { code: '890800', description: 'Vessels and other floating structures for breaking up<961><857>', chapter: '89', category: 'ships', keywords: ['vessels', 'floating', 'structures', 'breaking', 'up961857'] },
+];

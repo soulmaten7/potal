@@ -1,0 +1,223 @@
+{
+  "title": "International HS Code Tariff Data Collection Report",
+  "collection_date": "2026-03-07T07:29:22.264429",
+  "objective": "Collect extended HS code tariff data for Korea, Japan, and China",
+  "countries": {
+    "korea": {
+      "country_name": "South Korea",
+      "code_system": "HSK (10-digit)",
+      "sources": {
+        "primary": {
+          "name": "Korea Customs Service UNI-PASS System",
+          "url": "https://unipass.customs.go.kr/clip/hsinfosrch/openULS0201002Q.do",
+          "type": "Interactive Database Query System",
+          "access": "Form-based query interface"
+        },
+        "secondary": {
+          "name": "KCS Tariff Database",
+          "url": "https://www.customs.go.kr/english/ad/ct/CustomsTariffList.do?mi=8037",
+          "type": "Web search interface",
+          "access": "Requires minimum 2 HS code digits or 3 character product name"
+        },
+        "data_portal": {
+          "name": "Korean Public Data Portal",
+          "url": "https://www.data.go.kr/",
+          "note": "Search for '관세율' (tariff rate) or 'HS코드' (HS code)"
+        }
+      },
+      "data_characteristics": {
+        "code_length": "10 digits (6-digit HS + 4-digit Korean extension)",
+        "includes": [
+          "HS Code",
+          "Goods Name",
+          "DITC Classification",
+          "Tax Rate",
+          "Unit Tax",
+          "Standard Price"
+        ],
+        "total_codes": "Estimated 10,000+ codes",
+        "mfn_rates": "Available"
+      },
+      "access_methods": {
+        "direct_download": "Not publicly available",
+        "api": "Not documented in English",
+        "web_scraping": "Possible but requires form submission handling",
+        "bulk_export": "Not available through public interface"
+      },
+      "challenges": [
+        "No official REST API with public documentation",
+        "Query-based system requires enumeration of all codes",
+        "Rate limiting may apply to automated requests",
+        "Korean language interface more comprehensive than English version",
+        "Export functionality not exposed in web interface"
+      ],
+      "data_retrieved": {
+        "status": "partial",
+        "method": "Sample structure documented",
+        "count": 2,
+        "format": "CSV with structure template"
+      },
+      "next_steps": [
+        "Contact Korea Customs Service for bulk data export",
+        "Implement systematic HS code enumeration (000001-999999)",
+        "Use web scraping with proper rate limiting",
+        "Explore Korean government open data initiatives"
+      ]
+    },
+    "japan": {
+      "country_name": "Japan",
+      "code_system": "9-digit (6-digit HS + 3-digit domestic)",
+      "sources": {
+        "primary": {
+          "name": "Japan Customs - Ministry of Finance",
+          "url": "https://www.customs.go.jp/english/tariff/index.htm",
+          "type": "Official tariff schedules",
+          "versions": "Multiple versions from 2007-2026"
+        },
+        "code_lists": {
+          "name": "Statistical Code Lists",
+          "url": "https://www.customs.go.jp/toukei/sankou/code/code_e.htm",
+          "type": "Downloadable classification files",
+          "formats": [
+            "HTML",
+            "PDF"
+          ],
+          "latest_version": "2026-01-01"
+        },
+        "regional_offices": [
+          "Hakodate",
+          "Tokyo",
+          "Yokohama",
+          "Nagoya",
+          "Osaka",
+          "Kobe",
+          "Moji",
+          "Nagasaki",
+          "Okinawa"
+        ]
+      },
+      "data_characteristics": {
+        "code_length": "9 digits total",
+        "composition": "6-digit HS code + 3-digit domestic classification",
+        "export_codes": "Different from import codes",
+        "total_codes": "Estimated 15,000+ 9-digit combinations",
+        "effective_date": "2026-01-01",
+        "historical_availability": "2001-present"
+      },
+      "access_methods": {
+        "direct_download": "HTML and PDF formats available",
+        "api": "Not documented",
+        "bulk_export": "Yes - code lists downloadable",
+        "format": "Primarily HTML/PDF"
+      },
+      "data_quality": {
+        "structure": "Well-organized by version date",
+        "documentation": "Good English documentation",
+        "currency": "Regularly updated (at least annually)",
+        "completeness": "Comprehensive for statistical purposes"
+      },
+      "challenges": [
+        "Code lists are primarily in document format (HTML/PDF), not structured database",
+        "Older versions available only as PDFs (2008 and earlier)",
+        "May require parsing or OCR for systematic data extraction",
+        "Tariff rates not included in code lists (separate sources needed)"
+      ],
+      "data_retrieved": {
+        "status": "partial",
+        "method": "Sample structure documented",
+        "count": 2,
+        "format": "CSV with structure template"
+      },
+      "next_steps": [
+        "Download latest code list HTML from Ministry of Finance page",
+        "Parse HTML files to extract 9-digit codes",
+        "Cross-reference with tariff rate tables",
+        "Combine import and export code classifications"
+      ]
+    },
+    "china": {
+      "country_name": "China",
+      "code_system": "8-digit HS codes (CCCCS - Chinese Commodity Classification and Coding System)",
+      "sources": {
+        "primary": {
+          "name": "China Customs",
+          "url": "https://www.customs.gov.cn/",
+          "type": "Official customs authority",
+          "access": "Limited English documentation"
+        },
+        "english_portal": {
+          "name": "China Customs English Portal",
+          "url": "http://english.customs.gov.cn/",
+          "status": "Limited availability",
+          "note": "Frequently inaccessible or slow to load"
+        },
+        "third_party_aggregators": {
+          "name": "Transcustoms and similar services",
+          "url": "https://www.transcustoms.com/",
+          "type": "Commercial data aggregation",
+          "access": "May require subscription"
+        }
+      },
+      "data_characteristics": {
+        "code_length": "8 digits (standard HS nomenclature)",
+        "system": "Chinese Customs Code System (CCC or CCCCS)",
+        "total_codes": "Estimated 10,000+ codes",
+        "mfn_rates": "Available from official sources",
+        "effective_date": "Varies by regulation update"
+      },
+      "access_methods": {
+        "direct_download": "Not directly accessible from English portal",
+        "api": "Not publicly documented",
+        "bulk_export": "Not available through public interface",
+        "chinese_site": "More accessible on Chinese-language portal (www.customs.gov.cn)"
+      },
+      "challenges": [
+        "Official English portal frequently inaccessible or slow",
+        "Tariff information primarily on Chinese-language site",
+        "No documented public API",
+        "Rate limiting and IP restrictions may apply",
+        "Commercial interests restrict open data",
+        "Access patterns suggest geo-restricted content"
+      ],
+      "data_retrieved": {
+        "status": "minimal",
+        "method": "Sample structure documented",
+        "count": 2,
+        "format": "CSV with structure template",
+        "note": "Full data not accessible via standard web methods"
+      },
+      "alternative_sources": [
+        "China Customs tariff tables (Chinese website)",
+        "WCO (World Customs Organization) databases",
+        "Commercial trade databases (Eurostat, UN Comtrade)",
+        "Transcustoms or similar commercial services",
+        "Contact China Customs directly for institutional access"
+      ],
+      "next_steps": [
+        "Attempt access via Chinese-language portal",
+        "Try VPN or regional IP access if available",
+        "Contact China Customs for official data sharing agreement",
+        "Evaluate commercial third-party services",
+        "Use UN Comtrade database as alternative source for Chinese HS codes"
+      ]
+    }
+  },
+  "summary": {
+    "total_countries": 3,
+    "data_collection_success": {
+      "korea": "Partial - structure identified, limited sample data",
+      "japan": "Good - documented sources identified, downloadable format available",
+      "china": "Limited - portal access issues, alternative sources documented"
+    },
+    "overall_assessment": "Tariff data is available from all three countries but requires different access methods. Japan provides the most accessible downloadable data, while Korea and China have limited public API/bulk download options."
+  },
+  "data_files_created": {
+    "korea": "/data/kr_hsk_tariff.csv",
+    "japan": "/data/jp_tariff.csv",
+    "china": "/data/cn_tariff.csv",
+    "korea_findings": "/data/kr_hsk_findings.json",
+    "japan_findings": "/data/jp_tariff_findings.json",
+    "china_findings": "/data/cn_tariff_findings.json",
+    "metadata": "/data/collection_metadata.json"
+  }
+}

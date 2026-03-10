@@ -1,0 +1,78 @@
+{
+  "source": "Norway Customs Tariff",
+  "collection_date": "2026-03-07",
+  "findings": {
+    "system_overview": {
+      "name": "Norwegian Customs Tariff",
+      "authority": "Tolletaten (Norwegian Customs Authority)",
+      "url": "https://www.toll.no/en/corporate/norwegian-customs-tariff/",
+      "description": "Interactive database for commodity classification and tariff information",
+      "access": "Public - free access"
+    },
+    "primary_tool": {
+      "name": "The Customs Tariff (Interactive Database)",
+      "description": "Main tool for finding Norwegian tariff codes and rates",
+      "function": "Interactive commodity classification lookup",
+      "language_support": ["English", "Norwegian", "German"]
+    },
+    "tariff_code_specifications": {
+      "code_level": "10-digit Norwegian tariff codes",
+      "nomenclature": "Norwegian Customs Tariff (based on HS nomenclature)",
+      "classification_system": "Based on Harmonized System with Norwegian extensions"
+    },
+    "available_resources": {
+      "guidance_documents": [
+        {
+          "type": "Binding Tariff Rulings",
+          "description": "Information on obtaining binding rulings for specific goods"
+        },
+        {
+          "type": "Code Finding Instructions",
+          "description": "How to find correct commodity codes for imports/exports"
+        },
+        {
+          "type": "Terminology Guide",
+          "description": "Explanation of terminology used in the tariff"
+        },
+        {
+          "type": "Historical Versions",
+          "description": "Previous tariff schedules for reference"
+        }
+      ]
+    },
+    "bulk_download_capability": {
+      "status": "NOT DOCUMENTED",
+      "notes": "System appears to be interactive lookup-based",
+      "potential_access": [
+        "Direct query of the database interface",
+        "Contact Tolletaten directly for bulk data extraction",
+        "Potentially available through Norwegian government data portals"
+      ]
+    },
+    "business_services": {
+      "audience": "Businesses and individuals importing/exporting goods",
+      "related_services": [
+        "Import regulations",
+        "Export procedures",
+        "Digitoll (Digital customs services)",
+        "Transport regulations"
+      ]
+    },
+    "data_specifications": {
+      "geographical_scope": "Norwegian applied tariffs",
+      "product_scope": "All goods subject to import into Norway",
+      "code_structure": "10-digit codes (extended HS codes)",
+      "last_update": "November 27, 2025"
+    },
+    "assessment": {
+      "importance": "MEDIUM - Norway is a developed market with significant trade",
+      "data_quality": "Official government source - high reliability",
+      "accessibility": "Public interface available; bulk download not documented",
+      "recommendation": "Secondary priority - Contact Tolletaten directly for bulk tariff data; interactive interface available for spot checks"
+    }
+  },
+  "sources": [
+    "https://www.toll.no/en/corporate/norwegian-customs-tariff/",
+    "https://www.toll.no/"
+  ]
+}

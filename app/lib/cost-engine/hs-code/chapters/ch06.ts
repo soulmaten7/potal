@@ -1,0 +1,21 @@
+// Chapter 06: Live Trees & Plants -- 16 codes
+import type { HsCodeEntry } from '../types';
+
+export const CHAPTER_06: HsCodeEntry[] = [
+  { code: '060110', description: 'Bulbs, tubers, tuberous roots, corms, crowns and rhizomes, dormant, in growth...', chapter: '06', category: 'plants', keywords: ['bulbs', 'tubers', 'tuberous', 'roots', 'corms', 'crowns', 'rhizomes', 'dormant', 'growth', 'flower'] },
+  { code: '060120', description: 'Bulbs, tubers, tuberous roots, corms, crowns and rhizomes, dormant, in growth...', chapter: '06', category: 'plants', keywords: ['bulbs', 'tubers', 'tuberous', 'roots', 'corms', 'crowns', 'rhizomes', 'dormant', 'growth', 'flower'] },
+  { code: '060210', description: 'Live trees', chapter: '06', category: 'garden', keywords: ['tree', 'plant', 'live tree', 'landscaping', 'live', 'plants', 'their', 'roots', 'cuttings', 'slips'] },
+  { code: '060220', description: 'Other live plants (including their roots), cuttings and slips; mushroom spawn...', chapter: '06', category: 'plants', keywords: ['live', 'plants', 'their', 'roots', 'cuttings', 'slips', 'mushroom', 'spawntrees', 'shrubs', 'bushes'] },
+  { code: '060230', description: 'Other live plants (including their roots), cuttings and slips; mushroom spawn...', chapter: '06', category: 'plants', keywords: ['live', 'plants', 'their', 'roots', 'cuttings', 'slips', 'mushroom', 'spawnrhododendrons', 'azaleas', 'grafted'] },
+  { code: '060240', description: 'Other live plants (including their roots), cuttings and slips; mushroom spawn...', chapter: '06', category: 'plants', keywords: ['live', 'plants', 'their', 'roots', 'cuttings', 'slips', 'mushroom', 'spawnroses', 'grafted'] },
+  { code: '060290', description: 'Live plants & flowers', chapter: '06', category: 'garden', keywords: ['flower', 'plant', 'houseplant', 'perennial', 'annual', 'seeds', 'live', 'plants', 'their', 'roots'] },
+  { code: '060311', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060312', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060313', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060314', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060315', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060319', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060390', description: 'Cut flowers and flower buds of a kind suitable for bouquets or for ornamental...', chapter: '06', category: 'plants', keywords: ['cut', 'flowers', 'flower', 'buds', 'kind', 'suitable', 'bouquets', 'ornamental', 'purposes', 'fresh'] },
+  { code: '060420', description: 'Foliage, branches and other parts of plants, without flowers or flower buds, ...', chapter: '06', category: 'plants', keywords: ['foliage', 'branches', 'plants', 'without', 'flowers', 'flower', 'buds', 'grasses', 'mosses', 'lichens'] },
+  { code: '060490', description: 'Foliage, branches and other parts of plants, without flowers or flower buds, ...', chapter: '06', category: 'plants', keywords: ['foliage', 'branches', 'plants', 'without', 'flowers', 'flower', 'buds', 'grasses', 'mosses', 'lichens'] },
+];

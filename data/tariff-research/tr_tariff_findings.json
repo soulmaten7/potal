@@ -1,0 +1,132 @@
+{
+  "country": "Turkey (Türkiye)",
+  "tariff_system": "Turkish Customs Tariff (GTİP - Gümrük Tarife İstatistik Pozisyonu)",
+  "code_structure": {
+    "total_digits": 12,
+    "digit_breakdown": {
+      "1-6": "Harmonized System (HS) Code",
+      "7-8": "Combined Nomenclature Code (EU)",
+      "9-10": "National Subheadings (Turkish-specific tax applications)",
+      "11-12": "Statistical Codes"
+    },
+    "base_system": "Harmonized System (HS)"
+  },
+  "gtip_definition": {
+    "full_name": "Customs Tariff Statistics Positions",
+    "abbreviation": "GTİP",
+    "description": "Turkish 12-digit tariff nomenclature system used for customs classification, duty determination, and statistical reporting"
+  },
+  "official_sources": {
+    "primary": {
+      "ministry_of_trade": {
+        "name": "Turkish Ministry of Trade",
+        "website": "https://www.trade.gov.tr/",
+        "customs_page": "https://www.trade.gov.tr/customs-formalities/",
+        "faq_english": "https://www.trade.gov.tr/customs-formalities/frequently-asked-questions/tariff"
+      },
+      "general_directorate_of_customs": {
+        "name": "General Directorate of Customs (Gümrük Müşteşarlığı - GGM)",
+        "website": "https://ggm.ticaret.gov.tr/",
+        "tariff_nomenclature_access": "Data Bank > Tariff Nomenclature",
+        "download_availability": "Position-by-position basis",
+        "classification_sheet": "https://ggm.ticaret.gov.tr/data/5dedfe4d13b876e93804ba65/e7f55410a6f228d51deeb2081cf05a4b.pdf"
+      }
+    },
+    "secondary": {
+      "tariff_tr_com": {
+        "name": "Tariff-TR.com",
+        "website": "https://www.tariff-tr.com/",
+        "type": "Third-party commercial portal",
+        "services": [
+          "Smart Customs Duty Calculator",
+          "Tariff rate searches",
+          "HS code classification assistance",
+          "EU TARIC system access",
+          "HS code correlation tools"
+        ],
+        "note": "Provides 2026 customs tariff data for subscribers",
+        "data_basis": "Eight-digit HS codes based on EU Customs Tariff Nomenclature"
+      },
+      "turkexim": {
+        "name": "TURKEXIM",
+        "website": "https://www.ithalatihracat.biz/?pnum=1791",
+        "service": "Turkey HS Code Search"
+      }
+    }
+  },
+  "data_access_methods": {
+    "method_1": {
+      "name": "Direct Government Database",
+      "source": "GGM (ggm.ticaret.gov.tr)",
+      "process": "Access Data Bank section, select Tariff Nomenclature, download by position",
+      "format": "Multiple formats available",
+      "accessibility": "Free, public access"
+    },
+    "method_2": {
+      "name": "Online Search Engine",
+      "description": "Query by GTIP code or product description",
+      "source": "GGM website",
+      "accessibility": "Free, real-time search"
+    },
+    "method_3": {
+      "name": "Commercial Portal",
+      "source": "Tariff-TR.com",
+      "accessibility": "Subscription-based for comprehensive 2026 data",
+      "format": "Web interface with downloadable reports"
+    }
+  },
+  "code_count": {
+    "estimated_total": "10,000+",
+    "note": "Exact count not specified in available sources"
+  },
+  "tariff_data_characteristics": {
+    "includes": [
+      "12-digit GTIP codes",
+      "Product descriptions",
+      "Duty rates",
+      "VAT/GST information",
+      "Statistical classifications"
+    ],
+    "basis": "2022 HS Edition",
+    "updates": "Annual updates, January 1 each year"
+  },
+  "important_notes": [
+    "First 6 digits are international HS codes",
+    "7-8 digits are EU Combined Nomenclature codes",
+    "9-10 digits are Turkey-specific for different tax treatments",
+    "11-12 digits are purely for statistical purposes",
+    "Different from GCC member countries despite similar 12-digit structure",
+    "EU Member State Customs Tariff Nomenclature (TARIC) system applies",
+    "Eight-digit HS codes from Tariff-TR must be used with caution outside EU customs territory"
+  ],
+  "bulk_download_status": {
+    "government_portal": "Individual code downloads available; full database bulk download not mentioned",
+    "commercial_sources": "Tariff-TR.com offers downloadable reports for subscribers",
+    "recommendation": "Contact GGM directly for bulk data export requests"
+  },
+  "related_resources": {
+    "findhs_codes": {
+      "name": "FindHS.Codes",
+      "service": "Harmonized system classification assistance"
+    },
+    "wco": {
+      "name": "World Customs Organization",
+      "service": "HS maintenance and updates"
+    }
+  },
+  "limitations": [
+    "No direct CSV/Excel bulk download from official government sources in search results",
+    "Position-by-position download may be tedious for complete database",
+    "Tariff-TR.com is third-party and requires subscription for 2026 data",
+    "Dynamic database means continuous updates throughout the year",
+    "Some detailed rate information may require customs authority contact"
+  ],
+  "research_date": "March 2026",
+  "sources": [
+    "https://www.trade.gov.tr/customs-formalities/",
+    "https://ggm.ticaret.gov.tr/",
+    "https://www.tariff-tr.com/",
+    "https://www.ithalatihracat.biz/?pnum=1791",
+    "https://ticaret.gov.tr/gumruk-islemleri/sikca-sorulan-sorular/english/tariff"
+  ]
+}

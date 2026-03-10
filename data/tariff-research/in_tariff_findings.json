@@ -1,0 +1,73 @@
+{
+  "source": "India Tariff Database",
+  "collection_date": "2026-03-07",
+  "findings": {
+    "primary_sources": {
+      "indian_trade_portal": {
+        "name": "Indian Trade Portal",
+        "url": "https://indiantradeportal.in/vs.jsp?pid=1",
+        "description": "Official portal for Indian trade tariff lookups",
+        "search_capability": "Allows searching for ITC HS codes and corresponding customs duties",
+        "search_format": "Enter 2 to 6 digits to locate codes",
+        "features": {
+          "hs_code_lookup": "Search by code or product name",
+          "country_selection": "Select country to find applicable tariff rates",
+          "tariff_calculation": "Integrated tariff calculations"
+        },
+        "bulk_download": "Not explicitly available through portal interface"
+      },
+      "cbic": {
+        "name": "Central Board of Indirect Taxes and Customs (CBIC)",
+        "url": "https://www.cbic.gov.in/",
+        "description": "Official Indian customs authority",
+        "access_notes": "JavaScript required to view content",
+        "services_mentioned": [
+          "Customs Duty Calculator",
+          "Tariff Schedule Information",
+          "Regulatory updates"
+        ],
+        "limitations": "Website requires JavaScript; full content not accessible via standard fetching"
+      }
+    },
+    "data_specifications": {
+      "code_level": "8-digit HS codes (Indian Tariff Schedule)",
+      "key_field": "BCD (Basic Customs Duty) rates",
+      "tariff_types": [
+        "Applied tariff rates",
+        "Preferential rates",
+        "Specific duty rates",
+        "Additional duties"
+      ]
+    },
+    "access_methods": {
+      "search_interface": "Interactive online search at Indian Trade Portal",
+      "bulk_download": "No direct bulk download documented",
+      "alternative_sources": [
+        "Direct CBIC contact",
+        "Directorate General of Foreign Trade (DGFT)",
+        "Published customs tariff schedules"
+      ]
+    },
+    "data_availability": {
+      "code_range": "8-digit HS codes",
+      "countries_in_system": "Major trading partners queryable through portal",
+      "coverage": "Indian applied tariffs for all product categories"
+    },
+    "limitations": {
+      "bulk_download_not_available": "Cannot download entire tariff schedule programmatically",
+      "portal_interface_required": "Requires interactive queries",
+      "documentation_limited": "Limited information about technical data structure",
+      "access_challenges": "CBIC website requires JavaScript and interactive access"
+    },
+    "assessment": {
+      "importance": "HIGH - India is a major trading nation with significant non-tariff measures",
+      "data_quality": "Official government source - high reliability",
+      "accessibility": "Limited for bulk automated access",
+      "recommendation": "Secondary priority - will require contact with CBIC for bulk download options or web scraping of search results"
+    }
+  },
+  "sources": [
+    "https://indiantradeportal.in/vs.jsp?pid=1",
+    "https://www.cbic.gov.in/"
+  ]
+}

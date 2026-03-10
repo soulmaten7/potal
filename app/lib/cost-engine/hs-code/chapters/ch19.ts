@@ -1,0 +1,25 @@
+// Chapter 19: Cereal & Bakery Products -- 20 codes
+import type { HsCodeEntry } from '../types';
+
+export const CHAPTER_19: HsCodeEntry[] = [
+  { code: '190110', description: 'Malt extract; food preparations of flour, groats, meal, starch or malt extrac...', chapter: '19', category: 'food', keywords: ['malt', 'extract', 'food', 'flour', 'groats', 'meal', 'starch', 'cocoa', '40', 'calculated'] },
+  { code: '190120', description: 'Malt extract; food preparations of flour, groats, meal, starch or malt extrac...', chapter: '19', category: 'food', keywords: ['malt', 'extract', 'food', 'flour', 'groats', 'meal', 'starch', 'cocoa', '40', 'calculated'] },
+  { code: '190190', description: 'Malt extract; food preparations of flour, groats, meal, starch or malt extrac...', chapter: '19', category: 'food', keywords: ['malt', 'extract', 'food', 'flour', 'groats', 'meal', 'starch', 'cocoa', '40', 'calculated'] },
+  { code: '190210', description: 'Pasta', chapter: '19', category: 'food', keywords: ['pasta', 'spaghetti', 'penne', 'noodles', 'macaroni'] },
+  { code: '190211', description: 'Pasta, whether or not cooked or stuffed (with meat or other substances) or ot...', chapter: '19', category: 'food', keywords: ['pasta', 'cooked', 'stuffed', 'meat', 'substances', 'otherwise', 'prepared', 'such', 'spaghetti', 'macaroni'] },
+  { code: '190219', description: 'Pasta, whether or not cooked or stuffed (with meat or other substances) or ot...', chapter: '19', category: 'food', keywords: ['pasta', 'cooked', 'stuffed', 'meat', 'substances', 'otherwise', 'prepared', 'such', 'spaghetti', 'macaroni'] },
+  { code: '190220', description: 'Ramen noodles', chapter: '19', category: 'food', keywords: ['ramen', 'instant noodles', 'noodles', 'asian noodles', 'pasta', 'cooked', 'stuffed', 'meat', 'substances', 'otherwise'] },
+  { code: '190230', description: 'Pasta, whether or not cooked or stuffed (with meat or other substances) or ot...', chapter: '19', category: 'food', keywords: ['pasta', 'cooked', 'stuffed', 'meat', 'substances', 'otherwise', 'prepared', 'such', 'spaghetti', 'macaroni'] },
+  { code: '190240', description: 'Pasta, whether or not cooked or stuffed (with meat or other substances) or ot...', chapter: '19', category: 'food', keywords: ['pasta', 'cooked', 'stuffed', 'meat', 'substances', 'otherwise', 'prepared', 'such', 'spaghetti', 'macaroni'] },
+  { code: '190300', description: 'Tapioca and substitutes therefor prepared from starch, in the form of flakes,...', chapter: '19', category: 'food', keywords: ['tapioca', 'substitutes', 'therefor', 'prepared', 'starch', 'form', 'flakes', 'grains', 'pearls', 'siftings'] },
+  { code: '190410', description: 'Cereal breakfast', chapter: '19', category: 'food', keywords: ['cereal', 'breakfast cereal', 'granola', 'oatmeal', 'muesli', 'prepared', 'foods', 'obtained', 'swelling', 'roasting'] },
+  { code: '190420', description: 'Prepared foods obtained by the swelling or roasting of cereals or cereal prod...', chapter: '19', category: 'food', keywords: ['prepared', 'foods', 'obtained', 'swelling', 'roasting', 'cereals', 'cereal', 'products', 'example', 'corn'] },
+  { code: '190430', description: 'Prepared foods obtained by the swelling or roasting of cereals or cereal prod...', chapter: '19', category: 'food', keywords: ['prepared', 'foods', 'obtained', 'swelling', 'roasting', 'cereals', 'cereal', 'products', 'example', 'corn'] },
+  { code: '190490', description: 'Prepared foods obtained by the swelling or roasting of cereals or cereal prod...', chapter: '19', category: 'food', keywords: ['prepared', 'foods', 'obtained', 'swelling', 'roasting', 'cereals', 'cereal', 'products', 'example', 'corn'] },
+  { code: '190510', description: 'Bread', chapter: '19', category: 'food', keywords: ['bread', 'white bread', 'whole wheat bread', 'sourdough', 'bakery', 'pastry', 'cakes', 'biscuits', 'bakers', 'wares'] },
+  { code: '190520', description: 'Biscuits', chapter: '19', category: 'food', keywords: ['biscuit', 'cookie', 'crackers', 'wafer', 'snack', 'bread', 'pastry', 'cakes', 'biscuits', 'bakers'] },
+  { code: '190531', description: 'Bread, pastry, cakes, biscuits and other bakers\\ wares, whether or not conta...', chapter: '19', category: 'food', keywords: ['bread', 'pastry', 'cakes', 'biscuits', 'bakers', 'wares', 'cocoa', 'communion', 'wafers', 'empty'] },
+  { code: '190532', description: 'Bread, pastry, cakes, biscuits and other bakers\\ wares, whether or not conta...', chapter: '19', category: 'food', keywords: ['bread', 'pastry', 'cakes', 'biscuits', 'bakers', 'wares', 'cocoa', 'communion', 'wafers', 'empty'] },
+  { code: '190540', description: 'Bread, pastry, cakes, biscuits and other bakers\\ wares, whether or not conta...', chapter: '19', category: 'food', keywords: ['bread', 'pastry', 'cakes', 'biscuits', 'bakers', 'wares', 'cocoa', 'communion', 'wafers', 'empty'] },
+  { code: '190590', description: 'Pastries', chapter: '19', category: 'food', keywords: ['pastry', 'cake', 'donut', 'croissant', 'dessert', 'bakery', 'bread', 'cakes', 'biscuits', 'bakers'] },
+];

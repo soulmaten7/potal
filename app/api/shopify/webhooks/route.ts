@@ -13,7 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyShopifyWebhook, markShopUninstalled } from '@/app/lib/shopify/shopify-auth';
+import { verifyShopifyWebhook, markShopUninstalled, deleteShopData } from '@/app/lib/shopify/shopify-auth';
 
 export async function POST(req: NextRequest) {
   // ━━━ 1. Raw body 읽기 (HMAC 검증용) ━━━
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const topic = req.headers.get('x-shopify-topic');
   const shopDomain = req.headers.get('x-shopify-shop-domain');
 
-  console.log(`[POTAL Shopify] Webhook received: ${topic} from ${shopDomain}`);
+  // Webhook received: ${topic} from ${shopDomain}
 
   let body: any;
   try {
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
       break;
 
     default:
-      console.log(`[POTAL Shopify] Unknown webhook topic: ${topic}`);
+      // Unknown webhook topic — silently ignore
   }
 
   // Shopify는 2xx 응답을 기대 (200 OK)
@@ -71,7 +71,6 @@ export async function POST(req: NextRequest) {
  * 앱 삭제: 토큰 무효화, 스토어 비활성화
  */
 async function handleAppUninstalled(shop: string, _body: any): Promise<void> {
-  console.log(`[POTAL Shopify] App uninstalled from ${shop}`);
   await markShopUninstalled(shop);
 }
 
@@ -79,23 +78,16 @@ async function handleAppUninstalled(shop: string, _body: any): Promise<void> {
  * GDPR: 고객 데이터 요청
  * POTAL은 고객 개인정보를 저장하지 않으므로 빈 응답
  */
-async function handleCustomersDataRequest(shop: string, body: any): Promise<void> {
-  console.log(`[POTAL Shopify] Customer data request from ${shop}`, {
-    customer_id: body.customer?.id,
-    orders_requested: body.orders_requested?.length || 0,
-  });
-  // POTAL은 고객 PII를 저장하지 않음. 추후 필요 시 구현.
+async function handleCustomersDataRequest(_shop: string, _body: any): Promise<void> {
+  // POTAL은 고객 PII를 저장하지 않음 — 빈 응답 반환 (Shopify GDPR 준수)
 }
 
 /**
  * GDPR: 고객 데이터 삭제
  * POTAL은 고객 개인정보를 저장하지 않으므로 실행할 작업 없음
  */
-async function handleCustomersRedact(shop: string, body: any): Promise<void> {
-  console.log(`[POTAL Shopify] Customer redact from ${shop}`, {
-    customer_id: body.customer?.id,
-  });
-  // No customer PII stored. No action needed.
+async function handleCustomersRedact(_shop: string, _body: any): Promise<void> {
+  // POTAL은 고객 PII를 저장하지 않음 — 삭제할 데이터 없음 (Shopify GDPR 준수)
 }
 
 /**
@@ -103,7 +95,5 @@ async function handleCustomersRedact(shop: string, body: any): Promise<void> {
  * shopify_stores 테이블에서 해당 스토어 데이터 삭제
  */
 async function handleShopRedact(shop: string, _body: any): Promise<void> {
-  console.log(`[POTAL Shopify] Shop redact from ${shop}`);
-  await markShopUninstalled(shop);
-  // 추후: shopify_stores 테이블에서 완전 삭제 (현재는 비활성화만)
+  await deleteShopData(shop);
 }

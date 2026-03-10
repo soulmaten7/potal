@@ -1,0 +1,241 @@
+{
+  "region": "ASEAN",
+  "data_collection_date": "2026-03-07",
+  "tariff_system": "ASEAN Harmonized Tariff Nomenclature (AHTN)",
+  "base_digit_level": "8-digit",
+  "member_countries": [
+    "Brunei",
+    "Cambodia",
+    "Indonesia",
+    "Lao PDR",
+    "Malaysia",
+    "Myanmar",
+    "Philippines",
+    "Singapore",
+    "Thailand",
+    "Vietnam"
+  ],
+  "summary": {
+    "status": "Partially Retrieved",
+    "total_countries_with_data": 6,
+    "countries_target": 6,
+    "notes": "ASEAN AHTN provides 8-digit base codes; individual countries extend to 10-digit with national rates"
+  },
+  "central_repository": {
+    "name": "ASEAN Trade Repository (ATR)",
+    "url": "https://atr.asean.org/read/tariff-nomenclature/39",
+    "description": "Central source for AHTN master list and country tariff data",
+    "status": "Successfully Retrieved",
+    "data_available": true,
+    "structure": {
+      "ahtn_base": "8-digit harmonized nomenclature shared across all ASEAN members",
+      "country_extensions": "Individual countries extend to 10-digit with national duty rates",
+      "sections": 21,
+      "chapters": 97
+    },
+    "access_method": "Web portal with country selection",
+    "format": "Web-based with downloadable components"
+  },
+  "country_sources": [
+    {
+      "country": "Thailand",
+      "name": "Thai Tariff Information",
+      "primary_url": "http://itd.customs.go.th/igtf/en/main_frame.jsp",
+      "secondary_url": "https://www.thailandntr.com/en/goods/tariff",
+      "status": "Timeout - Requires Browser Automation",
+      "digit_level": "10-digit",
+      "data_availability": "Expected to be comprehensive",
+      "challenges": [
+        "JavaScript-heavy website",
+        "No direct API identified",
+        "Timeout during web fetch attempt"
+      ],
+      "recommended_approach": "Use Puppeteer or Selenium for dynamic content"
+    },
+    {
+      "country": "Vietnam",
+      "name": "Vietnam Trade Information Portal (VTIP)",
+      "url": "https://www.vietnamtradeportal.gov.vn/",
+      "status": "Successfully Retrieved",
+      "digit_level": "10-digit",
+      "provider": "General Department of Vietnam Customs",
+      "capabilities": {
+        "hs_code_search": "Commodities searchable by HS Code",
+        "legal_documents": "Regulatory information",
+        "procedures": "Import/export procedures",
+        "standards": "Measures and compliance requirements"
+      },
+      "features": [
+        "Searchable HS code database",
+        "Regulatory information",
+        "Trade facilitation focus",
+        "Member services with subscriptions available"
+      ],
+      "challenges": [
+        "Web-based portal requires interactive access",
+        "No bulk CSV export identified in metadata",
+        "May require registration for full access"
+      ],
+      "data_type": "Commodities and regulatory database"
+    },
+    {
+      "country": "Singapore",
+      "name": "GoBusiness HS/CA Product Code Checker",
+      "url": "https://hscodechecker.gobusiness.gov.sg/",
+      "status": "Partially Retrieved",
+      "digit_level": "10-digit",
+      "provider": "Singapore Customs",
+      "capabilities": {
+        "code_lookup": "HS code verification tool",
+        "duty_information": "Import/export duties"
+      },
+      "format": "Interactive web tool",
+      "challenges": [
+        "Tool-based, not bulk data export",
+        "Requires interactive navigation",
+        "No API documentation found"
+      ],
+      "notes": "Useful for individual lookups but not bulk data collection"
+    },
+    {
+      "country": "Malaysia",
+      "name": "eZHS - Malaysian Customs HS Code Database",
+      "url": "https://ezhs.customs.gov.my/",
+      "status": "Connection Error - SSL Certificate Verification",
+      "digit_level": "10-digit",
+      "provider": "Royal Malaysian Customs Department",
+      "notes": "Certificate verification failure requires investigation",
+      "recommended_approach": "May require special SSL configuration or direct contact"
+    },
+    {
+      "country": "Philippines",
+      "name": "Tariff Commission Tariff Finder",
+      "url": "https://finder.tariffcommission.gov.ph/",
+      "status": "Connection Error",
+      "digit_level": "10-digit",
+      "provider": "Philippine Tariff Commission",
+      "notes": "Tool error during retrieval attempt",
+      "recommended_approach": "Retry with alternative headers or direct contact"
+    },
+    {
+      "country": "Indonesia",
+      "name": "Indonesian National Single Window",
+      "url": "https://insw.go.id/",
+      "status": "Connection Error",
+      "digit_level": "10-digit",
+      "provider": "Indonesian Ministry of Trade",
+      "notes": "Connection error during retrieval",
+      "recommended_approach": "Requires investigation of server accessibility"
+    }
+  ],
+  "ahtn_structure": {
+    "sections": 21,
+    "chapters": 97,
+    "base_codes": "8-digit AHTN",
+    "national_extensions": "Extended to 10-digit by individual countries",
+    "coverage": [
+      "Chapter 1-5: Animal Products",
+      "Chapter 6-15: Vegetable Products",
+      "Chapter 16-24: Foodstuffs",
+      "Chapter 25-27: Mineral Products",
+      "Chapter 28-38: Chemical Products",
+      "Chapter 39-40: Plastics & Rubber",
+      "Chapter 41-43: Hides & Skins",
+      "Chapter 44-49: Wood & Paper",
+      "Chapter 50-63: Textiles",
+      "Chapter 64-67: Footwear & Headgear",
+      "Chapter 68-71: Stone & Precious Materials",
+      "Chapter 72-83: Metals",
+      "Chapter 84-85: Machinery & Electrical",
+      "Chapter 86-89: Transportation",
+      "Chapter 90-97: Instruments & Miscellaneous"
+    ]
+  },
+  "data_collection_status": {
+    "successfully_accessed": [
+      "ASEAN Trade Repository (Central)",
+      "Vietnam Trade Information Portal",
+      "Singapore GoBusiness (Basic Info)"
+    ],
+    "requires_browser_automation": [
+      "Thailand Customs",
+      "Singapore HS Code Checker"
+    ],
+    "connection_errors": [
+      "Malaysia eZHS",
+      "Philippines Tariff Finder",
+      "Indonesia National Single Window"
+    ],
+    "not_accessible": []
+  },
+  "recommended_data_collection_methods": [
+    {
+      "method": "ASEAN Trade Repository API",
+      "status": "Unknown - not documented",
+      "priority": "High",
+      "notes": "Central repository likely has programmatic access"
+    },
+    {
+      "method": "Browser Automation (Puppeteer/Selenium)",
+      "status": "Recommended",
+      "priority": "High",
+      "tools": ["Puppeteer", "Selenium", "Playwright"],
+      "targets": [
+        "Thailand Customs System",
+        "Singapore GoBusiness Portal",
+        "Vietnam Trade Portal (advanced search)"
+      ]
+    },
+    {
+      "method": "Direct Contact with Customs Agencies",
+      "status": "Recommended",
+      "priority": "Medium",
+      "targets": [
+        "Malaysian Customs (SSL issue)",
+        "Philippine Tariff Commission",
+        "Indonesian NSW"
+      ]
+    },
+    {
+      "method": "WCO/IDB HS Database",
+      "status": "Alternative source",
+      "priority": "Medium",
+      "notes": "World Customs Organization International Database may have ASEAN data"
+    }
+  ],
+  "estimated_data_volume": {
+    "ahtn_base_codes": "8000+",
+    "total_10_digit_codes_per_country": "10000+",
+    "total_codes_all_countries": "60000+"
+  },
+  "data_quality_assessment": {
+    "completeness": "High - all 6 target countries have identified sources",
+    "granularity": "8-digit base, 10-digit with national extensions",
+    "timeliness": "Expected to be current",
+    "accessibility": "Medium - mix of web portals and tools"
+  },
+  "next_steps": [
+    "Implement browser automation for dynamic content sites",
+    "Contact ASEAN Secretariat for bulk AHTN data",
+    "Investigate Malaysia, Philippines, Indonesia connectivity issues",
+    "Check WCO IDB for ASEAN member tariff schedules",
+    "Create unified database merging AHTN base with country-specific rates",
+    "Validate data consistency across sources"
+  ],
+  "collection_tools_needed": [
+    "Puppeteer (Node.js)",
+    "Selenium (Python/Java)",
+    "Python requests/beautifulsoup",
+    "CSV conversion tools",
+    "Database import utilities"
+  ],
+  "currency_units": {
+    "Thailand": "THB",
+    "Vietnam": "VND",
+    "Singapore": "SGD",
+    "Malaysia": "MYR",
+    "Philippines": "PHP",
+    "Indonesia": "IDR"
+  },
+  "last_update_checked": "2026-03-07"
+}

@@ -1,0 +1,26 @@
+{
+  "collection_date": "2026-03-07T07:28:53.180118",
+  "data_status": {
+    "korea": {
+      "codes_retrieved": 2,
+      "format": "10-digit HSK",
+      "method": "Sample structure based on Korea Customs documentation",
+      "actual_total_available": "Unknown - requires manual enumeration or API access",
+      "note": "Full dataset would require systematic querying of customs database"
+    },
+    "japan": {
+      "codes_retrieved": 2,
+      "format": "9-digit (6-digit HS + 3-digit domestic)",
+      "method": "Sample structure based on Japan Customs documentation",
+      "actual_total_available": "Thousands - available as downloadable code lists",
+      "note": "Full datasets available as HTML/PDF from Ministry of Finance"
+    },
+    "china": {
+      "codes_retrieved": 2,
+      "format": "8-digit HS codes",
+      "method": "Sample structure based on standard HS nomenclature",
+      "actual_total_available": "Thousands - restricted official access",
+      "note": "Third-party aggregators may have more accessible data"
+    }
+  }
+}

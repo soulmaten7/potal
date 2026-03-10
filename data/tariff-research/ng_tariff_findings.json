@@ -1,0 +1,86 @@
+{
+  "country": "Nigeria",
+  "country_code": "NG",
+  "tariff_system": "Common External Tariff (CET)",
+  "system_type": "ECOWAS Harmonized HS-based",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Nigeria uses 8-digit HS codes (6-digit HS base + 2 Nigerian-specific digits) aligned with ECOWAS Common External Tariff. Tariff information available through Nigeria Trade Portal and Nigeria Customs Service.",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 8,000+ codes",
+    "official_sources": ["Nigeria Trade Portal", "Nigeria Customs Service (NCS)"],
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["PDF", "Web interface", "Database"]
+  },
+  "sources": [
+    {
+      "name": "Nigeria Trade Portal - Tariff Search",
+      "url": "https://trade.gov.ng/en/tools/tariff-search",
+      "type": "Official Government Portal",
+      "description": "Nigerian tariff search tool with complete CET tariff sections and chapters"
+    },
+    {
+      "name": "Nigeria Customs Service (NCS) - CET Tariff",
+      "url": "https://customs.gov.ng/?page_id=3133",
+      "type": "Official Authority",
+      "description": "Nigeria Customs Service CET tariff sections and chapters documentation"
+    },
+    {
+      "name": "Nigeria Customs HS Codes PDF",
+      "url": "https://www.cbn.gov.ng/out/2020/ccd/hscodes.pdf",
+      "type": "PDF Document",
+      "description": "Central Bank of Nigeria HS codes reference document"
+    },
+    {
+      "name": "SEAIR HS Code Database - Nigeria",
+      "url": "https://www.seair.co.in/nigeria-hs-code.aspx",
+      "type": "Third-party Database",
+      "description": "Nigerian HS codes and trade data"
+    },
+    {
+      "name": "Cotecna Nigeria - HS Code Verification",
+      "url": "https://www.exports-to-nigeria.com/media/news/obtain-and-verify-hs-codes",
+      "type": "Trade Services",
+      "description": "Assistance with obtaining and verifying HS codes for Nigeria"
+    },
+    {
+      "name": "TariffTel - HS Code Lookup",
+      "url": "https://app.coresupplychains.com/hs-code-lookup/index/into-ng-nigeria",
+      "type": "Third-party Tool",
+      "description": "HS code lookup tool specific to Nigerian imports"
+    },
+    {
+      "name": "Ronish Nigeria - Customs Tariff Reference",
+      "url": "https://www.ronishlogistics.com/nigeria-customs-tariff-hs-code.html",
+      "type": "Logistics Reference",
+      "description": "Nigerian customs tariff and HS code information"
+    }
+  ],
+  "regional_alignment": {
+    "bloc": "ECOWAS (Economic Community of West African States)",
+    "tariff_system": "Common External Tariff (CET)",
+    "tariff_bands": 5,
+    "band_range": "0% to 35%"
+  },
+  "code_structure": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_8": "Nigerian-specific classification",
+    "total_codes": "Estimated 8,000+"
+  },
+  "tariff_rates": {
+    "access": "Via Nigeria Trade Portal or NCS website",
+    "structure": "5-band CET structure (0%, 5%, 10%, 20%, 35%)",
+    "note": "Aligned with ECOWAS CET"
+  },
+  "data_collection_status": "RESEARCH_COMPLETE",
+  "next_steps": [
+    "Access Nigeria Trade Portal tariff search tool",
+    "Download NCS CET tariff PDF documentation",
+    "Compile complete HS code database with duty rates",
+    "Cross-reference with ECOWAS CET master list"
+  ],
+  "notes": "Nigeria Trade Portal provides the most accessible tariff search interface. Nigeria Customs Service maintains official CET documentation. Data aligned with ECOWAS Common External Tariff. Multiple third-party databases available for reference."
+}

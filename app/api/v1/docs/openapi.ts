@@ -8,13 +8,13 @@
 export const openApiSpec = {
   openapi: '3.0.3',
   info: {
-    title: 'POTAL API',
+    title: 'POTAL API v1',
     version: '1.0.0',
     description:
-      'Total Landed Cost calculation API for cross-border commerce. Calculate import duties, taxes, and fees for 240 countries and territories. Includes China CBEC, Mexico IEPS, Brazil cascading tax, India IGST, processing fees for 12 countries, and multi-language support (7 languages).',
+      'B2B Total Landed Cost calculation API for cross-border e-commerce. Calculates import duties, VAT/GST, customs fees, and shipping costs for 240 countries/territories. Features: 5,371 HS codes + 92.3M tariff rates (44 countries completed), 30-language support (en, de, fr, es, it, pt, ru, ar, hi, th, vi, id, tr, pl, nl, sv, da, fi, nb, cs, ro, hu, uk, el, he, ms, ja, ko, zh, zn), AI product classification (text/image-based), customs document generation, import restriction checks, tariff change monitoring, integration with ChatGPT, Claude (MCP), Gemini, and AI shopping agents.',
     contact: {
       name: 'POTAL Support',
-      url: 'https://www.potal.app',
+      url: 'https://www.potal.app/developers',
       email: 'contact@potal.app',
     },
   },
@@ -213,20 +213,458 @@ export const openApiSpec = {
     '/countries': {
       get: {
         summary: 'List supported countries',
-        description: 'Get a list of all supported destination countries with their tax/duty information.',
+        description: 'Get a list of all supported destination countries (240) with their VAT/GST rates, de minimis thresholds, and customs fees. Results include 30 language translations for each country.',
         operationId: 'listCountries',
         tags: ['Reference'],
         responses: {
           '200': {
-            description: 'List of supported countries',
+            description: 'List of 240 supported countries with multi-language names and tax information',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: {
+                            type: 'object',
+                            properties: {
+                              code: { type: 'string', example: 'US' },
+                              name: { type: 'string' },
+                              nameInLanguages: { type: 'object', additionalProperties: { type: 'string' } },
+                              vatRate: { type: 'number', nullable: true },
+                              deMinimusThreshold: { type: 'number' },
+                              customsFees: { type: 'object' },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
           },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/classify': {
+      post: {
+        summary: 'Classify product to HS Code',
+        description: 'Classify a product to its HS Code using text-based or image-based AI classification. Supports product name, category, image URL, or base64 image.',
+        operationId: 'classifyProduct',
+        tags: ['Classification'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                oneOf: [
+                  {
+                    type: 'object',
+                    properties: {
+                      productName: { type: 'string', maxLength: 500 },
+                      category: { type: 'string', maxLength: 500 },
+                    },
+                    required: ['productName'],
+                  },
+                  {
+                    type: 'object',
+                    properties: {
+                      imageUrl: { type: 'string', format: 'uri' },
+                      productHint: { type: 'string', maxLength: 500 },
+                    },
+                    required: ['imageUrl'],
+                  },
+                  {
+                    type: 'object',
+                    properties: {
+                      imageBase64: { type: 'string' },
+                      productHint: { type: 'string', maxLength: 500 },
+                    },
+                    required: ['imageBase64'],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Product classified successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'object',
+                          properties: {
+                            hsCode: { type: 'string', example: '6204.62' },
+                            description: { type: 'string' },
+                            confidence: { type: 'number', minimum: 0, maximum: 1 },
+                            countryOfOrigin: { type: 'string', nullable: true },
+                            alternatives: { type: 'array', items: { type: 'string' } },
+                            detectedProductName: { type: 'string', nullable: true },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '429': { $ref: '#/components/responses/RateLimited' },
+        },
+      },
+    },
+    '/documents': {
+      post: {
+        summary: 'Generate customs documents',
+        description: 'Generate Commercial Invoice and/or Packing List for cross-border shipment. AI-powered HS Code classification and formatting.',
+        operationId: 'generateDocuments',
+        tags: ['Documentation'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['type', 'exporter', 'importer', 'items'],
+                properties: {
+                  type: { type: 'string', enum: ['commercial_invoice', 'packing_list', 'both'] },
+                  exporter: { $ref: '#/components/schemas/TradeParty' },
+                  importer: { $ref: '#/components/schemas/TradeParty' },
+                  items: {
+                    type: 'array',
+                    maxItems: 100,
+                    items: { $ref: '#/components/schemas/LineItem' },
+                  },
+                  shippingCost: { type: 'number', minimum: 0 },
+                  insuranceCost: { type: 'number', minimum: 0 },
+                  incoterm: { type: 'string', enum: ['EXW', 'FCA', 'FAS', 'FOB', 'CFR', 'CIF', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP'] },
+                  currency: { type: 'string', default: 'USD' },
+                  paymentTerms: { type: 'string' },
+                  shippingMethod: { type: 'string' },
+                  notes: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Documents generated successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'object',
+                          properties: {
+                            commercialInvoice: { type: 'string', nullable: true },
+                            packingList: { type: 'string', nullable: true },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '429': { $ref: '#/components/responses/RateLimited' },
+        },
+      },
+    },
+    '/restrictions': {
+      post: {
+        summary: 'Check import restrictions',
+        description: 'Check if a product has import restrictions for a destination country (e.g., prohibited items, licenses required, banned substances).',
+        operationId: 'checkRestrictions',
+        tags: ['Compliance'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['destinationCountry'],
+                properties: {
+                  hsCode: { type: 'string', maxLength: 10 },
+                  destinationCountry: { type: 'string', minLength: 2, maxLength: 2, example: 'US' },
+                  productName: { type: 'string', maxLength: 500 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Restrictions checked successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'object',
+                          properties: {
+                            hasRestrictions: { type: 'boolean' },
+                            isProhibited: { type: 'boolean' },
+                            restrictions: {
+                              type: 'array',
+                              items: {
+                                type: 'object',
+                                properties: {
+                                  type: { type: 'string' },
+                                  description: { type: 'string' },
+                                  licenseRequired: { type: 'boolean' },
+                                },
+                              },
+                            },
+                            hsCode: { type: 'string' },
+                            destinationCountry: { type: 'string' },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '429': { $ref: '#/components/responses/RateLimited' },
+        },
+      },
+    },
+    '/alerts': {
+      get: {
+        summary: 'List tariff change alerts',
+        description: 'Get all tariff change alerts set up by the authenticated seller.',
+        operationId: 'listAlerts',
+        tags: ['Monitoring'],
+        responses: {
+          '200': {
+            description: 'List of alerts',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'array',
+                          items: { $ref: '#/components/schemas/AlertItem' },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+      post: {
+        summary: 'Create tariff change alert',
+        description: 'Set up an alert for tariff rate changes on specific HS codes and destination countries.',
+        operationId: 'createAlert',
+        tags: ['Monitoring'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['hsCode', 'destinationCountry'],
+                properties: {
+                  hsCode: { type: 'string' },
+                  destinationCountry: { type: 'string' },
+                  webhookUrl: { type: 'string', format: 'uri' },
+                  emailNotification: { type: 'boolean', default: true },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Alert created successfully' },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+      delete: {
+        summary: 'Delete tariff alert',
+        description: 'Remove a tariff change alert by ID.',
+        operationId: 'deleteAlert',
+        tags: ['Monitoring'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'query',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+            description: 'Alert ID',
+          },
+        ],
+        responses: {
+          '200': { description: 'Alert deleted successfully' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '404': { $ref: '#/components/responses/NotFound' },
+        },
+      },
+    },
+    '/agent': {
+      post: {
+        summary: 'AI Agent Tool Call',
+        description: 'Execute POTAL calculation and lookup functions via AI agent tools. Used by ChatGPT, Claude, Gemini integrations for seamless duty lookups.',
+        operationId: 'agentToolCall',
+        tags: ['AI Integration'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  tool: { type: 'string', enum: ['calculate_cost', 'lookup_duty_rate', 'classify', 'check_restrictions'] },
+                  params: { type: 'object' },
+                },
+                required: ['tool', 'params'],
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Tool execution result' },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/checkout': {
+      post: {
+        summary: 'Create DDP checkout session',
+        description: 'Initiate a Stripe checkout session with DDP (Delivered Duty Paid) pricing. Includes landed cost, duty, VAT, and processing fees.',
+        operationId: 'createCheckout',
+        tags: ['Checkout'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['price', 'destinationCountry'],
+                properties: {
+                  price: { type: 'number' },
+                  shippingPrice: { type: 'number', default: 0 },
+                  destinationCountry: { type: 'string' },
+                  successUrl: { type: 'string', format: 'uri' },
+                  cancelUrl: { type: 'string', format: 'uri' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Checkout session created',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'object',
+                          properties: {
+                            sessionId: { type: 'string' },
+                            url: { type: 'string' },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          '400': { $ref: '#/components/responses/BadRequest' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/sellers/me': {
+      get: {
+        summary: 'Get authenticated seller profile',
+        description: 'Retrieve current seller information and plan details.',
+        operationId: 'getSellerProfile',
+        tags: ['Account'],
+        responses: {
+          '200': { description: 'Seller profile' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/sellers/register': {
+      post: {
+        summary: 'Register new seller',
+        description: 'Create a new seller account. Returns API keys.',
+        operationId: 'registerSeller',
+        tags: ['Account'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['email', 'password', 'storeName'],
+                properties: {
+                  email: { type: 'string', format: 'email' },
+                  password: { type: 'string', minLength: 8 },
+                  storeName: { type: 'string', maxLength: 200 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: 'Seller registered successfully' },
+          '400': { $ref: '#/components/responses/BadRequest' },
         },
       },
     },
     '/sellers/usage': {
       get: {
         summary: 'Get usage statistics',
-        description: 'Get monthly API usage statistics for the authenticated seller.',
+        description: 'Get monthly API usage statistics for the authenticated seller, broken down by endpoint and status code.',
         operationId: 'getUsage',
         tags: ['Account'],
         parameters: [
@@ -238,8 +676,106 @@ export const openApiSpec = {
           },
         ],
         responses: {
-          '200': { description: 'Usage statistics' },
+          '200': {
+            description: 'Usage statistics',
+            content: {
+              'application/json': {
+                schema: {
+                  allOf: [
+                    { $ref: '#/components/schemas/SuccessResponse' },
+                    {
+                      type: 'object',
+                      properties: {
+                        data: {
+                          type: 'object',
+                          properties: {
+                            month: { type: 'string' },
+                            totalCalls: { type: 'integer' },
+                            callsByEndpoint: { type: 'object', additionalProperties: { type: 'integer' } },
+                            successRate: { type: 'number' },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
           '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/sellers/analytics': {
+      get: {
+        summary: 'Get seller analytics',
+        description: 'Get detailed analytics on product classifications, duty calculations, and customer demographics.',
+        operationId: 'getAnalytics',
+        tags: ['Account'],
+        parameters: [
+          {
+            name: 'from',
+            in: 'query',
+            schema: { type: 'string', format: 'date', example: '2026-01-01' },
+            description: 'Start date for analytics period',
+          },
+          {
+            name: 'to',
+            in: 'query',
+            schema: { type: 'string', format: 'date', example: '2026-03-08' },
+            description: 'End date for analytics period',
+          },
+        ],
+        responses: {
+          '200': { description: 'Analytics data' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/admin/update-tariffs': {
+      post: {
+        summary: 'Trigger tariff update (admin only)',
+        description: 'Manually trigger tariff rate updates from 7 government sources (USITC, UK, EU, Canada, Australia, Japan, Korea). Requires admin API key.',
+        operationId: 'updateTariffs',
+        tags: ['Admin'],
+        responses: {
+          '200': { description: 'Tariff update initiated' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+          '403': { $ref: '#/components/responses/Forbidden' },
+        },
+      },
+      get: {
+        summary: 'Get tariff update status (Vercel Cron)',
+        description: 'Vercel Cron job endpoint. Runs automatically every Monday 06:00 UTC. Requires CRON_SECRET.',
+        operationId: 'getTariffUpdateStatus',
+        tags: ['Admin'],
+        responses: {
+          '200': { description: 'Tariff update completed' },
+          '401': { $ref: '#/components/responses/Unauthorized' },
+        },
+      },
+    },
+    '/health': {
+      get: {
+        summary: 'Health check',
+        description: 'Verify API and database connectivity.',
+        operationId: 'healthCheck',
+        tags: ['System'],
+        responses: {
+          '200': {
+            description: 'System healthy',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    status: { type: 'string', enum: ['ok'] },
+                    timestamp: { type: 'string', format: 'date-time' },
+                  },
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -300,6 +836,55 @@ export const openApiSpec = {
           label: { type: 'string' },
           amount: { type: 'number' },
           note: { type: 'string' },
+        },
+      },
+      TradeParty: {
+        type: 'object',
+        required: ['name', 'country'],
+        properties: {
+          name: { type: 'string', maxLength: 500 },
+          country: { type: 'string', minLength: 2, maxLength: 2, example: 'US' },
+          address: { type: 'string', maxLength: 500 },
+          city: { type: 'string', maxLength: 100 },
+          state: { type: 'string', maxLength: 100 },
+          postalCode: { type: 'string', maxLength: 20 },
+          phone: { type: 'string', maxLength: 30 },
+          email: { type: 'string', format: 'email', maxLength: 200 },
+          taxId: { type: 'string', maxLength: 50 },
+        },
+      },
+      LineItem: {
+        type: 'object',
+        required: ['description', 'quantity', 'unitPrice'],
+        properties: {
+          description: { type: 'string', maxLength: 500 },
+          quantity: { type: 'number', minimum: 0.001 },
+          unitPrice: { type: 'number', minimum: 0 },
+          hsCode: { type: 'string', maxLength: 10 },
+          countryOfOrigin: { type: 'string', minLength: 2, maxLength: 2 },
+          weightKg: { type: 'number', minimum: 0 },
+          category: { type: 'string', maxLength: 200 },
+          dimensionsCm: {
+            type: 'object',
+            properties: {
+              length: { type: 'number' },
+              width: { type: 'number' },
+              height: { type: 'number' },
+            },
+          },
+        },
+      },
+      AlertItem: {
+        type: 'object',
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          hsCode: { type: 'string' },
+          destinationCountry: { type: 'string' },
+          currentRate: { type: 'number', nullable: true },
+          webhookUrl: { type: 'string', format: 'uri', nullable: true },
+          emailNotification: { type: 'boolean' },
+          createdAt: { type: 'string', format: 'date-time' },
+          lastTriggeredAt: { type: 'string', format: 'date-time', nullable: true },
         },
       },
       BatchRequest: {

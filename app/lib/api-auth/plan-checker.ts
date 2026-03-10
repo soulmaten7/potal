@@ -13,11 +13,12 @@ interface PlanLimits {
   };
 }
 
-// Plan limits (mirrors PLAN_CONFIG in lemonsqueezy.ts — cached here to avoid DB call every request)
+// Plan limits — 신 요금제 (세션 28 확정, 세션 36 코드 반영)
+// Free $0/100건, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
 const PLAN_LIMITS: PlanLimits = {
-  free: { maxCalculationsMonthly: 500 },
-  starter: { maxCalculationsMonthly: 5000 },
-  growth: { maxCalculationsMonthly: 25000 },
+  free: { maxCalculationsMonthly: 100 },
+  basic: { maxCalculationsMonthly: 2000 },
+  pro: { maxCalculationsMonthly: 10000 },
   enterprise: { maxCalculationsMonthly: -1 }, // unlimited
 };
 
@@ -35,7 +36,7 @@ export async function checkPlanLimits(
   sellerId: string,
   planId: string
 ): Promise<PlanCheckResult> {
-  const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.starter;
+  const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
 
   // Unlimited plan — always allowed
   if (limits.maxCalculationsMonthly === -1) {

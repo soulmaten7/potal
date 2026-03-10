@@ -49,3 +49,20 @@ next-env.d.ts
 repomix-output.xml
 mcp-server/node_modules/
 mcp-server/build/
+
+# logs
+wdc_download.log
+*.log
+!.env.example
+
+# python cache
+__pycache__/
+*.pyc
+
+# Large data files (already in Supabase DB)
+data/itc_macmap/
+data/tariff-research/*.csv
+data/wits_tariffline/
+supabase/migrations/007_wits_duty_rates.sql
+supabase/migrations/008_merged_duty_rates.sql
+supabase/migrations/009_macmap_ntlc_rates.sql

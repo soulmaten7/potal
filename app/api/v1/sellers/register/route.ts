@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         company_name: companyName || null,
         website: website || null,
         platform: platform || null,
-        plan_id: 'starter',
+        plan_id: 'free',
         subscription_status: 'active',
       })
       .select('id')
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
         message: 'Seller account created successfully.',
         sellerId,
         email,
-        plan: 'starter',
+        plan: 'free',
         keys: {
           publishable: {
             fullKey: publishableKey.fullKey,

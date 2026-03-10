@@ -1,0 +1,84 @@
+{
+  "country": "Egypt",
+  "country_code": "EG",
+  "tariff_system": "Egyptian Tariff Schedule",
+  "system_type": "Extended HS Nomenclature",
+  "code_digits": "Up to 12",
+  "hs_base_digits": 6,
+  "maximum_extension_digits": 6,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Egypt uses tariff codes with up to 12 digits (HS 6-digit base with 6 additional Egyptian-specific digits). Tariff information available through Federation of Egyptian Industries (FEI).",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 8,000+ codes",
+    "official_source": "FEI (Federation of Egyptian Industries)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["Web interface", "Database search"]
+  },
+  "sources": [
+    {
+      "name": "FEI Tariff Search",
+      "url": "http://www.fei.org.eg/tariff/tariff.php/",
+      "type": "Official Database",
+      "description": "Federation of Egyptian Industries tariff search system. Accepts HS codes from 2-12 digits.",
+      "features": [
+        "Search tariff codes",
+        "Download tariff documents",
+        "HS code validation (2-12 digit range)"
+      ]
+    },
+    {
+      "name": "Egypt Tariff Schedule - World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/EGY",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Egyptian schedules"
+    },
+    {
+      "name": "Egypt ERA HS Code Portal",
+      "url": "http://www.egyptera.org/en/Code.aspx",
+      "type": "Government Portal",
+      "description": "Egypt Economic Development Authority HS code information"
+    },
+    {
+      "name": "QIZ HS Code Query System",
+      "url": "http://www.qizegypt.gov.eg/Page/HS_Code",
+      "type": "Special Economic Zone",
+      "description": "Qualified Industrial Zones HS code query tool"
+    },
+    {
+      "name": "US Trade.gov - Egypt Import Tariffs",
+      "url": "https://www.trade.gov/country-commercial-guides/egypt-import-tariffs",
+      "type": "International Reference",
+      "description": "Summary of Egyptian tariff information"
+    },
+    {
+      "name": "FedEx Egypt - HS Code Information",
+      "url": "https://www.fedex.com/en-eg/small-business/getting-started/customs-101-hs-code.html",
+      "type": "Logistics Reference",
+      "description": "Guide to HS codes for Egyptian shipping"
+    },
+    {
+      "name": "WTO - Egypt Tariff Profile",
+      "url": "https://www.wto.org/english/tratop_e/tariffs_e/tariff_data_e.htm",
+      "type": "International Database",
+      "description": "WTO member tariff information for Egypt"
+    }
+  ],
+  "code_structure": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_12": "Egyptian-specific classification extensions",
+    "search_range": "Minimum 2 digits, maximum 12 digits"
+  },
+  "tariff_rates": {
+    "access": "Via FEI tariff search system",
+    "scope": "All goods imported into Egypt"
+  },
+  "data_collection_status": "PENDING",
+  "next_steps": [
+    "Access FEI tariff search at http://www.fei.org.eg/tariff/",
+    "Compile complete 12-digit tariff code database",
+    "Extract duty rates for all codes",
+    "Cross-reference with World Bank WITS for validation"
+  ],
+  "notes": "FEI is primary source for Egyptian tariff information. System accepts variable-length codes (2-12 digits). May require iteration through all possible codes to create comprehensive database. Alternative access through Egypt Economic Development Authority and QIZ portals."
+}

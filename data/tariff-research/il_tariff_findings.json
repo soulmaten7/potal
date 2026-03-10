@@ -1,0 +1,148 @@
+{
+  "country": "Israel",
+  "tariff_system": "Israeli Customs Tariff",
+  "code_structure": {
+    "total_digits": 8,
+    "digit_breakdown": {
+      "1-2": "HS Chapter",
+      "3-4": "HS Heading",
+      "5-6": "HS Sub-Heading",
+      "7-8": "National Sub-classification"
+    },
+    "base_system": "Harmonized System (HS)",
+    "hs_edition": "Based on international HS standards"
+  },
+  "code_count": {
+    "total_items": "12,000+",
+    "description": "Over 12,000 tariff items in the official Israeli customs tariff book"
+  },
+  "official_sources": {
+    "primary": {
+      "israel_customs_authority": {
+        "name": "Israel Tax Authority - Customs Division",
+        "website": "https://shaarolami-query.customs.mof.gov.il/",
+        "official_portal": "Sha'ar Olami (International Gateway)",
+        "services": [
+          "Online customs tariff book",
+          "Tariff file downloads",
+          "HS code queries"
+        ]
+      },
+      "customs_tariff_files": {
+        "name": "Customs Tariff Files Portal",
+        "website": "https://shaarolami-query.customs.mof.gov.il/CustomspilotWeb/en/CustomsBook/Home/LinkReports",
+        "description": "Downloadable tariff files organized by sections",
+        "organization": "Sections I through XXII"
+      },
+      "customs_book_online": {
+        "name": "Customs Book (Online Interface)",
+        "website": "https://shaarolami-query.customs.mof.gov.il/CustomspilotWeb/en/CustomsBook/Import/CustomsTaarifEntry",
+        "description": "Interactive customs tariff classification tool"
+      }
+    },
+    "secondary": {
+      "world_bank_wits": {
+        "name": "World Bank - WITS (World Integrated Trade Solution)",
+        "website": "https://wits.worldbank.org/tariff/trains/en/country/ISR",
+        "description": "Israel Tariff Schedule database"
+      },
+      "wto_tariff_profiles": {
+        "name": "WTO Tariff Profiles",
+        "website": "https://www.wto.org/english/res_e/statis_e/daily_update_e/tariff_profiles/il_e.pdf",
+        "document": "Israel Part A.1 Tariffs and imports summary"
+      },
+      "us_trade_gov": {
+        "name": "US Department of Commerce Trade.gov",
+        "website": "https://www.trade.gov/country-commercial-guides/israel-import-tariffs",
+        "description": "Israel import tariff guide for traders"
+      }
+    }
+  },
+  "data_included_in_tariff_book": [
+    "8-digit HS codes",
+    "Product classifications",
+    "Customs duty rates",
+    "Purchase tax rates",
+    "Import regulations",
+    "Exemptions and discounts"
+  ],
+  "download_capabilities": {
+    "organized_by": "Product sections (I-XXII covering all commodity categories)",
+    "format": "Downloadable files (format not fully specified, likely PDF)",
+    "accessibility": "Free download from official portal",
+    "scope": "Complete tariff book in sections"
+  },
+  "commodity_sections_covered": {
+    "section_1_5": "Animal Products",
+    "section_6_15": "Vegetable Products",
+    "section_16_21": "Foodstuffs, Beverages, Tobacco",
+    "section_22_24": "Mineral Products",
+    "section_25_27": "Chemicals, Minerals",
+    "section_28_38": "Chemical and Mineral Industries",
+    "section_39_40": "Plastics and Rubber",
+    "section_41_43": "Hides and Skins",
+    "section_44_49": "Wood and Paper Products",
+    "section_50_60": "Textiles",
+    "section_61_67": "Textiles and Footwear",
+    "section_68_71": "Stone, Glass, Ceramics",
+    "section_72_83": "Metals and Metal Products",
+    "section_84_85": "Machinery and Electrical Equipment",
+    "section_86_89": "Transportation Equipment",
+    "section_90_97": "Optical, Medical, Musical Instruments",
+    "section_98": "Miscellaneous"
+  },
+  "key_features": {
+    "tariff_item_information": [
+      "Harmonized System (HS) code classification",
+      "Hebrew and English descriptions",
+      "Applicable duty rates",
+      "Purchase tax rates",
+      "Special provisions and exemptions"
+    ]
+  },
+  "access_methods": {
+    "method_1": {
+      "name": "Online Tariff Search",
+      "source": "Sha'ar Olami portal",
+      "description": "Search for specific HS codes or product descriptions",
+      "accessibility": "Free, real-time access"
+    },
+    "method_2": {
+      "name": "Section-by-Section Downloads",
+      "source": "Customs tariff files portal",
+      "description": "Download complete sections of the tariff book",
+      "accessibility": "Free download"
+    },
+    "method_3": {
+      "name": "World Bank WITS",
+      "source": "https://wits.worldbank.org/",
+      "description": "Standardized international tariff database",
+      "accessibility": "Free access"
+    }
+  },
+  "important_notes": [
+    "Israel uses 8-digit HS codes (not 12-digit like GCC members)",
+    "Tariff book contains over 12,000 individual items",
+    "Both Hebrew and English versions available",
+    "Duty rates subject to bilateral trade agreements",
+    "Exemptions available for certain products and origins",
+    "Frequently updated throughout the year",
+    "Purchase tax (VAT) information included in tariff documentation"
+  ],
+  "limitations": [
+    "Web portal may have limited bulk download capabilities",
+    "Complete database export may require direct contact with customs authority",
+    "Some advanced features may require registration",
+    "Updates are ongoing; version control important for compliance",
+    "Exact current file format and size not specified in available sources"
+  ],
+  "bilateral_agreements_note": "Israel has bilateral trade agreements affecting duty rates; check ICP website for latest agreements and exemptions",
+  "research_date": "March 2026",
+  "sources": [
+    "https://shaarolami-query.customs.mof.gov.il/",
+    "https://shaarolami-query.customs.mof.gov.il/CustomspilotWeb/en/CustomsBook/Home/LinkReports",
+    "https://wits.worldbank.org/tariff/trains/en/country/ISR",
+    "https://www.wto.org/english/res_e/statis_e/daily_update_e/tariff_profiles/il_e.pdf",
+    "https://www.trade.gov/country-commercial-guides/israel-import-tariffs"
+  ]
+}

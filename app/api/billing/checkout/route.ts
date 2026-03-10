@@ -1,18 +1,26 @@
 /**
  * POTAL Billing — POST /api/billing/checkout
  *
- * Creates a LemonSqueezy Checkout session for plan upgrade.
+ * Creates a Paddle Checkout session (transaction) for plan upgrade.
  * Requires Supabase auth token (Bearer).
  *
- * Body: { planId: "starter" | "growth" | "enterprise" }
+ * Body: { planId: "basic" | "pro" | "enterprise", billingCycle?: "monthly" | "annual" }
  *
- * Returns: { url: "https://potal.lemonsqueezy.com/checkout/..." }
+ * Returns: { url: "https://checkout.paddle.com/..." }
+ *
+ * Paddle Checkout 방식:
+ * - Paddle.js overlay (프론트엔드) 또는
+ * - Transaction API → checkout URL (백엔드, 여기서 사용)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createCheckout } from '@lemonsqueezy/lemonsqueezy.js';
-import { initLemonSqueezy, PLAN_CONFIG, getStoreId, type PlanId } from '@/app/lib/billing/lemonsqueezy';
+import {
+  PLAN_CONFIG,
+  getPaddleHeaders,
+  getPaddleBaseUrl,
+  type PlanId,
+} from '@/app/lib/billing/paddle';
 
 function getServiceClient() {
   return createClient(
@@ -49,15 +57,18 @@ export async function POST(req: NextRequest) {
 
     if (!planId || !PLAN_CONFIG[planId]) {
       return NextResponse.json(
-        { success: false, error: 'Invalid plan ID. Must be: starter, growth, or enterprise' },
+        { success: false, error: 'Invalid plan ID. Must be: basic, pro, or enterprise' },
         { status: 400 }
       );
     }
 
+    const billingCycle = (body.billingCycle as string) || 'monthly';
     const plan = PLAN_CONFIG[planId];
-    if (!plan.variantId) {
+    const priceId = billingCycle === 'annual' ? plan.paddlePriceIdAnnual : plan.paddlePriceIdMonthly;
+
+    if (!priceId) {
       return NextResponse.json(
-        { success: false, error: 'This plan does not require payment (free or custom)' },
+        { success: false, error: 'This plan does not require payment (free) or is not configured yet' },
         { status: 400 }
       );
     }
@@ -75,43 +86,54 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Initialize LemonSqueezy
-    initLemonSqueezy();
-    const storeId = getStoreId();
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://potal-x1vl.vercel.app';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.potal.app';
 
-    // Create LemonSqueezy Checkout
-    const { data: checkout, error: checkoutError } = await createCheckout(storeId, plan.variantId, {
-      checkoutData: {
-        email: seller.contact_email,
-        name: seller.company_name || seller.contact_email,
-        custom: {
+    // Create Paddle Transaction (generates checkout URL)
+    const res = await fetch(`${getPaddleBaseUrl()}/transactions`, {
+      method: 'POST',
+      headers: getPaddleHeaders(),
+      body: JSON.stringify({
+        items: [
+          {
+            price_id: priceId,
+            quantity: 1,
+          },
+        ],
+        customer_email: seller.contact_email,
+        custom_data: {
           potal_seller_id: seller.id,
           potal_plan_id: planId,
+          potal_billing_cycle: billingCycle,
         },
-      },
-      productOptions: {
-        redirectUrl: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
-        receiptButtonText: 'Go to POTAL Dashboard',
-        receiptLinkUrl: `${baseUrl}/dashboard`,
-      },
-      checkoutOptions: {
-        embed: false,
-      },
+        checkout: {
+          url: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
+        },
+      }),
     });
 
-    if (checkoutError || !checkout) {
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
       return NextResponse.json(
-        { success: false, error: `Failed to create checkout: ${checkoutError?.message || 'Unknown error'}` },
+        { success: false, error: `Failed to create checkout: ${JSON.stringify(err)}` },
+        { status: 500 }
+      );
+    }
+
+    const transaction = await res.json();
+    const checkoutUrl = transaction.data?.checkout?.url;
+
+    if (!checkoutUrl) {
+      return NextResponse.json(
+        { success: false, error: 'Checkout URL not returned from Paddle' },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      data: { url: checkout.data.attributes.url },
+      data: { url: checkoutUrl },
     });
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { success: false, error: 'Failed to create checkout session' },
       { status: 500 }

@@ -1,0 +1,238 @@
+{
+  "metadata": {
+    "title": "GCC Integrated Customs Tariff Data - Research Findings",
+    "date_generated": "2026-03-07",
+    "scope": "GCC member states customs tariff information",
+    "research_status": "Completed - Web search and portal validation"
+  },
+  "executive_summary": {
+    "overview": "In December 2024, the GCC Customs Union Authority issued the first edition of the GCC Integrated Customs Tariff to be implemented from January 1, 2025, by all GCC member states. The system expanded from 8-digit to 12-digit tariff codes, increasing tariff lines from 7,800 to over 13,400 lines.",
+    "member_states": [
+      "Bahrain",
+      "Kuwait",
+      "Oman",
+      "Qatar",
+      "Saudi Arabia",
+      "United Arab Emirates"
+    ],
+    "implementation_date": "2025-01-01",
+    "tariff_code_expansion": {
+      "previous_system": "7,800 tariff lines (8-digit codes)",
+      "new_system": "13,400+ tariff lines (12-digit codes)",
+      "increase_percentage": "72%+ increase"
+    }
+  },
+  "tariff_code_structure": {
+    "description": "The 12-digit GCC Integrated Customs Tariff structure",
+    "digit_breakdown": {
+      "digits_1_2": "HS Chapter (International classification)",
+      "digits_3_4": "HS Heading (International classification)",
+      "digits_5_6": "HS Sub-Heading (International classification)",
+      "digits_7_8": "GCC Local Classification (Regional extension)",
+      "digits_9_12": "National/Detailed Classification (Country-specific)"
+    },
+    "basis": "Based on the 2022 edition of the Harmonized System for Description and Classification (HS) developed by the World Customs Organization"
+  },
+  "member_state_status": {
+    "bahrain": {
+      "status": "Implementation announced",
+      "implementation_date": "2025-01-01",
+      "tariff_access": "Bahrain Customs portal (customs.gov.bh)",
+      "features": "HS Code search and tariff finder available",
+      "notes": "Updates may have been pending as of February 2025"
+    },
+    "kuwait": {
+      "status": "Published and implemented",
+      "implementation_date": "2025-01-01",
+      "tariff_access": "Kuwait Customs Authority official portal",
+      "standard_duty_rate": "5% on CIF value for most goods",
+      "preferential_rate": "0% for food products, medicines, fresh plants/animals, gold, essential consumer goods, and printing materials",
+      "notes": "Kuwait is one of the three member states that have officially published the 12-digit tariff schedule"
+    },
+    "oman": {
+      "status": "Published and implemented",
+      "implementation_date": "2025-01-01",
+      "tariff_access": "Directorate General of Customs (customs.gov.om)",
+      "special_notes": "Digital tax stamps on imported beverages effective 2025-02-01",
+      "notes": "Oman was among the first to publish the 12-digit tariff schedule"
+    },
+    "qatar": {
+      "status": "Published and implemented",
+      "implementation_date": "2025-01-01",
+      "tariff_access": "Qatar Customs Single Window (ecustoms.gov.qa)",
+      "hs_code_search_portal": "https://www.ecustoms.gov.qa/qccsw/jsf/tariff/EXPublicHSCodeSearch.jsf",
+      "notes": "Qatar was among the first to publish the 12-digit tariff schedule"
+    },
+    "saudi_arabia": {
+      "status": "Implementation in progress",
+      "implementation_date": "2025-01-01",
+      "tariff_access": "ZATCA - Zakat, Tax and Customs Authority",
+      "tariff_search_portal": "https://eservices.zatca.gov.sa/sites/sc/en/tariff/Pages/TariffPages/TariffSearch.aspx",
+      "national_platform": "https://my.gov.sa/en/services/19166",
+      "user_manual": "https://zatca.gov.sa/en/eServices/Documents/IntegratedTariffs_EN.pdf",
+      "notes": "Saudi Arabia previously used a 12-digit system, now transitioning to GCC Integrated format"
+    },
+    "uae_emirates": {
+      "status": "Phased implementation",
+      "initial_implementation": "2025-01-01",
+      "uae_full_implementation": "2025-08-01",
+      "tariff_access_dubai": "Dubai Customs (dubaicustoms.gov.ae)",
+      "tariff_access_federal": "ICP - Federal Authority for Identity, Citizenship, Customs & Ports Security (icp.gov.ae)",
+      "central_tariff_system": "Central Customs Tariff System launched 2025-04-01",
+      "hs_code_search": "https://www.dubaicustoms.gov.ae/en/eServices/Pages/HScodesearch.aspx",
+      "integrated_tariff_page": "https://www.dubaicustoms.gov.ae/en/CustomsInformation/Pages/IntegratedCustomsTariff.aspx",
+      "notes": "Dubai initially implemented on Jan 1, 2025; full UAE implementation on Aug 1, 2025"
+    }
+  },
+  "data_access_resources": {
+    "official_portals": {
+      "dubai_customs": {
+        "url": "https://www.dubaicustoms.gov.ae/",
+        "hs_code_search": "https://www.dubaicustoms.gov.ae/en/eServices/Pages/HScodesearch.aspx",
+        "tariff_search": "https://www.dubaicustoms.gov.ae/en/TradeInformation/Pages/TariffSearch.aspx",
+        "integrated_tariff": "https://www.dubaicustoms.gov.ae/en/CustomsInformation/Pages/IntegratedCustomsTariff.aspx",
+        "documents": "Integrated Customs Tariff v4.0 PDF available"
+      },
+      "uae_icp": {
+        "url": "https://icp.gov.ae/",
+        "central_tariff_system": "https://icp.gov.ae/en/central-customs-tariff-system/",
+        "main_customs": "https://icp.gov.ae/en/uae-customs-en/"
+      },
+      "saudi_zatca": {
+        "url": "https://zatca.gov.sa/",
+        "tariff_search": "https://eservices.zatca.gov.sa/sites/sc/en/tariff/Pages/TariffPages/TariffSearch.aspx",
+        "integrated_tariff": "https://zatca.gov.sa/en/RulesRegulations/Taxes/Pages/Integrated-Tarrifs.aspx",
+        "national_platform": "https://my.gov.sa/en/services/19166",
+        "user_manual": "https://zatca.gov.sa/en/eServices/Documents/IntegratedTariffs_EN.pdf"
+      },
+      "bahrain_customs": {
+        "url": "https://www.bahraincustoms.gov.bh/",
+        "tariff_finder": "https://www.customs.gov.bh/en/tariff-finder",
+        "hs_code_browse": "https://www.bahraincustoms.gov.bh/en/hscode-browse-list"
+      },
+      "qatar_customs": {
+        "url": "https://www.customs.gov.qa/",
+        "clearance_window": "https://www.ecustoms.gov.qa/qccsw/jsf/tariff/EXPublicHSCodeSearch.jsf"
+      },
+      "kuwait_customs": {
+        "url": "https://www.customs.gov.kw/",
+        "notes": "Official portal for tariff information"
+      },
+      "oman_customs": {
+        "url": "https://www.customs.gov.om/",
+        "user_guides": "https://www.customs.gov.om/en/user-guides/"
+      }
+    },
+    "wto_resources": {
+      "description": "World Customs Organization HS Code database",
+      "harmonized_system": "HS 2022 Edition used as basis for GCC Integrated Tariff"
+    }
+  },
+  "document_availability": {
+    "available_documents": [
+      {
+        "title": "Dubai Customs Transition from 8-digit to 12-digit HS Code",
+        "format": "PDF",
+        "url": "https://www.dubaicustoms.gov.ae/en/PoliciesAndNotices/Documents/IntegratedCustomsTariffv4.pdf",
+        "pages": 27,
+        "language": "English",
+        "status": "Available"
+      },
+      {
+        "title": "Saudi ZATCA Integrated Tariffs User Manual",
+        "format": "PDF",
+        "url": "https://zatca.gov.sa/en/eServices/Documents/IntegratedTariffs_EN.pdf",
+        "language": "English",
+        "status": "Available"
+      },
+      {
+        "title": "FedEx Change in HS Code GCC Countries",
+        "format": "PDF",
+        "url": "https://www.fedex.com/content/dam/fedex/us-united-states/International/upload/Change_in_HS_Code_in_Select_GCC_Countries_from_8_Digits_to_12_Digits_Beginning_January_1_2025.pdf",
+        "status": "Available"
+      }
+    ],
+    "professional_resources": [
+      {
+        "title": "KPMG - GCC countries implement the GCC Integrated Customs Tariff",
+        "format": "PDF Report",
+        "url": "https://assets.kpmg.com/content/dam/kpmgsites/ae/pdf/gulf-cooperation-council-countries-implement-the-gcc-integrated-customs.pdf.coredownload.inline.pdf",
+        "provider": "KPMG"
+      },
+      {
+        "title": "KPMG - Tax Alert GCC Integrated Customs Tariff",
+        "url": "https://kpmg.com/sa/en/insights/tax-insights/tax-alert-gcc-countries-implement-the-gcc-integrated-customs-tariff.html",
+        "provider": "KPMG"
+      },
+      {
+        "title": "PwC - UAE Customs International Trade: 12-digit Integrated Tariff",
+        "url": "https://www.pwc.com/m1/en/services/tax/me-tax-legal-news/2025/uae-customs-international-trade-dubai-abu-dhabi-announce-implementation-of-12-digit-tariff.html",
+        "provider": "PwC"
+      },
+      {
+        "title": "Kuehne+Nagel - All you need to know about the UAE 12-digit Integrated Customs Tariff",
+        "url": "https://www.kuehne-nagel.com/market-insights/customs-clearance/uae-12-digit-integrated-customs-tarif",
+        "provider": "Kuehne+Nagel"
+      },
+      {
+        "title": "JK Management - GCC Integrated Customs Tariff 2025 For Traders & Investors",
+        "url": "https://jkmanagement.ae/gcc-integrated-customs-tariff-2025/",
+        "provider": "JK Management"
+      },
+      {
+        "title": "Deloitte - Harmonization of the GCC Unified Customs Tariff",
+        "url": "https://www.deloitte.com/middle-east/en/events/2025/harmonization-of-the-gcc-unified-customs-tariff-shift-to-12-digit-codes.html",
+        "provider": "Deloitte"
+      },
+      {
+        "title": "U.S. Trade.gov - United Arab Emirates Import Tariffs",
+        "url": "https://www.trade.gov/country-commercial-guides/united-arab-emirates-import-tariffs",
+        "provider": "U.S. Government"
+      }
+    ]
+  },
+  "key_findings": {
+    "successful_implementations": [
+      "Qatar has officially published and implemented the 12-digit tariff schedule as of January 1, 2025",
+      "Kuwait has officially published and implemented the 12-digit tariff schedule as of January 1, 2025",
+      "Oman has officially published and implemented the 12-digit tariff schedule as of January 1, 2025",
+      "Saudi Arabia transitioned to the GCC Integrated format on January 1, 2025"
+    ],
+    "pending_implementations": [
+      "Bahrain implementation announced; full rollout status pending as of February 2025",
+      "UAE phased implementation - Dubai on January 1, 2025; full UAE on August 1, 2025"
+    ],
+    "data_access_methods": [
+      "Official customs authority portals with HS code search functionality",
+      "Tariff finder/search tools on each country's customs website",
+      "PDF documents and user manuals available for download",
+      "Online inquiry systems for duty rates and classifications"
+    ],
+    "challenges_encountered": [
+      "Direct Excel/bulk download files not readily available through public search",
+      "Most systems require manual searching through web interfaces",
+      "Some PDFs are binary-encoded and require specialized extraction",
+      "Implementation timelines vary by member state"
+    ]
+  },
+  "notes_and_recommendations": {
+    "data_collection_strategy": [
+      "Access each country's customs authority portal directly for the most current tariff data",
+      "Use the HS code search interfaces for lookups and bulk data collection",
+      "Contact customs authorities directly for bulk export options (Excel/CSV)",
+      "Check for API access or data export features on official portals"
+    ],
+    "important_dates": {
+      "gcc_announcement": "December 2024",
+      "general_implementation": "2025-01-01",
+      "uae_full_implementation": "2025-08-01",
+      "oman_beverage_tax": "2025-02-01"
+    },
+    "next_steps": [
+      "Verify current availability of bulk Excel exports from each customs authority",
+      "Document any API endpoints or data export capabilities",
+      "Create standardized mapping between member state codes and international HS codes",
+      "Track any additional implementation notices or amendments from GCC Customs Union Authority"
+    ]
+  }
+}

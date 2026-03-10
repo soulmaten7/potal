@@ -4,20 +4,16 @@
  * Handles subscription lifecycle:
  *   trialing → active → past_due → canceled
  *
- * Syncs LemonSqueezy subscription status to Supabase sellers table.
- * (Migrated from Stripe — 세션 26, Stripe 계정 정지)
+ * Syncs Paddle subscription status to Supabase sellers table.
+ * (Stripe → LemonSqueezy(세션 26) → Paddle(세션 36))
  */
 
 import { createClient } from '@supabase/supabase-js';
 import {
-  initLemonSqueezy,
+  getPaddleHeaders,
+  getPaddleBaseUrl,
   type PlanId,
-} from './lemonsqueezy';
-import {
-  createCustomer,
-  cancelSubscription as lsCancelSubscription,
-  updateSubscription as lsUpdateSubscription,
-} from '@lemonsqueezy/lemonsqueezy.js';
+} from './paddle';
 
 function getServiceClient() {
   return createClient(
@@ -27,39 +23,27 @@ function getServiceClient() {
 }
 
 /**
- * Map LemonSqueezy subscription status to POTAL subscription status
+ * Map Paddle subscription status to POTAL subscription status
  *
- * LS statuses: on_trial, active, paused, past_due, unpaid, cancelled, expired
+ * Paddle statuses: trialing, active, past_due, paused, canceled
  */
-export function mapLSStatus(
-  lsStatus: string
+export function mapPaddleStatus(
+  paddleStatus: string
 ): 'trialing' | 'active' | 'past_due' | 'canceled' | 'inactive' {
-  switch (lsStatus) {
-    case 'on_trial':
+  switch (paddleStatus) {
+    case 'trialing':
       return 'trialing';
     case 'active':
       return 'active';
     case 'paused':
       return 'active'; // Treat paused as active (keeps access until period end)
     case 'past_due':
-    case 'unpaid':
       return 'past_due';
-    case 'cancelled':
-    case 'expired':
+    case 'canceled':
       return 'canceled';
     default:
       return 'inactive';
   }
-}
-
-/**
- * Map LemonSqueezy Variant ID to POTAL Plan ID
- */
-export function mapVariantToPlan(variantId: string): PlanId {
-  if (variantId === process.env.LEMONSQUEEZY_VARIANT_STARTER) return 'starter';
-  if (variantId === process.env.LEMONSQUEEZY_VARIANT_GROWTH) return 'growth';
-  if (variantId === process.env.LEMONSQUEEZY_VARIANT_ENTERPRISE) return 'enterprise';
-  return 'starter'; // Default fallback
 }
 
 /**
@@ -112,71 +96,58 @@ export async function updateSellerSubscription(params: {
 }
 
 /**
- * Create or retrieve LemonSqueezy Customer for a seller
- */
-export async function getOrCreateBillingCustomer(
-  sellerId: string,
-  email: string,
-  companyName?: string
-): Promise<string> {
-  const supabase = getServiceClient();
-  initLemonSqueezy();
-
-  // Check if seller already has a billing customer ID
-  const { data: seller } = await (supabase.from('sellers') as any)
-    .select('billing_customer_id')
-    .eq('id', sellerId)
-    .single();
-
-  if (seller?.billing_customer_id) {
-    return seller.billing_customer_id;
-  }
-
-  // Create new LemonSqueezy customer
-  const storeId = process.env.LEMONSQUEEZY_STORE_ID;
-  if (!storeId) {
-    throw new Error('LEMONSQUEEZY_STORE_ID is not set');
-  }
-
-  const { data: customer, error } = await createCustomer(storeId, {
-    name: companyName || email,
-    email,
-  });
-
-  if (error || !customer) {
-    throw new Error(`Failed to create LemonSqueezy customer: ${error?.message || 'Unknown error'}`);
-  }
-
-  const customerId = customer.data.id;
-
-  // Save customer ID to Supabase
-  await (supabase.from('sellers') as any)
-    .update({ billing_customer_id: customerId })
-    .eq('id', sellerId);
-
-  return customerId;
-}
-
-/**
- * Cancel a subscription (at period end)
+ * Cancel a Paddle subscription (at period end)
  */
 export async function cancelSubscription(subscriptionId: string) {
-  initLemonSqueezy();
-  const { error } = await lsCancelSubscription(subscriptionId);
-  if (error) {
-    throw new Error(`Failed to cancel subscription: ${error.message}`);
+  const res = await fetch(
+    `${getPaddleBaseUrl()}/subscriptions/${subscriptionId}/cancel`,
+    {
+      method: 'POST',
+      headers: getPaddleHeaders(),
+      body: JSON.stringify({ effective_from: 'next_billing_period' }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Failed to cancel subscription: ${JSON.stringify(err)}`);
   }
 }
 
 /**
- * Resume/reactivate a cancelled subscription (if still within billing period)
+ * Pause a Paddle subscription
  */
-export async function reactivateSubscription(subscriptionId: string) {
-  initLemonSqueezy();
-  const { error } = await lsUpdateSubscription(subscriptionId, {
-    cancelled: false,
-  });
-  if (error) {
-    throw new Error(`Failed to reactivate subscription: ${error.message}`);
+export async function pauseSubscription(subscriptionId: string) {
+  const res = await fetch(
+    `${getPaddleBaseUrl()}/subscriptions/${subscriptionId}/pause`,
+    {
+      method: 'POST',
+      headers: getPaddleHeaders(),
+      body: JSON.stringify({ effective_from: 'next_billing_period' }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Failed to pause subscription: ${JSON.stringify(err)}`);
+  }
+}
+
+/**
+ * Resume a paused Paddle subscription
+ */
+export async function resumeSubscription(subscriptionId: string) {
+  const res = await fetch(
+    `${getPaddleBaseUrl()}/subscriptions/${subscriptionId}/resume`,
+    {
+      method: 'POST',
+      headers: getPaddleHeaders(),
+      body: JSON.stringify({ effective_from: 'immediately' }),
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`Failed to resume subscription: ${JSON.stringify(err)}`);
   }
 }

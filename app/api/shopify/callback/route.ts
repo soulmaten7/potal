@@ -14,6 +14,7 @@ import {
   exchangeCodeForToken,
   saveShopToken,
   isValidShopDomain,
+  verifyShopifyHmac,
   getShopifyConfig,
 } from '@/app/lib/shopify/shopify-auth';
 import { cookies } from 'next/headers';
@@ -67,11 +68,6 @@ export async function GET(req: NextRequest) {
 
   // ━━━ 2. 파라미터 검증 ━━━
   if (!shop || !code || !hmac) {
-    console.error('[POTAL Shopify] Missing params:', {
-      shop: !!shop,
-      code: !!code,
-      hmac: !!hmac,
-    });
     return NextResponse.json(
       {
         error: 'Missing required parameters',
@@ -94,8 +90,13 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // ━━━ 3. HMAC 검증 (경고만, 블로킹하지 않음) ━━━
-  // Shopify 새 설치 방식에서는 HMAC 파라미터 구성이 다를 수 있음
+  // ━━━ 3. HMAC 검증 ━━━
+  if (!verifyShopifyHmac(params)) {
+    return NextResponse.json(
+      { error: 'HMAC verification failed' },
+      { status: 401 }
+    );
+  }
 
   // ━━━ 4. Nonce (state) 검증 — CSRF 방지 ━━━
   const cookieStore = await cookies();
@@ -123,9 +124,7 @@ export async function GET(req: NextRequest) {
   // ━━━ 6. DB에 저장 ━━━
   const saved = await saveShopToken(shop, tokenResult.accessToken, tokenResult.scope);
 
-  if (!saved) {
-    console.error(`[POTAL Shopify] Failed to save token for ${shop}`);
-  }
+  // Token save failure is already logged in saveShopToken
 
   // ━━━ 7. POTAL 대시보드로 리다이렉트 ━━━
   const config = getShopifyConfig();

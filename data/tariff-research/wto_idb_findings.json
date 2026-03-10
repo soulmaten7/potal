@@ -1,0 +1,75 @@
+{
+  "wto_idb_research": {
+    "date_generated": "2026-03-07",
+    "objective": "Document available sources for WTO IDB (Integrated Database) tariff-line level data download",
+    "key_findings": {
+      "summary": "WTO IDB data is available through multiple platforms with varying access restrictions. The most accessible option for free tariff-line data is WITS (World Integrated Trade Solution) via World Bank.",
+      "data_detail_level": "Tariff-line level (8-10 digit HS codes) applied duty rates and import statistics",
+      "temporal_coverage": "1996 onwards",
+      "country_coverage": "164+ WTO members and acceding economies"
+    },
+    "primary_sources": [
+      {
+        "name": "WTO Tariff & Trade Data (TTD)",
+        "url": "https://ttd.wto.org/en",
+        "access_level": "Restricted - Login required for IDB downloads",
+        "data_types": ["Applied tariffs", "Preferential tariffs", "Import statistics"],
+        "description": "Official WTO platform providing tariff and trade data for 170+ economies. Currently in beta version.",
+        "download_formats": "HTML, PDF, and raw data downloads available",
+        "tariff_detail": "HS 6-digit level via ADB, tariff-line (8-10 digit) for authorized users",
+        "notes": "IDB data downloads are accessible only to WTO Member governments and authorized international organizations"
+      },
+      {
+        "name": "WTO IDB Download Portal",
+        "url": "https://ttd.wto.org/en/download/idb",
+        "access_level": "Restricted - Login required",
+        "description": "Dedicated IDB download section requiring WTO member credentials",
+        "data_available": "Applied and preferential tariff rates, import statistics at tariff-line level",
+        "coverage": "From 1996 onward, organized by year and economy"
+      },
+      {
+        "name": "WTO Data Portal",
+        "url": "https://data.wto.org/en/dataset/wto_idb",
+        "access_level": "Publicly accessible",
+        "data_formats": ["HTML", "PDF"],
+        "description": "WTO's main data portal with IDB dataset information",
+        "update_frequency": "Monthly updates with new member submissions"
+      },
+      {
+        "name": "Legacy Tariff Download Facility",
+        "url": "https://tariffdata.wto.org/",
+        "access_level": "Legacy system",
+        "status": "Superseded by WTO Tariff & Trade Data (TTD)",
+        "notes": "Available formats were Excel, XML, CSV. Data at HS 6-digit level."
+      }
+    ],
+    "free_alternatives": [
+      {
+        "name": "World Bank WITS",
+        "url": "https://wits.worldbank.org/",
+        "access_level": "FREE - No login required",
+        "data_available": [
+          "MFN Applied tariffs at tariff-line level (8-10 digit HS)",
+          "Preferential tariffs",
+          "Import statistics by country of origin",
+          "Trade data from multiple sources"
+        ],
+        "tariff_line_capability": "Yes - 8-digit and higher HS codes available",
+        "description": "Comprehensive trade database developed by World Bank in collaboration with UNCTAD, ITC, UNSD, and WTO",
+        "coverage": "150+ countries with WTO IDB data",
+        "data_sources": "WTO IDB, CTS, ADB, UN Comtrade, ITC, Trade Data Monitor",
+        "download_methods": [
+          "Web interface downloads",
+          "REST API for programmatic access",
+          "WITS software for advanced analysis"
+        ],
+        "harmonization_note": "Data harmonized across countries at HS 6-digit level; 8-10 digit data available but computed averages use all reported tariffs"
+      }
+    ],
+    "recommended_access": {
+      "best_free_option": "World Bank WITS at https://wits.worldbank.org/",
+      "why": "Free access to WTO IDB data for 150+ countries at HS 6-digit and limited 8-10 digit tariff-line level",
+      "next_step": "For authorized users: WTO TTD at https://ttd.wto.org/en/download/idb for complete 8-10 digit coverage"
+    }
+  }
+}

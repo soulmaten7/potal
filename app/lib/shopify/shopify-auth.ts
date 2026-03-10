@@ -234,6 +234,24 @@ export async function markShopUninstalled(shop: string): Promise<void> {
   }
 }
 
+/**
+ * GDPR: 스토어 데이터 완전 삭제 (shop/redact 웹훅)
+ * shopify_stores 테이블에서 해당 스토어 레코드를 완전 삭제합니다.
+ */
+export async function deleteShopData(shop: string): Promise<void> {
+  const supabase = getSupabase();
+  if (!supabase) return;
+
+  try {
+    await supabase
+      .from('shopify_stores')
+      .delete()
+      .eq('shop_domain', shop);
+  } catch (error) {
+    console.error('[POTAL Shopify] Delete shop data error:', error);
+  }
+}
+
 // ─── Shopify Admin API ──────────────────────────────
 
 /**
@@ -284,7 +302,7 @@ export async function installScriptTag(
         display_scope: 'all',
       },
     });
-    console.log(`[POTAL Shopify] Script tag installed for ${shop}`);
+    // Script tag installed for ${shop}
     return true;
   } catch (error) {
     console.error('[POTAL Shopify] Script tag install error:', error);

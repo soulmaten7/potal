@@ -1,0 +1,84 @@
+{
+  "region": "ASEAN",
+  "collection_date": "2026-03-07T07:30:56.035432",
+  "countries_target": [
+    "Thailand",
+    "Vietnam",
+    "Singapore",
+    "Malaysia",
+    "Philippines",
+    "Indonesia"
+  ],
+  "central_repository": {
+    "central_repository": "https://atr.asean.org/read/tariff-nomenclature/39"
+  },
+  "country_sources": {
+    "Thailand": {
+      "urls": [
+        "http://itd.customs.go.th/igtf/en/main_frame.jsp",
+        "https://www.thailandntr.com/en/goods/tariff"
+      ],
+      "method": "browser_automation"
+    },
+    "Vietnam": {
+      "urls": [
+        "https://www.vietnamtradeportal.gov.vn/"
+      ],
+      "method": "web_portal"
+    },
+    "Singapore": {
+      "urls": [
+        "https://hscodechecker.gobusiness.gov.sg/"
+      ],
+      "method": "tool_interface"
+    },
+    "Malaysia": {
+      "urls": [
+        "https://ezhs.customs.gov.my/"
+      ],
+      "method": "web_portal",
+      "issues": "SSL certificate verification"
+    },
+    "Philippines": {
+      "urls": [
+        "https://finder.tariffcommission.gov.ph/"
+      ],
+      "method": "web_portal",
+      "issues": "Connection error"
+    },
+    "Indonesia": {
+      "urls": [
+        "https://insw.go.id/"
+      ],
+      "method": "web_portal",
+      "issues": "Connection error"
+    }
+  },
+  "notes": [
+    "ASEAN Trade Repository (ATR) is primary central source",
+    "AHTN base nomenclature: 8-digit codes",
+    "Country extensions: 10-digit with national duty rates",
+    "Expected structure: 21 sections, 97 chapters",
+    "Total estimated codes: 60,000+ across all countries"
+  ],
+  "collection_methods": {
+    "browser_automation": "Thailand",
+    "web_scraping": [
+      "Vietnam",
+      "Singapore"
+    ],
+    "direct_contact": [
+      "Malaysia",
+      "Philippines",
+      "Indonesia"
+    ],
+    "api_integration": "To be determined for ASEAN Trade Repository"
+  },
+  "next_steps": [
+    "Contact ASEAN Trade Repository for bulk AHTN data export",
+    "Implement Python/Puppeteer scripts for dynamic content",
+    "Contact customs agencies for direct data access",
+    "Investigate and resolve SSL/connection issues",
+    "Map all 10-digit codes to AHTN 8-digit base"
+  ]
+}

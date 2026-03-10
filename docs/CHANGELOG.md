@@ -1,5 +1,206 @@
 # POTAL Development Changelog
 
+## [2026-03-09] Cowork 세션 2 (세션 36) — B2C 잔재 삭제 + 파일 정리 2차 + 요금제 검증
+
+### 🗑️ B2C 잔재 삭제
+- `ios/` 폴더 전체 삭제 (Capacitor iOS 프로젝트, B2C 모바일 앱)
+- `capacitor.config.ts` 삭제
+- `POTAL_Distribution.mobileprovision` 삭제 (iOS 배포 인증서)
+- `marketing/app-store-metadata.md` 삭제 (Apple App Store 메타데이터, B2C)
+- `docs/architecture/SEARCH_LOGIC_ANALYSIS.md` 삭제 (B2C 검색 로직, 2/23)
+- `docs/architecture/SPECS.md` 삭제 (B2C Mall Classification, 2/23)
+- `docs/architecture/POTAL_MASTER_ARCHITECTURE.md` 삭제 (B2C 마스터 아키텍처, 2/23)
+- `docs/architecture/POTAL_AI_EVOLUTION_ROADMAP.docx` 삭제 (B2C AI 로드맵, 2/23)
+- **B2C 백업**: `potal-b2c-snapshot` 브랜치에 보존 (remote push 완료)
+
+### 🗑️ 중복/대체 파일 삭제
+- `analysis/POTAL_vs_Competitors_Analysis.md` (v2.xlsx로 대체)
+- `analysis/COMPETITOR-ANALYSIS.md` (v2.xlsx에 최신 내용)
+- `checklists/POTAL_Checklist_20260309.xlsx` (B2B_Checklist.xlsx가 마스터)
+- `checklists/MORNING-TODO.md` (세션 30 아침 TODO, 완료됨)
+- `docs/architecture/INDEX.md` (README.md와 중복)
+
+### 📁 파일 이동/정리
+- `data/south_africa_tariff_schedule_s1p1.pdf` → `data/tariff-research/`
+- `data/south_africa_tariff_schedule_s1p2a.pdf` → `data/tariff-research/`
+- `data/` 루트 파일 14개 → `data/tariff-research/` (수집 스크립트 2개, 메타/리포트 5개, 데이터 원본 7개)
+- `SESSION_TEMPLATES.md` → `archive/`
+- `marketing/POTAL_Agent_Dashboard.html` → `archive/`
+- `analysis/POTAL_API_Strategy_Analysis.xlsx` → `archive/`
+- `.DS_Store` 7개 삭제, `data/collection.log` 삭제
+
+### 🔍 요금제 검증
+- 세션 트랜스크립트 29MB (3,175줄) 전수 분석하여 요금제 논의 이력 복기
+- **구 요금제** (코드에 남아있음): Free 500/Starter $9/Growth $29/Enterprise custom
+- **신 요금제** (세션 28 확정): Free $0/100건, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
+- Paddle Sandbox에 구 요금제(Starter $9)로 제품 생성됨 → 신 요금제로 재생성 필요
+
+### 📝 문서 업데이트
+- `CLAUDE.md` — 폴더 구조 맵 업데이트, 세션 번호 반영
+- `.cursorrules` — Paddle 전환 반영, MIN 수치 업데이트 (5.4M→92.3M), 30개국어, 파일 경로 수정
+- `session-context.md` — 작업 로그 세션 36 추가
+- `docs/CHANGELOG.md` — 이 엔트리
+- `docs/NEXT_SESSION_START.md` — 전면 재작성
+
+### ⏳ 참고 — 나중에 Mac에서
+- `package.json`에 Capacitor 패키지 7개 남아있음 (`@capacitor/app`, `browser`, `cli`, `core`, `ios`, `splash-screen`, `status-bar`) → `npm uninstall` 필요
+
+---
+
+## [2026-03-07] 세션 31 — EC2 WDC 다운로드 수정 + ITC MacMap 53개국 MFN 관세율 수집 완료
+
+### 🔧 EC2 WDC 다운로드 문제 진단 + 수정
+- S3 버킷 `potal-wdc-920263653804` 비어있음 확인 → user-data 스크립트가 실행되지 않은 것으로 판명
+- EC2 Instance ID 오류 수정: `i-0c114c6176439b9cb` (세션 30에서 `i-0c114c6176439b9cb`로 오기록)
+- Security Group `sg-0ffd851660edd6415`에 SSH (port 22) 규칙 추가 → EC2 Instance Connect로 SSH 접속
+- 잘못된 WDC URL로 HTML 페이지 다운로드하던 v1 스크립트 중단 + S3 정리
+- 올바른 WDC URL 확인: `data.dws.informatik.uni-mannheim.de/structureddata/2022-12/quads/classspecific/Product/`
+- **WDC 데이터 정보 수정**: 1,899파일이 아닌 **179파일** (part_0.gz~part_178.gz, 총 257GB, 17.88B quads)
+- `download_wdc_v2.sh` 작성 + `nohup` 실행 → 정상 다운로드 진행 확인
+
+### 🔄 관세 데이터 자동 수집 시도 (실패)
+- **WITS API 자동화**: EC2에서 50개국 벌크 다운로드 시도 → 전부 FAILED (API가 스크립트 접근 차단)
+- **정부 직접 다운로드**: US HTS, EU TARIC, UK Trade Tariff 등 직접 wget → 대부분 0바이트 (JavaScript 렌더링 필요 or wget 차단)
+- **결론**: MacMap 웹사이트 수동 다운로드가 현실적 대안
+
+### 📦 ITC MacMap 53개국 MFN 관세율 수집 완료
+- MacMap 벌크 다운로드 설정: TARIFF → APPLIED TARIFFS → MFN → NTLC (National Tariff Line Code)
+- **53개국**: ARE, ARG, AUS, BGD, BHR, BRA, CAN, CHE, CHL, CHN, COL, CRI, DOM, DZA, ECU, EGY, EUR, GBR, GHA, HKG, IDN, IND, ISR, JOR, JPN, KAZ, KEN, KOR, KWT, LKA, MAR, MEX, MYS, NGA, NOR, NZL, OMN, PAK, PER, PHL, PRY, QAT, RUS, SAU, SGP, THA, TUN, TUR, TWN, UKR, URY, USA, VNM
+- **73개 데이터 파일, 721,582건 관세율, 191MB** (NTLC 8-12자리 수준)
+- 데이터 형식: Tab-separated .txt (Revision, ReportingCountry, Year, ProductCode, Nav_flag, AvDuty, NavDuty, Source)
+
+### 📁 파일 정리
+- `data/itc_macmap/by_country/{ISO3}/` 구조로 53개국 폴더 정리 완료
+- BulkDownloadResult 폴더 4개 삭제 (369246~369249)
+- zip 파일 6개 삭제 (369246~369251)
+- 개별 CSV/폴더/임시 파일 삭제: Algeria_ntlc.csv, japan_ntlc.csv, .DS_Store, API_NOTES.md, COUNTRY_CODES.txt, INDEX.md, QUERY_GUIDE.md, README.md 등
+
+### ⏳ 대기 항목
+- WDC 다운로드 진행 중 (EC2 nohup, 마지막 확인 시 ~55/179)
+- Supabase Pro 전환 대기 (결제 완료, 플랜 미활성화 → support 요청)
+- MacMap 반덤핑/세이프가드 데이터 별도 수집 필요
+
+---
+
+## [2026-03-07] 세션 30 — HS Code 분류 DB 전략 수립 + WDC 5.95억 상품 파이프라인 + AWS EC2 자동 실행
+
+### 🧪 AI HS Code 분류 테스트 (6종)
+- **Test 1 — Enrichment Pipeline** (3종):
+  - Method A: Raw Llama 70B = 50% 6-digit, 80% 4-digit (최고 성능)
+  - Method B: Generic Enrichment → 70B = 50% 6-digit, 50% 4-digit (오히려 하락)
+  - Method C: Generic Enrichment → 8B = 30% 6-digit, 30% 4-digit
+- **Test 2 — HS-Aware Enrichment** (3종):
+  - Method D: HS-Aware Single 70B = 40%/70%/90%
+  - Method E: 2-Step HS = 30%/40%/50%
+  - Method F: CoT + HS Hints = 20%/20%/40%
+- **핵심 발견**: AI 분류 최대 60% 정확도 한계 → 모델의 HS 법적 지식 부족이 병목
+- **결론**: AI 실시간 분류 전략 포기 → 대량 상품명 수집 + 룩업 전략으로 전환
+
+### 🔄 전략 전환: "HS Code = 결국 상품명"
+- Avalara 3,000만+ = 상품명 3,000만 매핑 DB → 우리도 동일 전략
+- **4단계 전략 확정**:
+  1. 전 세계 HS 코드 확보 (6~12자리, 약 50만~80만개)
+  2. 코드 변경 자동 업데이트 체계
+  3. 온라인 상품명 50~80억 건 대량 수집
+  4. 상품명 → HS 코드 매핑 (세관 공개데이터 + AI 배치)
+- RapidAPI 벌크 스크래핑 불가 확인 → Tier 1 무료 데이터셋 우선 전략
+
+### 📦 WDC (Web Data Commons) 5.95억 상품 데이터
+- 1,899개 파트 파일 × 186MB = ~350GB (Common Crawl schema.org/Product)
+- part_0 검증: 238,249 고유 상품명 추출 성공
+- 추출 정보: name, category, brand, material, GTIN, SKU, source URL
+- Google Taxonomy 5,596 카테고리 다운로드 완료
+
+### ☁️ AWS 인프라 구축
+- **AWS 계정**: POTAL (920263653804), us-east-1, Free Tier $100 크레딧
+- **S3 버킷**: potal-wdc-920263653804
+- **IAM Role**: potal-ec2-role (S3FullAccess)
+- **EC2 Instance**: i-0c114c6176439b9cb (m7i-flex.large, 2 vCPU, 8GB RAM)
+- **자동 파이프라인**: User-data 스크립트로 다운로드→추출→중복제거→S3 업로드→자동종료
+- 예상 소요: 8~16시간, 비용 ~$1 (Free Tier 내)
+
+### 📁 신규 파일
+- `scripts/download_wdc_products.sh` — WDC 전체 파일 다운로드 스크립트
+- `scripts/extract_products_detailed.py` — 상품 정보 상세 추출기 (JSONL + CSV)
+- `scripts/setup_wdc_download.sh` — 외장하드 다운로드 셋업 스크립트
+
+### ⏳ 대기 항목
+- EC2 결과물 확인: `aws s3 ls s3://potal-wdc-920263653804/unique_product_names.txt`
+- Supabase Pro 전환 + 008 마이그레이션 (세션 29 대기)
+- Stanford Amazon 9.4M + MAVE 2.2M 추가 데이터 병합
+
+---
+
+## [2026-03-07] 세션 29 — 관세 데이터 벌크 수집 (WITS+WTO 1,027,674건 186개국, TFAD 137개국)
+
+### 📦 HS Code & 관세 데이터 대량 수집
+- HS Code DB: 443→5,371 코드 (WCO HS 2022 전체 6자리 서브헤딩 기반)
+- WITS (World Bank) 벌크 다운로드: 175개국, 962,729건 MFN 관세율 (SDMX XML API, 무인증)
+- WTO Timeseries API 벌크 다운로드: 114개국, 618,016건 (API 키 인증, 22개 실패 분석)
+- WITS+WTO 통합: **1,027,674건, 186개국, 6,350 HS코드** (WTO 우선, 교차검증 95-98.5%)
+- EU 멤버 27개국 관세율 자동 복제 포함
+- Spot Check 9/9 통과: US T-shirt 16.5%, JP salmon 3.5%, KR T-shirt 13%, DE laptop 0% 등
+
+### 🏛 TFAD 통관절차 데이터
+- 137개국 Trade Facilitation Agreement 이행 데이터 (tfadatabase.org 웹 스크래핑)
+- 비준일, 이행률, 관련 조항, 카테고리 구분 (A/B/C) 수집
+
+### 🔍 WTO API 전수 테스트 (4개)
+- Timeseries API ✅ (114개국 벌크 다운로드 완료)
+- ePing API ⚠️ (members 엔드포인트만 작동, SearchNotifications 404)
+- QR API ❌ (403 Forbidden — CloudFront 차단, WTO 인프라 문제)
+- TFAD API ❌ (모든 엔드포인트 404 → 웹 스크래핑으로 전환)
+
+### 📁 프로젝트 적용 파일
+- `data/duty_rates_merged.csv` (54MB) — 1,027,674건 통합 MFN 관세율
+- `supabase/migrations/008_merged_duty_rates.sql` (81MB) — Supabase INSERT
+- `data/tfad_members.json` (60KB) — 137개국 통관절차 데이터
+- `data/merge_summary.json` — 데이터 통합 요약
+
+### ⏳ 대기 항목
+- ITC MacMap: 계정 활성화 에러 → ITC 이메일 문의 중 (반덤핑/세이프가드 데이터)
+- WTO QR API: 403 차단 (제한 물품 데이터)
+
+## [2026-03-06] 세션 28 — 경쟁사 비교 분석 + 요금제 전략 재설계 + "33개 기능 업계 최고" 전략 확정
+
+### 📊 경쟁사 비교 분석 4종 엑셀 생성
+- `POTAL_vs_Competitors_v2.xlsx` — 5시트 (종합 비교, 가격 시뮬레이션, 강점약점 매트릭스, 성장 추적, 전략 인사이트)
+- `Competitor_Feature_Matrix.xlsx` — 3시트 (9카테고리×45기능×10경쟁사 체크리스트, 가격별 기능, 할당량별 실비용)
+- `Competitor_Pricing_Analysis.xlsx` — 4시트 (25개 요금제 상세, 건당 단가, 할당량 비교, POTAL 문제점 7개)
+- `POTAL_Cost_Analysis_45Features.xlsx` — 3시트 (47기능별 원가, 요금제별 손익, 티어별 기능 배분)
+- 경쟁사 10곳: Avalara, Global-e, Zonos, Hurricane, DHL, Easyship, SimplyDuty, Dutify, TaxJar
+
+### 💰 요금제 전략 재설계 (Alex Hormozi 전략 적용)
+- "극소수에게 비싸게 팔거나, 모두에게 싸게 팔아라. 중간은 죽음이다."
+- 구: Free $0/500, Starter $9/5K, Growth $29/25K, Enterprise custom → **폐기**
+- 신: Free $0/100, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
+- 근거: SMB 셀러 실제 API 사용량 데이터 분석 (Hobby 8-24건, Small 120-300건, Medium 675-1,800건)
+- AI 원가: 건당 $0.001 (GPT-4o-mini) + 캐시 히트 70-90% → 실질 $0.0003
+- Basic $20/2K: 97% 마진 (AI 비용 ~$0.60)
+
+### 🎯 "33개 기능 업계 최고" 전략 확정
+- 47개 경쟁사 기능 전수 분석 → 33개 POTAL 스코프, 14개 스코프 밖
+- 33개 모두 경쟁사 최고 수준 이상으로 구현 목표
+- 스코프 OUT (14개): 배송/물류 5개, 현지결제수단, VAT 신고, Landed Cost 보증, 전담매니저, 사기방지, 3PL, BNPL
+- Golden Circle: WHY(LLM이 쇼핑 장악) → HOW(LLM에 디테일 제공) → WHAT(POTAL이 모든 부품 제공)
+
+### 🔍 45기능 원가 분석 결론
+- A(AI/코드) 22개: 건당 $0 추가 — AI 호출에 이미 포함
+- B(DB/캐시) 12개: 건당 $0 — 자체 DB 조회
+- C(외부API) 5개: 건당 $0.0005 — 환율/정부 API
+- D(인프라) 4개: 월 고정비 $50-100
+- E(인력/보증) 3개: Enterprise 전용 (Basic/Pro 미포함)
+- F(물류/외부) 5개: 스코프 밖
+- **결론: 33개 기능 전부 넣어도 건당 $0.008 이하. $20/2K 유지 가능**
+
+### 📋 Phase 6 태스크 17개 추가 (B2B Checklist)
+- HS Code DB 50만+ 확대, 이미지 분류, 반덤핑 DB, 제한물품 검사, 통관서류 생성
+- DDP 체크아웃, 다중통화, WooCommerce, BigCommerce
+- 원산지 자동감지, 관세변동알림, AI 에이전트 SDK
+- 요금제 코드 업데이트, Supabase Pro 전환
+
+---
+
 ## [2026-03-06] 세션 26 — Shopify App Bridge + 181개국 통합 업데이트 + Product Hunt 에셋
 
 ### 🔧 Shopify App Bridge 임베디드 확인

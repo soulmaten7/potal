@@ -1,0 +1,32 @@
+// Chapter 11: Milling Products -- 27 codes
+import type { HsCodeEntry } from '../types';
+
+export const CHAPTER_11: HsCodeEntry[] = [
+  { code: '110100', description: 'Flour & meal', chapter: '11', category: 'food', keywords: ['flour', 'wheat flour', 'all-purpose flour', 'specialty flour', 'wheat', 'meslin', 'flourwheat', 'flourof', 'durum'] },
+  { code: '110220', description: 'Malt', chapter: '11', category: 'food', keywords: ['malt', 'barley malt', 'malt extract', 'brewing ingredient', 'cereal', 'flours', 'wheat', 'meslinmaize', 'corn', 'flourof'] },
+  { code: '110290', description: 'Cereal flours other than of wheat or meslin:Other:*Barley flour', chapter: '11', category: 'food', keywords: ['cereal', 'flours', 'wheat', 'meslinbarley', 'flour'] },
+  { code: '110311', description: 'Cereal groats, meal and pellets:Groats and meal:*Of wheat:**Durum wheat', chapter: '11', category: 'food', keywords: ['cereal', 'groats', 'meal', 'pelletsgroats', 'mealof', 'wheatdurum', 'wheat'] },
+  { code: '110313', description: 'Cereal groats, meal and pellets:Groats and meal:*Of maize (corn):**Of a fat c...', chapter: '11', category: 'food', keywords: ['cereal', 'groats', 'meal', 'pelletsgroats', 'mealof', 'maize', 'corn', 'of', 'fat', '15'] },
+  { code: '110319', description: 'Cereal groats, meal and pellets:Groats and meal:*Of other cereals:**Of rye or...', chapter: '11', category: 'food', keywords: ['cereal', 'groats', 'meal', 'pelletsgroats', 'mealof', 'cerealsof', 'rye', 'barley'] },
+  { code: '110320', description: 'Cereal groats, meal and pellets:Pellets:*Of rye or barley', chapter: '11', category: 'food', keywords: ['cereal', 'groats', 'meal', 'pelletspelletsof', 'rye', 'barley'] },
+  { code: '110412', description: 'Cereal grains otherwise worked (for example, hulled, rolled, flaked, pearled,...', chapter: '11', category: 'food', keywords: ['cereal', 'grains', 'otherwise', 'worked', 'example', 'hulled', 'rolled', 'flaked', 'pearled', 'sliced'] },
+  { code: '110419', description: 'Cereal grains otherwise worked (for example, hulled, rolled, flaked, pearled,...', chapter: '11', category: 'food', keywords: ['cereal', 'grains', 'otherwise', 'worked', 'example', 'hulled', 'rolled', 'flaked', 'pearled', 'sliced'] },
+  { code: '110422', description: 'Cereal grains otherwise worked (for example, hulled, rolled, flaked, pearled,...', chapter: '11', category: 'food', keywords: ['cereal', 'grains', 'otherwise', 'worked', 'example', 'hulled', 'rolled', 'flaked', 'pearled', 'sliced'] },
+  { code: '110423', description: 'Cereal grains otherwise worked (for example, hulled, rolled, flaked, pearled,...', chapter: '11', category: 'food', keywords: ['cereal', 'grains', 'otherwise', 'worked', 'example', 'hulled', 'rolled', 'flaked', 'pearled', 'sliced'] },
+  { code: '110429', description: 'Cereal grains otherwise worked (for example, hulled, rolled, flaked, pearled,...', chapter: '11', category: 'food', keywords: ['cereal', 'grains', 'otherwise', 'worked', 'example', 'hulled', 'rolled', 'flaked', 'pearled', 'sliced'] },
+  { code: '110430', description: 'Cereal grains otherwise worked (for example, hulled, rolled, flaked, pearled,...', chapter: '11', category: 'food', keywords: ['cereal', 'grains', 'otherwise', 'worked', 'example', 'hulled', 'rolled', 'flaked', 'pearled', 'sliced'] },
+  { code: '110510', description: 'Flour, meal, powder, flakes, granules and pellets of potatoes:Flour, meal and...', chapter: '11', category: 'food', keywords: ['flour', 'meal', 'powder', 'flakes', 'granules', 'pellets', 'potatoesflour'] },
+  { code: '110520', description: 'Flour, meal, powder, flakes, granules and pellets of potatoes:Flakes, granule...', chapter: '11', category: 'food', keywords: ['flour', 'meal', 'powder', 'flakes', 'granules', 'pellets', 'potatoesflakes'] },
+  { code: '110610', description: 'Flour, meal and powder of the dried leguminous vegetables of heading 0713, of...', chapter: '11', category: 'food', keywords: ['flour', 'meal', 'powder', 'dried', 'leguminous', 'vegetables', 'heading', '0713', 'sago', 'roots'] },
+  { code: '110620', description: 'Flour, meal and powder of the dried leguminous vegetables of heading 0713, of...', chapter: '11', category: 'food', keywords: ['flour', 'meal', 'powder', 'dried', 'leguminous', 'vegetables', 'heading', '0713', 'sago', 'roots'] },
+  { code: '110630', description: 'Flour, meal and powder of the dried leguminous vegetables of heading 0713, of...', chapter: '11', category: 'food', keywords: ['flour', 'meal', 'powder', 'dried', 'leguminous', 'vegetables', 'heading', '0713', 'sago', 'roots'] },
+  { code: '110710', description: 'Malt, whether or not roasted:Not roasted:*Of wheat:**In the form of flour', chapter: '11', category: 'food', keywords: ['malt', 'roastednot', 'roastedof', 'wheatin', 'form', 'flour'] },
+  { code: '110720', description: 'Malt, whether or not roasted:Roasted', chapter: '11', category: 'food', keywords: ['malt', 'roastedroasted'] },
+  { code: '110811', description: 'Potato starch', chapter: '11', category: 'food', keywords: ['starch', 'cornstarch', 'potato starch', 'thickener', 'starches', 'inulinstarcheswheat'] },
+  { code: '110812', description: 'Starches; inulin:Starches:*Maize (corn) starch', chapter: '11', category: 'food', keywords: ['starches', 'inulinstarchesmaize', 'corn', 'starch'] },
+  { code: '110813', description: 'Starches; inulin:Starches:*Potato starch', chapter: '11', category: 'food', keywords: ['starches', 'inulinstarchespotato', 'starch'] },
+  { code: '110814', description: 'Starches; inulin:Starches:*Manioc (cassava) starch', chapter: '11', category: 'food', keywords: ['starches', 'inulinstarchesmanioc', 'cassava', 'starch'] },
+  { code: '110819', description: 'Starches; inulin:Starches:*Other starches:**Rice starch', chapter: '11', category: 'food', keywords: ['starches', 'inulinstarches', 'starchesrice', 'starch'] },
+  { code: '110820', description: 'Starches; inulin:Inulin', chapter: '11', category: 'food', keywords: ['starches', 'inulininulin'] },
+  { code: '110900', description: 'Wheat gluten, whether or not dried', chapter: '11', category: 'food', keywords: ['wheat', 'gluten', 'dried'] },
+];

@@ -1,0 +1,156 @@
+{
+  "region": "Southern Africa",
+  "bloc_name": "SACU (Southern African Customs Union)",
+  "bloc_code": "SACU",
+  "tariff_system": "South African Customs & Excise Tariff",
+  "system_type": "Harmonized HS-based Regional Tariff",
+  "code_digits": "8 + check digit",
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "check_digit": true,
+  "member_countries": [
+    "South Africa (administrator)",
+    "Botswana",
+    "Lesotho",
+    "Namibia",
+    "Eswatini (formerly Swaziland)"
+  ],
+  "status": "RESEARCH_COMPLETE",
+  "summary": "SACU is a customs union where South Africa administers the common tariff schedule. All member countries apply the same tariff rates for external trade. The tariff book consists of Schedules 1-4 covering ordinary duties, excise duties, anti-dumping duties, and rebate items.",
+  "tariff_structure": {
+    "governing_regulation": "Customs & Excise Act, 1964",
+    "administrator": "South Africa (SARS)",
+    "schedule_1": {
+      "part_1": "Ordinary Customs Duties (Normal Import Duties)",
+      "part_2a": "Excise Duties",
+      "part_2b": "Ad Valorem Duties"
+    },
+    "schedule_2": "Anti-dumping (Part 1) and Countervailing Duties (Part 2)",
+    "schedule_3": "Rebate Items",
+    "schedule_4": "Additional Rebate Items"
+  },
+  "data_availability": {
+    "complete_tariff_schedule": "Available",
+    "official_source": "South African Revenue Service (SARS)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["PDF", "Online database"],
+    "note": "All SACU members apply SARS tariff schedule"
+  },
+  "sources": [
+    {
+      "name": "SARS - Official Tariff Page",
+      "url": "https://www.sars.gov.za/customs-and-excise/tariff/",
+      "type": "Official Government Portal",
+      "description": "South African Revenue Service official tariff information and download page"
+    },
+    {
+      "name": "SARS Tariff Book - Schedule 1 Part 1",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch1P1Chpt1-to-99-Schedule-No-1-Part-1-Chapters-1-to-99.pdf",
+      "type": "PDF Document",
+      "description": "Official SARS Ordinary Customs Duty schedule"
+    },
+    {
+      "name": "SARS Tariff Book - Schedule 1 Part 2A",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch1P2A-Schedule-No-1-Part-2A.pdf",
+      "type": "PDF Document",
+      "description": "Official SARS Excise Duties schedule"
+    },
+    {
+      "name": "SARS Tariff Book - Schedule 1 Part 2B",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch1P2B-Schedule-No-1-Part-2B.pdf",
+      "type": "PDF Document",
+      "description": "Official SARS Ad Valorem Duties schedule"
+    },
+    {
+      "name": "SARS Tariff Book - Schedule 2",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch2-Schedule-No-2.pdf",
+      "type": "PDF Document",
+      "description": "Official SARS Anti-dumping and Countervailing Duties schedule"
+    },
+    {
+      "name": "SARS Tariff Book - Schedule 3",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch3-Schedule-No-3.pdf",
+      "type": "PDF Document",
+      "description": "Official SARS Rebate Items schedule"
+    },
+    {
+      "name": "SARS Tariff Book - Schedule 4",
+      "url": "https://www.sars.gov.za/wp-content/uploads/Legal/SCEA1964/Legal-LPrim-CE-Sch4-Schedule-No-4.pdf",
+      "type": "PDF Document",
+      "description": "Official SARS Additional Rebate Items schedule"
+    },
+    {
+      "name": "SARS Tariff Determination Portal",
+      "url": "https://tdn.sars.gov.za/portal/",
+      "type": "Online Tool",
+      "description": "Tariff Determination Number search engine for finalized classifications"
+    },
+    {
+      "name": "SACU Official Website",
+      "url": "https://www.sacu.int/",
+      "type": "Official Regional Organization",
+      "description": "Southern African Customs Union official website"
+    },
+    {
+      "name": "ITAC (International Trade Administration Commission)",
+      "url": "http://www.itac.org.za/",
+      "type": "Government Agency",
+      "description": "Responsible for tariff investigations, amendments, and trade remedies for SACU"
+    },
+    {
+      "name": "tralac - SACU Profile",
+      "url": "https://www.tralac.org/blog/article/13807-southern-african-customs-union-sacu-s-trade-and-tariff-profile.html",
+      "type": "Trade Law Resources",
+      "description": "SACU's trade and tariff profile and analysis"
+    }
+  ],
+  "member_state_implementation": {
+    "south_africa": {
+      "role": "Administrator",
+      "tariff_authority": "SARS (South African Revenue Service)",
+      "portal": "https://www.sars.gov.za/"
+    },
+    "botswana": {
+      "role": "Member",
+      "note": "Applies SARS tariff schedule"
+    },
+    "lesotho": {
+      "role": "Member",
+      "note": "Applies SARS tariff schedule"
+    },
+    "namibia": {
+      "role": "Member",
+      "note": "Applies SARS tariff schedule"
+    },
+    "eswatini": {
+      "role": "Member",
+      "note": "Applies SARS tariff schedule"
+    }
+  },
+  "revenue_sharing": {
+    "note": "SACU agreement includes revenue pool sharing mechanism for customs and excise duties"
+  },
+  "tariff_code_system": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_8": "SACU-specific classification",
+    "check_digit": "Validation digit for code accuracy"
+  },
+  "data_collection_status": "COMPLETE",
+  "files_available": [
+    "SARS Schedule 1 Part 1 (Ordinary Duties)",
+    "SARS Schedule 1 Part 2A (Excise Duties)",
+    "SARS Schedule 1 Part 2B (Ad Valorem Duties)",
+    "SARS Schedule 2 (Anti-dumping & Countervailing)",
+    "SARS Schedule 3 (Rebate Items)",
+    "SARS Schedule 4 (Additional Rebates)"
+  ],
+  "next_steps": [
+    "Download all SARS tariff schedules from SARS website",
+    "Extract all HS codes and applicable duty rates",
+    "Validate check digits for code accuracy",
+    "Create master SACU tariff database",
+    "Note rebate item availability for eligible goods"
+  ],
+  "notes": "SACU is the oldest customs union in Africa (established 1910, reformed 2002). South Africa administers the common tariff for all 5 member states. SARS is the primary source for all tariff information. All schedules available as downloadable PDFs. ITAC handles tariff amendments and trade remedies investigations."
+}

@@ -1,0 +1,4493 @@
+{
+  "timestamp": "2026-03-07 07:15:33",
+  "statistics": {
+    "total_commodities_downloaded": 34,
+    "total_duty_rates": 1717,
+    "commodities_with_duties": 34,
+    "errors": 0
+  },
+  "duty_rates_summary": {
+    "0.00 %": 1487,
+    "": 107,
+    "p/st": 34,
+    "10.00 % + 77.00 GBP / 100 kg": 25,
+    "0.00 % + 77.00 GBP / 100 kg": 25,
+    "2.00 % + 15.00 GBP / 100 kg": 12,
+    "35.00 %": 10,
+    "2.00 % + 15.40 GBP / 100 kg": 6,
+    "20.00 %": 5,
+    "10.00 %": 2,
+    "6.50 %": 2,
+    "6.00 %": 1,
+    "2.50 %": 1
+  },
+  "sample_commodities": [
+    {
+      "code": "0101299000",
+      "description": "Other",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000002",
+          "duty": "10.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982599",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204565",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20220693",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control - CITES",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20210353",
+          "duty": "6.50 %",
+          "origin": "1060",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20212420",
+          "duty": "0.00 %",
+          "origin": "1061",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012542431",
+          "duty": "20.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134281",
+          "duty": "0.00 %",
+          "origin": "AL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-03T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182782",
+          "duty": "35.00 %",
+          "origin": "BY",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138879",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139288",
+          "duty": "0.00 %",
+          "origin": "CL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268537",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20090143",
+          "duty": "0.00 %",
+          "origin": "IS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109686",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20064705",
+          "duty": "",
+          "origin": "KP",
+          "measure_type": "Import control on luxury goods",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20140145",
+          "duty": "0.00 %",
+          "origin": "MK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20119671",
+          "duty": "0.00 %",
+          "origin": "MX",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20152290",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182781",
+          "duty": "35.00 %",
+          "origin": "RU",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140723",
+          "duty": "0.00 %",
+          "origin": "TN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20101931",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139668",
+          "duty": "0.00 %",
+          "origin": "XK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20135736",
+          "duty": "0.00 %",
+          "origin": "XS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140519",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0101210000",
+      "description": "Pure-bred breeding animals",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000000",
+          "duty": "0.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982599",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204539",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2023-05-02T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20220692",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control - CITES",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012542431",
+          "duty": "20.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134281",
+          "duty": "0.00 %",
+          "origin": "AL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-03T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182782",
+          "duty": "35.00 %",
+          "origin": "BY",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138879",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178131",
+          "duty": "0.00 %",
+          "origin": "CH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139288",
+          "duty": "0.00 %",
+          "origin": "CL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20200993",
+          "duty": "0.00 %",
+          "origin": "FO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-03-17T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268537",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20090143",
+          "duty": "0.00 %",
+          "origin": "IS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109686",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20064704",
+          "duty": "",
+          "origin": "KP",
+          "measure_type": "Import control on luxury goods",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20194462",
+          "duty": "0.00 %",
+          "origin": "LI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-02-22T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20140145",
+          "duty": "0.00 %",
+          "origin": "MK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20119671",
+          "duty": "0.00 %",
+          "origin": "MX",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20152289",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182781",
+          "duty": "35.00 %",
+          "origin": "RU",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20101931",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139668",
+          "duty": "0.00 %",
+          "origin": "XK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20135736",
+          "duty": "0.00 %",
+          "origin": "XS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140519",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0101900000",
+      "description": "Other",
+      "declarable": true,
+      "validity_start": "2002-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000004",
+          "duty": "10.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982599",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204541",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2023-05-02T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20210355",
+          "duty": "6.50 %",
+          "origin": "1060",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20212422",
+          "duty": "0.00 %",
+          "origin": "1061",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012542431",
+          "duty": "20.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134281",
+          "duty": "0.00 %",
+          "origin": "AL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-03T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182782",
+          "duty": "35.00 %",
+          "origin": "BY",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138879",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139288",
+          "duty": "0.00 %",
+          "origin": "CL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268537",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20090143",
+          "duty": "0.00 %",
+          "origin": "IS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109686",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20140145",
+          "duty": "0.00 %",
+          "origin": "MK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20119671",
+          "duty": "0.00 %",
+          "origin": "MX",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182781",
+          "duty": "35.00 %",
+          "origin": "RU",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20101931",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139668",
+          "duty": "0.00 %",
+          "origin": "XK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20135736",
+          "duty": "0.00 %",
+          "origin": "XS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140519",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0101291000",
+      "description": "For slaughter",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000001",
+          "duty": "0.00 %",
+          "origin": "1011",
+          "measure_type": "Non preferential duty under authorised use",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982599",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204565",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012542431",
+          "duty": "20.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134281",
+          "duty": "0.00 %",
+          "origin": "AL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-03T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182782",
+          "duty": "35.00 %",
+          "origin": "BY",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138879",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139288",
+          "duty": "0.00 %",
+          "origin": "CL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268537",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20090143",
+          "duty": "0.00 %",
+          "origin": "IS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109686",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20140145",
+          "duty": "0.00 %",
+          "origin": "MK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20119671",
+          "duty": "0.00 %",
+          "origin": "MX",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20152290",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182781",
+          "duty": "35.00 %",
+          "origin": "RU",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140723",
+          "duty": "0.00 %",
+          "origin": "TN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20101931",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139668",
+          "duty": "0.00 %",
+          "origin": "XK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20135736",
+          "duty": "0.00 %",
+          "origin": "XS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140519",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0101300000",
+      "description": "Asses",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000003",
+          "duty": "6.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982599",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204540",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2023-05-02T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20220694",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control - CITES",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20210354",
+          "duty": "2.50 %",
+          "origin": "1060",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20212421",
+          "duty": "0.00 %",
+          "origin": "1061",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012542431",
+          "duty": "20.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134281",
+          "duty": "0.00 %",
+          "origin": "AL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-03T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182782",
+          "duty": "35.00 %",
+          "origin": "BY",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138879",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139288",
+          "duty": "0.00 %",
+          "origin": "CL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268537",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20090143",
+          "duty": "0.00 %",
+          "origin": "IS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109686",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20140145",
+          "duty": "0.00 %",
+          "origin": "MK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20119671",
+          "duty": "0.00 %",
+          "origin": "MX",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20182781",
+          "duty": "35.00 %",
+          "origin": "RU",
+          "measure_type": "Additional duties",
+          "effective_start": "2022-06-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20101931",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139668",
+          "duty": "0.00 %",
+          "origin": "XK",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20135736",
+          "duty": "0.00 %",
+          "origin": "XS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140519",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0102219000",
+      "description": "Other",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000007",
+          "duty": "0.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982600",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204566",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012549012",
+          "duty": "0.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138881",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178134",
+          "duty": "0.00 %",
+          "origin": "CH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20200994",
+          "duty": "0.00 %",
+          "origin": "FO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-03-17T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268538",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109687",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20194463",
+          "duty": "0.00 %",
+          "origin": "LI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-02-22T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20152291",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134894",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178133",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0102290500",
+      "description": "Of the sub-genus Bibos or of the sub-genus Poephagus",
+      "declarable": true,
+      "validity_start": "2013-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000008",
+          "duty": "0.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982600",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204566",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012549012",
+          "duty": "0.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138881",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268538",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109687",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20152292",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134895",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178135",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0102211000",
+      "description": "Heifers (female bovines that have never calved)",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000005",
+          "duty": "0.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982600",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204566",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012549012",
+          "duty": "0.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138881",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178134",
+          "duty": "0.00 %",
+          "origin": "CH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20200994",
+          "duty": "0.00 %",
+          "origin": "FO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-03-17T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268538",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109687",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20194463",
+          "duty": "0.00 %",
+          "origin": "LI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-02-22T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20152291",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134894",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178133",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0102213000",
+      "description": "Cows",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000006",
+          "duty": "0.00 %",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982600",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204566",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012549012",
+          "duty": "0.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138881",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178134",
+          "duty": "0.00 %",
+          "origin": "CH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20200994",
+          "duty": "0.00 %",
+          "origin": "FO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-03-17T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268538",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109687",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20194463",
+          "duty": "0.00 %",
+          "origin": "LI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-02-22T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20152291",
+          "duty": "0.00 %",
+          "origin": "NO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-12-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134894",
+          "duty": "0.00 %",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20178133",
+          "duty": "0.00 %",
+          "origin": "ZA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    },
+    {
+      "code": "0102291010",
+      "description": "Young male bovine animals, intended for fattening",
+      "declarable": true,
+      "validity_start": "2012-01-01T00:00:00.000Z",
+      "validity_end": null,
+      "duty_rates": [
+        {
+          "measure_id": "20000009",
+          "duty": "10.00 % + 77.00 GBP / 100 kg",
+          "origin": "1011",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "2982600",
+          "duty": "p/st",
+          "origin": "1011",
+          "measure_type": "Supplementary unit",
+          "effective_start": "2008-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20204566",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Veterinary control",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20232643",
+          "duty": "",
+          "origin": "1011",
+          "measure_type": "Import control of organic products",
+          "effective_start": "2024-02-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125835",
+          "duty": "0.00 %",
+          "origin": "1013",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079764",
+          "duty": "0.00 %",
+          "origin": "1033",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20236854",
+          "duty": "0.00 %",
+          "origin": "1034",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-08-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079954",
+          "duty": "0.00 %",
+          "origin": "1035",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20205167",
+          "duty": "0.00 %",
+          "origin": "1062",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-06-19T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20184077",
+          "duty": "0.00 %",
+          "origin": "1080",
+          "measure_type": "Third country duty",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "-1012549012",
+          "duty": "0.00 %",
+          "origin": "1400",
+          "measure_type": "Value added tax",
+          "effective_start": "2024-09-25T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20250524",
+          "duty": "0.00 %",
+          "origin": "2051",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-12-24T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20091260",
+          "duty": "0.00 %",
+          "origin": "2080",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139151",
+          "duty": "0.00 %",
+          "origin": "2200",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20202901",
+          "duty": "0.00 %",
+          "origin": "AU",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138881",
+          "duty": "0.00 %",
+          "origin": "CA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079669",
+          "duty": "0.00 %",
+          "origin": "CI",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20120631",
+          "duty": "0.00 %",
+          "origin": "CM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138294",
+          "duty": "0.00 %",
+          "origin": "CO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138441",
+          "duty": "0.00 %",
+          "origin": "EC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139420",
+          "duty": "0.00 %",
+          "origin": "EG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080049",
+          "duty": "0.00 %",
+          "origin": "FJ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139478",
+          "duty": "0.00 %",
+          "origin": "GE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20133241",
+          "duty": "0.00 %",
+          "origin": "GH",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-03-05T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20268538",
+          "duty": "0.00 %",
+          "origin": "IL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2025-09-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20090144",
+          "duty": "0.00 %",
+          "origin": "IS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20134759",
+          "duty": "0.00 %",
+          "origin": "JO",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-05-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20109687",
+          "duty": "0.00 %",
+          "origin": "JP",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20079574",
+          "duty": "0.00 %",
+          "origin": "KE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140443",
+          "duty": "0.00 %",
+          "origin": "KR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20139952",
+          "duty": "0.00 %",
+          "origin": "LB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140095",
+          "duty": "0.00 %",
+          "origin": "MA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20217770",
+          "duty": "0.00 %",
+          "origin": "MD",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-07-31T00:00:00.000Z",
+          "effective_end": "2029-07-31T23:59:59.000Z"
+        },
+        {
+          "measure_id": "20203454",
+          "duty": "0.00 %",
+          "origin": "NZ",
+          "measure_type": "Tariff preference",
+          "effective_start": "2023-05-31T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20138579",
+          "duty": "0.00 %",
+          "origin": "PE",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080334",
+          "duty": "0.00 %",
+          "origin": "PG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20140379",
+          "duty": "0.00 %",
+          "origin": "PS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20151806",
+          "duty": "0.00 %",
+          "origin": "SB",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20237197",
+          "duty": "0.00 %",
+          "origin": "SG",
+          "measure_type": "Tariff preference",
+          "effective_start": "2024-11-21T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20125947",
+          "duty": "0.00 %",
+          "origin": "SM",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20101932",
+          "duty": "0.00 % + 77.00 GBP / 100 kg",
+          "origin": "TR",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-20T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20183289",
+          "duty": "0.00 %",
+          "origin": "UA",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-05-10T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20179836",
+          "duty": "",
+          "origin": "UA",
+          "measure_type": "Restriction on entry into free circulation",
+          "effective_start": "2022-03-30T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20164679",
+          "duty": "0.00 %",
+          "origin": "VN",
+          "measure_type": "Tariff preference",
+          "effective_start": "2022-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20080239",
+          "duty": "0.00 %",
+          "origin": "WS",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126145",
+          "duty": "0.00 %",
+          "origin": "XC",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        },
+        {
+          "measure_id": "20126257",
+          "duty": "0.00 %",
+          "origin": "XL",
+          "measure_type": "Tariff preference",
+          "effective_start": "2021-01-01T00:00:00.000Z",
+          "effective_end": null
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

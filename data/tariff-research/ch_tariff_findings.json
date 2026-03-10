@@ -1,0 +1,107 @@
+{
+  "source": "Switzerland Customs Tariff (Tares)",
+  "collection_date": "2026-03-07",
+  "findings": {
+    "system_overview": {
+      "name": "Tares - Swiss Customs Tariff System",
+      "primary_url": "https://www.tares.ch/",
+      "official_provider": "Federal Office for Customs and Border Security (BAZG/AZAD)",
+      "description": "Free online system for accessing Swiss customs tariffs",
+      "availability": "Free of charge for all users",
+      "language_options": ["English", "German", "French"]
+    },
+    "access_points": {
+      "main_systems": [
+        {
+          "name": "Tares Public Interface",
+          "url": "https://www.tares.ch/",
+          "type": "Interactive web-based tariff lookup",
+          "access_restriction": "None - publicly available"
+        },
+        {
+          "name": "xtares (Extended Tares)",
+          "url": "https://xtares.admin.ch/",
+          "type": "Government portal with tariff access",
+          "access_restriction": "Registration may be required"
+        },
+        {
+          "name": "BAZG Official Portal",
+          "url": "https://www.bazg.admin.ch/bazg/en/home/services/services-companies/services-firmen_einfuhr-ausfuhr-durchfuhr/zolltarif-tares.html",
+          "type": "Official federal customs website",
+          "access_restriction": "None"
+        }
+      ]
+    },
+    "tariff_code_specifications": {
+      "code_level": "8-digit tariff codes",
+      "nomenclature": "Swiss Customs Tariff (based on HS nomenclature)",
+      "tariff_types": [
+        "Normal customs rate",
+        "Preferential rates (conditional)",
+        "Rates with certificate of origin",
+        "Special use rates"
+      ]
+    },
+    "how_system_works": {
+      "process": [
+        "Select effective date of tariff",
+        "Choose country of origin/destination",
+        "Select transport direction (import/export)",
+        "Enter 8-digit tariff heading",
+        "Select statistical key if applicable",
+        "Click to display results"
+      ],
+      "output_includes": [
+        "Normal customs rates",
+        "Preferential customs rates (if applicable)",
+        "Additional fees or taxes",
+        "License requirements",
+        "Special provisions"
+      ]
+    },
+    "supplementary_resources": {
+      "tariff_classification_decisions": "Available through Tares",
+      "explanatory_notes": "Detailed descriptions of which goods correspond to which codes",
+      "remarks_sections": [
+        "General remarks",
+        "Free Trade Agreements notes",
+        "Customs Quotas",
+        "Trade Statistics",
+        "Customs Privileges",
+        "Taxes",
+        "Import/Export Licenses",
+        "Special provisions"
+      ]
+    },
+    "bulk_download_capability": {
+      "status": "NOT DOCUMENTED",
+      "notes": "Tares system appears to be interface-based lookup only",
+      "potential_workarounds": [
+        "Contact BAZG directly for bulk tariff data",
+        "Web scraping may be possible but terms of use unclear"
+      ]
+    },
+    "recent_updates": {
+      "update_frequency": "Regular updates (effective 1 March 2026 most recent)",
+      "notification_method": "News announcements on BAZG website",
+      "affected_areas": "Tariff rates and classifications updated annually"
+    },
+    "data_specifications": {
+      "geographical_scope": "Swiss customs tariffs - applies to Switzerland and bilateral/multilateral agreements",
+      "product_scope": "All goods subject to Swiss import duties",
+      "historical_data": "Previous tariff schedules may be available"
+    },
+    "assessment": {
+      "importance": "MEDIUM-HIGH - Switzerland is a major trading nation with specific tariff structure",
+      "data_quality": "Official government source - high reliability",
+      "accessibility": "Public interface available but no bulk download documented",
+      "recommendation": "Contact BAZG (bazg@bazg.admin.ch or through website) for bulk tariff data extraction"
+    }
+  },
+  "sources": [
+    "https://www.tares.ch/",
+    "https://xtares.admin.ch/",
+    "https://www.bazg.admin.ch/bazg/en/home/services/services-companies/services-firmen_einfuhr-ausfuhr-durchfuhr/zolltarif-tares.html",
+    "https://www.kmu.admin.ch/kmu/en/home/concrete-know-how/import-export/importing-sme/customs-tariffs-internet.html"
+  ]
+}

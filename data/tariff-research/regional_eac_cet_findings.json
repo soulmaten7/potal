@@ -1,0 +1,133 @@
+{
+  "region": "East Africa",
+  "bloc_name": "EAC (East African Community)",
+  "bloc_code": "EAC",
+  "tariff_system": "Common External Tariff (CET)",
+  "system_type": "Harmonized HS-based Regional Tariff",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "member_countries": [
+    "Kenya",
+    "Uganda",
+    "Tanzania",
+    "Rwanda",
+    "Burundi",
+    "South Sudan",
+    "Democratic Republic of Congo (DRC)"
+  ],
+  "status": "RESEARCH_COMPLETE",
+  "summary": "EAC Common External Tariff is the harmonized tariff schedule for the East African Community Customs Union. Updated in 2022 with 4-band structure. Latest version updated June 2025. Applies to Kenya, Uganda, Tanzania, Rwanda, and Burundi as core customs union members.",
+  "cet_structure": {
+    "current_version": "2022 (Updated June 2025)",
+    "tariff_bands": 4,
+    "band_rates": ["0%", "10%", "25%", "35%"],
+    "adoption_date_4band": "2022",
+    "note": "35% band added in 2022 as fourth band"
+  },
+  "data_availability": {
+    "complete_tariff_schedule": "Available",
+    "official_source": "EAC Secretariat and Kenya Revenue Authority",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["PDF", "Web database"]
+  },
+  "sources": [
+    {
+      "name": "EAC Online Customs Tariff Portal",
+      "url": "https://www.eac.int/customs/online-tariff-home",
+      "type": "Official Regional Portal",
+      "description": "Official EAC Customs online tariff database and search tool"
+    },
+    {
+      "name": "EAC Common External Tariff Documentation",
+      "url": "https://www.eac.int/component/documentmananger/category/eac-common-external-tariff",
+      "type": "Official Document Repository",
+      "description": "EAC Secretariat CET documentation and updates"
+    },
+    {
+      "name": "EAC CET 2022 Version (June 2025 Update)",
+      "url": "https://eabc-online.com/download/eac-common-external-tariff-version-2022-as-updated-june-2025/",
+      "type": "Official Document",
+      "description": "Latest EAC CET version with June 2025 updates from East African Business Council"
+    },
+    {
+      "name": "Kenya Revenue Authority - EAC CET 2022",
+      "url": "https://www.kra.go.ke/images/publications/EAC-CET-2022-VERSION-30TH-JUNE-Fn.pdf",
+      "type": "PDF Document",
+      "description": "Official EAC CET 2022 version published by Kenya Revenue Authority (30 June version)"
+    },
+    {
+      "name": "EAC AfCFTA Tariff Schedule",
+      "url": "https://www.kra.go.ke/images/publications/EAC-PROVISIONAL-SCHEDULE-OF-TARIFF-CONCESSIONS-FOR-THE-AFRICAN-CONTINENTAL-FREE-TRADE-AREA-AfCFTA-CATEGORY-A-PRODUCTS.pdf",
+      "type": "Regional Trade Agreement",
+      "description": "EAC provisional tariff concessions for African Continental Free Trade Area"
+    },
+    {
+      "name": "EAC - Tariff Changes for FY 2023/24",
+      "url": "https://globaltaxnews.ey.com/news/2023-1308-east-african-community-implements-tariff-changes-for-the-financial-year-2023-24",
+      "type": "Policy Update",
+      "description": "EAC tariff changes implementation for 2023/24 financial year"
+    },
+    {
+      "name": "EAGC - EAC CET 35% Band Announcement",
+      "url": "https://eagc.org/2022/08/18/the-east-africa-community-publishes-the-new-common-external-tariff-schedule-with-a-new-35-tariff-band-/",
+      "type": "Industry Update",
+      "description": "East Africa Global Competitiveness Council announcement of new 35% CET band"
+    }
+  ],
+  "tariff_band_structure": {
+    "band_1": {
+      "rate": "0%",
+      "category": "Raw materials and capital goods",
+      "examples": "Unprocessed agricultural products, industrial machinery"
+    },
+    "band_2": {
+      "rate": "10%",
+      "category": "Intermediate goods",
+      "examples": "Semi-processed materials"
+    },
+    "band_3": {
+      "rate": "25%",
+      "category": "Finished goods",
+      "examples": "Manufactured consumer products"
+    },
+    "band_4": {
+      "rate": "35%",
+      "category": "Sensitive items",
+      "examples": "Protected agricultural and industrial products",
+      "note": "Added in 2022"
+    }
+  },
+  "special_features": {
+    "sensitive_items": {
+      "included": true,
+      "note": "Special provisions in fifth column of tariff schedule for Sensitive Items (SI)"
+    },
+    "preferential_access": {
+      "afcfta": true,
+      "description": "Reduced tariffs for trade within African Continental Free Trade Area"
+    }
+  },
+  "digitalization_initiative": {
+    "status": "In progress",
+    "goal": "Digitalize CET to enhance private sector participation in international trade"
+  },
+  "customs_union_members": {
+    "core": ["Kenya", "Uganda", "Tanzania", "Rwanda", "Burundi"],
+    "acceding": ["South Sudan", "Democratic Republic of Congo (DRC)"]
+  },
+  "data_collection_status": "COMPLETE",
+  "files_available": [
+    "EAC-CET-2022-VERSION-30TH-JUNE-Fn.pdf (recommended primary source)",
+    "EAC-COMMON-EXTERNAL-TARIFF-VERSION-2022-as-updated-June-2025"
+  ],
+  "next_steps": [
+    "Download EAC CET 2022 (June 2025 version) from KRA or EABC website",
+    "Extract all HS codes and tariff band assignments",
+    "Identify items with Sensitive Item (SI) designation",
+    "Note preferential rates for AfCFTA partners",
+    "Cross-reference with individual country portals for any local derogations"
+  ],
+  "notes": "EAC CET 2022 (June 2025 update) is the most current version. 4-band structure with 35% sensitive item band. Kenya Revenue Authority and EAC Secretariat are primary sources. AfCFTA preferential schedule available for intra-African trade. Digitalization of CET in progress."
+}

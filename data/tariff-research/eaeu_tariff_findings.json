@@ -1,0 +1,89 @@
+{
+  "source": "EAEU (Eurasian Economic Union) Common Customs Tariff",
+  "collection_date": "2026-03-07",
+  "findings": {
+    "system_overview": {
+      "name": "EAEU Common Customs Tariff",
+      "authority": "Eurasian Economic Commission (EEC)",
+      "url": "https://eec.eaeunion.org/en/",
+      "description": "Common tariff system for the Eurasian Economic Union member states",
+      "member_countries": [
+        "Russia",
+        "Belarus",
+        "Kazakhstan",
+        "Armenia",
+        "Kyrgyzstan"
+      ],
+      "access": "Public information available"
+    },
+    "tariff_code_specifications": {
+      "code_level": "10-digit tariff codes",
+      "nomenclature": "Eurasian Commodity Nomenclature (ECN)",
+      "coverage": "All goods subject to customs tariffs in EAEU member states",
+      "harmonization": "Unified tariff system across all member states"
+    },
+    "organizational_structure": {
+      "primary_organization": "Eurasian Economic Commission (EEC)",
+      "relevant_departments": [
+        {
+          "name": "Department of Customs and Tariff Regulation",
+          "function": "Manages EAEU tariff policy and rates"
+        },
+        {
+          "name": "FEA Nomenclature Section",
+          "function": "Maintains commodity nomenclature"
+        },
+        {
+          "name": "Common Customs Tariff Section",
+          "function": "Maintains and updates tariff rates"
+        }
+      ]
+    },
+    "access_points": {
+      "eec_website": {
+        "url": "https://eec.eaeunion.org/en/comission/department/catr/ttr/default.php",
+        "description": "Customs and Tariff Regulation information",
+        "content": "Tariff information organized by department"
+      },
+      "eec_customs_code": {
+        "url": "https://eec.eaeunion.org/upload/medialibrary/9dd/Customs-Code-of-the-EAEU.pdf",
+        "document_type": "Official PDF",
+        "description": "Unofficial English translation of EAEU Customs Code"
+      }
+    },
+    "bulk_download_capability": {
+      "status": "UNCLEAR",
+      "documentation": "Not explicitly documented in available sources",
+      "potential_access_points": [
+        "EEC website customs tariff section",
+        "Direct contact with EEC"
+      ],
+      "notes": "Database structure exists but download mechanism not clearly publicized"
+    },
+    "data_availability": {
+      "scope": "Applied tariff rates for all EAEU members",
+      "uniformity": "Common tariff rates across all member states",
+      "specificity": "10-digit codes with detailed classifications"
+    },
+    "regulatory_context": {
+      "key_instruments": [
+        "EAEU Customs Code",
+        "Common Customs Tariff",
+        "Tariff preferences and agreements",
+        "Tariff exemptions and special regimes"
+      ],
+      "coverage": "Import/export tariffs, customs procedures, trade preferences"
+    },
+    "assessment": {
+      "importance": "HIGH - Covers Russia and major Eurasian economies",
+      "data_quality": "Official source - high reliability",
+      "accessibility": "Limited public documentation on bulk download mechanisms",
+      "recommendation": "HIGH PRIORITY - Contact EEC directly at https://eec.eaeunion.org/ for bulk tariff database access; Russia is a major economy"
+    }
+  },
+  "sources": [
+    "https://eec.eaeunion.org/en/",
+    "https://eec.eaeunion.org/en/comission/department/catr/ttr/default.php",
+    "https://eec.eaeunion.org/upload/medialibrary/9dd/Customs-Code-of-the-EAEU.pdf"
+  ]
+}

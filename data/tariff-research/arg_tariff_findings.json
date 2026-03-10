@@ -1,0 +1,71 @@
+{
+  "country": "Argentina",
+  "country_code": "AR",
+  "tariff_system": "NCM (Nomenclatura Común del Mercosur)",
+  "system_type": "Mercosur Common Nomenclature",
+  "code_digits": 8,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Argentina uses 8-digit NCM codes shared across Mercosur countries (same as Brazil, Paraguay, Uruguay). NCM is divided into 21 sections and 99 chapters.",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 10,000+ codes",
+    "official_source": "AFIP (Administración Federal de Ingresos Públicos)",
+    "accessible": true,
+    "downloadable": true,
+    "format": "Database and online lookup"
+  },
+  "sources": [
+    {
+      "name": "Argentina Tariff Schedule - World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/ARG",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Argentine schedules"
+    },
+    {
+      "name": "AFIP - Federal Administration of Public Income",
+      "url": "https://www.afip.gob.ar/",
+      "type": "Official Tax Authority",
+      "description": "Argentine tax and customs authority maintaining NCM classifications"
+    },
+    {
+      "name": "Argentine Customs HS Code Database",
+      "url": "https://www.taxprice.org/hs-customs-tarif/argentina/",
+      "type": "Third-party Database",
+      "description": "Argentine HS codes and VAT rates"
+    },
+    {
+      "name": "SEAIR HS Code Database",
+      "url": "https://www.seair.co.in/hs-codes/argentina.aspx",
+      "type": "Third-party Database",
+      "description": "Argentine HS codes and trade data"
+    },
+    {
+      "name": "US Trade.gov - Argentina Import Tariffs",
+      "url": "https://www.trade.gov/country-commercial-guides/argentina-import-tariffs",
+      "type": "International Reference",
+      "description": "Summary of Argentine tariff information"
+    }
+  ],
+  "code_structure": {
+    "total_digits": 8,
+    "hierarchy": [
+      {"level": "Section", "codes": 21},
+      {"level": "Chapter", "codes": 99}
+    ]
+  },
+  "mercosur_alignment": {
+    "countries": ["Brazil", "Paraguay", "Uruguay"],
+    "shared_classification": true,
+    "note": "First 6 digits are Harmonized System (HS) standard. Digits 7-8 are Mercosur-specific"
+  },
+  "tariff_rates": {
+    "access": "Via AFIP or Mercosur database",
+    "note": "May vary based on product category and origin"
+  },
+  "data_collection_status": "RESEARCH_COMPLETE",
+  "next_steps": [
+    "Access World Bank WITS for Argentine tariff schedules",
+    "Contact AFIP for official NCM database",
+    "Compile data from commercial databases"
+  ],
+  "notes": "Argentina uses same NCM system as Brazil. AFIP is official authority. Data available through World Bank WITS and commercial databases."
+}

@@ -1,1080 +1,229 @@
 /**
- * POTAL HS Code Database - EXPANDED
- *
- * Comprehensive consumer product HS Codes with keyword matching.
- * Covers 40+ chapters and 300+ product categories in cross-border e-commerce.
- *
- * Sources: WCO Harmonized System, US HTSUS, EU TARIC
- *
- * Phase 1: ~100 most common product categories (keyword match)
- * Phase 2: EXPANSION to 300+ entries with full chapter coverage
+ * POTAL HS Code Database -- WCO HS 2022 Complete
+ * Total: 5371 codes across 96 chapters
+ * Sources: WCO HS 2022, USITC HTS, EU TARIC, POTAL e-commerce optimized
+ * Generated: 2026-03-06 (Session 28)
  */
 
 import type { HsCodeEntry } from './types';
 
+import { CHAPTER_01 } from './chapters/ch01'; // Live Animals (34)
+import { CHAPTER_02 } from './chapters/ch02'; // Meat & Edible Meat Offal (68)
+import { CHAPTER_03 } from './chapters/ch03'; // Fish & Crustaceans (190)
+import { CHAPTER_04 } from './chapters/ch04'; // Dairy, Eggs, Honey (33)
+import { CHAPTER_05 } from './chapters/ch05'; // Animal Products NES (16)
+import { CHAPTER_06 } from './chapters/ch06'; // Live Trees & Plants (16)
+import { CHAPTER_07 } from './chapters/ch07'; // Edible Vegetables (68)
+import { CHAPTER_08 } from './chapters/ch08'; // Edible Fruit & Nuts (72)
+import { CHAPTER_09 } from './chapters/ch09'; // Coffee, Tea, Spices (42)
+import { CHAPTER_10 } from './chapters/ch10'; // Cereals (27)
+import { CHAPTER_11 } from './chapters/ch11'; // Milling Products (27)
+import { CHAPTER_12 } from './chapters/ch12'; // Oil Seeds & Plants (49)
+import { CHAPTER_13 } from './chapters/ch13'; // Lac, Gums, Resins (11)
+import { CHAPTER_14 } from './chapters/ch14'; // Vegetable Plaiting Materials (5)
+import { CHAPTER_15 } from './chapters/ch15'; // Animal & Vegetable Fats (50)
+import { CHAPTER_16 } from './chapters/ch16'; // Meat/Fish Preparations (42)
+import { CHAPTER_17 } from './chapters/ch17'; // Sugars & Confectionery (19)
+import { CHAPTER_18 } from './chapters/ch18'; // Cocoa & Preparations (12)
+import { CHAPTER_19 } from './chapters/ch19'; // Cereal & Bakery Products (20)
+import { CHAPTER_20 } from './chapters/ch20'; // Preserved Fruit & Vegetables (56)
+import { CHAPTER_21 } from './chapters/ch21'; // Misc Food Preparations (17)
+import { CHAPTER_22 } from './chapters/ch22'; // Beverages & Vinegar (25)
+import { CHAPTER_23 } from './chapters/ch23'; // Food Industry Residues (24)
+import { CHAPTER_24 } from './chapters/ch24'; // Tobacco & Substitutes (10)
+import { CHAPTER_25 } from './chapters/ch25'; // Salt, Sulphur, Stone (68)
+import { CHAPTER_26 } from './chapters/ch26'; // Ores, Slag, Ash (37)
+import { CHAPTER_27 } from './chapters/ch27'; // Mineral Fuels (44)
+import { CHAPTER_28 } from './chapters/ch28'; // Inorganic Chemicals (167)
+import { CHAPTER_29 } from './chapters/ch29'; // Organic Chemicals (336)
+import { CHAPTER_30 } from './chapters/ch30'; // Pharmaceuticals (33)
+import { CHAPTER_31 } from './chapters/ch31'; // Fertilizers (23)
+import { CHAPTER_32 } from './chapters/ch32'; // Tanning & Dyes (47)
+import { CHAPTER_33 } from './chapters/ch33'; // Essential Oils & Perfumes (30)
+import { CHAPTER_34 } from './chapters/ch34'; // Soap & Cleansers (26)
+import { CHAPTER_35 } from './chapters/ch35'; // Albuminoidal Substances (15)
+import { CHAPTER_36 } from './chapters/ch36'; // Explosives (8)
+import { CHAPTER_37 } from './chapters/ch37'; // Photographic Supplies (32)
+import { CHAPTER_38 } from './chapters/ch38'; // Misc Chemical Products (83)
+import { CHAPTER_39 } from './chapters/ch39'; // Plastics & Articles (127)
+import { CHAPTER_40 } from './chapters/ch40'; // Rubber & Articles (89)
+import { CHAPTER_41 } from './chapters/ch41'; // Raw Hides & Skins (37)
+import { CHAPTER_42 } from './chapters/ch42'; // Leather Goods (22)
+import { CHAPTER_43 } from './chapters/ch43'; // Fur Articles (15)
+import { CHAPTER_44 } from './chapters/ch44'; // Wood & Articles (77)
+import { CHAPTER_45 } from './chapters/ch45'; // Cork & Articles (7)
+import { CHAPTER_46 } from './chapters/ch46'; // Basketwork (13)
+import { CHAPTER_47 } from './chapters/ch47'; // Wood Pulp (21)
+import { CHAPTER_48 } from './chapters/ch48'; // Paper & Paperboard (106)
+import { CHAPTER_49 } from './chapters/ch49'; // Books & Printed Materials (20)
+import { CHAPTER_50 } from './chapters/ch50'; // Silk (9)
+import { CHAPTER_51 } from './chapters/ch51'; // Wool & Fine Hair (40)
+import { CHAPTER_52 } from './chapters/ch52'; // Cotton (124)
+import { CHAPTER_53 } from './chapters/ch53'; // Other Vegetable Textiles (23)
+import { CHAPTER_54 } from './chapters/ch54'; // Man-Made Filaments (71)
+import { CHAPTER_55 } from './chapters/ch55'; // Man-Made Staple Fibers (107)
+import { CHAPTER_56 } from './chapters/ch56'; // Wadding & Nonwovens (31)
+import { CHAPTER_57 } from './chapters/ch57'; // Carpets & Rugs (22)
+import { CHAPTER_58 } from './chapters/ch58'; // Special Woven Fabrics (39)
+import { CHAPTER_59 } from './chapters/ch59'; // Impregnated Textiles (24)
+import { CHAPTER_60 } from './chapters/ch60'; // Knitted Fabrics (45)
+import { CHAPTER_61 } from './chapters/ch61'; // Knitted Apparel (113)
+import { CHAPTER_62 } from './chapters/ch62'; // Woven Apparel (121)
+import { CHAPTER_63 } from './chapters/ch63'; // Textile Articles (55)
+import { CHAPTER_64 } from './chapters/ch64'; // Footwear (29)
+import { CHAPTER_65 } from './chapters/ch65'; // Headwear (11)
+import { CHAPTER_66 } from './chapters/ch66'; // Umbrellas (7)
+import { CHAPTER_67 } from './chapters/ch67'; // Feathers & Artificial Flowers (10)
+import { CHAPTER_68 } from './chapters/ch68'; // Stone & Cement (50)
+import { CHAPTER_69 } from './chapters/ch69'; // Ceramics (32)
+import { CHAPTER_70 } from './chapters/ch70'; // Glass & Articles (65)
+import { CHAPTER_71 } from './chapters/ch71'; // Jewelry & Precious Metals (54)
+import { CHAPTER_72 } from './chapters/ch72'; // Iron & Steel (167)
+import { CHAPTER_73 } from './chapters/ch73'; // Iron & Steel Articles (127)
+import { CHAPTER_74 } from './chapters/ch74'; // Copper & Articles (51)
+import { CHAPTER_75 } from './chapters/ch75'; // Nickel & Articles (17)
+import { CHAPTER_76 } from './chapters/ch76'; // Aluminum & Articles (36)
+import { CHAPTER_78 } from './chapters/ch78'; // Lead & Articles (8)
+import { CHAPTER_79 } from './chapters/ch79'; // Zinc & Articles (9)
+import { CHAPTER_80 } from './chapters/ch80'; // Tin & Articles (5)
+import { CHAPTER_81 } from './chapters/ch81'; // Other Base Metals (48)
+import { CHAPTER_82 } from './chapters/ch82'; // Tools & Implements (68)
+import { CHAPTER_83 } from './chapters/ch83'; // Base Metal Articles (38)
+import { CHAPTER_84 } from './chapters/ch84'; // Machinery & Mechanical (515)
+import { CHAPTER_85 } from './chapters/ch85'; // Electrical & Electronics (274)
+import { CHAPTER_86 } from './chapters/ch86'; // Railway (23)
+import { CHAPTER_87 } from './chapters/ch87'; // Vehicles (75)
+import { CHAPTER_88 } from './chapters/ch88'; // Aircraft (15)
+import { CHAPTER_89 } from './chapters/ch89'; // Ships (18)
+import { CHAPTER_90 } from './chapters/ch90'; // Optical & Medical Instruments (148)
+import { CHAPTER_91 } from './chapters/ch91'; // Watches (52)
+import { CHAPTER_92 } from './chapters/ch92'; // Musical Instruments (21)
+import { CHAPTER_93 } from './chapters/ch93'; // Arms & Ammunition (20)
+import { CHAPTER_94 } from './chapters/ch94'; // Furniture (42)
+import { CHAPTER_95 } from './chapters/ch95'; // Toys & Sports (35)
+import { CHAPTER_96 } from './chapters/ch96'; // Misc Manufactured Articles (52)
+import { CHAPTER_97 } from './chapters/ch97'; // Works of Art (9)
+
 export const HS_DATABASE: HsCodeEntry[] = [
-  // ═══ CHAPTER 02: MEAT & EDIBLE MEAT OFFAL ═══
-  { code: '020110', description: 'Fresh beef carcass', chapter: '02', category: 'food',
-    keywords: ['beef', 'fresh meat', 'carcass', 'steak', 'meat'] },
-  { code: '020210', description: 'Fresh pork carcass', chapter: '02', category: 'food',
-    keywords: ['pork', 'fresh meat', 'pork chop', 'ham', 'bacon'] },
-  { code: '020721', description: 'Fresh chicken', chapter: '02', category: 'food',
-    keywords: ['chicken', 'poultry', 'fresh chicken', 'chicken breast', 'chicken wing'] },
-  { code: '020811', description: 'Fresh rabbit meat', chapter: '02', category: 'food',
-    keywords: ['rabbit', 'rabbit meat', 'game meat'] },
-
-  // ═══ CHAPTER 03: FISH & CRUSTACEANS ═══
-  { code: '030349', description: 'Fresh fish', chapter: '03', category: 'food',
-    keywords: ['fish', 'fresh fish', 'salmon', 'tuna', 'cod', 'trout', 'seafood'] },
-  { code: '030613', description: 'Fresh shrimp', chapter: '03', category: 'food',
-    keywords: ['shrimp', 'prawn', 'fresh shrimp', 'seafood', 'crustacean'] },
-  { code: '030621', description: 'Fresh crab', chapter: '03', category: 'food',
-    keywords: ['crab', 'fresh crab', 'seafood', 'shellfish'] },
-  { code: '030741', description: 'Fresh oysters', chapter: '03', category: 'food',
-    keywords: ['oyster', 'shellfish', 'seafood', 'fresh oyster'] },
-  { code: '030799', description: 'Other fresh mollusks', chapter: '03', category: 'food',
-    keywords: ['clam', 'mussel', 'scallop', 'shellfish', 'mollusks'] },
-
-  // ═══ CHAPTER 04: DAIRY, EGGS, HONEY ═══
-  { code: '040110', description: 'Fresh milk', chapter: '04', category: 'food',
-    keywords: ['milk', 'fresh milk', 'dairy', 'liquid milk'] },
-  { code: '040210', description: 'Milk powder', chapter: '04', category: 'food',
-    keywords: ['milk powder', 'powdered milk', 'dairy', 'infant formula'] },
-  { code: '040510', description: 'Butter', chapter: '04', category: 'food',
-    keywords: ['butter', 'dairy', 'butter spread'] },
-  { code: '040610', description: 'Cheese', chapter: '04', category: 'food',
-    keywords: ['cheese', 'cheddar', 'mozzarella', 'dairy', 'cheese block'] },
-  { code: '040710', description: 'Yogurt', chapter: '04', category: 'food',
-    keywords: ['yogurt', 'greek yogurt', 'dairy', 'yoghurt'] },
-  { code: '040811', description: 'Bird eggs', chapter: '04', category: 'food',
-    keywords: ['eggs', 'chicken eggs', 'egg carton', 'egg dozen'] },
-  { code: '040900', description: 'Honey', chapter: '04', category: 'food',
-    keywords: ['honey', 'raw honey', 'bee honey', 'honey jar'] },
-
-  // ═══ CHAPTER 07: EDIBLE VEGETABLES ═══
-  { code: '070310', description: 'Onions', chapter: '07', category: 'food',
-    keywords: ['onion', 'red onion', 'yellow onion', 'white onion', 'vegetable'] },
-  { code: '070410', description: 'Cabbage', chapter: '07', category: 'food',
-    keywords: ['cabbage', 'green cabbage', 'red cabbage', 'vegetable'] },
-  { code: '070510', description: 'Lettuce', chapter: '07', category: 'food',
-    keywords: ['lettuce', 'salad', 'romaine', 'iceberg', 'greens', 'vegetable'] },
-  { code: '070610', description: 'Carrots', chapter: '07', category: 'food',
-    keywords: ['carrot', 'baby carrot', 'organic carrot', 'vegetable'] },
-  { code: '070700', description: 'Cucumbers', chapter: '07', category: 'food',
-    keywords: ['cucumber', 'pickle', 'vegetable', 'fresh cucumber'] },
-  { code: '070810', description: 'Peas', chapter: '07', category: 'food',
-    keywords: ['pea', 'green pea', 'peas frozen', 'vegetable'] },
-  { code: '070920', description: 'Asparagus', chapter: '07', category: 'food',
-    keywords: ['asparagus', 'fresh asparagus', 'green asparagus', 'vegetable'] },
-  { code: '071010', description: 'Mushrooms', chapter: '07', category: 'food',
-    keywords: ['mushroom', 'shiitake', 'button mushroom', 'portobello', 'vegetable'] },
-  { code: '071120', description: 'Peppers', chapter: '07', category: 'food',
-    keywords: ['bell pepper', 'pepper', 'red pepper', 'green pepper', 'chili', 'vegetable'] },
-  { code: '071390', description: 'Tomatoes', chapter: '07', category: 'food',
-    keywords: ['tomato', 'cherry tomato', 'beefsteak tomato', 'vegetable', 'fresh tomato'] },
-
-  // ═══ CHAPTER 08: EDIBLE FRUIT & NUTS ═══
-  { code: '080120', description: 'Coconuts', chapter: '08', category: 'food',
-    keywords: ['coconut', 'coconut meat', 'dried coconut', 'fruit', 'coconut water'] },
-  { code: '080210', description: 'Bananas', chapter: '08', category: 'food',
-    keywords: ['banana', 'plantain', 'fresh banana', 'fruit'] },
-  { code: '080300', description: 'Dates', chapter: '08', category: 'food',
-    keywords: ['date', 'medjool', 'date fruit', 'dried fruit'] },
-  { code: '080410', description: 'Figs', chapter: '08', category: 'food',
-    keywords: ['fig', 'dried fig', 'fruit', 'fig jam'] },
-  { code: '080520', description: 'Avocados', chapter: '08', category: 'food',
-    keywords: ['avocado', 'fresh avocado', 'hass avocado', 'fruit'] },
-  { code: '080610', description: 'Grapes', chapter: '08', category: 'food',
-    keywords: ['grape', 'fresh grape', 'red grape', 'green grape', 'raisin', 'fruit'] },
-  { code: '080720', description: 'Melons', chapter: '08', category: 'food',
-    keywords: ['watermelon', 'cantaloupe', 'honeydew', 'melon', 'fruit'] },
-  { code: '080810', description: 'Apples', chapter: '08', category: 'food',
-    keywords: ['apple', 'fresh apple', 'fuji apple', 'granny smith', 'fruit'] },
-  { code: '080820', description: 'Pears', chapter: '08', category: 'food',
-    keywords: ['pear', 'fresh pear', 'fruit', 'bosc pear'] },
-  { code: '080930', description: 'Apricots', chapter: '08', category: 'food',
-    keywords: ['apricot', 'fresh apricot', 'dried apricot', 'fruit'] },
-  { code: '081010', description: 'Strawberries', chapter: '08', category: 'food',
-    keywords: ['strawberry', 'fresh strawberry', 'frozen strawberry', 'fruit'] },
-  { code: '081020', description: 'Raspberries', chapter: '08', category: 'food',
-    keywords: ['raspberry', 'fresh raspberry', 'berry', 'fruit'] },
-  { code: '081030', description: 'Blackberries', chapter: '08', category: 'food',
-    keywords: ['blackberry', 'blueberry', 'berry', 'fresh berry', 'fruit'] },
-  { code: '081110', description: 'Oranges', chapter: '08', category: 'food',
-    keywords: ['orange', 'fresh orange', 'navel orange', 'citrus', 'fruit'] },
-  { code: '081120', description: 'Lemons', chapter: '08', category: 'food',
-    keywords: ['lemon', 'fresh lemon', 'lime', 'citrus', 'fruit'] },
-  { code: '081130', description: 'Grapefruit', chapter: '08', category: 'food',
-    keywords: ['grapefruit', 'fresh grapefruit', 'citrus', 'fruit'] },
-  { code: '081220', description: 'Mangoes', chapter: '08', category: 'food',
-    keywords: ['mango', 'fresh mango', 'ripe mango', 'tropical fruit'] },
-  { code: '081310', description: 'Cashew nuts', chapter: '08', category: 'food',
-    keywords: ['cashew', 'cashew nut', 'roasted cashew', 'nut'] },
-  { code: '081320', description: 'Almonds', chapter: '08', category: 'food',
-    keywords: ['almond', 'raw almond', 'roasted almond', 'nut'] },
-  { code: '081340', description: 'Walnuts', chapter: '08', category: 'food',
-    keywords: ['walnut', 'black walnut', 'english walnut', 'nut'] },
-  { code: '081350', description: 'Pistachios', chapter: '08', category: 'food',
-    keywords: ['pistachio', 'roasted pistachio', 'salted pistachio', 'nut'] },
-
-  // ═══ CHAPTER 09: COFFEE, TEA, SPICES ═══
-  { code: '090111', description: 'Coffee beans (not roasted)', chapter: '09', category: 'food',
-    keywords: ['coffee bean', 'green coffee', 'unroasted coffee', 'arabica'] },
-  { code: '090121', description: 'Roasted coffee', chapter: '09', category: 'food',
-    keywords: ['coffee', 'roasted coffee', 'ground coffee', 'espresso'] },
-  { code: '090210', description: 'Coffee husks', chapter: '09', category: 'food',
-    keywords: ['coffee husks', 'coffee byproducts'] },
-  { code: '090240', description: 'Coffee substitutes', chapter: '09', category: 'food',
-    keywords: ['chicory', 'coffee substitute', 'instant coffee'] },
-  { code: '090410', description: 'Tea', chapter: '09', category: 'food',
-    keywords: ['tea', 'black tea', 'green tea', 'oolong tea', 'white tea', 'tea bags', 'loose tea'] },
-  { code: '090710', description: 'Cloves', chapter: '09', category: 'food',
-    keywords: ['clove', 'spice', 'dried clove', 'clove bud'] },
-  { code: '090811', description: 'Vanilla beans', chapter: '09', category: 'food',
-    keywords: ['vanilla', 'vanilla bean', 'vanilla extract', 'spice'] },
-  { code: '091010', description: 'Nutmeg', chapter: '09', category: 'food',
-    keywords: ['nutmeg', 'ground nutmeg', 'whole nutmeg', 'spice'] },
-  { code: '091020', description: 'Cinnamon', chapter: '09', category: 'food',
-    keywords: ['cinnamon', 'cinnamon stick', 'ground cinnamon', 'spice'] },
-  { code: '091090', description: 'Other spices', chapter: '09', category: 'food',
-    keywords: ['spice', 'cumin', 'coriander', 'cardamom', 'pepper', 'paprika'] },
-
-  // ═══ CHAPTER 15: ANIMAL & VEGETABLE FATS/OILS ═══
-  { code: '150710', description: 'Refined coconut oil', chapter: '15', category: 'food',
-    keywords: ['coconut oil', 'cooking oil', 'virgin coconut oil', 'organic oil'] },
-  { code: '150910', description: 'Olive oil', chapter: '15', category: 'food',
-    keywords: ['olive oil', 'extra virgin olive oil', 'cooking oil', 'premium oil'] },
-  { code: '151110', description: 'Palm oil', chapter: '15', category: 'food',
-    keywords: ['palm oil', 'cooking oil', 'vegetable oil'] },
-  { code: '151290', description: 'Sunflower oil', chapter: '15', category: 'food',
-    keywords: ['sunflower oil', 'cooking oil', 'vegetable oil', 'canola oil'] },
-  { code: '151510', description: 'Butter', chapter: '15', category: 'food',
-    keywords: ['butter', 'ghee', 'clarified butter', 'dairy fat'] },
-  { code: '151620', description: 'Lard', chapter: '15', category: 'food',
-    keywords: ['lard', 'animal fat', 'pork fat', 'cooking fat'] },
-
-  // ═══ CHAPTER 16: MEAT/FISH PREPARATIONS ═══
-  { code: '160100', description: 'Sausages', chapter: '16', category: 'food',
-    keywords: ['sausage', 'hot dog', 'meat sausage', 'processed meat', 'deli meat'] },
-  { code: '160210', description: 'Canned beef', chapter: '16', category: 'food',
-    keywords: ['corned beef', 'beef jerky', 'canned meat', 'processed beef'] },
-  { code: '160300', description: 'Extracted meat', chapter: '16', category: 'food',
-    keywords: ['meat extract', 'bouillon', 'stock concentrate', 'broth'] },
-  { code: '160413', description: 'Canned tuna', chapter: '16', category: 'food',
-    keywords: ['canned tuna', 'tuna fish', 'canned fish', 'seafood'] },
-  { code: '160500', description: 'Crab/lobster preparations', chapter: '16', category: 'food',
-    keywords: ['canned crab', 'canned seafood', 'processed seafood'] },
-
-  // ═══ CHAPTER 17: SUGARS & SUGAR CONFECTIONERY ═══
-  { code: '170111', description: 'Raw cane sugar', chapter: '17', category: 'food',
-    keywords: ['sugar', 'cane sugar', 'raw sugar', 'brown sugar'] },
-  { code: '170191', description: 'Refined sugar', chapter: '17', category: 'food',
-    keywords: ['white sugar', 'granulated sugar', 'refined sugar'] },
-  { code: '170210', description: 'Lactose', chapter: '17', category: 'food',
-    keywords: ['lactose', 'milk sugar', 'dairy ingredient'] },
-  { code: '170290', description: 'Maple syrup', chapter: '17', category: 'food',
-    keywords: ['maple syrup', 'syrup', 'sugar syrup', 'sweetener'] },
-  { code: '170310', description: 'Molasses', chapter: '17', category: 'food',
-    keywords: ['molasses', 'blackstrap molasses', 'sweetener'] },
-  { code: '170490', description: 'Candy', chapter: '17', category: 'food',
-    keywords: ['candy', 'sweets', 'lollipop', 'hard candy', 'gummy'] },
-
-  // ═══ CHAPTER 18: COCOA & COCOA PREPARATIONS ═══
-  { code: '180100', description: 'Cocoa beans', chapter: '18', category: 'food',
-    keywords: ['cocoa bean', 'cacao', 'cocoa powder', 'chocolate ingredient'] },
-  { code: '180200', description: 'Cocoa shells', chapter: '18', category: 'food',
-    keywords: ['cocoa nibs', 'cocoa mass', 'unsweetened cocoa'] },
-  { code: '180310', description: 'Cocoa butter', chapter: '18', category: 'food',
-    keywords: ['cocoa butter', 'cacao butter', 'cosmetic butter'] },
-  { code: '180400', description: 'Cocoa powder', chapter: '18', category: 'food',
-    keywords: ['cocoa powder', 'unsweetened cocoa', 'baking cocoa'] },
-  { code: '180520', description: 'Chocolate', chapter: '18', category: 'food',
-    keywords: ['chocolate', 'dark chocolate', 'milk chocolate', 'chocolate bar', 'cocoa chocolate'] },
-  { code: '180690', description: 'Chocolate preparations', chapter: '18', category: 'food',
-    keywords: ['chocolate spread', 'chocolate sauce', 'hot chocolate mix', 'chocolate drink'] },
-
-  // ═══ CHAPTER 19: CEREAL & BAKERY PRODUCTS ═══
-  { code: '190210', description: 'Pasta', chapter: '19', category: 'food',
-    keywords: ['pasta', 'spaghetti', 'penne', 'noodles', 'macaroni'] },
-  { code: '190220', description: 'Ramen noodles', chapter: '19', category: 'food',
-    keywords: ['ramen', 'instant noodles', 'noodles', 'asian noodles'] },
-  { code: '190410', description: 'Cereal breakfast', chapter: '19', category: 'food',
-    keywords: ['cereal', 'breakfast cereal', 'granola', 'oatmeal', 'muesli'] },
-  { code: '190510', description: 'Bread', chapter: '19', category: 'food',
-    keywords: ['bread', 'white bread', 'whole wheat bread', 'sourdough', 'bakery'] },
-  { code: '190520', description: 'Biscuits', chapter: '19', category: 'food',
-    keywords: ['biscuit', 'cookie', 'crackers', 'wafer', 'snack'] },
-  { code: '190590', description: 'Pastries', chapter: '19', category: 'food',
-    keywords: ['pastry', 'cake', 'donut', 'croissant', 'dessert', 'bakery'] },
-
-  // ═══ CHAPTER 20: PRESERVED FRUIT & VEGETABLES ═══
-  { code: '200110', description: 'Tomato sauce', chapter: '20', category: 'food',
-    keywords: ['tomato sauce', 'pasta sauce', 'marinara', 'preserved vegetable'] },
-  { code: '200210', description: 'Canned tomatoes', chapter: '20', category: 'food',
-    keywords: ['canned tomato', 'diced tomato', 'whole tomato', 'preserved vegetable'] },
-  { code: '200320', description: 'Canned mushrooms', chapter: '20', category: 'food',
-    keywords: ['canned mushroom', 'pickled mushroom', 'preserved vegetable'] },
-  { code: '200510', description: 'Pickles', chapter: '20', category: 'food',
-    keywords: ['pickle', 'pickled vegetable', 'fermented vegetable', 'cucumber pickle'] },
-  { code: '200711', description: 'Canned peaches', chapter: '20', category: 'food',
-    keywords: ['canned peach', 'canned fruit', 'preserved fruit', 'peach halves'] },
-  { code: '200720', description: 'Canned pineapple', chapter: '20', category: 'food',
-    keywords: ['canned pineapple', 'pineapple juice', 'preserved fruit', 'tropical fruit'] },
-  { code: '200810', description: 'Fruit jams', chapter: '20', category: 'food',
-    keywords: ['jam', 'jelly', 'preserves', 'marmalade', 'fruit spread'] },
-
-  // ═══ CHAPTER 21: MISCELLANEOUS FOOD PREPARATIONS ═══
-  { code: '210110', description: 'Bouillon cubes', chapter: '21', category: 'food',
-    keywords: ['bouillon', 'stock cube', 'broth cube', 'seasoning'] },
-  { code: '210210', description: 'Yeast', chapter: '21', category: 'food',
-    keywords: ['yeast', 'baker yeast', 'active yeast', 'brewing yeast'] },
-  { code: '210320', description: 'Soy sauce', chapter: '21', category: 'food',
-    keywords: ['soy sauce', 'tamari', 'asian sauce', 'condiment'] },
-  { code: '210390', description: 'Sauces & condiments', chapter: '21', category: 'food',
-    keywords: ['sauce', 'ketchup', 'mayonnaise', 'mustard', 'condiment', 'salsa'] },
-  { code: '210410', description: 'Soups', chapter: '21', category: 'food',
-    keywords: ['soup', 'instant soup', 'soup mix', 'ramen broth'] },
-  { code: '210500', description: 'Ice cream', chapter: '21', category: 'food',
-    keywords: ['ice cream', 'frozen dessert', 'gelato', 'frozen treat'] },
-  { code: '210690', description: 'Protein supplements', chapter: '21', category: 'health',
-    keywords: ['protein powder', 'whey protein', 'supplement', 'nutritional'] },
-
-  // ═══ CHAPTER 22: BEVERAGES & VINEGAR ═══
-  { code: '220210', description: 'Still water', chapter: '22', category: 'beverages',
-    keywords: ['water', 'drinking water', 'purified water', 'spring water', 'mineral water'] },
-  { code: '220300', description: 'Beer', chapter: '22', category: 'beverages',
-    keywords: ['beer', 'lager', 'ale', 'craft beer', 'stout'] },
-  { code: '220410', description: 'Wine', chapter: '22', category: 'beverages',
-    keywords: ['wine', 'red wine', 'white wine', 'sparkling wine', 'champagne', 'prosecco'] },
-  { code: '220500', description: 'Vermouth & fortified wine', chapter: '22', category: 'beverages',
-    keywords: ['vermouth', 'fortified wine', 'sherry', 'port', 'madeira'] },
-  { code: '220600', description: 'Spirits & liqueurs', chapter: '22', category: 'beverages',
-    keywords: ['vodka', 'whiskey', 'rum', 'gin', 'tequila', 'brandy', 'liqueur', 'spirit'] },
-  { code: '220710', description: 'Undenatured ethanol', chapter: '22', category: 'beverages',
-    keywords: ['alcohol', 'ethanol', 'grain alcohol', 'spirits'] },
-  { code: '220820', description: 'Vinegar', chapter: '22', category: 'food',
-    keywords: ['vinegar', 'apple cider vinegar', 'balsamic vinegar', 'white vinegar'] },
-  { code: '220900', description: 'Fruit juices', chapter: '22', category: 'beverages',
-    keywords: ['juice', 'orange juice', 'apple juice', 'coconut juice', 'fresh juice'] },
-  { code: '221011', description: 'Soft drinks', chapter: '22', category: 'beverages',
-    keywords: ['soda', 'cola', 'lemonade', 'soft drink', 'carbonated beverage'] },
-  { code: '221120', description: 'Protein drinks', chapter: '22', category: 'beverages',
-    keywords: ['protein shake', 'sports drink', 'energy drink', 'functional beverage'] },
-
-  // ═══ CHAPTER 27: MINERAL FUELS ═══
-  { code: '270710', description: 'Petroleum oil', chapter: '27', category: 'industrial',
-    keywords: ['crude oil', 'petroleum', 'gasoline', 'diesel'] },
-  { code: '271011', description: 'Liquefied gas', chapter: '27', category: 'industrial',
-    keywords: ['lpg', 'propane', 'butane', 'liquefied gas'] },
-
-  // ═══ CHAPTER 28: INORGANIC CHEMICALS ═══
-  { code: '280530', description: 'Hydrogen', chapter: '28', category: 'industrial',
-    keywords: ['hydrogen', 'chemical', 'industrial gas'] },
-  { code: '280860', description: 'Chlorine', chapter: '28', category: 'industrial',
-    keywords: ['chlorine', 'bleach', 'chemical', 'disinfectant'] },
-  { code: '281410', description: 'Calcium hydroxide', chapter: '28', category: 'industrial',
-    keywords: ['calcium hydroxide', 'slaked lime', 'chemical'] },
-
-  // ═══ CHAPTER 29: ORGANIC CHEMICALS ═══
-  { code: '290511', description: 'Hydrocarbons', chapter: '29', category: 'industrial',
-    keywords: ['hydrocarbon', 'chemical', 'organic compound'] },
-  { code: '291090', description: 'Alcohols & derivates', chapter: '29', category: 'industrial',
-    keywords: ['ethanol', 'methanol', 'organic alcohol', 'chemical'] },
-
-  // ═══ CHAPTER 30: PHARMACEUTICALS ═══
-  { code: '300110', description: 'Glands & organs extracts', chapter: '30', category: 'health',
-    keywords: ['pharmaceutical', 'medicine', 'extract', 'hormone'] },
-  { code: '300210', description: 'Human blood', chapter: '30', category: 'health',
-    keywords: ['blood', 'plasma', 'medical', 'pharmaceutical'] },
-  { code: '300390', description: 'Medicines (human)', chapter: '30', category: 'health',
-    keywords: ['medicine', 'tablet', 'pill', 'antibiotic', 'painkiller', 'aspirin', 'ibuprofen', 'cough syrup'] },
-  { code: '300420', description: 'Vaccines', chapter: '30', category: 'health',
-    keywords: ['vaccine', 'immunization', 'medical', 'pharmaceutical'] },
-  { code: '300491', description: 'Veterinary medicines', chapter: '30', category: 'health',
-    keywords: ['pet medicine', 'veterinary', 'animal health', 'pet supplements'] },
-  { code: '300590', description: 'Plasters & bandages', chapter: '30', category: 'health',
-    keywords: ['band-aid', 'bandage', 'adhesive plaster', 'medical tape', 'gauze'] },
-
-  // ═══ CHAPTER 32: TANNING & DYES ═══
-  { code: '320100', description: 'Tanning extracts', chapter: '32', category: 'industrial',
-    keywords: ['tanning agent', 'dye', 'leather treatment'] },
-  { code: '320500', description: 'Paints & varnishes', chapter: '32', category: 'home',
-    keywords: ['paint', 'varnish', 'coating', 'interior paint', 'exterior paint', 'acrylic paint'] },
-  { code: '320600', description: 'Paint preparations', chapter: '32', category: 'home',
-    keywords: ['primer', 'paint thinner', 'paint remover', 'sealant'] },
-  { code: '320710', description: 'Printing ink', chapter: '32', category: 'office',
-    keywords: ['ink', 'printer ink', 'ballpoint pen ink', 'ink cartridge'] },
-  { code: '320900', description: 'Inks & dyes', chapter: '32', category: 'industrial',
-    keywords: ['dye', 'ink', 'pigment', 'colorant', 'textile dye'] },
-
-  // ═══ CHAPTER 33: ESSENTIAL OILS & PERFUMES ═══
-  { code: '330110', description: 'Essential oils', chapter: '33', category: 'beauty',
-    keywords: ['essential oil', 'aromatherapy', 'lavender oil', 'peppermint oil', 'tea tree oil'] },
-  { code: '330129', description: 'Perfume oils', chapter: '33', category: 'beauty',
-    keywords: ['fragrance', 'perfume oil', 'aromatic oil'] },
-  { code: '330300', description: 'Perfumes', chapter: '33', category: 'beauty',
-    keywords: ['perfume', 'eau de parfum', 'eau de toilette', 'fragrance', 'cologne'] },
-  { code: '330410', description: 'Beauty/makeup products', chapter: '33', category: 'beauty',
-    keywords: ['makeup', 'lipstick', 'foundation', 'mascara', 'eyeshadow', 'concealer', 'blush', 'cosmetic', 'eyeliner', 'powder'] },
-  { code: '330510', description: 'Hair care products', chapter: '33', category: 'beauty',
-    keywords: ['shampoo', 'conditioner', 'hair oil', 'hair spray', 'hair dye', 'hair mask', 'hair gel', 'leave-in conditioner'] },
-  { code: '330730', description: 'Skincare & lotions', chapter: '33', category: 'beauty',
-    keywords: ['skincare', 'moisturizer', 'sunscreen', 'serum', 'cleanser', 'lotion', 'deodorant', 'body wash', 'face cream', 'anti-wrinkle'] },
-
-  // ═══ CHAPTER 34: SOAP, CLEANSERS & POLISHES ═══
-  { code: '340111', description: 'Toilet soap', chapter: '34', category: 'beauty',
-    keywords: ['soap', 'hand soap', 'body soap', 'glycerin soap', 'castile soap'] },
-  { code: '340119', description: 'Other soaps', chapter: '34', category: 'beauty',
-    keywords: ['laundry soap', 'bar soap', 'organic soap', 'exfoliating soap'] },
-  { code: '340210', description: 'Soap based on surface-active agents', chapter: '34', category: 'home',
-    keywords: ['detergent', 'laundry detergent', 'dish soap', 'multipurpose cleaner'] },
-  { code: '340220', description: 'Cleaning preparations', chapter: '34', category: 'home',
-    keywords: ['cleaner', 'surface cleaner', 'floor cleaner', 'bathroom cleaner', 'window cleaner', 'antibacterial cleaner'] },
-  { code: '340290', description: 'Other cleaning products', chapter: '34', category: 'home',
-    keywords: ['disinfectant', 'sanitizer', 'bleach', 'stain remover', 'carpet cleaner'] },
-  { code: '340300', description: 'Polishes', chapter: '34', category: 'home',
-    keywords: ['furniture polish', 'shoe polish', 'metal polish', 'car wax'] },
-  { code: '340400', description: 'Artificial waxes', chapter: '34', category: 'home',
-    keywords: ['wax', 'dental wax', 'hair removal wax'] },
-  { code: '340600', description: 'Candles', chapter: '34', category: 'home',
-    keywords: ['candle', 'scented candle', 'wax melt', 'tealight', 'pillar candle', 'votive candle'] },
-
-  // ═══ CHAPTER 37: PHOTOGRAPHIC & CINEMATOGRAPHIC SUPPLIES ═══
-  { code: '370110', description: 'Photographic film', chapter: '37', category: 'electronics',
-    keywords: ['film', 'camera film', '35mm film', 'photography'] },
-  { code: '370200', description: 'Photo paper', chapter: '37', category: 'office',
-    keywords: ['photo paper', 'glossy paper', 'matte photo paper', 'printing paper'] },
-  { code: '370390', description: 'Photographic chemicals', chapter: '37', category: 'industrial',
-    keywords: ['photo chemicals', 'developing chemicals', 'darkroom supplies'] },
-
-  // ═══ CHAPTER 38: MISCELLANEOUS CHEMICAL PRODUCTS ═══
-  { code: '380210', description: 'Activated carbon', chapter: '38', category: 'industrial',
-    keywords: ['activated charcoal', 'carbon filter', 'water filter'] },
-  { code: '381100', description: 'Disinfectants', chapter: '38', category: 'home',
-    keywords: ['disinfectant', 'surface disinfectant', 'hand sanitizer', 'antibacterial'] },
-  { code: '381520', description: 'Adhesives', chapter: '38', category: 'office',
-    keywords: ['glue', 'adhesive', 'wood glue', 'super glue', 'construction adhesive'] },
-
-  // ═══ CHAPTER 39: PLASTICS & ARTICLES ═══
-  { code: '390210', description: 'Polyethylene', chapter: '39', category: 'industrial',
-    keywords: ['plastic', 'polyethylene', 'hdpe', 'ldpe'] },
-  { code: '390720', description: 'Polyvinyl chloride', chapter: '39', category: 'industrial',
-    keywords: ['pvc', 'vinyl', 'plastic pipe', 'plastic sheet'] },
-  { code: '391000', description: 'Silicones', chapter: '39', category: 'industrial',
-    keywords: ['silicone', 'rubber compound', 'sealant'] },
-  { code: '392010', description: 'Plastic bags', chapter: '39', category: 'home',
-    keywords: ['plastic bag', 'storage bag', 'ziplock bag', 'trash bag', 'garbage bag'] },
-  { code: '392090', description: 'Other plastic bags', chapter: '39', category: 'home',
-    keywords: ['shopping bag', 'plastic tote', 'reusable bag'] },
-  { code: '392410', description: 'Plastic dinnerware', chapter: '39', category: 'home',
-    keywords: ['plastic plate', 'plastic cup', 'plastic bowl', 'disposable dinnerware'] },
-  { code: '392590', description: 'Other plastic household articles', chapter: '39', category: 'home',
-    keywords: ['plastic container', 'storage bin', 'water bottle', 'tupperware', 'lunch box', 'ice cube tray'] },
-  { code: '392620', description: 'Plastic bottle caps', chapter: '39', category: 'home',
-    keywords: ['bottle cap', 'plastic cap', 'lid'] },
-  { code: '392690', description: 'Other plastic articles', chapter: '39', category: 'accessories',
-    keywords: ['phone case', 'plastic cover', 'screen protector', 'protective case', 'silicone case', 'case cover'] },
-
-  // ═══ CHAPTER 40: RUBBER & ARTICLES ═══
-  { code: '400110', description: 'Natural rubber', chapter: '40', category: 'industrial',
-    keywords: ['rubber', 'natural rubber', 'latex'] },
-  { code: '401110', description: 'Pneumatic tires', chapter: '40', category: 'automotive',
-    keywords: ['tire', 'car tire', 'truck tire', 'bicycle tire', 'tyre'] },
-  { code: '401210', description: 'Solid rubber tires', chapter: '40', category: 'automotive',
-    keywords: ['solid tire', 'rubber tire', 'industrial tire'] },
-  { code: '401520', description: 'Rubber tubes', chapter: '40', category: 'automotive',
-    keywords: ['inner tube', 'rubber tube', 'inflatable tube'] },
-  { code: '401600', description: 'Other rubber articles', chapter: '40', category: 'home',
-    keywords: ['rubber mat', 'yoga mat', 'rubber gasket', 'rubber seal'] },
-  { code: '402000', description: 'Rubber ducks & toys', chapter: '40', category: 'toys',
-    keywords: ['rubber duck', 'squeak toy', 'bath toy'] },
-
-  // ═══ CHAPTER 42: LEATHER GOODS ═══
-  { code: '420110', description: 'Saddlery', chapter: '42', category: 'accessories',
-    keywords: ['saddle', 'horse tack', 'bridle', 'equestrian'] },
-  { code: '420210', description: 'Trunks, suitcases, bags', chapter: '42', category: 'bags',
-    keywords: ['handbag', 'purse', 'wallet', 'backpack', 'luggage', 'suitcase', 'bag', 'tote', 'clutch', 'briefcase', 'leather bag', 'crossbody bag'] },
-  { code: '420310', description: 'Belts', chapter: '42', category: 'accessories',
-    keywords: ['belt', 'leather belt', 'dress belt', 'casual belt'] },
-  { code: '420500', description: 'Clothing articles', chapter: '42', category: 'apparel',
-    keywords: ['leather jacket', 'leather pants', 'leather vest', 'leather coat'] },
-
-  // ═══ CHAPTER 43: FUR ARTICLES ═══
-  { code: '430100', description: 'Raw furskins', chapter: '43', category: 'accessories',
-    keywords: ['fur', 'animal skin', 'pelt'] },
-  { code: '430210', description: 'Tanned/dressed furskins', chapter: '43', category: 'accessories',
-    keywords: ['processed fur', 'tanned fur'] },
-  { code: '430300', description: 'Fur articles', chapter: '43', category: 'apparel',
-    keywords: ['fur coat', 'fur stole', 'fur trim', 'fur collar', 'luxury fur'] },
-
-  // ═══ CHAPTER 44: WOOD & ARTICLES ═══
-  { code: '440110', description: 'Fuel wood', chapter: '44', category: 'home',
-    keywords: ['firewood', 'wood logs', 'charcoal', 'heating wood'] },
-  { code: '441010', description: 'Particleboard', chapter: '44', category: 'furniture',
-    keywords: ['particle board', 'wood panel', 'mdf', 'plywood'] },
-  { code: '441210', description: 'Plywood', chapter: '44', category: 'furniture',
-    keywords: ['plywood', 'wood sheet', 'veneer'] },
-  { code: '442010', description: 'Wooden furniture', chapter: '44', category: 'furniture',
-    keywords: ['wooden table', 'wooden chair', 'wood desk', 'wood cabinet', 'wooden furniture'] },
-  { code: '442090', description: 'Other wooden items', chapter: '44', category: 'home',
-    keywords: ['cutting board', 'wooden spoon', 'wooden utensil', 'wooden bowl', 'wood decor'] },
-
-  // ═══ CHAPTER 46: BASKETWORK, WICKERWORK ═══
-  { code: '460110', description: 'Baskets', chapter: '46', category: 'home',
-    keywords: ['basket', 'wicker basket', 'storage basket', 'decorative basket', 'picnic basket'] },
-  { code: '460190', description: 'Other wicker articles', chapter: '46', category: 'home',
-    keywords: ['wicker furniture', 'rattan chair', 'woven furniture', 'basket weave'] },
-
-  // ═══ CHAPTER 48: PAPER & PAPERBOARD ARTICLES ═══
-  { code: '480110', description: 'Newsprint', chapter: '48', category: 'office',
-    keywords: ['newspaper', 'newsprint', 'print paper'] },
-  { code: '481830', description: 'Toilet paper', chapter: '48', category: 'home',
-    keywords: ['toilet paper', 'bathroom tissue', 'tissue paper', 'paper rolls'] },
-  { code: '481840', description: 'Facial tissue', chapter: '48', category: 'home',
-    keywords: ['tissue', 'facial tissue', 'kleenex', 'paper tissue'] },
-  { code: '481850', description: 'Kitchen paper', chapter: '48', category: 'home',
-    keywords: ['paper towel', 'kitchen towel', 'napkin', 'paper napkin'] },
-  { code: '481900', description: 'Carbon paper', chapter: '48', category: 'office',
-    keywords: ['carbon paper', 'copy paper', 'carbonless paper'] },
-  { code: '482010', description: 'Cardboard boxes', chapter: '48', category: 'office',
-    keywords: ['box', 'cardboard box', 'shipping box', 'storage box', 'carton'] },
-  { code: '483600', description: 'Sanitary paper articles', chapter: '48', category: 'home',
-    keywords: ['paper cup', 'paper plate', 'disposable plate', 'paper container'] },
-  { code: '483900', description: 'Other paper articles', chapter: '48', category: 'office',
-    keywords: ['paper bag', 'envelope', 'greeting card', 'postcard', 'notebook'] },
-
-  // ═══ CHAPTER 49: BOOKS & PRINTED MATERIALS ═══
-  { code: '490110', description: 'Printed books', chapter: '49', category: 'books',
-    keywords: ['book', 'novel', 'textbook', 'comic', 'manga', 'guide', 'cookbook', 'autobiography'] },
-  { code: '490191', description: 'Digital books', chapter: '49', category: 'books',
-    keywords: ['ebook', 'digital book', 'pdf book'] },
-  { code: '490200', description: 'Newspapers', chapter: '49', category: 'books',
-    keywords: ['newspaper', 'publication', 'news'] },
-  { code: '490300', description: 'Magazines & periodicals', chapter: '49', category: 'books',
-    keywords: ['magazine', 'journal', 'periodical', 'publication'] },
-  { code: '490510', description: 'Maps', chapter: '49', category: 'office',
-    keywords: ['map', 'wall map', 'road map', 'topographic map'] },
-
-  // ═══ CHAPTER 50: SILK ARTICLES ═══
-  { code: '500200', description: 'Silk yarn', chapter: '50', category: 'textiles',
-    keywords: ['silk yarn', 'silk thread', 'embroidery silk'] },
-  { code: '500400', description: 'Silk fabrics', chapter: '50', category: 'textiles',
-    keywords: ['silk fabric', 'silk cloth', 'silk textile', 'charmeuse silk'] },
-
-  // ═══ CHAPTER 51: WOOL ARTICLES ═══
-  { code: '510210', description: 'Wool yarn', chapter: '51', category: 'textiles',
-    keywords: ['wool yarn', 'knitting yarn', 'wool thread', 'merino yarn'] },
-  { code: '510520', description: 'Wool fabrics', chapter: '51', category: 'textiles',
-    keywords: ['wool fabric', 'wool cloth', 'tweed', 'felt'] },
-
-  // ═══ CHAPTER 52: COTTON ARTICLES ═══
-  { code: '520100', description: 'Cotton yarn', chapter: '52', category: 'textiles',
-    keywords: ['cotton yarn', 'cotton thread', 'embroidery thread'] },
-  { code: '520512', description: 'Plain cotton fabric', chapter: '52', category: 'textiles',
-    keywords: ['cotton fabric', 'cotton cloth', 'cotton textile', 'muslin'] },
-
-  // ═══ CHAPTER 54: MAN-MADE FILAMENT YARNS ═══
-  { code: '540710', description: 'Polyester yarn', chapter: '54', category: 'textiles',
-    keywords: ['polyester yarn', 'synthetic yarn', 'polyester thread'] },
-  { code: '540813', description: 'Acrylic yarn', chapter: '54', category: 'textiles',
-    keywords: ['acrylic yarn', 'knitting yarn', 'synthetic yarn'] },
-
-  // ═══ CHAPTER 55: MAN-MADE STAPLE FIBER YARNS ═══
-  { code: '550110', description: 'Nylon yarn', chapter: '55', category: 'textiles',
-    keywords: ['nylon yarn', 'polyamide yarn', 'synthetic yarn'] },
-  { code: '550620', description: 'Polypropylene yarn', chapter: '55', category: 'textiles',
-    keywords: ['polypropylene yarn', 'pp yarn', 'synthetic yarn'] },
-
-  // ═══ CHAPTER 56: WADDING & ARTICLES ═══
-  { code: '560100', description: 'Wadding & articles', chapter: '56', category: 'textiles',
-    keywords: ['wadding', 'padding', 'fiberfill', 'quilting padding'] },
-  { code: '560210', description: 'Felt', chapter: '56', category: 'textiles',
-    keywords: ['felt', 'wool felt', 'craft felt', 'decorative felt'] },
-
-  // ═══ CHAPTER 57: CARPETS & RUGS ═══
-  { code: '570110', description: 'Carpets of wool', chapter: '57', category: 'furniture',
-    keywords: ['carpet', 'wool carpet', 'area rug', 'floor rug', 'oriental rug'] },
-  { code: '570210', description: 'Carpets of synthetic', chapter: '57', category: 'furniture',
-    keywords: ['synthetic carpet', 'nylon carpet', 'polyester carpet', 'modern rug'] },
-  { code: '570290', description: 'Other carpets', chapter: '57', category: 'furniture',
-    keywords: ['floor mat', 'door mat', 'welcome mat', 'yoga mat'] },
-
-  // ═══ CHAPTER 58: SPECIAL WOVEN FABRICS ═══
-  { code: '580110', description: 'Pile fabrics', chapter: '58', category: 'textiles',
-    keywords: ['velvet', 'corduroy', 'upholstery fabric', 'plush fabric'] },
-  { code: '580210', description: 'Chenille yarn fabrics', chapter: '58', category: 'textiles',
-    keywords: ['chenille', 'upholstery', 'textured fabric'] },
-
-  // ═══ CHAPTER 60: KNITTED FABRICS ═══
-  { code: '601010', description: 'Cotton knit fabrics', chapter: '60', category: 'textiles',
-    keywords: ['knit fabric', 'jersey', 'cotton knit', 'stretchy fabric'] },
-  { code: '601020', description: 'Synthetic knit fabrics', chapter: '60', category: 'textiles',
-    keywords: ['polyester knit', 'synthetic knit', 'stretch fabric'] },
-
-  // ═══ CHAPTER 61: KNITTED APPAREL ═══
-  { code: '610910', description: 'T-shirts of cotton (knitted)', chapter: '61', category: 'apparel',
-    keywords: ['t-shirt', 'tshirt', 'tee', 'cotton t-shirt', 'graphic tee', 'plain tee', 'crew neck'] },
-  { code: '610920', description: 'T-shirts of synthetic (knitted)', chapter: '61', category: 'apparel',
-    keywords: ['polyester tee', 'synthetic t-shirt', 'performance tee'] },
-  { code: '610990', description: 'Other t-shirts (knitted)', chapter: '61', category: 'apparel',
-    keywords: ['blended tee', 'mixed fiber tee', 'comfort tee'] },
-  { code: '611010', description: 'Sweaters of wool', chapter: '61', category: 'apparel',
-    keywords: ['wool sweater', 'cashmere sweater', 'merino sweater', 'knit sweater'] },
-  { code: '611020', description: 'Sweaters of synthetic', chapter: '61', category: 'apparel',
-    keywords: ['acrylic sweater', 'polyester sweater', 'synthetic sweater'] },
-  { code: '611030', description: 'Sweaters of cotton', chapter: '61', category: 'apparel',
-    keywords: ['cotton sweater', 'casual sweater', 'lightweight sweater'] },
-  { code: '611090', description: 'Sweaters of other fibers', chapter: '61', category: 'apparel',
-    keywords: ['mixed fiber sweater', 'blended sweater', 'specialty sweater'] },
-  { code: '611110', description: 'Jerseys & pullovers', chapter: '61', category: 'apparel',
-    keywords: ['pullover', 'jersey', 'long sleeve tee', 'crew neck pullover'] },
-  { code: '611200', description: 'Cardigans', chapter: '61', category: 'apparel',
-    keywords: ['cardigan', 'button up sweater', 'button cardigan', 'open cardigan'] },
-  { code: '611510', description: 'Socks of synthetic', chapter: '61', category: 'apparel',
-    keywords: ['sock', 'socks', 'crew socks', 'ankle socks', 'athletic socks'] },
-  { code: '611520', description: 'Socks of wool', chapter: '61', category: 'apparel',
-    keywords: ['wool socks', 'merino socks', 'hiking socks', 'warm socks'] },
-  { code: '611590', description: 'Other hosiery', chapter: '61', category: 'apparel',
-    keywords: ['stockings', 'tights', 'pantyhose', 'compression stockings', 'leggings'] },
-  { code: '611610', description: 'Gloves of synthetic', chapter: '61', category: 'apparel',
-    keywords: ['glove', 'winter glove', 'knit glove', 'mittens', 'thermal glove'] },
-  { code: '611620', description: 'Gloves of wool', chapter: '61', category: 'apparel',
-    keywords: ['wool glove', 'cashmere glove', 'warm glove'] },
-  { code: '611710', description: 'Swimwear (knitted)', chapter: '61', category: 'apparel',
-    keywords: ['swimsuit', 'bikini', 'swim trunk', 'swimming suit', 'rash guard', 'swimwear'] },
-
-  // ═══ CHAPTER 62: WOVEN APPAREL ═══
-  { code: '620110', description: 'Men overcoats & raincoats', chapter: '62', category: 'apparel',
-    keywords: ['overcoat', 'raincoat', 'long coat', 'wool coat', 'dress coat'] },
-  { code: '620210', description: 'Men jackets & blazers', chapter: '62', category: 'apparel',
-    keywords: ['jacket', 'blazer', 'sport coat', 'wind jacket', 'denim jacket', 'leather jacket'] },
-  { code: '620320', description: 'Men trousers & shorts', chapter: '62', category: 'apparel',
-    keywords: ['pants', 'trousers', 'jeans', 'shorts', 'chino', 'cargo pants', 'dress pants'] },
-  { code: '620330', description: 'Men shorts', chapter: '62', category: 'apparel',
-    keywords: ['shorts', 'board shorts', 'cargo shorts', 'athletic shorts'] },
-  { code: '620510', description: 'Men shirts (woven)', chapter: '62', category: 'apparel',
-    keywords: ['shirt', 'button-up', 'dress shirt', 'polo', 'oxford', 'formal shirt', 'casual shirt'] },
-  { code: '620710', description: 'Women jackets & blazers', chapter: '62', category: 'apparel',
-    keywords: ['women jacket', 'women blazer', 'ladies coat', 'dress jacket'] },
-  { code: '620820', description: 'Women dresses', chapter: '62', category: 'apparel',
-    keywords: ['dress', 'sundress', 'cocktail dress', 'maxi dress', 'shift dress', 'party dress'] },
-  { code: '620830', description: 'Women skirts', chapter: '62', category: 'apparel',
-    keywords: ['skirt', 'mini skirt', 'maxi skirt', 'pencil skirt', 'pleated skirt'] },
-  { code: '620920', description: 'Women trousers & shorts', chapter: '62', category: 'apparel',
-    keywords: ['women pants', 'women shorts', 'ladies trousers', 'capris'] },
-  { code: '621010', description: 'Women shirts & blouses', chapter: '62', category: 'apparel',
-    keywords: ['blouse', 'women shirt', 'button-up blouse', 'silk blouse'] },
-  { code: '621110', description: 'Tracksuits', chapter: '62', category: 'apparel',
-    keywords: ['tracksuit', 'jogging suit', 'athletic suit', 'sweat suit'] },
-  { code: '621120', description: 'Ski suits & swimwear', chapter: '62', category: 'apparel',
-    keywords: ['ski suit', 'swimwear', 'swimsuit', 'bathing suit', 'one-piece'] },
-
-  // ═══ CHAPTER 63: TEXTILE ARTICLES ═══
-  { code: '630210', description: 'Bed sheets', chapter: '63', category: 'home',
-    keywords: ['bed sheet', 'flat sheet', 'fitted sheet', 'linen', 'cotton sheet', 'bedding'] },
-  { code: '630220', description: 'Pillowcases', chapter: '63', category: 'home',
-    keywords: ['pillowcase', 'pillow cover', 'decorative pillow', 'sham'] },
-  { code: '630230', description: 'Duvet covers & comforters', chapter: '63', category: 'home',
-    keywords: ['duvet cover', 'comforter', 'blanket', 'quilt', 'bedding'] },
-  { code: '630240', description: 'Bath towels', chapter: '63', category: 'home',
-    keywords: ['towel', 'bath towel', 'hand towel', 'washcloth', 'terry cloth'] },
-  { code: '630250', description: 'Kitchen towels', chapter: '63', category: 'home',
-    keywords: ['tea towel', 'kitchen cloth', 'dish towel', 'apron'] },
-  { code: '630290', description: 'Other textile articles', chapter: '63', category: 'home',
-    keywords: ['face mask', 'cloth mask', 'fabric mask', 'cleaning cloth', 'textile bag', 'flag', 'banner', 'tablecloth'] },
-
-  // ═══ CHAPTER 64: FOOTWEAR ═══
-  { code: '640110', description: 'Waterproof footwear', chapter: '64', category: 'footwear',
-    keywords: ['rain boot', 'rubber boot', 'waterproof shoe', 'wellington', 'galosh'] },
-  { code: '640210', description: 'Sports shoes & sneakers', chapter: '64', category: 'footwear',
-    keywords: ['sneaker', 'running shoe', 'athletic shoe', 'trainer', 'sports shoe', 'cross-trainer', 'performance shoe'] },
-  { code: '640220', description: 'Tennis & badminton shoes', chapter: '64', category: 'footwear',
-    keywords: ['tennis shoe', 'badminton shoe', 'court shoe', 'athletic shoe'] },
-  { code: '640290', description: 'Other sports footwear', chapter: '64', category: 'footwear',
-    keywords: ['basketball shoe', 'soccer shoe', 'football shoe', 'cleats'] },
-  { code: '640310', description: 'Leather shoes & boots', chapter: '64', category: 'footwear',
-    keywords: ['leather shoe', 'boot', 'sandal', 'loafer', 'oxford', 'heel', 'dress shoe', 'ankle boot', 'leather boot'] },
-  { code: '640320', description: 'Leather sports shoes', chapter: '64', category: 'footwear',
-    keywords: ['leather sneaker', 'casual shoe', 'slip-on shoe'] },
-  { code: '640410', description: 'Textile upper footwear', chapter: '64', category: 'footwear',
-    keywords: ['canvas shoe', 'slipper', 'espadrille', 'flat', 'slip-on', 'loafer'] },
-  { code: '640420', description: 'Slippers', chapter: '64', category: 'footwear',
-    keywords: ['slipper', 'house slipper', 'bedroom slipper', 'fuzzy slipper', 'comfy slipper'] },
-  { code: '640510', description: 'Footwear uppers', chapter: '64', category: 'footwear',
-    keywords: ['shoe upper', 'shoe component', 'shoe part'] },
-  { code: '640610', description: 'Shoe parts', chapter: '64', category: 'footwear',
-    keywords: ['shoe sole', 'heel', 'shoe lace', 'insole', 'shoe insert', 'orthotic'] },
-
-  // ═══ CHAPTER 65: HEADWEAR ═══
-  { code: '650510', description: 'Hats & caps', chapter: '65', category: 'accessories',
-    keywords: ['hat', 'cap', 'beanie', 'baseball cap', 'snapback', 'bucket hat', 'visor', 'headband', 'wool hat', 'sun hat'] },
-  { code: '650520', description: 'Sports headwear', chapter: '65', category: 'accessories',
-    keywords: ['sports cap', 'running cap', 'cycling cap', 'trucker hat'] },
-  { code: '650590', description: 'Other headwear', chapter: '65', category: 'accessories',
-    keywords: ['beret', 'fedora', 'sombrero', 'turban', 'headwrap', 'fascinator'] },
-  { code: '650610', description: 'Hair nets', chapter: '65', category: 'accessories',
-    keywords: ['hair net', 'hair covering', 'chef hat', 'kitchen hat'] },
-
-  // ═══ CHAPTER 66: UMBRELLAS & PARASOLS ═══
-  { code: '660110', description: 'Umbrellas', chapter: '66', category: 'accessories',
-    keywords: ['umbrella', 'rain umbrella', 'compact umbrella', 'beach umbrella', 'automatic umbrella'] },
-  { code: '660200', description: 'Sunshades & parasols', chapter: '66', category: 'accessories',
-    keywords: ['parasol', 'sun shade', 'patio umbrella', 'garden umbrella'] },
-  { code: '660300', description: 'Walking sticks', chapter: '66', category: 'accessories',
-    keywords: ['walking stick', 'cane', 'hiking pole', 'travel cane'] },
-
-  // ═══ CHAPTER 67: FEATHERS & ARTIFICIAL FLOWERS ═══
-  { code: '670110', description: 'Feathers', chapter: '67', category: 'craft',
-    keywords: ['feather', 'craft feather', 'decorative feather', 'feather boa'] },
-  { code: '670200', description: 'Artificial flowers', chapter: '67', category: 'home',
-    keywords: ['artificial flower', 'fake flower', 'silk flower', 'floral arrangement', 'flower bouquet'] },
-
-  // ═══ CHAPTER 68: STONE & CEMENT ARTICLES ═══
-  { code: '680110', description: 'Setts, paving stones', chapter: '68', category: 'industrial',
-    keywords: ['paving stone', 'stone tile', 'slate', 'granite paver'] },
-  { code: '680210', description: 'Cement & articles', chapter: '68', category: 'industrial',
-    keywords: ['cement', 'concrete', 'mortar', 'building material'] },
-  { code: '680300', description: 'Worked stone articles', chapter: '68', category: 'home',
-    keywords: ['stone tile', 'marble', 'granite', 'decorative stone'] },
-
-  // ═══ CHAPTER 69: CERAMICS ═══
-  { code: '690110', description: 'Brick', chapter: '69', category: 'industrial',
-    keywords: ['brick', 'clay brick', 'building brick'] },
-  { code: '690210', description: 'Ceramic tiles', chapter: '69', category: 'home',
-    keywords: ['ceramic tile', 'floor tile', 'wall tile', 'bathroom tile', 'kitchen tile'] },
-  { code: '691110', description: 'Tableware of porcelain', chapter: '69', category: 'home',
-    keywords: ['mug', 'cup', 'plate', 'bowl', 'ceramic', 'porcelain', 'dinnerware', 'tea set', 'dishes'] },
-  { code: '691120', description: 'Tableware of bone china', chapter: '69', category: 'home',
-    keywords: ['bone china', 'fine china', 'dinnerware set', 'fancy dishes'] },
-  { code: '691300', description: 'Decorative ceramics', chapter: '69', category: 'home',
-    keywords: ['ceramic vase', 'decorative pot', 'ceramic figurine', 'art pottery'] },
-
-  // ═══ CHAPTER 70: GLASS & ARTICLES ═══
-  { code: '700500', description: 'Glass sheets', chapter: '70', category: 'industrial',
-    keywords: ['glass sheet', 'window glass', 'plate glass', 'mirror'] },
-  { code: '701510', description: 'Glass bottles', chapter: '70', category: 'home',
-    keywords: ['glass bottle', 'wine bottle', 'beer bottle', 'storage bottle'] },
-  { code: '701710', description: 'Glass glasses & drinkware', chapter: '70', category: 'home',
-    keywords: ['glass cup', 'drinking glass', 'wine glass', 'beer glass', 'water glass', 'pint glass'] },
-  { code: '701990', description: 'Other glassware', chapter: '70', category: 'home',
-    keywords: ['glass vase', 'glass bowl', 'glass jar', 'glass container'] },
-
-  // ═══ CHAPTER 71: JEWELRY & PRECIOUS METALS ═══
-  { code: '711311', description: 'Jewelry of gold', chapter: '71', category: 'jewelry',
-    keywords: ['gold jewelry', 'gold ring', 'gold necklace', 'gold bracelet', 'gold earring'] },
-  { code: '711320', description: 'Jewelry of silver', chapter: '71', category: 'jewelry',
-    keywords: ['silver jewelry', 'silver ring', 'silver necklace', 'sterling silver'] },
-  { code: '711590', description: 'Jewelry of other precious metal', chapter: '71', category: 'jewelry',
-    keywords: ['platinum jewelry', 'white gold', 'luxury jewelry', 'fine jewelry'] },
-  { code: '711710', description: 'Imitation jewelry', chapter: '71', category: 'jewelry',
-    keywords: ['jewelry', 'necklace', 'bracelet', 'earring', 'ring', 'pendant', 'brooch', 'costume jewelry', 'fashion jewelry', 'statement jewelry'] },
-
-  // ═══ CHAPTER 73: IRON & STEEL ARTICLES ═══
-  { code: '730210', description: 'Iron bars & rods', chapter: '73', category: 'industrial',
-    keywords: ['steel rod', 'iron bar', 'rebar', 'metal rod'] },
-  { code: '730350', description: 'Iron tubes & pipes', chapter: '73', category: 'industrial',
-    keywords: ['steel pipe', 'iron pipe', 'metal tube', 'plumbing pipe'] },
-  { code: '731010', description: 'Nails', chapter: '73', category: 'tools',
-    keywords: ['nail', 'steel nail', 'finishing nail', 'fastener'] },
-  { code: '731020', description: 'Bolts & screws', chapter: '73', category: 'tools',
-    keywords: ['screw', 'bolt', 'nut', 'washer', 'fastener', 'hardware'] },
-  { code: '732310', description: 'Cookware & kitchen articles', chapter: '73', category: 'home',
-    keywords: ['pot', 'pan', 'cookware', 'stainless steel pot', 'baking sheet', 'wok', 'frying pan', 'kitchen knife', 'cooking utensil'] },
-  { code: '732390', description: 'Other steel household articles', chapter: '73', category: 'home',
-    keywords: ['steel bowl', 'storage container', 'steel rack', 'metal shelf'] },
-
-  // ═══ CHAPTER 74: COPPER & ARTICLES ═══
-  { code: '740100', description: 'Copper', chapter: '74', category: 'industrial',
-    keywords: ['copper', 'copper wire', 'copper sheet', 'metal'] },
-  { code: '741400', description: 'Copper articles', chapter: '74', category: 'home',
-    keywords: ['copper pot', 'copper kettle', 'copper cookware', 'copper decoration'] },
-
-  // ═══ CHAPTER 76: ALUMINUM & ARTICLES ═══
-  { code: '760110', description: 'Aluminum', chapter: '76', category: 'industrial',
-    keywords: ['aluminum', 'aluminum foil', 'aluminum sheet', 'metal'] },
-  { code: '761610', description: 'Aluminum tables & furniture', chapter: '76', category: 'furniture',
-    keywords: ['aluminum furniture', 'metal frame', 'lightweight furniture'] },
-  { code: '761690', description: 'Other aluminum articles', chapter: '76', category: 'home',
-    keywords: ['aluminum pot', 'aluminum pan', 'aluminum tray', 'aluminum cookware'] },
-
-  // ═══ CHAPTER 82: TOOLS & IMPLEMENTS ═══
-  { code: '820110', description: 'Hand tools (spades)', chapter: '82', category: 'tools',
-    keywords: ['spade', 'shovel', 'garden tool', 'digging tool'] },
-  { code: '820130', description: 'Hand tools (pickaxes)', chapter: '82', category: 'tools',
-    keywords: ['pickaxe', 'mattock', 'garden tool'] },
-  { code: '820150', description: 'Hand tools (saws)', chapter: '82', category: 'tools',
-    keywords: ['saw', 'hand saw', 'cutting tool', 'pruning saw'] },
-  { code: '820230', description: 'Wrenches', chapter: '82', category: 'tools',
-    keywords: ['wrench', 'adjustable wrench', 'socket wrench', 'monkey wrench'] },
-  { code: '820240', description: 'Screwdrivers', chapter: '82', category: 'tools',
-    keywords: ['screwdriver', 'phillips head', 'flathead', 'multi-tool'] },
-  { code: '820300', description: 'Pliers & cutters', chapter: '82', category: 'tools',
-    keywords: ['plier', 'wire cutter', 'cutting plier', 'needle nose plier'] },
-  { code: '820400', description: 'Clamps & vises', chapter: '82', category: 'tools',
-    keywords: ['clamp', 'vise', 'c-clamp', 'bar clamp', 'woodworking'] },
-  { code: '820500', description: 'Percussion tools', chapter: '82', category: 'tools',
-    keywords: ['hammer', 'mallet', 'sledge hammer', 'nail hammer', 'rubber mallet'] },
-  { code: '820600', description: 'Measuring tools', chapter: '82', category: 'tools',
-    keywords: ['tape measure', 'ruler', 'level', 'measuring tape', 'carpenter level'] },
-  { code: '820730', description: 'Knife sharpeners', chapter: '82', category: 'tools',
-    keywords: ['knife sharpener', 'sharpening stone', 'honing steel'] },
-
-  // ═══ CHAPTER 83: BASE METAL ARTICLES ═══
-  { code: '830210', description: 'Locks', chapter: '83', category: 'home',
-    keywords: ['lock', 'padlock', 'door lock', 'keyed lock', 'combination lock'] },
-  { code: '830220', description: 'Hinges', chapter: '83', category: 'home',
-    keywords: ['hinge', 'door hinge', 'cabinet hinge', 'hardware'] },
-  { code: '830240', description: 'Handles & knobs', chapter: '83', category: 'home',
-    keywords: ['knob', 'handle', 'door handle', 'cabinet knob', 'hardware'] },
-  { code: '830300', description: 'Pipe fittings', chapter: '83', category: 'industrial',
-    keywords: ['fitting', 'pipe fitting', 'connector', 'coupling', 'plumbing'] },
-  { code: '830500', description: 'Chain links', chapter: '83', category: 'industrial',
-    keywords: ['chain', 'metal chain', 'link chain', 'jewelry chain'] },
-
-  // ═══ CHAPTER 84: MACHINERY & MECHANICAL APPLIANCES ═══
-  { code: '840290', description: 'Other steam engines', chapter: '84', category: 'industrial',
-    keywords: ['engine', 'steam engine', 'industrial equipment'] },
-  { code: '840350', description: 'Internal combustion engines', chapter: '84', category: 'automotive',
-    keywords: ['engine', 'motor', 'car engine', 'gasoline engine'] },
-  { code: '840440', description: 'Hydraulic engines', chapter: '84', category: 'industrial',
-    keywords: ['hydraulic', 'pump', 'hydraulic pump'] },
-  { code: '840680', description: 'Pumps', chapter: '84', category: 'industrial',
-    keywords: ['pump', 'water pump', 'fuel pump', 'circulation pump'] },
-  { code: '840820', description: 'Ball bearings', chapter: '84', category: 'industrial',
-    keywords: ['bearing', 'ball bearing', 'roller bearing', 'mechanical part'] },
-  { code: '840890', description: 'Other transmission elements', chapter: '84', category: 'industrial',
-    keywords: ['transmission', 'gear', 'belt', 'pulley', 'mechanical'] },
-  { code: '841230', description: 'Air conditioning units', chapter: '84', category: 'appliances',
-    keywords: ['air conditioner', 'ac unit', 'cooling system', 'hvac'] },
-  { code: '841350', description: 'Refrigerators', chapter: '84', category: 'appliances',
-    keywords: ['refrigerator', 'fridge', 'freezer', 'ice maker', 'cooler'] },
-  { code: '841410', description: 'Industrial furnaces', chapter: '84', category: 'industrial',
-    keywords: ['oven', 'furnace', 'kiln', 'industrial oven'] },
-  { code: '841581', description: 'Dishwashers', chapter: '84', category: 'appliances',
-    keywords: ['dishwasher', 'automatic dishwasher', 'kitchen appliance'] },
-  { code: '841640', description: 'Washing machines', chapter: '84', category: 'appliances',
-    keywords: ['washing machine', 'washer', 'laundry machine', 'front loader', 'top loader'] },
-  { code: '841680', description: 'Dryers', chapter: '84', category: 'appliances',
-    keywords: ['dryer', 'clothes dryer', 'tumble dryer', 'laundry dryer'] },
-  { code: '841920', description: 'Mills & grinders', chapter: '84', category: 'appliances',
-    keywords: ['coffee grinder', 'spice grinder', 'food mill', 'food processor'] },
-  { code: '842010', description: 'Weighing machines', chapter: '84', category: 'tools',
-    keywords: ['scale', 'bathroom scale', 'weight scale', 'digital scale'] },
-  { code: '843081', description: 'Presses', chapter: '84', category: 'industrial',
-    keywords: ['press', 'hydraulic press', 'heat press'] },
-  { code: '843210', description: 'Drawers for filing', chapter: '84', category: 'office',
-    keywords: ['file cabinet', 'filing cabinet', 'office cabinet', 'document storage'] },
-  { code: '844110', description: 'Binding machinery', chapter: '84', category: 'office',
-    keywords: ['binder', 'binding machine', 'book binder'] },
-
-  // ═══ CHAPTER 85: ELECTRICAL & ELECTRONICS ═══
-  { code: '850110', description: 'Generators', chapter: '85', category: 'electronics',
-    keywords: ['generator', 'backup generator', 'portable generator', 'power generator'] },
-  { code: '850220', description: 'Power transformers', chapter: '85', category: 'electronics',
-    keywords: ['transformer', 'power transformer', 'voltage converter'] },
-  { code: '850430', description: 'Printed circuit boards', chapter: '85', category: 'electronics',
-    keywords: ['circuit board', 'motherboard', 'pcb', 'electronic component'] },
-  { code: '850450', description: 'Electronic switches', chapter: '85', category: 'electronics',
-    keywords: ['switch', 'light switch', 'toggle switch', 'power switch'] },
-  { code: '850650', description: 'Primary batteries', chapter: '85', category: 'electronics',
-    keywords: ['battery', 'aa battery', 'aaa battery', 'alkaline battery', 'disposable battery'] },
-  { code: '850710', description: 'Rechargeable batteries', chapter: '85', category: 'electronics',
-    keywords: ['rechargeable battery', 'lithium battery', 'ni-mh battery', 'li-ion battery'] },
-  { code: '851630', description: 'Microphones', chapter: '85', category: 'electronics',
-    keywords: ['microphone', 'condenser mic', 'dynamic mic', 'recording mic', 'vocal mic'] },
-  { code: '851640', description: 'Amplifiers', chapter: '85', category: 'electronics',
-    keywords: ['amplifier', 'amp', 'audio amplifier', 'guitar amp', 'speaker amp'] },
-  { code: '851650', description: 'Signal generators', chapter: '85', category: 'electronics',
-    keywords: ['tone generator', 'signal generator', 'audio tool'] },
-  { code: '851710', description: 'Telephone & modem', chapter: '85', category: 'electronics',
-    keywords: ['telephone', 'phone', 'landline', 'corded phone', 'answering machine'] },
-  { code: '851710', description: 'Smartphones & mobile phones', chapter: '85', category: 'electronics',
-    keywords: ['phone', 'smartphone', 'iphone', 'samsung', 'pixel', 'mobile phone', 'cell phone', 'android phone', 'ios phone'] },
-  { code: '851821', description: 'Earphones & headphones', chapter: '85', category: 'electronics',
-    keywords: ['headphone', 'earphone', 'speaker', 'bluetooth speaker', 'airpods', 'earbuds', 'true wireless', 'over-ear headphones', 'in-ear monitors'] },
-  { code: '851950', description: 'Domestic audio equipment', chapter: '85', category: 'electronics',
-    keywords: ['mp3 player', 'turntable', 'record player', 'audio recorder', 'cd player', 'boombox'] },
-  { code: '852110', description: 'Radar & navigation', chapter: '85', category: 'electronics',
-    keywords: ['gps', 'navigation', 'radar', 'satellite navigation'] },
-  { code: '852120', description: 'Digital video recorders', chapter: '85', category: 'electronics',
-    keywords: ['dvd player', 'blu-ray', 'video recorder', 'streaming device', 'media player', 'dvr'] },
-  { code: '852321', description: 'Storage media (USB, SD cards)', chapter: '85', category: 'electronics',
-    keywords: ['usb drive', 'flash drive', 'sd card', 'memory card', 'usb stick', 'external hard drive', 'ssd drive'] },
-  { code: '852510', description: 'Transmission apparatus', chapter: '85', category: 'electronics',
-    keywords: ['transmitter', 'wifi router', 'wireless adapter'] },
-  { code: '852520', description: 'Reception apparatus', chapter: '85', category: 'electronics',
-    keywords: ['receiver', 'tuner', 'radio receiver'] },
-  { code: '852530', description: 'Color cameras', chapter: '85', category: 'electronics',
-    keywords: ['camera', 'webcam', 'gopro', 'action camera', 'camcorder', 'dslr', 'mirrorless', 'drone camera', 'instant camera'] },
-  { code: '852540', description: 'Video projectors', chapter: '85', category: 'electronics',
-    keywords: ['projector', 'video projector', 'data projector', 'home projector', 'led projector'] },
-  { code: '852580', description: 'Television receivers', chapter: '85', category: 'electronics',
-    keywords: ['tv', 'television', 'led tv', 'oled tv', 'smart tv', '4k tv', 'monitor', 'display screen'] },
-  { code: '850440', description: 'Chargers & power supplies', chapter: '85', category: 'electronics',
-    keywords: ['charger', 'power bank', 'battery', 'adapter', 'power supply', 'usb charger', 'wireless charger', 'fast charger'] },
-  { code: '851610', description: 'Electrical heaters', chapter: '85', category: 'appliances',
-    keywords: ['hair dryer', 'iron', 'heater', 'toaster', 'kettle', 'electric blanket', 'space heater', 'heating element'] },
-  { code: '851621', description: 'Electric cookers', chapter: '85', category: 'appliances',
-    keywords: ['instant pot', 'pressure cooker', 'electric cooker', 'rice cooker', 'slow cooker'] },
-  { code: '851750', description: 'Vacuum cleaners', chapter: '85', category: 'appliances',
-    keywords: ['vacuum', 'upright vacuum', 'robot vacuum', 'handheld vacuum', 'bagless vacuum'] },
-  { code: '851760', description: 'Food processing machines', chapter: '85', category: 'appliances',
-    keywords: ['blender', 'food processor', 'mixer', 'juicer', 'food mill', 'chopper'] },
-
-  // ═══ CHAPTER 87: VEHICLES ═══
-  { code: '870210', description: 'Motorcycles', chapter: '87', category: 'vehicles',
-    keywords: ['motorcycle', 'sport bike', 'cruiser', 'adventure bike', 'street bike'] },
-  { code: '870310', description: 'Cars', chapter: '87', category: 'vehicles',
-    keywords: ['car', 'automobile', 'sedan', 'suv', 'crossover', 'compact car'] },
-  { code: '871110', description: 'E-bikes & motorcycles', chapter: '87', category: 'vehicles',
-    keywords: ['e-bike', 'electric scooter', 'electric motorcycle', 'e-scooter', 'electric bike', 'moped'] },
-  { code: '871210', description: 'Bicycles', chapter: '87', category: 'vehicles',
-    keywords: ['bicycle', 'bike', 'mountain bike', 'road bike', 'bmx', 'hybrid bike', 'fixed gear'] },
-  { code: '871420', description: 'Trailers & caravans', chapter: '87', category: 'vehicles',
-    keywords: ['trailer', 'cargo trailer', 'boat trailer', 'rv', 'camper'] },
-
-  // ═══ CHAPTER 90: OPTICAL & MEDICAL INSTRUMENTS ═══
-  { code: '900110', description: 'Optical microscopes', chapter: '90', category: 'electronics',
-    keywords: ['microscope', 'optical microscope', 'lab equipment'] },
-  { code: '900310', description: 'Eyeglasses', chapter: '90', category: 'accessories',
-    keywords: ['glasses', 'eyeglasses', 'spectacles', 'reading glasses', 'prescription glasses', 'frame'] },
-  { code: '900400', description: 'Sunglasses', chapter: '90', category: 'accessories',
-    keywords: ['sunglasses', 'shades', 'aviator', 'wayfarer', 'designer shades', 'uv protection'] },
-  { code: '901000', description: 'Binoculars', chapter: '90', category: 'electronics',
-    keywords: ['binocular', 'telescope', 'optical device', 'magnifying glass'] },
-  { code: '901180', description: 'Medical instruments', chapter: '90', category: 'health',
-    keywords: ['blood pressure monitor', 'thermometer', 'stethoscope', 'medical device', 'pulse oximeter', 'glucose meter'] },
-  { code: '901890', description: 'Massage apparatus', chapter: '90', category: 'health',
-    keywords: ['massage gun', 'massager', 'therapy', 'tens unit', 'massage chair', 'percussion massager', 'vibration massager'] },
-
-  // ═══ CHAPTER 91: WATCHES ═══
-  { code: '910110', description: 'Wristwatches (precious metal)', chapter: '91', category: 'watches',
-    keywords: ['luxury watch', 'gold watch', 'rolex', 'omega', 'cartier', 'luxury timepiece'] },
-  { code: '910120', description: 'Wristwatches (other materials)', chapter: '91', category: 'watches',
-    keywords: ['watch', 'smartwatch', 'apple watch', 'fitness watch', 'digital watch', 'wristwatch', 'sports watch', 'analog watch'] },
-  { code: '910300', description: 'Clocks', chapter: '91', category: 'home',
-    keywords: ['clock', 'wall clock', 'alarm clock', 'digital clock', 'desk clock', 'grandfather clock'] },
-
-  // ═══ CHAPTER 92: MUSICAL INSTRUMENTS ═══
-  { code: '920210', description: 'Pianos', chapter: '92', category: 'music',
-    keywords: ['piano', 'digital piano', 'keyboard', 'music instrument'] },
-  { code: '920300', description: 'Stringed instruments', chapter: '92', category: 'music',
-    keywords: ['guitar', 'acoustic guitar', 'electric guitar', 'bass', 'violin', 'ukulele', 'banjo', 'harp'] },
-  { code: '920400', description: 'Wind instruments', chapter: '92', category: 'music',
-    keywords: ['trumpet', 'saxophone', 'flute', 'clarinet', 'trombone', 'harmonica', 'recorder'] },
-  { code: '920500', description: 'Percussion instruments', chapter: '92', category: 'music',
-    keywords: ['drum', 'drums', 'percussion', 'cymbals', 'xylophone', 'timpani', 'timpani'] },
-  { code: '920900', description: 'Music scores & parts', chapter: '92', category: 'books',
-    keywords: ['sheet music', 'music score', 'chord chart', 'songbook'] },
-
-  // ═══ CHAPTER 93: ARMS & AMMUNITION ═══
-  { code: '930100', description: 'Guns', chapter: '93', category: 'industrial',
-    keywords: ['firearm', 'shotgun', 'rifle', 'pistol', 'revolver'] },
-  { code: '930200', description: 'Rifles & carbines', chapter: '93', category: 'industrial',
-    keywords: ['rifle', 'carbine', 'hunting rifle', 'assault rifle'] },
-  { code: '930300', description: 'Shotguns', chapter: '93', category: 'industrial',
-    keywords: ['shotgun', 'hunting shotgun', 'sport shotgun'] },
-  { code: '930400', description: 'Ammunition', chapter: '93', category: 'industrial',
-    keywords: ['ammunition', 'bullets', 'shells', 'cartridges'] },
-
-  // ═══ CHAPTER 94: FURNITURE ═══
-  { code: '940110', description: 'Seats & chairs', chapter: '94', category: 'furniture',
-    keywords: ['chair', 'office chair', 'gaming chair', 'stool', 'dining chair', 'accent chair', 'reclining chair'] },
-  { code: '940250', description: 'Beds & frames', chapter: '94', category: 'furniture',
-    keywords: ['bed frame', 'platform bed', 'adjustable bed', 'bunk bed', 'murphy bed'] },
-  { code: '940300', description: 'Bedroom furniture', chapter: '94', category: 'furniture',
-    keywords: ['desk', 'table', 'shelf', 'bookcase', 'cabinet', 'dresser', 'nightstand', 'wardrobe'] },
-  { code: '940340', description: 'Couches & sofas', chapter: '94', category: 'furniture',
-    keywords: ['sofa', 'couch', 'sectional', 'loveseat', 'sleeper sofa', 'futon'] },
-  { code: '940350', description: 'Dining furniture', chapter: '94', category: 'furniture',
-    keywords: ['dining table', 'dining set', 'table', 'extension table', 'folding table'] },
-  { code: '940380', description: 'Office furniture', chapter: '94', category: 'furniture',
-    keywords: ['desk', 'office desk', 'filing cabinet', 'office chair', 'cubicle'] },
-  { code: '940490', description: 'Mattresses & bedding', chapter: '94', category: 'furniture',
-    keywords: ['mattress', 'pillow', 'bedding', 'duvet', 'comforter', 'mattress topper', 'sleeping bag', 'bed pillow'] },
-  { code: '940520', description: 'Lamps & light fixtures', chapter: '94', category: 'furniture',
-    keywords: ['lamp', 'light', 'chandelier', 'led strip', 'desk lamp', 'floor lamp', 'pendant light', 'ceiling light'] },
-  { code: '940540', description: 'Garden furniture', chapter: '94', category: 'furniture',
-    keywords: ['patio furniture', 'garden chair', 'outdoor table', 'deck furniture', 'lounge chair'] },
-
-  // ═══ CHAPTER 95: TOYS & SPORTS EQUIPMENT ═══
-  { code: '950300', description: 'Toys & games', chapter: '95', category: 'toys',
-    keywords: ['toy', 'lego', 'puzzle', 'doll', 'action figure', 'board game', 'plush', 'stuffed animal', 'model kit', 'building blocks'] },
-  { code: '950430', description: 'Video game consoles', chapter: '95', category: 'electronics',
-    keywords: ['playstation', 'xbox', 'nintendo', 'switch', 'game console', 'video game', 'controller', 'gaming console'] },
-  { code: '950500', description: 'Sports equipment', chapter: '95', category: 'sports',
-    keywords: ['yoga mat', 'dumbbell', 'weight', 'gym equipment', 'tennis racket', 'golf club', 'basketball', 'fitness equipment', 'resistance band', 'kettlebell'] },
-  { code: '950610', description: 'Roller skates', chapter: '95', category: 'sports',
-    keywords: ['roller skate', 'inline skate', 'ice skate', 'roller blade', 'skating'] },
-  { code: '950650', description: 'Skis & snowboards', chapter: '95', category: 'sports',
-    keywords: ['ski', 'snowboard', 'winter sports', 'snow gear'] },
-  { code: '950690', description: 'Fishing equipment', chapter: '95', category: 'sports',
-    keywords: ['fishing rod', 'fishing reel', 'fishing gear', 'tackle box', 'fishing lure'] },
-
-  // ═══ CHAPTER 96: MISC MANUFACTURED ARTICLES ═══
-  { code: '960110', description: 'Brooms & brushes', chapter: '96', category: 'home',
-    keywords: ['brush', 'broom', 'mop', 'toothbrush', 'paint brush', 'makeup brush', 'hairbrush', 'cleaning brush'] },
-  { code: '960170', description: 'Mops', chapter: '96', category: 'home',
-    keywords: ['mop', 'mop bucket', 'microfiber mop', 'floor mop'] },
-  { code: '960810', description: 'Pens & pencils', chapter: '96', category: 'stationery',
-    keywords: ['pen', 'pencil', 'marker', 'fountain pen', 'ballpoint', 'highlighter', 'gel pen', 'colored pencil'] },
-  { code: '961600', description: 'Perfume sprayers', chapter: '96', category: 'beauty',
-    keywords: ['perfume', 'cologne', 'fragrance', 'body spray', 'air freshener', 'room spray'] },
-  { code: '960290', description: 'Clothespins & hangers', chapter: '96', category: 'home',
-    keywords: ['clothespin', 'clothes hanger', 'laundry hanger', 'clip'] },
-  { code: '960300', description: 'Buttons & fasteners', chapter: '96', category: 'textiles',
-    keywords: ['button', 'snap', 'hook', 'fastener', 'rivet', 'clasp'] },
-  { code: '960610', description: 'Buttons', chapter: '96', category: 'craft',
-    keywords: ['button', 'decorative button', 'craft button', 'clothing button'] },
-
-  // ═══ CHAPTER 97: WORKS OF ART & COLLECTIBLES ═══
-  { code: '970110', description: 'Paintings & drawings', chapter: '97', category: 'art',
-    keywords: ['painting', 'artwork', 'canvas art', 'drawing', 'portrait', 'landscape'] },
-  { code: '970200', description: 'Engravings & prints', chapter: '97', category: 'art',
-    keywords: ['print', 'engraving', 'lithograph', 'poster', 'art print'] },
-  { code: '970300', description: 'Original sculptures', chapter: '97', category: 'art',
-    keywords: ['sculpture', 'statue', 'carving', 'bronze sculpture', 'stone sculpture'] },
-  { code: '970500', description: 'Antiques', chapter: '97', category: 'art',
-    keywords: ['antique', 'vintage', 'collectible', 'rare item', 'memorabilia'] },
-  { code: '970610', description: 'Stamps', chapter: '97', category: 'collectibles',
-    keywords: ['stamp', 'postage stamp', 'rare stamp', 'philately'] },
-  { code: '970700', description: 'Coins & medals', chapter: '97', category: 'collectibles',
-    keywords: ['coin', 'medal', 'rare coin', 'commemorative', 'numismatic'] },
-
-  // ═══ CRITICAL E-COMMERCE ADDITIONS (Session 24) ═══
-
-  // Laptops & Computers (Ch 84 — most traded cross-border electronics)
-  { code: '847130', description: 'Portable computers (laptops)', chapter: '84', category: 'electronics',
-    keywords: ['laptop', 'notebook', 'macbook', 'chromebook', 'ultrabook', 'portable computer', 'gaming laptop', 'dell', 'lenovo', 'hp laptop', 'thinkpad'] },
-  { code: '847141', description: 'Desktop computers', chapter: '84', category: 'electronics',
-    keywords: ['desktop', 'desktop computer', 'pc', 'workstation', 'imac', 'all-in-one', 'gaming pc', 'tower pc', 'mini pc'] },
-  { code: '847150', description: 'Computer processing units', chapter: '84', category: 'electronics',
-    keywords: ['cpu', 'processor', 'gpu', 'graphics card', 'intel', 'amd', 'nvidia', 'ram', 'computer memory'] },
-  { code: '847160', description: 'Computer peripherals (keyboard, mouse)', chapter: '84', category: 'electronics',
-    keywords: ['keyboard', 'mouse', 'trackpad', 'computer mouse', 'mechanical keyboard', 'wireless mouse', 'gaming mouse', 'gaming keyboard'] },
-  { code: '847130', description: 'Tablets & e-readers', chapter: '84', category: 'electronics',
-    keywords: ['tablet', 'ipad', 'samsung tab', 'kindle', 'e-reader', 'fire tablet', 'android tablet', 'drawing tablet', 'wacom'] },
-  { code: '844332', description: 'Printers', chapter: '84', category: 'electronics',
-    keywords: ['printer', 'inkjet', 'laser printer', 'multifunction printer', 'scanner', 'copier', '3d printer', 'label printer'] },
-
-  // Drones (Ch 88)
-  { code: '880211', description: 'Drones & unmanned aircraft', chapter: '88', category: 'electronics',
-    keywords: ['drone', 'quadcopter', 'dji', 'mavic', 'fpv drone', 'camera drone', 'racing drone', 'uav'] },
-
-  // Networking & Smart Home
-  { code: '851762', description: 'Network equipment (routers)', chapter: '85', category: 'electronics',
-    keywords: ['router', 'wifi router', 'mesh wifi', 'network switch', 'access point', 'modem', 'wifi extender'] },
-  { code: '852691', description: 'Smart home devices', chapter: '85', category: 'electronics',
-    keywords: ['smart speaker', 'alexa', 'echo', 'google home', 'smart display', 'smart hub', 'nest'] },
-  { code: '853180', description: 'Smart doorbells & security cameras', chapter: '85', category: 'electronics',
-    keywords: ['ring doorbell', 'security camera', 'ip camera', 'baby monitor', 'doorbell camera', 'smart lock'] },
-  { code: '852849', description: 'VR headsets & AR glasses', chapter: '85', category: 'electronics',
-    keywords: ['vr headset', 'virtual reality', 'oculus', 'meta quest', 'ar glasses', 'vr goggles'] },
-
-  // Phone Cases & Accessories
-  { code: '392690', description: 'Phone cases (plastic)', chapter: '39', category: 'accessories',
-    keywords: ['phone case', 'iphone case', 'samsung case', 'phone cover', 'protective case', 'silicone case', 'popsocket'] },
-  { code: '854442', description: 'Cables & connectors', chapter: '85', category: 'electronics',
-    keywords: ['usb cable', 'usb-c', 'lightning cable', 'hdmi cable', 'charging cable', 'aux cable', 'thunderbolt'] },
-  { code: '854140', description: 'LED lighting devices', chapter: '85', category: 'electronics',
-    keywords: ['led bulb', 'led strip', 'led light', 'smart bulb', 'rgb light', 'fairy lights', 'string lights', 'grow light'] },
-
-  // Pet Products
-  { code: '230910', description: 'Pet food (dog)', chapter: '23', category: 'pet',
-    keywords: ['dog food', 'pet food', 'kibble', 'dog treat', 'puppy food'] },
-  { code: '230920', description: 'Pet food (cat)', chapter: '23', category: 'pet',
-    keywords: ['cat food', 'cat treat', 'kitten food', 'wet cat food'] },
-  { code: '420100', description: 'Pet collars & leashes', chapter: '42', category: 'pet',
-    keywords: ['dog collar', 'pet leash', 'cat collar', 'pet harness', 'dog harness'] },
-
-  // Baby Products
-  { code: '871500', description: 'Baby strollers', chapter: '87', category: 'baby',
-    keywords: ['stroller', 'baby stroller', 'pram', 'carriage', 'pushchair', 'jogger stroller'] },
-  { code: '940171', description: 'Baby car seats', chapter: '94', category: 'baby',
-    keywords: ['car seat', 'baby car seat', 'infant car seat', 'booster seat', 'child seat'] },
-  { code: '611120', description: 'Baby clothing', chapter: '61', category: 'baby',
-    keywords: ['baby clothes', 'onesie', 'baby bodysuit', 'infant clothing', 'baby romper'] },
-
-  // Supplements & Vitamins
-  { code: '210690', description: 'Food supplements & vitamins', chapter: '21', category: 'health',
-    keywords: ['vitamin', 'supplement', 'protein powder', 'creatine', 'omega-3', 'multivitamin', 'probiotic', 'collagen', 'whey protein', 'fish oil', 'pre-workout'] },
-
-  // Coffee Machines, Air Purifiers, Power Tools
-  { code: '841912', description: 'Coffee machines', chapter: '84', category: 'appliances',
-    keywords: ['coffee maker', 'espresso machine', 'nespresso', 'keurig', 'french press', 'pour over', 'drip coffee'] },
-  { code: '842139', description: 'Air purifiers', chapter: '84', category: 'appliances',
-    keywords: ['air purifier', 'hepa filter', 'air cleaner', 'ionizer'] },
-  { code: '842199', description: 'Humidifiers & dehumidifiers', chapter: '84', category: 'appliances',
-    keywords: ['humidifier', 'dehumidifier', 'essential oil diffuser', 'aroma diffuser'] },
-  { code: '846721', description: 'Electric drills', chapter: '84', category: 'tools',
-    keywords: ['drill', 'cordless drill', 'impact driver', 'power drill', 'hammer drill'] },
-  { code: '846789', description: 'Power tools (saws, sanders)', chapter: '84', category: 'tools',
-    keywords: ['circular saw', 'jigsaw', 'sander', 'orbital sander', 'angle grinder', 'rotary tool', 'dremel'] },
-
-  // Personal Care Electronics
-  { code: '851020', description: 'Electric shavers & trimmers', chapter: '85', category: 'beauty',
-    keywords: ['electric shaver', 'trimmer', 'beard trimmer', 'hair clipper', 'grooming kit', 'epilator'] },
-  { code: '851010', description: 'Electric toothbrushes', chapter: '85', category: 'health',
-    keywords: ['electric toothbrush', 'sonic toothbrush', 'oral-b', 'sonicare', 'water flosser'] },
-  { code: '851631', description: 'Hair styling tools', chapter: '85', category: 'beauty',
-    keywords: ['hair straightener', 'flat iron', 'curling iron', 'hair curler', 'hair wand', 'styling tool'] },
-
-  // Skincare & Makeup (more specific)
-  { code: '330499', description: 'Skincare products', chapter: '33', category: 'beauty',
-    keywords: ['moisturizer', 'serum', 'face cream', 'cleanser', 'toner', 'sunscreen', 'retinol', 'hyaluronic acid', 'face mask', 'eye cream'] },
-  { code: '330420', description: 'Makeup & cosmetics', chapter: '33', category: 'beauty',
-    keywords: ['foundation', 'concealer', 'mascara', 'lipstick', 'blush', 'eyeshadow', 'eyeliner', 'primer', 'lip gloss', 'bronzer'] },
-
-  // Car Accessories, Camping, Wearables
-  { code: '870899', description: 'Car accessories', chapter: '87', category: 'automotive',
-    keywords: ['car accessory', 'car mat', 'seat cover', 'car charger', 'dash cam', 'dashcam', 'car organizer'] },
-  { code: '630612', description: 'Camping tents', chapter: '63', category: 'sports',
-    keywords: ['tent', 'camping tent', 'backpacking tent', 'pop-up tent', 'canopy'] },
-  { code: '901920', description: 'Fitness trackers & wearables', chapter: '90', category: 'electronics',
-    keywords: ['fitness tracker', 'fitbit', 'activity tracker', 'smart band', 'smart ring', 'oura ring'] },
-
-  // ═══ ADDITIONAL ENTRIES FOR COVERAGE ═══
-  { code: '050110', description: 'Animal hair', chapter: '05', category: 'textiles',
-    keywords: ['animal hair', 'alpaca', 'mohair', 'cashmere'] },
-  { code: '060210', description: 'Live trees', chapter: '06', category: 'garden',
-    keywords: ['tree', 'plant', 'live tree', 'landscaping'] },
-  { code: '060290', description: 'Live plants & flowers', chapter: '06', category: 'garden',
-    keywords: ['flower', 'plant', 'houseplant', 'perennial', 'annual', 'seeds'] },
-  { code: '100590', description: 'Cereals', chapter: '10', category: 'food',
-    keywords: ['grain', 'wheat', 'rice', 'corn', 'barley', 'oat'] },
-  { code: '101140', description: 'Rice', chapter: '10', category: 'food',
-    keywords: ['rice', 'white rice', 'brown rice', 'jasmine rice', 'basmati rice'] },
-  { code: '110100', description: 'Flour & meal', chapter: '11', category: 'food',
-    keywords: ['flour', 'wheat flour', 'all-purpose flour', 'specialty flour'] },
-  { code: '110220', description: 'Malt', chapter: '11', category: 'food',
-    keywords: ['malt', 'barley malt', 'malt extract', 'brewing ingredient'] },
-  { code: '110811', description: 'Potato starch', chapter: '11', category: 'food',
-    keywords: ['starch', 'cornstarch', 'potato starch', 'thickener'] },
-  { code: '120100', description: 'Oil seeds', chapter: '12', category: 'food',
-    keywords: ['seeds', 'sunflower seed', 'sesame seed', 'pumpkin seed'] },
-  { code: '130110', description: 'Shellac', chapter: '13', category: 'industrial',
-    keywords: ['shellac', 'finish', 'wood finish', 'resin'] },
-  { code: '140110', description: 'Vegetable plaiting materials', chapter: '14', category: 'craft',
-    keywords: ['straw', 'raffia', 'palm', 'weaving material'] },
+  ...CHAPTER_01,
+  ...CHAPTER_02,
+  ...CHAPTER_03,
+  ...CHAPTER_04,
+  ...CHAPTER_05,
+  ...CHAPTER_06,
+  ...CHAPTER_07,
+  ...CHAPTER_08,
+  ...CHAPTER_09,
+  ...CHAPTER_10,
+  ...CHAPTER_11,
+  ...CHAPTER_12,
+  ...CHAPTER_13,
+  ...CHAPTER_14,
+  ...CHAPTER_15,
+  ...CHAPTER_16,
+  ...CHAPTER_17,
+  ...CHAPTER_18,
+  ...CHAPTER_19,
+  ...CHAPTER_20,
+  ...CHAPTER_21,
+  ...CHAPTER_22,
+  ...CHAPTER_23,
+  ...CHAPTER_24,
+  ...CHAPTER_25,
+  ...CHAPTER_26,
+  ...CHAPTER_27,
+  ...CHAPTER_28,
+  ...CHAPTER_29,
+  ...CHAPTER_30,
+  ...CHAPTER_31,
+  ...CHAPTER_32,
+  ...CHAPTER_33,
+  ...CHAPTER_34,
+  ...CHAPTER_35,
+  ...CHAPTER_36,
+  ...CHAPTER_37,
+  ...CHAPTER_38,
+  ...CHAPTER_39,
+  ...CHAPTER_40,
+  ...CHAPTER_41,
+  ...CHAPTER_42,
+  ...CHAPTER_43,
+  ...CHAPTER_44,
+  ...CHAPTER_45,
+  ...CHAPTER_46,
+  ...CHAPTER_47,
+  ...CHAPTER_48,
+  ...CHAPTER_49,
+  ...CHAPTER_50,
+  ...CHAPTER_51,
+  ...CHAPTER_52,
+  ...CHAPTER_53,
+  ...CHAPTER_54,
+  ...CHAPTER_55,
+  ...CHAPTER_56,
+  ...CHAPTER_57,
+  ...CHAPTER_58,
+  ...CHAPTER_59,
+  ...CHAPTER_60,
+  ...CHAPTER_61,
+  ...CHAPTER_62,
+  ...CHAPTER_63,
+  ...CHAPTER_64,
+  ...CHAPTER_65,
+  ...CHAPTER_66,
+  ...CHAPTER_67,
+  ...CHAPTER_68,
+  ...CHAPTER_69,
+  ...CHAPTER_70,
+  ...CHAPTER_71,
+  ...CHAPTER_72,
+  ...CHAPTER_73,
+  ...CHAPTER_74,
+  ...CHAPTER_75,
+  ...CHAPTER_76,
+  ...CHAPTER_78,
+  ...CHAPTER_79,
+  ...CHAPTER_80,
+  ...CHAPTER_81,
+  ...CHAPTER_82,
+  ...CHAPTER_83,
+  ...CHAPTER_84,
+  ...CHAPTER_85,
+  ...CHAPTER_86,
+  ...CHAPTER_87,
+  ...CHAPTER_88,
+  ...CHAPTER_89,
+  ...CHAPTER_90,
+  ...CHAPTER_91,
+  ...CHAPTER_92,
+  ...CHAPTER_93,
+  ...CHAPTER_94,
+  ...CHAPTER_95,
+  ...CHAPTER_96,
+  ...CHAPTER_97,
 ];
 
+// Total: 5371 entries across 96 chapters
+// E-commerce optimized entries (original POTAL): 442
+// WCO HS 2022 expansion: +4929
+
 /**
- * Get HS Code entry by exact code
+ * Get a single HS code entry by its 6-digit code
  */
 export function getHsEntry(code: string): HsCodeEntry | undefined {
-  return HS_DATABASE.find(e => e.code === code);
+  return HS_DATABASE.find((entry) => entry.code === code);
 }
 
 /**
- * Get all entries for a chapter
+ * Get all HS code entries for a specific chapter (2-digit)
  */
 export function getChapterEntries(chapter: string): HsCodeEntry[] {
-  return HS_DATABASE.filter(e => e.chapter === chapter);
+  return HS_DATABASE.filter((entry) => entry.chapter === chapter);
 }
 
 /**
- * Get all entries for a category
+ * Get all HS code entries for a specific category
  */
 export function getCategoryEntries(category: string): HsCodeEntry[] {
-  return HS_DATABASE.filter(e => e.category === category);
+  return HS_DATABASE.filter((entry) => entry.category === category);
 }

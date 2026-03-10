@@ -1,0 +1,93 @@
+{
+  "country": "Australia",
+  "data_collection_date": "2026-03-07",
+  "tariff_system": "Combined Australian Customs Tariff Nomenclature and Statistical Classification (CACTNS)",
+  "digit_level": "10-digit",
+  "summary": {
+    "status": "Partially Retrieved",
+    "data_availability": "Requires direct navigation or API access",
+    "total_codes_retrieved": 0,
+    "notes": "Australian tariff data is highly structured and available but requires accessing multiple sources"
+  },
+  "sources": [
+    {
+      "name": "Australian Border Force (ABF) Tariff Classification",
+      "url": "https://www.abf.gov.au/importing-exporting-and-manufacturing/tariff-classification/current-tariff",
+      "description": "Official source for Australian tariff classifications",
+      "structure": {
+        "schedule_1": "Country preferential rates",
+        "schedule_2": "Interpretative rules",
+        "schedule_3": "List of tariff classifications and applicable rates of duty (21 sections, 97 chapters)",
+        "schedules_4_16": "Various preferential trade agreement tariffs"
+      },
+      "format": "PDF, HTML (web-based)",
+      "status": "Available but requires manual navigation",
+      "challenges": [
+        "No direct CSV export link found",
+        "Data spread across multiple schedule documents",
+        "Requires navigating Schedule 3 for detailed rates"
+      ]
+    },
+    {
+      "name": "DFAT FTA Portal",
+      "url": "https://ftaportal.dfat.gov.au/",
+      "description": "Free Trade Agreement tariff data portal",
+      "status": "Portal appears to be loading/dynamic content",
+      "challenges": [
+        "Dynamic application requires JavaScript execution",
+        "Unable to access data through static HTML retrieval",
+        "Would require browser automation to interact with"
+      ]
+    },
+    {
+      "name": "Integrated Cargo System (ICS)",
+      "url": "https://www.ccf.customs.gov.au/",
+      "description": "Customs cargo processing system",
+      "status": "Requires direct access/authentication",
+      "challenges": [
+        "May require user registration",
+        "System access restricted to registered traders"
+      ]
+    }
+  ],
+  "data_structure": {
+    "expected_fields": [
+      "tariff_code_10_digit",
+      "chapter",
+      "section",
+      "description",
+      "general_duty_rate",
+      "preferential_rates_by_country",
+      "special_conditions",
+      "statistical_classification"
+    ],
+    "example_codes": [
+      "6109100000 - T-shirts of cotton",
+      "8517704000 - Parts of mobile phones",
+      "2709000000 - Petroleum oils"
+    ]
+  },
+  "recommended_next_steps": [
+    "Use Selenium or Puppeteer to automate DFAT Portal navigation",
+    "Download Schedule 3 PDF directly from ABF website",
+    "Parse PDF to extract tariff codes and rates",
+    "Contact ABF directly for bulk data export",
+    "Check AusTrade for trade preference data",
+    "Access ASEAN Trade Repository for Australia's AHTN equivalent"
+  ],
+  "api_endpoints": {
+    "status": "Not publicly documented",
+    "available": false,
+    "notes": "Australian systems appear to rely on web portal access rather than API"
+  },
+  "data_quality_assessment": {
+    "completeness": "High - comprehensive coverage expected",
+    "granularity": "10-digit (most detailed for Australia)",
+    "currency": "Regular updates expected from ABF",
+    "accessibility": "Medium - requires navigation or automation"
+  },
+  "collection_method": "Web scraping and document download",
+  "estimated_code_count": "10000+",
+  "currency_unit": "AUD",
+  "last_update_checked": "2026-03-07"
+}

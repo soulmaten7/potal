@@ -1,0 +1,63 @@
+{
+  "country": "Peru",
+  "country_code": "PE",
+  "tariff_system": "Peruvian Customs Tariff",
+  "system_type": "HS-based Tariff Schedule",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Peru uses 8-digit tariff codes based on the Harmonized System (HS). 6-digit HS base plus 2 Peruvian-specific additional digits.",
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 8,000+ codes",
+    "official_source": "ADUANET (Peruvian Customs Administration)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["Database", "Web interface"]
+  },
+  "sources": [
+    {
+      "name": "Peru Tariff Schedule - World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/PER",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Peruvian schedules"
+    },
+    {
+      "name": "WTO Tariff & Trade Data - Peru",
+      "url": "https://ttd.wto.org/en/profiles/peru",
+      "type": "International Database",
+      "description": "WTO tariff and trade data for Peru"
+    },
+    {
+      "name": "ADUANET - Peruvian Customs",
+      "url": "https://www.aduanet.gob.pe/",
+      "type": "Official Government Portal",
+      "description": "Peruvian national customs administration system"
+    },
+    {
+      "name": "WTO Tariff Profiles - Peru",
+      "url": "https://www.wto.org/",
+      "type": "WTO Resource",
+      "description": "WTO member tariff information for Peru"
+    },
+    {
+      "name": "SEAIR HS Code Database",
+      "url": "https://www.seair.co.in/hs-codes/",
+      "type": "Third-party Database",
+      "description": "Peruvian HS codes and trade data"
+    }
+  ],
+  "access_methods": {
+    "method_1": "World Bank WITS database - direct access and download",
+    "method_2": "WTO TTD system - search and reference",
+    "method_3": "ADUANET official portal",
+    "method_4": "Third-party commercial databases"
+  },
+  "data_collection_status": "RESEARCH_COMPLETE",
+  "next_steps": [
+    "Access World Bank WITS for complete Peruvian tariff schedules",
+    "Visit ADUANET official portal for official Peruvian tariff information",
+    "Download from WTO TTD for reference"
+  ],
+  "notes": "Peru tariff data is publicly available through World Bank WITS and WTO systems. ADUANET is the official Peruvian customs system. Data accessible through both official and international trade databases."
+}

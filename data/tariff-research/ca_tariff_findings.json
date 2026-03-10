@@ -1,0 +1,399 @@
+{
+  "metadata": {
+    "research_date": "2026-03-07",
+    "country": "Canada",
+    "agency": "Canada Border Services Agency (CBSA)",
+    "version": "2026",
+    "summary": "Comprehensive research on CBSA Customs Tariff API, tariff data access methods, and extended HS code systems"
+  },
+  "executive_summary": {
+    "available_apis": [
+      {
+        "name": "CARM Tariff Codes API",
+        "url": "https://ccp-pcc.cbsa-asfc.cloud-nuage.canada.ca/en/carm-api/tariff-codes",
+        "version": "1.0.0",
+        "status": "Active",
+        "documentation_location": "CARM Client Portal (requires authentication)",
+        "notes": "As of June 1, 2024, all CARM API swagger documentation is only accessible via the CARM Portal. The portal uses interactive swagger documentation."
+      }
+    ],
+    "bulk_download_options": [
+      {
+        "format": "Microsoft Access Database",
+        "file_size": "1.1 MB",
+        "format_type": "ZIP archive containing .mdb file",
+        "url": "Available at https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/menu-eng.html",
+        "notes": "Structured database format, recommended for programmatic access"
+      },
+      {
+        "format": "PDF",
+        "file_size": "46.3 MB",
+        "url": "Available at https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/menu-eng.html",
+        "notes": "Complete tariff document, readable but not ideal for bulk processing"
+      },
+      {
+        "format": "HTML Chapter-by-Chapter",
+        "url": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/html/tblmod-eng.html",
+        "notes": "Individual chapters available for browsing"
+      },
+      {
+        "format": "Financial Concordance",
+        "format_type": "Microsoft Excel XLSX",
+        "file_size": "10 KB",
+        "notes": "Cross-referencing tool for financial mapping"
+      }
+    ],
+    "extended_hs_code_system": {
+      "international_standard": "6-digit HS codes",
+      "canada_imports": "10-digit classification",
+      "canada_exports": "8-digit classification",
+      "structure_imports": {
+        "digits_1_2": "Chapter (01-99)",
+        "digits_3_4": "Heading",
+        "digits_5_6": "Subheading (standardized internationally)",
+        "digits_7_8": "Tariff Item (Canadian-specific, for duty rate determination)",
+        "digits_9_10": "Statistical Suffix (for Statistics Canada tracking)"
+      },
+      "example": "9507.90.10.00",
+      "example_breakdown": {
+        "9507": "Heading (Fishing equipment)",
+        "90": "Subheading",
+        "10": "Tariff Item",
+        "00": "Statistical Suffix"
+      }
+    }
+  },
+  "api_details": {
+    "carm_tariff_codes_api": {
+      "name": "CARM Tariff Codes API",
+      "full_name": "Canada Border Services Agency - Customs Assessment and Revenue Management - Tariff Codes API",
+      "api_version": "1.0.0",
+      "endpoint": "https://ccp-pcc.cbsa-asfc.cloud-nuage.canada.ca/en/carm-api/tariff-codes",
+      "authentication": {
+        "type": "Required",
+        "details": "CARM Client Portal credentials required",
+        "registration": "Must register for CARM Client Portal access"
+      },
+      "documentation": {
+        "format": "Swagger/OpenAPI 3.1.0",
+        "location": "CARM Client Portal",
+        "access_notes": "Interactive swagger documentation available only through CARM Portal after login",
+        "as_of": "June 1, 2024"
+      },
+      "expected_capabilities": {
+        "likely_endpoints": [
+          "GET /tariff-codes - List tariff codes",
+          "GET /tariff-codes/{code} - Get specific tariff code details",
+          "POST /tariff-codes/search - Search tariff codes"
+        ],
+        "data_fields_expected": [
+          "HS Code (6-digit international)",
+          "Extended HS Code (8 or 10-digit Canadian)",
+          "Product Description",
+          "MFN (Most Favoured Nation) Duty Rate",
+          "Preferential Tariff Rates (for FTA countries)",
+          "Effective Date",
+          "Status/Notes"
+        ]
+      },
+      "limitations": {
+        "requires_authentication": true,
+        "no_public_documentation": "Swagger docs require CARM portal login",
+        "rate_limiting": "Unknown - contact CBSA",
+        "free_access": "Unknown - may require paid registration"
+      },
+      "contact_for_details": "tariff_files-fichiers_du_tarif@cbsa-asfc.gc.ca"
+    }
+  },
+  "tariff_data_sources": {
+    "primary_source": "Canada Border Services Agency (CBSA)",
+    "primary_url": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/menu-eng.html",
+    "current_version": {
+      "year": 2026,
+      "effective_date": "January 1, 2026",
+      "url": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/menu-eng.html"
+    },
+    "download_formats": {
+      "access_database": {
+        "format": "Microsoft Access (.mdb)",
+        "container": "ZIP archive",
+        "size": "1.1 MB (compressed)",
+        "structured": true,
+        "fields": "Database includes tariff codes, duty rates, descriptions, and country-specific preferences",
+        "recommendation": "BEST for programmatic bulk access"
+      },
+      "pdf": {
+        "format": "PDF",
+        "size": "46.3 MB",
+        "pages": "Multiple",
+        "features": "Change bars (left margin) showing modifications from previous version",
+        "for_access_files": "Changes indicated with '1' in change column",
+        "recommendation": "Good for documentation and reference"
+      },
+      "html_by_chapter": {
+        "format": "HTML",
+        "url": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/html/tblmod-eng.html",
+        "structure": "Individual chapters (01-99)",
+        "recommendation": "For browsing specific chapters"
+      },
+      "excel_concordance": {
+        "format": "Microsoft Excel XLSX",
+        "size": "10 KB",
+        "purpose": "Financial cross-referencing",
+        "recommendation": "For specific financial mapping use cases"
+      }
+    },
+    "related_resources": {
+      "guide_to_classification": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/guide/cct-tdc-eng.html",
+      "how_to_read_tariff_numbers": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/guide/read-lire-eng.html",
+      "administrative_guidelines": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/html/admin-eng.html",
+      "list_of_countries": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/html/countries-pays-eng.html",
+      "customs_tariff_act": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/html/ca-td-eng.html"
+    },
+    "historical_data": {
+      "archive_url": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/archive-eng.html",
+      "available": "Previous years tariff files accessible"
+    }
+  },
+  "alternative_tools": {
+    "canada_tariff_finder": {
+      "name": "Canada Tariff Finder",
+      "url": "https://www.tariffinder.ca/",
+      "type": "Web-based Customs & Duty Calculator",
+      "target_audience": "Canadian importers and exporters",
+      "features": [
+        "Real-time tariff rate lookup",
+        "Free Trade Agreement (FTA) country support",
+        "Current and future year projections",
+        "Preferential tariff treatments"
+      ],
+      "api_status": "No public API found",
+      "limitation": "Frontend web application (Quasar/Vue.js based), no documented API access"
+    },
+    "canada_post_hs_code_tool": {
+      "name": "Canada Post - Find a Harmonized System Code",
+      "url": "https://www.canadapost-postescanada.ca/information/app/wtz/business/findHsCode?execution=e1s1",
+      "type": "HS Code Lookup Tool",
+      "purpose": "Find HS codes for products"
+    },
+    "wto_tariff_download_facility": {
+      "name": "WTO Tariff Download Facility",
+      "url": "https://www.wto.org/english/tratop_e/tariffs_e/database_explanation_e.htm",
+      "type": "International Tariff Database",
+      "coverage": "Canada and other WTO members",
+      "features": [
+        "MFN applied tariffs",
+        "Legally bound duty rates",
+        "Preferential tariff information",
+        "Merchandise trade statistics"
+      ]
+    }
+  },
+  "tariff_structure_details": {
+    "harmonized_system_overview": {
+      "scope": "International standardized product classification system",
+      "structure_international_6digit": {
+        "chapter": "2 digits (01-99)",
+        "heading": "4 digits (00-99 within chapter)",
+        "subheading": "6 digits (00-99 within heading)"
+      },
+      "canada_specific_extensions": {
+        "imports_10digit": {
+          "digits_1_6": "International HS code (6-digit subheading)",
+          "digits_7_8": "Tariff Item level (Canadian-specific subdivisions for duty purposes)",
+          "digits_9_10": "Statistical suffix (for Statistics Canada commodity tracking)"
+        },
+        "exports_8digit": {
+          "digits_1_6": "International HS code (6-digit subheading)",
+          "digits_7_8": "Export classification detail"
+        }
+      }
+    },
+    "tariff_rate_types": [
+      {
+        "rate_type": "MFN (Most Favoured Nation)",
+        "description": "Standard WTO rate applied to countries without specific trade agreements",
+        "countries_affected": "All WTO members without Canada FTA"
+      },
+      {
+        "rate_type": "Preferential Rates",
+        "description": "Reduced duty rates for countries with Free Trade Agreements (FTA)",
+        "examples": "USMCA, CPTPP, CETA, and other bilateral/multilateral FTAs"
+      },
+      {
+        "rate_type": "LDC Tariff (Least Developed Country)",
+        "description": "Special rates for least developed countries",
+        "primary_use": "Textile and apparel industries"
+      }
+    ]
+  },
+  "data_fields_available": {
+    "from_access_database": [
+      "Tariff Code (10-digit)",
+      "HS Code (6-digit)",
+      "Product Description",
+      "MFN Duty Rate (%)",
+      "Preferential Tariff Rates (by country/agreement)",
+      "Effective Date",
+      "Change Indicator",
+      "Statistical Classification",
+      "Notes/References"
+    ],
+    "notes": "Exact field names would be confirmed by accessing the actual .mdb file or CARM API documentation"
+  },
+  "getting_all_tariff_codes_mfn_rates": {
+    "recommended_approach": "Download and Parse Microsoft Access Database",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Visit https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/2026/menu-eng.html",
+        "details": "Navigate to 2026 Customs Tariff menu page"
+      },
+      {
+        "step": 2,
+        "action": "Download 'Complete Tariff - Microsoft Access' ZIP file",
+        "details": "File size: 1.1 MB (compressed)",
+        "contains": "All 2026 tariff codes with duty rates"
+      },
+      {
+        "step": 3,
+        "action": "Extract ZIP archive",
+        "details": "Reveals .mdb Access database file"
+      },
+      {
+        "step": 4,
+        "action": "Parse .mdb file using libraries",
+        "libraries_by_language": {
+          "python": "pyodbc, pandas, jackcesspy",
+          "javascript": "mdb-export, node-mdb",
+          "java": "jackcesspy wrapper or ODBC driver",
+          "csharp": "System.Data.OleDb"
+        }
+      },
+      {
+        "step": 5,
+        "action": "Extract columns: 10-digit code, MFN rate, description",
+        "details": "Filter for MFN rates only"
+      },
+      {
+        "step": 6,
+        "action": "Store in desired format (CSV, JSON, SQLite, etc.)",
+        "details": "Create searchable database"
+      }
+    ]
+  },
+  "api_based_approach": {
+    "advantages": [
+      "Real-time data access",
+      "Programmatic integration",
+      "Automatic updates"
+    ],
+    "limitations": [
+      "Requires CARM portal authentication",
+      "No public documentation (requires portal login to access swagger)",
+      "Unknown rate limits",
+      "May require paid registration"
+    ],
+    "steps_to_access": [
+      {
+        "step": 1,
+        "action": "Register for CARM Client Portal",
+        "url": "https://www.cbsa-asfc.gc.ca/services/carm-gcra/start-passer-eng.html",
+        "contact": "CARM support"
+      },
+      {
+        "step": 2,
+        "action": "Login to CARM Portal",
+        "url": "https://ccp-pcc.cbsa-asfc.cloud-nuage.canada.ca"
+      },
+      {
+        "step": 3,
+        "action": "Access Swagger documentation",
+        "url": "https://ccp-pcc.cbsa-asfc.cloud-nuage.canada.ca/en/carm-api",
+        "details": "Review tariff-codes endpoint specification"
+      },
+      {
+        "step": 4,
+        "action": "Use API credentials to authenticate requests",
+        "method": "Bearer token or API key (as documented in swagger)"
+      },
+      {
+        "step": 5,
+        "action": "Query tariff codes endpoint",
+        "expected_query": "GET /tariff-codes or similar search endpoint"
+      }
+    ]
+  },
+  "testing_requirements": {
+    "sample_hs_codes_for_testing": [
+      {
+        "code_6digit": "610910",
+        "description": "Cotton T-shirts",
+        "category": "Textiles - Apparel"
+      },
+      {
+        "code_6digit": "847130",
+        "description": "Semiconductor manufacturing equipment",
+        "category": "Electronics - Equipment"
+      },
+      {
+        "code_6digit": "090111",
+        "description": "Coffee - Roasted",
+        "category": "Food and Beverages"
+      },
+      {
+        "code_6digit": "640399",
+        "description": "Footwear - Canvas shoes",
+        "category": "Apparel and Footwear"
+      },
+      {
+        "code_6digit": "300490",
+        "description": "Medicaments",
+        "category": "Pharmaceutical"
+      }
+    ],
+    "expected_canadian_10digit_codes": [
+      "6109.10.10.00 - Cotton T-shirts",
+      "8471.30.00.00 - Semiconductor equipment",
+      "0901.11.10.00 - Roasted coffee"
+    ],
+    "expected_mfn_duty_rates": "Available in Access database or via API after authentication"
+  },
+  "contact_information": {
+    "cbsa_tariff_files": {
+      "email": "tariff_files-fichiers_du_tarif@cbsa-asfc.gc.ca",
+      "purpose": "Questions about tariff files, downloads, formats"
+    },
+    "cbsa_border_information": {
+      "service": "Border Information Service",
+      "purpose": "General tariff and classification questions"
+    },
+    "carm_support": {
+      "url": "https://www.cbsa-asfc.gc.ca/services/carm-gcra/menu-eng.html",
+      "purpose": "CARM system support and API access"
+    }
+  },
+  "recommendations": {
+    "for_bulk_data_access": "Download Microsoft Access database from CBSA website - simplest approach with no authentication required",
+    "for_real_time_integration": "Use CARM Tariff Codes API after registering for CARM Client Portal",
+    "for_one_off_lookups": "Use Canada Tariff Finder web tool at https://www.tariffinder.ca/",
+    "for_verification": "Compare results with WTO database for international reference"
+  },
+  "key_findings": [
+    "CBSA provides multiple formats for tariff data access",
+    "Microsoft Access database is best for bulk download without authentication",
+    "CARM API requires portal registration but offers programmatic access",
+    "Canada uses 10-digit HS codes for imports (extends 6-digit international standard)",
+    "MFN duty rates are available in all provided formats",
+    "No free public API with open documentation found - CARM API documentation requires portal login",
+    "Canada Tariff Finder tool is web-based only, no API access",
+    "Extended HS codes (10-digit) include Canadian-specific tariff items (digits 7-8) for precise duty determination"
+  ],
+  "limitations": {
+    "api_access": "CARM API documentation not publicly accessible without portal login",
+    "automation": "No open/free API available for full programmatic access",
+    "real_time_updates": "Access database is updated annually (January 1)",
+    "historical_tracking": "Previous years available but must be downloaded separately",
+    "rate_limiting": "Unknown for CARM API - contact CBSA for details"
+  }
+}

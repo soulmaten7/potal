@@ -1,0 +1,154 @@
+{
+  "platform_name": "Market Access Map (MacMap)",
+  "operator": "International Trade Centre (ITC)",
+  "website": "https://www.macmap.org/",
+  "last_updated": "2026-03-07",
+  "data_overview": {
+    "countries_covered": "200+ countries and territories",
+    "data_types": [
+      "Customs tariffs (MFN, applied, general, preferential rates)",
+      "Tariff rate quotas (TRQs)",
+      "Trade remedies (anti-dumping, countervailing, safeguard measures)",
+      "Non-tariff measures (NTMs) and regulatory requirements",
+      "Trade agreements (400+ bilateral and multilateral agreements)",
+      "Trade flows and market access data",
+      "GTAP tariff databases"
+    ],
+    "product_classification": "HS codes (Harmonized System) with national tariff line breakdowns"
+  },
+  "access_methods": {
+    "primary_interface": "Web-based query portal at https://www.macmap.org/en/query",
+    "query_parameters": [
+      "Destination market (importing country)",
+      "Exporting from (country of origin)",
+      "Year/tariff year",
+      "Product (HS6 codes or product names)",
+      "Trade measures/remedies"
+    ],
+    "features": {
+      "access_module": "Query customs tariffs, trade remedies, regulatory requirements",
+      "compare_module": "Comparative analysis across markets, competitors, and products",
+      "analyse_module": "Trade agreement information, GTAP tariffs, market access graphs",
+      "download_section": "Bulk data export in customized formats",
+      "monitor_measures": "Track trade-related developments"
+    }
+  },
+  "download_capabilities": {
+    "available": true,
+    "description": "Bulk download data on applied tariffs and GTAP tariff protection databases",
+    "formats": [
+      "Excel tables",
+      "Charts (JPEG, PNG, SVG, PDF)",
+      "Customized data extractions"
+    ],
+    "access_requirement": "Free registration required for full functionality",
+    "bulk_download_url": "https://www.macmap.org/en/download",
+    "custom_query_downloads": "Users can download results from query interface"
+  },
+  "api_status": {
+    "public_api": false,
+    "notes": "No publicly documented REST API or developer API endpoints found",
+    "api_inquiries": "Contact ITC directly for potential API access"
+  },
+  "known_working_urls": [
+    {
+      "url": "https://www.macmap.org/",
+      "description": "Main portal with navigation to all modules"
+    },
+    {
+      "url": "https://www.macmap.org/en/query",
+      "description": "Main query interface for accessing tariff data"
+    },
+    {
+      "url": "https://www.macmap.org/en/download",
+      "description": "Download section for bulk data (may require login)"
+    },
+    {
+      "url": "https://www.macmap.org/en/query/customs-duties",
+      "description": "Specialized interface for customs duties queries"
+    }
+  ],
+  "known_nonworking_urls": [
+    {
+      "url": "https://www.macmap.org/en/query/bulk-download",
+      "status": "404 Not Found"
+    },
+    {
+      "url": "https://www.macmap.org/en/api",
+      "status": "404 - No public API documentation"
+    },
+    {
+      "url": "https://www.macmap.org/en/data-availability",
+      "status": "404 Not Found"
+    },
+    {
+      "url": "https://www.macmap.org/en/docs",
+      "status": "404 Not Found"
+    },
+    {
+      "url": "https://www.macmap.org/en/methodology",
+      "status": "404 Not Found"
+    }
+  ],
+  "data_availability": {
+    "verification_tool": "Data Availability module on main site",
+    "coverage": "Customs tariffs, tariff rate quotas, trade remedies, regulatory requirements, trade flows",
+    "note": "Not all indicators available for all countries and years"
+  },
+  "contact_information": {
+    "email": "marketanalysis@intracen.org",
+    "phone": "+41 (0)22 730 05 46",
+    "organization": "International Trade Centre - Trade and Market Intelligence unit"
+  },
+  "funding_partners": [
+    "European Commission",
+    "Ireland",
+    "Germany",
+    "Switzerland"
+  ],
+  "partner_organizations": [
+    "ALADI (Latin American Integration Association)"
+  ],
+  "user_roles_supported": [
+    "Exporters",
+    "Policymakers",
+    "Researchers",
+    "Trade negotiators"
+  ],
+  "key_findings": {
+    "strength": "Comprehensive global tariff database with 200+ countries, multiple data types, and comparative analysis tools",
+    "limitation": "No public API documentation; bulk download requires navigating web interface and may need registration",
+    "accessibility": "Free access for basic queries; full functionality requires account creation",
+    "data_quality": "Official ITC data with recognized methodology; regularly updated"
+  },
+  "recommended_next_steps": [
+    "Create account at https://www.macmap.org/ to access full download features",
+    "Navigate to Data Availability tool to verify specific country-year coverage",
+    "Use query interface for specific tariff lookups by country and product",
+    "Contact ITC directly for bulk data extracts and API access requests",
+    "Check if GTAP tariff databases are available for download",
+    "Explore trade agreement module for preferential rate information"
+  ],
+  "data_access_workflow": {
+    "step_1": "Visit https://www.macmap.org/ and create free account",
+    "step_2": "Use 'Access' module for customs tariffs queries",
+    "step_3": "Select destination country and exporting country",
+    "step_4": "Search by product (HS code or name) and tariff year",
+    "step_5": "View results with applied, MFN, and preferential rates",
+    "step_6": "Export/download individual query results as Excel or charts",
+    "step_7": "For bulk data, navigate to 'Download' section with account"
+  },
+  "limitations_encountered": [
+    "Cannot directly download full tariff schedules via public URLs without web interface",
+    "Documentation pages (methodology, full country list) returning 404 errors",
+    "No REST API for programmatic access",
+    "Specific country-year coverage details not accessible without interactive tool",
+    "Some download features may require authentication/registration"
+  ],
+  "alternative_access_recommendations": [
+    "Contact marketanalysis@intracen.org for bulk data requests",
+    "Request tariff extracts by country and year from ITC directly",
+    "Inquire about GTAP tariff database availability",
+    "Ask about historical tariff data and time-series extracts"
+  ]
+}

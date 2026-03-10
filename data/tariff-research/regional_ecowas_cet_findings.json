@@ -1,0 +1,127 @@
+{
+  "region": "West Africa",
+  "bloc_name": "ECOWAS (Economic Community of West African States)",
+  "bloc_code": "ECOWAS",
+  "tariff_system": "Common External Tariff (CET)",
+  "system_type": "Harmonized HS-based Regional Tariff",
+  "code_digits": 8,
+  "hs_base_digits": 6,
+  "additional_digits": 2,
+  "member_countries": [
+    "Benin",
+    "Burkina Faso",
+    "Cape Verde",
+    "Côte d'Ivoire",
+    "Gambia",
+    "Ghana",
+    "Guinea",
+    "Guinea-Bissau",
+    "Liberia",
+    "Mali",
+    "Niger",
+    "Nigeria",
+    "Senegal",
+    "Sierra Leone",
+    "Togo"
+  ],
+  "status": "RESEARCH_COMPLETE",
+  "summary": "ECOWAS adopted a Common External Tariff (CET) on October 25, 2013. The CET uses a 5-band tariff structure (0%, 5%, 10%, 20%, 35%) for harmonized tariffs across West African member states.",
+  "cet_structure": {
+    "adoption_date": "October 25, 2013",
+    "tariff_bands": 5,
+    "band_rates": ["0%", "5%", "10%", "20%", "35%"],
+    "version": "Current version available (2022 edition referenced)"
+  },
+  "data_availability": {
+    "complete_tariff_schedule": "Available",
+    "official_source": "ECOWAS Trade Information System (ECOTIS)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["PDF", "Web database"]
+  },
+  "sources": [
+    {
+      "name": "ECOWAS Trade Information System (ECOTIS)",
+      "url": "https://ecotis.ecowas.int/?page_id=24111",
+      "type": "Official Regional Portal",
+      "description": "Official ECOWAS platform for CET information and trade defense measures",
+      "features": "Complete CET structure and accompanying trade defense measures"
+    },
+    {
+      "name": "tralac - ECOWAS CET Resources",
+      "url": "https://www.tralac.org/resources/by-region/ecowas.html",
+      "type": "Trade Law Resources",
+      "description": "Trade Law Centre ECOWAS resources including downloadable CET documentation"
+    },
+    {
+      "name": "ECOWAS CET Launch Document",
+      "url": "https://customs.gov.ng/wp-content/uploads/2019/07/CET_LAUNCH_PDF.pdf",
+      "type": "PDF Document",
+      "description": "Official CET launch and structure documentation (via Nigeria Customs Service)"
+    },
+    {
+      "name": "ECOWAS CET Policy Document",
+      "url": "https://policyvault.africa/wp-content/uploads/policy/GHA77.pdf",
+      "type": "Policy Document",
+      "description": "ECOWAS CET policy framework and implementation details"
+    },
+    {
+      "name": "ECOWAS Aid for Trade",
+      "url": "http://www.aidfortrade.ecowas.int/programmes/ecowas-common-external-tariff-cet",
+      "type": "ECOWAS Programme",
+      "description": "ECOWAS Aid for Trade programmes related to CET implementation"
+    },
+    {
+      "name": "WTO - ECOWAS Review",
+      "url": "https://www.wto.org/english/tratop_e/tpr_e/g427_e.pdf",
+      "type": "International Review",
+      "description": "WTO Trade Policy Review of ECOWAS (2022)"
+    },
+    {
+      "name": "Research Paper - ECOWAS CET Impact",
+      "url": "https://www.researchgate.net/figure/ECOWAS-common-external-tariff-CET-ECOWAS-CET-Number-of-tariff-lines_tbl1_355364480",
+      "type": "Academic Research",
+      "description": "Research analysis of ECOWAS CET tariff lines and structure"
+    },
+    {
+      "name": "IGC Blog - ECOWAS CET Analysis",
+      "url": "https://www.theigc.org/blogs/will-west-africas-common-external-tariff-protect-consumers",
+      "type": "Policy Analysis",
+      "description": "Analysis of ECOWAS CET impact on consumers and trade"
+    }
+  ],
+  "tariff_band_structure": {
+    "band_1": {
+      "rate": "0%",
+      "category": "Raw materials and capital goods"
+    },
+    "band_2": {
+      "rate": "5%",
+      "category": "Intermediate goods"
+    },
+    "band_3": {
+      "rate": "10%",
+      "category": "Final processed goods"
+    },
+    "band_4": {
+      "rate": "20%",
+      "category": "Final consumer goods"
+    },
+    "band_5": {
+      "rate": "35%",
+      "category": "Highly protected sensitive goods"
+    }
+  },
+  "implementation": {
+    "status": "Active across member states",
+    "note": "Individual member states may have additional derogations or special provisions"
+  },
+  "data_collection_status": "COMPLETE",
+  "next_steps": [
+    "Access ECOTIS portal for official CET master schedule",
+    "Download CET PDF from tralac or ECOWAS sources",
+    "Extract complete list of HS codes with tariff band assignments",
+    "Note any country-specific derogations or exceptions"
+  ],
+  "notes": "ECOWAS CET is the primary tariff harmonization mechanism for West Africa. The 5-band structure provides common framework across 15 member states. ECOTIS is the official source for current CET and trade defense information. tralac provides accessible downloadable versions."
+}

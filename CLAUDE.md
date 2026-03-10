@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-08 (세션 33)
+# 마지막 업데이트: 2026-03-09 (Cowork 세션 2/세션 36 — B2C 잔재 삭제 + 파일 정리 2차 + 요금제 검증)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -8,25 +8,76 @@ POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위
 1. `session-context.md` — 프로젝트 전체 맥락 (히스토리, TODO, 완료 내역, 인증정보)
 2. `.cursorrules` — 코딩 표준, 파일 매핑, 프로덕션 환경
 
+## 📁 폴더 구조 (2026-03-09 정리)
+```
+portal/
+├── [루트 코어] CLAUDE.md, session-context.md, .cursorrules, README.md, 설정파일
+│
+├── docs/                    # 문서
+│   ├── sessions/            # 세션별 리포트 (SESSION_30~36 등)
+│   ├── architecture/        # 아키텍처, 설계 문서 (DESIGN_AGR_IMPORT, DESIGN_WDC_HS_MAPPING)
+│   ├── CHANGELOG.md         # 개발 변경 이력
+│   └── NEXT_SESSION_START.md # 다음 세션 시작 가이드
+│
+├── analysis/                # 경쟁사/비용/전략 분석
+│   ├── Competitor_*.xlsx    # 경쟁사 비교 매트릭스
+│   ├── POTAL_Cost_*.xlsx    # 비용/기능 분석
+│   └── POTAL-B2B-Strategy-Roadmap.docx
+│
+├── marketing/               # 마케팅/런칭 자료
+│   ├── product-hunt-assets/ # PH 이미지
+│   ├── POTAL_Pitch_Deck.pptx
+│   └── Facebook_Group_Posts.md
+│
+├── checklists/              # 체크리스트/TODO
+│   ├── POTAL_B2B_Checklist.xlsx  # 마스터 체크리스트
+│   └── POTAL_NEXT_CHECKLIST.md
+│
+├── ai-agents/               # AI 에이전트 설정
+│   ├── custom-gpt/          # ChatGPT Actions
+│   ├── gemini-gem/          # Google Gemini
+│   └── meta-ai/             # Meta AI
+│
+├── archive/                 # 현재 안쓰지만 보관 (B2C 잔재, 참고용)
+│
+├── data/                    # 관세 데이터
+│   ├── itc_macmap/          # MacMap 실제 관세 데이터 (53개국)
+│   ├── tariff-research/     # 국가별 리서치 findings JSON/CSV + 수집 스크립트/메타/원본
+│   └── wits_tariffline/     # WITS tariff line 데이터
+│
+├── scripts/                 # 실행 스크립트
+│   ├── docs/                # 스크립트 사용법 문서
+│   └── (import_*, download_* 등 실행 파일)
+│
+├── supabase/migrations/     # DB 마이그레이션 SQL
+├── app/                     # Next.js 소스코드
+├── components/              # React 컴포넌트
+├── plugins/                 # 이커머스 플러그인 (WooCommerce, Magento, BigCommerce)
+└── mcp-server/              # MCP 서버
+```
+
 ## 기술 스택
 - Next.js 14+ App Router + TypeScript
-- Supabase (Auth + PostgreSQL DB), Vercel (배포), LemonSqueezy (결제, MoR)
+- Supabase (Auth + PostgreSQL DB), Paddle (결제, MoR) ← LemonSqueezy에서 전환
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션: https://www.potal.app
 
-## 핵심 수치 (세션 33 기준)
-- 240개국/영토, 7개국어, 63개 FTA, 12개국 특수세금
+## 핵심 수치 (세션 36/Cowork 2 기준)
+- 240개국/영토, **30개국어** (세션 34: 7→30 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
-- MIN 관세율: ~5.4M/130M행 임포트 진행중 (macmap_min_rates)
+- MIN 관세율: **~92.3M행/130M 44개국 완료, 9개국 진행중** (macmap_min_rates)
 - AGR 관세율: 148M행 대기 (macmap_agr_rates)
 - 무역협정: 1,319건 (macmap_trade_agreements)
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
+- **관세율 자동업데이트**: Vercel Cron 매주 월요일 06:00 UTC (세션 34 설정)
 
 ## 절대 규칙
 1. **B2C 코드 수정 금지** — lib/search/, lib/agent/, components/search/ 등. 보존만
 2. **npm run build 확인 후 push** — 빌드 깨진 코드 push 금지
+7. **터미널/다운로드 작업은 한 번에 하나만** — 동시에 2개 이상 다운로드/임포트 실행 금지. 병렬 실행 시 프로세스가 죽거나 불안정해짐
+8. **추가 작업은 메모리 부담 없는 것만** — 다운로드/임포트 진행 중 할 수 있는 건 문서 수정, 코드 리뷰, 설정 변경 등 가벼운 작업에 한함
 3. **session-context.md에 없는 숫자 만들기 금지** — "70% 완료" 같은 근거 없는 수치 사용 금지
 4. **console.log 금지** — 프로덕션 코드에 남기지 않기
 5. **한 번에 하나의 작업만** — 멀티태스킹 금지
@@ -53,7 +104,7 @@ POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위
 | customs_fees | 240 | ✅ |
 | macmap_trade_agreements | 1,319 | ✅ |
 | macmap_ntlc_rates | 537,894 | ✅ (MFN 009) |
-| macmap_min_rates | ~5.4M/130M | 🔄 진행중 |
+| macmap_min_rates | ~92.3M/130M (44개국) | 🔄 진행중 (9개국 남음) |
 | macmap_agr_rates | 0/148M | ⏳ 대기 |
 | trade_remedy_cases | 10,999 | ✅ (세션 33) |
 | trade_remedy_products | 55,259 | ✅ (세션 33) |
@@ -62,15 +113,32 @@ POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위
 
 ## MIN 임포트 재개 방법
 ```bash
+# Cowork VM에서 실행 (Mac 터미널 아님)
 # 진행 상태 확인
 cat min_import_progress.json
 
-# 재개 (이전 진행 이어서)
-python3 import_min_via_api.py
+# 재개 (남은 9개국: SGP, THA, TUN, TUR, TWN, UKR, URY, USA, VNM)
+nohup python3 import_min_remaining.py > min_import.log 2>&1 &
+
+# 자동 재시작 래퍼
+nohup bash run_min_loop.sh > min_import.log 2>&1 &
 ```
-- 스크립트: `import_min_via_api.py` (40K행/배치, ON CONFLICT DO NOTHING)
-- 진행 파일: `min_import_progress.json` (completed_countries + total_rows)
-- 속도: ~7,200행/초, 전체 ~5시간
+- 스크립트: `import_min_remaining.py` (5K행/배치, curl 임시파일, ON CONFLICT DO NOTHING)
+- 자동 재시작: `run_min_loop.sh` (프로세스 죽으면 5초 후 재시작)
+- 속도: ~2,800행/초
+- 완료 국가: 44개국 (AE~SA), 남은 9개국
+
+## WDC 다운로드 (Mac에서 실행)
+```bash
+# Mac 터미널에서 (VM 아님!)
+cd ~/portal && nohup scripts/download_wdc_products.sh /Volumes/soulmaten/POTAL/wdc-products > ~/wdc_download.log 2>&1 &
+
+# 진행 확인
+tail -5 ~/wdc_download.log
+```
+- 총 1,899개 파일 × ~186MB = ~350GB
+- 외장하드: /Volumes/soulmaten/POTAL/wdc-products
+- 이미 다운로드된 파일 자동 건너뜀 (이어받기 가능)
 
 ## 주요 인증 정보
 | 항목 | 값 |
@@ -82,7 +150,26 @@ python3 import_min_via_api.py
 | WTO API Key | e6b00ecdb5b34e09aabe15e68ab71d1d |
 | Groq API Key | gsk_***REDACTED*** |
 | AWS Account | 920263653804 |
-| EC2 Instance | i-0c114c6176439b9cb |
+| EC2 Instance | i-0c114c6176439b9cb (현재 중지됨) |
+| CRON_SECRET | 8e82e09e218d6147943253fdbffacc3bacda4e4f8d322ce508ea2befde00f297 |
+
+## ⚠️ 요금제 (세션 28 확정 — 반드시 숙지)
+
+**현재 유효한 요금제 (신):**
+| 플랜 | 가격 | 할당량 |
+|------|------|--------|
+| Free | $0 | 100건/월 |
+| Basic | $20 | 2,000건/월 |
+| Pro | $80 | 10,000건/월 |
+| Enterprise | $300+ | 50,000건+ |
+
+**폐기된 요금제 (구 — 코드에 아직 남아있으나 더 이상 유효하지 않음):**
+Free 500건 / Starter $9 / Growth $29 / Enterprise custom → 세션 28에서 전면 폐기
+
+**변경 이유**: Alex Hormozi 전략 "중간은 죽음". 기존 $9/$29은 "중간" → AI 원가 건당 $0.001 (캐시 시 $0.0003)이므로 33개 기능 전부 넣어도 건당 $0.008 이하 → Basic $20/2K에서 마진 97% → "모두에게 싸게 + 압도적 기능 = 가격 파괴자"
+
+**⚠️ 코드에 구버전 숫자 남아있음**: plan-checker.ts, lemonsqueezy.ts, page.tsx 등 7개 파일. Paddle 전환 후 일괄 업데이트 예정. 구버전을 현재 요금제로 착각하지 말 것
+**⚠️ 결제 시스템**: LemonSqueezy → Paddle로 전환됨. 코드에 LemonSqueezy 참조 아직 남아있음
 
 ## 은태님 스타일 (코딩 초보자)
 - 기술 설명은 간결하게, 작업은 직접 해줘야 함

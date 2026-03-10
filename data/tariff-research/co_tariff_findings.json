@@ -1,0 +1,63 @@
+{
+  "country": "Colombia",
+  "country_code": "CO",
+  "tariff_system": "Colombian Customs Tariff (Arancel Aduanero)",
+  "system_type": "10-digit Harmonized System Extension",
+  "code_digits": 10,
+  "hs_base_digits": 6,
+  "additional_digits": 4,
+  "status": "RESEARCH_COMPLETE",
+  "summary": "Colombia uses a 10-digit tariff code system. First 6 digits are international HS codes, plus 2 digits for Andean Community (CAN), plus 2 digits exclusive to Colombia. Governed by Decree 2153 of 2016.",
+  "code_composition": {
+    "digits_1_6": "Harmonized System (HS) - International standard",
+    "digits_7_8": "Andean Community (CAN) extensions",
+    "digits_9_10": "Colombian exclusive classification",
+    "total_codes": "Estimated 10,000+",
+    "regulation": "Decree 2153 of 2016"
+  },
+  "data_availability": {
+    "complete_tariff_codes": "Estimated 10,000+ codes",
+    "official_source": "DIAN (Dirección de Impuestos y Aduanas Nacionales)",
+    "accessible": true,
+    "downloadable": true,
+    "formats": ["Online database", "API via Arancel tool"]
+  },
+  "sources": [
+    {
+      "name": "DIAN - Official Customs Authority",
+      "url": "https://www.dian.gov.co/",
+      "type": "Official Government Agency",
+      "description": "Colombian tax and customs authority responsible for tariff classifications"
+    },
+    {
+      "name": "DIAN Arancel Tool",
+      "url": "https://muisca.dian.gov.co/",
+      "type": "Official Tariff Lookup System",
+      "description": "Interactive tool for 10-digit tariff code classification and duty queries"
+    },
+    {
+      "name": "World Bank WITS",
+      "url": "https://wits.worldbank.org/tariff/trains/en/country/COL",
+      "type": "International Database",
+      "description": "World Bank's tariff database with Colombian schedules"
+    },
+    {
+      "name": "FreightAmigo Colombia Guide",
+      "url": "https://www.freightamigo.com/en/blog/logistics/navigating-colombias-customs-a-guide-for-international-shippers/",
+      "type": "Trade Information",
+      "description": "Colombian customs and tariff guide"
+    }
+  ],
+  "tariff_rates": {
+    "access": "Via DIAN Arancel tool",
+    "classification_level": "Highly detailed due to 10-digit system"
+  },
+  "data_collection_status": "PENDING",
+  "next_steps": [
+    "Access DIAN Arancel tool at https://muisca.dian.gov.co/",
+    "Query complete 10-digit tariff schedule",
+    "Request bulk export if available",
+    "Compile tariff rates from DIAN database"
+  ],
+  "notes": "DIAN Arancel tool is primary access point. Tool uses 10-digit classification system based on HS + CAN + Colombian-specific extensions. Bulk download not explicitly mentioned but may be available through DIAN upon request."
+}

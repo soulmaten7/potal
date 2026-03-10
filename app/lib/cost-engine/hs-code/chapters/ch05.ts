@@ -1,0 +1,21 @@
+// Chapter 05: Animal Products NES -- 16 codes
+import type { HsCodeEntry } from '../types';
+
+export const CHAPTER_05: HsCodeEntry[] = [
+  { code: '050100', description: 'Human hair, unworked, whether or not washed or scoured; waste of human hair', chapter: '05', category: 'food', keywords: ['human', 'hair', 'unworked', 'washed', 'scoured', 'waste'] },
+  { code: '050110', description: 'Animal hair', chapter: '05', category: 'textiles', keywords: ['animal hair', 'alpaca', 'mohair', 'cashmere'] },
+  { code: '050210', description: 'Pigs\\, hogs\\ or boars\\ bristles and hair; badger hair and other brush maki...', chapter: '05', category: 'food', keywords: ['pigs', 'hogs', 'boars', 'bristles', 'hair', 'badger', 'brush', 'making', 'waste', 'such'] },
+  { code: '050290', description: 'Pigs\\, hogs\\ or boars\\ bristles and hair; badger hair and other brush maki...', chapter: '05', category: 'food', keywords: ['pigs', 'hogs', 'boars', 'bristles', 'hair', 'badger', 'brush', 'making', 'waste', 'such'] },
+  { code: '050400', description: 'Guts, bladders and stomachs of animals (other than fish), whole and pieces th...', chapter: '05', category: 'food', keywords: ['guts', 'bladders', 'stomachs', 'animals', 'fish', 'whole', 'pieces', 'fresh', 'chilled', 'frozen'] },
+  { code: '050510', description: 'Skins and other parts of birds, with their feathers or down, feathers and par...', chapter: '05', category: 'food', keywords: ['skins', 'birds', 'their', 'feathers', 'down', 'trimmed', 'edges', 'further', 'worked', 'cleaned'] },
+  { code: '050590', description: 'Skins and other parts of birds, with their feathers or down, feathers and par...', chapter: '05', category: 'food', keywords: ['skins', 'birds', 'their', 'feathers', 'down', 'trimmed', 'edges', 'further', 'worked', 'cleaned'] },
+  { code: '050610', description: 'Bones and horn-cores, unworked, defatted, simply prepared (but not cut to sha...', chapter: '05', category: 'food', keywords: ['bones', 'horn', 'cores', 'unworked', 'defatted', 'simply', 'prepared', 'cut', 'shape', 'treated'] },
+  { code: '050690', description: 'Bones and horn-cores, unworked, defatted, simply prepared (but not cut to sha...', chapter: '05', category: 'food', keywords: ['bones', 'horn', 'cores', 'unworked', 'defatted', 'simply', 'prepared', 'cut', 'shape', 'treated'] },
+  { code: '050710', description: 'Ivory, tortoise-shell, whalebone and whalebone hair, horns, antlers, hooves, ...', chapter: '05', category: 'food', keywords: ['ivory', 'tortoise', 'shell', 'whalebone', 'hair', 'horns', 'antlers', 'hooves', 'nails', 'claws'] },
+  { code: '050790', description: 'Ivory, tortoise-shell, whalebone and whalebone hair, horns, antlers, hooves, ...', chapter: '05', category: 'food', keywords: ['ivory', 'tortoise', 'shell', 'whalebone', 'hair', 'horns', 'antlers', 'hooves', 'nails', 'claws'] },
+  { code: '050800', description: 'Coral and similar materials, unworked or simply prepared but not otherwise wo...', chapter: '05', category: 'food', keywords: ['coral', 'similar', 'materials', 'unworked', 'simply', 'prepared', 'otherwise', 'worked', 'shells', 'molluscs'] },
+  { code: '051000', description: 'Ambergris, castoreum, civet and musk; cantharides; bile, whether or not dried...', chapter: '05', category: 'food', keywords: ['ambergris', 'castoreum', 'civet', 'musk', 'cantharides', 'bile', 'dried', 'glands', 'animal', 'products'] },
+  { code: '051110', description: 'Animal products not elsewhere specified or included; dead animals of Chapter ...', chapter: '05', category: 'food', keywords: ['animal', 'products', 'specified', 'included', 'dead', 'animals', 'chapter', 'unfit', 'human', 'consumptionbovine'] },
+  { code: '051191', description: 'Animal products not elsewhere specified or included; dead animals of Chapter ...', chapter: '05', category: 'food', keywords: ['animal', 'products', 'specified', 'included', 'dead', 'animals', 'chapter', 'unfit', 'human', 'consumptionproducts'] },
+  { code: '051199', description: 'Animal products not elsewhere specified or included; dead animals of Chapter ...', chapter: '05', category: 'food', keywords: ['animal', 'products', 'specified', 'included', 'dead', 'animals', 'chapter', 'unfit', 'human', 'consumptionsinews'] },
+];
