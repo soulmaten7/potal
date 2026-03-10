@@ -130,17 +130,21 @@ export async function POST(req: NextRequest) {
 
     const transaction = await res.json();
     const checkoutUrl = transaction.data?.checkout?.url;
+    const transactionId = transaction.data?.id;
 
-    if (!checkoutUrl) {
+    if (!transactionId) {
       return NextResponse.json(
-        { success: false, error: 'Checkout URL not returned from Paddle' },
+        { success: false, error: 'Transaction ID not returned from Paddle' },
         { status: 500 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      data: { url: checkoutUrl },
+      data: {
+        url: checkoutUrl,
+        transactionId,
+      },
     });
   } catch {
     return NextResponse.json(

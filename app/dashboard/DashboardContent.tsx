@@ -3,7 +3,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import Script from 'next/script';
 import { useSupabase } from '@/app/context/SupabaseProvider';
+
+// Paddle.js global type
+declare global {
+  interface Window {
+    Paddle?: {
+      Initialize: (config: { token: string; environment?: string }) => void;
+      Checkout: {
+        open: (config: {
+          transactionId: string;
+          settings?: {
+            displayMode?: string;
+            theme?: string;
+            successUrl?: string;
+          };
+        }) => void;
+      };
+    };
+  }
+}
 
 // ─── Types ──────────────────────────────────────────
 interface ApiKey {
@@ -300,13 +320,14 @@ export default function DashboardContent() {
     }
   };
 
-  // ─── Billing: Upgrade ────────────────────────────
+  // ─── Billing: Upgrade (Paddle.js Overlay Checkout) ────
   const handleUpgrade = async (planId: string) => {
     if (!session) return;
     setBillingLoading(true);
     setError(null);
 
     try {
+      // 1. Create transaction server-side
       const res = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: {
@@ -319,8 +340,24 @@ export default function DashboardContent() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to create checkout');
 
-      // Redirect to Paddle Checkout
-      window.location.href = data.data.url;
+      // 2. Open Paddle.js overlay checkout (always shows payment form)
+      if (window.Paddle) {
+        window.Paddle.Checkout.open({
+          transactionId: data.data.transactionId,
+          settings: {
+            displayMode: 'overlay',
+            theme: 'light',
+            successUrl: `${window.location.origin}/dashboard?checkout=success&plan=${planId}`,
+          },
+        });
+      } else {
+        // Fallback: redirect if Paddle.js not loaded
+        if (data.data.url) {
+          window.location.href = data.data.url;
+        } else {
+          throw new Error('Paddle checkout not available');
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Checkout failed');
     } finally {
@@ -395,6 +432,22 @@ export default function DashboardContent() {
       background: '#f5f5f5',
       color: '#1a1a1a',
     }}>
+      {/* Paddle.js — checkout overlay for payment method collection */}
+      <Script
+        src="https://cdn.paddle.com/paddle/v2/paddle.js"
+        strategy="lazyOnload"
+        onLoad={() => {
+          if (window.Paddle) {
+            const paddleToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+            if (paddleToken) {
+              window.Paddle.Initialize({
+                token: paddleToken,
+                environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox' ? 'sandbox' : undefined,
+              });
+            }
+          }
+        }}
+      />
       {/* Top Bar */}
       <div style={{
         background: '#02122c',
