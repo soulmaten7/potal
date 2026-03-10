@@ -101,7 +101,7 @@ Claude에게 다음과 같이 물어보세요:
 - `hsCode`: HS 코드 (알고 있는 경우)
 
 ### list_supported_countries
-지원되는 181개국의 VAT/GST 세율, 관세율, 면세 기준 정보를 조회합니다.
+지원되는 240개국의 VAT/GST 세율, 관세율, 면세 기준 정보를 조회합니다.
 
 ## 문제 해결
 
@@ -112,4 +112,4 @@ Claude에게 다음과 같이 물어보세요:
 → Claude Desktop을 완전히 종료 후 재시작. 설정 파일의 JSON 문법이 올바른지 확인
 
 ### "Network error" 오류
-→ 인터넷 연결 확인. POTAL 서버 상태 확인: https://potal-x1vl.vercel.app
+→ 인터넷 연결 확인. POTAL 서버 상태 확인: https://www.potal.app

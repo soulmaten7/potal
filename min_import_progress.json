@@ -1,0 +1,31 @@
+{
+  "SGP": {
+    "rows_done": 2705118,
+    "status": "done",
+    "total": 2705118
+  },
+  "THA": {
+    "rows_done": 2551868,
+    "status": "done",
+    "total": 2551868
+  },
+  "TUN": {
+    "rows_done": 4040613,
+    "status": "done",
+    "total": 4040613
+  },
+  "TUR": {
+    "rows_done": 3763960,
+    "status": "done",
+    "total": 3763960
+  },
+  "TWN": {
+    "rows_done": 2910360,
+    "status": "done",
+    "total": 2910360
+  },
+  "UKR": {
+    "rows_done": 2500000,
+    "status": "in_progress"
+  }
+}

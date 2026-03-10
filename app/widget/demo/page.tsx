@@ -106,7 +106,7 @@ export default function WidgetDemo() {
           lineHeight: 1.6,
         }}>
           <code>{`<div id="potal-widget"></div>
-<script src="https://potal-x1vl.vercel.app/widget/potal-widget.js"
+<script src="https://www.potal.app/widget/potal-widget.js"
   data-api-key="YOUR_PUBLISHABLE_KEY"
   data-origin="CN"
   data-product-name="Your Product Name"
@@ -135,7 +135,7 @@ export default function WidgetDemo() {
           fontSize: 13,
           lineHeight: 1.6,
         }}>
-          <code>{`<script src="https://potal-x1vl.vercel.app/widget/potal-widget.js"></script>
+          <code>{`<script src="https://www.potal.app/widget/potal-widget.js"></script>
 <script>
   PotalWidget.init({ apiKey: 'pk_live_...' });
 

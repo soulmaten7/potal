@@ -46,7 +46,7 @@ A: "The estimated total cost would be approximately $83-96. Here's the breakdown
 - Import Duty: $11.75 (23.5% for apparel HS 6109)
 - MPF: $31.67 (minimum processing fee)
 - No state sales tax without ZIP code
-For exact calculations, visit https://potal-x1vl.vercel.app"
+For exact calculations, visit https://www.potal.app"
 
 ### 5단계: Avatar 설정
 

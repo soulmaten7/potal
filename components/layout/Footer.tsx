@@ -87,7 +87,7 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <span className="text-xs text-slate-500">
-              181 countries &middot; Real-time duty &amp; tax calculations
+              240 countries &middot; Real-time duty &amp; tax calculations
             </span>
           </div>
         </div>

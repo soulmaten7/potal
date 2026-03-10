@@ -17,7 +17,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 // ─── Configuration ──────────────────────────────────────────
-const POTAL_API_BASE = "https://potal-x1vl.vercel.app/api/v1";
+const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
 const USER_AGENT = "potal-mcp-server/1.0.0";
 
@@ -186,7 +186,7 @@ server.tool(
         content: [
           {
             type: "text" as const,
-            text: "❌ POTAL API key is not configured. Please set the POTAL_API_KEY environment variable.\n\nGet your API key at: https://potal-x1vl.vercel.app",
+            text: "❌ POTAL API key is not configured. Please set the POTAL_API_KEY environment variable.\n\nGet your API key at: https://www.potal.app",
           },
         ],
       };
@@ -242,7 +242,7 @@ server.tool(
         content: [
           {
             type: "text" as const,
-            text: "❌ POTAL API key is not configured. Please set the POTAL_API_KEY environment variable.\n\nGet your API key at: https://potal-x1vl.vercel.app",
+            text: "❌ POTAL API key is not configured. Please set the POTAL_API_KEY environment variable.\n\nGet your API key at: https://www.potal.app",
           },
         ],
       };

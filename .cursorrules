@@ -91,7 +91,7 @@
 ### B2B 핵심 — API & 엔진
 | 파일 | 역할 |
 |------|------|
-| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (181개국, India/Brazil 특수 세금) |
+| `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (240개국, India/Brazil 특수 세금) |
 | `app/lib/cost-engine/country-data.ts` | 240개국 VAT/GST/관세/de minimis 데이터 |
 | `app/lib/cost-engine/country-i18n.ts` | 7개국어 국가명 (EN/KO/JA/ZH/ES/FR/DE) |
 | `app/lib/cost-engine/ai-classifier/` | AI HS Code 분류 (GPT-4o-mini + DB캐시 + 키워드) |
@@ -131,7 +131,7 @@
 | `app/api/shopify/session/route.ts` | Shopify 세션 토큰 인증 API |
 | `components/shopify/ShopifyAppBridge.tsx` | Shopify App Bridge 4.x 초기화 |
 | `extensions/potal-widget/` | Theme App Extension (3개 블록) |
-| `public/widget/potal-widget.js` | 임베드 위젯 (v2, Shadow DOM, 181 countries) |
+| `public/widget/potal-widget.js` | 임베드 위젯 (v2, Shadow DOM, 240 countries) |
 
 ### B2B 핵심 — Billing & Dashboard
 | 파일 | 역할 |
@@ -150,7 +150,7 @@
 | 파일 | 역할 |
 |------|------|
 | `app/page.tsx` | 랜딩 페이지 (B2B — TLC API 소개) |
-| `app/about/page.tsx` | About (181개국, 120ms, 99.9% Uptime) |
+| `app/about/page.tsx` | About (240개국, 120ms, 99.9% Uptime) |
 | `app/terms/page.tsx` | 이용약관 (API/Shopify/정확도) |
 | `app/privacy/page.tsx` | 개인정보처리방침 |
 | `app/help/page.tsx` | FAQ (API/Shopify/요금제) |

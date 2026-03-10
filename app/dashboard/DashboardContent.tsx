@@ -689,7 +689,7 @@ export default function DashboardContent() {
                     <pre style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: '#a5f3fc', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
 {`<div id="potal-widget"></div>
 <script
-  src="https://potal-x1vl.vercel.app/widget/potal-widget.js"
+  src="https://www.potal.app/widget/potal-widget.js"
   data-api-key="${publishableKey?.prefix || 'YOUR_KEY'}..."
   data-origin="${widgetOrigin}"${widgetProductName ? `\n  data-product-name="${widgetProductName}"` : ''}${widgetPrice ? `\n  data-price="${widgetPrice}"` : ''}${widgetShipping ? `\n  data-shipping="${widgetShipping}"` : ''}
   data-theme="${widgetTheme}">

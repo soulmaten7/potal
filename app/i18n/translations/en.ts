@@ -12,14 +12,14 @@ export const en = {
   // Hero Section
   'hero.title': 'The Infrastructure for Cross-Border Commerce',
   'hero.subtitle': 'Show buyers the total landed cost instantly',
-  'hero.description': 'Calculate duties, taxes, and shipping for 181 countries in real-time. Embed our widget or API to reduce checkout friction and increase international sales.',
+  'hero.description': 'Calculate duties, taxes, and shipping for 240 countries in real-time. Embed our widget or API to reduce checkout friction and increase international sales.',
   'hero.cta': 'Get Started Free',
   'hero.tryCta': 'Try Demo',
 
   // Features Section
   'features.title': 'Why Choose POTAL',
   'features.realTime.title': 'Real-Time Calculations',
-  'features.realTime.description': 'Instant duty, tax, and shipping calculations for all 181 countries',
+  'features.realTime.description': 'Instant duty, tax, and shipping calculations for all 240 countries',
   'features.reliable.title': 'Highly Reliable',
   'features.reliable.description': 'Built on proven cross-border commerce expertise with 99.9% uptime',
   'features.easyIntegration.title': 'Easy Integration',

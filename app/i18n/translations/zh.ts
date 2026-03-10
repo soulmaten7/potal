@@ -12,14 +12,14 @@ export const zh = {
   // Hero Section
   'hero.title': '跨境电商基础设施',
   'hero.subtitle': '即时向买家展示总到岸成本',
-  'hero.description': '实时计算181个国家的关税、税费和运费。嵌入我们的组件或API，减少结账摩擦，提升国际销售额。',
+  'hero.description': '实时计算240个国家的关税、税费和运费。嵌入我们的组件或API，减少结账摩擦，提升国际销售额。',
   'hero.cta': '免费开始',
   'hero.tryCta': '试用演示',
 
   // Features Section
   'features.title': '为什么选择 POTAL',
   'features.realTime.title': '实时计算',
-  'features.realTime.description': '覆盖181个国家的即时关税、税费和运费计算',
+  'features.realTime.description': '覆盖240个国家的即时关税、税费和运费计算',
   'features.reliable.title': '高度可靠',
   'features.reliable.description': '基于成熟的跨境电商专业技术，99.9%可用性',
   'features.easyIntegration.title': '轻松集成',

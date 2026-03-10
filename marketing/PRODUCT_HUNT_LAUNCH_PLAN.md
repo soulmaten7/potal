@@ -14,7 +14,7 @@
 
 ### Description (260자)
 
-> POTAL is the Total Landed Cost API for cross-border commerce. Calculate import duties, VAT/GST, and customs fees for 181+ countries in milliseconds. REST API, Shopify app, and AI agent integrations (GPT, Claude, Gemini). Free tier included. Built by a solo founder with AI.
+> POTAL is the Total Landed Cost API for cross-border commerce. Calculate import duties, VAT/GST, and customs fees for 240+ countries in milliseconds. REST API, Shopify app, and AI agent integrations (GPT, Claude, Gemini). Free tier included. Built by a solo founder with AI.
 
 ### Tags (최대 3개)
 
@@ -37,10 +37,10 @@
 > 최소 2장 필요. 4장 권장.
 
 ### Gallery 이미지 아이디어
-1. **Hero** — "Calculate landed costs for 181+ countries" + API 응답 스크린샷
+1. **Hero** — "Calculate landed costs for 240+ countries" + API 응답 스크린샷
 2. **Dashboard** — 셀러 대시보드 (API Keys, Usage, Billing 탭)
 3. **Integration** — Shopify 위젯 + API 코드 스니펫 + AI agents (GPT/Claude/Gemini 로고)
-4. **Pricing** — Free → Starter → Growth → Enterprise 비교
+4. **Pricing** — Free → Basic → Pro → Enterprise 비교
 
 ---
 
@@ -60,12 +60,12 @@ Cross-border e-commerce is a $1.2T market growing to $9T+ by 2033. But 48% of sh
 Enterprise tools like Zonos charge $2+ per order. Spreadsheets get outdated instantly. Manual calculations don't scale.
 
 **What POTAL does:**
-One API call → instant breakdown of import duties, VAT/GST, customs fees for 181+ countries.
+One API call → instant breakdown of import duties, VAT/GST, customs fees for 240+ countries.
 
 - REST API with <100ms response time
 - Shopify Theme App Extension (1-click install)
 - AI agent integrations: Custom GPT, Claude MCP, Gemini Gem
-- Free: 500 calls/mo | Starter: $9/5K | Growth: $29/25K
+- Free: 100 calls/mo | Basic: $20/2K | Pro: $80/10K | Enterprise: $300/50K
 
 **What makes it different:**
 - 10-75x cheaper per API call than competitors
@@ -73,7 +73,7 @@ One API call → instant breakdown of import duties, VAT/GST, customs fees for 1
 - Built for developers: OpenAPI spec, interactive docs, code examples in 3 languages
 
 **PH exclusive:**
-First 50 signups get Starter plan free for 3 months. Use code PRODUCTHUNT at checkout.
+First 50 signups get Basic plan free for 3 months. Use code PRODUCTHUNT at checkout.
 
 **I'd love to hear:**
 1. What integrations would be most valuable for your use case?
@@ -138,7 +138,7 @@ Happy to answer any questions! 🚀
 |------|------|------|
 | 1주 | 가입 전환 | PH 방문자 → 무료 회원가입 유도 |
 | 2주 | API 키 활성화 | 가입자에게 온보딩 이메일 (API 사용법) |
-| 3주 | 유료 전환 | 무료 한도 도달 사용자에게 Starter 안내 |
+| 3주 | 유료 전환 | 무료 한도 도달 사용자에게 Basic 안내 |
 | 4주 | 피드백 수집 | 사용자 인터뷰, 기능 요청 정리 |
 
 ---

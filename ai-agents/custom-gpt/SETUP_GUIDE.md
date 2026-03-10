@@ -15,7 +15,7 @@ POTAL — Cross-Border Shopping Calculator
 
 ### Description (설명):
 ```
-Calculate the true total cost of buying products from other countries. Get instant breakdowns of import duties, taxes, VAT/GST, and customs fees for 181 countries. Know exactly what you'll pay before you buy.
+Calculate the true total cost of buying products from other countries. Get instant breakdowns of import duties, taxes, VAT/GST, and customs fees for 240 countries. Know exactly what you'll pay before you buy.
 ```
 
 ### Instructions (지침):
@@ -52,7 +52,7 @@ What import duties will I pay on shoes from Italy to the UK?
    - `openapi-gpt-actions.json` 파일의 내용을 전체 복사해서 붙여넣기
 4. **Privacy policy URL**:
    ```
-   https://potal-x1vl.vercel.app/privacy
+   https://www.potal.app/privacy
    ```
 
 ## 4단계: 테스트

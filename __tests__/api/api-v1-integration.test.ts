@@ -299,15 +299,15 @@ describe('Calculate Endpoint — TLC Calculation', () => {
 // ═══════════════════════════════════════════════════════════
 
 describe('Countries Endpoint', () => {
-  test('returns 181+ countries', () => {
+  test('returns 240+ countries', () => {
     const count = getCountryCount();
-    expect(count).toBeGreaterThanOrEqual(181);
+    expect(count).toBeGreaterThanOrEqual(240);
   });
 
   test('getSupportedCountries returns array', () => {
     const countries = getSupportedCountries();
     expect(Array.isArray(countries)).toBe(true);
-    expect(countries.length).toBeGreaterThanOrEqual(181);
+    expect(countries.length).toBeGreaterThanOrEqual(240);
   });
 
   test('country profile has required fields', () => {

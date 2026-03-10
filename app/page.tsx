@@ -30,7 +30,7 @@ function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: stri
 // ─── Code Preview Component ───────────────────────
 function CodeBlock() {
   const [copied, setCopied] = useState(false);
-  const code = `curl -X POST https://potal-x1vl.vercel.app/api/v1/calculate \\
+  const code = `curl -X POST https://www.potal.app/api/v1/calculate \\
   -H "X-API-Key: pk_live_your_key" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -88,7 +88,7 @@ function CodeBlock() {
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-all',
       }}>
-        <span style={{ color: '#c084fc' }}>curl</span> -X POST https://potal-x1vl.vercel.app/api/v1/calculate \{'\n'}
+        <span style={{ color: '#c084fc' }}>curl</span> -X POST https://www.potal.app/api/v1/calculate \{'\n'}
         {'  '}-H <span style={{ color: '#fbbf24' }}>&quot;X-API-Key: pk_live_your_key&quot;</span> \{'\n'}
         {'  '}-H <span style={{ color: '#fbbf24' }}>&quot;Content-Type: application/json&quot;</span> \{'\n'}
         {'  '}-d <span style={{ color: '#86efac' }}>{`'{
@@ -592,9 +592,10 @@ export default function HomePage() {
           100 free API calls per month. No credit card required.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
           {[
             { name: 'Free', price: '$0', desc: '100 calls/mo', highlight: false },
+            { name: 'Basic', price: '$20/mo', desc: '2,000 calls/mo', highlight: false },
             { name: 'Pro', price: '$80/mo', desc: '10,000 calls/mo', highlight: true },
             { name: 'Enterprise', price: '$300/mo', desc: '50,000+ calls/mo', highlight: false },
           ].map((plan) => (

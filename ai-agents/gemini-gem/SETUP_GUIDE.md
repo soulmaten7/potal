@@ -16,7 +16,7 @@ POTAL — Cross-Border Shopping Cost Calculator
 
 **설명 (Description):**
 ```
-Calculate the true total cost of buying products from other countries. Import duties, taxes, VAT/GST, and customs fees for 181 countries — instantly.
+Calculate the true total cost of buying products from other countries. Import duties, taxes, VAT/GST, and customs fees for 240 countries — instantly.
 ```
 
 ### 3단계: 지침 (Instructions) 입력
@@ -53,7 +53,7 @@ Compare the total import cost of a $200 laptop: China to Japan vs China to Germa
 
 - Gemini Gems는 외부 API 호출이 불가능합니다
 - 계산은 업로드된 참고 데이터 기반 **추정치**입니다
-- 정확한 실시간 계산은 https://potal-x1vl.vercel.app 에서 가능합니다
+- 정확한 실시간 계산은 https://www.potal.app 에서 가능합니다
 - Gem은 이 데이터를 바탕으로 상당히 정확한 추정을 제공하지만, 특정 HS Code별 세부 세율까지는 커버하지 못합니다
 
 ## 전략적 가치
