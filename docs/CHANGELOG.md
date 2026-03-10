@@ -1,6 +1,17 @@
 # POTAL Development Changelog
 
-## [2026-03-10] Cowork 세션 3 후반 (세션 37 계속) — 빌드 수정, Paddle 버그 픽스, B2C 잔재 완전 정리
+## [2026-03-10] Cowork 세션 3 후반 (세션 37 계속) — Overage 빌링 구현, Paddle 버그 픽스, B2C 잔재 완전 정리
+
+### 💰 Overage 빌링 구현
+- `app/lib/billing/overage.ts` — 초과 사용량 계산 + Paddle One-time Charge API 연동
+- `app/api/v1/admin/billing-overage/route.ts` — Cron 엔드포인트 (매월 1일 07:00 UTC)
+- `app/lib/api-auth/plan-checker.ts` — 유료 플랜 overage 허용 (Free만 hard-block)
+- `app/lib/api-auth/middleware.ts` — X-Plan-Usage/X-Plan-Limit/X-Plan-Overage 헤더 추가
+- `app/api/v1/sellers/usage/route.ts` — 구버전 요금제 숫자 수정 (free:500→100, starter→basic 등) + overage 정보 추가
+- `vercel.json` — billing-overage cron 추가 ("0 7 1 * *")
+- Overage rates: Basic $0.015/건, Pro $0.012/건, Enterprise $0.01/건
+
+---
 
 ### 🔧 빌드 수정 (Capacitor 제거 후속)
 - `app/lib/native-auth.ts` — @capacitor/core 임포트 제거, stub 함수로 대체 (isNativePlatform→false 등)

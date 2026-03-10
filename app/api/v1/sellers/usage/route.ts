@@ -88,14 +88,17 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     }
   }
 
-  // Plan limits
-  const planLimits: Record<string, number> = {
-    free: 500,
-    starter: 5000,
-    growth: 25000,
-    enterprise: -1, // unlimited
+  // Plan limits — 신 요금제 (세션 28 확정, 세션 37 Overage 추가)
+  const planConfig: Record<string, { limit: number; overageRate: number }> = {
+    free: { limit: 100, overageRate: 0 },
+    basic: { limit: 2000, overageRate: 0.015 },
+    pro: { limit: 10000, overageRate: 0.012 },
+    enterprise: { limit: 50000, overageRate: 0.01 },
   };
-  const limit = planLimits[context.planId] ?? 500;
+  const config = planConfig[context.planId] ?? planConfig.free;
+  const limit = config.limit;
+  const overageCount = Math.max(0, totalRequests - limit);
+  const overageCost = overageCount * config.overageRate;
 
   return apiSuccess({
     period: `${year}-${String(month).padStart(2, '0')}`,
@@ -106,10 +109,15 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     byEndpoint,
     plan: {
       id: context.planId,
-      limit: limit === -1 ? 'unlimited' : limit,
+      limit,
       used: totalRequests,
-      remaining: limit === -1 ? 'unlimited' : Math.max(0, limit - totalRequests),
-      usagePercent: limit === -1 ? 0 : Math.round((totalRequests / limit) * 100),
+      remaining: Math.max(0, limit - totalRequests),
+      usagePercent: Math.round((totalRequests / limit) * 100),
+    },
+    overage: {
+      count: overageCount,
+      rate: config.overageRate,
+      estimatedCharge: Math.round(overageCost * 100) / 100,
     },
   });
 });

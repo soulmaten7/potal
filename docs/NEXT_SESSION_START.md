@@ -29,19 +29,23 @@
 ## 다음 세션 우선순위
 
 ### 🔴 즉시
-1. **2차 Git Push** (Mac) — Paddle 버그 픽스 + Annual 토글 코드
+1. **3차 Git Push** (Mac) — Overage 빌링 + usage 요금제 수정 + Paddle 버그 픽스
    ```bash
    cd ~/portal && npm run build
-   git add app/api/billing/checkout/route.ts app/api/billing/portal/route.ts app/dashboard/DashboardContent.tsx
-   git commit -m "fix: Paddle billing bugs + annual billing toggle"
+   git add app/lib/billing/overage.ts app/api/v1/admin/billing-overage/route.ts \
+     app/lib/api-auth/plan-checker.ts app/lib/api-auth/middleware.ts \
+     app/api/v1/sellers/usage/route.ts vercel.json \
+     app/api/billing/checkout/route.ts app/api/billing/portal/route.ts \
+     app/dashboard/DashboardContent.tsx docs/CHANGELOG.md docs/NEXT_SESSION_START.md
+   git commit -m "feat: overage billing + Paddle bug fixes + annual toggle"
    git push
    ```
-2. **Paddle 결제 플로우 E2E 테스트** — Live에서 Checkout → Webhook → 구독 상태 확인
-3. **Overage 빌링 구현** — Paddle One-time charge API로 초과 요금 처리
+2. ~~Paddle 결제 플로우 E2E 테스트~~ ✅ **완료** (Products/Prices/Webhook/Auth 정상)
+3. ~~Overage 빌링 구현~~ ✅ **완료** (overage.ts + billing-overage cron + plan-checker overage 허용)
 
 ### 🟢 데이터 (백그라운드)
 4. **WDC 다운로드 완료 확인** — ~97% (1,852/1,899), Mac 외장하드
-5. **MIN 임포트 재개** — 9개국 남음 (SGP~VNM), Cowork VM에서 `import_min_remaining.py`
+5. **MIN 임포트 재개** — 🔄 진행중 (SGP ~44%, Cowork VM 백그라운드)
 6. **AGR 임포트** — 148M행, MIN 완료 후
 
 ### 🔵 기능/비즈니스

@@ -119,7 +119,7 @@ export function withApiAuth(handler: ApiHandler) {
       return response;
     }
 
-    // 6. Plan usage limits
+    // 6. Plan usage limits (paid plans allow overage, free plan hard-blocks)
     const planCheck = await checkPlanLimits(supabase as any, keyInfo.sellerId, keyInfo.planId);
     if (!planCheck.allowed) {
       return apiError(ApiErrorCode.PLAN_LIMIT_EXCEEDED, `Monthly calculation limit reached (${planCheck.used}/${planCheck.limit}). Upgrade your plan for more.`);
@@ -158,9 +158,15 @@ export function withApiAuth(handler: ApiHandler) {
       responseTimeMs,
     }).catch(() => {}); // Don't block response on log failure
 
-    // 10. Add rate limit headers
+    // 10. Add rate limit & usage headers
     response.headers.set('X-RateLimit-Limit', String(keyInfo.rateLimitPerMinute));
     response.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
+    response.headers.set('X-Plan-Usage', String(planCheck.used));
+    response.headers.set('X-Plan-Limit', String(planCheck.limit));
+    if (planCheck.isOverage) {
+      response.headers.set('X-Plan-Overage', String(planCheck.overageCount));
+      response.headers.set('X-Plan-Overage-Rate', String(planCheck.overageRate));
+    }
 
     return response;
   };
