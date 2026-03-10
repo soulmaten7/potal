@@ -382,8 +382,8 @@ export default function DashboardContent() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Failed to open portal');
 
-      // Redirect to Paddle Customer Portal
-      window.location.href = data.data.url;
+      // Open Paddle Customer Portal in new tab (so user doesn't lose dashboard)
+      window.open(data.data.url, '_blank', 'noopener,noreferrer');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Portal failed');
     } finally {

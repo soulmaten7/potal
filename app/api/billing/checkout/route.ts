@@ -103,6 +103,10 @@ export async function POST(req: NextRequest) {
       },
       checkout: {
         url: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
+        settings: {
+          show_add_discounts: false,
+          allow_quantity_updates: false,
+        },
       },
     };
 
