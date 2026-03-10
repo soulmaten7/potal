@@ -1,13 +1,16 @@
 /**
  * POTAL API v1 — /api/v1/checkout
  *
- * DDP (Delivered Duty Paid) Checkout.
+ * DDP (Delivered Duty Paid) Checkout — Quote & Session.
  *
  * POST /api/v1/checkout
- *   → Create checkout session (returns Stripe checkout URL)
+ *   → Create DDP checkout session (returns quote with full breakdown)
  *
  * POST /api/v1/checkout?action=quote
- *   → Get DDP price quote (no Stripe session created)
+ *   → Get DDP price quote only (same calculation, lighter response)
+ *
+ * Sellers use the returned breakdown to display all-inclusive DDP pricing
+ * in their own checkout system (Stripe, PayPal, Shopify Payments, etc.).
  */
 
 import { NextRequest } from 'next/server';
@@ -85,14 +88,6 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     });
   }
 
-  // URLs (required for checkout, optional for quote)
-  const successUrl = sanitize(body.successUrl, 2000);
-  const cancelUrl = sanitize(body.cancelUrl, 2000);
-
-  if (action === 'checkout' && (!successUrl || !cancelUrl)) {
-    return apiError(ApiErrorCode.BAD_REQUEST, 'successUrl and cancelUrl are required for checkout.');
-  }
-
   const input: DdpCheckoutInput = {
     sellerId: context.sellerId,
     originCountry,
@@ -104,8 +99,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     buyerEmail: sanitize(body.buyerEmail, 200) || undefined,
     buyerName: sanitize(body.buyerName, 200) || undefined,
     currency: sanitize(body.currency, 3).toUpperCase() || 'USD',
-    successUrl: successUrl || 'https://example.com/success',
-    cancelUrl: cancelUrl || 'https://example.com/cancel',
+    successUrl: sanitize(body.successUrl, 2000) || undefined,
+    cancelUrl: sanitize(body.cancelUrl, 2000) || undefined,
     metadata: body.metadata && typeof body.metadata === 'object'
       ? Object.fromEntries(
           Object.entries(body.metadata as Record<string, unknown>)
@@ -140,6 +135,6 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 export async function GET() {
   return apiError(
     ApiErrorCode.BAD_REQUEST,
-    'Use POST. Body: { originCountry, destinationCountry, items: [{productName, price, quantity}], shippingCost, successUrl, cancelUrl }. Add ?action=quote for price-only.'
+    'Use POST. Body: { originCountry, destinationCountry, items: [{productName, price, quantity}], shippingCost }. Add ?action=quote for price-only breakdown.'
   );
 }

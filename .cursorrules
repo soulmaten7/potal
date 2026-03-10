@@ -41,7 +41,7 @@
   - **가능한 이유**: AI 원가 건당 $0.001, 캐시 히트 70-90% 시 실질 $0.0003. 33개 기능 전부 넣어도 건당 $0.008 이하. Basic $20/2K에서 마진 97%
   - **상세 근거**: session-context.md "요금제 변경 배경과 근거" 섹션 참조
 - **✅ 요금제 코드 완전 업데이트 완료 (세션 37 후반)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx, plan-checker.ts, usage/route.ts, i18n 6개 언어 전부 신 요금제 반영. lemonsqueezy.ts 삭제 완료. Overage 빌링 구현 완료 (overage.ts + billing-overage cron)
-- **Shopify 심사 대기**: App Bridge 4.x CDN + 세션 토큰 push 완료, 임베디드 확인 대기 → 통과 후 "검토를 위해 제출"
+- **✅ Shopify 심사 제출 완료**: App Bridge 4.x CDN + 세션 토큰 push 완료, 앱스토어 심사 제출 완료 (2026-03-10). 리뷰어 할당 대기 중
 - **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. Live 6개 Price + Webhook + Vercel 배포 완료. Annual 20% off + Overage 빌링 구현 완료. lemonsqueezy.ts 삭제, Capacitor stub, Vercel B2C 환경변수 15개 삭제 (36→21개). Paddle Live E2E 테스트 통과
 - **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
 - **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
@@ -58,8 +58,8 @@
 - **AWS 계정**: POTAL (920263653804), us-east-1, Free Tier $100 크레딧. Groq API Key: gsk_***REDACTED***
 - **✅ Supabase 마이그레이션 010-016 실행 완료 (세션 32)**: Management API (curl + Personal Access Token) 경유. countries 240, vat_gst 240, de_minimis 240, customs_fees 240, trade_agreements 1,319행
 - **✅ MFN 009 데이터 임포트 완료 (세션 32)**: macmap_ntlc_rates 537,894행 53개국. 131MB SQL → 54 BEGIN/COMMIT 블록 → 5개 413에러 → 10분할 재시도 전체 성공
-- **🔄 MIN 벌크 임포트 진행중 (세션 32→35)**: macmap_min_rates ~92.3M/130M행 (44개국 완료, 9개국 남음: SGP~VNM). 5K행/배치 스트리밍 방식, ~2,800행/초. import_min_remaining.py 사용
-- **⏳ AGR 벌크 임포트 대기 (세션 32)**: macmap_agr_rates 0/148M행. MIN 완료 후 진행
+- **✅ MIN 벌크 임포트 완료 (세션 32→Cowork5)**: macmap_min_rates ~113M행 53개국 전체 완료. import_min_remaining.py 사용
+- **🔄 AGR 벌크 임포트 진행중 (Cowork5)**: macmap_agr_rates 0→진행중/148M행. Mac에서 run_agr_loop.sh 실행 중. ARE 완료(~2M행), 순차 진행
 - **✅ 반덤핑/상계관세/세이프가드 임포트 완료 (세션 33)**: TTBD (World Bank) 36개국 AD + 19개국 CVD + WTO SG → Supabase 4개 테이블 119,706행 (trade_remedy_cases 10,999, trade_remedy_products 55,259, trade_remedy_duties 37,513, safeguard_exemptions 15,935)
 - **Supabase Management API**: `POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query` (curl만 가능, urllib은 Cloudflare 차단). Token: sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a
 - **Supabase DB Password**: PotalReview2026!
@@ -181,7 +181,7 @@
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
-- **관세 데이터 (세션 36)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~92.3M/130M 44개국 완료, 9개국 남음), macmap_agr_rates(대기), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935)
+- **관세 데이터 (세션 36)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(진행중🔄), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935)
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

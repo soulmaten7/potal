@@ -1,7 +1,7 @@
 /**
  * POTAL DDP Checkout — Public API
  */
-export { createDdpCheckoutSession, getDdpQuote } from './stripe-checkout';
+export { createDdpCheckoutSession, getDdpQuote } from './ddp-session';
 export { calculateDdpPrice } from './ddp-calculator';
 export type {
   DdpCheckoutInput,

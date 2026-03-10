@@ -20,6 +20,38 @@ define('POTAL_VERSION', '1.0.0');
 define('POTAL_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('POTAL_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('POTAL_API_BASE', 'https://www.potal.app/api/v1');
+define('POTAL_CACHE_TTL', 3600); // 1 hour cache for API responses
+
+// ─── WooCommerce HPOS Compatibility ─────────────────
+
+add_action('before_woocommerce_init', function () {
+    if (class_exists(\Automattic\WooCommerce\Utilities\FeaturesUtil::class)) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+    }
+});
+
+// ─── Activation / Deactivation ──────────────────────
+
+register_activation_hook(__FILE__, function () {
+    if (!class_exists('WooCommerce')) {
+        deactivate_plugins(plugin_basename(__FILE__));
+        wp_die(
+            __('POTAL Landed Cost requires WooCommerce to be installed and activated.', 'potal-landed-cost'),
+            'Plugin Activation Error',
+            ['back_link' => true]
+        );
+    }
+    // Set default options
+    add_option('potal_origin_country', 'US');
+    add_option('potal_widget_position', 'after_price');
+    add_option('potal_enable_ddp', 0);
+});
+
+register_deactivation_hook(__FILE__, function () {
+    // Clear cached API responses
+    global $wpdb;
+    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_potal_calc_%' OR option_name LIKE '_transient_timeout_potal_calc_%'");
+});
 
 // ─── Admin Settings ─────────────────────────────────
 
@@ -35,61 +67,98 @@ add_action('admin_menu', function () {
 });
 
 add_action('admin_init', function () {
-    register_setting('potal_settings', 'potal_api_key');
-    register_setting('potal_settings', 'potal_seller_id');
-    register_setting('potal_settings', 'potal_origin_country');
-    register_setting('potal_settings', 'potal_widget_position');
-    register_setting('potal_settings', 'potal_enable_ddp');
+    register_setting('potal_settings', 'potal_api_key', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting('potal_settings', 'potal_seller_id', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting('potal_settings', 'potal_origin_country', ['sanitize_callback' => function ($val) {
+        return strtoupper(substr(sanitize_text_field($val), 0, 2));
+    }]);
+    register_setting('potal_settings', 'potal_widget_position', ['sanitize_callback' => 'sanitize_text_field']);
+    register_setting('potal_settings', 'potal_enable_ddp', ['sanitize_callback' => 'absint']);
 });
 
 function potal_settings_page() {
     ?>
     <div class="wrap">
-        <h1>POTAL — Total Landed Cost Settings</h1>
+        <h1><?php esc_html_e('POTAL — Total Landed Cost Settings', 'potal-landed-cost'); ?></h1>
         <form method="post" action="options.php">
             <?php settings_fields('potal_settings'); ?>
             <table class="form-table">
                 <tr>
-                    <th>API Key</th>
+                    <th><?php esc_html_e('API Key', 'potal-landed-cost'); ?></th>
                     <td>
                         <input type="text" name="potal_api_key" value="<?php echo esc_attr(get_option('potal_api_key')); ?>" class="regular-text" />
-                        <p class="description">Get your API key at <a href="https://www.potal.app/dashboard" target="_blank">potal.app/dashboard</a></p>
+                        <p class="description"><?php printf(
+                            __('Get your API key at %s', 'potal-landed-cost'),
+                            '<a href="https://www.potal.app/dashboard" target="_blank">potal.app/dashboard</a>'
+                        ); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th>Seller ID</th>
+                    <th><?php esc_html_e('Seller ID', 'potal-landed-cost'); ?></th>
                     <td><input type="text" name="potal_seller_id" value="<?php echo esc_attr(get_option('potal_seller_id')); ?>" class="regular-text" /></td>
                 </tr>
                 <tr>
-                    <th>Origin Country</th>
+                    <th><?php esc_html_e('Origin Country', 'potal-landed-cost'); ?></th>
                     <td>
                         <input type="text" name="potal_origin_country" value="<?php echo esc_attr(get_option('potal_origin_country', 'US')); ?>" class="small-text" maxlength="2" />
-                        <p class="description">2-letter ISO code (e.g. US, CN, DE)</p>
+                        <p class="description"><?php esc_html_e('2-letter ISO code (e.g. US, CN, DE)', 'potal-landed-cost'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th>Widget Position</th>
+                    <th><?php esc_html_e('Widget Position', 'potal-landed-cost'); ?></th>
                     <td>
                         <select name="potal_widget_position">
-                            <option value="after_price" <?php selected(get_option('potal_widget_position'), 'after_price'); ?>>After Price</option>
-                            <option value="after_add_to_cart" <?php selected(get_option('potal_widget_position'), 'after_add_to_cart'); ?>>After Add to Cart</option>
-                            <option value="before_tabs" <?php selected(get_option('potal_widget_position'), 'before_tabs'); ?>>Before Tabs</option>
-                            <option value="shortcode" <?php selected(get_option('potal_widget_position'), 'shortcode'); ?>>Shortcode Only</option>
+                            <option value="after_price" <?php selected(get_option('potal_widget_position'), 'after_price'); ?>><?php esc_html_e('After Price', 'potal-landed-cost'); ?></option>
+                            <option value="after_add_to_cart" <?php selected(get_option('potal_widget_position'), 'after_add_to_cart'); ?>><?php esc_html_e('After Add to Cart', 'potal-landed-cost'); ?></option>
+                            <option value="before_tabs" <?php selected(get_option('potal_widget_position'), 'before_tabs'); ?>><?php esc_html_e('Before Tabs', 'potal-landed-cost'); ?></option>
+                            <option value="shortcode" <?php selected(get_option('potal_widget_position'), 'shortcode'); ?>><?php esc_html_e('Shortcode Only', 'potal-landed-cost'); ?></option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <th>Enable DDP Checkout</th>
+                    <th><?php esc_html_e('Enable DDP Checkout', 'potal-landed-cost'); ?></th>
                     <td>
                         <label>
                             <input type="checkbox" name="potal_enable_ddp" value="1" <?php checked(get_option('potal_enable_ddp'), 1); ?> />
-                            Show DDP (all duties included) price option at checkout
+                            <?php esc_html_e('Show DDP (all duties included) price option at checkout', 'potal-landed-cost'); ?>
                         </label>
                     </td>
                 </tr>
             </table>
             <?php submit_button(); ?>
         </form>
+
+        <?php if (get_option('potal_api_key')): ?>
+        <hr />
+        <h2><?php esc_html_e('Connection Test', 'potal-landed-cost'); ?></h2>
+        <p>
+            <button type="button" class="button" id="potal-test-connection"><?php esc_html_e('Test API Connection', 'potal-landed-cost'); ?></button>
+            <span id="potal-test-result" style="margin-left: 10px;"></span>
+        </p>
+        <script>
+        document.getElementById('potal-test-connection').addEventListener('click', function() {
+            var btn = this;
+            var result = document.getElementById('potal-test-result');
+            btn.disabled = true;
+            result.textContent = 'Testing...';
+            fetch('<?php echo esc_url(rest_url('potal/v1/calculate')); ?>', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    price: 100, origin: '<?php echo esc_js(get_option('potal_origin_country', 'US')); ?>',
+                    destinationCountry: 'DE', productName: 'Test Product'
+                })
+            })
+            .then(r => r.json())
+            .then(d => {
+                result.textContent = d.success ? '✅ Connected! Duty: $' + (d.data?.importDuty || 0).toFixed(2) : '❌ Error: ' + (d.error?.message || 'Unknown');
+                result.style.color = d.success ? 'green' : 'red';
+            })
+            .catch(e => { result.textContent = '❌ ' + e.message; result.style.color = 'red'; })
+            .finally(() => { btn.disabled = false; });
+        });
+        </script>
+        <?php endif; ?>
     </div>
     <?php
 }
@@ -184,6 +253,13 @@ function potal_proxy_calculate($request) {
     $body = $request->get_json_params();
     $body['origin'] = $body['origin'] ?? get_option('potal_origin_country', 'US');
 
+    // Check transient cache
+    $cache_key = 'potal_calc_' . md5(wp_json_encode($body));
+    $cached = get_transient($cache_key);
+    if ($cached !== false) {
+        return rest_ensure_response($cached);
+    }
+
     $response = wp_remote_post(POTAL_API_BASE . '/calculate', [
         'headers' => [
             'Content-Type' => 'application/json',
@@ -198,6 +274,12 @@ function potal_proxy_calculate($request) {
     }
 
     $data = json_decode(wp_remote_retrieve_body($response), true);
+
+    // Cache successful responses
+    if ($data && isset($data['success']) && $data['success']) {
+        set_transient($cache_key, $data, POTAL_CACHE_TTL);
+    }
+
     return rest_ensure_response($data);
 }
 
@@ -238,22 +320,30 @@ if (get_option('potal_enable_ddp')) {
             'shippingCost' => (float) $cart->get_shipping_total(),
         ];
 
-        $response = wp_remote_post(POTAL_API_BASE . '/checkout?action=quote', [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'X-API-Key' => $api_key,
-            ],
-            'body' => wp_json_encode($body),
-            'timeout' => 10,
-        ]);
+        // Check transient cache for DDP quote
+        $cache_key = 'potal_ddp_' . md5(wp_json_encode($body));
+        $cached_quote = get_transient($cache_key);
 
-        if (is_wp_error($response)) return;
+        if ($cached_quote === false) {
+            $response = wp_remote_post(POTAL_API_BASE . '/checkout?action=quote', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'X-API-Key' => $api_key,
+                ],
+                'body' => wp_json_encode($body),
+                'timeout' => 10,
+            ]);
 
-        $data = json_decode(wp_remote_retrieve_body($response), true);
-        if (!$data || !$data['success'] || !isset($data['data']['quote'])) return;
+            if (is_wp_error($response)) return;
 
-        $quote = $data['data']['quote'];
-        $duty_total = ($quote['importDuty'] ?? 0) + ($quote['vat'] ?? 0) + ($quote['customsFee'] ?? 0);
+            $data = json_decode(wp_remote_retrieve_body($response), true);
+            if (!$data || !$data['success'] || !isset($data['data']['quote'])) return;
+
+            $cached_quote = $data['data']['quote'];
+            set_transient($cache_key, $cached_quote, 300); // 5 min cache for DDP quotes
+        }
+
+        $duty_total = ($cached_quote['importDuty'] ?? 0) + ($cached_quote['vat'] ?? 0) + ($cached_quote['customsFee'] ?? 0);
 
         if ($duty_total > 0) {
             $cart->add_fee(

@@ -1,92 +1,96 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-10 (Cowork 세션 4 — 구 요금제 잔재 전면 정리, WDC 추출 스크립트, MIN 임포트 실행)
+> 마지막 업데이트: 2026-03-10 (Cowork 세션 5 — 프로젝트 전체 파악 + Paddle 라이브 수정 + 문서 교차검증)
 
 ---
 
-## ⚠️ 이번 세션(Cowork 4)에서 완료된 사항
+## ⚠️ 이번 세션(Cowork 5)에서 완료된 사항
 
-### 1. 구 요금제 잔재 전면 정리 (6개 파일)
-- `app/developers/docs/page.tsx` — Starter $9/Growth $29 → Free/Basic $20/Pro $80/Enterprise $300
-- `app/terms/page.tsx` — Free 500→100, Starter→Basic, Growth→Pro, 초과요금 안내 추가
-- `app/help/page.tsx` — FAQ 2건 업데이트 (Starter/Growth 삭제, 신 요금제 반영)
-- `app/page.tsx` (랜딩) — Free 500→100, Growth $29→Pro $80, Enterprise Custom→$300
-- `app/api/v1/sellers/me/route.ts` — planLimits: free 500→100, starter 5K→basic 2K, growth 25K→pro 10K, enterprise -1→50K
-- `app/legal/[slug]/page.tsx` — Terms 요금제 조항 전면 수정
+### 1. Paddle Billing 라이브 수정
+- **Webhook Secret 수정** → Vercel 재배포 → 웹훅 정상 수신
+- DB 수동 동기화: sellers 테이블에 billing_customer_id, billing_subscription_id, subscription_status, plan_id 업데이트
+- Paddle Customer Portal: 고객명 "Jang Eun" + locale "en" 설정
+- Manage Subscription 버튼: `window.open` (새 탭)으로 변경
+- **14일 무료체험**: 6개 Price 모두 trial_period 14일 + requires_payment_method 설정
+- **VAT 외부 처리**: 6개 Price 모두 tax_mode "external" (VAT-exclusive)
 
-### 2. WDC 상품 데이터 추출 스크립트
-- `scripts/extract_with_categories.py` (NEW) — 진행 상태 저장(재시작 가능), 카테고리별 통계, 메모리 효율 개선
-- Mac 외장하드에서 실행: `nohup python3 scripts/extract_with_categories.py /Volumes/soulmaten/POTAL/wdc-products > wdc_extract.log 2>&1 &`
+### 2. MIN 임포트 완료 확인
+- **112,935,450행, 53개국 전체 완료** ✅
+- session-context.md, CLAUDE.md, .cursorrules 업데이트 완료
 
-### 3. lookup_duty_rate_v2() 테스트 쿼리
-- `scripts/test_lookup_duty_rate.sql` (NEW) — MIN 상태 확인, 국가별 카운트, 4단계 폴백 테스트, 주요 무역 시나리오
+### 3. AGR 임포트 스크립트 생성 + 실행
+- `import_agr_all.py` + `run_agr_loop.sh` 생성
+- Mac에서 실행 시작 (ARE 2M행 완료, ARG 진행 중)
 
-### 4. OpenAPI 스펙 업데이트
-- `app/api/v1/docs/openapi.ts` — "Stripe checkout session" → "Paddle checkout session"
+### 4. 기능 상태 전수 조사
+- 33개 기능 중 8개가 이미 구현되어 있음을 확인:
+  - #3 이미지 HS 분류, #6 제한물품, #7 통관서류, #8 DDP 체크아웃
+  - #9 다중통화, #12 원산지 감지, #13 관세 알림, #14 AI 에이전트 SDK
+- session-context.md 33개 기능 테이블 업데이트
 
-### 5. AI 에이전트 확인
-- Custom GPT (gpt-instructions.md): 변경 불필요 (Stripe/구 요금제 참조 없음)
-- Gemini Gem: 폴더 비어있음 — 건너뜀
+### 5. 문서 교차검증 + 불일치 수정
+- `.cursorrules`: MIN 완료 반영, Shopify 심사 제출 완료 반영, macmap_min_rates 수치 업데이트
+- `NEXT_SESSION_START.md`: 전면 재작성 (이 파일)
+- `CLAUDE.md`: MIN 완료, 테이블 수치 업데이트
 
-### 6. MIN 임포트 진행중 (Mac 백그라운드)
-- WDC 다운로드 완료 (1,895/1,899)
-- `import_min_remaining.py` + `run_min_loop.sh` Mac에 생성 후 실행 시작
-- 남은 9개국: SGP, THA, TUN, TUR, TWN, UKR, URY, USA, VNM
+---
+
+## 현재 진행 중인 백그라운드 작업
+
+### AGR 관세율 임포트 (Mac)
+```bash
+# 진행 확인
+tail -5 ~/portal/agr_import.log
+cat ~/portal/agr_import_progress.json
+```
+- 144M행, 53개국, ~15시간 예상
+- 스크립트: import_agr_all.py + run_agr_loop.sh
+- progress 파일로 이어받기 가능
+
+### WDC 상품명 추출 (AGR 완료 후)
+```bash
+cd ~/portal && nohup python3 scripts/extract_with_categories.py /Volumes/soulmaten/POTAL/wdc-products > wdc_extract.log 2>&1 &
+```
+- ⚠️ AGR 완료 후 실행 (동시 실행 금지)
 
 ---
 
 ## 다음 세션 우선순위
 
-### 🔴 즉시 (Push 필요)
-1. **5차 Git Push** (Mac) — Cowork 4 변경사항 (구 요금제 정리 + 스크립트 + 문서)
-   ```bash
-   cd ~/portal && npm run build
-   git add app/developers/docs/page.tsx app/terms/page.tsx app/help/page.tsx \
-     app/page.tsx app/api/v1/sellers/me/route.ts app/legal/\[slug\]/page.tsx \
-     app/api/v1/docs/openapi.ts scripts/extract_with_categories.py \
-     scripts/test_lookup_duty_rate.sql docs/CHANGELOG.md docs/NEXT_SESSION_START.md \
-     docs/sessions/SESSION_37_REPORT.md CLAUDE.md
-   git commit -m "fix: replace legacy plan names (Starter/Growth) with new plans (Basic/Pro) across all pages + add WDC extract script"
-   git push
-   ```
+### 🔴 즉시 (코드 변경 필요)
+1. **DDP Checkout Stripe→Paddle 전환** — `app/lib/checkout/stripe-checkout.ts`가 아직 Stripe API 사용 중. Paddle로 전환 필요
+2. **WooCommerce 플러그인 완성** — `plugins/woocommerce/` 기본 코드만 있음. WordPress 설치 후 테스트 필요
+3. **BigCommerce/Magento 플러그인** — `plugins/bigcommerce/` (설치 스크립트만), `plugins/magento/` (빈 구조)
 
-### 🟡 기능/비즈니스
-2. **Shopify 임베디드 앱 확인** — Partner Dashboard에서 앱 심사 상태 확인
-3. **Paddle Customer Portal E2E 확인** — portal URL 플로우, management_urls API 테스트
-4. **Paddle Invoice 확인** — MoR 자동 인보이스 생성 확인
+### 🟡 비즈니스/운영
+4. **Shopify 앱 심사 상태 확인** — Partner Dashboard에서 확인
+5. **Paddle Customer Portal E2E 확인** — 실제 구독 플로우 테스트
+6. **AGR 임포트 완료 확인** → WDC 추출 실행
 
-### 🟢 데이터 (백그라운드)
-5. **MIN 임포트 확인** — Mac에서 실행 중, 진행 확인:
-   ```bash
-   tail -5 ~/portal/min_import.log
-   cat ~/portal/min_import_progress.json
-   ```
-6. **AGR 임포트** — 148M행, MIN 완료 후
-7. **WDC 상품명 추출 실행** — MIN 완료 후, Mac 외장하드에서:
-   ```bash
-   cd ~/portal
-   nohup python3 scripts/extract_with_categories.py /Volumes/soulmaten/POTAL/wdc-products > wdc_extract.log 2>&1 &
-   ```
-
-### 🔵 개발
-8. **lookup_duty_rate_v2() 검증** — MIN+AGR 완료 후 4단계 폴백 통합 테스트
-9. **반덤핑/상계관세/세이프가드 5단계 폴백** — lookup_duty_rate에 AD/CVD/SG 추가
-10. **WDC 상품명→HS 매핑 파이프라인** — 5.95억 상품 데이터 처리
+### 🟢 개발 (AGR/WDC 완료 후)
+7. **lookup_duty_rate_v2() 검증** — MIN+AGR 4단계 폴백 통합 테스트
+8. **반덤핑/상계관세 5단계 폴백** — lookup_duty_rate에 AD/CVD/SG 추가
+9. **WDC 상품명→HS 매핑 파이프라인** — 5.95억 상품 데이터 처리
 
 ---
 
 ## ⚠️ 주의사항
-- **요금제**: ✅ 전체 코드베이스 정리 완료 (Cowork 4). 구 요금제(Starter/Growth/500건) 참조 제로
-- **결제**: ✅ Paddle **Live 전환 완료** + Overage 빌링 구현 완료
-- **B2C 잔재**: ✅ 완전 정리 (lemonsqueezy 삭제, Capacitor 삭제, Vercel B2C 환경변수 삭제, i18n 키 교체)
-- **MIN 임포트**: Mac에서 실행 중 (WDC 완료 후 시작됨)
+- **결제**: ✅ Paddle Live 전환 완료 + 14일 무료체험 + Overage 빌링. 단, **DDP Checkout은 아직 Stripe 코드**
+- **요금제**: ✅ 전체 코드베이스 정리 완료
+- **B2C 잔재**: ✅ 완전 정리
 - **Git push**: Mac 터미널에서만 가능
+- **터미널 작업**: 한 번에 하나만 (AGR 실행 중 WDC 동시 실행 금지)
 
 ---
 
-## 현재 Paddle 환경변수 (Live — 2026-03-10 전환)
+## 33개 기능 현황 요약
+- ✅ 구현 완료: #1~#9, #12~#14 (28개)
+- ⏳ 계획/진행중: #10 WooCommerce, #11 BigCommerce/Magento
+- 나머지: 세션 28 정의된 33개 중 대부분 완료. session-context.md "33개 기능" 테이블 참조
+
+## Paddle 환경변수 (Live)
 ```
 PADDLE_API_KEY=pdl_live_apikey_***REDACTED***
-PADDLE_WEBHOOK_SECRET=ntfset_***REDACTED***
+PADDLE_WEBHOOK_SECRET=***REDACTED***
 PADDLE_ENVIRONMENT=production
 PADDLE_PRICE_BASIC_MONTHLY=pri_01kkaxq0grevdgr3dgrx3fwvpx
 PADDLE_PRICE_BASIC_ANNUAL=pri_01kkaxr28wf8bwmkx73myw9fya
@@ -95,6 +99,3 @@ PADDLE_PRICE_PRO_ANNUAL=pri_01kkaxskn730atcdyrahs5t4zp
 PADDLE_PRICE_ENTERPRISE_MONTHLY=pri_01kkaxt980j0s0aypv7nk0474k
 PADDLE_PRICE_ENTERPRISE_ANNUAL=pri_01kkaxtxp8jjtfhxjwyqfz74rf
 ```
-
-## Checklist 진행 상태 (세션 37+Cowork 4 기준)
-- ✅ Done: 107+ | TODO: 35~ | 🔄 In Progress: 2 | ⏸ Deferred: 5 | ❌ Failed: 2

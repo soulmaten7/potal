@@ -48,10 +48,10 @@ export interface DdpCheckoutInput {
   buyerName?: string;
   /** Currency for display (default: USD) */
   currency?: string;
-  /** Success redirect URL */
-  successUrl: string;
-  /** Cancel redirect URL */
-  cancelUrl: string;
+  /** Success redirect URL (for seller's own checkout integration) */
+  successUrl?: string;
+  /** Cancel redirect URL (for seller's own checkout integration) */
+  cancelUrl?: string;
   /** Metadata to attach to the session */
   metadata?: Record<string, string>;
 }
@@ -93,10 +93,6 @@ export interface DdpItemBreakdown {
 export interface DdpCheckoutSession {
   /** POTAL checkout session ID */
   sessionId: string;
-  /** Stripe Checkout Session ID (if using Stripe) */
-  stripeSessionId?: string;
-  /** Stripe Checkout URL (redirect buyer here) */
-  checkoutUrl?: string;
   /** DDP price breakdown */
   breakdown: DdpPriceBreakdown;
   /** Session status */

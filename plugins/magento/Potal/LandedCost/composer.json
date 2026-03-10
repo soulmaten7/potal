@@ -1,0 +1,17 @@
+{
+    "name": "potal/module-landed-cost",
+    "description": "POTAL Total Landed Cost Calculator for Magento 2 — Show import duties, taxes, and customs fees on product pages. 240 countries supported.",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "magento/framework": ">=103.0"
+    },
+    "autoload": {
+        "files": ["registration.php"],
+        "psr-4": {
+            "Potal\\LandedCost\\": ""
+        }
+    }
+}

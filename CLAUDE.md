@@ -66,7 +66,7 @@ portal/
 - 240개국/영토, **30개국어** (세션 34: 7→30 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
-- MIN 관세율: **~92.3M행/130M 44개국 완료, 9개국 진행중** (macmap_min_rates)
+- MIN 관세율: **~113M행 53개국 완료✅** (macmap_min_rates)
 - AGR 관세율: 148M행 대기 (macmap_agr_rates)
 - 무역협정: 1,319건 (macmap_trade_agreements)
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
@@ -104,7 +104,7 @@ portal/
 | customs_fees | 240 | ✅ |
 | macmap_trade_agreements | 1,319 | ✅ |
 | macmap_ntlc_rates | 537,894 | ✅ (MFN 009) |
-| macmap_min_rates | ~92.3M/130M (44개국) | 🔄 진행중 (9개국 남음) |
+| macmap_min_rates | ~113M (53개국) | ✅ 완료 |
 | macmap_agr_rates | 0/148M | ⏳ 대기 |
 | trade_remedy_cases | 10,999 | ✅ (세션 33) |
 | trade_remedy_products | 55,259 | ✅ (세션 33) |

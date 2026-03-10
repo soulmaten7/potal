@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+ POTAL Landed Cost — Product Page Layout
+ Inserts the POTAL widget below the product price on product detail pages.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="product.info.price">
+            <block class="Potal\LandedCost\Block\Widget"
+                   name="potal.landed.cost.widget"
+                   template="Potal_LandedCost::widget.phtml"
+                   after="-" />
+        </referenceContainer>
+    </body>
+</page>

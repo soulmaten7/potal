@@ -130,10 +130,112 @@
 
   // ─── Cart DDP Integration (optional) ────────────
   if (POTAL_CONFIG.enableDdp) {
-    // Listen for cart updates to recalculate DDP
-    document.addEventListener('cart-quantity-update', async function () {
-      // DDP calculation would be triggered here
-      // This is a placeholder for the full DDP cart integration
-    });
+    async function updateDdpFee() {
+      // Only run on cart/checkout pages
+      const isCartPage = window.location.pathname.includes('/cart') ||
+                         window.location.pathname.includes('/checkout');
+      if (!isCartPage) return;
+
+      try {
+        // Get cart contents via BigCommerce Storefront API
+        const cartRes = await fetch('/api/storefront/carts', {
+          credentials: 'same-origin'
+        });
+        const carts = await cartRes.json();
+        if (!carts.length || !carts[0].lineItems) return;
+
+        const cart = carts[0];
+        const items = [];
+
+        // Physical items
+        for (const item of (cart.lineItems.physicalItems || [])) {
+          items.push({
+            productName: item.name,
+            price: item.salePrice || item.listPrice,
+            quantity: item.quantity,
+          });
+        }
+        // Digital items
+        for (const item of (cart.lineItems.digitalItems || [])) {
+          items.push({
+            productName: item.name,
+            price: item.salePrice || item.listPrice,
+            quantity: item.quantity,
+          });
+        }
+
+        if (!items.length) return;
+
+        // Get buyer's shipping country (from checkout data or geolocation)
+        const geoRes = await fetch('/api/storefront/checkout/' + cart.id, {
+          credentials: 'same-origin'
+        }).catch(() => null);
+
+        let destination = 'US'; // fallback
+        if (geoRes && geoRes.ok) {
+          const checkout = await geoRes.json();
+          const shipping = checkout.consignments?.[0]?.shippingAddress;
+          if (shipping?.countryCode) {
+            destination = shipping.countryCode;
+          }
+        }
+
+        // Skip if domestic
+        if (destination.toUpperCase() === POTAL_CONFIG.origin.toUpperCase()) return;
+
+        // Call POTAL DDP quote
+        const quoteRes = await fetch('https://www.potal.app/api/v1/checkout?action=quote', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': POTAL_CONFIG.apiKey,
+          },
+          body: JSON.stringify({
+            originCountry: POTAL_CONFIG.origin,
+            destinationCountry: destination,
+            items: items,
+            shippingCost: 0,
+          }),
+        });
+
+        if (!quoteRes.ok) return;
+        const quoteData = await quoteRes.json();
+        if (!quoteData.success || !quoteData.data?.quote) return;
+
+        const quote = quoteData.data.quote;
+        const dutyTotal = (quote.importDuty || 0) + (quote.vat || 0) + (quote.customsFee || 0);
+
+        // Display DDP info on cart page
+        if (dutyTotal > 0) {
+          let ddpEl = document.getElementById('potal-ddp-info');
+          if (!ddpEl) {
+            ddpEl = document.createElement('div');
+            ddpEl.id = 'potal-ddp-info';
+            ddpEl.style.cssText = 'padding:12px 16px;margin:8px 0;background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;font-size:14px;';
+            const cartTotal = document.querySelector('.cart-total') ||
+                              document.querySelector('[data-cart-totals]') ||
+                              document.querySelector('.cart-actions');
+            if (cartTotal) cartTotal.parentNode.insertBefore(ddpEl, cartTotal);
+          }
+          ddpEl.innerHTML = '<strong>🌍 Import Duties & Taxes (DDP)</strong><br/>' +
+            'Duty: $' + quote.importDuty.toFixed(2) +
+            ' · VAT/GST: $' + quote.vat.toFixed(2) +
+            (quote.customsFee > 0 ? ' · Customs: $' + quote.customsFee.toFixed(2) : '') +
+            '<br/><strong>Total with duties: $' + quote.grandTotal.toFixed(2) + '</strong>' +
+            '<br/><small style="color:#6b7280;">Powered by POTAL — No surprise fees at delivery</small>';
+        }
+      } catch (e) {
+        // Silently fail — DDP is optional enhancement
+      }
+    }
+
+    // Run on page load and cart updates
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateDdpFee);
+    } else {
+      updateDdpFee();
+    }
+    document.addEventListener('cart-quantity-update', updateDdpFee);
+    document.addEventListener('cart-item-add', updateDdpFee);
   }
 })();
