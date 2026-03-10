@@ -75,23 +75,10 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 // Plan display config (mirrors paddle.ts PLAN_CONFIG — 세션 28 신 요금제)
 const PLANS = [
   {
-    id: 'free' as const,
-    name: 'Free',
-    price: '$0',
-    priceNote: 'Forever',
-    calls: '100',
-    features: [
-      '100 API calls / month',
-      'Widget embed (light theme)',
-      '240 countries supported',
-      'AI HS Code classification',
-      'Community support',
-    ],
-  },
-  {
     id: 'basic' as const,
     name: 'Basic',
-    price: '$20',
+    priceMonthly: '$20',
+    priceAnnualMonthly: '$16',
     priceNote: '/ month',
     calls: '2,000',
     features: [
@@ -107,7 +94,8 @@ const PLANS = [
   {
     id: 'pro' as const,
     name: 'Pro',
-    price: '$80',
+    priceMonthly: '$80',
+    priceAnnualMonthly: '$64',
     priceNote: '/ month',
     calls: '10,000',
     popular: true,
@@ -123,7 +111,8 @@ const PLANS = [
   {
     id: 'enterprise' as const,
     name: 'Enterprise',
-    price: '$300+',
+    priceMonthly: '$300',
+    priceAnnualMonthly: '$240',
     priceNote: '/ month',
     calls: '50,000+',
     features: [
@@ -166,6 +155,7 @@ export default function DashboardContent() {
 
   // Billing
   const [billingLoading, setBillingLoading] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
   // New key creation
   const [newKeyName, setNewKeyName] = useState('');
@@ -323,7 +313,7 @@ export default function DashboardContent() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ planId }),
+        body: JSON.stringify({ planId, billingCycle }),
       });
 
       const data = await res.json();
@@ -914,7 +904,48 @@ export default function DashboardContent() {
           {activeTab === 'billing' && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h2 style={{ fontSize: 22, fontWeight: 700 }}>Billing & Plans</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <h2 style={{ fontSize: 22, fontWeight: 700 }}>Billing & Plans</h2>
+                  <div style={{
+                    display: 'inline-flex',
+                    background: '#f1f5f9',
+                    borderRadius: 8,
+                    padding: 3,
+                  }}>
+                    <button
+                      onClick={() => setBillingCycle('monthly')}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        background: billingCycle === 'monthly' ? 'white' : 'transparent',
+                        color: billingCycle === 'monthly' ? '#02122c' : '#888',
+                        boxShadow: billingCycle === 'monthly' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
+                      }}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      onClick={() => setBillingCycle('annual')}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        background: billingCycle === 'annual' ? 'white' : 'transparent',
+                        color: billingCycle === 'annual' ? '#02122c' : '#888',
+                        boxShadow: billingCycle === 'annual' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
+                      }}
+                    >
+                      Annual <span style={{ color: '#10b981', fontWeight: 700 }}>-20%</span>
+                    </button>
+                  </div>
+                </div>
                 {seller?.billingCustomerId && (
                   <button
                     onClick={handleManageBilling}
@@ -1045,9 +1076,18 @@ export default function DashboardContent() {
                           {plan.name}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                          <span style={{ fontSize: 36, fontWeight: 800, color: '#02122c' }}>{plan.price}</span>
-                          <span style={{ fontSize: 14, color: '#888' }}>{plan.priceNote}</span>
+                          <span style={{ fontSize: 36, fontWeight: 800, color: '#02122c' }}>
+                            {billingCycle === 'annual' ? plan.priceAnnualMonthly : plan.priceMonthly}
+                          </span>
+                          <span style={{ fontSize: 14, color: '#888' }}>
+                            {billingCycle === 'annual' ? '/ mo (billed annually)' : plan.priceNote}
+                          </span>
                         </div>
+                        {billingCycle === 'annual' && (
+                          <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600, marginTop: 2 }}>
+                            Save 20% vs monthly
+                          </div>
+                        )}
                         <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>
                           {plan.calls} API calls / month
                         </div>

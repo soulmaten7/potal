@@ -73,9 +73,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get seller profile
+    // Get seller profile (include billing_customer_id for returning customers)
     const { data: seller } = await (supabase.from('sellers') as any)
-      .select('id, user_id, contact_email, company_name')
+      .select('id, user_id, contact_email, company_name, billing_customer_id')
       .eq('user_id', user.id)
       .single();
 
@@ -88,27 +88,36 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.potal.app';
 
+    // Build transaction payload
+    const transactionPayload: Record<string, unknown> = {
+      items: [
+        {
+          price_id: priceId,
+          quantity: 1,
+        },
+      ],
+      custom_data: {
+        potal_seller_id: seller.id,
+        potal_plan_id: planId,
+        potal_billing_cycle: billingCycle,
+      },
+      checkout: {
+        url: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
+      },
+    };
+
+    // Use existing Paddle customer if available, otherwise create by email
+    if (seller.billing_customer_id) {
+      transactionPayload.customer_id = seller.billing_customer_id;
+    } else {
+      transactionPayload.customer_email = seller.contact_email;
+    }
+
     // Create Paddle Transaction (generates checkout URL)
     const res = await fetch(`${getPaddleBaseUrl()}/transactions`, {
       method: 'POST',
       headers: getPaddleHeaders(),
-      body: JSON.stringify({
-        items: [
-          {
-            price_id: priceId,
-            quantity: 1,
-          },
-        ],
-        customer_email: seller.contact_email,
-        custom_data: {
-          potal_seller_id: seller.id,
-          potal_plan_id: planId,
-          potal_billing_cycle: billingCycle,
-        },
-        checkout: {
-          url: `${baseUrl}/dashboard?checkout=success&plan=${planId}`,
-        },
-      }),
+      body: JSON.stringify(transactionPayload),
     });
 
     if (!res.ok) {

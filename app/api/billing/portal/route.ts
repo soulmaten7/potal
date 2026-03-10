@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
+        url: updatePaymentUrl || cancelUrl || null,
         updatePaymentUrl: updatePaymentUrl || null,
         cancelUrl: cancelUrl || null,
       },
