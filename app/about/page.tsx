@@ -96,7 +96,7 @@ export default function AboutPage() {
           padding: '24px', textAlign: 'center', marginTop: '16px',
         }}>
           <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Start showing true landed costs today.</h2>
-          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>Free plan available. No credit card required.</p>
+          <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>Free plan available. Paid plans include a 14-day free trial.</p>
           <a href="/developers" style={{
             display: 'inline-block', padding: '10px 24px', background: '#F59E0B', color: '#ffffff',
             fontSize: '14px', fontWeight: 700, borderRadius: '10px', textDecoration: 'none',

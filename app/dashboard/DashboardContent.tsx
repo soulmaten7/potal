@@ -500,7 +500,8 @@ export default function DashboardContent() {
                   Welcome to {checkoutPlan ? checkoutPlan.charAt(0).toUpperCase() + checkoutPlan.slice(1) : ''} Plan!
                 </div>
                 <div style={{ fontSize: 13, color: '#065f46', marginTop: 2 }}>
-                  Your 14-day free trial has started. You can manage your subscription anytime.
+                  Your 14-day free trial has started. No charges until the trial ends.
+                  You can cancel anytime from <span style={{ fontWeight: 600 }}>Billing &gt; Manage Subscription</span>.
                 </div>
               </div>
             </div>
@@ -1184,9 +1185,9 @@ export default function DashboardContent() {
               }}>
                 <strong style={{ color: '#333' }}>Billing FAQ:</strong>
                 <div style={{ marginTop: 8, lineHeight: 1.8 }}>
-                  All plans come with a <strong>14-day free trial</strong>. You can cancel anytime before the trial ends and you won&apos;t be charged.
-                  After the trial, you&apos;ll be billed monthly. You can manage your subscription, update payment method, or cancel at any time
-                  through the <span style={{ color: '#F59E0B', fontWeight: 600, cursor: 'pointer' }} onClick={handleManageBilling}>Manage Subscription</span> portal.
+                  All paid plans include a <strong>14-day free trial</strong>. Your payment method will be saved at signup, but you won&apos;t be charged until the trial ends.
+                  Cancel anytime before the trial ends — no charge. After the trial, billing starts automatically (monthly or annual depending on your selection).
+                  Manage your subscription, update payment method, or cancel through the <span style={{ color: '#F59E0B', fontWeight: 600, cursor: 'pointer' }} onClick={handleManageBilling}>Manage Subscription</span> portal.
                 </div>
               </div>
             </div>

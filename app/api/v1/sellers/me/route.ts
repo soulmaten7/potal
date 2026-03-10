@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
       pro: 10000,
       enterprise: 50000,
     };
-    const limit = planLimits[s.plan_id] ?? 500;
+    const limit = planLimits[s.plan_id] ?? 100;
     const used = usageLogs?.length || 0;
 
     return NextResponse.json({

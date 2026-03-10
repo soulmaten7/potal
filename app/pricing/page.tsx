@@ -120,7 +120,7 @@ const FAQS = [
   },
   {
     q: 'Is there a free trial?',
-    a: 'Yes! Basic and Pro plans come with a 14-day free trial with full access to all features. No credit card required to start.',
+    a: 'Yes! All paid plans come with a 14-day free trial with full access to all features. A payment method is required at signup, but you won\'t be charged until the trial ends. Cancel anytime before — no charge.',
   },
   {
     q: 'What makes POTAL different from competitors?',

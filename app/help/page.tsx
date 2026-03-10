@@ -50,7 +50,7 @@ const FAQ_ITEMS = [
     id: '6',
     category: 'pricing',
     question: 'Is there a free plan?',
-    answer: 'Yes! Our Free plan includes 100 API calls per month — enough to test the integration. No credit card required. Basic and Pro plans come with a 14-day free trial.'
+    answer: 'Yes! Our Free plan includes 100 API calls per month — no credit card required. Paid plans (Basic, Pro, Enterprise) come with a 14-day free trial. A payment method is collected at signup, but you won\'t be charged until the trial ends.'
   },
   {
     id: '7',

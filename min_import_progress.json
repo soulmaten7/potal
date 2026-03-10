@@ -25,7 +25,22 @@
     "total": 2910360
   },
   "UKR": {
-    "rows_done": 2500000,
+    "rows_done": 2597888,
+    "status": "done",
+    "total": 2597888
+  },
+  "URY": {
+    "rows_done": 2885475,
+    "status": "done",
+    "total": 2885475
+  },
+  "USA": {
+    "rows_done": 2657632,
+    "status": "done",
+    "total": 2657632
+  },
+  "VNM": {
+    "rows_done": 2350000,
     "status": "in_progress"
   }
 }
