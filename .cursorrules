@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-10 (Cowork 세션 3 후반/세션 37 — Paddle 버그 픽스+Overage 구현, B2C 잔재 완전 정리, i18n 키 교체)
+# 마지막 업데이트: 2026-03-10 (Cowork 5 — DDP Stripe→Quote 전환, 플러그인 3종 완성, Dashboard UI 통일 1440px, AGR 임포트 진행중)
 
 ## 0. 프로젝트 개요
 
@@ -43,6 +43,11 @@
 - **✅ 요금제 코드 완전 업데이트 완료 (세션 37 후반)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx, plan-checker.ts, usage/route.ts, i18n 6개 언어 전부 신 요금제 반영. lemonsqueezy.ts 삭제 완료. Overage 빌링 구현 완료 (overage.ts + billing-overage cron)
 - **✅ Shopify 심사 제출 완료**: App Bridge 4.x CDN + 세션 토큰 push 완료, 앱스토어 심사 제출 완료 (2026-03-10). 리뷰어 할당 대기 중
 - **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. Live 6개 Price + Webhook + Vercel 배포 완료. Annual 20% off + Overage 빌링 구현 완료. lemonsqueezy.ts 삭제, Capacitor stub, Vercel B2C 환경변수 15개 삭제 (36→21개). Paddle Live E2E 테스트 통과
+- **✅ DDP Checkout Stripe→Quote 전환 (Cowork 5)**: stripe-checkout.ts→ddp-session.ts 리네임, Stripe API 코드 전면 제거, Quote-only 방식 (셀러 자체 결제 연동)
+- **✅ WooCommerce/BigCommerce/Magento 플러그인 완성 (Cowork 5)**: WooCommerce(HPOS/캐싱/sanitize/i18n/uninstall), BigCommerce(DDP cart), Magento(layout XML/ACL/composer.json)
+- **✅ Dashboard UI 통일 (Cowork 5)**: 메인 헤더/푸터 전 페이지 표시(대시보드 포함), 1440px max-width 통일, 유저 메뉴에 Docs 링크 추가
+- **🔄 AGR 벌크 임포트 진행중 (Cowork 5)**: Mac에서 run_agr_loop.sh 실행 중, 53개국 ~144M행, ARE 완료+AUS 진행중
+- **✅ WDC 다운로드 완료 확인 (Cowork 5)**: 외장하드(/Volumes/soulmaten/POTAL/wdc-products/) 1,903파일 (extracted+raw 폴더)
 - **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
 - **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
 - **✅ 240개국 확장 (세션 27)**: 181→240개국/영토. Zonos(235) 초과 달성. 카리브해/태평양 섬/아프리카/유럽 영토 59개 추가
@@ -144,7 +149,8 @@
 | `app/lib/billing/overage.ts` | 초과 사용량 계산 + Paddle One-time Charge API 청구 |
 | `app/api/v1/admin/billing-overage/route.ts` | Overage Cron (매월 1일 07:00 UTC, CRON_SECRET 인증) |
 | `app/lib/api-auth/plan-checker.ts` | 플랜 한도 체크 (Free hard-block, 유료 overage 허용) |
-| `app/dashboard/DashboardContent.tsx` | 대시보드 (Overview/API Keys/Widget/Usage/Billing + Annual 토글) |
+| `app/lib/checkout/ddp-session.ts` | DDP Quote-only 세션 (Stripe 제거, 셀러 자체 결제) |
+| `app/dashboard/DashboardContent.tsx` | 대시보드 (Overview/API Keys/Widget/Usage/Billing + Annual 토글, 자체 Top Bar 제거→메인 헤더 사용) |
 
 ### B2B 핵심 — 프론트엔드 (B2B 전환 완료)
 | 파일 | 역할 |
@@ -181,7 +187,7 @@
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
-- **관세 데이터 (세션 36)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(진행중🔄), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935)
+- **관세 데이터 (세션 36)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(진행중🔄 ~144M행 53개국), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935)
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

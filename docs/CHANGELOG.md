@@ -1,5 +1,42 @@
 # POTAL Development Changelog
 
+## [2026-03-10] Cowork 세션 5 — DDP Stripe→Quote 전환, 플러그인 3종 완성, Dashboard UI 통일
+
+### 🔧 DDP Checkout Stripe→Quote 전환
+- `app/lib/checkout/stripe-checkout.ts` → `ddp-session.ts` 리네임 — Stripe API 코드 전면 제거
+- `app/lib/checkout/types.ts` — stripeSessionId/checkoutUrl 제거, successUrl/cancelUrl optional
+- `app/lib/checkout/index.ts` — import path 변경
+- `app/api/v1/checkout/route.ts` — Quote-only 방식으로 재작성
+
+### 🔌 이커머스 플러그인 3종 완성
+- **WooCommerce** (`plugins/woocommerce/potal-landed-cost/`)
+  - HPOS 호환성 선언, 활성화 훅 (WooCommerce 체크), API 응답 캐싱 (transient)
+  - sanitize 콜백, Connection Test 버튼, i18n text domain 적용
+  - `uninstall.php` (NEW) — 삭제 시 옵션/캐시 정리
+- **BigCommerce** (`plugins/bigcommerce/potal-widget-installer.js`)
+  - DDP 장바구니 통합 완성 (Storefront API → POTAL DDP Quote → 관세 표시)
+- **Magento** (`plugins/magento/Potal/LandedCost/`)
+  - `catalog_product_view.xml` (NEW) — 상품 페이지 위젯 자동 삽입
+  - `acl.xml` (NEW) — Admin 권한
+  - `composer.json` (NEW) — Packagist 배포
+
+### 🎨 Dashboard UI 통일
+- `components/layout/Header.tsx` — 대시보드 숨김 제거, 유저 메뉴에 Docs 링크 추가
+- `components/layout/Footer.tsx` — 대시보드 숨김 제거, max-width 1100→1440px
+- `app/dashboard/DashboardContent.tsx` — 자체 Top Bar 제거, max-width 1200→1440px
+- `app/dashboard/page.tsx` — fallback 스타일 통일
+
+### 🔄 데이터 임포트 현황
+- **MIN**: ✅ 53개국 ~113M행 전체 완료 확인
+- **AGR**: 🔄 Mac 백그라운드 진행중 (import_agr_all.py + run_agr_loop.sh, ~144M행 53개국)
+- **WDC 다운로드**: ✅ 완료 확인 (외장하드 1,903파일)
+
+### 📊 Git Push (2회)
+- **1차** (6b9e0be, 15 files, +467/-291): DDP Quote 전환 + 플러그인 3종 완성
+- **2차** (3b3e0cb, 4 files, +16/-77): Dashboard UI 통일 + Docs 메뉴 추가
+
+---
+
 ## [2026-03-10] Cowork 세션 4 — 구 요금제 잔재 전면 정리, WDC 추출 스크립트, MIN 임포트 실행
 
 ### 🔧 구 요금제 잔재 전면 정리 (6개 파일)

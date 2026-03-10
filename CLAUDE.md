@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-10 (Cowork 4 — 구 요금제 잔재 전면 정리(6개 파일), WDC 추출 스크립트, MIN 임포트 실행)
+# 마지막 업데이트: 2026-03-10 (Cowork 5 — DDP Stripe→Quote, 플러그인 3종 완성, Dashboard UI 통일, AGR 진행중, WDC 완료)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -62,16 +62,18 @@ portal/
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션: https://www.potal.app
 
-## 핵심 수치 (세션 37/Cowork 3 기준)
+## 핵심 수치 (Cowork 5 기준)
 - 240개국/영토, **30개국어** (세션 34: 7→30 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
 - MIN 관세율: **~113M행 53개국 완료✅** (macmap_min_rates)
-- AGR 관세율: 148M행 대기 (macmap_agr_rates)
+- AGR 관세율: **~144M행 53개국 진행중🔄** (macmap_agr_rates, Mac 백그라운드)
 - 무역협정: 1,319건 (macmap_trade_agreements)
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
 - **관세율 자동업데이트**: Vercel Cron 매주 월요일 06:00 UTC (세션 34 설정)
+- **WDC 상품 데이터**: ✅ 다운로드 완료 (1,903파일, 외장하드), 상품명→HS 매핑 추출 대기
+- **33개 기능**: 전부 ✅ 구현 완료 (DDP Quote, WooCommerce, BigCommerce, Magento 포함)
 
 ## 절대 규칙
 1. **B2C 코드 수정 금지** — lib/search/, lib/agent/, components/search/ 등. 보존만
@@ -105,38 +107,30 @@ portal/
 | macmap_trade_agreements | 1,319 | ✅ |
 | macmap_ntlc_rates | 537,894 | ✅ (MFN 009) |
 | macmap_min_rates | ~113M (53개국) | ✅ 완료 |
-| macmap_agr_rates | 0/148M | ⏳ 대기 |
+| macmap_agr_rates | 진행중/~144M (53개국) | 🔄 Mac 백그라운드 |
 | trade_remedy_cases | 10,999 | ✅ (세션 33) |
 | trade_remedy_products | 55,259 | ✅ (세션 33) |
 | trade_remedy_duties | 37,513 | ✅ (세션 33) |
 | safeguard_exemptions | 15,935 | ✅ (세션 33) |
 
-## MIN 임포트 재개 방법 (Mac에서, WDC 완료 후)
+## MIN 임포트 — ✅ 완료
+- **~113M행, 53개국 전체 완료** (Cowork 5에서 확인)
+- 스크립트: import_min_remaining.py + run_min_loop.sh
+
+## AGR 임포트 (Mac에서 실행 중)
 ```bash
-# ⚠️ Mac 터미널에서 실행 (VM 아님! WDC 다운로드 완료 후 진행)
-# 남은 9개국: SGP, THA, TUN, TUR, TWN, UKR, URY, USA, VNM
-# 스크립트: import_min_remaining.py (5K행/배치, curl 임시파일, ON CONFLICT DO NOTHING)
-cd ~/portal
-nohup python3 import_min_remaining.py > min_import.log 2>&1 &
-
-# 자동 재시작 래퍼 (프로세스 죽으면 5초 후 재시작)
-nohup bash run_min_loop.sh > min_import.log 2>&1 &
-```
-- 속도: ~2,800행/초
-- 완료 국가: 44개국 (AE~SA), 남은 9개국 (~26.8M행)
-
-## WDC 다운로드 (Mac에서 실행)
-```bash
-# Mac 터미널에서 (VM 아님!)
-cd ~/portal && nohup scripts/download_wdc_products.sh /Volumes/soulmaten/POTAL/wdc-products > ~/wdc_download.log 2>&1 &
-
 # 진행 확인
-tail -5 ~/wdc_download.log
+tail -5 ~/portal/agr_import.log
+cat ~/portal/agr_import_progress.json
 ```
-- 총 1,899개 파일 × ~186MB = ~350GB
-- 외장하드: /Volumes/soulmaten/POTAL/wdc-products
-- 이미 다운로드된 파일 자동 건너뜀 (이어받기 가능)
-- **진행률**: 1,778/1,899 (~93.6%, 세션 37 기준)
+- 총 ~144M행, 53개국
+- 스크립트: import_agr_all.py + run_agr_loop.sh
+- **현재**: ARE 완료, AUS 진행중 (~14시간 예상)
+- ⚠️ 완료 전까지 다른 대량 작업 금지
+
+## WDC 다운로드 — ✅ 완료
+- 외장하드: /Volumes/soulmaten/POTAL/wdc-products (extracted + raw 폴더, 1,903파일)
+- **다음 단계**: AGR 완료 후 → `extract_with_categories.py` 실행 → 상품명→HS 매핑
 
 ## 주요 인증 정보
 | 항목 | 값 |

@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-10 (Cowork 세션 3 후반/세션 37 — Paddle 버그 3건 수정, B2C 잔재 완전 정리, i18n 6개 언어 키 교체, Vercel B2C 환경변수 15개 삭제)
+> 마지막 업데이트: 2026-03-10 (Cowork 세션 5 — DDP Stripe→Quote 전환, WooCommerce/BigCommerce/Magento 완성, Dashboard UI 통일 1440px, MIN 완료 확인, AGR 임포트 진행중, WDC 다운로드 완료 확인)
 
 ---
 
@@ -1105,6 +1105,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 03-10 | CW5 | **Cowork 5 — DDP Stripe→Quote 전환, 플러그인 3종 완성, Dashboard UI 통일**: DDP Checkout Stripe 코드 전면 제거 → Quote-only 방식 (stripe-checkout.ts→ddp-session.ts). WooCommerce 플러그인 강화 (HPOS/캐싱/sanitize/i18n/uninstall.php). BigCommerce DDP cart 완성. Magento 2 모듈 (layout XML/ACL/composer.json). Dashboard UI 통일: 메인 헤더/푸터 전 페이지 표시, 1440px max-width, 유저 메뉴에 Docs 추가. MIN 53개국 완료 확인. AGR 임포트 Mac 백그라운드 진행중. WDC 다운로드 완료 확인 (1,903파일 외장하드). Git push 2회 (6b9e0be, 3b3e0cb) |
 | 03-09 | 36 | **Cowork 2 — B2C 잔재 삭제 + 파일 정리 2차 + 요금제 검증 + Paddle Sandbox**: B2C 잔재 삭제 (ios/ 폴더, capacitor.config.ts, POTAL_Distribution.mobileprovision, B2C 아키텍처 문서 4개). 중복 파일 삭제 (Competitors Analysis md, COMPETITOR-ANALYSIS md, Checklist_20260309, MORNING-TODO, INDEX.md). data/ 루트 파일 14개 → data/tariff-research/ 이동. 남아공 PDF 2개 → data/tariff-research/ 이동. archive/로 3개 이동. .DS_Store 7개 삭제. 요금제 구/신 불일치 발견 및 검증 (코드에 구버전 Free500/Starter$9/Growth$29 vs 신 Free100/Basic$20/Pro$80/Enterprise$300+). Paddle Sandbox에 Starter $9 생성 — 구 요금제 기준이라 신 요금제로 재생성 필요. 전체 세션 트랜스크립트 29MB 분석하여 대화 이력 검증 완료 |
 | 03-08 | 34 | **다국어 30언어 확장 + Vercel Cron + MIN/WDC 진행**: country-i18n.ts 7→30개 언어 (CLDR babel, 240개국×29번역, 97% 커버리지). vercel.json 신규 (매주 월 06:00 UTC cron) + update-tariffs GET 핸들러 + CRON_SECRET 설정. POTAL_33Features_Status.xlsx (28✅/5🟡/0❌). MIN 임포트 44개국/86M행 완료+9개국 진행중 (Cowork VM). WDC 350GB Mac 다운로드 시작 (메타2개+part_0~3 완료). EC2 중지. .gitignore 업데이트. git push 완료 |
 | 03-08 | 33 | **반덤핑/상계관세/세이프가드**: TTBD 36개국 AD + 19개국 CVD + WTO SG → Supabase 4테이블 119,706행. MIN 벌크 임포트 ~5.4M→~86M행 진행 (43→44개국) |
