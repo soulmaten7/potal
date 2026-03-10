@@ -44,13 +44,13 @@ const FAQ_ITEMS = [
     id: '5',
     category: 'pricing',
     question: 'What happens if I exceed my plan\'s API call limit?',
-    answer: 'On the Free and Starter plans, API calls will return a 429 rate limit error once you exceed your monthly limit. On the Growth plan, overage is billed at $0.002 per additional call. Enterprise plans have no limits. You can upgrade your plan anytime from the Dashboard.'
+    answer: 'On the Free plan, API calls stop at the 100-call limit. On paid plans (Basic, Pro, Enterprise), overage calls are automatically billed: Basic $0.015/call, Pro $0.012/call, Enterprise $0.01/call. Enterprise customers with 100K+ volume commitments get $0.008/call. You can upgrade your plan anytime from the Dashboard.'
   },
   {
     id: '6',
     category: 'pricing',
     question: 'Is there a free plan?',
-    answer: 'Yes! Our Free plan includes 500 API calls per month — enough to test the integration and serve small stores. No credit card required.'
+    answer: 'Yes! Our Free plan includes 100 API calls per month — enough to test the integration. No credit card required. Basic and Pro plans come with a 14-day free trial.'
   },
   {
     id: '7',

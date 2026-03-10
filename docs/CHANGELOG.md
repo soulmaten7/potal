@@ -1,5 +1,28 @@
 # POTAL Development Changelog
 
+## [2026-03-10] Cowork 세션 4 — 구 요금제 잔재 전면 정리, WDC 추출 스크립트, MIN 임포트 실행
+
+### 🔧 구 요금제 잔재 전면 정리 (6개 파일)
+- `app/developers/docs/page.tsx` — Starter $9/Growth $29 → Free/Basic $20/Pro $80/Enterprise $300
+- `app/terms/page.tsx` — Free 500→100, Starter→Basic, Growth→Pro, 초과요금 안내 추가
+- `app/help/page.tsx` — FAQ 2건 업데이트 (Starter/Growth 삭제, 신 요금제 반영)
+- `app/page.tsx` (랜딩) — Free 500→100, Growth $29→Pro $80, Enterprise Custom→$300
+- `app/api/v1/sellers/me/route.ts` — planLimits: free 500→100, starter→basic 2K, growth→pro 10K, enterprise unlimited→50K
+- `app/legal/[slug]/page.tsx` — Terms 요금제 조항 전면 수정
+
+### 📊 WDC 상품 데이터 추출 스크립트
+- `scripts/extract_with_categories.py` (NEW) — 카테고리 포함 추출, 진행 상태 저장/재시작, category_stats.json 출력
+
+### 🧪 lookup_duty_rate_v2() 테스트 쿼리
+- `scripts/test_lookup_duty_rate.sql` (NEW) — MIN 상태, 4단계 폴백, 주요 무역 시나리오 테스트
+
+### 🔄 기타
+- `app/api/v1/docs/openapi.ts` — "Stripe checkout session" → "Paddle checkout session"
+- MIN 임포트 Mac 백그라운드 실행 시작 (9개국, ~26.9M행)
+- WDC 다운로드 완료 확인 (1,895/1,899)
+
+---
+
 ## [2026-03-10] Cowork 세션 3 후반 (세션 37 계속) — Overage 빌링 구현, Paddle 버그 픽스, B2C 잔재 완전 정리
 
 ### 💰 Overage 빌링 구현

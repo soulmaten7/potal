@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-10 (Cowork 세션 3 후반/세션 37 — Overage 빌링 구현, Paddle 버그 픽스, B2C 잔재 완전 정리, i18n 키 교체)
+# 마지막 업데이트: 2026-03-10 (Cowork 4 — 구 요금제 잔재 전면 정리(6개 파일), WDC 추출 스크립트, MIN 임포트 실행)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -168,7 +168,7 @@ tail -5 ~/wdc_download.log
 Free 500건 / Starter $9 / Growth $29 / Enterprise custom → 세션 28에서 전면 폐기
 
 **결제 시스템**: ✅ Paddle (MoR 모델, 5%+$0.50/transaction). **Live 전환 완료** — Live API Key + 6개 Live Price + Webhook + Vercel 배포
-**코드 잔존**: ✅ 완전 정리됨 (lemonsqueezy.ts 삭제, Capacitor stub, i18n 6개 언어 키 교체 완료)
+**코드 잔존**: ✅ 완전 정리됨 (lemonsqueezy.ts 삭제, Capacitor stub, i18n 6개 언어 키 교체, 구 요금제 6개 파일 정리 완료)
 **Overage 빌링**: ✅ 구현 완료 — plan-checker(유료 overage 허용) + middleware(X-Plan-Overage 헤더) + overage.ts(Paddle charge) + billing-overage cron(매월 1일)
 
 ## 은태님 스타일 (코딩 초보자)

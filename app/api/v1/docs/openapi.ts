@@ -570,7 +570,7 @@ export const openApiSpec = {
     '/checkout': {
       post: {
         summary: 'Create DDP checkout session',
-        description: 'Initiate a Stripe checkout session with DDP (Delivered Duty Paid) pricing. Includes landed cost, duty, VAT, and processing fees.',
+        description: 'Initiate a Paddle checkout session with DDP (Delivered Duty Paid) pricing. Includes landed cost, duty, VAT, and processing fees.',
         operationId: 'createCheckout',
         tags: ['Checkout'],
         requestBody: {

@@ -183,5 +183,75 @@
 
 ---
 
+---
+
+# Cowork 세션 4 (세션 37 이후)
+> 날짜: 2026-03-10
+> 유형: Cowork (Claude Desktop)
+> 주제: 구 요금제 잔재 전면 정리 + WDC 추출 스크립트 + MIN 임포트 실행
+
+---
+
+## 작업 요약
+
+### 1. 구 요금제 잔재 전면 정리 (6개 파일)
+- developers/docs, terms, help, landing(page.tsx), sellers/me, legal — 모두 Starter/Growth → Free/Basic/Pro/Enterprise 전환
+- planLimits 코드 업데이트 (free:500→100, starter:5K→basic:2K, growth:25K→pro:10K, enterprise:-1→50K)
+- 전체 코드베이스 grep 확인: 구 요금제(Starter/Growth/$9/$29/500건) 참조 제로
+
+### 2. WDC 상품 데이터 추출 스크립트
+- `scripts/extract_with_categories.py` — 진행 상태 저장, 카테고리 통계, 메모리 효율 개선
+- 출력: products_detailed.jsonl, products_summary.csv, category_stats.json
+
+### 3. lookup_duty_rate_v2() 테스트 쿼리
+- `scripts/test_lookup_duty_rate.sql` — 4단계 폴백 + 주요 무역 시나리오 + 신규 9개국 테스트
+
+### 4. OpenAPI 스펙
+- Stripe → Paddle 참조 수정
+
+### 5. AI 에이전트 확인
+- Custom GPT: 변경 불필요
+- Gemini Gem: 폴더 비어있음
+
+### 6. pricing page 교차검증
+- pricing/page.tsx ↔ paddle.ts PLAN_CONFIG: 모든 수치 일치 확인
+
+### 7. MIN 임포트 실행
+- WDC 다운로드 완료 확인 (1,895/1,899)
+- Mac에서 `import_min_remaining.py` + `run_min_loop.sh` 생성 후 실행 시작
+- 9개국: SGP, THA, TUN, TUR, TWN, UKR, URY, USA, VNM
+
+---
+
+## 변경 파일 목록
+
+| 파일 | 유형 | 내용 |
+|------|------|------|
+| app/developers/docs/page.tsx | 수정 | 요금제 테이블 업데이트 |
+| app/terms/page.tsx | 수정 | 요금제 조항 업데이트 |
+| app/help/page.tsx | 수정 | FAQ 2건 업데이트 |
+| app/page.tsx | 수정 | 랜딩페이지 요금제 카드 업데이트 |
+| app/api/v1/sellers/me/route.ts | 수정 | planLimits 코드 업데이트 |
+| app/legal/[slug]/page.tsx | 수정 | Terms 요금제 조항 수정 |
+| app/api/v1/docs/openapi.ts | 수정 | Stripe→Paddle |
+| scripts/extract_with_categories.py | 신규 | WDC 카테고리 포함 추출 |
+| scripts/test_lookup_duty_rate.sql | 신규 | lookup 테스트 쿼리 |
+| import_min_remaining.py | 신규(Mac) | MIN 9개국 임포트 |
+| run_min_loop.sh | 신규(Mac) | MIN 자동 재시작 래퍼 |
+| docs/CHANGELOG.md | 수정 | Cowork 4 엔트리 |
+| docs/NEXT_SESSION_START.md | 수정 | 전면 재작성 |
+| docs/sessions/SESSION_37_REPORT.md | 수정 | Cowork 4 섹션 추가 |
+
+---
+
+## 다음 세션 우선순위
+1. 5차 Git Push (Mac) — Cowork 4 변경사항
+2. MIN 임포트 완료 확인 (9개국)
+3. AGR 임포트 (148M행)
+4. Shopify 임베디드 앱 확인
+5. lookup_duty_rate_v2() 통합 테스트
+
+---
+
 ## 체크리스트 현황
-- ✅ Done: 107 | TODO: 38 | 🔄 In Progress: 2 | ⏸ Deferred: 5 | ❌ Failed: 2
+- ✅ Done: 107+ | TODO: 35~ | 🔄 In Progress: 2 | ⏸ Deferred: 5 | ❌ Failed: 2

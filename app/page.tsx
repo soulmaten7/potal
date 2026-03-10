@@ -589,14 +589,14 @@ export default function HomePage() {
           Start free, scale as you grow
         </h2>
         <p style={{ fontSize: 16, color: '#666', marginBottom: 40 }}>
-          500 free API calls per month. No credit card required.
+          100 free API calls per month. No credit card required.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
           {[
-            { name: 'Free', price: '$0', desc: '500 calls/mo', highlight: false },
-            { name: 'Growth', price: '$29/mo', desc: '25,000 calls/mo', highlight: true },
-            { name: 'Enterprise', price: 'Custom', desc: 'Unlimited', highlight: false },
+            { name: 'Free', price: '$0', desc: '100 calls/mo', highlight: false },
+            { name: 'Pro', price: '$80/mo', desc: '10,000 calls/mo', highlight: true },
+            { name: 'Enterprise', price: '$300/mo', desc: '50,000+ calls/mo', highlight: false },
           ].map((plan) => (
             <div
               key={plan.name}

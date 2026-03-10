@@ -55,16 +55,16 @@ export default function TermsPage() {
           </p>
           <ul className="list-disc pl-6 mt-2 space-y-1">
             <li>
-              <strong>Free Plan:</strong> 500 API calls per month.
+              <strong>Free Plan:</strong> 100 API calls per month.
             </li>
             <li>
-              <strong>Starter Plan:</strong> 5,000 API calls per month ($9/mo).
+              <strong>Basic Plan:</strong> 2,000 API calls per month ($20/mo). Overage: $0.015/call.
             </li>
             <li>
-              <strong>Growth Plan:</strong> 25,000 API calls per month ($29/mo).
+              <strong>Pro Plan:</strong> 10,000 API calls per month ($80/mo). Overage: $0.012/call.
             </li>
             <li>
-              <strong>Enterprise Plan:</strong> Custom volume and pricing.
+              <strong>Enterprise Plan:</strong> 50,000 API calls per month ($300/mo). Overage: $0.01/call.
             </li>
           </ul>
           <p className="mt-3">
