@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-10 (Cowork 세션 3/세션 37 — Enterprise 요금제 확정, Annual+Overage, Paddle 프로덕션 배포, Vercel 환경변수 자동화)
+# 마지막 업데이트: 2026-03-10 (Cowork 세션 3 후반/세션 37 — Paddle 버그 픽스+Overage 구현, B2C 잔재 완전 정리, i18n 키 교체)
 
 ## 0. 프로젝트 개요
 
@@ -40,9 +40,9 @@
   - **배경**: Alex Hormozi 전략 "중간은 죽음" 적용. 기존 $9/$29은 딱 "중간"이라 죽은 요금제. "모두에게 싸게 + 압도적 기능 = 가격 파괴자"로 전환
   - **가능한 이유**: AI 원가 건당 $0.001, 캐시 히트 70-90% 시 실질 $0.0003. 33개 기능 전부 넣어도 건당 $0.008 이하. Basic $20/2K에서 마진 97%
   - **상세 근거**: session-context.md "요금제 변경 배경과 근거" 섹션 참조
-- **✅ 요금제 코드 대부분 업데이트 완료 (세션 36-37)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx 등 핵심 파일 신 요금제 반영. **잔존**: lemonsqueezy.ts (미삭제), i18n translations (pricing.starter/growth 키). 나머지 파일 cleanup 필요
+- **✅ 요금제 코드 완전 업데이트 완료 (세션 37 후반)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx, plan-checker.ts, usage/route.ts, i18n 6개 언어 전부 신 요금제 반영. lemonsqueezy.ts 삭제 완료. Overage 빌링 구현 완료 (overage.ts + billing-overage cron)
 - **Shopify 심사 대기**: App Bridge 4.x CDN + 세션 토큰 push 완료, 임베디드 확인 대기 → 통과 후 "검토를 위해 제출"
-- **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. 코드 전환 + Sandbox 6개 Price + Vercel 환경변수 9개 + 프로덕션 배포 완료 (세션 36-37). Annual 20% off + Overage billing 구조 확정. Vercel에서 Stripe 환경변수 3개 삭제 완료
+- **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. Live 6개 Price + Webhook + Vercel 배포 완료. Annual 20% off + Overage 빌링 구현 완료. lemonsqueezy.ts 삭제, Capacitor stub, Vercel B2C 환경변수 15개 삭제 (36→21개). Paddle Live E2E 테스트 통과
 - **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
 - **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
 - **✅ 240개국 확장 (세션 27)**: 181→240개국/영토. Zonos(235) 초과 달성. 카리브해/태평양 섬/아프리카/유럽 영토 59개 추가
@@ -136,12 +136,15 @@
 ### B2B 핵심 — Billing & Dashboard
 | 파일 | 역할 |
 |------|------|
-| `app/api/billing/checkout/route.ts` | LemonSqueezy Checkout (createCheckout, 14일 trial) |
-| `app/api/billing/webhook/route.ts` | LemonSqueezy Webhook (HMAC SHA-256, 6개 이벤트) |
-| `app/api/billing/portal/route.ts` | LemonSqueezy Customer Portal URL |
-| `app/lib/billing/lemonsqueezy.ts` | LemonSqueezy SDK 초기화 + PLAN_CONFIG (variantId) |
+| `app/api/billing/checkout/route.ts` | Paddle Checkout (Transaction API, billingCycle, customer_id 재사용) |
+| `app/api/billing/webhook/route.ts` | Paddle Webhook (HMAC SHA-256, subscription/transaction 이벤트) |
+| `app/api/billing/portal/route.ts` | Paddle Customer Portal URL (updatePayment/cancel) |
+| `app/lib/billing/paddle.ts` | Paddle PLAN_CONFIG + API helpers (getPaddleHeaders/BaseUrl/mapPriceToPlan) |
 | `app/lib/billing/subscription.ts` | 구독 상태 매핑 + DB 업데이트 (billing_* 컬럼) |
-| `app/dashboard/DashboardContent.tsx` | 대시보드 (Overview/API Keys/Widget/Usage/Billing) |
+| `app/lib/billing/overage.ts` | 초과 사용량 계산 + Paddle One-time Charge API 청구 |
+| `app/api/v1/admin/billing-overage/route.ts` | Overage Cron (매월 1일 07:00 UTC, CRON_SECRET 인증) |
+| `app/lib/api-auth/plan-checker.ts` | 플랜 한도 체크 (Free hard-block, 유료 overage 허용) |
+| `app/dashboard/DashboardContent.tsx` | 대시보드 (Overview/API Keys/Widget/Usage/Billing + Annual 토글) |
 
 ### B2B 핵심 — 프론트엔드 (B2B 전환 완료)
 | 파일 | 역할 |
@@ -174,7 +177,7 @@
 | 테스트 스토어 | potal-test-store.myshopify.com |
 | Supabase URL | https://zyurflkhiregundhisky.supabase.co |
 | API 엔드포인트 | https://www.potal.app/api/v1/calculate |
-| Paddle | Sandbox 활성 + 프로덕션 도메인 승인 완료. Starter $9 제품 생성됨 (구 요금제 — 신 요금제로 재생성 필요) |
+| Paddle | ✅ Live 전환 완료. Product 1개 + Price 6개 (3플랜×Monthly/Annual) + Webhook 56이벤트. Vercel 환경변수 21개 |
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW

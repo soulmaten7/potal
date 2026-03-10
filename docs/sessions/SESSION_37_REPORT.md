@@ -1,7 +1,7 @@
-# SESSION 37 REPORT (Cowork 세션 3)
+# SESSION 37 REPORT (Cowork 세션 3 — 전반+후반)
 > 날짜: 2026-03-10
 > 유형: Cowork (Claude Desktop)
-> 주제: Enterprise 요금제+Annual 확정, Paddle 프로덕션 배포, Vercel 환경변수 자동화
+> 주제: Enterprise 요금제 확정 → Paddle Live 전환 → Overage 빌링 구현 → B2C 완전 정리
 
 ---
 
@@ -92,16 +92,96 @@
 
 ---
 
-## 다음 세션 우선순위
-1. Paddle Sandbox → Live 전환
-2. 결제 플로우 E2E 테스트
-3. Annual/Overage 빌링 구현
-4. lemonsqueezy.ts 삭제 + npm uninstall
-5. WDC 다운로드 완료 확인 (~93.6%)
-6. MIN 임포트 재개 (9개국)
+---
+
+# Cowork 세션 3 후반
+
+## 작업 요약 (후반)
+
+### 6. 빌드 수정 + B2C 잔재 완전 정리
+- `app/lib/native-auth.ts` — @capacitor/core → stub 함수 (isNativePlatform→false)
+- LemonSqueezy 완전 삭제: `lemonsqueezy.ts` + npm uninstall
+- Capacitor 패키지 7개 npm uninstall
+- Vercel B2C 환경변수 15개 삭제 (36→21개)
+
+### 7. i18n 번역 키 업데이트 (6개 언어)
+- en/ko/ja/zh/es/de — starter→free, growth→basic+pro, scale→enterprise
+- Annual 키 추가, FAQ Stripe→Paddle 전환
+- ja.ts: "Stripe" → "インフラ"
+
+### 8. Paddle 결제 버그 3건 수정
+- portal: `url` 필드 추가
+- checkout: billing_customer_id 재사용 + billingCycle 전달
+- DashboardContent: Monthly/Annual 토글 UI + billingCycle state
+
+### 9. Paddle Live 전환 + E2E 테스트
+- Live API Key + 6개 Live Price + Webhook 56 events
+- Products/Prices/Webhook/Auth 정상 확인
+
+### 10. Overage 빌링 구현
+- `app/lib/billing/overage.ts` (NEW) — Paddle One-time Charge API
+- `app/api/v1/admin/billing-overage/route.ts` (NEW) — Cron (매월 1일 07:00 UTC)
+- `app/lib/api-auth/plan-checker.ts` — 유료 overage 허용
+- `app/lib/api-auth/middleware.ts` — X-Plan-Overage 헤더
+- `app/api/v1/sellers/usage/route.ts` — 구버전 숫자 수정 + overage 정보
+- `vercel.json` — billing-overage cron 추가
+
+### 11. Git Push (3회)
+- 1차 (10 files, +280/-1,260): Capacitor stub + lemonsqueezy + i18n
+- 2차 (8a6b0a0): Paddle 버그 픽스 + 문서 + .gitignore (secrets masking)
+- 3차 (a80737e): Overage 빌링 + plan-checker + middleware + vercel.json
+
+### 12. 문서 전면 업데이트 (2차)
+- session-context.md, .cursorrules, CLAUDE.md, CHANGELOG.md 업데이트
+- POTAL_B2B_Checklist.xlsx — 8개 태스크 추가 완료 처리
+- NEXT_SESSION_START.md — 전면 재작성
+- 교차검증 통과
 
 ---
 
-## 백그라운드 진행
-- **WDC 다운로드**: 1,778/1,899 (~93.6%) — Mac 외장하드
-- **MIN 임포트**: 44/53 국가 완료, 9개국 남음
+## 후반 변경 파일
+
+### 코드 수정 (13개)
+| 파일 | 내용 |
+|------|------|
+| app/lib/native-auth.ts | Capacitor → stub |
+| app/lib/billing/lemonsqueezy.ts | 삭제 |
+| app/i18n/translations/{en,ko,ja,zh,es,de}.ts | 요금제 키 교체 (6개) |
+| app/api/billing/portal/route.ts | url 필드 추가 |
+| app/api/billing/checkout/route.ts | billing_customer_id + billingCycle |
+| app/dashboard/DashboardContent.tsx | Annual 토글 |
+
+### 신규 생성 (2개)
+| 파일 | 내용 |
+|------|------|
+| app/lib/billing/overage.ts | Overage 계산 + Paddle charge |
+| app/api/v1/admin/billing-overage/route.ts | Cron 엔드포인트 |
+
+### Overage 관련 수정 (4개)
+| 파일 | 내용 |
+|------|------|
+| app/lib/api-auth/plan-checker.ts | 유료 overage 허용 |
+| app/lib/api-auth/middleware.ts | X-Plan-Overage 헤더 |
+| app/api/v1/sellers/usage/route.ts | 구버전 숫자 수정 |
+| vercel.json | billing-overage cron |
+
+### 기타
+| 파일 | 내용 |
+|------|------|
+| .gitignore | vercel_env_backup 추가 |
+| Vercel 환경변수 (원격) | B2C 15개 삭제 |
+
+---
+
+## 다음 세션 우선순위
+1. 4차 Git Push (Mac) — 문서 업데이트
+2. Shopify 임베디드 앱 확인 (Partner Dashboard)
+3. Paddle Customer Portal E2E 테스트
+4. WDC 다운로드 완료 확인 (~97%)
+5. MIN 임포트 재개 — WDC 완료 후 Mac에서 실행
+6. AGR 임포트 (148M행)
+
+---
+
+## 체크리스트 현황
+- ✅ Done: 107 | TODO: 38 | 🔄 In Progress: 2 | ⏸ Deferred: 5 | ❌ Failed: 2

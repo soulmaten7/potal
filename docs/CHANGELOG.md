@@ -36,9 +36,10 @@
 - Vercel 환경변수: 36개 → 21개
 - AI_CLASSIFIER_* + OPENAI_API_KEY는 B2B에서 사용 중 → KEEP
 
-### 📊 1차 Git Push (10 files, +280/-1,260)
-- Capacitor stub + lemonsqueezy 삭제 + i18n 업데이트
-- 2차 Push 준비: Paddle 버그 픽스 + Annual 토글 (Mac에서 실행 필요)
+### 📊 Git Push (3회)
+- **1차** (10 files, +280/-1,260): Capacitor stub + lemonsqueezy 삭제 + i18n 업데이트
+- **2차** (8a6b0a0): Paddle 버그 픽스 + Annual 토글 + 문서 업데이트 + .gitignore (secrets masking)
+- **3차** (a80737e): Overage 빌링 + plan-checker + middleware + usage route + vercel.json cron
 
 ---
 
