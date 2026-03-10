@@ -1,5 +1,88 @@
 # POTAL Development Changelog
 
+## [2026-03-10] Cowork 세션 3 후반 (세션 37 계속) — 빌드 수정, Paddle 버그 픽스, B2C 잔재 완전 정리
+
+### 🔧 빌드 수정 (Capacitor 제거 후속)
+- `app/lib/native-auth.ts` — @capacitor/core 임포트 제거, stub 함수로 대체 (isNativePlatform→false 등)
+- `@lemonsqueezy/lemonsqueezy.js` npm uninstall + `app/lib/billing/lemonsqueezy.ts` 삭제
+
+### 🌐 i18n 번역 키 업데이트 (6개 언어)
+- `app/i18n/translations/{en,ko,ja,zh,es,de}.ts` — 구버전 키 전면 교체
+  - pricing.starter → pricing.free (Free $0, 100건/월)
+  - pricing.growth → pricing.basic ($20, 2,000건) + pricing.pro ($80, 10,000건)
+  - pricing.scale → pricing.enterprise ($300, 50,000건)
+  - pricing.annual 키 추가 ("Save 20% with annual billing")
+  - FAQ: Stripe→Paddle, Starter→Free, 초과요금 안내 추가
+  - ja.ts hero.title: "Stripe" → "インフラ"
+
+### 🐛 Paddle 결제 버그 3건 수정
+- `app/api/billing/portal/route.ts` — `url` 필드 추가 (대시보드 호환)
+- `app/api/billing/checkout/route.ts` — billing_customer_id 재사용 (기존 고객 중복 생성 방지) + billingCycle 파라미터 전달
+- `app/dashboard/DashboardContent.tsx` — Monthly/Annual 토글 UI 추가, billingCycle state 관리, PLANS 배열 업데이트
+
+### 🗑️ Vercel B2C 환경변수 15개 삭제
+- 삭제: ALIEXPRESS_*, AMAZON_*, EBAY_*, RAPIDAPI_*, APIFY_*, TEMU_* (15개)
+- Vercel 환경변수: 36개 → 21개
+- AI_CLASSIFIER_* + OPENAI_API_KEY는 B2B에서 사용 중 → KEEP
+
+### 📊 1차 Git Push (10 files, +280/-1,260)
+- Capacitor stub + lemonsqueezy 삭제 + i18n 업데이트
+- 2차 Push 준비: Paddle 버그 픽스 + Annual 토글 (Mac에서 실행 필요)
+
+---
+
+## [2026-03-10] Cowork 세션 3 (세션 37) — Enterprise 요금제+Annual 확정, Paddle 프로덕션 배포, Vercel 환경변수 자동화
+
+### 💰 Enterprise 요금제 + Annual/Overage 확정
+- **Annual 요금 20% 할인**: Basic $16/mo ($192/yr), Pro $64/mo ($768/yr), Enterprise $240/mo ($2,880/yr)
+- **Overage 초과 요금**: Basic $0.015/건, Pro $0.012/건, Enterprise $0.01/건
+- **Volume Commit**: 100K+/월 → $0.008/건 (Enterprise 협상)
+- Paddle 수수료 분석: 5% + $0.50/건 → 마진 Basic 82.5%, Pro 81.9%, Enterprise 78.2%
+
+### 🏗️ Paddle Billing 프로덕션 배포 (세션 36에서 코드 작성 → 세션 37에서 완료)
+- **Paddle Sandbox 6개 Price 생성**: Basic/Pro/Enterprise × Monthly/Annual
+- **코드 업데이트 완료**:
+  - `app/lib/billing/paddle.ts` — priceAnnual, overageRate, paddlePriceIdMonthly/Annual 추가
+  - `app/pricing/page.tsx` — Annual 토글 UI, 초과요금 안내, FAQ 추가
+  - `app/api/billing/checkout/route.ts` — billingCycle 파라미터 지원
+  - `app/dashboard/DashboardContent.tsx` — 플랜명 수정 (growth→pro, starter→basic)
+- **npm run build 통과** + git push + Vercel 프로덕션 배포 성공
+
+### 🔧 Vercel 환경변수 자동화 (Vercel API 활용)
+- **Vercel API Token 발급**: Full Account, Never expires
+- **Paddle 환경변수 9개 자동 추가** (Vercel REST API POST):
+  - PADDLE_API_KEY, PADDLE_WEBHOOK_SECRET, PADDLE_ENVIRONMENT
+  - PADDLE_PRICE_BASIC_MONTHLY, PADDLE_PRICE_BASIC_ANNUAL
+  - PADDLE_PRICE_PRO_MONTHLY, PADDLE_PRICE_PRO_ANNUAL
+  - PADDLE_PRICE_ENTERPRISE_MONTHLY, PADDLE_PRICE_ENTERPRISE_ANNUAL
+- **Stripe 환경변수 3개 삭제**: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_GROWTH
+- **AI_CLASSIFIER 확인**: `app/lib/cost-engine/ai-classifier/claude-classifier.ts`에서 사용중 → KEEP
+- **Vercel Redeploy 트리거**: API로 자동 재배포
+
+### 📦 B2C 잔재 백업
+- `archive/vercel_env_backup_2026-03-10.txt` 생성 — RapidAPI, Affiliate, Stripe 키 백업
+- Vercel 환경변수 총 30→36개 (9 추가, 3 삭제)
+
+### 📝 문서 업데이트
+- session-context.md — 세션 37 전체 반영 (요금제, Paddle, Vercel, WDC 진행률)
+- .cursorrules — Paddle 전환 완료 반영, 코드 상태 업데이트
+- CLAUDE.md — 핵심 수치, 요금제 테이블, 인증정보 업데이트
+- CHANGELOG.md — 이 엔트리
+- NEXT_SESSION_START.md — 전면 재작성
+- POTAL_B2B_Checklist.xlsx — 완료/신규 태스크 반영
+
+### 🚀 Paddle Sandbox → Live 전환
+- **Live API Key 발급**: `pdl_live_apikey_01kkaxcqb7nak8dyrsm3ktxgjj_...`
+- **Live Products/Prices 6개 생성**: POTAL 제품 1개 + Basic/Pro/Enterprise × Monthly/Annual
+- **Live Webhook 설정**: `https://www.potal.app/api/billing/webhook` (전체 이벤트)
+- **Vercel 환경변수 9개 Live로 교체** + Redeploy
+- **.env.local Live로 수정**
+
+### ⏳ 백그라운드
+- WDC 다운로드 진행: 1,778/1,899 (~93.6%)
+
+---
+
 ## [2026-03-09] Cowork 세션 2 (세션 36) — B2C 잔재 삭제 + 파일 정리 2차 + 요금제 검증
 
 ### 🗑️ B2C 잔재 삭제

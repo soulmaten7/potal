@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-09 (Cowork 세션 2/세션 36 — B2C 잔재 삭제 + 파일 정리 2차 + 요금제 검증)
+# 마지막 업데이트: 2026-03-10 (Cowork 세션 3 후반/세션 37 — Paddle 버그 픽스, B2C 잔재 완전 정리, i18n 키 교체)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -14,7 +14,7 @@ portal/
 ├── [루트 코어] CLAUDE.md, session-context.md, .cursorrules, README.md, 설정파일
 │
 ├── docs/                    # 문서
-│   ├── sessions/            # 세션별 리포트 (SESSION_30~36 등)
+│   ├── sessions/            # 세션별 리포트 (SESSION_30~37 등)
 │   ├── architecture/        # 아키텍처, 설계 문서 (DESIGN_AGR_IMPORT, DESIGN_WDC_HS_MAPPING)
 │   ├── CHANGELOG.md         # 개발 변경 이력
 │   └── NEXT_SESSION_START.md # 다음 세션 시작 가이드
@@ -62,7 +62,7 @@ portal/
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션: https://www.potal.app
 
-## 핵심 수치 (세션 36/Cowork 2 기준)
+## 핵심 수치 (세션 37/Cowork 3 기준)
 - 240개국/영토, **30개국어** (세션 34: 7→30 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
@@ -139,6 +139,7 @@ tail -5 ~/wdc_download.log
 - 총 1,899개 파일 × ~186MB = ~350GB
 - 외장하드: /Volumes/soulmaten/POTAL/wdc-products
 - 이미 다운로드된 파일 자동 건너뜀 (이어받기 가능)
+- **진행률**: 1,778/1,899 (~93.6%, 세션 37 기준)
 
 ## 주요 인증 정보
 | 항목 | 값 |
@@ -152,24 +153,25 @@ tail -5 ~/wdc_download.log
 | AWS Account | 920263653804 |
 | EC2 Instance | i-0c114c6176439b9cb (현재 중지됨) |
 | CRON_SECRET | 8e82e09e218d6147943253fdbffacc3bacda4e4f8d322ce508ea2befde00f297 |
+| Vercel API Token | vcp_***REDACTED*** (Full Account, Never expires) |
 
-## ⚠️ 요금제 (세션 28 확정 — 반드시 숙지)
+## ⚠️ 요금제 (세션 28 확정, 세션 37 Annual/Overage 추가 — 반드시 숙지)
 
-**현재 유효한 요금제 (신):**
-| 플랜 | 가격 | 할당량 |
-|------|------|--------|
-| Free | $0 | 100건/월 |
-| Basic | $20 | 2,000건/월 |
-| Pro | $80 | 10,000건/월 |
-| Enterprise | $300+ | 50,000건+ |
+**현재 유효한 요금제 (신 — 세션 37 확정):**
+| 플랜 | Monthly | Annual (20% off) | 할당량 | 초과 요금 |
+|------|---------|-----------------|--------|----------|
+| Free | $0 | $0 | 100건/월 | - |
+| Basic | $20 | $16/mo ($192/yr) | 2,000건/월 | $0.015/건 |
+| Pro | $80 | $64/mo ($768/yr) | 10,000건/월 | $0.012/건 |
+| Enterprise | $300 | $240/mo ($2,880/yr) | 50,000건/월 | $0.01/건 |
 
-**폐기된 요금제 (구 — 코드에 아직 남아있으나 더 이상 유효하지 않음):**
+**Volume Commit**: 100K+/월 → $0.008/건 (Enterprise 협상)
+
+**폐기된 요금제 (구):**
 Free 500건 / Starter $9 / Growth $29 / Enterprise custom → 세션 28에서 전면 폐기
 
-**변경 이유**: Alex Hormozi 전략 "중간은 죽음". 기존 $9/$29은 "중간" → AI 원가 건당 $0.001 (캐시 시 $0.0003)이므로 33개 기능 전부 넣어도 건당 $0.008 이하 → Basic $20/2K에서 마진 97% → "모두에게 싸게 + 압도적 기능 = 가격 파괴자"
-
-**⚠️ 코드에 구버전 숫자 남아있음**: plan-checker.ts, lemonsqueezy.ts, page.tsx 등 7개 파일. Paddle 전환 후 일괄 업데이트 예정. 구버전을 현재 요금제로 착각하지 말 것
-**⚠️ 결제 시스템**: LemonSqueezy → Paddle로 전환됨. 코드에 LemonSqueezy 참조 아직 남아있음
+**결제 시스템**: ✅ Paddle (MoR 모델, 5%+$0.50/transaction). **Live 전환 완료** — Live API Key + 6개 Live Price + Webhook + Vercel 배포
+**코드 잔존**: ✅ 완전 정리됨 (lemonsqueezy.ts 삭제, Capacitor stub, i18n 6개 언어 키 교체 완료)
 
 ## 은태님 스타일 (코딩 초보자)
 - 기술 설명은 간결하게, 작업은 직접 해줘야 함

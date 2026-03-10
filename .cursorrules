@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-09 (Cowork 세션 2/세션 36 — B2C 잔재 삭제, 파일 정리 2차, 요금제 검증, Paddle Sandbox)
+# 마지막 업데이트: 2026-03-10 (Cowork 세션 3/세션 37 — Enterprise 요금제 확정, Annual+Overage, Paddle 프로덕션 배포, Vercel 환경변수 자동화)
 
 ## 0. 프로젝트 개요
 
@@ -40,9 +40,9 @@
   - **배경**: Alex Hormozi 전략 "중간은 죽음" 적용. 기존 $9/$29은 딱 "중간"이라 죽은 요금제. "모두에게 싸게 + 압도적 기능 = 가격 파괴자"로 전환
   - **가능한 이유**: AI 원가 건당 $0.001, 캐시 히트 70-90% 시 실질 $0.0003. 33개 기능 전부 넣어도 건당 $0.008 이하. Basic $20/2K에서 마진 97%
   - **상세 근거**: session-context.md "요금제 변경 배경과 근거" 섹션 참조
-- **⚠️ 코드 내 요금제 숫자는 아직 구버전 (7개 파일에 Free 500/Starter $9/Growth $29 남아있음)**: plan-checker.ts, lemonsqueezy.ts, page.tsx, terms, docs, sellers/me, sellers/usage. LS 승인 후 일괄 업데이트 예정. **코드에서 구버전 숫자를 보고 현재 요금제로 착각하지 말 것**
+- **✅ 요금제 코드 대부분 업데이트 완료 (세션 36-37)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx 등 핵심 파일 신 요금제 반영. **잔존**: lemonsqueezy.ts (미삭제), i18n translations (pricing.starter/growth 키). 나머지 파일 cleanup 필요
 - **Shopify 심사 대기**: App Bridge 4.x CDN + 세션 토큰 push 완료, 임베디드 확인 대기 → 통과 후 "검토를 위해 제출"
-- **✅ Stripe→LemonSqueezy→Paddle 전환**: Stripe 계정 정지 → LS 신원 확인 거절 → Paddle 가입 완료 (Sandbox 활성, 프로덕션 도메인 승인). 코드는 아직 LS SDK. Paddle SDK 전환 필요
+- **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. 코드 전환 + Sandbox 6개 Price + Vercel 환경변수 9개 + 프로덕션 배포 완료 (세션 36-37). Annual 20% off + Overage billing 구조 확정. Vercel에서 Stripe 환경변수 3개 삭제 완료
 - **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
 - **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
 - **✅ 240개국 확장 (세션 27)**: 181→240개국/영토. Zonos(235) 초과 달성. 카리브해/태평양 섬/아프리카/유럽 영토 59개 추가
