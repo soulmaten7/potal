@@ -404,22 +404,15 @@ export default function DashboardContent() {
     return (
       <div style={{
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        minHeight: '100vh',
+        minHeight: 'calc(100vh - 80px)',
         background: '#f5f5f5',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>
-            <span style={{ color: '#02122c' }}>P</span>
-            <span style={{ color: '#F59E0B' }}>O</span>
-            <span style={{ color: '#02122c' }}>TAL</span>
-          </div>
-          <p style={{ color: '#888', fontSize: 14 }}>
-            {!session ? 'Redirecting to sign in...' : 'Loading dashboard...'}
-          </p>
-        </div>
+        <p style={{ color: '#888', fontSize: 14 }}>
+          {!session ? 'Redirecting to sign in...' : 'Loading dashboard...'}
+        </p>
       </div>
     );
   }
@@ -428,9 +421,9 @@ export default function DashboardContent() {
   return (
     <div style={{
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      minHeight: '100vh',
       background: '#f5f5f5',
       color: '#1a1a1a',
+      minHeight: 'calc(100vh - 80px)',
     }}>
       {/* Paddle.js — checkout overlay for payment method collection */}
       <Script
@@ -448,64 +441,8 @@ export default function DashboardContent() {
           }
         }}
       />
-      {/* Top Bar */}
-      <div style={{
-        background: '#02122c',
-        color: 'white',
-        padding: '0 24px',
-        height: 56,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontSize: 22, fontWeight: 800 }}>
-              <span style={{ color: 'white' }}>P</span>
-              <span style={{ color: '#F59E0B' }}>O</span>
-              <span style={{ color: 'white' }}>TAL</span>
-            </span>
-          </Link>
-          <span style={{
-            background: 'rgba(245,158,11,0.15)',
-            color: '#F59E0B',
-            padding: '3px 10px',
-            borderRadius: 6,
-            fontSize: 12,
-            fontWeight: 600,
-          }}>
-            Dashboard
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13 }}>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>
-            {seller?.email}
-          </span>
-          <span style={{ color: 'rgba(255,255,255,0.4)' }}>|</span>
-          <span style={{ color: 'rgba(255,255,255,0.6)' }}>
-            Plan: <strong style={{ color: '#F59E0B' }}>{seller?.plan || 'free'}</strong>
-          </span>
-          <Link href="/developers" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: 13 }}>
-            Docs
-          </Link>
-          <button
-            onClick={handleSignOut}
-            style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: 'none',
-              color: 'rgba(255,255,255,0.7)',
-              padding: '6px 12px',
-              borderRadius: 6,
-              fontSize: 13,
-              cursor: 'pointer',
-            }}
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
 
-      <div style={{ display: 'flex', maxWidth: 1200, margin: '0 auto', padding: '24px 20px', gap: 24 }}>
+      <div style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '24px 24px', gap: 24 }}>
         {/* Sidebar */}
         <div style={{ width: 200, flexShrink: 0 }}>
           <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

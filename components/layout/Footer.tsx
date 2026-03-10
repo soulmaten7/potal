@@ -9,12 +9,9 @@ export function Footer() {
   const { t } = useI18n();
   const pathname = usePathname();
 
-  // Hide footer on dashboard
-  if (pathname?.startsWith('/dashboard')) return null;
-
   return (
     <footer className="bg-[#02122c] text-white py-12 mt-auto w-full z-10 relative">
-      <div className="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">

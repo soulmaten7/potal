@@ -61,9 +61,6 @@ export function Header() {
 
   const userEmail = session?.user?.email;
 
-  // Hide main header on dashboard (dashboard has its own header)
-  if (pathname?.startsWith('/dashboard')) return null;
-
   return (
     <header className="bg-white text-[#02122c] w-full border-b border-slate-200 relative z-[5000] hidden md:block">
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
@@ -171,6 +168,14 @@ export function Header() {
                   >
                     {t('nav.dashboard')}
                   </Link>
+                  <Link
+                    href="/developers/docs"
+                    onClick={() => setShowUserMenu(false)}
+                    className="block w-full text-left px-4 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-50 cursor-pointer"
+                  >
+                    Docs
+                  </Link>
+                  <div className="border-t border-slate-100" />
                   <button
                     onClick={handleSignOut}
                     className="w-full text-left px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 cursor-pointer"
