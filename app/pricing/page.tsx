@@ -100,8 +100,8 @@ const PLANS = [
       'All Pro features included',
     ],
     limitations: [],
-    cta: 'Contact Sales',
-    ctaLink: '/contact',
+    cta: 'Get Custom Pricing',
+    ctaLink: '#enterprise-form',
   },
 ];
 
@@ -282,6 +282,20 @@ export default function PricingPage() {
                   ? plan.priceNote
                   : billingCycle === 'annual' ? '/ month (billed annually)' : plan.priceNote}
               </span>
+              {plan.price !== '$0' && plan.annualSavings && billingCycle === 'monthly' && (
+                <div style={{ marginTop: 4 }}>
+                  <span style={{
+                    background: 'rgba(16,185,129,0.12)',
+                    color: '#059669',
+                    padding: '3px 10px',
+                    borderRadius: 10,
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}>
+                    {plan.annualSavings} with annual billing
+                  </span>
+                </div>
+              )}
               {billingCycle === 'annual' && plan.price !== '$0' && (
                 <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600, marginTop: 4 }}>
                   {plan.priceAnnualTotal} / year
@@ -492,6 +506,95 @@ export default function PricingPage() {
         </div>
       </div>
 
+      {/* Enterprise Contact Form */}
+      <div id="enterprise-form" style={{
+        maxWidth: 600,
+        margin: '60px auto',
+        padding: '0 20px',
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: 16,
+          padding: 40,
+          border: '2px solid #e5e7eb',
+          textAlign: 'center',
+        }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>
+            Enterprise Inquiry
+          </h2>
+          <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>
+            Need 50,000+ API calls? Get custom pricing with a dedicated account manager.
+          </p>
+          <form
+            action={`https://formsubmit.co/${encodeURIComponent('contact@potal.app')}`}
+            method="POST"
+            style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+          >
+            <input type="hidden" name="_subject" value="POTAL Enterprise Inquiry" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_next" value="https://www.potal.app/pricing?submitted=true" />
+            <input
+              type="text"
+              name="name"
+              placeholder="Your name"
+              required
+              style={{
+                padding: '12px 16px',
+                borderRadius: 10,
+                border: '1px solid #e5e7eb',
+                fontSize: 14,
+                outline: 'none',
+              }}
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Work email"
+              required
+              style={{
+                padding: '12px 16px',
+                borderRadius: 10,
+                border: '1px solid #e5e7eb',
+                fontSize: 14,
+                outline: 'none',
+              }}
+            />
+            <input
+              type="text"
+              name="monthly_volume"
+              placeholder="Estimated monthly API calls (e.g. 100,000)"
+              required
+              style={{
+                padding: '12px 16px',
+                borderRadius: 10,
+                border: '1px solid #e5e7eb',
+                fontSize: 14,
+                outline: 'none',
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                padding: '14px 24px',
+                borderRadius: 12,
+                border: 'none',
+                background: '#02122c',
+                color: 'white',
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: 'pointer',
+                marginTop: 4,
+              }}
+            >
+              Get Custom Pricing
+            </button>
+          </form>
+          <p style={{ fontSize: 12, color: '#999', marginTop: 12 }}>
+            We respond within 24 hours on business days.
+          </p>
+        </div>
+      </div>
+
       {/* CTA */}
       <div style={{
         background: '#02122c',
@@ -520,7 +623,7 @@ export default function PricingPage() {
                 textDecoration: 'none',
               }}
             >
-              Get API Key
+              Calculate Duties Free
             </Link>
             <Link
               href="/developers/playground"

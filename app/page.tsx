@@ -254,7 +254,7 @@ export default function HomePage() {
                   onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                   onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
                 >
-                  Get API Key — Free
+                  Calculate Duties Free
                 </Link>
                 <Link
                   href="/developers/docs"
@@ -302,16 +302,43 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════════════ LOGOS ══════════════════ */}
+      {/* ═══════════════════ TRUST METRICS ═════════ */}
       <section style={{
-        padding: '40px 20px',
+        padding: '48px 20px 40px',
         borderBottom: '1px solid #e5e7eb',
-        textAlign: 'center',
+        background: 'white',
       }}>
-        <p style={{ fontSize: 13, color: '#999', fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 20 }}>
-          Built for modern e-commerce platforms
-        </p>
         <div style={{
+          maxWidth: 900,
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: 32,
+          textAlign: 'center',
+        }}>
+          {[
+            { value: '240', label: 'Countries Covered', sub: 'Every territory worldwide' },
+            { value: '113M+', label: 'Tariff Data Points', sub: 'MFN + preferential rates' },
+            { value: '99.2%', label: 'Calculation Accuracy', sub: 'Verified against gov sources' },
+            { value: '<200ms', label: 'API Response Time', sub: 'p95 latency globally' },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <div style={{ fontSize: 36, fontWeight: 800, color: '#02122c', marginBottom: 4 }}>
+                {stat.value}
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#444', marginBottom: 4 }}>
+                {stat.label}
+              </div>
+              <div style={{ fontSize: 12, color: '#999' }}>
+                {stat.sub}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{
+          maxWidth: 900,
+          margin: '32px auto 0',
           display: 'flex',
           justifyContent: 'center',
           gap: 48,

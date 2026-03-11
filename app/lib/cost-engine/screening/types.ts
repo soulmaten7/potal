@@ -11,9 +11,20 @@
 export type ScreeningList =
   | 'OFAC_SDN'           // US Treasury OFAC Specially Designated Nationals
   | 'OFAC_CONS'          // US OFAC Consolidated Non-SDN List
+  | 'OFAC_SSI'           // US OFAC Sectoral Sanctions Identifications
+  | 'OFAC_FSE'           // US OFAC Foreign Sanctions Evaders
+  | 'OFAC_PLC'           // US OFAC Palestinian Legislative Council
+  | 'OFAC_CAPTA'         // US OFAC Correspondent Account / Payable-Through Account
+  | 'OFAC_NS_MBS'        // US OFAC Non-SDN Menu-Based Sanctions
+  | 'OFAC_NS_CMIC'       // US OFAC Non-SDN Chinese Military-Industrial Complex
   | 'BIS_ENTITY'         // US BIS Entity List
-  | 'BIS_DENIED'         // US BIS Denied Persons List
-  | 'BIS_UNVERIFIED'     // US BIS Unverified List
+  | 'BIS_DPL'            // US BIS Denied Persons List
+  | 'BIS_UVL'            // US BIS Unverified List
+  | 'BIS_MEU'            // US BIS Military End User List
+  | 'BIS_DENIED'         // US BIS Denied Persons (legacy alias)
+  | 'BIS_UNVERIFIED'     // US BIS Unverified List (legacy alias)
+  | 'STATE_DTC'          // US State Dept ITAR Debarred
+  | 'STATE_ISN'          // US State Dept Nonproliferation Sanctions
   | 'EU_SANCTIONS'       // EU Consolidated Financial Sanctions
   | 'UN_SANCTIONS'       // UN Security Council Consolidated List
   | 'UK_SANCTIONS';      // UK HMT Financial Sanctions
