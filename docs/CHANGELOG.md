@@ -1,4 +1,11 @@
 # POTAL Development Changelog
+> 마지막 업데이트: 2026-03-11 15:13 KST
+
+## [2026-03-11 15:13 KST] Cowork 세션 8 — Layer 2 Monitor 시스템 구현
+- Morning Brief API (`/api/v1/admin/morning-brief`) — 15개 Division 상태 Green/Yellow/Red 요약
+- Division Checklists (`app/lib/monitoring/division-checklists.ts`) — 15개 Division 체크 항목 정의
+- Division Status Dashboard (`/admin/division-status`) — 관리자 전용 현황 페이지
+- 절대 규칙 추가: 문서 업데이트 시 날짜+시간(KST) 기록 필수
 
 ## [2026-03-11] Cowork 세션 7 — Chief Orchestrator + Layer 1 자동화 대량 구현 + D9 FAQ/Crisp
 
