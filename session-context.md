@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-11 (Cowork 세션 7 — Chief Orchestrator 운영 체계 확정, 15 Division + 3 Layer 구조, CLAUDE.md 운영 프로토콜 반영)
+> 마지막 업데이트: 2026-03-11 (Cowork 세션 7 마감 — Layer 1 자동화 7개 Division 구현, D9 FAQ+Crisp, Vercel Cron 9개, Division 14/15 완료)
 
 ---
 
@@ -1105,7 +1105,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
-| 03-11 | CW7 | **Cowork 7 — Chief Orchestrator 운영 체계 확정**: AI Agent Organization v2→v3 전면 재설계. 10개 Division→15개 Division 확장 (D5 Product&Web, D8 QA, D9 Customer Success 신설). 40 Agent 개념→3 Layer 모델 전환 (Automation/Monitor/Active). 일일 운영 플로우 v3 상세화 (Phase 0~4 + 주간/월간). Opus 최소화 (11→4+에스컬5, 70%+ 절약). CLAUDE.md에 Chief Orchestrator 운영 프로토콜 전면 반영 (역할정의/15 Division 테이블/Morning Brief 포맷/Layer 모델/Escalation Flow/Division 세팅 현황). AGR 28/53 국가 완료 확인 (KOR 진행중). 수정: POTAL_AI_Agent_Org.html (v3), CLAUDE.md |
+| 03-11 | CW7 | **Cowork 7 — Chief Orchestrator 운영 체계 + Layer 1 자동화 대량 구현**: AI Agent Organization v2→v3 전면 재설계 (10→15 Division, 3 Layer 모델). **Layer 1 자동화 7개 Division 구현**: D11 health-check(DB/API/Auth 매6시간), D8 spot-check(8케이스 매일), D5 uptime-check(6페이지 매6시간), D1 trade-remedy-sync(6테이블 매주월), D4 gov-api-health(7개국 매12시간), D6 plugin-health(위젯/웹훅 매12시간), D15 competitor-scan(10사 매주월). **D9 Customer Success**: FAQ 7→13항목, Google Rich Snippets 확장, Crisp 채팅 위젯 삽입(NEXT_PUBLIC_CRISP_WEBSITE_ID). Vercel Cron 2→9개. Supabase health_check_logs 테이블 생성. Vercel env CRISP ID 등록(Production/Preview/Development). Division 세팅 현황: ✅14개 / ❌1개(D14 Finance만 보류). D12 Make.com Welcome Email+LinkedIn ✅, D13 Google Calendar 법률 리뷰 3건 ✅. git push 3회. AGR 28/53 국가 완료 (KOR 진행중) |
 | 03-10 | CW6 | **Cowork 6 — AI Agent Organization 설계, 47기능 전략**: 47기능 완전정복 전략 엑셀 완성 (47기능×전략+19팀+5단계 로드맵). AI Agent Organization 설계: 10개 Division, 40개 Agent, 1 Chief Orchestrator. Opus 11개(판단/법률)+Sonnet 29개(실행/데이터) 모델 최적화. Claude Code Agent Teams 전환 계획 수립 (Max 2, settings.json CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1). 경쟁사 Best vs POTAL 42기능 비교 (16✅/13⚠️/6🔴/7스코프밖). 신규 파일: POTAL_47_Victory_Strategy.xlsx, POTAL_AI_Agent_Org.html |
 | 03-10 | CW5 | **Cowork 5 — DDP Stripe→Quote 전환, 플러그인 3종 완성, Dashboard UI 통일**: DDP Checkout Stripe 코드 전면 제거 → Quote-only 방식 (stripe-checkout.ts→ddp-session.ts). WooCommerce 플러그인 강화 (HPOS/캐싱/sanitize/i18n/uninstall.php). BigCommerce DDP cart 완성. Magento 2 모듈 (layout XML/ACL/composer.json). Dashboard UI 통일: 메인 헤더/푸터 전 페이지 표시, 1440px max-width, 유저 메뉴에 Docs 추가. MIN 53개국 완료 확인. AGR 임포트 Mac 백그라운드 진행중. WDC 다운로드 완료 확인 (1,903파일 외장하드). Git push 2회 (6b9e0be, 3b3e0cb) |
 | 03-09 | 36 | **Cowork 2 — B2C 잔재 삭제 + 파일 정리 2차 + 요금제 검증 + Paddle Sandbox**: B2C 잔재 삭제 (ios/ 폴더, capacitor.config.ts, POTAL_Distribution.mobileprovision, B2C 아키텍처 문서 4개). 중복 파일 삭제 (Competitors Analysis md, COMPETITOR-ANALYSIS md, Checklist_20260309, MORNING-TODO, INDEX.md). data/ 루트 파일 14개 → data/tariff-research/ 이동. 남아공 PDF 2개 → data/tariff-research/ 이동. archive/로 3개 이동. .DS_Store 7개 삭제. 요금제 구/신 불일치 발견 및 검증 (코드에 구버전 Free500/Starter$9/Growth$29 vs 신 Free100/Basic$20/Pro$80/Enterprise$300+). Paddle Sandbox에 Starter $9 생성 — 구 요금제 기준이라 신 요금제로 재생성 필요. 전체 세션 트랜스크립트 29MB 분석하여 대화 이력 검증 완료 |

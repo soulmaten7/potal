@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-11 (Cowork 7 — Chief Orchestrator 운영 체계 확정, 15 Division + 3 Layer 구조, CLAUDE.md에 운영 프로토콜 반영)
+# 마지막 업데이트: 2026-03-11 (Cowork 7 마감 — Layer 1 자동화 7개 Division, D9 FAQ+Crisp, Vercel Cron 9개, Division 14/15 완료)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -266,8 +266,8 @@ Layer 1 자동실행 → 🟡 Layer 2 팀장 체크 → 🟣 Layer 3 Agent Teams
 | D9 | ✅ 완료 | FAQ 13개 항목 ✅ + Google Rich Snippets ✅ + Crisp 채팅 위젯 준비 ✅ (env: NEXT_PUBLIC_CRISP_WEBSITE_ID) |
 | D10 | ✅ 완료 | Paddle Webhook + Overage Cron + plan-checker |
 | D11 | ✅ 완료 | Vercel CI/CD ✅ + health-check 매6시간 ✅ (DB/API/Auth/데이터 모니터링) |
-| D12 | ❌ 미구현 | Make.com 포스팅/이메일 미설정 |
-| D13 | ❌ 미구현 | 캘린더 알림 미설정 |
+| D12 | ✅ 완료 | Make.com Welcome Email + LinkedIn 소셜공유 시나리오 ✅ |
+| D13 | ✅ 완료 | Google Calendar 법률 리뷰 3개 반복일정 ✅ |
 | D14 | ❌ 미구현 | 비용 데이터 자동 수집 미설정 |
 | D15 | ✅ 완료 | competitor-scan 매주 월 08:00 ✅ (10개 경쟁사 사이트/가격 페이지 모니터링) |
 

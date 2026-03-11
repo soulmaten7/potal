@@ -1,37 +1,59 @@
 # POTAL Development Changelog
 
-## [2026-03-11] Cowork 세션 7 — Chief Orchestrator 운영 체계 확정, 15 Division + 3 Layer 구조
+## [2026-03-11] Cowork 세션 7 — Chief Orchestrator + Layer 1 자동화 대량 구현 + D9 FAQ/Crisp
 
 ### 🧠 Chief Orchestrator 운영 체계
 - AI Agent Organization v2→v3 전면 재설계
 - 10개 Division → 15개 Division 확장 (D5 Product & Web, D8 QA & Accuracy, D9 Customer Success 신설)
 - 40 Agent 개념 → 3 Layer 모델 전환 (Layer 1 Automation / Layer 2 Monitor / Layer 3 Active)
 - Opus 최소화: v1 11개 → v3 4+에스컬5 = 70%+ 토큰 절약
-- Division 세팅 현황 정의: ✅4개(D2/D3/D7/D10) / ⚠️5개(D1/D4/D5/D6/D11) / ❌6개(D8/D9/D12/D13/D14/D15)
 
-### 📋 일일 운영 플로우 v3
-- Phase 0~4 타임라인 상세화 (새벽 자동 → 아침 5분 Morning Brief → 오전/오후 프로젝트 → 마감 정리)
-- 주간 루틴 (매주 월: 관세 업데이트, KPI, 경쟁사 스캔)
-- 월간 루틴 (매월 1일: Overage 정산, 정확도 리포트, 인프라 비용)
+### 🤖 Layer 1 자동화 — 7개 Division 구현
+- **D11 Infrastructure**: `health-check` Cron 매 6시간 — DB 연결, 데이터 무결성(4테이블), API 헬스, Supabase Auth 체크
+- **D8 QA & Accuracy**: `spot-check` Cron 매일 04:00 — 8개 계산 케이스 자동 검증 (US/UK/DE/JP/CA/AU/KR/CN)
+- **D5 Product & Web**: `uptime-check` Cron 매 6시간 — 6개 핵심 페이지/API 가용성 + 응답속도
+- **D1 Tariff**: `trade-remedy-sync` Cron 매주 월 06:30 — 6개 무역구제 테이블 행수 검증 (119K+ 건)
+- **D4 Data Pipeline**: `gov-api-health` Cron 매 12시간 — 7개국 정부 API 가용성 (USITC/UK/EU/CA/AU/JP/KR)
+- **D6 Platform**: `plugin-health` Cron 매 12시간 — 위젯 Config/Shopify/Billing 웹훅 엔드포인트
+- **D15 Intelligence**: `competitor-scan` Cron 매주 월 08:00 — 10개 경쟁사 사이트 + 가격 페이지 모니터링
+- Supabase `health_check_logs` 테이블 생성 (019 마이그레이션)
+- **Vercel Cron**: 2개 → 9개 (기존 update-tariffs + billing-overage + 신규 7개)
 
-### 📝 CLAUDE.md 운영 프로토콜 반영
-- Chief Orchestrator 역할 정의 (Claude Code = COO/Chief of Staff)
-- 15개 Division 테이블 (담당 범위 + 핵심 파일)
-- Morning Brief 포맷, 3 Layer 모델, Opus 사용 맵
-- Escalation Flow, 일일/주간/월간 운영 사이클
-- Division 세팅 현황 테이블 (Layer 1 자동화 기준)
-- 확장 패턴 문서화
+### 🎧 D9 Customer Success Layer 1
+- FAQ 7개 → 13개 항목 확장 (국가/통화, 플러그인, DDP, 연간 할인, HS 분류, 위젯 커스텀)
+- "Plugins & Widgets" FAQ 카테고리 신설
+- Google Rich Snippets (layout.tsx structured data) — 새 FAQ 6개 추가
+- Crisp 채팅 위젯 컴포넌트 생성 (`components/common/CrispChat.tsx`) + 루트 레이아웃 삽입
+- Vercel env `NEXT_PUBLIC_CRISP_WEBSITE_ID` 등록 (Production/Preview/Development)
+
+### 📊 Division 세팅 현황 (Layer 1 기준)
+- **✅ 14개 완료**: D1~D13, D15 (D12 Make.com Welcome Email+LinkedIn, D13 Google Calendar 법률 리뷰 3건)
+- **❌ 1개 보류**: D14 Finance (비용 자동수집)
 
 ### 📊 AGR 임포트 진행
 - 28/53 국가 완료, KOR 진행중 (2026-03-11 기준)
 
-### 📝 문서 업데이트 (6개 파일)
-- `POTAL_AI_Agent_Org.html` — v2→v3 전면 재작성 + 일일 운영 플로우 상세 교체
-- `CLAUDE.md` — Chief Orchestrator 섹션 추가, 수치 업데이트, AGR 진행상황 반영
-- `session-context.md` — CW7 헤더, 스프린트 상태, 작업 로그
-- `.cursorrules` — CW7 헤더, Anti-Amnesia 업데이트
-- `docs/CHANGELOG.md` — CW7 엔트리 추가
-- `docs/NEXT_SESSION_START.md` — 전면 재작성
+### 📊 Git Push (3회)
+- **1차**: Chief Orchestrator 운영 체계 확정
+- **2차**: D11/D8/D5/D1/D4/D6/D15 Layer 1 자동화 구현
+- **3차**: D9 FAQ+Crisp + D12/D13 세팅 + 문서 업데이트
+
+### 📝 신규/수정 파일
+- `app/lib/monitoring/health-monitor.ts` (NEW) — D11 헬스체크 로직
+- `app/lib/monitoring/spot-checker.ts` (NEW) — D8 스팟체크 로직
+- `app/api/v1/admin/health-check/route.ts` (NEW) — D11 Cron
+- `app/api/v1/admin/spot-check/route.ts` (NEW) — D8 Cron
+- `app/api/v1/admin/uptime-check/route.ts` (NEW) — D5 Cron
+- `app/api/v1/admin/trade-remedy-sync/route.ts` (NEW) — D1 Cron
+- `app/api/v1/admin/gov-api-health/route.ts` (NEW) — D4 Cron
+- `app/api/v1/admin/plugin-health/route.ts` (NEW) — D6 Cron
+- `app/api/v1/admin/competitor-scan/route.ts` (NEW) — D15 Cron
+- `components/common/CrispChat.tsx` (NEW) — Crisp 채팅 위젯
+- `supabase/migrations/019_health_check_logs.sql` (NEW) — 모니터링 로그 테이블
+- `vercel.json` — Cron 2→9개
+- `app/help/page.tsx` — FAQ 7→13항목 + Plugins 카테고리
+- `app/help/layout.tsx` — Google Rich Snippets 확장
+- `app/layout.tsx` — CrispChat 삽입
 
 ---
 

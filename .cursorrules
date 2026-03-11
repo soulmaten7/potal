@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-11 (Cowork 7 — Chief Orchestrator 운영 체계 확정, 15 Division + 3 Layer 구조)
+# 마지막 업데이트: 2026-03-11 (Cowork 7 마감 — Layer 1 자동화 7개 Division, D9 FAQ+Crisp, Vercel Cron 9개, Division 14/15 완료)
 
 ## 0. 프로젝트 개요
 
@@ -42,6 +42,8 @@
   - **상세 근거**: session-context.md "요금제 변경 배경과 근거" 섹션 참조
 - **✅ 요금제 코드 완전 업데이트 완료 (세션 37 후반)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx, plan-checker.ts, usage/route.ts, i18n 6개 언어 전부 신 요금제 반영. lemonsqueezy.ts 삭제 완료. Overage 빌링 구현 완료 (overage.ts + billing-overage cron)
 - **✅ Chief Orchestrator 운영 체계 (Cowork 7)**: Claude Code = Chief Orchestrator. 15개 Division + 3 Layer(Automation/Monitor/Active). CLAUDE.md에 운영 프로토콜 전면 반영. 조직도: POTAL_AI_Agent_Org.html v3
+- **✅ Layer 1 자동화 대량 구현 (Cowork 7 후반)**: Vercel Cron 2→9개. D11 health-check(매6시간), D8 spot-check(매일), D5 uptime-check(매6시간), D1 trade-remedy-sync(매주월), D4 gov-api-health(매12시간), D6 plugin-health(매12시간), D15 competitor-scan(매주월). Supabase health_check_logs 테이블. D12 Make.com(Welcome Email+LinkedIn) ✅, D13 Google Calendar(법률 리뷰 3건) ✅. Division 14/15 완료(D14 Finance만 보류)
+- **✅ D9 Customer Success (Cowork 7 후반)**: FAQ 7→13항목 + Google Rich Snippets 확장 + Crisp 채팅 위젯 삽입(NEXT_PUBLIC_CRISP_WEBSITE_ID=6069fe77-cada-4d19-b8ff-a6747666f520). Vercel env 3환경 등록 완료
 - **✅ Shopify 심사 제출 완료**: App Bridge 4.x CDN + 세션 토큰 push 완료, 앱스토어 심사 제출 완료 (2026-03-10). 리뷰어 할당 대기 중
 - **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. Live 6개 Price + Webhook + Vercel 배포 완료. Annual 20% off + Overage 빌링 구현 완료. lemonsqueezy.ts 삭제, Capacitor stub, Vercel B2C 환경변수 15개 삭제 (36→21개). Paddle Live E2E 테스트 통과
 - **✅ DDP Checkout Stripe→Quote 전환 (Cowork 5)**: stripe-checkout.ts→ddp-session.ts 리네임, Stripe API 코드 전면 제거, Quote-only 방식 (셀러 자체 결제 연동)
