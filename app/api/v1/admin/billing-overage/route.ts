@@ -13,6 +13,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { calculateMonthlyOverages } from '@/app/lib/billing/overage';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
@@ -45,11 +46,28 @@ export async function GET(req: NextRequest) {
   try {
     const results = await calculateMonthlyOverages(prevYear, prevMonth);
 
+    const period = `${prevYear}-${String(prevMonth).padStart(2, '0')}`;
+    const charged = results.filter(r => r.charged).length;
+
+    // Log to health_check_logs for D10 monitoring
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
+      await supabase.from('health_check_logs').insert({
+        checked_at: new Date().toISOString(),
+        overall_status: 'green',
+        checks: [{ name: 'billing-overage', status: 'green', period, processed: results.length, charged }],
+        duration_ms: Date.now() - now.getTime(),
+      });
+    } catch { /* silent */ }
+
     return NextResponse.json({
       success: true,
-      period: `${prevYear}-${String(prevMonth).padStart(2, '0')}`,
+      period,
       processed: results.length,
-      charged: results.filter(r => r.charged).length,
+      charged,
       totalOverageCents: results.reduce((sum, r) => sum + r.chargeAmountCents, 0),
       details: results,
     });

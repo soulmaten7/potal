@@ -15,25 +15,51 @@
  */
 
 import { NextRequest } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { runTariffUpdate } from '@/app/lib/cost-engine/updater';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 
+function verifyCronAuth(req: NextRequest): boolean {
+  const authHeader = req.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ') && authHeader.slice(7) === CRON_SECRET) {
+    return true;
+  }
+  const secret = req.nextUrl.searchParams.get('secret');
+  return secret === CRON_SECRET;
+}
+
 /**
  * GET — Called by Vercel Cron.
  * Vercel automatically sends Authorization: Bearer {CRON_SECRET}.
+ * Also accepts ?secret= query param for manual trigger.
  */
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get('authorization') || '';
-  if (!CRON_SECRET || authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (!CRON_SECRET || !verifyCronAuth(req)) {
     return Response.json(
       { success: false, error: 'Unauthorized' },
       { status: 401 }
     );
   }
 
+  const start = Date.now();
   try {
     const summary = await runTariffUpdate();
+
+    // Log to health_check_logs for D1 monitoring
+    try {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+      );
+      await supabase.from('health_check_logs').insert({
+        checked_at: new Date().toISOString(),
+        overall_status: 'green',
+        checks: [{ name: 'update-tariffs', status: 'green', message: 'Tariff update completed' }],
+        duration_ms: Date.now() - start,
+      });
+    } catch { /* silent */ }
+
     return Response.json({ success: true, data: summary });
   } catch (err) {
     return Response.json(
@@ -47,17 +73,9 @@ export async function GET(req: NextRequest) {
  * POST — Called by Make.com, GitHub Actions, or manual trigger.
  */
 export async function POST(req: NextRequest) {
-  // Auth: check CRON_SECRET header or Bearer token
-  const authHeader = req.headers.get('authorization') || '';
-  const cronHeader = req.headers.get('x-cron-secret') || '';
-
-  const isAuthorized =
-    (CRON_SECRET && cronHeader === CRON_SECRET) ||
-    (CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`);
-
-  if (!isAuthorized) {
+  if (!CRON_SECRET || !verifyCronAuth(req)) {
     return Response.json(
-      { success: false, error: 'Unauthorized. Provide x-cron-secret header or Bearer token.' },
+      { success: false, error: 'Unauthorized' },
       { status: 401 }
     );
   }
