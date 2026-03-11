@@ -13,6 +13,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
 import { CrispChat } from "@/components/common/CrispChat";
+import { CookieConsent } from "@/components/common/CookieConsent";
 import { ShopifyAppBridge } from "@/components/shopify/ShopifyAppBridge";
 import { ShopifyNavMenu } from "@/components/shopify/ShopifyNavMenu";
 import { SupabaseProvider } from "./context/SupabaseProvider";
@@ -167,6 +168,9 @@ export default function RootLayout({
 
                 {/* 모바일 하단 네비게이션 바 */}
                 <MobileBottomNav />
+
+                {/* 쿠키 동의 배너 */}
+                <CookieConsent />
 
               </div>
 

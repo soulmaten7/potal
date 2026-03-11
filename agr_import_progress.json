@@ -180,7 +180,17 @@
     "total": 2358352
   },
   "OMN": {
-    "rows_done": 1470000,
+    "rows_done": 2052969,
+    "status": "done",
+    "total": 2052969
+  },
+  "PAK": {
+    "rows_done": 1825460,
+    "status": "done",
+    "total": 1825460
+  },
+  "PER": {
+    "rows_done": 1950000,
     "status": "in_progress"
   }
 }
