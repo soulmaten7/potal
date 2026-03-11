@@ -157,9 +157,9 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   {
     id: 'D14',
     name: 'Finance',
-    layer1Status: 'pending',
+    layer1Status: 'done',
     checks: [
-      { id: 'd14-cost-tracking', label: '비용 자동 수집 (미설정)', source: 'manual' },
+      { id: 'd14-cost-tracking', label: 'Finance Tracker 스프레드시트 운영', source: 'external' },
     ],
   },
   {

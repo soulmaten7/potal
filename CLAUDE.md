@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-11 15:21 KST (Cowork 8 — Layer 2 Monitor + Layer 3 Active 구조 정의 완료)
+# 마지막 업데이트: 2026-03-11 15:30 KST (Cowork 8 — Layer 2/3 구현 + D14 완료 + 절대 규칙 10번 추가 → Division 15/15)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -87,6 +87,7 @@ portal/
 5. **한 번에 하나의 작업만** — 멀티태스킹 금지
 6. **Git push는 Mac 터미널에서** — VM/EC2에서 push 불가
 9. **문서 업데이트 시 날짜+시간(KST) 기록 필수** — 예: 2026-03-11 14:30 KST. session-context.md, .cursorrules, CLAUDE.md, CHANGELOG.md, NEXT_SESSION_START.md 헤더에 마지막 업데이트 시간 포함
+10. **Cowork 작업도 5개 문서 동기화 필수** — Cowork(은태님+Claude Cowork)에서 진행한 작업도 반드시 동일하게 5개 문서(CLAUDE.md, session-context.md, .cursorrules, CHANGELOG.md, NEXT_SESSION_START.md)에 업데이트해야 함. Cowork 작업은 Claude Code가 모르므로, 은태님이 알려주면 즉시 반영할 것
 
 ## Supabase 연결 방법 (세션 32 확인)
 - **직접 PostgreSQL**: ❌ 포트 5432 차단 (VM/EC2에서)
@@ -269,7 +270,7 @@ Layer 1 자동실행 → 🟡 Layer 2 팀장 체크 → 🟣 Layer 3 Agent Teams
 | D11 | ✅ 완료 | Vercel CI/CD ✅ + health-check 매6시간 ✅ (DB/API/Auth/데이터 모니터링) |
 | D12 | ✅ 완료 | Make.com Welcome Email + LinkedIn 소셜공유 시나리오 ✅ |
 | D13 | ✅ 완료 | Google Calendar 법률 리뷰 3개 반복일정 ✅ |
-| D14 | ❌ 미구현 | 비용 데이터 자동 수집 미설정 |
+| D14 | ✅ 완료 | POTAL_D14_Finance_Tracker.xlsx (Monthly Costs + Revenue + Division Log 3시트) ✅ |
 | D15 | ✅ 완료 | competitor-scan 매주 월 08:00 ✅ (10개 경쟁사 사이트/가격 페이지 모니터링) |
 
 ### Layer 2 Monitor 구현 (Cowork 8)
