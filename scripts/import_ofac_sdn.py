@@ -33,8 +33,9 @@ SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a")
 PROJECT_ID = "zyurflkhiregundhisky"
 
-# SDN XML namespace
-NS = {"sdn": "http://www.un.org/sanctions/1.0"}
+# SDN XML namespace (OFAC uses this namespace for all elements)
+SDN_NS = "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/XML"
+NS = {"sdn": SDN_NS}
 
 # Country code mapping (OFAC uses full names, we need ISO2)
 COUNTRY_TO_ISO2 = {
@@ -95,9 +96,13 @@ def compute_hash(data: bytes) -> str:
 
 # ─── Parse ─────────────────────────────────────────
 
+def ns(tag):
+    """Wrap tag with SDN namespace."""
+    return f"{{{SDN_NS}}}{tag}"
+
 def get_text(el, tag):
     """Get text content of a child element, or None."""
-    child = el.find(tag)
+    child = el.find(ns(tag))
     return child.text.strip() if child is not None and child.text else None
 
 def country_to_iso2(name):
@@ -112,7 +117,7 @@ def parse_sdn_xml(xml_data: bytes):
 
     # Get publish date from header
     publish_date = None
-    publish_el = root.find(".//publshInformation/Publish_Date")
+    publish_el = root.find(f".//{ns('publshInformation')}/{ns('Publish_Date')}")
     if publish_el is not None and publish_el.text:
         publish_date = publish_el.text.strip()
 
@@ -121,7 +126,7 @@ def parse_sdn_xml(xml_data: bytes):
     address_list = []
     id_list = []
 
-    sdn_entries = root.findall(".//sdnEntry")
+    sdn_entries = root.findall(ns("sdnEntry"))
     print(f"[SDN] Found {len(sdn_entries)} entries in XML")
 
     for entry in sdn_entries:
@@ -147,15 +152,15 @@ def parse_sdn_xml(xml_data: bytes):
 
         # Programs
         programs = []
-        program_list = entry.find("programList")
+        program_list = entry.find(ns("programList"))
         if program_list is not None:
-            for prog in program_list.findall("program"):
+            for prog in program_list.findall(ns("program")):
                 if prog.text:
                     programs.append(prog.text.strip())
 
         # Nationality / country
         nationality = None
-        nationality_el = entry.find("nationalityList/nationality/country")
+        nationality_el = entry.find(f"{ns('nationalityList')}/{ns('nationality')}/{ns('country')}")
         if nationality_el is not None and nationality_el.text:
             nationality = country_to_iso2(nationality_el.text.strip())
 
@@ -190,10 +195,10 @@ def parse_sdn_xml(xml_data: bytes):
         entries.append(entry_data)
 
         # Parse aliases (akaList)
-        aka_list = entry.find("akaList")
+        aka_list = entry.find(ns("akaList"))
         if aka_list is not None:
-            for aka in aka_list.findall("aka"):
-                aka_type_el = aka.find("type")
+            for aka in aka_list.findall(ns("aka")):
+                aka_type_el = aka.find(ns("type"))
                 aka_type = aka_type_el.text.strip() if aka_type_el is not None and aka_type_el.text else "a.k.a."
 
                 first_a = get_text(aka, "firstName") or ""
@@ -211,13 +216,16 @@ def parse_sdn_xml(xml_data: bytes):
                     })
 
         # Parse addresses
-        addr_list_el = entry.find("addressList")
+        addr_list_el = entry.find(ns("addressList"))
         if addr_list_el is not None:
-            for addr in addr_list_el.findall("address"):
+            for addr in addr_list_el.findall(ns("address")):
                 addr_country = get_text(addr, "country")
+                # Combine address1 + address2 + address3
+                addr_parts = [get_text(addr, "address1"), get_text(addr, "address2"), get_text(addr, "address3")]
+                full_address = ", ".join(p for p in addr_parts if p)
                 address_list.append({
                     "source_id": uid,
-                    "address": get_text(addr, "address1"),
+                    "address": full_address or None,
                     "city": get_text(addr, "city"),
                     "state": get_text(addr, "stateOrProvince"),
                     "postal_code": get_text(addr, "postalCode"),
@@ -230,9 +238,9 @@ def parse_sdn_xml(xml_data: bytes):
                     entry_data["country"] = nationality
 
         # Parse IDs
-        id_list_el = entry.find("idList")
+        id_list_el = entry.find(ns("idList"))
         if id_list_el is not None:
-            for id_el in id_list_el.findall("id"):
+            for id_el in id_list_el.findall(ns("id")):
                 id_list.append({
                     "source_id": uid,
                     "id_type": get_text(id_el, "idType"),
@@ -254,17 +262,31 @@ def parse_sdn_xml(xml_data: bytes):
 # ─── Database Operations ──────────────────────────
 
 def run_sql(query):
-    """Execute SQL via Supabase Management API."""
-    import urllib.request
+    """Execute SQL via Supabase Management API (curl — urllib blocked by Cloudflare)."""
+    import subprocess
     url = f"https://api.supabase.com/v1/projects/{PROJECT_ID}/database/query"
-    data = json.dumps({"query": query}).encode("utf-8")
-    req = urllib.request.Request(url, data=data, method="POST", headers={
-        "Authorization": f"Bearer {MGMT_TOKEN}",
-        "Content-Type": "application/json",
-    })
+    payload = json.dumps({"query": query})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            return json.loads(resp.read().decode())
+        result = subprocess.run(
+            ["curl", "-s", "-X", "POST", url,
+             "-H", f"Authorization: Bearer {MGMT_TOKEN}",
+             "-H", "Content-Type: application/json",
+             "-d", payload],
+            capture_output=True, text=True, timeout=60
+        )
+        if result.returncode != 0:
+            print(f"[SDN] curl error: {result.stderr}")
+            return None
+        body = result.stdout.strip()
+        if not body:
+            return None
+        parsed = json.loads(body)
+        if isinstance(parsed, list):
+            return parsed
+        if isinstance(parsed, dict) and "error" in parsed:
+            print(f"[SDN] SQL API error: {parsed['error']}")
+            return None
+        return parsed
     except Exception as e:
         print(f"[SDN] SQL error: {e}")
         return None
@@ -328,9 +350,10 @@ def load_to_db(parsed_data, file_hash):
             "RETURNING id, source_id;"
         )
         result = run_sql(sql)
-        if result:
+        if result and isinstance(result, list):
             for row in result:
-                source_id_to_db_id[str(row["source_id"])] = row["id"]
+                if isinstance(row, dict) and "source_id" in row and "id" in row:
+                    source_id_to_db_id[str(row["source_id"])] = row["id"]
 
         done = min(i + BATCH_SIZE, total)
         print(f"[SDN] Entries: {done}/{total}")

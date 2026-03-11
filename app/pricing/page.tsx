@@ -9,6 +9,7 @@ const PLANS = [
     price: '$0',
     priceAnnualMonthly: '$0',
     priceAnnualTotal: '$0',
+    annualSavings: '',
     priceNote: 'forever',
     description: 'Try POTAL with basic features',
     highlight: false,
@@ -33,6 +34,7 @@ const PLANS = [
     price: '$20',
     priceAnnualMonthly: '$16',
     priceAnnualTotal: '$192',
+    annualSavings: 'Save $48/yr',
     priceNote: '/ month',
     description: 'For growing stores with real traffic',
     highlight: false,
@@ -57,6 +59,7 @@ const PLANS = [
     price: '$80',
     priceAnnualMonthly: '$64',
     priceAnnualTotal: '$768',
+    annualSavings: 'Save $192/yr',
     priceNote: '/ month',
     description: 'For serious e-commerce operations',
     highlight: true,
@@ -79,6 +82,7 @@ const PLANS = [
     price: '$300',
     priceAnnualMonthly: '$240',
     priceAnnualTotal: '$2,880',
+    annualSavings: 'Save $720/yr',
     priceNote: '/ month',
     description: 'For large-scale operations',
     highlight: false,
@@ -280,7 +284,20 @@ export default function PricingPage() {
               </span>
               {billingCycle === 'annual' && plan.price !== '$0' && (
                 <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600, marginTop: 4 }}>
-                  {plan.priceAnnualTotal} / year — Save 20%
+                  {plan.priceAnnualTotal} / year
+                  {plan.annualSavings && (
+                    <span style={{
+                      marginLeft: 8,
+                      background: 'rgba(16,185,129,0.12)',
+                      color: '#059669',
+                      padding: '2px 8px',
+                      borderRadius: 10,
+                      fontSize: 11,
+                      fontWeight: 700,
+                    }}>
+                      {plan.annualSavings}
+                    </span>
+                  )}
                 </div>
               )}
               {plan.overageNote && plan.price !== '$0' && (

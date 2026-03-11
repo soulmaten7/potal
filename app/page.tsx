@@ -280,8 +280,9 @@ export default function HomePage() {
               <div style={{ display: 'flex', gap: 40 }}>
                 {[
                   { value: 240, suffix: '', label: 'Countries' },
-                  { value: 50, suffix: '+', label: 'HS Code Categories' },
-                  { value: 120, suffix: 'ms', label: 'Avg Response' },
+                  { value: 5371, suffix: '', label: 'HS Codes' },
+                  { value: 63, suffix: '', label: 'FTAs' },
+                  { value: 181, suffix: '', label: 'Tariff Countries' },
                 ].map((stat, i) => (
                   <div key={i}>
                     <div style={{ fontSize: 28, fontWeight: 800, color: '#F59E0B' }}>

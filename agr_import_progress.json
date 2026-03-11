@@ -160,7 +160,17 @@
     "total": 2093938
   },
   "MYS": {
-    "rows_done": 2730000,
+    "rows_done": 2935320,
+    "status": "done",
+    "total": 2935320
+  },
+  "NGA": {
+    "rows_done": 1595378,
+    "status": "done",
+    "total": 1595378
+  },
+  "NOR": {
+    "rows_done": 780000,
     "status": "in_progress"
   }
 }

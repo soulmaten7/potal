@@ -1,9 +1,35 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+const SIDEBAR_LINKS = [
+  { id: 'quick-start', label: 'Quick Start' },
+  { id: 'api-reference', label: 'API Reference' },
+  { id: 'authentication', label: 'Authentication' },
+  { id: 'widget-customization', label: 'Widget Customization' },
+];
 
 export default function DevelopersPage() {
   const [copied, setCopied] = useState(false);
+  const [activeSection, setActiveSection] = useState('quick-start');
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0.1 }
+    );
+    for (const link of SIDEBAR_LINKS) {
+      const el = document.getElementById(link.id);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, []);
 
   const embedCode = `<!-- POTAL Widget -->
 <script src="https://www.potal.app/widget/potal-widget.js"></script>
@@ -61,11 +87,46 @@ export default function DevelopersPage() {
         </div>
       </section>
 
-      {/* Main Content */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 24px' }}>
+      {/* Main Content with Sidebar */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 24px', display: 'flex', gap: 40 }}>
+
+        {/* Sticky Sidebar */}
+        <nav style={{
+          width: 200,
+          flexShrink: 0,
+          position: 'sticky',
+          top: 80,
+          alignSelf: 'flex-start',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}>
+          {SIDEBAR_LINKS.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: activeSection === link.id ? 700 : 500,
+                color: activeSection === link.id ? '#02122c' : '#6b7280',
+                background: activeSection === link.id ? '#f3f4f6' : 'transparent',
+                textDecoration: 'none',
+                borderLeft: activeSection === link.id ? '3px solid #F59E0B' : '3px solid transparent',
+                transition: 'all 0.15s',
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
 
         {/* Section A: Quick Start */}
-        <section style={{ marginBottom: '80px' }}>
+        <section id="quick-start" style={{ marginBottom: '80px', scrollMarginTop: 80 }}>
           <div style={{ marginBottom: '32px' }}>
             <h2 style={{
               fontSize: '32px',
@@ -168,7 +229,7 @@ export default function DevelopersPage() {
         </section>
 
         {/* Section B: API Reference */}
-        <section style={{ marginBottom: '80px' }}>
+        <section id="api-reference" style={{ marginBottom: '80px', scrollMarginTop: 80 }}>
           <div style={{ marginBottom: '32px' }}>
             <h2 style={{
               fontSize: '32px',
@@ -379,8 +440,113 @@ export default function DevelopersPage() {
           </p>
         </section>
 
-        {/* Section C: Widget Customization */}
-        <section style={{ marginBottom: '60px' }}>
+        {/* Section C: Authentication */}
+        <section id="authentication" style={{ marginBottom: '80px', scrollMarginTop: 80 }}>
+          <div style={{ marginBottom: '32px' }}>
+            <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#02122c', marginBottom: '12px' }}>
+              Authentication
+            </h2>
+            <p style={{ fontSize: '16px', color: '#6b7280', lineHeight: '1.6' }}>
+              All API requests (except public endpoints) require authentication via the <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, fontSize: 14 }}>X-API-Key</code> header.
+            </p>
+          </div>
+
+          {/* Key Format */}
+          <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24, marginBottom: 24 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#02122c', marginBottom: 16 }}>API Key Format</h3>
+            <div style={{ fontSize: 13, fontFamily: 'monospace', lineHeight: 2 }}>
+              <div><span style={{ color: '#2563eb', fontWeight: 'bold' }}>pk_live_...</span> — Publishable key (widget embed, client-side)</div>
+              <div><span style={{ color: '#dc2626', fontWeight: 'bold' }}>sk_live_...</span> — Secret key (server-side only, never expose in frontend)</div>
+            </div>
+          </div>
+
+          {/* Error Codes */}
+          <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24, marginBottom: 24 }}>
+            <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#02122c', marginBottom: 16 }}>Error Codes</h3>
+            <table style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
+                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>Status</th>
+                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>Meaning</th>
+                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>Solution</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
+                  <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#dc2626' }}>401</td>
+                  <td style={{ padding: '8px 12px' }}>Missing or invalid API key</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Check X-API-Key header is set correctly</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
+                  <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#dc2626' }}>403</td>
+                  <td style={{ padding: '8px 12px' }}>Plan limit exceeded or key disabled</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Upgrade your plan or contact support</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#F59E0B' }}>429</td>
+                  <td style={{ padding: '8px 12px' }}>Rate limit exceeded</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Wait and retry, or upgrade for higher limits</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Code Examples */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+            {/* curl */}
+            <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', marginBottom: 12 }}>cURL</div>
+              <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`curl -X POST https://www.potal.app/api/v1/calculate \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: pk_live_YOUR_KEY" \\
+  -d '{"price": 99.99, "origin": "CN", "destinationCountry": "US"}'`}</pre>
+            </div>
+
+            {/* JavaScript */}
+            <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', marginBottom: 12 }}>JavaScript</div>
+              <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`const res = await fetch(
+  "https://www.potal.app/api/v1/calculate",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": "pk_live_YOUR_KEY",
+    },
+    body: JSON.stringify({
+      price: 99.99,
+      origin: "CN",
+      destinationCountry: "US",
+    }),
+  }
+);
+const data = await res.json();`}</pre>
+            </div>
+
+            {/* Python */}
+            <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', marginBottom: 12 }}>Python</div>
+              <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`import requests
+
+resp = requests.post(
+    "https://www.potal.app/api/v1/calculate",
+    headers={
+        "Content-Type": "application/json",
+        "X-API-Key": "pk_live_YOUR_KEY",
+    },
+    json={
+        "price": 99.99,
+        "origin": "CN",
+        "destinationCountry": "US",
+    },
+)
+data = resp.json()`}</pre>
+            </div>
+          </div>
+        </section>
+
+        {/* Section D: Widget Customization */}
+        <section id="widget-customization" style={{ marginBottom: '60px', scrollMarginTop: 80 }}>
           <div style={{ marginBottom: '32px' }}>
             <h2 style={{
               fontSize: '32px',
@@ -598,6 +764,8 @@ export default function DevelopersPage() {
             </a>
           </div>
         </section>
+
+        </div>{/* end Content */}
       </div>
     </div>
   );
