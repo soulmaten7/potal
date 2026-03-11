@@ -13,6 +13,7 @@ const FAQ_CATEGORIES = [
   { id: 'account', label: 'Account & API' },
   { id: 'pricing', label: 'Pricing & Plans' },
   { id: 'shopify', label: 'Shopify App' },
+  { id: 'plugins', label: 'Plugins & Widgets' },
 ];
 
 const FAQ_ITEMS = [
@@ -57,7 +58,43 @@ const FAQ_ITEMS = [
     category: 'shopify',
     question: 'What data does the Shopify app access?',
     answer: 'The app only accesses read_products (to classify items), read_orders (to track calculation usage), and read_shipping (to include shipping in landed cost). We never modify your store data.'
-  }
+  },
+  {
+    id: '8',
+    category: 'about',
+    question: 'Which countries and currencies does POTAL support?',
+    answer: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 30 languages in the UI and display costs in local currencies using daily-updated exchange rates.'
+  },
+  {
+    id: '9',
+    category: 'plugins',
+    question: 'Do you offer WooCommerce, BigCommerce, or Magento plugins?',
+    answer: 'Yes! We provide ready-to-install plugins for WooCommerce (WordPress), BigCommerce, and Magento 2. Each plugin embeds the POTAL widget on your product pages so customers see landed cost estimates before checkout.'
+  },
+  {
+    id: '10',
+    category: 'about',
+    question: 'What is DDP (Delivered Duty Paid) and how does POTAL help?',
+    answer: 'DDP means the seller covers all import duties and taxes so the buyer pays no surprise fees at delivery. POTAL provides a DDP Quote API that calculates the exact landed cost — enabling you to offer DDP pricing with confidence.'
+  },
+  {
+    id: '11',
+    category: 'pricing',
+    question: 'Do you offer annual billing discounts?',
+    answer: 'Yes — all paid plans offer 20% off with annual billing. Basic: $16/mo ($192/yr), Pro: $64/mo ($768/yr), Enterprise: $240/mo ($2,880/yr). Enterprise customers with 100K+ monthly volume can negotiate further discounts.'
+  },
+  {
+    id: '12',
+    category: 'account',
+    question: 'How does HS Code classification work?',
+    answer: 'POTAL uses a 3-stage AI classification pipeline: first checking a cached product database (WDC), then vector similarity search, and finally an LLM-based classifier. This ensures fast, accurate HS Code assignment for any product description.'
+  },
+  {
+    id: '13',
+    category: 'plugins',
+    question: 'Can I customize the widget appearance?',
+    answer: 'Yes — the widget inherits your store\'s theme styles by default. You can also configure colors, position, and display options from your POTAL dashboard under Widget Settings.'
+  },
 ];
 
 // --- MAIN CONTENT ---

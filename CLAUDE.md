@@ -263,7 +263,7 @@ Layer 1 자동실행 → 🟡 Layer 2 팀장 체크 → 🟣 Layer 3 Agent Teams
 | D6 | ✅ 완료 | Shopify Webhook ✅ + plugin-health 매12시간 ✅ (위젯/웹훅 엔드포인트 체크) |
 | D7 | ✅ 완료 | plan-checker, rate-limiter 앱 내장 |
 | D8 | ✅ 완료 | CI 테스트 ✅ + spot-check 매일 04:00 ✅ (8개 계산 케이스 자동 검증) |
-| D9 | ❌ 미구현 | 챗봇/온보딩 자동화 없음 |
+| D9 | ✅ 완료 | FAQ 13개 항목 ✅ + Google Rich Snippets ✅ + Crisp 채팅 위젯 준비 ✅ (env: NEXT_PUBLIC_CRISP_WEBSITE_ID) |
 | D10 | ✅ 완료 | Paddle Webhook + Overage Cron + plan-checker |
 | D11 | ✅ 완료 | Vercel CI/CD ✅ + health-check 매6시간 ✅ (DB/API/Auth/데이터 모니터링) |
 | D12 | ❌ 미구현 | Make.com 포스팅/이메일 미설정 |

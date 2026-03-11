@@ -74,6 +74,46 @@ const faqStructuredData = {
         text: 'The app only accesses read_products (to classify items), read_orders (to track calculation usage), and read_shipping (to include shipping in landed cost). We never modify your store data.',
       },
     },
+    {
+      '@type': 'Question',
+      name: 'Which countries and currencies does POTAL support?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 30 languages in the UI and display costs in local currencies using daily-updated exchange rates.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you offer WooCommerce, BigCommerce, or Magento plugins?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes! We provide ready-to-install plugins for WooCommerce (WordPress), BigCommerce, and Magento 2. Each plugin embeds the POTAL widget on your product pages so customers see landed cost estimates before checkout.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is DDP (Delivered Duty Paid) and how does POTAL help?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'DDP means the seller covers all import duties and taxes so the buyer pays no surprise fees at delivery. POTAL provides a DDP Quote API that calculates the exact landed cost.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you offer annual billing discounts?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes — all paid plans offer 20% off with annual billing. Basic: $16/mo, Pro: $64/mo, Enterprise: $240/mo.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How does HS Code classification work?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'POTAL uses a 3-stage AI classification pipeline: cached product database (WDC), vector similarity search, and LLM-based classifier for fast, accurate HS Code assignment.',
+      },
+    },
   ],
 };
 

@@ -12,6 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
+import { CrispChat } from "@/components/common/CrispChat";
 import { ShopifyAppBridge } from "@/components/shopify/ShopifyAppBridge";
 import { ShopifyNavMenu } from "@/components/shopify/ShopifyNavMenu";
 import { SupabaseProvider } from "./context/SupabaseProvider";
@@ -119,6 +120,7 @@ export default function RootLayout({
           }}
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+        <CrispChat />
         {/* 태블릿 viewport는 iOS 네이티브(TabletViewController.swift)에서 WKUserScript로 처리 */}
         {/* PWA Service Worker 등록 (프로덕션만) */}
         <script
