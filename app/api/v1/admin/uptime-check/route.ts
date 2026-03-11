@@ -32,7 +32,7 @@ const PAGES_TO_CHECK: PageCheck[] = [
   { path: '/', label: 'Landing page', expectedStatus: 200 },
   { path: '/pricing', label: 'Pricing page', expectedStatus: 200 },
   { path: '/dashboard', label: 'Dashboard (redirect OK)', expectedStatus: 200 },
-  { path: '/login', label: 'Login page', expectedStatus: 200 },
+  { path: '/auth/login', label: 'Login page', expectedStatus: 200 },
   { path: '/api/v1/health', label: 'API Health', expectedStatus: 200 },
   { path: '/api/v1/docs', label: 'API Docs', expectedStatus: 200 },
 ];

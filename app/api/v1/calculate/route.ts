@@ -12,7 +12,8 @@
  *   shippingType?: string,          // "domestic" | "international" | "global"
  *   zipcode?: string,               // US ZIP for sales tax
  *   hsCode?: string,                // HS Code (future use)
- *   destinationCountry?: string     // default "US"
+ *   destinationCountry?: string,    // default "US"
+ *   firmName?: string               // Exporter firm name for AD/CVD matching
  * }
  */
 
@@ -66,6 +67,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     destinationCountry: typeof body.destinationCountry === 'string' ? body.destinationCountry : undefined,
     productName: typeof body.productName === 'string' ? body.productName : undefined,
     productCategory: typeof body.productCategory === 'string' ? body.productCategory : undefined,
+    firmName: typeof body.firmName === 'string' ? body.firmName : undefined,
   };
 
   // 6. Calculate (DB-backed global engine — supports 58+ countries)

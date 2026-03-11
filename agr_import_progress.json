@@ -135,7 +135,32 @@
     "total": 1488627
   },
   "KOR": {
-    "rows_done": 1830000,
+    "rows_done": 1845798,
+    "status": "done",
+    "total": 15798
+  },
+  "KWT": {
+    "rows_done": 2046173,
+    "status": "done",
+    "total": 2046173
+  },
+  "LKA": {
+    "rows_done": 1971815,
+    "status": "done",
+    "total": 1971815
+  },
+  "MAR": {
+    "rows_done": 3856828,
+    "status": "done",
+    "total": 3856828
+  },
+  "MEX": {
+    "rows_done": 2093938,
+    "status": "done",
+    "total": 2093938
+  },
+  "MYS": {
+    "rows_done": 2730000,
     "status": "in_progress"
   }
 }

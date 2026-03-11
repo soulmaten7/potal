@@ -35,6 +35,14 @@
     {
       "path": "/api/v1/admin/competitor-scan",
       "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/v1/admin/exchange-rate-sync",
+      "schedule": "30 0 * * *"
+    },
+    {
+      "path": "/api/v1/admin/sdn-sync",
+      "schedule": "0 5 * * *"
     }
   ]
 }

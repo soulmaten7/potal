@@ -93,6 +93,8 @@ export interface GlobalCostInput extends CostInput {
   includeBrokerage?: boolean;
   /** Shipping terms: DDP (seller pays duties) or DDU (buyer pays) */
   shippingTerms?: 'DDP' | 'DDU';
+  /** Exporter/manufacturer firm name for firm-specific AD/CVD matching */
+  firmName?: string;
 }
 
 // ─── Global Landed Cost Result ──────────────────────
@@ -329,30 +331,41 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     }
   }
 
+  // Save base duty rate BEFORE additional tariffs (for accurate breakdown)
+  const baseDutyRate = dutyRate;
+
   // Trade Remedies: AD/CVD/Safeguard additional duties
   let tradeRemedyResult: TradeRemedyResult | undefined;
+  let tradeRemedyRate = 0;
   if (!isDomestic && hsResult && hsResult.hsCode !== '9999') {
-    tradeRemedyResult = await lookupTradeRemedies(profile.code, originCountry, hsResult.hsCode);
+    tradeRemedyResult = await lookupTradeRemedies(profile.code, originCountry, hsResult.hsCode, {
+      firmName: (input as GlobalCostInput).firmName,
+    });
     if (tradeRemedyResult.hasRemedies) {
-      // Add trade remedy duties on top of base duty rate
-      dutyRate += tradeRemedyResult.totalRemedyRate;
+      tradeRemedyRate = tradeRemedyResult.totalRemedyRate;
+      dutyRate += tradeRemedyRate;
       const remedyTypes = tradeRemedyResult.measures.map(m => m.type).join('+');
-      additionalTariffNote = `${remedyTypes}: +${(tradeRemedyResult.totalRemedyRate * 100).toFixed(1)}%`;
+      additionalTariffNote = `${remedyTypes}: +${(tradeRemedyRate * 100).toFixed(1)}%`;
     }
   }
 
   // US Section 301/232 additional tariffs
   let usAdditionalTariffs: USAdditionalTariffResult | undefined;
+  let usAdditionalRate = 0;
   if (!isDomestic && profile.code === 'US' && hsResult && hsResult.hsCode !== '9999') {
     usAdditionalTariffs = lookupUSAdditionalTariffs(originCountry, hsResult.hsCode);
     if (usAdditionalTariffs.hasAdditionalTariffs) {
-      dutyRate += usAdditionalTariffs.totalRate;
+      usAdditionalRate = usAdditionalTariffs.totalRate;
+      dutyRate += usAdditionalRate;
       const notes: string[] = [];
       if (usAdditionalTariffs.section301) notes.push(usAdditionalTariffs.section301.note);
       if (usAdditionalTariffs.section232) notes.push(usAdditionalTariffs.section232.note);
       additionalTariffNote = (additionalTariffNote ? additionalTariffNote + '; ' : '') + notes.join('; ');
     }
   }
+
+  // Calculate separate duty amounts for breakdown
+  const additionalTariffRate = tradeRemedyRate + usAdditionalRate;
 
   // De Minimis — split into duty and tax thresholds
   // Many countries have different thresholds for duty vs tax exemption
@@ -517,17 +530,23 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   ];
 
   if (!isDomestic) {
+    // Split importDuty into base duty vs additional tariff amounts
+    const baseDutyAmount = deMinimisApplied ? 0 : round(declaredValue * baseDutyRate);
+    const additionalTariffAmount = deMinimisApplied ? 0 : round(declaredValue * additionalTariffRate);
+
     if (deMinimisApplied) {
       breakdown.push({ label: 'Import Duty', amount: 0, note: `De minimis exempt (≤$${profile.deMinimisUsd})` });
     } else if (isIossExempt) {
       breakdown.push({ label: 'Import Duty', amount: 0, note: 'IOSS exempt (≤€150)' });
-    } else if (importDuty > 0) {
-      breakdown.push({ label: 'Import Duty', amount: round(importDuty), note: dutyNote });
+    } else if (baseDutyAmount > 0) {
+      breakdown.push({ label: 'Import Duty', amount: baseDutyAmount, note: dutyNote });
     } else {
-      breakdown.push({ label: 'Import Duty', amount: 0, note: 'Duty-free' });
+      breakdown.push({ label: 'Import Duty', amount: 0, note: additionalTariffAmount > 0 ? `Base duty 0% (${dutyNote})` : 'Duty-free' });
     }
 
-    if (additionalTariffNote) {
+    if (additionalTariffNote && additionalTariffAmount > 0) {
+      breakdown.push({ label: 'Additional Tariff', amount: additionalTariffAmount, note: additionalTariffNote });
+    } else if (additionalTariffNote) {
       breakdown.push({ label: 'Additional Tariff', amount: 0, note: additionalTariffNote });
     }
   }
