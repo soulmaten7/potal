@@ -1,0 +1,141 @@
+{
+  "ARE": {
+    "rows_done": 2059922,
+    "status": "done",
+    "total": 2059922
+  },
+  "ARG": {
+    "rows_done": 2666471,
+    "status": "done",
+    "total": 2666471
+  },
+  "AUS": {
+    "rows_done": 2348874,
+    "status": "done",
+    "total": 2348874
+  },
+  "BGD": {
+    "rows_done": 84659,
+    "status": "done",
+    "total": 84659
+  },
+  "BHR": {
+    "rows_done": 2053094,
+    "status": "done",
+    "total": 2053094
+  },
+  "BRA": {
+    "rows_done": 2716358,
+    "status": "done",
+    "total": 2716358
+  },
+  "CAN": {
+    "rows_done": 1978892,
+    "status": "done",
+    "total": 1978892
+  },
+  "CHE": {
+    "rows_done": 3137215,
+    "status": "done",
+    "total": 3137215
+  },
+  "CHL": {
+    "rows_done": 3079708,
+    "status": "done",
+    "total": 3079708
+  },
+  "CHN": {
+    "rows_done": 3889004,
+    "status": "done",
+    "total": 3889004
+  },
+  "COL": {
+    "rows_done": 2165862,
+    "status": "done",
+    "total": 2165862
+  },
+  "CRI": {
+    "rows_done": 2958412,
+    "status": "done",
+    "total": 2958412
+  },
+  "DOM": {
+    "rows_done": 1986802,
+    "status": "done",
+    "total": 1986802
+  },
+  "DZA": {
+    "rows_done": 4679501,
+    "status": "done",
+    "total": 4679501
+  },
+  "ECU": {
+    "rows_done": 2104769,
+    "status": "done",
+    "total": 2104769
+  },
+  "EGY": {
+    "rows_done": 2439401,
+    "status": "done",
+    "total": 2439401
+  },
+  "EUR": {
+    "rows_done": 5870081,
+    "status": "done",
+    "total": 5870081
+  },
+  "GBR": {
+    "rows_done": 5627059,
+    "status": "done",
+    "total": 5627059
+  },
+  "GHA": {
+    "rows_done": 1631619,
+    "status": "done",
+    "total": 1631619
+  },
+  "HKG": {
+    "rows_done": 1849785,
+    "status": "done",
+    "total": 1849785
+  },
+  "IDN": {
+    "rows_done": 3137172,
+    "status": "done",
+    "total": 3137172
+  },
+  "IND": {
+    "rows_done": 3646667,
+    "status": "done",
+    "total": 3646667
+  },
+  "ISR": {
+    "rows_done": 2221566,
+    "status": "done",
+    "total": 2221566
+  },
+  "JOR": {
+    "rows_done": 1821519,
+    "status": "done",
+    "total": 1821519
+  },
+  "JPN": {
+    "rows_done": 3175343,
+    "status": "done",
+    "total": 3175343
+  },
+  "KAZ": {
+    "rows_done": 3356236,
+    "status": "done",
+    "total": 3356236
+  },
+  "KEN": {
+    "rows_done": 1488627,
+    "status": "done",
+    "total": 1488627
+  },
+  "KOR": {
+    "rows_done": 1830000,
+    "status": "in_progress"
+  }
+}

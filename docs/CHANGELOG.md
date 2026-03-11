@@ -1,5 +1,68 @@
 # POTAL Development Changelog
 
+## [2026-03-11] Cowork 세션 7 — Chief Orchestrator 운영 체계 확정, 15 Division + 3 Layer 구조
+
+### 🧠 Chief Orchestrator 운영 체계
+- AI Agent Organization v2→v3 전면 재설계
+- 10개 Division → 15개 Division 확장 (D5 Product & Web, D8 QA & Accuracy, D9 Customer Success 신설)
+- 40 Agent 개념 → 3 Layer 모델 전환 (Layer 1 Automation / Layer 2 Monitor / Layer 3 Active)
+- Opus 최소화: v1 11개 → v3 4+에스컬5 = 70%+ 토큰 절약
+- Division 세팅 현황 정의: ✅4개(D2/D3/D7/D10) / ⚠️5개(D1/D4/D5/D6/D11) / ❌6개(D8/D9/D12/D13/D14/D15)
+
+### 📋 일일 운영 플로우 v3
+- Phase 0~4 타임라인 상세화 (새벽 자동 → 아침 5분 Morning Brief → 오전/오후 프로젝트 → 마감 정리)
+- 주간 루틴 (매주 월: 관세 업데이트, KPI, 경쟁사 스캔)
+- 월간 루틴 (매월 1일: Overage 정산, 정확도 리포트, 인프라 비용)
+
+### 📝 CLAUDE.md 운영 프로토콜 반영
+- Chief Orchestrator 역할 정의 (Claude Code = COO/Chief of Staff)
+- 15개 Division 테이블 (담당 범위 + 핵심 파일)
+- Morning Brief 포맷, 3 Layer 모델, Opus 사용 맵
+- Escalation Flow, 일일/주간/월간 운영 사이클
+- Division 세팅 현황 테이블 (Layer 1 자동화 기준)
+- 확장 패턴 문서화
+
+### 📊 AGR 임포트 진행
+- 28/53 국가 완료, KOR 진행중 (2026-03-11 기준)
+
+### 📝 문서 업데이트 (6개 파일)
+- `POTAL_AI_Agent_Org.html` — v2→v3 전면 재작성 + 일일 운영 플로우 상세 교체
+- `CLAUDE.md` — Chief Orchestrator 섹션 추가, 수치 업데이트, AGR 진행상황 반영
+- `session-context.md` — CW7 헤더, 스프린트 상태, 작업 로그
+- `.cursorrules` — CW7 헤더, Anti-Amnesia 업데이트
+- `docs/CHANGELOG.md` — CW7 엔트리 추가
+- `docs/NEXT_SESSION_START.md` — 전면 재작성
+
+---
+
+## [2026-03-10] Cowork 세션 6 — AI Agent Organization 설계, 47기능 전략, Opus/Sonnet 최적화
+
+### 🤖 AI Agent Organization 설계
+- `POTAL_AI_Agent_Org.html` (NEW) — 10개 Division, 40개 Agent, 1 Chief Orchestrator 조직도
+- 초기 7개 Division → Legal & Corporate, Finance & Accounting, Marketing & Growth 추가 → 10개 Division 확정
+- 전체 Agent에 Opus/Sonnet 모델 배지 추가 (Opus 11 + Sonnet 29)
+- Communication & Reporting Flow 섹션 추가 (95% 자동 / 4% 판단 / 1% 에스컬레이션)
+
+### 📊 47기능 완전정복 전략
+- `POTAL_47_Victory_Strategy.xlsx` (이전 세션 생성, CW6에서 검증+공유)
+- 경쟁사 42기능 비교: 16✅ 동등/앞섬, 13⚠️ 약간 뒤짐, 6🔴 크리티컬 갭, 7 scope-out
+- 19개 AI Agent Teams 매핑, 5단계 실행 로드맵
+
+### 🔬 Claude Code Agent Teams 전환 계획
+- Max 2 ($200/월) 플랜 호환성 확인 — ~220K 토큰/5시간 rolling window
+- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` 설정으로 활성화 가능
+- Division 단위 3~5개 에이전트 병렬 실행 방식 확정
+- Opus/Sonnet 최적화로 40-50% 토큰 절감 예상
+
+### 📝 문서 업데이트 (5개 파일)
+- `session-context.md` — CW6 헤더, 스프린트, AGR 상태, 작업 로그
+- `.cursorrules` — CW6 헤더, Anti-Amnesia 3건 추가
+- `CLAUDE.md` — CW6 헤더, 핵심 수치 2건 추가 (Agent Org, 47기능 전략)
+- `docs/CHANGELOG.md` — CW6 엔트리 추가
+- `docs/NEXT_SESSION_START.md` — 전면 재작성
+
+---
+
 ## [2026-03-10] Cowork 세션 5 — DDP Stripe→Quote 전환, 플러그인 3종 완성, Dashboard UI 통일
 
 ### 🔧 DDP Checkout Stripe→Quote 전환
