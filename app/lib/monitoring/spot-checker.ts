@@ -75,9 +75,9 @@ const SPOT_CASES: SpotCase[] = [
     expect: { totalMin: 115, totalMax: 170, hasVat: true },
   },
   {
-    label: 'CN to US (duty + no VAT)',
+    label: 'CN to US (duty + Section 301 + sales tax)',
     input: { price: 50, shippingPrice: 10, destination: 'US', origin: 'CN', zipcode: '90001', productName: 'Phone Case', productCategory: 'electronics' },
-    expect: { totalMin: 60, totalMax: 90, hasVat: false },
+    expect: { totalMin: 60, totalMax: 130, hasVat: false },
   },
 ];
 

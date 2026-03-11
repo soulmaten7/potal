@@ -170,7 +170,17 @@
     "total": 1595378
   },
   "NOR": {
-    "rows_done": 780000,
+    "rows_done": 1907519,
+    "status": "done",
+    "total": 1907519
+  },
+  "NZL": {
+    "rows_done": 2358352,
+    "status": "done",
+    "total": 2358352
+  },
+  "OMN": {
+    "rows_done": 540000,
     "status": "in_progress"
   }
 }
