@@ -309,9 +309,63 @@ const COUNTRY_SPECIFIC: Restriction[] = [
   },
 ];
 
+// ─── Watched Items & Carrier Restrictions ──────────
+
+const WATCHED_AND_CARRIER: Restriction[] = [
+  // Lithium batteries — carrier restrictions (IATA DGR)
+  {
+    severity: 'watched',
+    hsPrefix: '8507',
+    category: 'Lithium Batteries',
+    description: 'Lithium batteries are regulated as dangerous goods. Shipping restrictions apply.',
+    carrierRestrictions: ['USPS', 'Royal Mail', 'China Post (air)', 'Singapore Post (air)'],
+  },
+  // Perfumes/fragrances — flammable (carrier restricted)
+  {
+    severity: 'watched',
+    hsPrefix: '3303',
+    category: 'Perfumes / Fragrances',
+    description: 'Alcohol-based perfumes classified as flammable. Air cargo restrictions apply.',
+    carrierRestrictions: ['FedEx (Economy)', 'USPS International'],
+  },
+  // Aerosols — pressurized containers
+  {
+    severity: 'watched',
+    hsPrefix: '3405',
+    category: 'Aerosol Products',
+    description: 'Aerosol/pressurized containers classified as dangerous goods for air transport.',
+    carrierRestrictions: ['USPS', 'Royal Mail', 'FedEx (Economy)'],
+  },
+  // Magnets — strong magnets affect aircraft instruments
+  {
+    severity: 'watched',
+    hsPrefix: '8505',
+    category: 'Magnets',
+    description: 'Strong magnets (neodymium) may require special packaging for air shipment.',
+    carrierRestrictions: ['DHL Express (unpackaged)'],
+  },
+  // Knives/blades — carrier restricted
+  {
+    severity: 'watched',
+    hsPrefix: '8211',
+    category: 'Knives / Blades',
+    description: 'Knives and cutting instruments may have carrier and import restrictions.',
+    carrierRestrictions: ['USPS', 'Royal Mail'],
+  },
+  // Drones — export control + carrier restrictions
+  {
+    severity: 'watched',
+    hsPrefix: '8806',
+    category: 'Drones / UAVs',
+    description: 'Drones may require export license and have import restrictions in many countries.',
+    requiredDocuments: ['Export License (if applicable)'],
+    carrierRestrictions: ['USPS International'],
+  },
+];
+
 /**
- * Get all restriction rules (universal + country-specific).
+ * Get all restriction rules (universal + country-specific + watched/carrier).
  */
 export function getAllRestrictions(): Restriction[] {
-  return [...UNIVERSAL, ...COUNTRY_SPECIFIC];
+  return [...UNIVERSAL, ...COUNTRY_SPECIFIC, ...WATCHED_AND_CARRIER];
 }

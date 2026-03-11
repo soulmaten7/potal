@@ -125,16 +125,16 @@ def import_country(country_iso3, progress):
             if row_count <= skip_rows:
                 continue
 
-            m49_reporter = row.get('ReportingCountry', '').strip()
-            m49_partner = row.get('PartnerCountry', '').strip()
+            m49_reporter = (row.get('ReportingCountry') or '').strip()
+            m49_partner = (row.get('PartnerCountry') or '').strip()
             reporter_iso2 = M49_TO_ISO2.get(m49_reporter, 'XX')
             partner_iso2 = M49_TO_ISO2.get(m49_partner, 'XX')
-            product_code = escape_sql(row.get('ProductCode', '').strip())
-            agreement_id = escape_sql(row.get('Agreement_id', '').strip())
-            nav_flag_raw = row.get('Nav_flag', '0').strip()
-            av_duty_raw = row.get('AvDuty', '0').strip()
-            nav_duty = escape_sql(row.get('NavDuty', '').strip())
-            year = row.get('Year', '2023').strip()
+            product_code = escape_sql((row.get('ProductCode') or '').strip())
+            agreement_id = escape_sql((row.get('Agreement_id') or '').strip())
+            nav_flag_raw = (row.get('Nav_flag') or '0').strip()
+            av_duty_raw = (row.get('AvDuty') or '0').strip()
+            nav_duty = escape_sql((row.get('NavDuty') or '').strip())
+            year = (row.get('Year') or '2023').strip()
 
             try:
                 av_duty_val = float(av_duty_raw) if av_duty_raw else 0

@@ -688,6 +688,146 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
   },
 ];
 
+// ─── Rules of Origin (RoO) ──────────────────────────────────
+
+export type RoOCriterion =
+  | 'WO'    // Wholly Obtained (raw materials, agriculture)
+  | 'PE'    // Produced Entirely in the territory
+  | 'CTC'   // Change in Tariff Classification (most common)
+  | 'CTH'   // Change in Tariff Heading (4-digit level)
+  | 'CTSH'  // Change in Tariff Sub-Heading (6-digit level)
+  | 'RVC'   // Regional Value Content (percentage threshold)
+  | 'SP'    // Specific Process (e.g. chemical reaction)
+  | 'DM'    // De Minimis (minor non-originating input allowed)
+  | 'AC'    // Accumulation (bilateral/diagonal/full)
+  | 'COMBO'; // Combination of criteria
+
+export interface RuleOfOrigin {
+  /** Which criterion applies */
+  criterion: RoOCriterion;
+  /** Human-readable description */
+  description: string;
+  /** Threshold percentage (for RVC) */
+  threshold?: number;
+  /** Method for RVC calculation */
+  rvcMethod?: 'build-up' | 'build-down' | 'net-cost' | 'transaction-value';
+  /** Whether de minimis exception applies */
+  deMinimisPercent?: number;
+  /** Accumulation type */
+  accumulationType?: 'bilateral' | 'diagonal' | 'full';
+}
+
+interface ChapterRoO {
+  /** HS chapter (2-digit) */
+  chapters: string[];
+  /** Applicable rules */
+  rules: RuleOfOrigin[];
+}
+
+/** Default RoO patterns by FTA type — maps FTA codes to chapter-specific rules */
+const FTA_ROO_DEFAULTS: Record<string, ChapterRoO[]> = {
+  USMCA: [
+    { chapters: ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15'], rules: [{ criterion: 'WO', description: 'Wholly obtained or produced in USMCA territory' }] },
+    { chapters: ['28','29','30','31','32','33','34','35','36','37','38'], rules: [{ criterion: 'CTH', description: 'Change in tariff heading at 4-digit level' }, { criterion: 'RVC', description: 'Regional Value Content ≥ 50% (transaction value) or ≥ 40% (net cost)', threshold: 50, rvcMethod: 'transaction-value' }] },
+    { chapters: ['50','51','52','53','54','55','56','57','58','59','60','61','62','63'], rules: [{ criterion: 'SP', description: 'Yarn-forward rule: yarn production, fabric formation, and cutting/sewing must occur in USMCA territory' }] },
+    { chapters: ['84','85','90'], rules: [{ criterion: 'CTH', description: 'Change in tariff heading' }, { criterion: 'RVC', description: 'Regional Value Content ≥ 50%', threshold: 50, rvcMethod: 'transaction-value' }] },
+    { chapters: ['87'], rules: [{ criterion: 'RVC', description: 'Automotive RVC ≥ 75% (net cost method)', threshold: 75, rvcMethod: 'net-cost' }] },
+  ],
+  RCEP: [
+    { chapters: ['01','02','03','04','05','06','07','08','09','10','11','12'], rules: [{ criterion: 'WO', description: 'Wholly obtained in RCEP member state' }] },
+    { chapters: ['28','29','30','38','39','40','84','85','87','90'], rules: [{ criterion: 'CTH', description: 'Change in tariff heading at 4-digit level' }, { criterion: 'RVC', description: 'Regional Value Content ≥ 40%', threshold: 40, rvcMethod: 'build-up' }] },
+    { chapters: ['50','51','52','54','55','61','62','63'], rules: [{ criterion: 'CTC', description: 'Change in tariff classification at chapter level' }] },
+  ],
+  CPTPP: [
+    { chapters: ['01','02','03','04','05','06','07','08','09','10','11','12'], rules: [{ criterion: 'WO', description: 'Wholly obtained in CPTPP territory' }] },
+    { chapters: ['50','51','52','54','55','61','62','63'], rules: [{ criterion: 'SP', description: 'Yarn-forward rule for textiles and apparel' }] },
+    { chapters: ['84','85','87','90'], rules: [{ criterion: 'CTH', description: 'Change in tariff heading' }, { criterion: 'RVC', description: 'Regional Value Content ≥ 45%', threshold: 45, rvcMethod: 'build-up' }] },
+  ],
+};
+
+// Generic fallback RoO for FTAs without specific rules
+const GENERIC_ROO: RuleOfOrigin[] = [
+  { criterion: 'CTH', description: 'Change in tariff heading at 4-digit level (general rule)' },
+  { criterion: 'RVC', description: 'Regional Value Content ≥ 40% (general threshold)', threshold: 40, rvcMethod: 'build-up' },
+  { criterion: 'DM', description: 'De minimis: up to 10% of transaction value may be non-originating materials', deMinimisPercent: 10 },
+];
+
+export interface RoOResult {
+  /** FTA code */
+  ftaCode: string;
+  /** FTA name */
+  ftaName: string;
+  /** Applicable rules of origin */
+  rules: RuleOfOrigin[];
+  /** Whether cumulation/accumulation is allowed */
+  accumulationAllowed: boolean;
+  /** Accumulation type */
+  accumulationType: 'bilateral' | 'diagonal' | 'full';
+  /** Required certificate type */
+  certificateType: string;
+  /** Notes */
+  notes: string[];
+}
+
+/**
+ * Get Rules of Origin for an FTA + HS code combination.
+ */
+export function getRulesOfOrigin(
+  originCountry: string,
+  destinationCountry: string,
+  hsCode?: string
+): RoOResult | null {
+  const fta = findApplicableFta(originCountry, destinationCountry, hsCode?.slice(0, 2));
+  if (!fta.hasFta || !fta.ftaCode || fta.ftaCode === 'DOMESTIC') return null;
+
+  const chapter = hsCode?.slice(0, 2) || '';
+  const notes: string[] = [];
+
+  // Look up FTA-specific RoO
+  let rules: RuleOfOrigin[] = [];
+  const ftaRoO = FTA_ROO_DEFAULTS[fta.ftaCode];
+  if (ftaRoO && chapter) {
+    const chapterRules = ftaRoO.find(r => r.chapters.includes(chapter));
+    if (chapterRules) {
+      rules = chapterRules.rules;
+    }
+  }
+
+  if (rules.length === 0) {
+    rules = GENERIC_ROO;
+    notes.push('Using general rules of origin. Product-specific rules may apply — check official FTA text.');
+  }
+
+  // Determine accumulation type
+  let accumulationType: 'bilateral' | 'diagonal' | 'full' = 'bilateral';
+  if (['RCEP', 'CPTPP', 'USMCA', 'ACFTA', 'AKFTA'].includes(fta.ftaCode)) {
+    accumulationType = 'diagonal';
+    notes.push('Diagonal accumulation allowed among FTA member states.');
+  }
+
+  // Certificate type
+  let certificateType = 'Certificate of Origin (CO)';
+  if (['RCEP'].includes(fta.ftaCode)) {
+    certificateType = 'RCEP Certificate of Origin or Approved Exporter Declaration';
+  } else if (['CPTPP'].includes(fta.ftaCode)) {
+    certificateType = 'CPTPP Certificate of Origin (self-certification allowed)';
+  } else if (['USMCA'].includes(fta.ftaCode)) {
+    certificateType = 'USMCA Certificate of Origin (self-certification by importer, exporter, or producer)';
+  } else if (fta.ftaCode.startsWith('EU-') || fta.ftaCode === 'CETA' || fta.ftaCode === 'EVFTA') {
+    certificateType = 'EUR.1 Movement Certificate or Invoice Declaration';
+  }
+
+  return {
+    ftaCode: fta.ftaCode,
+    ftaName: fta.ftaName!,
+    rules,
+    accumulationAllowed: true,
+    accumulationType,
+    certificateType,
+    notes,
+  };
+}
+
 // ─── Public API ────────────────────────────────────────────────
 
 export interface FtaResult {

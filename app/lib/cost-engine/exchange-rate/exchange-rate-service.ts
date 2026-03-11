@@ -48,7 +48,7 @@ interface ExchangeRateConfig {
 function getConfig(): ExchangeRateConfig {
   return {
     enabled: process.env.EXCHANGE_RATE_ENABLED !== 'false',
-    cacheTtlMs: parseInt(process.env.EXCHANGE_RATE_CACHE_TTL_MS || '3600000', 10), // 1시간
+    cacheTtlMs: parseInt(process.env.EXCHANGE_RATE_CACHE_TTL_MS || '900000', 10), // 15분
     timeoutMs: parseInt(process.env.EXCHANGE_RATE_TIMEOUT_MS || '10000', 10),
   };
 }

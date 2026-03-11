@@ -15,6 +15,7 @@ import { createHash } from 'crypto';
 import type { HsClassificationResult } from '../hs-code/types';
 import { classifyProduct, classifyWithOverride } from '../hs-code/classifier';
 import { classifyWithAi, getAiClassifierConfig } from './claude-classifier';
+import { classifyWithVectorSearch, storeClassificationVector, getVectorSearchConfig } from './vector-search';
 
 // ─── Supabase Client ──────────────────────────────
 
@@ -175,34 +176,41 @@ export async function classifyProductAsync(
   const config = getAiClassifierConfig();
   const hash = hashProductName(productName, category);
 
-  // ━━━ 1단계: DB 캐시 조회 ━━━
+  // ━━━ Stage 0: DB Cache ━━━
   const cached = await getFromCache(hash, config.maxCacheAgeDays);
   if (cached) {
-    console.log(`[POTAL] Cache HIT for "${productName}" → ${cached.hsCode}`);
     return { ...cached, classificationSource: 'cache' };
   }
 
-  // ━━━ 2단계: 키워드 매칭 (기존 로직) ━━━
+  // ━━━ Stage 1: Vector Search (cosine similarity, pgvector) ━━━
+  const vectorConfig = getVectorSearchConfig();
+  if (vectorConfig.enabled) {
+    try {
+      const vectorResult = await classifyWithVectorSearch(productName, category);
+      if (vectorResult && vectorResult.confidence >= vectorConfig.minSimilarity) {
+        await saveToCache(productName, hash, vectorResult, category);
+        return { ...vectorResult, classificationSource: 'vector' };
+      }
+    } catch {
+      // Vector search failed — continue to keyword
+    }
+  }
+
+  // ━━━ Stage 2: Keyword Matching ━━━
   const keywordResult = classifyProduct(productName, category);
 
   if (keywordResult.confidence >= config.minConfidenceThreshold) {
-    console.log(`[POTAL] Keyword match for "${productName}" → ${keywordResult.hsCode} (${keywordResult.confidence})`);
-    // 키워드 결과도 캐시에 저장 (다음엔 DB에서 바로 리턴)
     await saveToCache(productName, hash, keywordResult, category);
     return { ...keywordResult, classificationSource: 'keyword' };
   }
 
-  // ━━━ 3단계: AI 분류 ━━━
+  // ━━━ Stage 3: LLM Fallback ━━━
   if (config.enabled) {
-    console.log(`[POTAL] Keyword confidence too low (${keywordResult.confidence}), calling AI for "${productName}"`);
-
     const aiResult = await classifyWithAi(productName, category);
 
     if (aiResult) {
-      // AI 결과를 캐시에 저장 → 다음 요청부터 AI 호출 없이 DB 리턴
       await saveToCache(productName, hash, aiResult.result, category);
 
-      // API 호출 로그 저장 (비용 추적)
       await logApiCall(
         aiResult.meta.provider,
         productName,
@@ -212,17 +220,22 @@ export async function classifyProductAsync(
         sellerId,
       );
 
-      console.log(`[POTAL] AI classified "${productName}" → ${aiResult.result.hsCode} (${aiResult.result.confidence}) via ${aiResult.meta.provider}`);
+      // Store AI result as new vector for future similarity matches
+      void storeClassificationVector(
+        productName,
+        aiResult.result.hsCode,
+        category,
+        'ai_classified',
+        aiResult.result.confidence,
+      );
+
       return { ...aiResult.result, classificationSource: 'ai' };
     }
 
-    // AI 실패 로그
     await logApiCall('ai_failed', productName, 0, 0, false, sellerId);
   }
 
-  // ━━━ 4단계: 폴백 — 키워드 결과 그대로 리턴 ━━━
-  console.log(`[POTAL] Fallback to keyword for "${productName}" → ${keywordResult.hsCode}`);
-  // 낮은 confidence라도 캐시에 저장 (다음에 다시 시도할 수 있도록 짧은 TTL)
+  // ━━━ Stage 4: Fallback — keyword result as-is ━━━
   return { ...keywordResult, classificationSource: 'keyword_fallback' };
 }
 

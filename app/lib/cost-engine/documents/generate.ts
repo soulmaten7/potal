@@ -13,6 +13,9 @@ import type {
   PackingList,
   ShipmentItem,
   PackingListItem,
+  CertificateOfOrigin,
+  RequiredDocumentsResult,
+  RequiredDocument,
 } from './types';
 
 // ─── Invoice Number Generator ───────────────────────
@@ -138,6 +141,172 @@ function buildPackingList(
   };
 }
 
+// ─── Certificate of Origin Generator ─────────────────
+
+function generateCertificateNumber(): string {
+  const date = new Date();
+  const y = date.getFullYear().toString().slice(-2);
+  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `COO-${y}${m}-${rand}`;
+}
+
+function buildCertificateOfOrigin(
+  input: GenerateDocumentInput,
+  items: ShipmentItem[]
+): CertificateOfOrigin {
+  const originCountry =
+    items.find(i => i.countryOfOrigin)?.countryOfOrigin ||
+    input.exporter.country;
+
+  const coItems = items.map(item => ({
+    description: item.description,
+    hsCode: item.hsCode,
+    quantity: item.quantity,
+    countryOfOrigin: item.countryOfOrigin || originCountry,
+    originCriterion: 'WO', // Default: Wholly Obtained
+  }));
+
+  return {
+    certificateNumber: generateCertificateNumber(),
+    issueDate: new Date().toISOString().split('T')[0],
+    exporter: input.exporter,
+    importer: input.importer,
+    items: coItems,
+    isPreferential: false,
+    declaration: `The undersigned hereby declares that the above details and statements are correct, that all the goods were produced in ${originCountry} and that they comply with the origin requirements specified for those goods.`,
+    originCountry,
+    destinationCountry: input.importer.country,
+  };
+}
+
+// ─── Required Documents by Country ───────────────────
+
+const UNIVERSAL_DOCS: RequiredDocument[] = [
+  { name: 'Commercial Invoice', code: 'CI', required: true, description: 'Detailed invoice with item descriptions, values, and trade terms', responsible: 'exporter' },
+  { name: 'Packing List', code: 'PL', required: true, description: 'List of contents, weights, and dimensions of each package', responsible: 'exporter' },
+  { name: 'Bill of Lading / Airway Bill', code: 'BL', required: true, description: 'Transport document issued by carrier', responsible: 'both' },
+];
+
+const COUNTRY_SPECIFIC_DOCS: Record<string, RequiredDocument[]> = {
+  US: [
+    { name: 'CBP Form 3461 (Entry/Immediate Delivery)', code: 'CBP3461', required: true, description: 'Required for goods valued over $2,500 or regulated items', responsible: 'importer' },
+    { name: 'CBP Form 7501 (Entry Summary)', code: 'CBP7501', required: true, description: 'Customs entry summary for duty assessment', responsible: 'importer' },
+    { name: 'ISF 10+2 (Importer Security Filing)', code: 'ISF', required: true, description: 'Required for ocean shipments, filed 24h before vessel loading', responsible: 'importer' },
+    { name: 'FDA Prior Notice', code: 'FDA', required: false, description: 'Required for food, drugs, cosmetics, medical devices', responsible: 'importer' },
+    { name: 'FCC Declaration', code: 'FCC', required: false, description: 'Required for electronic devices', responsible: 'importer' },
+  ],
+  EU: [
+    { name: 'EUR.1 Movement Certificate', code: 'EUR1', required: false, description: 'For preferential tariff rates under EU FTAs', responsible: 'exporter' },
+    { name: 'SAD (Single Administrative Document)', code: 'SAD', required: true, description: 'Standard customs declaration form for EU imports', responsible: 'importer' },
+    { name: 'EORI Number', code: 'EORI', required: true, description: 'Economic Operators Registration and Identification number', responsible: 'importer' },
+    { name: 'CE Marking Declaration', code: 'CE', required: false, description: 'Required for electronics, toys, machinery, medical devices', responsible: 'exporter' },
+  ],
+  GB: [
+    { name: 'C88 (SAD) Import Declaration', code: 'C88', required: true, description: 'UK customs import declaration', responsible: 'importer' },
+    { name: 'EORI Number (UK)', code: 'EORI_UK', required: true, description: 'UK EORI required post-Brexit', responsible: 'importer' },
+    { name: 'UKCA Marking Declaration', code: 'UKCA', required: false, description: 'UK Conformity Assessment for regulated products', responsible: 'exporter' },
+  ],
+  CN: [
+    { name: 'China Inspection Certificate (CIQ)', code: 'CIQ', required: false, description: 'Required for food, cosmetics, and regulated goods', responsible: 'exporter' },
+    { name: 'China Customs Declaration', code: 'CCD', required: true, description: 'Import declaration filed with China Customs', responsible: 'importer' },
+    { name: 'CCC Mark Certificate', code: 'CCC', required: false, description: 'China Compulsory Certification for electronics and automotive parts', responsible: 'exporter' },
+  ],
+  JP: [
+    { name: 'Import Declaration (Japan Customs)', code: 'JPCD', required: true, description: 'Filed electronically via NACCS system', responsible: 'importer' },
+    { name: 'PSE Mark Certificate', code: 'PSE', required: false, description: 'Required for electrical appliances', responsible: 'exporter' },
+    { name: 'Food Sanitation Certificate', code: 'JPFOOD', required: false, description: 'Required for food imports under Food Sanitation Act', responsible: 'importer' },
+  ],
+  KR: [
+    { name: 'Korea Import Declaration', code: 'KRCD', required: true, description: 'Filed via UNI-PASS system', responsible: 'importer' },
+    { name: 'KC Mark Certificate', code: 'KC', required: false, description: 'Korea Certification for electronics, consumer goods', responsible: 'exporter' },
+  ],
+  AU: [
+    { name: 'Import Declaration (N10)', code: 'AUN10', required: true, description: 'Australian customs import declaration', responsible: 'importer' },
+    { name: 'Biosecurity Import Permit', code: 'AUBIO', required: false, description: 'Required for food, plants, animals, biological materials', responsible: 'importer' },
+  ],
+  IN: [
+    { name: 'Bill of Entry', code: 'INBE', required: true, description: 'Indian customs import declaration', responsible: 'importer' },
+    { name: 'Import Export Code (IEC)', code: 'IEC', required: true, description: 'Required for all commercial imports to India', responsible: 'importer' },
+    { name: 'BIS Certificate', code: 'BIS', required: false, description: 'Bureau of Indian Standards certification for electronics, toys', responsible: 'exporter' },
+  ],
+  BR: [
+    { name: 'Import License (LI)', code: 'BRLI', required: false, description: 'Required for certain regulated goods via SISCOMEX', responsible: 'importer' },
+    { name: 'Import Declaration (DI)', code: 'BRDI', required: true, description: 'Filed via SISCOMEX system', responsible: 'importer' },
+    { name: 'INMETRO Certificate', code: 'INMETRO', required: false, description: 'Required for electronics, toys, automotive parts', responsible: 'exporter' },
+  ],
+  SA: [
+    { name: 'SASO Certificate of Conformity', code: 'SASO', required: true, description: 'Saudi Standards certification required for all consumer goods', responsible: 'exporter' },
+    { name: 'Legalized Commercial Invoice', code: 'SACI', required: true, description: 'Invoice must be legalized by Saudi embassy or chamber of commerce', responsible: 'exporter' },
+  ],
+  AE: [
+    { name: 'Import Declaration (Dubai Customs)', code: 'AECD', required: true, description: 'Filed via Dubai Trade system', responsible: 'importer' },
+    { name: 'ECAS Certificate', code: 'ECAS', required: false, description: 'Emirates Conformity Assessment Scheme for regulated products', responsible: 'exporter' },
+  ],
+};
+
+// EU member states use EU docs
+const EU_MEMBERS = ['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'GR', 'FI', 'IE', 'SE', 'DK', 'PL', 'CZ', 'HU', 'RO', 'BG', 'HR', 'SK', 'SI', 'LT', 'LV', 'EE', 'CY', 'LU', 'MT'];
+
+function getRequiredDocuments(
+  destinationCountry: string,
+  originCountry: string,
+  hsCode?: string
+): RequiredDocumentsResult {
+  const docs: RequiredDocument[] = [...UNIVERSAL_DOCS];
+  const notes: string[] = [];
+  const dest = destinationCountry.toUpperCase();
+
+  // Certificate of Origin is generally recommended
+  docs.push({
+    name: 'Certificate of Origin',
+    code: 'COO',
+    required: false,
+    description: 'Certifies the country where goods were manufactured. Required for FTA preferential rates.',
+    responsible: 'exporter',
+  });
+
+  // Country-specific docs
+  if (COUNTRY_SPECIFIC_DOCS[dest]) {
+    docs.push(...COUNTRY_SPECIFIC_DOCS[dest]);
+  } else if (EU_MEMBERS.includes(dest)) {
+    docs.push(...(COUNTRY_SPECIFIC_DOCS['EU'] || []));
+    notes.push(`${dest} is an EU member state. EU customs regulations apply.`);
+  }
+
+  // HS code-based additional docs
+  if (hsCode) {
+    const ch = hsCode.slice(0, 2);
+    // Food/agricultural products
+    if (['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'].includes(ch)) {
+      docs.push({
+        name: 'Phytosanitary / Health Certificate',
+        code: 'PHYTO',
+        required: true,
+        description: 'Required for food and agricultural products',
+        responsible: 'exporter',
+      });
+      notes.push('Food/agricultural products may require additional permits and inspections.');
+    }
+    // Chemicals
+    if (['28','29','30','31','32','33','34','35','36','37','38'].includes(ch)) {
+      docs.push({
+        name: 'Material Safety Data Sheet (MSDS)',
+        code: 'MSDS',
+        required: true,
+        description: 'Required for chemical products and hazardous materials',
+        responsible: 'exporter',
+      });
+    }
+    // Textiles
+    if (['50','51','52','53','54','55','56','57','58','59','60','61','62','63'].includes(ch)) {
+      notes.push('Textile products may require country-of-origin labeling and fiber content disclosure.');
+    }
+  }
+
+  return { destinationCountry: dest, originCountry: originCountry.toUpperCase(), hsCode, documents: docs, notes };
+}
+
 // ─── Main Generator ─────────────────────────────────
 
 /**
@@ -168,12 +337,27 @@ export async function generateDocuments(
 
   const result: GenerateDocumentResult = {};
 
-  if (input.type === 'commercial_invoice' || input.type === 'both') {
+  const isAll = input.type === 'all';
+
+  if (input.type === 'commercial_invoice' || input.type === 'both' || isAll) {
     result.commercialInvoice = buildCommercialInvoice(input, enrichedItems, invoiceNumber);
   }
 
-  if (input.type === 'packing_list' || input.type === 'both') {
+  if (input.type === 'packing_list' || input.type === 'both' || isAll) {
     result.packingList = buildPackingList(input, enrichedItems, invoiceNumber);
+  }
+
+  if (input.type === 'certificate_of_origin' || isAll) {
+    result.certificateOfOrigin = buildCertificateOfOrigin(input, enrichedItems);
+  }
+
+  if (input.type === 'required_documents' || isAll) {
+    const firstHsCode = enrichedItems.find(i => i.hsCode)?.hsCode;
+    result.requiredDocuments = getRequiredDocuments(
+      input.importer.country,
+      input.exporter.country,
+      firstHsCode
+    );
   }
 
   return result;

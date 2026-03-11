@@ -22,7 +22,62 @@
 (function () {
   'use strict';
 
-  var VERSION = '2.0.0';
+  var VERSION = '2.1.0';
+
+  // ─── Auto-detect user locale, country, currency ─────
+  var LOCALE_COUNTRY_MAP = {
+    'en-US':'US','en-GB':'GB','en-AU':'AU','en-CA':'CA','en-NZ':'NZ','en-IE':'IE','en-SG':'SG','en-IN':'IN',
+    'ko':'KR','ko-KR':'KR','ja':'JP','ja-JP':'JP','zh-CN':'CN','zh-TW':'TW','zh-HK':'HK','zh':'CN',
+    'de':'DE','de-DE':'DE','de-AT':'AT','de-CH':'CH','fr':'FR','fr-FR':'FR','fr-CA':'CA','fr-BE':'BE',
+    'es':'ES','es-ES':'ES','es-MX':'MX','es-AR':'AR','es-CO':'CO','es-CL':'CL','es-PE':'PE',
+    'pt':'PT','pt-BR':'BR','pt-PT':'PT','it':'IT','it-IT':'IT','nl':'NL','nl-NL':'NL','nl-BE':'BE',
+    'sv':'SE','sv-SE':'SE','no':'NO','nb':'NO','nn':'NO','da':'DK','da-DK':'DK','fi':'FI','fi-FI':'FI',
+    'pl':'PL','pl-PL':'PL','cs':'CZ','cs-CZ':'CZ','sk':'SK','sk-SK':'SK','hu':'HU','hu-HU':'HU',
+    'ro':'RO','ro-RO':'RO','bg':'BG','bg-BG':'BG','el':'GR','el-GR':'GR','hr':'HR','hr-HR':'HR',
+    'tr':'TR','tr-TR':'TR','ru':'RU','ru-RU':'RU','uk':'UA','uk-UA':'UA',
+    'ar':'AE','ar-SA':'SA','ar-AE':'AE','ar-EG':'EG','he':'IL','he-IL':'IL','fa':'IR','fa-IR':'IR',
+    'hi':'IN','hi-IN':'IN','bn':'BD','bn-BD':'BD','bn-IN':'IN','th':'TH','th-TH':'TH',
+    'vi':'VN','vi-VN':'VN','id':'ID','id-ID':'ID','ms':'MY','ms-MY':'MY',
+    'tl':'PH','fil':'PH',
+  };
+  var COUNTRY_CURRENCY_MAP = {
+    US:'USD',CA:'CAD',GB:'GBP',AU:'AUD',NZ:'NZD',JP:'JPY',KR:'KRW',CN:'CNY',TW:'TWD',HK:'HKD',SG:'SGD',
+    MY:'MYR',TH:'THB',VN:'VND',ID:'IDR',PH:'PHP',IN:'INR',BD:'BDT',
+    DE:'EUR',FR:'EUR',IT:'EUR',ES:'EUR',NL:'EUR',BE:'EUR',AT:'EUR',PT:'EUR',IE:'EUR',GR:'EUR',FI:'EUR',
+    EE:'EUR',LV:'EUR',LT:'EUR',SK:'EUR',SI:'EUR',HR:'EUR',
+    SE:'SEK',NO:'NOK',DK:'DKK',PL:'PLN',CZ:'CZK',HU:'HUF',RO:'RON',BG:'BGN',
+    CH:'CHF',TR:'TRY',RU:'RUB',UA:'UAH',
+    AE:'AED',SA:'SAR',QA:'QAR',KW:'KWD',IL:'ILS',EG:'EGP',IR:'IRR',
+    MX:'MXN',BR:'BRL',AR:'ARS',CL:'CLP',CO:'COP',PE:'PEN',
+    ZA:'ZAR',NG:'NGN',KE:'KES',
+  };
+
+  function detectUserLocale() {
+    try {
+      var langs = navigator.languages || [navigator.language || 'en'];
+      return langs[0] || 'en';
+    } catch (e) { return 'en'; }
+  }
+
+  function detectCountryFromLocale(locale) {
+    if (!locale) return '';
+    // Try exact match first, then language-only
+    if (LOCALE_COUNTRY_MAP[locale]) return LOCALE_COUNTRY_MAP[locale];
+    var lang = locale.split('-')[0].toLowerCase();
+    if (LOCALE_COUNTRY_MAP[lang]) return LOCALE_COUNTRY_MAP[lang];
+    return '';
+  }
+
+  function detectCurrencyFromCountry(country) {
+    return COUNTRY_CURRENCY_MAP[country] || 'USD';
+  }
+
+  function detectSystemTheme() {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    } catch (e) { /* ignore */ }
+    return 'light';
+  }
 
   // ─── Detect API base from script src ────────────────
   var scriptEl = document.currentScript || (function () {
@@ -45,13 +100,15 @@
     apiKey: '',
     origin: 'CN',
     destination: '',
-    theme: 'light',
+    theme: 'auto',        // 'light', 'dark', or 'auto' (detect from system)
     containerId: 'potal-widget',
     productName: '',
     price: 0,
     shippingPrice: 0,
     showPoweredBy: true,
-    locale: 'en',
+    locale: 'auto',        // 'auto' = detect from browser, or explicit like 'en', 'ko'
+    currency: 'auto',      // 'auto' = detect from destination country
+    autoDetectCountry: true, // auto-detect destination from browser locale
     onCalculate: null,
     onError: null,
     // Custom theme overrides (from widget_configs or PotalWidget.init)
@@ -211,8 +268,13 @@
   }
 
   // ─── Styles (injected into Shadow DOM) ──────────────
+  function resolveTheme(theme) {
+    if (theme === 'auto') return detectSystemTheme();
+    return theme || 'light';
+  }
+
   function getStyles(theme) {
-    var isDark = theme === 'dark';
+    var isDark = resolveTheme(theme) === 'dark';
     var bg = isDark ? '#1e1e2e' : '#ffffff';
     var text = isDark ? '#cdd6f4' : '#1e293b';
     var subtext = isDark ? '#a6adc8' : '#64748b';
@@ -294,8 +356,18 @@
     // Create Shadow DOM for style isolation
     var shadow = hostEl.attachShadow ? hostEl.attachShadow({ mode: 'open' }) : hostEl;
 
+    // Auto-detect destination country from browser locale if not set
+    var detectedDest = params.destination || config.destination || '';
+    if (!detectedDest && config.autoDetectCountry) {
+      var userLocale = detectUserLocale();
+      detectedDest = detectCountryFromLocale(userLocale);
+    }
+
+    // Resolve display locale
+    var displayLocale = config.locale === 'auto' ? detectUserLocale() : (config.locale || 'en');
+
     var state = {
-      destination: params.destination || config.destination || '',
+      destination: detectedDest,
       zipcode: '',
       data: null,
       loading: false,
@@ -308,7 +380,7 @@
 
     function fmtLocal(n, currency) {
       try {
-        return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency, maximumFractionDigits: 2 }).format(n);
+        return new Intl.NumberFormat(displayLocale, { style: 'currency', currency: currency, maximumFractionDigits: 2 }).format(n);
       } catch (e) {
         return currency + ' ' + Number(n).toFixed(2);
       }
@@ -514,10 +586,13 @@
     config.apiKey = scriptEl.getAttribute('data-api-key') || '';
     config.origin = scriptEl.getAttribute('data-origin') || 'CN';
     config.destination = scriptEl.getAttribute('data-destination') || '';
-    config.theme = scriptEl.getAttribute('data-theme') || 'light';
+    config.theme = scriptEl.getAttribute('data-theme') || 'auto';
     config.containerId = scriptEl.getAttribute('data-container') || 'potal-widget';
     config.productName = scriptEl.getAttribute('data-product-name') || '';
     config.showPoweredBy = scriptEl.getAttribute('data-powered-by') !== 'false';
+    config.locale = scriptEl.getAttribute('data-locale') || 'auto';
+    config.currency = scriptEl.getAttribute('data-currency') || 'auto';
+    config.autoDetectCountry = scriptEl.getAttribute('data-auto-detect') !== 'false';
     config.primaryColor = scriptEl.getAttribute('data-primary-color') || '';
     config.borderRadius = scriptEl.getAttribute('data-border-radius') || '';
     config.fontFamily = scriptEl.getAttribute('data-font-family') || '';
@@ -585,6 +660,22 @@
 
     getConfig: function () {
       return JSON.parse(JSON.stringify(config));
+    },
+
+    setTheme: function (theme) {
+      config.theme = theme;
+    },
+
+    setLocale: function (locale) {
+      config.locale = locale;
+    },
+
+    detectCountry: function () {
+      return detectCountryFromLocale(detectUserLocale());
+    },
+
+    detectCurrency: function (countryCode) {
+      return detectCurrencyFromCountry(countryCode || this.detectCountry());
     },
   };
 

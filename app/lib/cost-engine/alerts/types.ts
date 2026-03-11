@@ -24,6 +24,8 @@ export interface TariffAlert {
   webhookUrl?: string;
   /** Email for notifications (optional) */
   notifyEmail?: string;
+  /** Alert types subscribed to */
+  alertTypes: AlertType[];
   /** Whether this alert is active */
   isActive: boolean;
   /** Created timestamp */
@@ -34,12 +36,16 @@ export interface TariffAlert {
   lastTriggeredAt?: string;
 }
 
+export type AlertType = 'tariff_change' | 'fta_update' | 'trade_remedy' | 'section_301' | 'regulation_change';
+
 export interface TariffAlertCreateInput {
   hsCode: string;
   originCountry: string;
   destinationCountry: string;
   webhookUrl?: string;
   notifyEmail?: string;
+  /** Alert types to subscribe to (default: all) */
+  alertTypes?: AlertType[];
 }
 
 export interface TariffChangeEvent {
@@ -53,4 +59,17 @@ export interface TariffChangeEvent {
   changePercent: number;
   rateSource: string;
   detectedAt: string;
+  /** Type of change that triggered the alert */
+  eventType: AlertType;
+  /** Additional details about the change */
+  details?: {
+    /** FTA name (for fta_update) */
+    ftaName?: string;
+    /** Trade remedy case ID (for trade_remedy) */
+    caseId?: number;
+    /** Section 301 list (for section_301) */
+    listName?: string;
+    /** Description of the change */
+    description?: string;
+  };
 }

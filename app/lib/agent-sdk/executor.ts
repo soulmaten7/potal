@@ -48,6 +48,9 @@ export async function executeToolCall(
       case 'potal_manage_alerts':
         return await executeAlerts(call.arguments, sellerId);
 
+      case 'potal_screen_shipment':
+        return await executeScreenShipment(call.arguments, sellerId);
+
       case 'potal_list_countries':
         return { success: true, data: { message: 'Use GET /api/v1/countries endpoint' } };
 
@@ -162,4 +165,164 @@ async function executeAlerts(
   }
 
   return { success: false, error: `Unknown action: ${action}` };
+}
+
+async function executeScreenShipment(
+  args: Record<string, unknown>,
+  sellerId: string
+): Promise<ToolCallResult> {
+  const input: GlobalCostInput = {
+    price: Number(args.price) || 0,
+    shippingPrice: Number(args.shippingPrice) || 0,
+    origin: String(args.origin || 'CN'),
+    destinationCountry: String(args.destinationCountry || 'US'),
+    hsCode: args.hsCode ? String(args.hsCode) : undefined,
+    productName: args.productName ? String(args.productName) : undefined,
+  };
+
+  // Run cost calculation and restriction check in parallel
+  const dest = String(args.destinationCountry || 'US');
+  let hsCode = args.hsCode ? String(args.hsCode) : '';
+
+  // Auto-classify if needed
+  if (!hsCode && args.productName) {
+    const classification = await classifyProductAsync(String(args.productName), undefined, sellerId);
+    hsCode = classification.hsCode || '';
+  }
+
+  const [costResult, restrictionResult] = await Promise.all([
+    calculateGlobalLandedCostAsync(input),
+    hsCode ? Promise.resolve(checkRestrictions(hsCode, dest)) : Promise.resolve(null),
+  ]);
+
+  return {
+    success: true,
+    data: {
+      landedCost: costResult,
+      restrictions: restrictionResult,
+      screening: {
+        isProhibited: restrictionResult?.isProhibited || false,
+        hasRestrictions: restrictionResult?.hasRestrictions || false,
+        hasTradeRemedies: !!(costResult as any).tradeRemedies?.hasRemedies,
+        hasAdditionalTariffs: !!(costResult as any).usAdditionalTariffs?.hasAdditionalTariffs,
+        confidenceScore: (costResult as any).confidenceScore,
+        accuracyLevel: (costResult as any).accuracyGuarantee?.level,
+      },
+    },
+  };
+}
+
+/**
+ * Get OpenAI Assistants v2 compatible tool definitions.
+ * Use these when creating an OpenAI Assistant that calls POTAL tools.
+ */
+export function getOpenAIToolDefinitions() {
+  return [
+    {
+      type: 'function' as const,
+      function: {
+        name: 'potal_calculate_landed_cost',
+        description: 'Calculate the total landed cost for an international shipment including duties, taxes, and fees.',
+        parameters: {
+          type: 'object',
+          properties: {
+            price: { type: 'number', description: 'Product price in USD' },
+            origin: { type: 'string', description: 'Origin country ISO2 code' },
+            destinationCountry: { type: 'string', description: 'Destination country ISO2 code' },
+            shippingPrice: { type: 'number', description: 'Shipping cost in USD' },
+            productName: { type: 'string', description: 'Product name for HS classification' },
+            hsCode: { type: 'string', description: 'Known HS code' },
+            zipcode: { type: 'string', description: 'Destination ZIP code' },
+          },
+          required: ['price', 'origin', 'destinationCountry'],
+        },
+      },
+    },
+    {
+      type: 'function' as const,
+      function: {
+        name: 'potal_classify_product',
+        description: 'Classify a product into an HS code for customs.',
+        parameters: {
+          type: 'object',
+          properties: {
+            productName: { type: 'string', description: 'Product name or description' },
+            category: { type: 'string', description: 'Product category' },
+            imageUrl: { type: 'string', description: 'Image URL for vision classification' },
+          },
+          required: ['productName'],
+        },
+      },
+    },
+    {
+      type: 'function' as const,
+      function: {
+        name: 'potal_check_restrictions',
+        description: 'Check import restrictions and compliance for a product.',
+        parameters: {
+          type: 'object',
+          properties: {
+            hsCode: { type: 'string', description: 'HS code to check' },
+            destinationCountry: { type: 'string', description: 'Destination country ISO2' },
+            productName: { type: 'string', description: 'Product name for auto-classification' },
+          },
+          required: ['destinationCountry'],
+        },
+      },
+    },
+    {
+      type: 'function' as const,
+      function: {
+        name: 'potal_screen_shipment',
+        description: 'Comprehensive shipment screening: cost + restrictions + trade remedies.',
+        parameters: {
+          type: 'object',
+          properties: {
+            price: { type: 'number', description: 'Product price in USD' },
+            origin: { type: 'string', description: 'Origin country ISO2' },
+            destinationCountry: { type: 'string', description: 'Destination country ISO2' },
+            productName: { type: 'string', description: 'Product name' },
+            shippingPrice: { type: 'number', description: 'Shipping cost' },
+            hsCode: { type: 'string', description: 'Known HS code' },
+          },
+          required: ['price', 'origin', 'destinationCountry'],
+        },
+      },
+    },
+    {
+      type: 'function' as const,
+      function: {
+        name: 'potal_generate_documents',
+        description: 'Generate customs documents (commercial invoice, packing list, etc.).',
+        parameters: {
+          type: 'object',
+          properties: {
+            type: { type: 'string', description: 'Document type: commercial_invoice, packing_list, certificate_of_origin' },
+            exporter: { type: 'object', description: 'Exporter details' },
+            importer: { type: 'object', description: 'Importer details' },
+            items: { type: 'array', description: 'Line items' },
+          },
+          required: ['type', 'exporter', 'importer', 'items'],
+        },
+      },
+    },
+    {
+      type: 'function' as const,
+      function: {
+        name: 'potal_manage_alerts',
+        description: 'Manage tariff change alerts (create/list/delete).',
+        parameters: {
+          type: 'object',
+          properties: {
+            action: { type: 'string', enum: ['create', 'list', 'delete'], description: 'Action to perform' },
+            hsCode: { type: 'string', description: 'HS code to watch (for create)' },
+            originCountry: { type: 'string', description: 'Origin country (for create)' },
+            destinationCountry: { type: 'string', description: 'Destination country (for create)' },
+            alertId: { type: 'string', description: 'Alert ID (for delete)' },
+          },
+          required: ['action'],
+        },
+      },
+    },
+  ];
 }

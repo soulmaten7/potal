@@ -10,4 +10,7 @@ export type {
   ShipmentItem,
   PackingListItem,
   TradeParty,
+  CertificateOfOrigin,
+  RequiredDocumentsResult,
+  RequiredDocument,
 } from './types';

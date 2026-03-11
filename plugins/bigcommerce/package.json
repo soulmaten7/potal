@@ -1,0 +1,37 @@
+{
+  "name": "potal-bigcommerce-widget",
+  "version": "1.1.0",
+  "description": "POTAL Total Landed Cost Widget for BigCommerce — Real-time import duties, taxes, and customs fees. 240+ countries, AI HS classification, DDP checkout integration.",
+  "main": "potal-widget-installer.js",
+  "keywords": [
+    "bigcommerce",
+    "landed-cost",
+    "import-duty",
+    "customs",
+    "tariff",
+    "cross-border",
+    "ddp",
+    "vat",
+    "gst",
+    "widget"
+  ],
+  "homepage": "https://www.potal.app",
+  "author": "POTAL <support@potal.app> (https://www.potal.app)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/potal-app/bigcommerce-widget"
+  },
+  "bigcommerce": {
+    "category": "Shipping & Fulfillment",
+    "compatibility": "Stencil, Cornerstone",
+    "installMethod": "Script Manager",
+    "features": [
+      "Product page landed cost widget",
+      "DDP checkout integration",
+      "Multi-currency support",
+      "AI HS code classification",
+      "240+ country coverage"
+    ]
+  }
+}

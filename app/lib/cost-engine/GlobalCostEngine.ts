@@ -32,6 +32,15 @@ import { getCountryProfileFromDb } from './db/country-data-db';
 import { getDutyRateFromDb, getEffectiveDutyRateFromDb, hasCountryDutyDataFromDb } from './db/duty-rates-db';
 import { applyFtaRateFromDb } from './db/fta-db';
 
+// MacMap 4-stage fallback lookup (AGR → MIN → NTLC → MFN)
+import { lookupMacMapDutyRate } from './macmap-lookup';
+
+// Trade remedy lookup (AD/CVD/Safeguard)
+import { lookupTradeRemedies, type TradeRemedyResult } from './trade-remedy-lookup';
+
+// US Section 301/232 additional tariffs
+import { lookupUSAdditionalTariffs, type USAdditionalTariffResult } from './section301-lookup';
+
 // Hardcoded fallbacks (sync, for backward compat)
 import { getEffectiveDutyRate as getHardcodedEffectiveDutyRate, getDutyRate as getHardcodedDutyRate, hasCountryDutyData as hardcodedHasCountryDutyData } from './hs-code';
 import { applyFtaRate as hardcodedApplyFtaRate } from './hs-code/fta';
@@ -39,6 +48,23 @@ import { applyFtaRate as hardcodedApplyFtaRate } from './hs-code/fta';
 // ─── Origin Detection ───────────────────────────────
 
 const CHINESE_PLATFORMS = ['aliexpress', 'temu', 'shein', 'wish', 'dhgate', 'banggood'];
+
+// EU member states for IOSS (Import One-Stop Shop) VAT handling
+const EU_IOSS_COUNTRIES = new Set([
+  'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+  'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+  'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+]);
+
+// GCC countries (Gulf Cooperation Council) — VAT 5% standard (SA, AE, BH, OM implemented; KW, QA pending)
+const GCC_VAT_COUNTRIES: Record<string, { rate: number; label: string }> = {
+  SA: { rate: 0.15, label: 'VAT' },      // Saudi Arabia: 15% (raised from 5% in Jul 2020)
+  AE: { rate: 0.05, label: 'VAT' },      // UAE: 5%
+  BH: { rate: 0.10, label: 'VAT' },      // Bahrain: 10% (raised from 5% in Jan 2022)
+  OM: { rate: 0.05, label: 'VAT' },      // Oman: 5% (introduced Apr 2021)
+  KW: { rate: 0, label: 'None' },         // Kuwait: no VAT yet
+  QA: { rate: 0, label: 'None' },         // Qatar: no VAT yet
+};
 
 function detectOriginForGlobal(input: CostInput): string {
   const origin = (input.origin || '').toLowerCase().trim();
@@ -61,6 +87,12 @@ export interface GlobalCostInput extends CostInput {
   productName?: string;
   productCategory?: string;
   hsCode?: string;
+  /** Insurance rate override (0.01 = 1%). Default: auto-calculated based on CIF */
+  insuranceRate?: number;
+  /** Include brokerage fee estimate (default: true for international) */
+  includeBrokerage?: boolean;
+  /** Shipping terms: DDP (seller pays duties) or DDU (buyer pays) */
+  shippingTerms?: 'DDP' | 'DDU';
 }
 
 // ─── Global Landed Cost Result ──────────────────────
@@ -71,16 +103,68 @@ export interface GlobalLandedCost extends LandedCost {
   vatLabel: string;
   vatRate: number;
   deMinimisApplied: boolean;
+  /** Whether duty is exempt (de minimis, IOSS, or duty-free) */
+  dutyExempt?: boolean;
+  /** Whether tax (VAT/GST) is exempt */
+  taxExempt?: boolean;
+  /** Duty de minimis threshold in USD (if applicable) */
+  dutyThresholdUsd?: number;
+  /** Tax de minimis threshold in USD (if applicable) */
+  taxThresholdUsd?: number;
   destinationCurrency: string;
   hsClassification?: HsClassificationResult;
   ftaApplied?: FtaResult;
   additionalTariffNote?: string;
   /** How the HS code was classified: 'cache' | 'keyword' | 'ai' | 'manual' | 'keyword_fallback' */
   classificationSource?: string;
-  /** Where the duty rate came from: 'hardcoded' | 'db' | 'live_db' | 'external_api' */
+  /** Where the duty rate came from: 'agr' | 'min' | 'ntlc' | 'mfn' | 'live_db' | 'external_api' | 'db' | 'hardcoded' */
   dutyRateSource?: string;
+  /** Confidence score of the duty rate (1.0=agr, 0.9=min, 0.8=ntlc, 0.7=mfn/hardcoded) */
+  dutyConfidenceScore?: number;
+  /** Insurance cost (CIF component) */
+  insurance?: number;
+  /** Brokerage fee estimate */
+  brokerageFee?: number;
+  /** Per-item confidence score (overall calculation reliability) */
+  confidenceScore?: number;
+  /** Trade remedy measures (AD/CVD/Safeguard) */
+  tradeRemedies?: TradeRemedyResult;
+  /** US Section 301/232 additional tariffs */
+  usAdditionalTariffs?: USAdditionalTariffResult;
+  /** Entry type: formal (>$2500) or informal (<=$2500) */
+  entryType?: 'formal' | 'informal';
+  /** Shipping terms used */
+  shippingTerms?: 'DDP' | 'DDU';
+  /** DDU breakdown: duties/taxes the buyer must pay at delivery (DDU mode only) */
+  dduBuyerCharges?: {
+    importDuty: number;
+    vat: number;
+    processingFee: number;
+    total: number;
+    note: string;
+  };
   /** AI-detected origin country ISO code (when seller didn't provide origin) */
   detectedOriginCountry?: string;
+  /** Accuracy guarantee level based on data quality */
+  accuracyGuarantee?: {
+    /** Guarantee level: high/medium/low */
+    level: 'high' | 'medium' | 'low';
+    /** Estimated accuracy percentage */
+    estimatedAccuracy: number;
+    /** Factors that affect accuracy */
+    factors: string[];
+  };
+  /** Data freshness metadata */
+  dataFreshness?: {
+    /** Duty rate data source and age */
+    dutyRateAge: string;
+    /** Last tariff DB update check */
+    lastTariffUpdate?: string;
+    /** Overall data quality: fresh/stale/fallback */
+    quality: 'fresh' | 'stale' | 'fallback';
+  };
+  /** Exchange rate timestamp (ISO 8601) */
+  exchangeRateTimestamp?: string;
   /** Local currency conversion (if destination currency != USD) */
   localCurrency?: {
     /** Total landed cost in local currency */
@@ -165,39 +249,54 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
 
   const isDomestic = originCountry === profile.code;
 
-  // Determine Duty Rate — DB → 외부 API → 하드코딩 폴백
+  // Determine Duty Rate — MacMap 4단계 폴백 → 정부 API → DB → 하드코딩
   let dutyRate = profile.avgDutyRate;
   let dutyNote = `~${(profile.avgDutyRate * 100).toFixed(1)}% avg`;
   let additionalTariffNote: string | undefined;
   let ftaResult: FtaResult | undefined;
   let dutyRateSource: string = 'hardcoded';
+  let dutyConfidenceScore: number = 0.7;
 
   if (hsResult && hsResult.hsCode !== '9999') {
     const hsChapter = hsResult.hsCode.substring(0, 2);
 
-    // 1차: 외부 API 캐시(duty_rates_live) 조회
-    const liveRate = await fetchDutyRateWithFallback(hsResult.hsCode, profile.code, originCountry);
-    if (liveRate) {
-      dutyRate = liveRate.rate.mfnRate + (liveRate.rate.additionalTariff || 0);
-      dutyNote = `HS ${hsResult.hsCode} (${(dutyRate * 100).toFixed(1)}%)`;
-      dutyRateSource = liveRate.source;
-      if (liveRate.rate.additionalTariff) {
-        additionalTariffNote = liveRate.rate.notes;
-      }
+    // ━━━ 1차: MacMap 4단계 폴백 (AGR → MIN → NTLC) ━━━
+    const macmapResult = await lookupMacMapDutyRate(profile.code, originCountry, hsResult.hsCode);
+    if (macmapResult) {
+      dutyRate = macmapResult.avDuty;
+      dutyNote = `HS ${hsResult.hsCode} (${(dutyRate * 100).toFixed(1)}%) [${macmapResult.source}]`;
+      dutyRateSource = macmapResult.source;
+      dutyConfidenceScore = macmapResult.confidenceScore;
     }
-    // 2차: 기존 DB 조회
-    else if (await hasCountryDutyDataFromDb(profile.code)) {
-      const specificRate = await getEffectiveDutyRateFromDb(hsResult.hsCode, profile.code, originCountry);
-      if (specificRate >= 0) {
-        dutyRate = specificRate;
-        dutyNote = `HS ${hsResult.hsCode} (${(specificRate * 100).toFixed(1)}%)`;
-        dutyRateSource = 'db';
-
-        const rateInfo = await getDutyRateFromDb(hsResult.hsCode, profile.code, originCountry);
-        if (rateInfo?.additionalTariff) {
-          additionalTariffNote = rateInfo.notes;
+    // ━━━ 2차: 정부 API 캐시(duty_rates_live) 조회 ━━━
+    else {
+      const liveRate = await fetchDutyRateWithFallback(hsResult.hsCode, profile.code, originCountry);
+      if (liveRate) {
+        dutyRate = liveRate.rate.mfnRate + (liveRate.rate.additionalTariff || 0);
+        dutyNote = `HS ${hsResult.hsCode} (${(dutyRate * 100).toFixed(1)}%)`;
+        dutyRateSource = liveRate.source;
+        dutyConfidenceScore = 0.85;
+        if (liveRate.rate.additionalTariff) {
+          additionalTariffNote = liveRate.rate.notes;
         }
       }
+      // ━━━ 3차: 기존 duty_rates DB 조회 ━━━
+      else if (await hasCountryDutyDataFromDb(profile.code)) {
+        const specificRate = await getEffectiveDutyRateFromDb(hsResult.hsCode, profile.code, originCountry);
+        if (specificRate >= 0) {
+          dutyRate = specificRate;
+          dutyNote = `HS ${hsResult.hsCode} (${(specificRate * 100).toFixed(1)}%)`;
+          dutyRateSource = 'db';
+          dutyConfidenceScore = 0.75;
+
+          const rateInfo = await getDutyRateFromDb(hsResult.hsCode, profile.code, originCountry);
+          if (rateInfo?.additionalTariff) {
+            additionalTariffNote = rateInfo.notes;
+          }
+        }
+      }
+      // ━━━ 4차: hardcoded (dutyRate는 profile.avgDutyRate 유지) ━━━
+      // dutyRateSource = 'hardcoded', dutyConfidenceScore = 0.7
     }
 
     // FTA: Live DB → 기존 DB 폴백
@@ -230,8 +329,43 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     }
   }
 
-  // De Minimis
-  const deMinimisApplied = !isDomestic && declaredValue > 0 && declaredValue <= profile.deMinimisUsd && profile.deMinimisUsd > 0;
+  // Trade Remedies: AD/CVD/Safeguard additional duties
+  let tradeRemedyResult: TradeRemedyResult | undefined;
+  if (!isDomestic && hsResult && hsResult.hsCode !== '9999') {
+    tradeRemedyResult = await lookupTradeRemedies(profile.code, originCountry, hsResult.hsCode);
+    if (tradeRemedyResult.hasRemedies) {
+      // Add trade remedy duties on top of base duty rate
+      dutyRate += tradeRemedyResult.totalRemedyRate;
+      const remedyTypes = tradeRemedyResult.measures.map(m => m.type).join('+');
+      additionalTariffNote = `${remedyTypes}: +${(tradeRemedyResult.totalRemedyRate * 100).toFixed(1)}%`;
+    }
+  }
+
+  // US Section 301/232 additional tariffs
+  let usAdditionalTariffs: USAdditionalTariffResult | undefined;
+  if (!isDomestic && profile.code === 'US' && hsResult && hsResult.hsCode !== '9999') {
+    usAdditionalTariffs = lookupUSAdditionalTariffs(originCountry, hsResult.hsCode);
+    if (usAdditionalTariffs.hasAdditionalTariffs) {
+      dutyRate += usAdditionalTariffs.totalRate;
+      const notes: string[] = [];
+      if (usAdditionalTariffs.section301) notes.push(usAdditionalTariffs.section301.note);
+      if (usAdditionalTariffs.section232) notes.push(usAdditionalTariffs.section232.note);
+      additionalTariffNote = (additionalTariffNote ? additionalTariffNote + '; ' : '') + notes.join('; ');
+    }
+  }
+
+  // De Minimis — split into duty and tax thresholds
+  // Many countries have different thresholds for duty vs tax exemption
+  // EU: duty exempt ≤€150 but VAT always applies (IOSS); AU: no duty/GST exemption post-2018 for LVG
+  // US: $800 de minimis covers both duty and tax; UK: £135 duty de minimis, VAT always applies
+  const dutyThresholdUsd = profile.deMinimisUsd;
+  // Tax threshold: most countries = same as duty, but UK/EU/AU have $0 (tax always applies on imports)
+  const taxAlwaysAppliesCountries = new Set([...EU_IOSS_COUNTRIES, 'GB', 'AU', 'NZ', 'NO', 'CH']);
+  const taxThresholdUsd = taxAlwaysAppliesCountries.has(profile.code) ? 0 : profile.deMinimisUsd;
+
+  const dutyExempt = !isDomestic && declaredValue > 0 && declaredValue <= dutyThresholdUsd && dutyThresholdUsd > 0;
+  const taxExempt = !isDomestic && declaredValue > 0 && declaredValue <= taxThresholdUsd && taxThresholdUsd > 0;
+  const deMinimisApplied = dutyExempt; // backward compat: deMinimisApplied = duty exemption
 
   // Duty
   let importDuty = 0;
@@ -301,6 +435,70 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     vat = mxTaxes.totalTax;
     effectiveVatRate = mxTaxes.effectiveRate;
     effectiveVatLabel = mxTaxes.ieps > 0 ? 'IVA+IEPS' : 'IVA';
+  } else if (profile.code === 'GB' && !isDomestic) {
+    // UK: VAT reverse charge for B2B imports
+    // Under £135 (~$170): seller charges VAT at point of sale (no import VAT)
+    // Over £135: standard import VAT 20% on (CIF + duty)
+    const UK_LOW_VALUE_THRESHOLD_USD = 170;
+    if (declaredValue <= UK_LOW_VALUE_THRESHOLD_USD) {
+      // Low value: VAT collected at point of sale (included in product price for marketplace)
+      // For B2B API: show VAT as seller-collected
+      vat = declaredValue * 0.20;
+      effectiveVatRate = 0.20;
+      effectiveVatLabel = 'VAT (seller-collected)';
+    } else {
+      // Standard import VAT on CIF + duty
+      vat = (declaredValue + importDuty) * 0.20;
+      effectiveVatRate = 0.20;
+      effectiveVatLabel = 'Import VAT';
+    }
+  } else if (EU_IOSS_COUNTRIES.has(profile.code) && !isDomestic) {
+    // EU IOSS: Import One-Stop Shop for consignments ≤€150 (~$165 USD)
+    // Below threshold: VAT at destination country rate, no import duty
+    // Above threshold: standard import VAT on (CIF + duty)
+    const EU_IOSS_THRESHOLD_USD = 165;
+    if (declaredValue <= EU_IOSS_THRESHOLD_USD) {
+      // IOSS: VAT at destination rate, duty exempt
+      vat = declaredValue * profile.vatRate;
+      effectiveVatRate = profile.vatRate;
+      effectiveVatLabel = 'VAT (IOSS)';
+      // Under IOSS, customs duty is waived for ≤€150
+      importDuty = 0;
+    } else {
+      // Standard EU import: VAT on (CIF + duty)
+      vat = (declaredValue + importDuty) * profile.vatRate;
+      effectiveVatRate = profile.vatRate;
+      effectiveVatLabel = 'Import VAT';
+    }
+  } else if (profile.code === 'AU' && !isDomestic) {
+    // Australia: GST on Low Value Goods (LVG) ≤ AUD 1000 (~$650 USD)
+    // Since Jul 2018: GST 10% applies to ALL imported goods (including ≤$1000)
+    // ≤ AUD 1000: GST collected by marketplace/seller (no customs processing)
+    // > AUD 1000: GST collected at border + customs processing
+    const AU_LVG_THRESHOLD_USD = 650;
+    if (declaredValue <= AU_LVG_THRESHOLD_USD) {
+      // Low Value Goods: GST on product value only (seller-collected)
+      vat = declaredValue * 0.10;
+      effectiveVatRate = 0.10;
+      effectiveVatLabel = 'GST (LVG seller-collected)';
+    } else {
+      // Standard: GST on (CIF + duty + customs charges)
+      vat = (declaredValue + importDuty) * 0.10;
+      effectiveVatRate = 0.10;
+      effectiveVatLabel = 'GST';
+    }
+  } else if (GCC_VAT_COUNTRIES[profile.code] && !isDomestic) {
+    // GCC countries: VAT on (CIF + duty) — rate varies by country
+    const gcc = GCC_VAT_COUNTRIES[profile.code];
+    if (gcc.rate > 0) {
+      vat = (declaredValue + importDuty) * gcc.rate;
+      effectiveVatRate = gcc.rate;
+      effectiveVatLabel = gcc.label;
+    } else {
+      vat = 0;
+      effectiveVatRate = 0;
+      effectiveVatLabel = 'None';
+    }
   } else if (isDomestic) {
     vat = declaredValue * profile.vatRate;
   } else {
@@ -308,6 +506,9 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   }
 
   const totalLandedCost = productPrice + shippingCost + importDuty + vat;
+
+  // Track IOSS status for breakdown
+  const isIossExempt = EU_IOSS_COUNTRIES.has(profile.code) && !isDomestic && importDuty === 0 && declaredValue <= 165;
 
   // Breakdown
   const breakdown: CostBreakdownItem[] = [
@@ -318,6 +519,8 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   if (!isDomestic) {
     if (deMinimisApplied) {
       breakdown.push({ label: 'Import Duty', amount: 0, note: `De minimis exempt (≤$${profile.deMinimisUsd})` });
+    } else if (isIossExempt) {
+      breakdown.push({ label: 'Import Duty', amount: 0, note: 'IOSS exempt (≤€150)' });
     } else if (importDuty > 0) {
       breakdown.push({ label: 'Import Duty', amount: round(importDuty), note: dutyNote });
     } else {
@@ -372,13 +575,22 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     });
   }
 
+  // Entry type: formal (>$2500 US) or informal (≤$2500)
+  const entryType: 'formal' | 'informal' = declaredValue > 2500 ? 'formal' : 'informal';
+
   // Country-specific processing / customs handling fees
   let mpf = 0;
   if (!isDomestic && !deMinimisApplied) {
     if (profile.code === 'US') {
-      // US CBP Merchandise Processing Fee: 0.3464%, min $31.67, max $614.35
-      mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
-      breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
+      if (entryType === 'formal') {
+        // Formal entry (>$2500): MPF 0.3464%, min $31.67, max $614.35
+        mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+        breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF (formal entry)' });
+      } else {
+        // Informal entry (≤$2500): flat $2.00-$6.00 (avg $2)
+        mpf = 2;
+        breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF (informal entry)' });
+      }
     } else if (profile.code === 'AU') {
       // Australia Import Processing Charge (IPC): AUD 88 (~$56 USD) for standard entries
       mpf = 56;
@@ -430,7 +642,55 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     // (brokerage is private, not government-imposed)
   }
 
-  const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf;
+  // Insurance (CIF component): 0.5-1.5% of declared value based on shipping type
+  let insurance = 0;
+  if (!isDomestic) {
+    const insuranceRate = input.insuranceRate ?? (
+      declaredValue > 5000 ? 0.005 :   // High value: 0.5%
+      declaredValue > 1000 ? 0.008 :    // Medium value: 0.8%
+      0.015                              // Low value: 1.5%
+    );
+    insurance = declaredValue * insuranceRate;
+    breakdown.push({ label: 'Insurance', amount: round(insurance), note: `${(insuranceRate * 100).toFixed(1)}% of CIF` });
+  }
+
+  // Brokerage fee estimate (for international shipments)
+  let brokerageFee = 0;
+  if (!isDomestic && input.includeBrokerage !== false) {
+    // Estimate based on declared value tiers
+    if (declaredValue > 2500) {
+      brokerageFee = Math.min(declaredValue * 0.005, 250); // 0.5% capped at $250
+    } else if (declaredValue > 800) {
+      brokerageFee = 25; // Flat $25 for mid-range
+    }
+    // Under $800: typically no formal entry / broker needed
+    if (brokerageFee > 0) {
+      breakdown.push({ label: 'Brokerage', amount: round(brokerageFee), note: 'Customs broker est.' });
+    }
+  }
+
+  // Per-item confidence score (overall calculation reliability)
+  // Factors: duty source confidence, HS classification, country specificity
+  let confidenceScore = dutyConfidenceScore;
+  if (!hsResult || hsResult.hsCode === '9999') confidenceScore *= 0.7;  // No HS = lower confidence
+  else if (classificationSource === 'ai') confidenceScore *= 0.9;       // AI classification = slightly lower
+  else if (classificationSource === 'cache' || classificationSource === 'manual') confidenceScore *= 1.0;
+  confidenceScore = Math.round(confidenceScore * 100) / 100;
+
+  const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf + insurance + brokerageFee;
+
+  // DDU: buyer pays duties/taxes at delivery, seller only pays product+shipping
+  const isDDU = input.shippingTerms === 'DDU';
+  const dduBuyerCharges = (!isDomestic && isDDU) ? {
+    importDuty: round(importDuty),
+    vat: round(vat),
+    processingFee: round(mpf),
+    total: round(importDuty + vat + mpf),
+    note: 'Buyer pays at delivery (DDU)',
+  } : undefined;
+
+  // For DDU, totalLandedCost still includes everything (full cost to buyer)
+  // but dduBuyerCharges shows what the buyer must pay separately at delivery
 
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' : originCountry === 'CN' ? 'CN' : 'OTHER';
@@ -468,12 +728,50 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     vatLabel: effectiveVatLabel,
     vatRate: effectiveVatRate,
     deMinimisApplied,
+    dutyExempt: isDomestic ? false : dutyExempt,
+    taxExempt: isDomestic ? false : taxExempt,
+    dutyThresholdUsd: !isDomestic ? dutyThresholdUsd : undefined,
+    taxThresholdUsd: !isDomestic ? taxThresholdUsd : undefined,
     destinationCurrency: profile.currency,
     hsClassification: hsResult,
     ftaApplied: ftaResult,
     additionalTariffNote,
     classificationSource,
     dutyRateSource,
+    dutyConfidenceScore,
+    insurance: round(insurance),
+    brokerageFee: round(brokerageFee),
+    confidenceScore,
+    tradeRemedies: tradeRemedyResult?.hasRemedies ? tradeRemedyResult : undefined,
+    usAdditionalTariffs: usAdditionalTariffs?.hasAdditionalTariffs ? usAdditionalTariffs : undefined,
+    entryType: !isDomestic ? entryType : undefined,
+    shippingTerms: input.shippingTerms || 'DDP',
+    dduBuyerCharges,
+    accuracyGuarantee: (() => {
+      const factors: string[] = [];
+      let score = confidenceScore;
+      if (dutyRateSource === 'agr') factors.push('FTA agreement rate');
+      else if (dutyRateSource === 'min') factors.push('Minimum duty rate');
+      else if (dutyRateSource === 'hardcoded') { factors.push('Estimated duty rate'); score *= 0.8; }
+      if (hsResult && hsResult.hsCode !== '9999') factors.push('HS-specific');
+      else { factors.push('No HS classification'); score *= 0.7; }
+      if (ftaResult?.hasFta) factors.push('FTA applied');
+      if (tradeRemedyResult?.hasRemedies) factors.push('Trade remedies included');
+      const level = score >= 0.8 ? 'high' as const : score >= 0.6 ? 'medium' as const : 'low' as const;
+      return {
+        level,
+        estimatedAccuracy: Math.round(score * 100),
+        factors,
+      };
+    })(),
+    dataFreshness: {
+      dutyRateAge: dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc'
+        ? 'macmap_db' : dutyRateSource || 'hardcoded',
+      quality: dutyRateSource === 'hardcoded' ? 'fallback'
+        : (dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc' || dutyRateSource === 'live_db' || dutyRateSource === 'external_api') ? 'fresh'
+        : 'stale',
+    },
+    exchangeRateTimestamp: localCurrency?.lastUpdated,
     detectedOriginCountry: (!input.origin && hsResult?.countryOfOrigin) ? hsResult.countryOfOrigin : undefined,
     localCurrency,
   };

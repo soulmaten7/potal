@@ -26,7 +26,9 @@ export function checkRestrictions(
     return {
       hasRestrictions: false,
       isProhibited: false,
+      isWatched: false,
       restrictions: [],
+      restrictedCarriers: [],
       hsCode: cleanHs,
       destinationCountry: dest,
     };
@@ -34,6 +36,7 @@ export function checkRestrictions(
 
   const allRules = getAllRestrictions();
   const matched: MatchedRestriction[] = [];
+  const carrierSet = new Set<string>();
 
   for (const rule of allRules) {
     // Check if HS code matches the rule prefix
@@ -52,17 +55,25 @@ export function checkRestrictions(
       category: rule.category,
       description: rule.description,
       requiredDocuments: rule.requiredDocuments,
+      carrierRestrictions: rule.carrierRestrictions,
     });
+
+    // Collect carrier restrictions
+    if (rule.carrierRestrictions) {
+      rule.carrierRestrictions.forEach(c => carrierSet.add(c));
+    }
   }
 
-  // Sort: prohibited first, then restricted, then warning
-  const severityOrder = { prohibited: 0, restricted: 1, warning: 2 };
-  matched.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+  // Sort: prohibited first, then restricted, watched, then warning
+  const severityOrder: Record<string, number> = { prohibited: 0, restricted: 1, watched: 2, warning: 3 };
+  matched.sort((a, b) => (severityOrder[a.severity] ?? 9) - (severityOrder[b.severity] ?? 9));
 
   return {
     hasRestrictions: matched.length > 0,
     isProhibited: matched.some(r => r.severity === 'prohibited'),
+    isWatched: matched.some(r => r.severity === 'watched'),
     restrictions: matched,
+    restrictedCarriers: [...carrierSet],
     hsCode: cleanHs,
     destinationCountry: dest,
   };

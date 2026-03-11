@@ -121,7 +121,7 @@ export interface PackingList {
 
 export interface GenerateDocumentInput {
   /** Document type to generate */
-  type: 'commercial_invoice' | 'packing_list' | 'both';
+  type: 'commercial_invoice' | 'packing_list' | 'certificate_of_origin' | 'required_documents' | 'both' | 'all';
   /** Seller/exporter info */
   exporter: TradeParty;
   /** Buyer/importer info */
@@ -153,7 +153,69 @@ export interface GenerateDocumentInput {
   notes?: string;
 }
 
+// ─── Certificate of Origin ─────────────────────────
+
+export interface CertificateOfOrigin {
+  /** Certificate number */
+  certificateNumber: string;
+  /** Date of issue */
+  issueDate: string;
+  /** Exporter / Producer */
+  exporter: TradeParty;
+  /** Importer / Consignee */
+  importer: TradeParty;
+  /** Items with origin details */
+  items: Array<{
+    description: string;
+    hsCode?: string;
+    quantity: number;
+    countryOfOrigin: string;
+    /** Origin criterion (WO, PE, etc.) */
+    originCriterion?: string;
+  }>;
+  /** FTA/Trade agreement name (if preferential) */
+  tradeAgreement?: string;
+  /** Whether this is a preferential certificate */
+  isPreferential: boolean;
+  /** Exporter declaration text */
+  declaration: string;
+  /** Country of origin */
+  originCountry: string;
+  /** Destination country */
+  destinationCountry: string;
+}
+
+// ─── Required Documents Check ──────────────────────
+
+export interface RequiredDocument {
+  /** Document name */
+  name: string;
+  /** Document code/type */
+  code: string;
+  /** Whether it's mandatory or optional */
+  required: boolean;
+  /** Description of what this document is for */
+  description: string;
+  /** Which party is responsible (exporter/importer/both) */
+  responsible: 'exporter' | 'importer' | 'both';
+}
+
+export interface RequiredDocumentsResult {
+  /** Destination country */
+  destinationCountry: string;
+  /** Origin country */
+  originCountry: string;
+  /** HS code (if provided) */
+  hsCode?: string;
+  /** List of required documents */
+  documents: RequiredDocument[];
+  /** Country-specific notes */
+  notes: string[];
+}
+
 export interface GenerateDocumentResult {
   commercialInvoice?: CommercialInvoice;
   packingList?: PackingList;
+  certificateOfOrigin?: CertificateOfOrigin;
+  requiredDocuments?: RequiredDocumentsResult;
 }

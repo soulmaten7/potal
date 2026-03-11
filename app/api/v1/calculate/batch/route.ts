@@ -3,7 +3,7 @@
  *
  * Batch Total Landed Cost calculation endpoint.
  * Calculate TLC for multiple items in a single request.
- * Max 100 items per request.
+ * Max 500 items per request.
  *
  * POST /api/v1/calculate/batch
  * Body: {
@@ -30,7 +30,7 @@ import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { calculateGlobalLandedCostAsync, type GlobalCostInput, type GlobalLandedCost } from '@/app/lib/cost-engine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
-const MAX_BATCH_SIZE = 100;
+const MAX_BATCH_SIZE = 500;
 
 interface BatchItem extends GlobalCostInput {
   id: string;

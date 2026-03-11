@@ -63,6 +63,8 @@ export async function createAlert(
 ): Promise<TariffAlert> {
   const id = `ta_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
+  const defaultAlertTypes: TariffAlert['alertTypes'] = ['tariff_change', 'fta_update', 'trade_remedy', 'section_301', 'regulation_change'];
+
   const alert: TariffAlert = {
     id,
     sellerId,
@@ -73,6 +75,7 @@ export async function createAlert(
     lastKnownRateSource: rateSource ?? 'unknown',
     webhookUrl: input.webhookUrl,
     notifyEmail: input.notifyEmail,
+    alertTypes: input.alertTypes || defaultAlertTypes,
     isActive: true,
     createdAt: new Date().toISOString(),
   };
@@ -88,6 +91,7 @@ export async function createAlert(
       last_known_rate_source: alert.lastKnownRateSource,
       webhook_url: alert.webhookUrl,
       notify_email: alert.notifyEmail,
+      alert_types: alert.alertTypes,
       is_active: alert.isActive,
     },
   });
@@ -115,6 +119,7 @@ export async function listAlerts(sellerId: string): Promise<TariffAlert[]> {
     lastKnownRateSource: String(row.last_known_rate_source),
     webhookUrl: row.webhook_url ? String(row.webhook_url) : undefined,
     notifyEmail: row.notify_email ? String(row.notify_email) : undefined,
+    alertTypes: Array.isArray(row.alert_types) ? row.alert_types : ['tariff_change', 'fta_update', 'trade_remedy', 'section_301', 'regulation_change'],
     isActive: Boolean(row.is_active),
     createdAt: String(row.created_at),
     lastCheckedAt: row.last_checked_at ? String(row.last_checked_at) : undefined,

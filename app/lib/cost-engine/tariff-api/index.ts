@@ -27,3 +27,6 @@ export { fetchCanadaCbsaDutyRate } from './canada-cbsa-provider';
 export { fetchAustraliaDutyRate } from './australia-abf-provider';
 export { fetchKoreaDutyRate } from './korea-kcs-provider';
 export { fetchJapanDutyRate } from './japan-customs-provider';
+export { fetchAseanDutyRate, isAseanMember } from './asean-provider';
+export { fetchIndiaCbicDutyRate } from './india-cbic-provider';
+export { fetchTurkeyDutyRate } from './turkey-tga-provider';

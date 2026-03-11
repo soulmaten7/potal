@@ -10,7 +10,7 @@
  * GET /api/v1/countries?lang=ko               — Korean country names
  * GET /api/v1/countries?lang=ja&region=Asia    — Japanese names, Asia only
  *
- * Supported languages: en, ko, ja, zh, es, fr, de
+ * Supported languages: 50 languages (en, ko, ja, zh, es, fr, de, pt, ru, ar, hi, th, vi, id, tr, pl, nl, sv, da, fi, nb, cs, ro, hu, uk, el, he, ms, it, bg, bn, fa, tl, sw, am, ur, my, km, lo, ka, az, uz, kk, ne, si, hr, sr, lt, lv, sk)
  */
 
 import { NextRequest } from 'next/server';

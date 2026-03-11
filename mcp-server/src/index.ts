@@ -7,8 +7,11 @@
  * Calculates import duties, taxes (VAT/GST), customs fees, and shipping
  * for cross-border purchases across 240 countries and territories.
  *
- * Tools:
+ * Tools (5):
  *   - calculate_landed_cost: Calculate total cost for international purchases
+ *   - classify_product: AI-powered HS code classification
+ *   - check_restrictions: Import restriction & compliance check
+ *   - screen_shipment: Comprehensive pre-shipment screening (cost + compliance)
  *   - list_supported_countries: Get all supported countries with tax info
  */
 
@@ -19,12 +22,12 @@ import { z } from "zod";
 // ─── Configuration ──────────────────────────────────────────
 const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
-const USER_AGENT = "potal-mcp-server/1.0.0";
+const USER_AGENT = "potal-mcp-server/1.1.0";
 
 // ─── Server Instance ────────────────────────────────────────
 const server = new McpServer({
   name: "potal",
-  version: "1.0.0",
+  version: "1.1.0",
 });
 
 // ─── API Helper ─────────────────────────────────────────────
@@ -224,6 +227,207 @@ server.tool(
           text: formatted,
         },
       ],
+    };
+  }
+);
+
+// ─── Tool: classify_product ──────────────────────────────────
+
+server.tool(
+  "classify_product",
+  "Classify a product into an HS (Harmonized System) code for customs. " +
+    "Uses AI-powered classification with keyword matching fallback. " +
+    "Returns HS code, description, chapter, and confidence level.",
+  {
+    productName: z.string().describe("Product name or description. Example: 'cotton t-shirt', 'laptop computer', 'running shoes'"),
+    productCategory: z.string().optional().describe("Product category hint. Example: 'apparel', 'electronics', 'footwear'"),
+    hsCode: z.string().optional().describe("Known HS code to override classification. Example: '6109.10'"),
+  },
+  async (params) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key not configured." }],
+      };
+    }
+
+    const result = await callPotalApi("/classify", "POST", {
+      productName: params.productName,
+      productCategory: params.productCategory,
+      hsCode: params.hsCode,
+    });
+
+    if (!result.success) {
+      return {
+        content: [{ type: "text" as const, text: `❌ Classification failed: ${result.error}` }],
+        isError: true,
+      };
+    }
+
+    const d = (result.data as any)?.data || result.data;
+    const lines: string[] = [
+      "## HS Code Classification\n",
+      `- **Product**: ${params.productName}`,
+      `- **HS Code**: ${d.hsCode || 'Unknown'}`,
+      `- **Description**: ${d.description || d.hsDescription || 'N/A'}`,
+      `- **Chapter**: ${d.chapter || (d.hsCode ? d.hsCode.substring(0, 2) : 'N/A')}`,
+      `- **Classification Source**: ${d.classificationSource || d.source || 'N/A'}`,
+    ];
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
+    };
+  }
+);
+
+// ─── Tool: check_restrictions ───────────────────────────────
+
+server.tool(
+  "check_restrictions",
+  "Check import restrictions for a product in a destination country. " +
+    "Returns prohibited items, required permits, watched items, and carrier restrictions. " +
+    "Essential for compliance screening before shipping.",
+  {
+    hsCode: z.string().describe("HS code to check restrictions for. Example: '9302' (firearms), '3004' (pharmaceuticals)"),
+    destinationCountry: z.string().length(2).describe("Destination country ISO2 code. Example: 'US', 'DE', 'JP'"),
+    productName: z.string().optional().describe("Product name for auto-classification if no HS code."),
+  },
+  async (params) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key not configured." }],
+      };
+    }
+
+    const result = await callPotalApi("/restrictions", "POST", {
+      hsCode: params.hsCode,
+      destinationCountry: params.destinationCountry,
+      productName: params.productName,
+    });
+
+    if (!result.success) {
+      return {
+        content: [{ type: "text" as const, text: `❌ Restriction check failed: ${result.error}` }],
+        isError: true,
+      };
+    }
+
+    const d = (result.data as any)?.data || result.data;
+    const lines: string[] = [
+      "## Import Restriction Check\n",
+      `- **HS Code**: ${d.hsCode || params.hsCode}`,
+      `- **Destination**: ${d.destinationCountry || params.destinationCountry}`,
+      `- **Has Restrictions**: ${d.hasRestrictions ? '⚠️ Yes' : '✅ No'}`,
+      `- **Prohibited**: ${d.isProhibited ? '🚫 YES' : 'No'}`,
+    ];
+
+    if (d.isWatched) {
+      lines.push(`- **Watch List**: ⚠️ Item is on a watch list`);
+    }
+
+    if (Array.isArray(d.restrictedCarriers) && d.restrictedCarriers.length > 0) {
+      lines.push(`- **Carrier Restrictions**: ${d.restrictedCarriers.join(', ')}`);
+    }
+
+    if (Array.isArray(d.restrictions) && d.restrictions.length > 0) {
+      lines.push("\n### Restrictions Found\n");
+      for (const r of d.restrictions) {
+        lines.push(`- **[${(r.severity || '').toUpperCase()}]** ${r.category}: ${r.description}`);
+        if (r.requiredDocuments?.length) {
+          lines.push(`  - Required: ${r.requiredDocuments.join(', ')}`);
+        }
+      }
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
+    };
+  }
+);
+
+// ─── Tool: screen_shipment ──────────────────────────────────
+
+server.tool(
+  "screen_shipment",
+  "Comprehensive shipment screening: calculates landed cost, checks restrictions, " +
+    "and identifies trade remedies — all in one call. Use this for a complete " +
+    "pre-shipment compliance and cost analysis.",
+  {
+    price: z.number().describe("Product price in USD"),
+    origin: z.string().length(2).describe("Origin country ISO2"),
+    destinationCountry: z.string().length(2).describe("Destination country ISO2"),
+    productName: z.string().describe("Product name for classification"),
+    shippingPrice: z.number().optional().describe("Shipping cost in USD"),
+    hsCode: z.string().optional().describe("Known HS code"),
+  },
+  async (params) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key not configured." }],
+      };
+    }
+
+    // Run calculate and restrictions in parallel
+    const [calcResult, restrictResult] = await Promise.all([
+      callPotalApi("/calculate", "POST", {
+        price: params.price,
+        origin: params.origin,
+        destinationCountry: params.destinationCountry,
+        productName: params.productName,
+        shippingPrice: params.shippingPrice,
+        hsCode: params.hsCode,
+      }),
+      callPotalApi("/restrictions", "POST", {
+        hsCode: params.hsCode || "",
+        destinationCountry: params.destinationCountry,
+        productName: params.productName,
+      }),
+    ]);
+
+    const lines: string[] = ["## Shipment Screening Report\n"];
+
+    // Cost section
+    if (calcResult.success && calcResult.data) {
+      lines.push(formatBreakdown(calcResult.data));
+
+      const d = (calcResult.data as any)?.data || calcResult.data;
+      if (d.tradeRemedies?.hasRemedies) {
+        lines.push("\n### ⚠️ Trade Remedies Apply");
+        for (const m of d.tradeRemedies.measures || []) {
+          lines.push(`- **${m.type}**: +${(m.dutyRate * 100).toFixed(1)}% — ${m.title}`);
+        }
+      }
+      if (d.usAdditionalTariffs?.hasAdditionalTariffs) {
+        lines.push("\n### ⚠️ US Additional Tariffs");
+        if (d.usAdditionalTariffs.section301) lines.push(`- ${d.usAdditionalTariffs.section301.note}`);
+        if (d.usAdditionalTariffs.section232) lines.push(`- ${d.usAdditionalTariffs.section232.note}`);
+      }
+      if (d.confidenceScore !== undefined) {
+        lines.push(`\n**Confidence Score**: ${(d.confidenceScore * 100).toFixed(0)}%`);
+      }
+    } else {
+      lines.push(`❌ Cost calculation failed: ${calcResult.error}`);
+    }
+
+    // Restrictions section
+    lines.push("\n---\n### Compliance Check\n");
+    if (restrictResult.success && restrictResult.data) {
+      const r = (restrictResult.data as any)?.data || restrictResult.data;
+      if (r.isProhibited) {
+        lines.push("🚫 **PROHIBITED** — This item cannot be imported to the destination country.");
+      } else if (r.hasRestrictions) {
+        lines.push("⚠️ **Restrictions apply** — See details below:");
+        for (const rest of r.restrictions || []) {
+          lines.push(`- [${(rest.severity || '').toUpperCase()}] ${rest.category}: ${rest.description}`);
+        }
+      } else {
+        lines.push("✅ No import restrictions found.");
+      }
+    } else {
+      lines.push("⚠️ Restriction check unavailable.");
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
     };
   }
 );

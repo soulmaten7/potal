@@ -1,37 +1,37 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-11 15:30 KST (Cowork 세션 8 — Layer 2/3 + D14 완료 + 절대 규칙 추가 → Division 15/15)
+> 마지막 업데이트: 2026-03-11 19:30 KST (Cowork 세션 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개)
 
 ---
 
-## ⚠️ 이번 세션(Cowork 7)에서 완료된 사항
+## ⚠️ CW9에서 완료된 사항
 
-### 1. Chief Orchestrator 운영 체계 확정
-- AI Agent Organization v2→v3 전면 재설계
-- 10→**15개 Division** + **3 Layer 모델** (Automation/Monitor/Active)
-- CLAUDE.md에 운영 프로토콜 전면 반영
-- Opus 최소화: 4+에스컬5 (70%+ 토큰 절약)
+### 47기능 도장깨기 — 34개 작업 완료
+- **31개 기능 구현**: #1~#10, #14, #17~#21, #24~#28, #30~#33, #40, #42, #44~#47
+- **3개 P0 인프라**: #11(벡터DB+분류파이프라인), #13(HS10자리확장), #15(분류DB규모)
+- 전부 npm run build 통과
 
-### 2. Layer 1 자동화 — 7개 Division 구현
-| Cron 엔드포인트 | Division | 스케줄 | 모니터링 대상 |
-|----------------|----------|--------|-------------|
-| `health-check` | D11 | 매 6시간 | DB/API/Auth/데이터 무결성 |
-| `spot-check` | D8 | 매일 04:00 | 8개 계산 케이스 정확도 |
-| `uptime-check` | D5 | 매 6시간 | 6개 핵심 페이지/API |
-| `trade-remedy-sync` | D1 | 매주 월 06:30 | 6개 무역구제 테이블 |
-| `gov-api-health` | D4 | 매 12시간 | 7개국 정부 API |
-| `plugin-health` | D6 | 매 12시간 | 위젯/Shopify/웹훅 |
-| `competitor-scan` | D15 | 매주 월 08:00 | 10개 경쟁사 사이트 |
+### 주요 변경
+- **50개국어 i18n** (#14, #19): 26→50개 locale + Intl.DisplayNames 폴백
+- **위젯 v2.1.0** (#21): auto-detect (locale/country/currency/theme)
+- **FTA RoO 엔진** (#5): CTC/CTH/CTSH/RVC/WO, USMCA/RCEP/CPTPP
+- **ASEAN/India/Turkey** (#18): 3개 tariff provider 추가
+- **제재심사** (#25): OFAC/BIS/EU/UN/UK + fuzzy matching
+- **CSV 배치** (#33): /api/v1/calculate/csv, batch MAX 500
+- **벡터DB** (#11): pgvector + ivfflat + 5단계 분류 파이프라인
+- **HS 10자리** (#13): USITC/UK/EU TARIC 정부 API + DB 캐시
+- **분류DB** (#15): product_hs_mappings + pg_trgm + Google Taxonomy 170+ 매핑
+- **GlobalCostEngine**: EU IOSS, UK reverse charge, AU LVG, Insurance, Brokerage, DDP/DDU, 반덤핑, Section 301, confidence_score
+- **새 API**: /fta, /screening, /vat-report, /graphql, /support, /alerts/subscribe, /calculate/csv
 
-### 3. D9 Customer Success
-- FAQ 7→13항목 + "Plugins & Widgets" 카테고리 신설
-- Google Rich Snippets 확장
-- Crisp 채팅 위젯 삽입 + Vercel env 등록 완료
+### Supabase 인프라 (CW9 신규)
+- pgvector (v0.8.0), pg_trgm 확장 설치
+- hs_classification_vectors (ivfflat 벡터 인덱스)
+- hs_expansion_rules (HS10 캐시)
+- product_hs_mappings (gin_trgm_ops 인덱스)
+- match_hs_vectors RPC 함수
 
-### 4. 인프라
-- Vercel Cron: 2→**9개**
-- Supabase `health_check_logs` 테이블 생성
-- Vercel env `NEXT_PUBLIC_CRISP_WEBSITE_ID` 3환경 등록
-- git push 3회, npm run build 전부 통과
+### AGR 버그 수정
+- import_agr_all.py: None 방어 (.strip() AttributeError)
 
 ---
 
@@ -44,68 +44,45 @@ tail -5 ~/portal/agr_import.log
 cat ~/portal/agr_import_progress.json
 ```
 - ~144M행, 53개국
-- **현재**: 28/53 국가 완료, KOR 진행중 (2026-03-11 기준)
 - 스크립트: import_agr_all.py + run_agr_loop.sh
 - ⚠️ 완료 전까지 다른 대량 작업 금지
 
 ---
 
-## Division 세팅 현황 (Layer 1 자동화 기준)
-
-| Division | 상태 | 비고 |
-|----------|------|------|
-| D1 Tariff | ✅ | Cron 관세 동기화 + trade-remedy-sync 매주 월 |
-| D2 Tax Engine | ✅ | 앱 내장 로직 자동 실행 |
-| D3 HS Classification | ✅ | 앱 내장 로직 자동 실행 |
-| D4 Data Pipeline | ✅ | 환율 Cron + gov-api-health 매 12시간 |
-| D5 Product & Web | ✅ | Vercel 배포 + uptime-check 매 6시간 |
-| D6 Platform | ✅ | Shopify Webhook + plugin-health 매 12시간 |
-| D7 API & Developer | ✅ | plan-checker, rate-limiter 내장 |
-| D8 QA | ✅ | CI 테스트 + spot-check 매일 |
-| D9 Customer Success | ✅ | FAQ 13항목 + Crisp 채팅 |
-| D10 Billing | ✅ | Paddle Webhook + Overage Cron |
-| D11 Infrastructure | ✅ | CI/CD + health-check 매 6시간 |
-| D12 Marketing | ✅ | Make.com Welcome Email + LinkedIn 소셜공유 |
-| D13 Legal | ✅ | Google Calendar 법률 리뷰 3개 반복일정 |
-| D14 Finance | ✅ | POTAL_D14_Finance_Tracker.xlsx (Monthly Costs + Revenue + Division Log) |
-| D15 Intelligence | ✅ | competitor-scan 매주 월 |
-
-**✅ 15/15 전체 완료**
-
----
-
 ## 다음 세션 우선순위
 
-### 🔴 즉시 — AGR 완료 후
-1. **AGR 임포트 완료 확인** → Supabase macmap_agr_rates 행 수 확인
-2. **WDC 상품명 추출 실행**:
+### 🔴 P1 — 즉시
+1. **#1 관세최적화** — 최적 관세율 자동 추천 (MIN/AGR/FTA 비교)
+2. **#8 기업별 AD 관세** — 반덤핑 기업별 세율 적용 (trade_remedy_duties 활용)
+3. **#9 heading 세분화** — HS 4자리 heading 내 세부 분류 개선
+4. **#17 일간 Cron** — 환율/관세율 일일 자동 업데이트 (현재 주간 → 일간)
+5. **#25 SDN 데이터 로딩** — OFAC SDN 실제 데이터 로딩 (현재 하드코딩 25건 → 풀 리스트)
+6. **AGR 임포트 모니터링** → `cat ~/portal/agr_import_progress.json` (31/53 완료, MAR 진행중)
+7. **Google Taxonomy→HS 매핑 임포트** — `npx tsx scripts/import-google-taxonomy-hs.ts`
+
+### 🟡 P2 — 47기능 남은 항목
+8. **47기능 중 미완료 항목 확인** — POTAL_47_Victory_Strategy.xlsx 기준
+9. **벤치마크 실행** — `npx tsx accuracy-benchmark/run-benchmark.ts` (분류 정확도 측정)
+10. **벡터DB 데이터 적재** — WDC 추출 후 임베딩 생성 → hs_classification_vectors
+11. **WDC 상품명 추출 실행** (AGR 완료 후):
    ```bash
    cd ~/portal && nohup python3 scripts/extract_with_categories.py /Volumes/soulmaten/POTAL/wdc-products > wdc_extract.log 2>&1 &
    ```
-3. **상품명→HS 코드 매핑 파이프라인** — WDC 5.95억 상품 데이터
+12. **Shopify 앱 심사 상태 확인** — Partner Dashboard
 
-### 🔴 즉시 — 비즈니스
-4. **Shopify 앱 심사 상태 확인** — Partner Dashboard
-5. **Morning Brief 시스템 실제 구현** — Layer 2 체크리스트 정의 + health_check_logs 데이터 기반 자동 보고
-6. **lookup_duty_rate_v2() 검증** — MIN+AGR 4단계 폴백 통합 테스트
-
-### 🟡 보류 Division
-7. ~~D14 Finance~~ — ✅ 완료 (POTAL_D14_Finance_Tracker.xlsx)
-
-### 🟢 장기
-9. **47기능 완전정복 전략 실행** — Phase 1 (크리티컬 갭 6개) 우선
-10. **Layer 2 Monitor 구현** — Sonnet 팀장 체크리스트 자동 실행
-11. **Layer 3 Agent Teams 시범 운영** — Division 단위 프로젝트 실행
+### 🟢 P3 — 장기
+13. **lookup_duty_rate_v2() 통합 테스트** — MIN+AGR 4단계 폴백 검증
+14. **Layer 2 Monitor 구현** — Morning Brief 자동 보고
+15. **Layer 3 Agent Teams 시범 운영**
 
 ---
 
 ## ⚠️ 주의사항
 - **결제**: ✅ Paddle Live 완료 + Overage 빌링 + DDP Quote-only
 - **요금제**: ✅ 전체 코드베이스 정리 완료 (Free/Basic/Pro/Enterprise)
-- **33개 기능**: ✅ 전부 구현 완료
+- **47기능**: CW9에서 34개 작업 완료 (31기능 + 3 P0인프라)
 - **AI Agent Org v3**: ✅ 15 Division, 3 Layer, Chief Orchestrator
 - **Layer 1 자동화**: ✅ 15/15 Division 전체 완료, Vercel Cron 9개
-- **Crisp 채팅**: ✅ 활성화됨 (env 등록 완료)
 - **Git push**: Mac 터미널에서만 가능
 - **터미널 작업**: 한 번에 하나만 (AGR 실행 중)
 

@@ -22,6 +22,9 @@ import { fetchCanadaCbsaDutyRate } from './canada-cbsa-provider';
 import { fetchAustraliaDutyRate } from './australia-abf-provider';
 import { fetchKoreaDutyRate } from './korea-kcs-provider';
 import { fetchJapanDutyRate } from './japan-customs-provider';
+import { fetchAseanDutyRate, isAseanMember } from './asean-provider';
+import { fetchIndiaCbicDutyRate } from './india-cbic-provider';
+import { fetchTurkeyDutyRate } from './turkey-tga-provider';
 
 // ─── Configuration ────────────────────────────────
 
@@ -354,6 +357,18 @@ export async function fetchDutyRateWithFallback(
       // 한국: KCS Customs Tariff (하드코딩 + FTA 적용)
       result = await fetchKoreaDutyRate(hsCode, originCountry, config.timeoutMs);
       providerName = 'korea-kcs';
+    } else if (dest === 'IN') {
+      // 인도: CBIC Customs Tariff
+      result = await fetchIndiaCbicDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'india-cbic';
+    } else if (dest === 'TR') {
+      // 터키: TGA Customs Tariff
+      result = await fetchTurkeyDutyRate(hsCode, originCountry, config.timeoutMs);
+      providerName = 'turkey-tga';
+    } else if (isAseanMember(dest)) {
+      // ASEAN 10개국: ATIGA + 국가별 MFN
+      result = await fetchAseanDutyRate(hsCode, dest, originCountry, config.timeoutMs);
+      providerName = 'asean-atiga';
     } else {
       // 기타 국가: 기존 WTO/Dutify 프로바이더 사용
       result = await openTradeProvider.fetchDutyRate(hsCode, destinationCountry, originCountry);

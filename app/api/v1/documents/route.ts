@@ -23,7 +23,7 @@ import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response'
 
 // ─── Input Validation ───────────────────────────────
 
-const VALID_DOC_TYPES = ['commercial_invoice', 'packing_list', 'both'] as const;
+const VALID_DOC_TYPES = ['commercial_invoice', 'packing_list', 'certificate_of_origin', 'required_documents', 'both', 'all'] as const;
 const VALID_INCOTERMS = ['EXW', 'FCA', 'FAS', 'FOB', 'CFR', 'CIF', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP'];
 const MAX_ITEMS = 100;
 const MAX_TEXT_LENGTH = 500;

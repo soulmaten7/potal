@@ -1,5 +1,71 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-11 15:30 KST
+> 마지막 업데이트: 2026-03-11 19:30 KST
+
+## [2026-03-11 19:30 KST] Cowork 세션 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개
+
+### 📊 47기능 도장깨기 — 34개 작업 완료 (전부 npm run build 통과)
+
+**간단 5개 (#14, #19, #21, #26, #33):**
+- **#14 i18n 50개국어**: 26→50개 언어 locale 파일, SUPPORTED_LANGUAGES 확장
+- **#19 50개국어 국가명**: country-i18n.ts에 Intl.DisplayNames API 폴백 추가
+- **#21 위젯 auto-detect**: v2.1.0 — locale/country/currency/theme 자동감지
+- **#26 통관서류 확장**: Certificate of Origin + 국가별 필수서류 10개국 룰
+- **#33 CSV 배치**: /api/v1/calculate/csv (멀티파트, 500행), batch MAX 100→500
+
+**무거운 3개 (#5, #18, #25):**
+- **#5 FTA RoO**: Rules of Origin 엔진 (CTC/CTH/CTSH/RVC/WO), USMCA/RCEP/CPTPP 규칙, /api/v1/fta
+- **#18 ASEAN/India/Turkey**: 3개 tariff provider (asean 10국 ATIGA, india BCD+SWS, turkey EU CU)
+- **#25 제재심사**: OFAC SDN, BIS Entity List, EU/UN/UK 제재 + fuzzy matching, /api/v1/screening
+
+**추가 기능 (#1~#10, #17, #20, #24, #27~#28, #30~#32, #40, #42, #44~#47):**
+- GlobalCostEngine.ts: EU IOSS, UK reverse charge, AU LVG, Insurance, Brokerage, DDP/DDU, 반덤핑, Section 301, confidence_score
+- macmap-lookup.ts: 4단계 폴백 관세 조회
+- trade-remedy-lookup.ts: 반덤핑/상계관세 API
+- section301-lookup.ts: Section 301/232
+- origin-detection.ts: 원산지 자동감지
+- fraud-prevention.ts: 사기 방지
+- /api/v1/vat-report, /api/v1/graphql, /api/v1/support, /api/v1/alerts/subscribe
+
+**P0 크리티컬 인프라 3개 (#11, #13, #15):**
+- **#11 AI Classification Infrastructure**: pgvector (v0.8.0) + ivfflat 인덱스, 5단계 파이프라인 (캐시→벡터→키워드→LLM→폴백), vector-search.ts, 벤치마크 1000 테스트케이스
+- **#13 HS 10자리 확장**: hs10-expander.ts (USITC/UK/EU TARIC 정부 API), hs_expansion_rules 캐시 테이블
+- **#15 분류 DB 규모**: product-mappings.ts (pg_trgm 트라이그램 검색), Google Taxonomy 170+ 카테고리→HS 매핑
+
+**Supabase 인프라:**
+- pgvector, pg_trgm 확장 설치
+- hs_classification_vectors 테이블 (ivfflat 벡터 인덱스)
+- hs_expansion_rules 테이블
+- product_hs_mappings 테이블 (gin_trgm_ops 인덱스)
+- match_hs_vectors RPC 함수
+
+**AGR 임포트 버그 수정:**
+- import_agr_all.py: None 방어 (.strip() AttributeError)
+
+### 📝 신규 파일 (주요)
+- `app/lib/cost-engine/macmap-lookup.ts` (NEW)
+- `app/lib/cost-engine/trade-remedy-lookup.ts` (NEW)
+- `app/lib/cost-engine/section301-lookup.ts` (NEW)
+- `app/lib/cost-engine/origin-detection.ts` (NEW)
+- `app/lib/cost-engine/screening/types.ts`, `screen.ts` (NEW)
+- `app/lib/cost-engine/ai-classifier/vector-search.ts` (NEW)
+- `app/lib/cost-engine/ai-classifier/product-mappings.ts` (NEW)
+- `app/lib/cost-engine/hs-code/hs10-expander.ts` (NEW)
+- `app/lib/cost-engine/tariff-api/asean-provider.ts` (NEW)
+- `app/lib/cost-engine/tariff-api/india-cbic-provider.ts` (NEW)
+- `app/lib/cost-engine/tariff-api/turkey-tga-provider.ts` (NEW)
+- `app/lib/api-auth/fraud-prevention.ts` (NEW)
+- `app/api/v1/calculate/csv/route.ts` (NEW)
+- `app/api/v1/fta/route.ts` (NEW)
+- `app/api/v1/screening/route.ts` (NEW)
+- `app/api/v1/vat-report/route.ts` (NEW)
+- `app/api/v1/graphql/route.ts` (NEW)
+- `app/api/v1/support/route.ts` (NEW)
+- `app/api/v1/alerts/subscribe/route.ts` (NEW)
+- `accuracy-benchmark/test-cases.ts`, `run-benchmark.ts` (NEW)
+- `scripts/import-google-taxonomy-hs.ts` (NEW)
+- `app/i18n/translations/` — 24개 신규 locale 파일
+
+---
 
 ## [2026-03-11 15:27 KST] Cowork 세션 8 — Layer 2/3 구현 + D14 완료 → 15/15
 - Morning Brief API (`/api/v1/admin/morning-brief`) — 15개 Division 상태 Green/Yellow/Red 요약

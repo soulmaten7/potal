@@ -40,9 +40,9 @@
  *   getSupportedLanguages() → ['en', 'ko', 'ja', 'zh', 'es', 'fr', 'de', 'pt', 'ru', 'ar', 'hi', 'th', 'vi', 'id', 'tr', 'pl', 'nl', 'sv', 'da', 'fi', 'nb', 'cs', 'ro', 'hu', 'uk', 'el', 'he', 'ms', 'it', 'bg']
  */
 
-export type SupportedLanguage = 'en' | 'ko' | 'ja' | 'zh' | 'es' | 'fr' | 'de' | 'pt' | 'ru' | 'ar' | 'hi' | 'th' | 'vi' | 'id' | 'tr' | 'pl' | 'nl' | 'sv' | 'da' | 'fi' | 'nb' | 'cs' | 'ro' | 'hu' | 'uk' | 'el' | 'he' | 'ms' | 'it' | 'bg';
+export type SupportedLanguage = 'en' | 'ko' | 'ja' | 'zh' | 'es' | 'fr' | 'de' | 'pt' | 'ru' | 'ar' | 'hi' | 'th' | 'vi' | 'id' | 'tr' | 'pl' | 'nl' | 'sv' | 'da' | 'fi' | 'nb' | 'cs' | 'ro' | 'hu' | 'uk' | 'el' | 'he' | 'ms' | 'it' | 'bg' | 'bn' | 'fa' | 'tl' | 'sw' | 'am' | 'ur' | 'my' | 'km' | 'lo' | 'ka' | 'az' | 'uz' | 'kk' | 'ne' | 'si' | 'hr' | 'sr' | 'lt' | 'lv' | 'sk';
 
-export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ['en', 'ko', 'ja', 'zh', 'es', 'fr', 'de', 'pt', 'ru', 'ar', 'hi', 'th', 'vi', 'id', 'tr', 'pl', 'nl', 'sv', 'da', 'fi', 'nb', 'cs', 'ro', 'hu', 'uk', 'el', 'he', 'ms', 'it', 'bg'];
+export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ['en', 'ko', 'ja', 'zh', 'es', 'fr', 'de', 'pt', 'ru', 'ar', 'hi', 'th', 'vi', 'id', 'tr', 'pl', 'nl', 'sv', 'da', 'fi', 'nb', 'cs', 'ro', 'hu', 'uk', 'el', 'he', 'ms', 'it', 'bg', 'bn', 'fa', 'tl', 'sw', 'am', 'ur', 'my', 'km', 'lo', 'ka', 'az', 'uz', 'kk', 'ne', 'si', 'hr', 'sr', 'lt', 'lv', 'sk'];
 
 export const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
   en: 'English',
@@ -75,6 +75,26 @@ export const LANGUAGE_LABELS: Record<SupportedLanguage, string> = {
   ms: 'Bahasa Melayu',
   it: 'Italiano',
   bg: 'Български',
+  bn: 'বাংলা',
+  fa: 'فارسی',
+  tl: 'Filipino',
+  sw: 'Kiswahili',
+  am: 'አማርኛ',
+  ur: 'اردو',
+  my: 'မြန်မာ',
+  km: 'ខ្មែរ',
+  lo: 'ລາວ',
+  ka: 'ქართული',
+  az: 'Azərbaycan',
+  uz: 'Oʻzbek',
+  kk: 'Қазақ',
+  ne: 'नेपाली',
+  si: 'සිංහල',
+  hr: 'Hrvatski',
+  sr: 'Српски',
+  lt: 'Lietuvių',
+  lv: 'Latviešu',
+  sk: 'Slovenčina',
 };
 
 /**
@@ -358,7 +378,14 @@ export function getCountryName(code: string, lang: SupportedLanguage = 'en'): st
     return translations[lang]!;
   }
 
-  // Fallback to English
+  // Fallback: use Intl.DisplayNames for languages without hardcoded data
+  try {
+    const displayNames = new Intl.DisplayNames([lang], { type: 'region' });
+    const intlName = displayNames.of(upperCode);
+    if (intlName && intlName !== upperCode) return intlName;
+  } catch { /* Intl not available or unsupported locale */ }
+
+  // Final fallback to English
   const { getCountryProfile } = require('./country-data');
   const profile = getCountryProfile(upperCode);
   return profile?.name || upperCode;

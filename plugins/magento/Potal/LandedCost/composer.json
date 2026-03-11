@@ -1,17 +1,55 @@
 {
     "name": "potal/module-landed-cost",
-    "description": "POTAL Total Landed Cost Calculator for Magento 2 — Show import duties, taxes, and customs fees on product pages. 240 countries supported.",
+    "description": "POTAL Total Landed Cost Calculator for Magento 2 — Show import duties, taxes, and customs fees on product pages. 240+ countries, AI HS classification, 4-stage duty fallback, trade remedies, DDP/DDU support.",
     "type": "magento2-module",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "license": "MIT",
+    "keywords": [
+        "magento2",
+        "landed-cost",
+        "import-duty",
+        "customs",
+        "tariff",
+        "cross-border",
+        "ddp",
+        "vat",
+        "gst",
+        "hs-code",
+        "trade-remedy"
+    ],
+    "homepage": "https://www.potal.app",
+    "support": {
+        "docs": "https://www.potal.app/developers/docs",
+        "issues": "https://github.com/potal-app/magento-module/issues",
+        "email": "support@potal.app"
+    },
+    "authors": [
+        {
+            "name": "POTAL",
+            "email": "support@potal.app",
+            "homepage": "https://www.potal.app"
+        }
+    ],
     "require": {
         "php": ">=8.1",
-        "magento/framework": ">=103.0"
+        "magento/framework": ">=103.0",
+        "magento/module-checkout": ">=100.4",
+        "magento/module-catalog": ">=104.0"
+    },
+    "suggest": {
+        "magento/module-multishipping": "For multi-shipping DDP support"
     },
     "autoload": {
         "files": ["registration.php"],
         "psr-4": {
             "Potal\\LandedCost\\": ""
+        }
+    },
+    "extra": {
+        "magento-marketplace": {
+            "category": "International Commerce",
+            "compatibility": "2.4.x",
+            "stability": "stable"
         }
     }
 }

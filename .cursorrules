@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-11 15:30 KST (Cowork 8 — Layer 2/3 + D14 완료 + 절대 규칙 추가 → Division 15/15)
+# 마지막 업데이트: 2026-03-11 19:30 KST (Cowork 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개 세팅)
 
 ## 0. 프로젝트 개요
 
@@ -9,10 +9,10 @@
 - 상세 맥락: `session-context.md` 반드시 먼저 읽을 것
 
 ### 핵심 서비스
-- **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 30개국어, 63개 FTA
+- **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 50개국어, 63개 FTA
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/100 | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
-- **핵심 전략 (세션 28)**: "33개 기능 업계 최고" — AI 원가 구조로 건당 $0.008 이하에 33개 기능 제공. "싸면서 압도적 = 가격 파괴자"
+- **핵심 전략 (세션 28→CW9)**: "47기능 도장깨기" — CW9에서 34개 작업 완료 (31개 기능+3개 P0 인프라). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자"
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 
 ### 기술 스택
@@ -49,10 +49,10 @@
 - **✅ DDP Checkout Stripe→Quote 전환 (Cowork 5)**: stripe-checkout.ts→ddp-session.ts 리네임, Stripe API 코드 전면 제거, Quote-only 방식 (셀러 자체 결제 연동)
 - **✅ WooCommerce/BigCommerce/Magento 플러그인 완성 (Cowork 5)**: WooCommerce(HPOS/캐싱/sanitize/i18n/uninstall), BigCommerce(DDP cart), Magento(layout XML/ACL/composer.json)
 - **✅ Dashboard UI 통일 (Cowork 5)**: 메인 헤더/푸터 전 페이지 표시(대시보드 포함), 1440px max-width 통일, 유저 메뉴에 Docs 링크 추가
-- **🔄 AGR 벌크 임포트 진행중 (Cowork 5~7)**: Mac에서 run_agr_loop.sh 실행 중, 53개국 ~144M행, 28/53 국가 완료, KOR 진행중 (2026-03-11)
+- **🔄 AGR 벌크 임포트 진행중 (Cowork 5~7)**: Mac에서 run_agr_loop.sh 실행 중, 53개국 ~144M행, 31/53 국가 완료, MAR 진행중 (2026-03-11)
 - **✅ WDC 다운로드 완료 확인 (Cowork 5)**: 외장하드(/Volumes/soulmaten/POTAL/wdc-products/) 1,903파일 (extracted+raw 폴더)
 - **✅ AI Agent Organization v3 (Cowork 7)**: 15개 Division, 3 Layer(Automation/Monitor/Active), 1 Chief Orchestrator. Opus 4+에스컬5 (v1 대비 70%+ 토큰 절약). POTAL_AI_Agent_Org.html v3
-- **✅ 47기능 완전정복 전략 (Cowork 6)**: POTAL_47_Victory_Strategy.xlsx — 47기능별 AI 에이전트 기반 전략, 5단계 로드맵
+- **✅ 47기능 완전정복 전략 (Cowork 6→CW9 실행)**: CW9에서 34개 작업 일괄 완료. 주요: 50개국어 i18n, FTA RoO, ASEAN/India/Turkey 관세, 제재심사, 벡터DB, HS10확장, product_hs_mappings, GraphQL, CSV배치, 사기방지, VAT리포트, 위젯 auto-detect 등
 - **✅ Product Hunt 런치 스케줄 (세션 26)**: 2026-03-07 (토) 스케줄, potalapp.producthunt.com, 프로모 PRODUCTHUNT (3개월 Starter 무료)
 - **✅ 셀러 온보딩 개선 (세션 26)**: signup에 website/platform 추가, Quick Start 가이드 3탭 (Shopify/Widget/API), DB migration 006 실행 완료
 - **✅ 240개국 확장 (세션 27)**: 181→240개국/영토. Zonos(235) 초과 달성. 카리브해/태평양 섬/아프리카/유럽 영토 59개 추가
@@ -103,8 +103,8 @@
 |------|------|
 | `app/lib/cost-engine/GlobalCostEngine.ts` | 글로벌 다국가 TLC 계산 엔진 (240개국, India/Brazil 특수 세금) |
 | `app/lib/cost-engine/country-data.ts` | 240개국 VAT/GST/관세/de minimis 데이터 |
-| `app/lib/cost-engine/country-i18n.ts` | 7개국어 국가명 (EN/KO/JA/ZH/ES/FR/DE) |
-| `app/lib/cost-engine/ai-classifier/` | AI HS Code 분류 (GPT-4o-mini + DB캐시 + 키워드) |
+| `app/lib/cost-engine/country-i18n.ts` | 50개국어 국가명 (CW9 확장, Intl.DisplayNames 폴백) |
+| `app/lib/cost-engine/ai-classifier/` | AI HS Code 분류 (5단계: 캐시→벡터→키워드→LLM→폴백) + 벡터DB(pgvector) + product_hs_mappings(pg_trgm) |
 | `app/lib/cost-engine/tariff-api/` | 외부 관세 API (USITC/UK/EU/CA/AU/JP/KR 7개 정부 API) |
 | `app/lib/cost-engine/exchange-rate/` | 실시간 환율 (ExchangeRate-API + Fawaz CDN 이중 폴백) |
 | `app/lib/cost-engine/hs-code/` | HS Code DB (5,371 코드, WCO HS 2022) |
@@ -118,18 +118,36 @@
 | `scripts/download_wdc_products.sh` | WDC 5.95억 상품 데이터 다운로드 스크립트 (외장하드/EC2용) |
 | `scripts/extract_products_detailed.py` | WDC 상품명+카테고리+재질+GTIN 상세 추출 스크립트 |
 | `product-data/google_taxonomy.txt` | Google Product Taxonomy 5,596 카테고리 (HS 매핑 기준) |
+| `app/lib/cost-engine/macmap-lookup.ts` | MacMap 4단계 폴백 관세 조회 (CW9) |
+| `app/lib/cost-engine/trade-remedy-lookup.ts` | 반덤핑/상계관세 API (CW9) |
+| `app/lib/cost-engine/section301-lookup.ts` | Section 301/232 관세 (CW9) |
+| `app/lib/cost-engine/origin-detection.ts` | 원산지 자동감지 (CW9) |
+| `app/lib/cost-engine/screening/` | 제재/제한자 심사 OFAC/BIS/EU/UN (CW9) |
+| `app/lib/cost-engine/hs-code/hs10-expander.ts` | HS 10자리 확장 (USITC/UK/EU TARIC) (CW9) |
+| `app/lib/cost-engine/ai-classifier/vector-search.ts` | pgvector 벡터 검색 (CW9) |
+| `app/lib/cost-engine/ai-classifier/product-mappings.ts` | product_hs_mappings 트라이그램 검색 (CW9) |
+| `app/lib/api-auth/fraud-prevention.ts` | 사기 방지 (속도/IP/패턴 분석) (CW9) |
+| `accuracy-benchmark/` | HS 분류 정확도 벤치마크 (1000 테스트케이스) (CW9) |
+| `scripts/import-google-taxonomy-hs.ts` | Google Taxonomy→HS 매핑 임포트 (CW9) |
 | `app/lib/api-auth/` | API 인증 (키 생성/검증/rate-limit/plan-check) |
 
 ### B2B 핵심 — API 라우트
 | 파일 | 역할 |
 |------|------|
 | `app/api/v1/calculate/route.ts` | 단건 TLC 계산 API |
-| `app/api/v1/calculate/batch/route.ts` | 배치 TLC 계산 (최대 100건) |
+| `app/api/v1/calculate/batch/route.ts` | 배치 TLC 계산 (최대 500건) |
 | `app/api/v1/sellers/keys/route.ts` | API 키 관리 (CRUD) |
 | `app/api/v1/sellers/usage/route.ts` | 사용량 조회 API |
 | `app/api/v1/sellers/analytics/route.ts` | 분석 API (countries/platforms/logs) |
 | `app/api/v1/countries/route.ts` | 지원국가 목록 API |
 | `app/api/v1/docs/route.ts` | OpenAPI 3.0 스펙 서빙 |
+| `app/api/v1/calculate/csv/route.ts` | CSV 업로드 배치 계산 (최대 500행) |
+| `app/api/v1/fta/route.ts` | FTA 조회 + Rules of Origin |
+| `app/api/v1/screening/route.ts` | 제재/제한자 심사 (OFAC/BIS/EU/UN) |
+| `app/api/v1/vat-report/route.ts` | VAT 리포트 생성 |
+| `app/api/v1/graphql/route.ts` | GraphQL 엔드포인트 |
+| `app/api/v1/support/route.ts` | 고객지원 티켓 API |
+| `app/api/v1/alerts/subscribe/route.ts` | 관세변동 알림 구독 |
 
 ### B2B 핵심 — Shopify
 | 파일 | 역할 |
@@ -192,7 +210,7 @@
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
-- **관세 데이터 (세션 36)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(진행중🔄 ~144M행 53개국), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935)
+- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(진행중🔄 ~144M행 53개국), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(pgvector CW9), hs_expansion_rules(CW9), product_hs_mappings(pg_trgm CW9)
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일
