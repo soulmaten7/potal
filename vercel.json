@@ -7,6 +7,34 @@
     {
       "path": "/api/v1/admin/billing-overage",
       "schedule": "0 7 1 * *"
+    },
+    {
+      "path": "/api/v1/admin/health-check",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/v1/admin/spot-check",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/v1/admin/uptime-check",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/v1/admin/trade-remedy-sync",
+      "schedule": "30 6 * * 1"
+    },
+    {
+      "path": "/api/v1/admin/gov-api-health",
+      "schedule": "0 */12 * * *"
+    },
+    {
+      "path": "/api/v1/admin/plugin-health",
+      "schedule": "0 */12 * * *"
+    },
+    {
+      "path": "/api/v1/admin/competitor-scan",
+      "schedule": "0 8 * * 1"
     }
   ]
 }

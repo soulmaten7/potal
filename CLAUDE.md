@@ -255,21 +255,21 @@ Layer 1 자동실행 → 🟡 Layer 2 팀장 체크 → 🟣 Layer 3 Agent Teams
 ### Division 세팅 현황 (Layer 1 자동화 기준)
 | Division | Layer 1 상태 | 비고 |
 |----------|-------------|------|
-| D1 | ⚠️ 부분 | Vercel Cron 관세 동기화만 있음. TTBD 자동수집/알림 미구현 |
+| D1 | ✅ 완료 | Vercel Cron 관세 동기화 ✅ + trade-remedy-sync 매주 월 06:30 ✅ (6테이블 행수 검증) |
 | D2 | ✅ 완료 | 앱 내장 로직 (GlobalCostEngine) 자동 실행 |
 | D3 | ✅ 완료 | 앱 내장 로직 (ai-classifier) 자동 실행 |
-| D4 | ⚠️ 부분 | 환율 Cron ✅, 정부 API 헬스체크 미구현 |
-| D5 | ⚠️ 부분 | Vercel 자동 배포 ✅, CWV/uptime 체크 없음 |
-| D6 | ⚠️ 부분 | Shopify Webhook ✅, 플러그인 상태 모니터링 없음 |
+| D4 | ✅ 완료 | 환율 Cron ✅ + gov-api-health 매12시간 ✅ (7개국 정부 API 가용성 체크) |
+| D5 | ✅ 완료 | Vercel 자동 배포 ✅ + uptime-check 매6시간 ✅ (6개 핵심 페이지/API) |
+| D6 | ✅ 완료 | Shopify Webhook ✅ + plugin-health 매12시간 ✅ (위젯/웹훅 엔드포인트 체크) |
 | D7 | ✅ 완료 | plan-checker, rate-limiter 앱 내장 |
-| D8 | ❌ 미구현 | CI 테스트만 있음. 자동 스팟체크 없음 |
+| D8 | ✅ 완료 | CI 테스트 ✅ + spot-check 매일 04:00 ✅ (8개 계산 케이스 자동 검증) |
 | D9 | ❌ 미구현 | 챗봇/온보딩 자동화 없음 |
 | D10 | ✅ 완료 | Paddle Webhook + Overage Cron + plan-checker |
-| D11 | ⚠️ 부분 | Vercel CI/CD ✅, 에러 모니터링/알림 미구현 |
+| D11 | ✅ 완료 | Vercel CI/CD ✅ + health-check 매6시간 ✅ (DB/API/Auth/데이터 모니터링) |
 | D12 | ❌ 미구현 | Make.com 포스팅/이메일 미설정 |
 | D13 | ❌ 미구현 | 캘린더 알림 미설정 |
 | D14 | ❌ 미구현 | 비용 데이터 자동 수집 미설정 |
-| D15 | ❌ 미구현 | RSS/뉴스 자동 수집 미설정 |
+| D15 | ✅ 완료 | competitor-scan 매주 월 08:00 ✅ (10개 경쟁사 사이트/가격 페이지 모니터링) |
 
 ### 확장 패턴
 Division 신설 → Sonnet 팀장 배치 → Layer 1 (자동화) → Layer 2 (체크 항목) → Layer 3 (역할 카드)
