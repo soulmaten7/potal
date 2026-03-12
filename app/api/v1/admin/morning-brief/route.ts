@@ -17,6 +17,7 @@ import { DIVISION_CHECKLISTS, type CheckItem, type DivisionChecklist } from '@/a
 import type { CheckStatus } from '@/app/lib/monitoring/health-monitor';
 import { classifyIssue, type ClassifiedIssue } from '@/app/lib/monitoring/issue-classifier';
 import { runAutoRemediation, type RemediationResult } from '@/app/lib/monitoring/auto-remediation';
+import { sendMorningBriefEmail } from '@/app/lib/notifications/morning-brief-email';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -281,6 +282,25 @@ export async function GET(req: NextRequest) {
     const hasYellow = yellowDivisions.length > 0;
     const overall: CheckStatus = hasRed ? 'red' : hasYellow ? 'yellow' : 'green';
 
+    // --- Email Notification (fire-and-forget) ---
+    const sendEmail = req.nextUrl.searchParams.get('notify') !== 'false';
+    let emailResult = { sent: false, reason: 'skipped' };
+    if (sendEmail) {
+      emailResult = await sendMorningBriefEmail({
+        overall,
+        summary: {
+          green: greenCount,
+          yellow: yellowDivisions.length,
+          red: redDivisions.length,
+          total: 15,
+        },
+        auto_resolved: autoResolved,
+        needs_attention: needsAttention,
+        all_green: allGreen,
+        durationMs: Date.now() - start,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
@@ -298,6 +318,9 @@ export async function GET(req: NextRequest) {
       auto_failed: autoFailed,
       needs_attention: needsAttention,
       all_green: allGreen,
+
+      // Email notification result
+      email: emailResult,
 
       // Legacy fields (backward compatible)
       yellowAlerts: yellowDivisions.map(d => ({
