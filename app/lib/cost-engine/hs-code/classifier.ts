@@ -98,6 +98,20 @@ export function classifyProduct(
 
   const tokens = tokenize(productName);
 
+  // Finished-product keywords: when these appear in the product name,
+  // prefer finished-good categories (apparel, footwear, accessories)
+  // over raw-material categories (textiles, raw materials, fibers)
+  const FINISHED_PRODUCT_WORDS = [
+    't-shirt', 'tshirt', 'shirt', 'dress', 'jacket', 'coat', 'blouse', 'sweater', 'hoodie', 'pants', 'trousers', 'skirt', 'suit',
+    'shoes', 'boots', 'sneakers', 'sandals', 'slippers', 'footwear',
+    'bag', 'handbag', 'backpack', 'purse', 'wallet', 'briefcase', 'suitcase', 'luggage',
+    'gloves', 'belt', 'hat', 'cap', 'scarf', 'tie', 'socks', 'underwear',
+    'ring', 'necklace', 'bracelet', 'earring', 'jewelry', 'jewellery', 'watch',
+  ];
+  const RAW_MATERIAL_CATEGORIES = ['textiles', 'raw materials', 'fibers'];
+  const FINISHED_CATEGORIES = ['apparel', 'footwear', 'accessories', 'jewelry', 'bags', 'leather'];
+  const hasFinishedProductWord = tokens.some(t => FINISHED_PRODUCT_WORDS.includes(t));
+
   // Score every entry
   const scored = HS_DATABASE.map((entry) => {
     let score = calculateScore(tokens, entry.keywords);
@@ -112,6 +126,18 @@ export function classifyProduct(
     for (const token of tokens) {
       if (descTokens.includes(token)) {
         score += 3;
+      }
+    }
+
+    // Finished-product priority: when the product name contains finished-product
+    // words (e.g., "t-shirt", "shoes", "bag"), boost finished-good categories
+    // and penalize raw-material categories to avoid misclassification
+    // (e.g., "Cotton T-Shirt" → 6109 apparel, not 5205 cotton fabric)
+    if (hasFinishedProductWord && score > 0) {
+      if (FINISHED_CATEGORIES.includes(entry.category)) {
+        score += 15;
+      } else if (RAW_MATERIAL_CATEGORIES.includes(entry.category)) {
+        score = Math.max(score - 10, 1);
       }
     }
 
