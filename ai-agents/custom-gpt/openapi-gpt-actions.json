@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "POTAL - Total Landed Cost Calculator",
-    "description": "Calculate the true total cost of cross-border purchases including import duties, taxes, and shipping fees for 240 countries and territories. Includes China CBEC tax, Mexico IEPS, Brazil cascading tax, India IGST, and processing fees for 12 countries. Multi-language support (30 languages).",
-    "version": "1.0.0"
+    "description": "Calculate the true total cost of cross-border purchases including import duties, taxes, and shipping fees for 240 countries and territories. Includes sanctions screening (OFAC SDN + CSL 21K entries), FTA lookup (63 agreements), AI HS classification, and processing fees for 12 countries. Multi-language support (50 languages).",
+    "version": "1.1.0"
   },
   "servers": [
     {
@@ -139,18 +139,127 @@
       "get": {
         "operationId": "listSupportedCountries",
         "summary": "Get a list of all supported countries with their tax and duty information",
-        "description": "Returns all 240 supported countries with VAT/GST rates, average duty rates, de minimis thresholds, and currency information. Supports multi-language country names via ?lang= parameter (en, ko, ja, zh, es, fr, de).",
+        "description": "Returns all 240 supported countries with VAT/GST rates, average duty rates, de minimis thresholds, and currency information. Supports multi-language country names via ?lang= parameter (50 languages).",
         "parameters": [
           {
             "name": "lang",
             "in": "query",
-            "schema": { "type": "string", "enum": ["en", "ko", "ja", "zh", "es", "fr", "de"], "default": "en" },
-            "description": "Language code for country names. Supports: en (English), ko (Korean), ja (Japanese), zh (Chinese), es (Spanish), fr (French), de (German)"
+            "schema": { "type": "string", "default": "en" },
+            "description": "Language code for country names. Supports 50 languages: en, ko, ja, zh, es, fr, de, pt, it, ru, ar, hi, th, vi, id, tr, pl, nl, sv, da, fi, no, cs, ro, hu, uk, el, he, ms, bg, etc."
           }
         ],
         "responses": {
           "200": {
             "description": "List of 240 supported countries with tax details and localized names"
+          }
+        }
+      }
+    },
+    "/screening": {
+      "post": {
+        "operationId": "screenDeniedParty",
+        "summary": "Screen a party against sanctions and denied-party lists",
+        "description": "Check a person or entity name against OFAC SDN, BIS Entity List, CSL, and other sanctions databases (21,301 total entries from 19 sources). Returns match results with confidence scores.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Person or entity name to screen. Example: 'Huawei Technologies'"
+                  },
+                  "country": {
+                    "type": "string",
+                    "description": "Country ISO2 code to narrow results. Example: 'CN'"
+                  },
+                  "lists": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Specific lists to check. Default: all. Options: OFAC_SDN, BIS_ENTITY, BIS_DPL, STATE_DTC, etc."
+                  },
+                  "minScore": {
+                    "type": "number",
+                    "description": "Minimum match score 0.5-1.0. Default: 0.8"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Screening results with match details"
+          }
+        }
+      }
+    },
+    "/fta": {
+      "get": {
+        "operationId": "lookupFTA",
+        "summary": "Look up Free Trade Agreements between two countries",
+        "description": "Check if a Free Trade Agreement exists between origin and destination countries. Returns FTA name, preferential duty rates, and rules of origin requirements. Covers 63 FTAs.",
+        "parameters": [
+          {
+            "name": "origin",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Origin country ISO2 code. Example: 'KR'"
+          },
+          {
+            "name": "destination",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Destination country ISO2 code. Example: 'US'"
+          },
+          {
+            "name": "hsCode",
+            "in": "query",
+            "schema": { "type": "string" },
+            "description": "HS code for product-specific FTA rate. Example: '6109.10'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "FTA details and preferential rates if applicable"
+          }
+        }
+      }
+    },
+    "/classify": {
+      "post": {
+        "operationId": "classifyProduct",
+        "summary": "AI-powered HS code classification for a product",
+        "description": "Classify a product into an HS (Harmonized System) code using a 3-stage AI pipeline: vector search, keyword matching, and LLM classification. Returns HS code, description, and confidence level.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["productName"],
+                "properties": {
+                  "productName": {
+                    "type": "string",
+                    "description": "Product name or description. Example: 'cotton t-shirt', 'laptop computer'"
+                  },
+                  "productCategory": {
+                    "type": "string",
+                    "description": "Product category hint. Example: 'apparel', 'electronics'"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "HS code classification result with confidence"
           }
         }
       }

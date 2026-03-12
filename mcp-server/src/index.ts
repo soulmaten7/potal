@@ -7,11 +7,13 @@
  * Calculates import duties, taxes (VAT/GST), customs fees, and shipping
  * for cross-border purchases across 240 countries and territories.
  *
- * Tools (5):
+ * Tools (7):
  *   - calculate_landed_cost: Calculate total cost for international purchases
  *   - classify_product: AI-powered HS code classification
  *   - check_restrictions: Import restriction & compliance check
  *   - screen_shipment: Comprehensive pre-shipment screening (cost + compliance)
+ *   - screen_denied_party: Sanctions/denied-party screening (OFAC SDN + CSL, 21K entries)
+ *   - lookup_fta: Free Trade Agreement lookup (63 FTAs)
  *   - list_supported_countries: Get all supported countries with tax info
  */
 
@@ -22,12 +24,12 @@ import { z } from "zod";
 // ─── Configuration ──────────────────────────────────────────
 const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
-const USER_AGENT = "potal-mcp-server/1.1.0";
+const USER_AGENT = "potal-mcp-server/1.2.0";
 
 // ─── Server Instance ────────────────────────────────────────
 const server = new McpServer({
   name: "potal",
-  version: "1.1.0",
+  version: "1.2.0",
 });
 
 // ─── API Helper ─────────────────────────────────────────────
@@ -424,6 +426,110 @@ server.tool(
       }
     } else {
       lines.push("⚠️ Restriction check unavailable.");
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
+    };
+  }
+);
+
+// ─── Tool: screen_denied_party ───────────────────────────────
+
+server.tool(
+  "screen_denied_party",
+  "Screen a person or entity against sanctions and denied-party lists. " +
+    "Checks OFAC SDN, BIS Entity List, CSL, and other databases (21,301 entries " +
+    "from 19 sources). Essential for trade compliance.",
+  {
+    name: z.string().describe("Person or entity name to screen. Example: 'Huawei Technologies'"),
+    country: z.string().optional().describe("Country ISO2 code to narrow results. Example: 'CN'"),
+    minScore: z.number().optional().describe("Minimum match score 0.5-1.0. Default: 0.8"),
+  },
+  async (params) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key not configured." }],
+      };
+    }
+
+    const result = await callPotalApi("/screening", "POST", {
+      name: params.name,
+      country: params.country,
+      minScore: params.minScore,
+    });
+
+    if (!result.success) {
+      return {
+        content: [{ type: "text" as const, text: `❌ Screening failed: ${result.error}` }],
+        isError: true,
+      };
+    }
+
+    const d = (result.data as any)?.data || result.data;
+    const lines: string[] = [
+      "## Denied Party Screening Result\n",
+      `- **Name Screened**: ${params.name}`,
+      `- **Has Matches**: ${d.hasMatches ? '⚠️ YES' : '✅ No matches'}`,
+      `- **Status**: ${d.overallStatus || (d.hasMatches ? 'ALERT' : 'CLEAR')}`,
+    ];
+
+    if (d.hasMatches && Array.isArray(d.results)) {
+      lines.push("\n### Matches Found\n");
+      for (const m of d.results.slice(0, 10)) {
+        lines.push(`- **${m.matchedName}** (Score: ${m.score}) — List: ${m.list}, Source: ${m.source || 'N/A'}`);
+      }
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
+    };
+  }
+);
+
+// ─── Tool: lookup_fta ────────────────────────────────────────
+
+server.tool(
+  "lookup_fta",
+  "Look up Free Trade Agreements between two countries. " +
+    "Covers 63 FTAs including USMCA, RCEP, CPTPP, KORUS, EU-UK TCA. " +
+    "Returns preferential duty rates if an FTA applies.",
+  {
+    origin: z.string().length(2).describe("Origin country ISO2 code. Example: 'KR'"),
+    destination: z.string().length(2).describe("Destination country ISO2 code. Example: 'US'"),
+    hsCode: z.string().optional().describe("HS code for product-specific FTA rate. Example: '6109.10'"),
+  },
+  async (params) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key not configured." }],
+      };
+    }
+
+    const query = `?origin=${params.origin}&destination=${params.destination}${params.hsCode ? `&hsCode=${params.hsCode}` : ''}`;
+    const result = await callPotalApi(`/fta${query}`, "GET");
+
+    if (!result.success) {
+      return {
+        content: [{ type: "text" as const, text: `❌ FTA lookup failed: ${result.error}` }],
+        isError: true,
+      };
+    }
+
+    const d = (result.data as any)?.data || result.data;
+    const lines: string[] = [
+      "## FTA Lookup Result\n",
+      `- **Route**: ${params.origin} → ${params.destination}`,
+      `- **FTA Found**: ${d.hasFTA ? '✅ Yes' : '❌ No FTA'}`,
+    ];
+
+    if (d.hasFTA && d.agreements) {
+      for (const fta of Array.isArray(d.agreements) ? d.agreements : [d.agreements]) {
+        lines.push(`- **Agreement**: ${fta.name || fta.agreement || 'N/A'}`);
+        if (fta.preferentialRate !== undefined) {
+          lines.push(`- **Preferential Rate**: ${fta.preferentialRate}%`);
+        }
+      }
     }
 
     return {

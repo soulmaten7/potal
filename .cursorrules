@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-11 19:30 KST (Cowork 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개 세팅)
+# 마지막 업데이트: 2026-03-12 10:00 KST (Cycle 5 — D15 Dashboard, AI Platform v1.2, QA, AGR 53/53 완료)
 
 ## 0. 프로젝트 개요
 
@@ -12,8 +12,10 @@
 - **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 50개국어, 63개 FTA
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/100 | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
-- **핵심 전략 (세션 28→CW9)**: "47기능 도장깨기" — CW9에서 34개 작업 완료 (31개 기능+3개 P0 인프라). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자"
+- **핵심 전략 (세션 28→CW9→CW9.5)**: "47기능 도장깨기" — CW9에서 34개 작업 완료 + CW9.5에서 Chief Orchestrator 첫 가동, SDN 21K건, UI/UX 6개 개선. AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자"
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
+- **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트)
+- **Vercel Cron**: 11개 (CW9.5에서 sdn-sync + exchange-rate-sync 추가)
 
 ### 기술 스택
 - Next.js 14+ App Router + TypeScript
@@ -41,15 +43,20 @@
   - **가능한 이유**: AI 원가 건당 $0.001, 캐시 히트 70-90% 시 실질 $0.0003. 33개 기능 전부 넣어도 건당 $0.008 이하. Basic $20/2K에서 마진 97%
   - **상세 근거**: session-context.md "요금제 변경 배경과 근거" 섹션 참조
 - **✅ 요금제 코드 완전 업데이트 완료 (세션 37 후반)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx, plan-checker.ts, usage/route.ts, i18n 6개 언어 전부 신 요금제 반영. lemonsqueezy.ts 삭제 완료. Overage 빌링 구현 완료 (overage.ts + billing-overage cron)
-- **✅ Chief Orchestrator 운영 체계 (Cowork 7)**: Claude Code = Chief Orchestrator. 15개 Division + 3 Layer(Automation/Monitor/Active). CLAUDE.md에 운영 프로토콜 전면 반영. 조직도: POTAL_AI_Agent_Org.html v3
-- **✅ Layer 1 자동화 대량 구현 (Cowork 7 후반)**: Vercel Cron 2→9개. D11 health-check(매6시간), D8 spot-check(매일), D5 uptime-check(매6시간), D1 trade-remedy-sync(매주월), D4 gov-api-health(매12시간), D6 plugin-health(매12시간), D15 competitor-scan(매주월). Supabase health_check_logs 테이블. D12 Make.com(Welcome Email+LinkedIn) ✅, D13 Google Calendar(법률 리뷰 3건) ✅. Division 15/15 전체 완료(D14 Finance: POTAL_D14_Finance_Tracker.xlsx)
+- **✅ Chief Orchestrator 운영 체계 (Cowork 7) + 사이클 1~5 완료**: Claude Code = Chief Orchestrator. 15개 Division + 3 Layer(Automation/Monitor/Active). 사이클 1~5 완료 (15/15 Division Green). Phase 1 Morning Brief 매일 9시 KST 자동 스케줄
+- **✅ D15 Intelligence Dashboard (Cycle 5)**: /admin/intelligence 페이지 + /api/v1/admin/intelligence API. 경쟁사 10사 스캔 이력+변동 감지
+- **✅ AI 플랫폼 업데이트 (Cycle 5)**: GPT Actions v1.1 (screening, FTA, classify), MCP v1.2 (7 tools), Gemini/Meta AI 설명 업데이트
+- **✅ AGR 관세율 53/53국 완료 (Cycle 5 확인)**: ~144M행 전체 완료, KOR 재임포트 진행중
+- **✅ Layer 1 자동화 (Cowork 7→9.5)**: Vercel Cron 2→11개. D1 sdn-sync(매일05:00)+trade-remedy-sync(매주월), D4 exchange-rate-sync(매일00:30)+gov-api-health(매12시간), D5 uptime-check(매6시간), D6 plugin-health(매12시간), D8 spot-check(매일), D10 billing-overage(매월1일), D11 health-check(매6시간), D15 competitor-scan(매주월). Division 15/15 전체 완료
+- **✅ SDN 제재 스크리닝 (CW9.5)**: 21,301건 19개 소스. sanctions 5테이블 + search_sanctions_fuzzy(). Paddle 환불 API /api/v1/admin/refund
 - **✅ D9 Customer Success (Cowork 7 후반)**: FAQ 7→13항목 + Google Rich Snippets 확장 + Crisp 채팅 위젯 삽입(NEXT_PUBLIC_CRISP_WEBSITE_ID=6069fe77-cada-4d19-b8ff-a6747666f520). Vercel env 3환경 등록 완료
 - **✅ Shopify 심사 제출 완료**: App Bridge 4.x CDN + 세션 토큰 push 완료, 앱스토어 심사 제출 완료 (2026-03-10). 리뷰어 할당 대기 중
 - **✅ Stripe→LemonSqueezy→Paddle 전환 완료**: Stripe 정지 → LS 거절 → Paddle 완료. Live 6개 Price + Webhook + Vercel 배포 완료. Annual 20% off + Overage 빌링 구현 완료. lemonsqueezy.ts 삭제, Capacitor stub, Vercel B2C 환경변수 15개 삭제 (36→21개). Paddle Live E2E 테스트 통과
 - **✅ DDP Checkout Stripe→Quote 전환 (Cowork 5)**: stripe-checkout.ts→ddp-session.ts 리네임, Stripe API 코드 전면 제거, Quote-only 방식 (셀러 자체 결제 연동)
 - **✅ WooCommerce/BigCommerce/Magento 플러그인 완성 (Cowork 5)**: WooCommerce(HPOS/캐싱/sanitize/i18n/uninstall), BigCommerce(DDP cart), Magento(layout XML/ACL/composer.json)
 - **✅ Dashboard UI 통일 (Cowork 5)**: 메인 헤더/푸터 전 페이지 표시(대시보드 포함), 1440px max-width 통일, 유저 메뉴에 Docs 링크 추가
-- **🔄 AGR 벌크 임포트 진행중 (Cowork 5~7)**: Mac에서 run_agr_loop.sh 실행 중, 53개국 ~144M행, 31/53 국가 완료, MAR 진행중 (2026-03-11)
+- **🔄 AGR 벌크 임포트 진행중 (Cowork 5~9.5)**: Mac에서 run_agr_loop.sh 실행 중, 53개국 ~144M행, ~36/53 국가 완료 (예상 3/12 아침). ⚠️ KOR 재임포트 필요 (15,798행만 들어감)
+- **🔄 WDC 상품 추출 진행중 (CW9.5)**: Mac에서 extract_with_categories.py 실행 중, 1,899 파트, ~50/1899 (예상 3/13 저녁). 완료 후 → Supabase 업로드 → AI 분류 파이프라인
 - **✅ WDC 다운로드 완료 확인 (Cowork 5)**: 외장하드(/Volumes/soulmaten/POTAL/wdc-products/) 1,903파일 (extracted+raw 폴더)
 - **✅ AI Agent Organization v3 (Cowork 7)**: 15개 Division, 3 Layer(Automation/Monitor/Active), 1 Chief Orchestrator. Opus 4+에스컬5 (v1 대비 70%+ 토큰 절약). POTAL_AI_Agent_Org.html v3
 - **✅ 47기능 완전정복 전략 (Cowork 6→CW9 실행)**: CW9에서 34개 작업 일괄 완료. 주요: 50개국어 i18n, FTA RoO, ASEAN/India/Turkey 관세, 제재심사, 벡터DB, HS10확장, product_hs_mappings, GraphQL, CSV배치, 사기방지, VAT리포트, 위젯 auto-detect 등

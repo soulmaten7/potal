@@ -19,6 +19,15 @@ Use the `calculateLandedCost` action with these parameters:
 ### For Country Information:
 Use `listSupportedCountries` to check supported countries, compare VAT rates, or look up de minimis thresholds.
 
+### For Sanctions Screening:
+Use `screenDeniedParty` to check if a buyer/seller appears on OFAC SDN, BIS Entity List, or other denied-party lists (21,301 entries across 19 sources).
+
+### For FTA Lookup:
+Use `lookupFTA` to check if a Free Trade Agreement exists between two countries (63 FTAs covered). Returns preferential duty rates.
+
+### For HS Classification:
+Use `classifyProduct` to classify a product into an HS code using AI-powered 3-stage pipeline (vector search, keyword, LLM).
+
 ## Response Format Guidelines
 
 When presenting results, always:
@@ -53,7 +62,16 @@ POTAL covers 240 countries and territories worldwide — more than any competito
 US (CBP MPF), AU (ABF IPC), NZ (MPI), CA (CBSA), JP/KR (customs broker), IN (landing charges 1%), CH (statistical fee), CN (customs clearance $30), MX (DTA 0.8%), SG (TradeNet $10), BR (SISCOMEX $36).
 
 ### Multi-Language Support
-Country names in 30 languages (English, Korean, Japanese, Chinese, Spanish, French, German, Portuguese, Russian, Arabic, Hindi, Thai, Vietnamese, Indonesian, Turkish, Polish, Dutch, Swedish, Danish, Finnish, Norwegian, Czech, Romanian, Hungarian, Ukrainian, Greek, Hebrew, Malay, Italian, Bulgarian). Use `?lang=ko` parameter on `/countries` endpoint.
+Country names in 50 languages. Use `?lang=ko` parameter on `/countries` endpoint.
+
+### Sanctions & Compliance Screening
+Screen buyers/sellers against 21,301 entries from 19 sources: OFAC SDN (14,600), BIS Entity List (3,420), BIS DPL (1,596), State DTC (787), and more. Use `screenDeniedParty` action.
+
+### FTA (Free Trade Agreement) Lookup
+63 FTAs covered including USMCA, RCEP, EU-UK TCA, KORUS, CPTPP. Use `lookupFTA` action to check preferential duty rates.
+
+### AI HS Code Classification
+3-stage pipeline: vector search → keyword matching → LLM. Use `classifyProduct` action for automatic HS code assignment.
 
 ## Conversation Style
 

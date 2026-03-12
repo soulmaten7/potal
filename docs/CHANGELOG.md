@@ -1,5 +1,67 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-11 19:30 KST
+> 마지막 업데이트: 2026-03-12 10:00 KST
+
+## [2026-03-12 10:00 KST] Chief Orchestrator Cycle 5 — D15 Dashboard + AI Platform + QA + AGR 완료
+
+### D15 Intelligence Dashboard (Yellow → Green)
+- `/admin/intelligence` 페이지 생성 (CRON_SECRET 인증)
+- `/api/v1/admin/intelligence` API (경쟁사 스캔 이력 조회)
+- 경쟁사 10사 최신 스캔 결과 + 변동 감지 + 스캔 이력 테이블
+
+### D7 AI 플랫폼 업데이트 (CW9~9.5 반영)
+- Custom GPT: OpenAPI 1.0→1.1 (screening, FTA, classify 3개 엔드포인트 추가)
+- MCP Server: v1.1→v1.2 (screen_denied_party, lookup_fta 2개 도구 추가, 5→7 도구)
+- Gemini Gem: 제재 스크리닝 21K건, FTA 63개, 50개국어, AI 분류 설명 추가
+- Meta AI: 동일 기능 설명 업데이트
+
+### D8 QA 강화
+- `__tests__/api/screening-fta.test.ts` 신규 (스크리닝 타입, FTA 계산, 환불 검증)
+
+### AGR 임포트 완료
+- 53/53국 완료 (KOR 재임포트 별도 진행중)
+- PHL, QAT, RUS, SAU, SGP, THA, TUN, TUR, TWN, UKR, USA, VNM, ZAF 완료
+
+### 5개 문서 동기화 완료
+
+## [2026-03-11 22:30 KST] Cowork 세션 9.5 — Chief Orchestrator 첫 가동 + SDN/CSL + UI/UX
+
+### Chief Orchestrator 사이클 1~3
+- **사이클 1**: 15 Division 전체 순회, 🔴1→0 🟡5→3 🟢9→12 (9분 48초)
+- **사이클 2**: 제품 완성도 7항목 (위젯, Shopify, 보안, i18n, SEO, 에러핸들링) (5분 55초)
+- **사이클 3**: Paddle 환불API + CSL 21K건 + UI/UX 6개 개선 (14분 58초)
+
+### 데이터 로딩
+- SDN 제재 데이터: 63,004건 (entries 14,600 + aliases 17,228 + addresses 24,176 + IDs 8,000)
+- CSL 제재 리스트: 6,701건 추가 → 총 21,301건 (19개 소스, BIS Entity/DPL/UVL, STATE DTC, OFAC SSI 등)
+- Google Taxonomy HS 매핑: 164건 → product_hs_mappings
+- DB 마이그레이션: sanctions 5테이블 + exchange_rate_history + search_sanctions_fuzzy()
+
+### P1 코드 완성
+- SDN 임포트 스크립트 (scripts/import_ofac_sdn.py)
+- 일간 환율 Cron (exchange-rate-sync, 매일 00:30 UTC)
+- SDN 동기화 Cron (sdn-sync, 매일 05:00 UTC)
+- AD/CVD 기업별 매칭 (exact→fuzzy→All Others→country-wide 4단계)
+- Paddle 환불 API (/api/v1/admin/refund)
+
+### UI/UX 개선
+- Hero 통계: 0 표시 버그 → 240 Countries, 5,371 HS Codes, 63 FTAs, 181 Tariff Countries
+- Developers: sticky 사이드바 + 인증 가이드 (API Key 포맷, 에러코드, curl/JS/Python 예제)
+- Pricing: Annual 절약 배지 ($48/$192/$720)
+- Trust 섹션: 240국가 / 113M+ 관세율 / 99.2% 정확도 / <200ms
+- CTA: "Get API Key" → "Calculate Duties Free"
+- Enterprise: 인라인 문의 폼 + "24시간 내 응답"
+- CN→US Breakdown 표기: Import Duty + Additional Tariff 분리
+
+### 인프라
+- Vercel Cron: 9→11개 (exchange-rate-sync, sdn-sync 추가)
+- D5 Red 수정 (uptime-check 경로 /login→/auth/login)
+- Morning Brief 15 Division 검증 완료 (12 Green, 3 Yellow, 0 Red)
+- spot-check 8/8 Green
+- Phase 1 Morning Brief 매일 9시 KST 자동 스케줄
+
+### 백그라운드
+- AGR 임포트: ~36/53국 진행중
+- WDC 추출: ~50/1899 파트 진행중
 
 ## [2026-03-11 19:30 KST] Cowork 세션 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개
 

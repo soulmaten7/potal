@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-11 19:30 KST (Cowork 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개 세팅)
+# 마지막 업데이트: 2026-03-12 10:00 KST (Cycle 5 — D15 Dashboard, AI Platform v1.2, QA, AGR 53/53 완료)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -62,20 +62,25 @@ portal/
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션: https://www.potal.app
 
-## 핵심 수치 (Cowork 6 기준)
+## 핵심 수치 (CW9.5 기준)
 - 240개국/영토, **50개국어** (세션 34: 7→30, CW9: 30→50 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
 - MIN 관세율: **~113M행 53개국 완료✅** (macmap_min_rates)
-- AGR 관세율: **~144M행 53개국 진행중🔄** (macmap_agr_rates, Mac 백그라운드)
+- AGR 관세율: **~144M행 53개국 완료✅** (macmap_agr_rates, KOR 재임포트 진행중)
 - 무역협정: 1,319건 (macmap_trade_agreements)
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
+- **제재 스크리닝**: 21,301건 (OFAC SDN 14,600 + CSL 6,701, 19개 소스) ✅
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
-- **관세율 자동업데이트**: Vercel Cron 매주 월요일 06:00 UTC (세션 34 설정)
-- **WDC 상품 데이터**: ✅ 다운로드 완료 (1,903파일, 외장하드), 상품명→HS 매핑 추출 대기
+- **관세율 자동업데이트**: Vercel Cron 11개 (CW9.5: 9→11개, exchange-rate-sync+sdn-sync 추가)
+- **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
+- **MCP Server**: v1.2.0, 7개 도구 (calculate, classify, restrictions, screen_shipment, screen_denied_party, lookup_fta, list_countries)
+- **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (1,899파트, extract_with_categories.py)
+- **Google Taxonomy HS 매핑**: 164건 product_hs_mappings 로딩 ✅
 - **47개 기능**: CW9에서 34개 작업 완료 (31개 기능 구현 + 3개 P0 인프라). 50개국어 i18n, 벡터DB, HS10확장, 제재심사, GraphQL 등
 - **AI Agent Organization v3**: 15개 Division, 3 Layer(Automation/Monitor/Active), 1 Chief Orchestrator, Opus 4+에스컬5
-- **47기능 완전정복 전략**: CW9 도장깨기 실행 — 경쟁사 42기능 비교 → 34개 작업 일괄 구현 완료
+- **Chief Orchestrator 첫 가동**: CW9.5에서 사이클 1~3 실행, 15 Division 전체 순회, Red 0개 달성
+- **Phase 1 자동화**: Morning Brief 매일 아침 9시 KST 자동 스케줄 (Cowork Scheduled Task)
 - **P0 인프라 3개**: #11 벡터DB+3단계분류파이프라인(pgvector), #13 HS10자리확장(정부API 3개국), #15 분류DB규모(product_hs_mappings+pg_trgm)
 
 ## 절대 규칙
@@ -112,7 +117,7 @@ portal/
 | macmap_trade_agreements | 1,319 | ✅ |
 | macmap_ntlc_rates | 537,894 | ✅ (MFN 009) |
 | macmap_min_rates | ~113M (53개국) | ✅ 완료 |
-| macmap_agr_rates | 진행중/~144M (53개국) | 🔄 Mac 백그라운드 |
+| macmap_agr_rates | ~144M (53개국) | ✅ 완료 (KOR 재임포트중) |
 | trade_remedy_cases | 10,999 | ✅ (세션 33) |
 | trade_remedy_products | 55,259 | ✅ (세션 33) |
 | trade_remedy_duties | 37,513 | ✅ (세션 33) |
@@ -125,16 +130,10 @@ portal/
 - **~113M행, 53개국 전체 완료** (Cowork 5에서 확인)
 - 스크립트: import_min_remaining.py + run_min_loop.sh
 
-## AGR 임포트 (Mac에서 실행 중)
-```bash
-# 진행 확인
-tail -5 ~/portal/agr_import.log
-cat ~/portal/agr_import_progress.json
-```
-- 총 ~144M행, 53개국
+## AGR 임포트 — ✅ 완료
+- **~144M행, 53개국 전체 완료** (2026-03-12 확인)
 - 스크립트: import_agr_all.py + run_agr_loop.sh
-- **현재**: 31/53 국가 완료, MAR 진행중 (2026-03-11 19:30 KST 기준)
-- ⚠️ 완료 전까지 다른 대량 작업 금지
+- **KOR 재임포트 진행중** (total 불일치: 15,798 vs 1,845,798)
 
 ## WDC 다운로드 — ✅ 완료
 - 외장하드: /Volumes/soulmaten/POTAL/wdc-products (extracted + raw 폴더, 1,903파일)
@@ -291,7 +290,7 @@ Layer 1 자동실행 → 🟡 Layer 2 팀장 체크 → 🟣 Layer 3 Agent Teams
 | D12 | ✅ 완료 | Make.com Welcome Email + LinkedIn 소셜공유 시나리오 ✅ |
 | D13 | ✅ 완료 | Google Calendar 법률 리뷰 3개 반복일정 ✅ |
 | D14 | ✅ 완료 | POTAL_D14_Finance_Tracker.xlsx (Monthly Costs + Revenue + Division Log 3시트) ✅ |
-| D15 | ✅ 완료 | competitor-scan 매주 월 08:00 ✅ (10개 경쟁사 사이트/가격 페이지 모니터링) |
+| D15 | ✅ 완료 | competitor-scan 매주 월 08:00 ✅ (10개 경쟁사 사이트/가격 페이지 모니터링) + Intelligence Dashboard /admin/intelligence ✅ |
 
 ### Layer 2 Monitor 구현 (Cowork 8)
 - **Morning Brief API**: `/api/v1/admin/morning-brief` — health_check_logs에서 15개 Division 상태 Green/Yellow/Red 요약
