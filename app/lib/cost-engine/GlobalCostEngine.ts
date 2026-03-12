@@ -32,8 +32,8 @@ import { getCountryProfileFromDb } from './db/country-data-db';
 import { getDutyRateFromDb, getEffectiveDutyRateFromDb, hasCountryDutyDataFromDb } from './db/duty-rates-db';
 import { applyFtaRateFromDb } from './db/fta-db';
 
-// MacMap 4-stage fallback lookup (AGR → MIN → NTLC → MFN)
-import { lookupMacMapDutyRate } from './macmap-lookup';
+// MacMap 4-stage fallback lookup (AGR → MIN → NTLC → MFN) + tariff optimization
+import { lookupMacMapDutyRate, lookupAllDutyRates, type TariffOptimization } from './macmap-lookup';
 
 // Trade remedy lookup (AD/CVD/Safeguard)
 import { lookupTradeRemedies, type TradeRemedyResult } from './trade-remedy-lookup';
@@ -165,6 +165,8 @@ export interface GlobalLandedCost extends LandedCost {
     /** Overall data quality: fresh/stale/fallback */
     quality: 'fresh' | 'stale' | 'fallback';
   };
+  /** Tariff optimization: compares MFN/MIN/AGR rates and shows savings */
+  tariffOptimization?: TariffOptimization;
   /** Exchange rate timestamp (ISO 8601) */
   exchangeRateTimestamp?: string;
   /** Local currency conversion (if destination currency != USD) */
@@ -258,17 +260,24 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   let ftaResult: FtaResult | undefined;
   let dutyRateSource: string = 'hardcoded';
   let dutyConfidenceScore: number = 0.7;
+  let tariffOptimization: TariffOptimization | undefined;
 
   if (hsResult && hsResult.hsCode !== '9999') {
     const hsChapter = hsResult.hsCode.substring(0, 2);
 
-    // ━━━ 1차: MacMap 4단계 폴백 (AGR → MIN → NTLC) ━━━
-    const macmapResult = await lookupMacMapDutyRate(profile.code, originCountry, hsResult.hsCode);
+    // ━━━ 1차: MacMap 관세최적화 — 3개 테이블 병렬 조회 후 최저 세율 자동 선택 ━━━
+    const { best: macmapResult, optimization } = await lookupAllDutyRates(profile.code, originCountry, hsResult.hsCode);
     if (macmapResult) {
       dutyRate = macmapResult.avDuty;
       dutyNote = `HS ${hsResult.hsCode} (${(dutyRate * 100).toFixed(1)}%) [${macmapResult.source}]`;
       dutyRateSource = macmapResult.source;
       dutyConfidenceScore = macmapResult.confidenceScore;
+      if (optimization && optimization.rateOptions.length > 1) {
+        tariffOptimization = optimization;
+        if (optimization.savingsVsMfn > 0 && optimization.optimalAgreementName) {
+          dutyNote += ` (${optimization.optimalAgreementName}, -${optimization.savingsPercent}%)`;
+        }
+      }
     }
     // ━━━ 2차: 정부 API 캐시(duty_rates_live) 조회 ━━━
     else {
@@ -758,6 +767,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     classificationSource,
     dutyRateSource,
     dutyConfidenceScore,
+    tariffOptimization,
     insurance: round(insurance),
     brokerageFee: round(brokerageFee),
     confidenceScore,

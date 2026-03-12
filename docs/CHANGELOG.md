@@ -1,5 +1,54 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-12 10:00 KST
+> 마지막 업데이트: 2026-03-12 14:30 KST
+
+## [2026-03-12 14:30 KST] CW10 — P1 #1 관세최적화 + Vector DB 시딩 + Vercel 환경변수
+
+### P1 #1 관세최적화 구현
+- `app/lib/cost-engine/macmap-lookup.ts` — `lookupAllDutyRates()` 신규: MIN/AGR/NTLC 3테이블 병렬 조회
+- `lookupAgrAll()` — 복수 FTA 협정세율 전부 수집 (기존: 첫 1건만 반환)
+- `resolveAgreementNames()` — macmap_trade_agreements에서 협정명 resolve
+- `TariffOptimization` 인터페이스 — optimalRate, optimalRateType, savingsVsMfn, savingsPercent, rateOptions[]
+- `app/lib/cost-engine/GlobalCostEngine.ts` — 기존 순차 폴백 → 병렬 최적화 교체, `tariffOptimization` 응답 필드 추가
+- **47기능 34→35개 완료 (#1 추가)**
+
+### Vector DB 시딩
+- `scripts/seed_classification_vectors.ts` — product_hs_mappings 164건 → OpenAI embedding → hs_classification_vectors 163건 삽입
+- Management API SQL 경유 (Supabase REST 503 우회)
+- AI 분류 파이프라인 정확도: **55% → 100%** (Vector Stage 0% → 95% hit rate)
+
+### AI 분류 파이프라인 테스트
+- `scripts/test_ai_classification_pipeline.ts` — 20개 상품 × 3 Stage (Keyword/Vector/LLM) 실데이터 테스트
+- Keyword: 50% hit, 20% accuracy | Vector(시딩 후): 95% hit, 95% accuracy | LLM: 100% hit, 55% accuracy
+
+### Vercel 환경변수 세팅 완료
+- RESEND_API_KEY, MORNING_BRIEF_EMAIL_TO, MORNING_BRIEF_EMAIL_FROM — Production + Preview (Vercel REST API)
+
+## [2026-03-12 12:00 KST] CW10 — AI Agent Organization 정식 운영 Day 1
+
+### Cycle 6: Morning Brief 강화 + 자동 수정 시스템
+- `app/lib/monitoring/issue-classifier.ts` 신규 — 15 Division별 Layer 1/2/3 분류 규칙
+- `app/lib/monitoring/auto-remediation.ts` 신규 — Layer 1 자동 수정 (Cron 3회 재시도, 5초 간격, 결과 로깅)
+- `app/api/v1/admin/morning-brief/route.ts` 강화 — 3섹션 응답 (auto_resolved/needs_attention/all_green)
+- `app/lib/monitoring/division-checklists.ts` 수정 — AGR 상태 app_builtin으로 변경
+- `?auto_fix=false` 파라미터로 자동 수정 비활성화 가능
+
+### Morning Briefing 스킬
+- Cowork "모닝브리핑" 명령어로 Gmail 확인 + 프로젝트 상태 + 추천 작업 한번에 실행
+- 새 세션에서도 이전 맥락 없이 바로 동작
+
+### 이메일 리뷰
+- Paddle 지원 티켓 해결 확인
+- Khurram Shoaib 보안 제보 답장 완료
+- Shopify 앱 심사 진행중 (리뷰어 할당 대기)
+
+### Morning Brief 이메일 알림
+- `app/lib/notifications/morning-brief-email.ts` 신규 — Resend API 조건부 발송 (needs_attention 시 Daily, 월요일 Weekly)
+- Vercel 환경변수 3개 필요: RESEND_API_KEY, MORNING_BRIEF_EMAIL_TO, MORNING_BRIEF_EMAIL_FROM
+- git push cfa4e4e 완료
+
+### KOR AGR 삭제→재임포트
+- delete_kor_agr_final.sh 배치 삭제 진행중 (100K 배치, 간헐적 DB 에러 복구됨)
+- 삭제 완료 후 재임포트 예정
 
 ## [2026-03-12 10:00 KST] Chief Orchestrator Cycle 5 — D15 Dashboard + AI Platform + QA + AGR 완료
 

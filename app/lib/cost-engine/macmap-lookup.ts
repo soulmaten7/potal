@@ -34,6 +34,28 @@ export interface MacMapDutyResult {
   agreementId?: number;
 }
 
+/** A single rate option in the tariff optimization comparison */
+export interface RateOption {
+  rateType: 'MFN' | 'MIN' | 'AGR' | 'FTA';
+  rate: number;
+  source: DutySource;
+  matchedCode: string;
+  agreementName?: string;
+  agreementId?: number;
+  navDutyText?: string;
+}
+
+/** Tariff optimization result — compares all available rates */
+export interface TariffOptimization {
+  optimalRate: number;
+  optimalRateType: 'MFN' | 'MIN' | 'AGR' | 'FTA';
+  optimalAgreementName?: string;
+  mfnRate?: number;
+  savingsVsMfn: number;
+  savingsPercent: number;
+  rateOptions: RateOption[];
+}
+
 const CONFIDENCE_MAP: Record<DutySource, number> = {
   agr: 1.0,
   min: 0.9,
@@ -217,5 +239,187 @@ export async function lookupMacMapDutyRate(
     return null;
   } catch {
     return null;
+  }
+}
+
+// ─── Tariff Optimization: Parallel All-Rate Lookup ──
+
+/** Fetch ALL AGR rates (multiple agreements) for a given route+HS */
+async function lookupAgrAll(
+  supabase: any,
+  reporterIso2: string,
+  partnerIso2: string,
+  productCode: string,
+): Promise<MacMapDutyResult[]> {
+  const prefixes = getHsPrefixes(productCode);
+  const results: MacMapDutyResult[] = [];
+  const seenAgreements = new Set<number>();
+
+  for (const prefix of prefixes) {
+    const result: any = await supabase
+      .from('macmap_agr_rates' as any)
+      .select('product_code, av_duty, nav_duty, agreement_id')
+      .eq('reporter_iso2', reporterIso2)
+      .eq('partner_iso2', partnerIso2)
+      .eq('hs6', prefix.substring(0, 6))
+      .limit(50);
+
+    if (result.error || !result.data || result.data.length === 0) continue;
+
+    for (const row of result.data as any[]) {
+      if (row.av_duty === null || row.av_duty === undefined) continue;
+      if (row.agreement_id && seenAgreements.has(row.agreement_id)) continue;
+      if (row.agreement_id) seenAgreements.add(row.agreement_id);
+
+      results.push({
+        avDuty: parseFloat(row.av_duty),
+        source: 'agr' as DutySource,
+        confidenceScore: CONFIDENCE_MAP.agr,
+        matchedCode: row.product_code,
+        matchType: row.product_code === prefix ? 'exact_agr' : 'prefix_agr',
+        navDutyText: row.nav_duty || undefined,
+        agreementId: row.agreement_id,
+      });
+    }
+
+    if (results.length > 0) break; // Use most specific prefix match
+  }
+
+  return results;
+}
+
+/** Resolve agreement names from macmap_trade_agreements */
+async function resolveAgreementNames(
+  supabase: any,
+  reporterIso2: string,
+  agreementIds: number[],
+): Promise<Map<number, string>> {
+  const map = new Map<number, string>();
+  if (agreementIds.length === 0) return map;
+
+  const result: any = await supabase
+    .from('macmap_trade_agreements' as any)
+    .select('agreement_id, tariff_regime')
+    .eq('reporter_iso2', reporterIso2)
+    .in('agreement_id', agreementIds);
+
+  if (!result.error && result.data) {
+    for (const row of result.data as any[]) {
+      map.set(row.agreement_id, row.tariff_regime);
+    }
+  }
+
+  return map;
+}
+
+/**
+ * Tariff Optimization — 3개 테이블 병렬 조회 후 최적 세율 추천
+ *
+ * MIN/AGR/NTLC(MFN) 전부 조회하여 비교하고,
+ * 가장 낮은 세율 + savings 정보를 반환.
+ */
+export async function lookupAllDutyRates(
+  destinationCountry: string,
+  originCountry: string,
+  hsCode: string,
+): Promise<{ best: MacMapDutyResult | null; optimization: TariffOptimization | null }> {
+  const supabase = getSupabase();
+  if (!supabase) return { best: null, optimization: null };
+
+  const reporter = destinationCountry.toUpperCase();
+  const partner = originCountry.toUpperCase();
+  const productCode = hsCode.replace(/\./g, '').trim();
+
+  try {
+    // Parallel: query all 3 tables simultaneously
+    const [agrResults, minResult, ntlcResult] = await Promise.all([
+      lookupAgrAll(supabase, reporter, partner, productCode),
+      lookupMin(supabase, reporter, partner, productCode),
+      lookupNtlc(supabase, reporter, productCode),
+    ]);
+
+    // Collect all rate options
+    const rateOptions: RateOption[] = [];
+
+    // NTLC = MFN baseline
+    if (ntlcResult) {
+      rateOptions.push({
+        rateType: 'MFN',
+        rate: ntlcResult.avDuty,
+        source: 'ntlc',
+        matchedCode: ntlcResult.matchedCode,
+        navDutyText: ntlcResult.navDutyText,
+      });
+    }
+
+    // MIN rate
+    if (minResult) {
+      rateOptions.push({
+        rateType: 'MIN',
+        rate: minResult.avDuty,
+        source: 'min',
+        matchedCode: minResult.matchedCode,
+      });
+    }
+
+    // AGR rates — resolve agreement names
+    const agrAgreementIds = agrResults
+      .map(r => r.agreementId)
+      .filter((id): id is number => id !== undefined);
+
+    const agreementNames = await resolveAgreementNames(supabase, reporter, agrAgreementIds);
+
+    for (const agr of agrResults) {
+      rateOptions.push({
+        rateType: 'AGR',
+        rate: agr.avDuty,
+        source: 'agr',
+        matchedCode: agr.matchedCode,
+        agreementId: agr.agreementId,
+        agreementName: agr.agreementId ? agreementNames.get(agr.agreementId) : undefined,
+        navDutyText: agr.navDutyText,
+      });
+    }
+
+    // No data at all
+    if (rateOptions.length === 0) {
+      return { best: null, optimization: null };
+    }
+
+    // Find optimal (lowest) rate
+    rateOptions.sort((a, b) => a.rate - b.rate);
+    const optimal = rateOptions[0];
+
+    // MFN baseline for savings calculation
+    const mfnOption = rateOptions.find(r => r.rateType === 'MFN');
+    const mfnRate = mfnOption?.rate;
+    const baseline = mfnRate ?? rateOptions[rateOptions.length - 1].rate; // highest rate as fallback baseline
+    const savingsVsMfn = baseline - optimal.rate;
+    const savingsPercent = baseline > 0 ? (savingsVsMfn / baseline) * 100 : 0;
+
+    // Build the best MacMapDutyResult (for backward compat)
+    const best: MacMapDutyResult = {
+      avDuty: optimal.rate,
+      source: optimal.source,
+      confidenceScore: CONFIDENCE_MAP[optimal.source],
+      matchedCode: optimal.matchedCode,
+      matchType: `optimal_${optimal.source}`,
+      navDutyText: optimal.navDutyText,
+      agreementId: optimal.agreementId,
+    };
+
+    const optimization: TariffOptimization = {
+      optimalRate: optimal.rate,
+      optimalRateType: optimal.rateType,
+      optimalAgreementName: optimal.agreementName,
+      mfnRate,
+      savingsVsMfn,
+      savingsPercent: Math.round(savingsPercent * 10) / 10,
+      rateOptions,
+    };
+
+    return { best, optimization };
+  } catch {
+    return { best: null, optimization: null };
   }
 }

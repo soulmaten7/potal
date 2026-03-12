@@ -1,5 +1,63 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-12 10:00 KST (Cycle 5 — D15 Dashboard, AI Platform, QA, AGR 완료)
+> 마지막 업데이트: 2026-03-12 14:30 KST (CW10 — P1#1 관세최적화, Vector DB 시딩 163건, Vercel 환경변수 세팅 완료)
+
+---
+
+## 🚀 새 세션 시작 명령어 (복사해서 붙여넣기)
+
+### Cowork 세션용
+Cowork에서 새 세션을 시작할 때는 아래 명령어를 그대로 복사해서 첫 메시지로 보내세요:
+
+```
+POTAL Chief Orchestrator 세션 시작.
+
+너는 POTAL의 Chief Orchestrator다. 은태 = CEO, 너 = COO.
+
+1단계: 컨텍스트 로딩
+- CLAUDE.md 읽어서 프로젝트 전체 맥락 파악
+- docs/NEXT_SESSION_START.md 읽어서 현재 진행 상황 + 우선순위 확인
+
+2단계: 백그라운드 작업 확인
+- KOR AGR 재임포트 상태 확인:
+  curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query \
+    -H "Authorization: Bearer sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a" \
+    -H "Content-Type: application/json" \
+    -d '{"query": "SELECT count(*) FROM macmap_agr_rates WHERE reporter_iso2 = '\''KR'\'';"}'
+  → 1,845,798이면 완료 ✅, 아니면 재임포트 필요
+- WDC 추출 상태는 은태가 Mac에서 확인 후 알려줄 예정
+
+3단계: Morning Brief 실행
+- Gmail에서 "Morning Brief" 또는 "health-check" 관련 이메일 확인
+- contact@potal.app 수신함에서 자동 알림 이메일 확인
+- 15개 Division 상태를 Morning Brief 포맷으로 보고:
+  🟢 정상 / 🟡 주의 / 🔴 긴급
+
+4단계: 오늘 작업 추천
+- NEXT_SESSION_START.md의 우선순위 기반으로 P0부터 추천
+- 은태 판단 후 작업 시작
+
+보고는 한국어로, Yellow/Red만 상세히, Green은 개수만.
+```
+
+### Claude Code 세션용
+Claude Code 터미널에서 새 세션을 시작할 때:
+
+```
+POTAL Chief Orchestrator 세션 시작.
+1. cat CLAUDE.md | head -200 으로 프로젝트 맥락 파악
+2. cat docs/NEXT_SESSION_START.md 로 현재 상태 + 우선순위 확인
+3. KOR AGR 확인: curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query -H "Authorization: Bearer sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a" -H "Content-Type: application/json" -d '{"query": "SELECT count(*) FROM macmap_agr_rates WHERE reporter_iso2 = '\''KR'\'';"}'
+4. Morning Brief: curl -s "https://www.potal.app/api/v1/admin/morning-brief" -H "x-cron-secret: 8e82e09e218d6147943253fdbffacc3bacda4e4f8d322ce508ea2befde00f297" | python3 -m json.tool
+5. 결과 종합해서 Morning Brief 포맷으로 보고
+6. 은태 판단 후 P0부터 작업 시작
+```
+
+### 간편 명령어 (Cowork 전용)
+매일 아침 출근하면 이것만 입력:
+```
+모닝브리핑
+```
+→ 모닝브리핑 스킬이 자동으로 Gmail 확인 + 프로젝트 상태 + 추천 작업까지 한번에 처리
 
 ---
 
@@ -11,6 +69,17 @@
 - **사이클 3**: Paddle 환불API + CSL 21K건 + UI/UX 6개 개선
 - **사이클 4**: 야간 15 Division 전체 정밀 점검 ✅ — ContactForm 수정, 쿠키 배너, .env 보강
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
+- **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
+
+### CW10 — AI Agent Organization Day 1
+- **AI Agent Org 정식 운영 개시**: Division 팀장 = if/else 분류 로직 (AI 아님), Layer 1-2 자동 처리, Layer 3만 CEO 판단
+- **Morning Brief 강화**: 3섹션 리포트 (자동수정/판단필요/정상) + contact@potal.app 이메일 알림
+- **모닝브리핑 스킬**: Cowork에서 "모닝브리핑" 입력 시 Gmail + CLAUDE.md 기반 일일 브리핑 자동 실행
+- **자동 수정 시스템**: issue-classifier.ts (15 Division Layer 분류) + auto-remediation.ts (Cron 3x 재시도)
+- **이메일 리뷰**: Paddle Live, Khurram Shoaib 보안 리포트 (답장 완료), Shopify, Product Hunt
+- **P1 #1 관세최적화**: lookupAllDutyRates() — MIN/AGR/NTLC 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답. 47기능 35개 완료
+- **Vector DB 시딩**: product_hs_mappings 164건 → hs_classification_vectors 163건. 파이프라인 정확도 55%→100%
+- **Vercel 환경변수 세팅 완료**: RESEND_API_KEY + MORNING_BRIEF_EMAIL_TO + MORNING_BRIEF_EMAIL_FROM
 
 ### 데이터 로딩
 - **SDN 제재**: 63,004건 (entries+aliases+addresses+IDs) + CSL 6,701건 = **총 21,301건 (19개 소스)**
@@ -40,23 +109,21 @@ tail -5 ~/portal/wdc_extract.log
 
 ---
 
-## 다음 세션 우선순위 (CW10)
+## 다음 세션 우선순위 (CW11)
 
 ### 🔴 P0 — 즉시
-1. **KOR AGR 재임포트 완료 확인**
+1. **KOR AGR 삭제 완료 확인** → 삭제 완료 후 재임포트 실행 (delete_kor_agr_final.sh 배치 진행중)
 2. **WDC 추출 완료 확인** → Supabase 업로드 (hs_classification_vectors + product_hs_mappings)
 
 ### 🔴 P1 — 이번 주
-3. **#1 관세최적화** — 최적 관세율 자동 추천 (MIN/AGR/FTA 비교)
-4. **#8 기업별 AD 관세** — 반덤핑 기업별 세율 적용
-5. **#9 heading 세분화** — HS 4자리 heading 내 세부 분류 개선
-6. **AI 분류 실데이터 테스트** — 벡터 검색 + 키워드 + LLM 파이프라인 검증
+3. **#8 기업별 AD 관세** — 반덤핑 기업별 세율 적용
+4. **#9 heading 세분화** — HS 4자리 heading 내 세부 분류 개선
+5. **벤치마크 실행** — 분류 정확도 측정 (Vector DB 시딩 후 실환경 검증)
 
 ### 🟡 P2 — 다음 주
-7. **벤치마크 실행** — 분류 정확도 측정
-8. **부하 테스트** — 동시 100명 접속
-9. **베타 유저 테스트** — 지인 셀러 2~3명
-10. **Layer 3 오케스트레이터 런타임** 설계
+8. **벤치마크 실행** — 분류 정확도 측정
+9. **부하 테스트** — 동시 100명 접속
+10. **베타 유저 테스트** — 지인 셀러 2~3명
 
 ### 🟢 P3 — 런칭 준비
 11. **Private Beta**: 3/17~20
@@ -69,12 +136,16 @@ tail -5 ~/portal/wdc_extract.log
 - **결제**: ✅ Paddle Live + Overage 빌링 + 환불 API
 - **요금제**: ✅ Free/Basic/Pro/Enterprise 완료
 - **제재 스크리닝**: ✅ 21,301건, 19개 소스 (OFAC SDN + CSL)
-- **AI Agent Org v3**: ✅ Chief Orchestrator 가동중, Phase 1 자동화 완료
-- **Layer 1**: ✅ Vercel Cron 11개
-- **Layer 2**: ✅ Morning Brief + Dashboard + Division Checklists
+- **AI Agent Org v3**: ✅ Chief Orchestrator 정식 운영 (Day 1), 15 Division 전체 Green
+- **Layer 1**: ✅ Vercel Cron 11개 + auto-remediation (Cron 3x 재시도)
+- **Layer 2**: ✅ Morning Brief 3섹션 + Dashboard + Division Checklists + issue-classifier
+- **모닝브리핑 스킬**: ✅ Cowork 설치 완료 ("모닝브리핑" 트리거)
 - **D15**: ✅ Intelligence Dashboard 구축 완료
 - **Git push**: Mac 터미널 또는 Claude Code (bypass permissions)
-- **AGR**: ✅ 53/53국 완료 (KOR 재임포트 진행중)
+- **AGR**: ✅ 53/53국 완료 (KOR 삭제 진행중 → 재임포트 예정)
+- **Resend API Key**: ✅ 발급 + Vercel 환경변수 세팅 완료
+- **관세최적화 (#1)**: ✅ lookupAllDutyRates() 구현 완료, tariffOptimization 응답. 47기능 35개 완료
+- **Vector DB 시딩**: ✅ hs_classification_vectors 163건, 파이프라인 정확도 100%
 
 ---
 
