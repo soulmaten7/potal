@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
 import { useSupabase } from '@/app/context/SupabaseProvider';
+import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
 
 // Paddle.js global type
 declare global {
@@ -170,6 +171,29 @@ export default function DashboardContent() {
   const [widgetOrigin, setWidgetOrigin] = useState('CN');
   const [widgetTheme, setWidgetTheme] = useState<'light' | 'dark'>('light');
   const [widgetProductName, setWidgetProductName] = useState('');
+  const [originSearch, setOriginSearch] = useState('');
+  const [originDropdownOpen, setOriginDropdownOpen] = useState(false);
+  const originRef = useRef<HTMLDivElement>(null);
+
+  // 240 countries sorted by name, with popular ones first
+  const allCountries = useMemo(() => {
+    const popular = ['CN', 'US', 'DE', 'JP', 'KR', 'VN', 'IN', 'GB', 'FR', 'IT', 'CA', 'AU', 'BR', 'MX', 'TW', 'TH', 'ID', 'TR', 'BD', 'PK'];
+    const entries = Object.values(COUNTRY_DATA).map(c => ({ code: c.code, name: c.name }));
+    const popularEntries = popular.map(code => entries.find(e => e.code === code)).filter(Boolean) as { code: string; name: string }[];
+    const rest = entries.filter(e => !popular.includes(e.code)).sort((a, b) => a.name.localeCompare(b.name));
+    return { popular: popularEntries, all: rest };
+  }, []);
+
+  // Close origin dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (originRef.current && !originRef.current.contains(e.target as Node)) {
+        setOriginDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
   const [widgetPrice, setWidgetPrice] = useState('');
   const [widgetShipping, setWidgetShipping] = useState('');
 
@@ -658,11 +682,59 @@ export default function DashboardContent() {
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                      <div>
+                      <div ref={originRef} style={{ position: 'relative' }}>
                         <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Origin</label>
-                        <select value={widgetOrigin} onChange={(e) => setWidgetOrigin(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 14, boxSizing: 'border-box', background: 'white' }}>
-                          {['CN', 'US', 'DE', 'JP', 'KR', 'VN', 'IN'].map(c => <option key={c} value={c}>{c}</option>)}
-                        </select>
+                        <button
+                          type="button"
+                          onClick={() => { setOriginDropdownOpen(!originDropdownOpen); setOriginSearch(''); }}
+                          style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 14, boxSizing: 'border-box' as const, background: 'white', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                        >
+                          <span>{widgetOrigin} — {Object.values(COUNTRY_DATA).find(c => c.code === widgetOrigin)?.name || widgetOrigin}</span>
+                          <span style={{ fontSize: 10, color: '#999' }}>{originDropdownOpen ? '▲' : '▼'}</span>
+                        </button>
+                        {originDropdownOpen && (
+                          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50, background: 'white', border: '1px solid #e5e7eb', borderRadius: 8, marginTop: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', maxHeight: 300, display: 'flex', flexDirection: 'column' }}>
+                            <div style={{ padding: 8, borderBottom: '1px solid #f3f4f6' }}>
+                              <input
+                                autoFocus
+                                value={originSearch}
+                                onChange={(e) => setOriginSearch(e.target.value)}
+                                placeholder="Search country..."
+                                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: 13, boxSizing: 'border-box' as const, outline: 'none' }}
+                              />
+                            </div>
+                            <div style={{ overflowY: 'auto', maxHeight: 250 }}>
+                              {(() => {
+                                const q = originSearch.toLowerCase();
+                                const filtered = q
+                                  ? [...allCountries.popular, ...allCountries.all].filter(c => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q))
+                                  : null;
+                                if (filtered && filtered.length === 0) return <div style={{ padding: '12px 16px', color: '#999', fontSize: 13 }}>No results</div>;
+                                const renderItem = (c: { code: string; name: string }) => (
+                                  <div
+                                    key={c.code}
+                                    onClick={() => { setWidgetOrigin(c.code); setOriginDropdownOpen(false); setOriginSearch(''); }}
+                                    style={{ padding: '8px 16px', cursor: 'pointer', fontSize: 13, background: c.code === widgetOrigin ? '#f0f7ff' : 'transparent', display: 'flex', justifyContent: 'space-between' }}
+                                    onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#f9fafb'; }}
+                                    onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = c.code === widgetOrigin ? '#f0f7ff' : 'transparent'; }}
+                                  >
+                                    <span style={{ fontWeight: c.code === widgetOrigin ? 600 : 400 }}>{c.code} — {c.name}</span>
+                                    {c.code === widgetOrigin && <span style={{ color: '#2563eb' }}>✓</span>}
+                                  </div>
+                                );
+                                if (filtered) return filtered.map(renderItem);
+                                return (
+                                  <>
+                                    <div style={{ padding: '6px 16px', fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase' as const, background: '#f9fafb' }}>Popular</div>
+                                    {allCountries.popular.map(renderItem)}
+                                    <div style={{ padding: '6px 16px', fontSize: 11, fontWeight: 700, color: '#999', textTransform: 'uppercase' as const, background: '#f9fafb' }}>All Countries</div>
+                                    {allCountries.all.map(renderItem)}
+                                  </>
+                                );
+                              })()}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Theme</label>
