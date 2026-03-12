@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-12 17:00 KST (CW10 — P1#8 기업별AD관세 + P1#9 heading세분화, 47기능 37개 완료)
+> 마지막 업데이트: 2026-03-12 19:30 KST (CW10 — 47기능 42개 완료: #17+#37+#2+#40+#20 추가 구현)
 
 ---
 
@@ -80,7 +80,12 @@ POTAL Chief Orchestrator 세션 시작.
 - **P1 #1 관세최적화**: lookupAllDutyRates() — MIN/AGR/NTLC 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답
 - **P1 #8 기업별 AD 관세**: trade-remedy-lookup.ts firm-specific 강화 + pg_trgm fuzzy search(search_firm_trgm DB함수)
 - **P1 #9 heading 세분화**: heading-subdivider.ts 신규 — material/gender/description 3단계 전략, classifier.ts 통합
-- 47기능 37개 완료
+- **#17 관세율 실시간**: cron 주간→일간(매일 04:00 UTC) + dataFreshness 응답
+- **#37 Drawback API**: /api/v1/drawback — 반품 관세 환급 계산 (16개국 규칙)
+- **#2 EU VAT 세분화**: eu-vat-rates.ts — EU 12개국 HS 챕터별 reduced VAT rate
+- **#40 MCP v1.3**: 7→9 tools (generate_document + compare_countries)
+- **#20 Incoterms**: EXW/FOB/CIF/DDP/DDU 5개 조건 + incotermsBreakdown
+- 47기능 42개 완료
 - **Vector DB 시딩**: product_hs_mappings 164건 → hs_classification_vectors 163건. 파이프라인 정확도 55%→100%
 - **Vercel 환경변수 세팅 완료**: RESEND_API_KEY + MORNING_BRIEF_EMAIL_TO + MORNING_BRIEF_EMAIL_FROM
 
@@ -150,7 +155,12 @@ tail -5 ~/portal/wdc_extract.log
 - **관세최적화 (#1)**: ✅ lookupAllDutyRates() 구현 완료, tariffOptimization 응답
 - **기업별 AD 관세 (#8)**: ✅ firm-specific AD/CVD matching + pg_trgm fuzzy search
 - **heading 세분화 (#9)**: ✅ heading-subdivider.ts — material/gender/description 3단계 subheading 선택
-- 47기능 37개 완료
+- **관세율 실시간 (#17)**: ✅ cron 주간→일간
+- **Drawback (#37)**: ✅ /api/v1/drawback — 16개국 관세 환급 API
+- **EU VAT 세분화 (#2)**: ✅ 12개국 HS 챕터별 reduced rate
+- **MCP v1.3 (#40)**: ✅ 7→9 tools (document+compare)
+- **Incoterms (#20)**: ✅ EXW/FOB/CIF/DDP/DDU + who-pays-what
+- 47기능 42개 완료
 - **Vector DB 시딩**: ✅ hs_classification_vectors 163건, 파이프라인 정확도 100%
 
 ---

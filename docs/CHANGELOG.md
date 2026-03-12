@@ -1,5 +1,33 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-12 17:00 KST
+> 마지막 업데이트: 2026-03-12 19:30 KST
+
+## [2026-03-12 19:30 KST] CW10 — 47기능 37→42개 완료 (5개 기능 추가 구현)
+
+### #17 관세율 실시간
+- `vercel.json` — update-tariffs cron 주간(매주 월 06:00)→일간(매일 04:00 UTC) 변경
+- `GlobalCostEngine.ts` — dataFreshness.lastTariffUpdate 'daily_04utc' 추가
+
+### #37 Drawback 계산 API
+- `app/api/v1/drawback/route.ts` 신규 — 반품 시 관세 환급 계산 API
+- 16개국 drawback 규칙 (US 5년 99%/EU 3년 100%/CA 4년 100%/IN 2년 98%/JP 1년 등)
+- GlobalCostEngine 호출로 원래 관세/VAT 자동 계산, 환급 가능액 산출
+
+### #2 EU VAT HS별 세분화
+- `app/lib/cost-engine/eu-vat-rates.ts` 신규 — EU 12개국 HS 챕터별 reduced VAT rate
+- DE(7%)/FR(5.5%/2.1%)/IT(4%/10%)/ES(4%/10%)/NL(9%)/BE(6%)/AT(10%)/PL(5%/8%)/SE(6%/12%)/PT(6%)/IE(0%)/GR(6%/13%)
+- GlobalCostEngine EU IOSS 섹션에 자동 적용 — 식품/서적/의약품 reduced rate 반영
+
+### MCP #40 Tool 확장 (v1.2→v1.3)
+- `mcp-server/src/index.ts` — 7→9 tools
+- `generate_document`: CI/PL/C/O 문서 생성 (exporter/importer/items/HS code)
+- `compare_countries`: 다국 TLC 비교 (최대 10개국 동시, cheapest route 추천)
+
+### #20 DDP/DDU Incoterms 확장
+- `GlobalCostEngine.ts` — shippingTerms: DDP/DDU → EXW/FOB/CIF/DDP/DDU 5개 조건 지원
+- `incotermsBreakdown` 응답 필드: sellerPays/buyerPays 항목별 금액 + 총액
+- EXW(매도인 공장 인도)/FOB(본선 인도)/CIF(보험+운임 포함)/DDU/DDP 각 조건별 비용 분배
+
+### **47기능 37→42개 완료 (#17, #37, #2, #40, #20 추가)**
 
 ## [2026-03-12 17:00 KST] CW10 — P1 #8 기업별AD관세 + P1 #9 heading세분화
 

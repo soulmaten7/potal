@@ -7,7 +7,7 @@
  * Calculates import duties, taxes (VAT/GST), customs fees, and shipping
  * for cross-border purchases across 240 countries and territories.
  *
- * Tools (7):
+ * Tools (9):
  *   - calculate_landed_cost: Calculate total cost for international purchases
  *   - classify_product: AI-powered HS code classification
  *   - check_restrictions: Import restriction & compliance check
@@ -15,6 +15,8 @@
  *   - screen_denied_party: Sanctions/denied-party screening (OFAC SDN + CSL, 21K entries)
  *   - lookup_fta: Free Trade Agreement lookup (63 FTAs)
  *   - list_supported_countries: Get all supported countries with tax info
+ *   - generate_document: Generate trade documents (CI/PL/C/O)
+ *   - compare_countries: Compare TLC across multiple destination countries
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -24,12 +26,12 @@ import { z } from "zod";
 // ─── Configuration ──────────────────────────────────────────
 const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
-const USER_AGENT = "potal-mcp-server/1.2.0";
+const USER_AGENT = "potal-mcp-server/1.3.0";
 
 // ─── Server Instance ────────────────────────────────────────
 const server = new McpServer({
   name: "potal",
-  version: "1.2.0",
+  version: "1.3.0",
 });
 
 // ─── API Helper ─────────────────────────────────────────────
@@ -579,6 +581,143 @@ server.tool(
           text: JSON.stringify(result.data, null, 2),
         },
       ],
+    };
+  }
+);
+
+// ─── Tool: generate_document ────────────────────────────────
+
+server.tool(
+  "generate_document",
+  "Generate trade documents for a shipment: Commercial Invoice (CI), " +
+    "Packing List (PL), or Certificate of Origin (C/O). " +
+    "Returns a structured JSON document ready for export/PDF generation.",
+  {
+    documentType: z.enum(["commercial_invoice", "packing_list", "certificate_of_origin"])
+      .describe("Type of trade document to generate"),
+    exporterName: z.string().describe("Exporter/seller company name"),
+    importerName: z.string().describe("Importer/buyer company name"),
+    originCountry: z.string().describe("Country of origin (ISO 2-letter code, e.g. 'CN')"),
+    destinationCountry: z.string().describe("Destination country (ISO 2-letter code, e.g. 'US')"),
+    productName: z.string().describe("Product name/description"),
+    hsCode: z.string().optional().describe("HS code (6+ digits)"),
+    quantity: z.number().describe("Number of units"),
+    unitPrice: z.number().describe("Price per unit in USD"),
+    weight: z.number().optional().describe("Total weight in kg"),
+    currency: z.string().optional().describe("Currency code (default: USD)"),
+  },
+  async (args) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key is not configured." }],
+      };
+    }
+
+    const result = await callPotalApi("/documents", "POST", {
+      type: args.documentType,
+      exporter: args.exporterName,
+      importer: args.importerName,
+      origin: args.originCountry,
+      destination: args.destinationCountry,
+      items: [{
+        description: args.productName,
+        hsCode: args.hsCode || undefined,
+        quantity: args.quantity,
+        unitPrice: args.unitPrice,
+        weight: args.weight || undefined,
+      }],
+      currency: args.currency || "USD",
+    });
+
+    if (!result.success) {
+      return {
+        content: [{ type: "text" as const, text: `❌ Document generation failed: ${result.error}` }],
+        isError: true,
+      };
+    }
+
+    return {
+      content: [{ type: "text" as const, text: JSON.stringify(result.data, null, 2) }],
+    };
+  }
+);
+
+// ─── Tool: compare_countries ────────────────────────────────
+
+server.tool(
+  "compare_countries",
+  "Compare Total Landed Cost across multiple destination countries for the same product. " +
+    "Useful for finding the cheapest import route or comparing duty rates between countries. " +
+    "Returns a side-by-side comparison of costs.",
+  {
+    productName: z.string().describe("Product name/description"),
+    price: z.number().describe("Product price in USD"),
+    originCountry: z.string().describe("Origin/export country (ISO 2-letter code, e.g. 'CN')"),
+    destinationCountries: z.array(z.string()).describe("List of destination countries to compare (ISO 2-letter codes, e.g. ['US', 'GB', 'DE', 'JP'])"),
+    hsCode: z.string().optional().describe("HS code (6+ digits)"),
+    shippingPrice: z.number().optional().describe("Shipping cost in USD (default: 0)"),
+  },
+  async (args) => {
+    if (!API_KEY) {
+      return {
+        content: [{ type: "text" as const, text: "❌ POTAL API key is not configured." }],
+      };
+    }
+
+    const results: { country: string; data?: Record<string, unknown>; error?: string }[] = [];
+
+    for (const country of args.destinationCountries.slice(0, 10)) {
+      const result = await callPotalApi("/calculate", "POST", {
+        price: args.price,
+        shippingPrice: args.shippingPrice || 0,
+        origin: args.originCountry,
+        destinationCountry: country,
+        productName: args.productName,
+        hsCode: args.hsCode || undefined,
+      });
+
+      if (result.success && result.data) {
+        results.push({ country, data: result.data });
+      } else {
+        results.push({ country, error: result.error || "Unknown error" });
+      }
+    }
+
+    // Format comparison
+    const lines: string[] = [];
+    lines.push(`## Country Comparison: ${args.productName}\n`);
+    lines.push(`**Price**: ${formatCurrency(args.price)} | **Origin**: ${args.originCountry}\n`);
+    lines.push("| Country | Duty | VAT/GST | Total Landed Cost | Duty Rate |");
+    lines.push("|---------|------|---------|-------------------|-----------|");
+
+    for (const r of results) {
+      if (r.error) {
+        lines.push(`| ${r.country} | - | - | Error: ${r.error} | - |`);
+        continue;
+      }
+      const d = r.data?.data ? (r.data.data as Record<string, unknown>) : r.data || {};
+      const duty = Number(d.importDuty || 0);
+      const vat = Number((d as Record<string, unknown>).vat || (d as Record<string, unknown>).salesTax || 0);
+      const total = Number(d.totalLandedCost || 0);
+      const dutyRate = d.dutyRate !== undefined ? `${(Number(d.dutyRate) * 100).toFixed(1)}%` : '-';
+      lines.push(`| ${r.country} | ${formatCurrency(duty)} | ${formatCurrency(vat)} | ${formatCurrency(total)} | ${dutyRate} |`);
+    }
+
+    // Find cheapest
+    const validResults = results.filter(r => r.data);
+    if (validResults.length > 1) {
+      const cheapest = validResults.reduce((min, r) => {
+        const d = r.data?.data ? (r.data.data as Record<string, unknown>) : r.data || {};
+        const total = Number(d.totalLandedCost || Infinity);
+        const minD = min.data?.data ? (min.data.data as Record<string, unknown>) : min.data || {};
+        const minTotal = Number(minD.totalLandedCost || Infinity);
+        return total < minTotal ? r : min;
+      });
+      lines.push(`\n> 💡 **Cheapest route**: ${cheapest.country}`);
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
     };
   }
 );

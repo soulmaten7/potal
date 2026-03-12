@@ -21,6 +21,9 @@ import type { FtaResult } from './hs-code/fta';
 // AI-powered classification (async, with DB caching)
 import { classifyWithOverrideAsync } from './ai-classifier';
 
+// EU HS chapter-based reduced VAT rates
+import { getEuReducedVatRate } from './eu-vat-rates';
+
 // External tariff API (async, with DB caching + circuit breaker)
 import { fetchDutyRateWithFallback, getFtaRateFromLiveDb } from './tariff-api';
 
@@ -91,8 +94,8 @@ export interface GlobalCostInput extends CostInput {
   insuranceRate?: number;
   /** Include brokerage fee estimate (default: true for international) */
   includeBrokerage?: boolean;
-  /** Shipping terms: DDP (seller pays duties) or DDU (buyer pays) */
-  shippingTerms?: 'DDP' | 'DDU';
+  /** Shipping terms / Incoterms: DDP, DDU, CIF, FOB, EXW */
+  shippingTerms?: 'DDP' | 'DDU' | 'CIF' | 'FOB' | 'EXW';
   /** Exporter/manufacturer firm name for firm-specific AD/CVD matching */
   firmName?: string;
 }
@@ -135,8 +138,8 @@ export interface GlobalLandedCost extends LandedCost {
   usAdditionalTariffs?: USAdditionalTariffResult;
   /** Entry type: formal (>$2500) or informal (<=$2500) */
   entryType?: 'formal' | 'informal';
-  /** Shipping terms used */
-  shippingTerms?: 'DDP' | 'DDU';
+  /** Shipping terms / Incoterms used */
+  shippingTerms?: 'DDP' | 'DDU' | 'CIF' | 'FOB' | 'EXW';
   /** DDU breakdown: duties/taxes the buyer must pay at delivery (DDU mode only) */
   dduBuyerCharges?: {
     importDuty: number;
@@ -144,6 +147,19 @@ export interface GlobalLandedCost extends LandedCost {
     processingFee: number;
     total: number;
     note: string;
+  };
+  /** Incoterms cost allocation — who pays what */
+  incotermsBreakdown?: {
+    /** Incoterm used */
+    term: string;
+    /** What the seller pays */
+    sellerPays: { item: string; amount: number }[];
+    /** What the buyer pays */
+    buyerPays: { item: string; amount: number }[];
+    /** Seller total */
+    sellerTotal: number;
+    /** Buyer total */
+    buyerTotal: number;
   };
   /** AI-detected origin country ISO code (when seller didn't provide origin) */
   detectedOriginCountry?: string;
@@ -479,18 +495,24 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     // Below threshold: VAT at destination country rate, no import duty
     // Above threshold: standard import VAT on (CIF + duty)
     const EU_IOSS_THRESHOLD_USD = 165;
+
+    // Check for HS chapter-based reduced VAT rate (e.g. food, books, pharma)
+    const euReduced = hsResult?.hsCode ? getEuReducedVatRate(profile.code, hsResult.hsCode) : null;
+    const euVatRate = euReduced ? euReduced.rate : profile.vatRate;
+    const euVatLabel = euReduced ? `${euReduced.label}` : undefined;
+
     if (declaredValue <= EU_IOSS_THRESHOLD_USD) {
       // IOSS: VAT at destination rate, duty exempt
-      vat = declaredValue * profile.vatRate;
-      effectiveVatRate = profile.vatRate;
-      effectiveVatLabel = 'VAT (IOSS)';
+      vat = declaredValue * euVatRate;
+      effectiveVatRate = euVatRate;
+      effectiveVatLabel = euVatLabel ? `VAT (IOSS, ${euVatLabel})` : 'VAT (IOSS)';
       // Under IOSS, customs duty is waived for ≤€150
       importDuty = 0;
     } else {
       // Standard EU import: VAT on (CIF + duty)
-      vat = (declaredValue + importDuty) * profile.vatRate;
-      effectiveVatRate = profile.vatRate;
-      effectiveVatLabel = 'Import VAT';
+      vat = (declaredValue + importDuty) * euVatRate;
+      effectiveVatRate = euVatRate;
+      effectiveVatLabel = euVatLabel ? `Import VAT (${euVatLabel})` : 'Import VAT';
     }
   } else if (profile.code === 'AU' && !isDomestic) {
     // Australia: GST on Low Value Goods (LVG) ≤ AUD 1000 (~$650 USD)
@@ -707,18 +729,75 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
 
   const totalWithMpf = productPrice + shippingCost + importDuty + vat + mpf + insurance + brokerageFee;
 
-  // DDU: buyer pays duties/taxes at delivery, seller only pays product+shipping
-  const isDDU = input.shippingTerms === 'DDU';
+  // DDU/CIF/FOB/EXW: buyer pays duties/taxes at delivery
+  const isDDU = input.shippingTerms === 'DDU' || input.shippingTerms === 'CIF' || input.shippingTerms === 'FOB' || input.shippingTerms === 'EXW';
   const dduBuyerCharges = (!isDomestic && isDDU) ? {
     importDuty: round(importDuty),
     vat: round(vat),
     processingFee: round(mpf),
     total: round(importDuty + vat + mpf),
-    note: 'Buyer pays at delivery (DDU)',
+    note: `Buyer pays at delivery (${input.shippingTerms || 'DDU'})`,
   } : undefined;
 
   // For DDU, totalLandedCost still includes everything (full cost to buyer)
   // but dduBuyerCharges shows what the buyer must pay separately at delivery
+
+  // Build incoterms cost allocation breakdown
+  const incotermsBreakdown = (!isDomestic) ? (() => {
+    const term = input.shippingTerms || 'DDP';
+    const sellerPays: { item: string; amount: number }[] = [];
+    const buyerPays: { item: string; amount: number }[] = [];
+
+    // Product price is always seller's cost
+    sellerPays.push({ item: 'Product', amount: round(productPrice) });
+
+    if (term === 'EXW') {
+      // EXW: Seller delivers at their premises. Buyer pays everything else.
+      buyerPays.push({ item: 'Shipping', amount: round(shippingCost) });
+      buyerPays.push({ item: 'Insurance', amount: round(insurance) });
+      buyerPays.push({ item: 'Import Duty', amount: round(importDuty) });
+      buyerPays.push({ item: 'VAT/GST', amount: round(vat) });
+      if (mpf > 0) buyerPays.push({ item: 'Processing Fee', amount: round(mpf) });
+      if (brokerageFee > 0) buyerPays.push({ item: 'Brokerage', amount: round(brokerageFee) });
+    } else if (term === 'FOB') {
+      // FOB: Seller delivers to port. Buyer pays freight + insurance + duties.
+      buyerPays.push({ item: 'Shipping (freight)', amount: round(shippingCost) });
+      buyerPays.push({ item: 'Insurance', amount: round(insurance) });
+      buyerPays.push({ item: 'Import Duty', amount: round(importDuty) });
+      buyerPays.push({ item: 'VAT/GST', amount: round(vat) });
+      if (mpf > 0) buyerPays.push({ item: 'Processing Fee', amount: round(mpf) });
+      if (brokerageFee > 0) buyerPays.push({ item: 'Brokerage', amount: round(brokerageFee) });
+    } else if (term === 'CIF') {
+      // CIF: Seller pays freight + insurance. Buyer pays duties at destination.
+      sellerPays.push({ item: 'Shipping (freight)', amount: round(shippingCost) });
+      sellerPays.push({ item: 'Insurance', amount: round(insurance) });
+      buyerPays.push({ item: 'Import Duty', amount: round(importDuty) });
+      buyerPays.push({ item: 'VAT/GST', amount: round(vat) });
+      if (mpf > 0) buyerPays.push({ item: 'Processing Fee', amount: round(mpf) });
+      if (brokerageFee > 0) buyerPays.push({ item: 'Brokerage', amount: round(brokerageFee) });
+    } else if (term === 'DDU') {
+      // DDU: Seller pays shipping. Buyer pays duties/taxes at delivery.
+      sellerPays.push({ item: 'Shipping', amount: round(shippingCost) });
+      buyerPays.push({ item: 'Import Duty', amount: round(importDuty) });
+      buyerPays.push({ item: 'VAT/GST', amount: round(vat) });
+      if (mpf > 0) buyerPays.push({ item: 'Processing Fee', amount: round(mpf) });
+      if (insurance > 0) sellerPays.push({ item: 'Insurance', amount: round(insurance) });
+      if (brokerageFee > 0) buyerPays.push({ item: 'Brokerage', amount: round(brokerageFee) });
+    } else {
+      // DDP: Seller pays everything.
+      sellerPays.push({ item: 'Shipping', amount: round(shippingCost) });
+      sellerPays.push({ item: 'Import Duty', amount: round(importDuty) });
+      sellerPays.push({ item: 'VAT/GST', amount: round(vat) });
+      if (mpf > 0) sellerPays.push({ item: 'Processing Fee', amount: round(mpf) });
+      if (insurance > 0) sellerPays.push({ item: 'Insurance', amount: round(insurance) });
+      if (brokerageFee > 0) sellerPays.push({ item: 'Brokerage', amount: round(brokerageFee) });
+    }
+
+    const sellerTotal = round(sellerPays.reduce((s, p) => s + p.amount, 0));
+    const buyerTotal = round(buyerPays.reduce((s, p) => s + p.amount, 0));
+
+    return { term, sellerPays, buyerPays, sellerTotal, buyerTotal };
+  })() : undefined;
 
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' : originCountry === 'CN' ? 'CN' : 'OTHER';
@@ -776,6 +855,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     entryType: !isDomestic ? entryType : undefined,
     shippingTerms: input.shippingTerms || 'DDP',
     dduBuyerCharges,
+    incotermsBreakdown,
     accuracyGuarantee: (() => {
       const factors: string[] = [];
       let score = confidenceScore;
@@ -796,6 +876,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     dataFreshness: {
       dutyRateAge: dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc'
         ? 'macmap_db' : dutyRateSource || 'hardcoded',
+      lastTariffUpdate: 'daily_04utc',
       quality: dutyRateSource === 'hardcoded' ? 'fallback'
         : (dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc' || dutyRateSource === 'live_db' || dutyRateSource === 'external_api') ? 'fresh'
         : 'stale',

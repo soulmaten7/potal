@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/v1/admin/update-tariffs",
-      "schedule": "0 6 * * 1"
+      "schedule": "0 4 * * *"
     },
     {
       "path": "/api/v1/admin/billing-overage",

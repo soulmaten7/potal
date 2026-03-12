@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-12 17:00 KST (CW10 — P1#8 기업별AD관세 + P1#9 heading세분화, 47기능 37개 완료)
+# 마지막 업데이트: 2026-03-12 19:30 KST (CW10 — 47기능 42개 완료: #17 실시간관세 + #37 Drawback + #2 EU VAT세분화 + #40 MCP9tools + #20 Incoterms)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -72,12 +72,12 @@ portal/
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
 - **제재 스크리닝**: 21,301건 (OFAC SDN 14,600 + CSL 6,701, 19개 소스) ✅
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
-- **관세율 자동업데이트**: Vercel Cron 11개 (CW9.5: 9→11개, exchange-rate-sync+sdn-sync 추가)
+- **관세율 자동업데이트**: Vercel Cron 11개 (CW10: update-tariffs 주간→일간 변경)
 - **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
 - **MCP Server**: v1.2.0, 7개 도구 (calculate, classify, restrictions, screen_shipment, screen_denied_party, lookup_fta, list_countries)
 - **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (1,899파트, extract_with_categories.py)
 - **Google Taxonomy HS 매핑**: 164건 product_hs_mappings 로딩 ✅
-- **47개 기능**: CW10에서 37개 작업 완료 (34개 기능 구현 + 3개 P0 인프라). #1 관세최적화 + #8 기업별AD + #9 heading세분화 추가. 50개국어 i18n, 벡터DB, HS10확장, 제재심사, GraphQL 등
+- **47개 기능**: CW10에서 42개 작업 완료 (39개 기능 구현 + 3개 P0 인프라). 50개국어 i18n, 벡터DB, HS10확장, 제재심사, GraphQL, 관세최적화, 기업별AD, heading세분화, EU VAT세분화, Drawback, Incoterms 등
 - **AI Agent Organization v3**: 15개 Division, 3 Layer(Automation/Monitor/Active), 1 Chief Orchestrator, Opus 4+에스컬5
 - **Chief Orchestrator 정식 운영**: CW9.5 사이클 1~3 → Cycle 4(야간) → Cycle 5(D15+AI플랫폼) → Cycle 6(Morning Brief 강화). 15/15 Division 전체 Green
 - **Phase 1 자동화**: Morning Brief 매일 아침 9시 KST 자동 스케줄 (Cowork Scheduled Task) + Layer 1/2/3 분류 + 자동 수정(auto-remediation) + contact@potal.app 이메일 알림 (Resend API, morning-brief-email.ts, ✅ Vercel 환경변수 세팅 완료)
