@@ -98,8 +98,6 @@ export async function fetchUsitcDutyRate(
 
     const cleanHtsNo = bestMatch.htsno.replace(/\./g, '');
 
-    console.log(`[POTAL USITC] ${hsCode} → HTS ${bestMatch.htsno} = ${(mfnRate * 100).toFixed(1)}% (${bestMatch.description.substring(0, 50)})`);
-
     return {
       hsCode: cleanHtsNo,
       destinationCountry: 'US',

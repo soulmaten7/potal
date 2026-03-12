@@ -75,8 +75,6 @@ export async function fetchUkTariffDutyRate(
       ftaRate = extractPreferentialRate(data, originCountry);
     }
 
-    console.log(`[POTAL UK] ${hsCode} → ${commodityCode} = ${(mfnRate * 100).toFixed(1)}% MFN`);
-
     return {
       hsCode: commodityCode,
       destinationCountry: 'GB',
@@ -134,7 +132,6 @@ async function tryFallbackCodes(
         const data = await response.json();
         const mfnRate = extractMfnDutyRate(data);
         if (mfnRate !== null) {
-          console.log(`[POTAL UK] Fallback to ${code8} = ${(mfnRate * 100).toFixed(1)}% MFN`);
           return {
             hsCode: code8,
             destinationCountry: 'GB',
@@ -166,7 +163,6 @@ async function tryFallbackCodes(
         // Heading 레벨의 기본 관세율이 있으면 사용
         const mfnRate = extractMfnFromHeading(data);
         if (mfnRate !== null) {
-          console.log(`[POTAL UK] Heading fallback ${heading} = ${(mfnRate * 100).toFixed(1)}%`);
           return {
             hsCode: heading.padEnd(10, '0'),
             destinationCountry: 'GB',

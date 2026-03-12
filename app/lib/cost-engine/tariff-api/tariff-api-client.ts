@@ -58,7 +58,6 @@ function isCircuitOpen(): boolean {
 
   // 리셋 시간이 지났으면 반 개방 (half-open) — 한 번 시도
   if (Date.now() - circuitOpenedAt > config.circuitBreakerResetMs) {
-    console.log('[POTAL Tariff] Circuit breaker half-open, allowing one retry');
     return false;
   }
 
@@ -308,7 +307,6 @@ export async function fetchDutyRateWithFallback(
   // ━━━ 1단계: Live DB 캐시 조회 ━━━
   const cached = await getDutyRateFromLiveDb(hsCode, destinationCountry, originCountry);
   if (cached) {
-    console.log(`[POTAL Tariff] Live DB HIT: ${hsCode} → ${destinationCountry} = ${cached.mfnRate}`);
     return { rate: cached, source: 'live_db' };
   }
 
@@ -381,7 +379,6 @@ export async function fetchDutyRateWithFallback(
       // DB에 저장 (다음 요청부터 API 호출 없이 DB 리턴)
       await saveDutyRateToLiveDb(hsCode, destinationCountry, result, providerName);
 
-      console.log(`[POTAL Tariff] External API (${providerName}): ${hsCode} → ${destinationCountry} = ${result.mfnRate}`);
       return { rate: result, source: `external_${providerName}` };
     }
 

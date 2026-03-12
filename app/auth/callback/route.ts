@@ -10,8 +10,8 @@ export async function GET(request: Request) {
   const next = requestUrl.searchParams.get("next");
   const origin = requestUrl.origin;
 
-  // Always send user to home after successful session exchange so cookies are set on same origin
-  const homeUrl = `${origin}/`;
+  // After successful auth, redirect to dashboard
+  const homeUrl = `${origin}/dashboard`;
 
   // Security: only allow internal relative paths to prevent open redirect attacks
   // Block absolute URLs, protocol-relative URLs, and encoded bypasses

@@ -137,7 +137,7 @@
   "KOR": {
     "rows_done": 1845798,
     "status": "done",
-    "total": 15798
+    "total": 1815798
   },
   "KWT": {
     "rows_done": 2046173,
@@ -190,7 +190,78 @@
     "total": 1825460
   },
   "PER": {
-    "rows_done": 1950000,
-    "status": "in_progress"
+    "rows_done": 1979587,
+    "status": "done",
+    "total": 1979587
+  },
+  "PHL": {
+    "rows_done": 3115879,
+    "status": "done",
+    "total": 3115879
+  },
+  "PRY": {
+    "rows_done": 2634321,
+    "status": "done",
+    "total": 2634321
+  },
+  "QAT": {
+    "rows_done": 2046173,
+    "status": "done",
+    "total": 2046173
+  },
+  "RUS": {
+    "rows_done": 3440652,
+    "status": "done",
+    "total": 3440652
+  },
+  "SAU": {
+    "rows_done": 3332165,
+    "status": "done",
+    "total": 3332165
+  },
+  "SGP": {
+    "rows_done": 2705934,
+    "status": "done",
+    "total": 2705934
+  },
+  "THA": {
+    "rows_done": 2968487,
+    "status": "done",
+    "total": 2968487
+  },
+  "TUN": {
+    "rows_done": 4788142,
+    "status": "done",
+    "total": 4788142
+  },
+  "TUR": {
+    "rows_done": 4915066,
+    "status": "done",
+    "total": 4915066
+  },
+  "TWN": {
+    "rows_done": 2976783,
+    "status": "done",
+    "total": 2976783
+  },
+  "UKR": {
+    "rows_done": 2896657,
+    "status": "done",
+    "total": 2896657
+  },
+  "URY": {
+    "rows_done": 3081112,
+    "status": "done",
+    "total": 3081112
+  },
+  "USA": {
+    "rows_done": 3576780,
+    "status": "done",
+    "total": 3576780
+  },
+  "VNM": {
+    "rows_done": 3388376,
+    "status": "done",
+    "total": 208376
   }
 }

@@ -237,7 +237,7 @@ export default function PricingPage() {
         margin: '-40px auto 0',
         padding: '0 20px',
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
         gap: 24,
       }}>
         {PLANS.map((plan) => (

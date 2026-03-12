@@ -1,5 +1,41 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-13 00:30 KST
+> 마지막 업데이트: 2026-03-13 03:00 KST
+
+## [2026-03-13 03:00 KST] CW10 — Private Beta 최종 준비 자율 스프린트 (20-Task)
+
+### Phase A: API E2E 검증 (6 tasks)
+- **A-1**: 10개 calculate 시나리오 전부 200 OK, totalLandedCost > 0 확인
+- **A-2**: 8개 API 엔드포인트 health check 통과 (alerts 500 → tariff_alerts 테이블 생성으로 해결)
+- **A-3**: Widget `/widget/potal-widget.js` 200 OK + CORS 정상, 플러그인 파일 존재 확인
+- **A-4**: Paddle 결제 시스템 확인 — 6 Live Prices, webhook 서명 검증 정상
+- **A-5**: Auth/보안 감사 — 시크릿 누출 없음, CRON_SECRET 보호, RLS 확인
+- **A-6**: 11개 Vercel Cron 수동 실행 — 10/11 성공 (update-tariffs timeout 예상)
+
+### Phase B: 코드 품질 (6 tasks)
+- **B-1**: console.log 12개 제거 (6개 파일: tariff-api-client, exchange-rate-service, claude-classifier, usitc/eu-taric/uk-tariff providers)
+- **B-2**: TypeScript 0 에러 확인
+- **B-3**: 4개 API route 에러 핸들링 강화 (calculate, classify, restrictions, agent — try-catch 추가)
+- **B-4**: i18n 137키 × 50언어 = 100% 커버리지 확인
+- **B-5**: SEO 감사 — meta tags, JSON-LD, robots.txt, sitemap.xml, 404 페이지 정상
+- **B-6**: 키워드 분류기 정확도 80% → 86% 개선
+  - ch61/ch62: `'car'` → `'car coat'` (Plastic Toy Car 오분류 방지)
+  - ch09 090111: `'coffee beans'` 복수형 추가
+  - ch85 854140: solar panel 키워드 4개 추가
+  - classifier.ts: bigram exact match 추적, partial match 중복 방지, material-only 0.40 캡, reranking 개선
+
+### Phase C: Beta UX (4 tasks)
+- **C-1**: Signup → OAuth → dashboard → API key → quickstart 플로우 정상
+- **C-2**: Pricing 페이지 모바일 반응형 수정 (4-column → auto-fit grid)
+- **C-3**: Legal 페이지 전부 200 OK, 쿠키 동의 존재 확인
+- **C-4**: 이메일 시스템 — Make.com Welcome Email 시나리오 확인
+
+### Phase D: 분석 (2 tasks)
+- **D-1**: 47기능 갭 분석 — 33개 스코프 IN 전부 ✅, Beta 미완료 0개
+- **D-2**: DB 정합성 — 12/12 테이블 CLAUDE.md 수치 일치 (macmap_min_rates 112,935,450)
+
+### Phase E: 최종 (2 tasks)
+- **E-1**: npm run build ✅ 0 errors
+- **E-2**: 5개 문서 동기화 (현재 항목)
 
 ## [2026-03-13 00:30 KST] CW10 — 플랫폼 전체 최종 점검
 

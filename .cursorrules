@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-13 00:30 KST (CW10 — 플랫폼 최종 점검: 42/42기능, 522/522테스트, 12/12DB, 27/27페이지 전체 검증 완료)
+# 마지막 업데이트: 2026-03-13 03:00 KST (CW10 — Private Beta 최종 준비 스프린트 20-Task 완료, console.log 12개 제거, 분류기 86%, 4 API route 에러핸들링 강화)
 
 ## 0. 프로젝트 개요
 

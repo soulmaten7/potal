@@ -61,11 +61,16 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
         results.push({ success: false, error: 'Invalid tool call format.' });
         continue;
       }
-      const result = await executeToolCall(
-        { name: String(call.name), arguments: (call.arguments || {}) as Record<string, unknown> },
-        context.sellerId
-      );
-      results.push(result);
+      try {
+        const result = await executeToolCall(
+          { name: String(call.name), arguments: (call.arguments || {}) as Record<string, unknown> },
+          context.sellerId
+        );
+        results.push(result);
+      } catch (err) {
+        console.error('[agent] Batch tool call error:', err instanceof Error ? err.message : err);
+        results.push({ success: false, error: 'Tool execution failed.' });
+      }
     }
 
     return apiSuccess({ results }, {
@@ -86,7 +91,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     ? body.arguments as Record<string, unknown>
     : {};
 
-  const result = await executeToolCall({ name, arguments: args }, context.sellerId);
+  let result;
+  try {
+    result = await executeToolCall({ name, arguments: args }, context.sellerId);
+  } catch (err) {
+    console.error('[agent] Tool execution error:', err instanceof Error ? err.message : err);
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Tool execution failed. Please try again.');
+  }
 
   if (!result.success) {
     return apiError(ApiErrorCode.BAD_REQUEST, result.error || 'Tool execution failed.');

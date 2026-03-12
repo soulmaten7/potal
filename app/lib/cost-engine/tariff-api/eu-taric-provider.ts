@@ -97,8 +97,6 @@ export async function fetchEuTaricDutyRate(
       ftaRate = extractPreferentialRate(data, originCountry);
     }
 
-    console.log(`[POTAL EU] ${hsCode} → ${commodityCode} (${destinationCountry}) = ${(mfnRate * 100).toFixed(1)}% CET`);
-
     return {
       hsCode: commodityCode,
       destinationCountry: destinationCountry.toUpperCase(),
@@ -150,7 +148,6 @@ async function tryFallbackCodes(
         const data = await response.json();
         const mfnRate = extractMfnDutyRate(data);
         if (mfnRate !== null) {
-          console.log(`[POTAL EU] Fallback to ${code8} = ${(mfnRate * 100).toFixed(1)}% CET`);
           return {
             hsCode: code8,
             destinationCountry: destinationCountry.toUpperCase(),

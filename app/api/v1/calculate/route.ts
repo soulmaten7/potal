@@ -71,13 +71,18 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   };
 
   // 6. Calculate (DB-backed global engine — supports 58+ countries)
-  const result = await calculateGlobalLandedCostAsync(costInput);
+  try {
+    const result = await calculateGlobalLandedCostAsync(costInput);
 
-  // 7. Return response
-  return apiSuccess(result, {
-    sellerId: context.sellerId,
-    plan: context.planId,
-  });
+    // 7. Return response
+    return apiSuccess(result, {
+      sellerId: context.sellerId,
+      plan: context.planId,
+    });
+  } catch (err) {
+    console.error('[calculate] Calculation failed:', err instanceof Error ? err.message : err);
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Calculation failed. Please try again.');
+  }
 });
 
 // ─── GET Handler (method not allowed) ───────────────

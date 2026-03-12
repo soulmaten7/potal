@@ -2,7 +2,7 @@
 import type { HsCodeEntry } from '../types';
 
 export const CHAPTER_09: HsCodeEntry[] = [
-  { code: '090111', description: 'Coffee beans (not roasted)', chapter: '09', category: 'food', keywords: ['coffee bean', 'green coffee', 'unroasted coffee', 'arabica', 'coffee', 'roasted', 'decaffeinated', 'husks', 'skins', 'substitutes'] },
+  { code: '090111', description: 'Coffee beans (not roasted)', chapter: '09', category: 'food', keywords: ['coffee bean', 'coffee beans', 'green coffee', 'unroasted coffee', 'arabica', 'raw coffee', 'whole bean', 'coffee', 'roasted', 'decaffeinated'] },
   { code: '090112', description: 'Coffee, whether or not roasted or decaffeinated; coffee husks and skins; coff...', chapter: '09', category: 'food', keywords: ['coffee', 'roasted', 'decaffeinated', 'husks', 'skins', 'substitutes', 'proportioncoffee', 'roasteddecaffeinated'] },
   { code: '090121', description: 'Roasted coffee', chapter: '09', category: 'food', keywords: ['coffee', 'roasted coffee', 'ground coffee', 'espresso', 'roasted', 'decaffeinated', 'husks', 'skins', 'substitutes', 'proportioncoffee'] },
   { code: '090122', description: 'Coffee, whether or not roasted or decaffeinated; coffee husks and skins; coff...', chapter: '09', category: 'food', keywords: ['coffee', 'roasted', 'decaffeinated', 'husks', 'skins', 'substitutes', 'proportioncoffee', 'roasteddecaffeinated'] },

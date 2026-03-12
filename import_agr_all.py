@@ -72,19 +72,28 @@ def save_progress(progress):
     with open(PROGRESS_FILE, 'w') as f:
         json.dump(progress, f, indent=2)
 
-def execute_sql(query):
+def execute_sql(query, retries=3):
     with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
         json.dump({"query": query}, f)
         tmp_path = f.name
     try:
-        result = subprocess.run([
-            'curl', '-s', '-X', 'POST',
-            f'https://api.supabase.com/v1/projects/{SUPABASE_PROJECT_ID}/database/query',
-            '-H', f'Authorization: Bearer {SUPABASE_TOKEN}',
-            '-H', 'Content-Type: application/json',
-            '-d', f'@{tmp_path}'
-        ], capture_output=True, text=True, timeout=120)
-        return result.stdout
+        for attempt in range(1, retries + 1):
+            try:
+                result = subprocess.run([
+                    'curl', '-s', '-X', 'POST',
+                    f'https://api.supabase.com/v1/projects/{SUPABASE_PROJECT_ID}/database/query',
+                    '-H', f'Authorization: Bearer {SUPABASE_TOKEN}',
+                    '-H', 'Content-Type: application/json',
+                    '-d', f'@{tmp_path}'
+                ], capture_output=True, text=True, timeout=180)
+                return result.stdout
+            except subprocess.TimeoutExpired:
+                log(f"    curl 타임아웃 (시도 {attempt}/{retries}), 30초 대기")
+                time.sleep(30)
+            except Exception as e:
+                log(f"    curl 에러 (시도 {attempt}/{retries}): {e}, 15초 대기")
+                time.sleep(15)
+        return '{"error": "all retries failed"}'
     finally:
         os.unlink(tmp_path)
 

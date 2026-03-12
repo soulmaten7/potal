@@ -316,7 +316,6 @@ export async function classifyWithAi(
   const config = getAiClassifierConfig();
 
   if (!config.enabled) {
-    console.log('[POTAL AI] AI classifier disabled');
     return null;
   }
 

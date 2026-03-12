@@ -53,7 +53,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     return apiError(ApiErrorCode.BAD_REQUEST, 'Provide hsCode or productName for restriction check.');
   }
 
-  const result = checkRestrictions(hsCode, destinationCountry);
+  let result;
+  try {
+    result = checkRestrictions(hsCode, destinationCountry);
+  } catch (err) {
+    console.error('[restrictions] Check failed:', err instanceof Error ? err.message : err);
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Restriction check failed. Please try again.');
+  }
 
   return apiSuccess({
     ...result,

@@ -244,7 +244,6 @@ export async function getExchangeRates(): Promise<ExchangeRates> {
     // 캐시에 저장
     cachedRates = rates;
     cacheTimestamp = Date.now();
-    console.log(`[POTAL FX] Rates updated from ${rates.source} (${Object.keys(rates.rates).length} currencies)`);
     return rates;
   }
 
@@ -253,7 +252,6 @@ export async function getExchangeRates(): Promise<ExchangeRates> {
 
   // 이전 캐시가 있으면 만료되었더라도 사용 (stale > fallback)
   if (cachedRates) {
-    console.log('[POTAL FX] Using stale cache');
     return cachedRates;
   }
 

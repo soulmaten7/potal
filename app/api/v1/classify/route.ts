@@ -96,7 +96,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     }
 
     const imageData = imageUrl || imageBase64!;
-    const visionResult = await classifyWithVision(imageData, productHint || productName || undefined);
+    let visionResult;
+    try {
+      visionResult = await classifyWithVision(imageData, productHint || productName || undefined);
+    } catch (err) {
+      console.error('[classify] Vision classification error:', err instanceof Error ? err.message : err);
+      return apiError(ApiErrorCode.INTERNAL_ERROR, 'Image classification service unavailable. Please try again.');
+    }
 
     if (!visionResult) {
       return apiError(ApiErrorCode.BAD_REQUEST, 'Image classification failed. Ensure image is clear and try again.');
@@ -126,7 +132,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     return apiError(ApiErrorCode.BAD_REQUEST, 'Provide "productName" for text classification or "imageUrl"/"imageBase64" for image classification.');
   }
 
-  const result = await classifyProductAsync(productName, category, context.sellerId);
+  let result;
+  try {
+    result = await classifyProductAsync(productName, category, context.sellerId);
+  } catch (err) {
+    console.error('[classify] Text classification error:', err instanceof Error ? err.message : err);
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Classification service unavailable. Please try again.');
+  }
 
   return apiSuccess({
     hsCode: result.hsCode,
