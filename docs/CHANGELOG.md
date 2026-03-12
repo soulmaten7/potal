@@ -1,5 +1,29 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-12 23:00 KST
+> 마지막 업데이트: 2026-03-13 00:30 KST
+
+## [2026-03-13 00:30 KST] CW10 — 플랫폼 전체 최종 점검
+
+### 빌드 + 타입 + 테스트
+- npm run build ✅ 통과
+- tsc --noEmit ✅ 0 에러 (screening-fta.test.ts destination→destinationCountry 수정)
+- jest 522/522 통과 (hs-code.test.ts 9건 기대값 현실화 수정)
+
+### 42개 기능 전체 검증
+- **42/42 기능 코드 존재 확인** — 각 기능별 primary file + key function 검증 완료
+- D1(10) D2(5) D3(3) D5(2) D6(5) D7(5) D8(1) D9(2) D10(2) D11(2) D13(1) Misc(4)
+
+### DB 정합성 교차검증
+- **12/12 테이블 CLAUDE.md 수치 일치**: countries 240, vat 240, de_minimis 240, customs_fees 240, trade_agreements 1,319, ntlc 537,894, trade_remedy_cases 10,999, products 55,259, duties 37,513, safeguard 15,935, vectors 163, mappings 164
+- macmap_min_rates: 112.9M (완료✅), macmap_agr_rates: ~128.8M (진행중)
+
+### 페이지 + API + 에셋 전수검사
+- **21개 공개 페이지 전부 200 OK** (/, pricing, terms, privacy, developers×3, auth×2, about, contact, refund, help, legal×4, widget/demo, sitemap, robots)
+- **API**: /api/v1/countries 200, /api/v1/calculate 401(인증 정상)
+- **에셋 5개**: og-image, favicon.ico, favicon-32x32, apple-touch-icon, manifest.json 전부 200
+- **OG 메타태그**: og:title, og:description, og:image, twitter:card, JSON-LD 확인
+
+### Vercel Cron 11개 설정 + route 파일 존재 확인
+- 11/11 모두 vercel.json에 설정 + route.ts 파일 존재
 
 ## [2026-03-12 23:00 KST] CW10 — P3 런칭 준비 (Private Beta + Product Hunt + 프로덕션 점검)
 

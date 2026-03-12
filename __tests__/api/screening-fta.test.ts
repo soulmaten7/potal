@@ -47,7 +47,7 @@ describe('FTA Impact on Landed Cost', () => {
     const result = calculateGlobalLandedCost({
       price: 100,
       shippingPrice: 15,
-      destination: 'US',
+      destinationCountry: 'US',
       origin: 'KR',
       zipcode: '10001',
       productName: 'Electronics',
@@ -61,7 +61,7 @@ describe('FTA Impact on Landed Cost', () => {
     const result = calculateGlobalLandedCost({
       price: 100,
       shippingPrice: 10,
-      destination: 'US',
+      destinationCountry: 'US',
       origin: 'MX',
       zipcode: '90001',
       productName: 'Shirt',
@@ -75,7 +75,7 @@ describe('FTA Impact on Landed Cost', () => {
     const result = calculateGlobalLandedCost({
       price: 200,
       shippingPrice: 20,
-      destination: 'AU',
+      destinationCountry: 'AU',
       origin: 'JP',
       productName: 'Camera',
       productCategory: 'electronics',
@@ -88,7 +88,7 @@ describe('FTA Impact on Landed Cost', () => {
     const result = calculateGlobalLandedCost({
       price: 100,
       shippingPrice: 20,
-      destination: 'BR',
+      destinationCountry: 'BR',
       origin: 'CN',
       productName: 'Toy',
       productCategory: 'toys',
@@ -107,7 +107,7 @@ describe('Trade Remedy Impact', () => {
     const result = calculateGlobalLandedCost({
       price: 50,
       shippingPrice: 10,
-      destination: 'US',
+      destinationCountry: 'US',
       origin: 'CN',
       zipcode: '10001',
       productName: 'Phone Case',
