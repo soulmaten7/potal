@@ -116,6 +116,36 @@ body.shopify-embedded main {
 }
 
 
+/* Landing page responsive overrides */
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .hero-grid .hero-code {
+    display: none;
+  }
+  .hero-title {
+    font-size: 32px !important;
+  }
+  .pricing-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .trust-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .features-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .trust-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* Hide native browser clear button for search inputs (we have custom X) */
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration,

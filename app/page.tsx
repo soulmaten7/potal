@@ -199,7 +199,7 @@ export default function HomePage() {
         }} />
 
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+          <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
             {/* Left: Text */}
             <div>
               <div style={{
@@ -216,7 +216,7 @@ export default function HomePage() {
                 The infrastructure for global commerce
               </div>
 
-              <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.15, marginBottom: 20 }}>
+              <h1 className="hero-title" style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.15, marginBottom: 20 }}>
                 Total Landed Cost,{' '}
                 <span style={{
                   background: 'linear-gradient(135deg, #F59E0B, #f97316)',
@@ -295,7 +295,7 @@ export default function HomePage() {
             </div>
 
             {/* Right: Code Preview */}
-            <div>
+            <div className="hero-code">
               <CodeBlock />
             </div>
           </div>
@@ -308,7 +308,7 @@ export default function HomePage() {
         borderBottom: '1px solid #e5e7eb',
         background: 'white',
       }}>
-        <div style={{
+        <div className="trust-grid" style={{
           maxWidth: 900,
           margin: '0 auto',
           display: 'grid',
@@ -438,7 +438,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             <FeatureCard
               icon="🌍"
               title="240 Countries"
@@ -620,7 +620,7 @@ export default function HomePage() {
           100 free API calls per month. No credit card required.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
+        <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
           {[
             { name: 'Free', price: '$0', desc: '100 calls/mo', highlight: false },
             { name: 'Basic', price: '$20/mo', desc: '2,000 calls/mo', highlight: false },

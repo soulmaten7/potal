@@ -107,17 +107,48 @@ export default function RootLayout({
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>
-        {/* JSON-LD 구조화 데이터: WebSite + SearchAction (Google Sitelinks Search Box) */}
+        {/* JSON-LD 구조화 데이터 */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              name: "POTAL",
-              url: "https://potal.app",
-              description: "Total Landed Cost API for cross-border commerce. Calculate duties, taxes, and shipping for 240 countries.",
-            }),
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "POTAL",
+                url: "https://potal.app",
+                description: "Total Landed Cost API for cross-border commerce. Calculate duties, taxes, and shipping for 240 countries.",
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                name: "POTAL",
+                url: "https://potal.app",
+                logo: "https://potal.app/og-image.png",
+                contactPoint: {
+                  "@type": "ContactPoint",
+                  email: "contact@potal.app",
+                  contactType: "customer service",
+                },
+                sameAs: [],
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                name: "POTAL API",
+                applicationCategory: "BusinessApplication",
+                operatingSystem: "Web",
+                url: "https://potal.app/developers",
+                description: "REST API for calculating total landed costs including duties, taxes, and fees for 240 countries.",
+                offers: {
+                  "@type": "AggregateOffer",
+                  lowPrice: "0",
+                  highPrice: "300",
+                  priceCurrency: "USD",
+                  offerCount: 4,
+                },
+              },
+            ]),
           }}
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}

@@ -43,11 +43,11 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
       },
       {
         heading: '9. Governing Law',
-        body: 'These Terms shall be governed by and construed in accordance with the laws of the State of California, United States, without regard to conflict of law provisions.',
+        body: 'These Terms shall be governed by and construed in accordance with the laws of the Republic of Korea. Any disputes shall be resolved in the courts of competent jurisdiction in the Republic of Korea, unless otherwise required by applicable law.',
       },
       {
         heading: '10. Contact',
-        body: 'For questions about these Terms, please contact us at support@potal.app or through our Contact page.',
+        body: 'For questions about these Terms, please contact us at contact@potal.app or through our Contact page.',
       },
     ],
   },
@@ -70,7 +70,7 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
       },
       {
         heading: '4. Data Retention',
-        body: 'API usage logs are retained for up to 12 months. Account data is retained until you request deletion. Contact support@potal.app to request data deletion at any time.',
+        body: 'API usage logs are retained for up to 12 months. Account data is retained until you request deletion. Contact contact@potal.app to request data deletion at any time.',
       },
       {
         heading: '5. Cookies',
@@ -82,7 +82,7 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
       },
       {
         heading: '7. Your Rights',
-        body: 'Depending on your location, you may have rights to: access, correct, delete, restrict processing of, or port your data, and to opt out of analytics. Contact support@potal.app to exercise these rights.',
+        body: 'Depending on your location, you may have rights to: access, correct, delete, restrict processing of, or port your data, and to opt out of analytics. Contact contact@potal.app to exercise these rights.',
       },
       {
         heading: '8. Children\'s Privacy',
@@ -124,7 +124,7 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
     sections: [
       {
         heading: 'Your Privacy Controls',
-        body: 'POTAL respects your privacy. You can manage: Analytics Cookies (help us improve), API Usage Logs (usage tracking), and Email Notifications (service updates). Visit your Dashboard settings to update preferences, or contact support@potal.app to delete all data.',
+        body: 'POTAL respects your privacy. You can manage: Analytics Cookies (help us improve), API Usage Logs (usage tracking), and Email Notifications (service updates). Visit your Dashboard settings to update preferences, or contact contact@potal.app to delete all data.',
       },
       {
         heading: 'Do Not Track',
@@ -166,7 +166,7 @@ export default function LegalPage({ params }: { params: Promise<{ slug: string }
         {/* Footer */}
         <div style={{ marginTop: '24px', textAlign: 'center' }}>
           <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '12px' }}>
-            Questions? <a href="mailto:support@potal.app" style={{ color: '#F59E0B', fontWeight: 700, textDecoration: 'none' }}>Contact us</a>
+            Questions? <a href="mailto:contact@potal.app" style={{ color: '#F59E0B', fontWeight: 700, textDecoration: 'none' }}>Contact us</a>
           </p>
           <a href="/dashboard" style={{ fontSize: '13px', color: '#94a3b8', textDecoration: 'none' }}>&larr; Back to Dashboard</a>
         </div>

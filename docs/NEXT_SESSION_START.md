@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-12 22:00 KST (CW10 — P2 벤치마크+부하테스트 완료)
+> 마지막 업데이트: 2026-03-12 23:00 KST (CW10 — P3 런칭 준비 완료)
 
 ---
 
@@ -133,9 +133,9 @@ tail -5 ~/portal/wdc_extract.log
 9. **베타 유저 테스트** — 지인 셀러 2~3명
 10. **DB 관세율 커버리지 확대** — hardcoded 소스 국가 줄이기
 
-### 🟢 P3 — 런칭 준비
-11. **Private Beta**: 3/17~20
-12. **Soft Launch**: 3/24 (Product Hunt)
+### 🟢 P3 — 런칭 준비 ✅ 코드 점검 완료
+11. **Private Beta**: 3/17~20 — Signup+Quickstart+Docs 정상, 모바일반응형+JSON-LD+법적통일 수정
+12. **Soft Launch**: 3/24 (Product Hunt) — PH 에셋 5개 + 런칭플랜 준비, 14페이지+API 전체 200 OK
 13. **Public Launch**: 4월 초
 
 ---
@@ -163,6 +163,7 @@ tail -5 ~/portal/wdc_extract.log
 - 47기능 42개 완료
 - **Vector DB 시딩**: ✅ hs_classification_vectors 163건, 파이프라인 정확도 100%
 - **P2 벤치마크**: ✅ AI분류 50상품(Pipeline 90%), Calculate E2E 15/15통과, 부하테스트 100동시(26.9req/s, p95=3.4s, 에러0%)
+- **P3 런칭 준비**: ✅ 모바일반응형, JSON-LD 3스키마, 법적통일(Korea), 이메일통일(contact@), 14페이지+API 200 OK
 
 ---
 

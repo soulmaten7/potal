@@ -1,5 +1,27 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-12 22:00 KST
+> 마지막 업데이트: 2026-03-12 23:00 KST
+
+## [2026-03-12 23:00 KST] CW10 — P3 런칭 준비 (Private Beta + Product Hunt + 프로덕션 점검)
+
+### P3-1: Private Beta 준비
+- Signup 플로우 확인 — Google OAuth + API key 발급 + Quickstart 가이드 연결 정상
+- Developers 페이지 점검 — docs/quickstart/playground 3개 페이지 모두 200 OK
+
+### P3-2: Product Hunt 준비
+- **랜딩 페이지 모바일 반응형** — `globals.css` 미디어쿼리 추가
+  - Hero grid: 768px 이하 1컬럼 + 코드블록 숨김
+  - Features/Trust/Pricing grid: 모바일 1~2컬럼 반응형
+  - Hero title 모바일 32px
+- **JSON-LD 스키마 강화** — `layout.tsx` WebSite → WebSite + Organization + SoftwareApplication 3개
+- **OG Image + 메타태그** 확인 — 1200x630 PNG 존재, Twitter summary_large_image, canonical URL
+- **PH 에셋** 확인 — thumbnail 1개 + gallery 4개 + PRODUCT_HUNT_LAUNCH_PLAN.md
+
+### P3-3: 프로덕션 점검
+- **14개 공개 페이지 모두 200 OK** (/, pricing, terms, privacy, developers, docs, quickstart, signup, about, contact, refund, legal/terms, legal/privacy, legal/cookie)
+- **API 엔드포인트** — /api/v1/countries 200, /api/v1/calculate 401(인증 정상), sitemap/robots/og-image 200
+- **법적 관할권 통일** — `legal/[slug]/page.tsx` California → Republic of Korea 수정
+- **연락 이메일 통일** — `legal/[slug]/page.tsx` support@potal.app → contact@potal.app 5곳 수정
+- **가격표 정확성** — 4개 플랜 금액/할당량/초과요금 모두 CLAUDE.md 기준 일치
 
 ## [2026-03-12 22:00 KST] CW10 — P2 벤치마크 + 부하 테스트 완료
 
