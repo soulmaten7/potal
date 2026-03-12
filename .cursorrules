@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-13 03:00 KST (CW10 — Private Beta 최종 준비 스프린트 20-Task 완료, console.log 12개 제거, 분류기 86%, 4 API route 에러핸들링 강화)
+# 마지막 업데이트: 2026-03-13 16:30 KST (KOR AGR 재임포트 완료 — 1,815,798행)
 
 ## 0. 프로젝트 개요
 
@@ -46,7 +46,7 @@
 - **✅ Chief Orchestrator 정식 운영 (CW10)**: 사이클 1~6 완료 (15/15 Division Green). Morning Brief 강화: issue-classifier.ts(Layer 분류) + auto-remediation.ts(자동 수정) + 3섹션 응답. contact@potal.app 이메일 알림. Morning Briefing 스킬 생성 ("모닝브리핑" 명령)
 - **✅ D15 Intelligence Dashboard (Cycle 5)**: /admin/intelligence 페이지 + /api/v1/admin/intelligence API. 경쟁사 10사 스캔 이력+변동 감지
 - **✅ AI 플랫폼 업데이트 (Cycle 5)**: GPT Actions v1.1 (screening, FTA, classify), MCP v1.2 (7 tools), Gemini/Meta AI 설명 업데이트
-- **✅ AGR 관세율 53/53국 완료 (Cycle 5 확인)**: ~144M행 전체 완료, KOR 삭제 진행중(delete_kor_agr_final.sh), 삭제 후 재임포트 예정
+- **✅ AGR 관세율 53/53국 완료 (Cycle 5 확인)**: ~144M행 전체 완료, KOR 재임포트 완료 (1,815,798행, 2026-03-13)
 - **✅ P1 #1 관세최적화 (CW10)**: lookupAllDutyRates() — MIN/AGR/NTLC 3테이블 병렬 조회, macmap_trade_agreements 협정명 resolve, tariffOptimization 응답 필드. 47기능 34→35개 완료
 - **✅ P1 #8 기업별 AD 관세 (CW10)**: trade-remedy-lookup.ts — firm-specific AD/CVD duty matching 강화. pg_trgm 서버사이드 fuzzy search(search_firm_trgm DB함수), matchScore 필드, exact/fuzzy 구분 버그 수정. 47기능 35→36개 완료
 - **✅ P1 #9 heading 세분화 (CW10)**: heading-subdivider.ts 신규 — HS4 heading 내 HS6 subheading 자동 선택. material/gender/description 3단계 전략. classifier.ts 통합. 47기능 36→37개 완료
@@ -66,7 +66,7 @@
 - **✅ DDP Checkout Stripe→Quote 전환 (Cowork 5)**: stripe-checkout.ts→ddp-session.ts 리네임, Stripe API 코드 전면 제거, Quote-only 방식 (셀러 자체 결제 연동)
 - **✅ WooCommerce/BigCommerce/Magento 플러그인 완성 (Cowork 5)**: WooCommerce(HPOS/캐싱/sanitize/i18n/uninstall), BigCommerce(DDP cart), Magento(layout XML/ACL/composer.json)
 - **✅ Dashboard UI 통일 (Cowork 5)**: 메인 헤더/푸터 전 페이지 표시(대시보드 포함), 1440px max-width 통일, 유저 메뉴에 Docs 링크 추가
-- **🔄 AGR 벌크 임포트 진행중 (Cowork 5~9.5)**: Mac에서 run_agr_loop.sh 실행 중, 53개국 ~144M행, ~36/53 국가 완료 (예상 3/12 아침). ⚠️ KOR 재임포트 필요 (15,798행만 들어감)
+- **✅ AGR 벌크 임포트 완료 (Cowork 5~9.5→CW10)**: 53개국 ~144M행 전체 완료. KOR 재임포트 완료 (1,815,798행, 2026-03-13)
 - **🔄 WDC 상품 추출 진행중 (CW9.5)**: Mac에서 extract_with_categories.py 실행 중, 1,899 파트, ~50/1899 (예상 3/13 저녁). 완료 후 → Supabase 업로드 → AI 분류 파이프라인
 - **✅ WDC 다운로드 완료 확인 (Cowork 5)**: 외장하드(/Volumes/soulmaten/POTAL/wdc-products/) 1,903파일 (extracted+raw 폴더)
 - **✅ AI Agent Organization v3 (Cowork 7)**: 15개 Division, 3 Layer(Automation/Monitor/Active), 1 Chief Orchestrator. Opus 4+에스컬5 (v1 대비 70%+ 토큰 절약). POTAL_AI_Agent_Org.html v3

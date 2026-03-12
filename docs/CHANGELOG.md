@@ -1,5 +1,13 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-13 03:00 KST
+> 마지막 업데이트: 2026-03-13 16:30 KST
+
+## [2026-03-13 16:30 KST] KOR AGR 재임포트 완료
+
+### KOR AGR 데이터 수정
+- **문제**: KOR AGR 임포트 시 progress rows_done이 1,830,000으로 기록됐으나 실제 삽입은 안 된 상태에서 재시작 → 마지막 15,798행만 삽입됨 (total: 15,798 vs rows_done: 1,845,798)
+- **해결**: progress 리셋(rows_done=0) → 전체 재임포트 (ON CONFLICT DO NOTHING으로 기존 행 보존)
+- **결과**: 1,815,798행 삽입 완료 (8,926초 소요)
+- **코드 수정**: `import_agr_all.py` — `execute_sql()` 함수에 타임아웃 에러 핸들링 추가 (3회 재시도, subprocess.TimeoutExpired 처리, timeout 120→180초)
 
 ## [2026-03-13 03:00 KST] CW10 — Private Beta 최종 준비 자율 스프린트 (20-Task)
 

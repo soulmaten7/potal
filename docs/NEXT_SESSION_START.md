@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-13 03:00 KST (CW10 — Private Beta 최종 준비 스프린트 20-Task 완료, Beta 준비 완료)
+> 마지막 업데이트: 2026-03-13 16:30 KST (KOR AGR 재임포트 완료 1,815,798행)
 
 ---
 
@@ -18,12 +18,7 @@ POTAL Chief Orchestrator 세션 시작.
 - docs/NEXT_SESSION_START.md 읽어서 현재 진행 상황 + 우선순위 확인
 
 2단계: 백그라운드 작업 확인
-- KOR AGR 재임포트 상태 확인:
-  curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query \
-    -H "Authorization: Bearer sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a" \
-    -H "Content-Type: application/json" \
-    -d '{"query": "SELECT count(*) FROM macmap_agr_rates WHERE reporter_iso2 = '\''KR'\'';"}'
-  → 1,845,798이면 완료 ✅, 아니면 재임포트 필요
+- KOR AGR 재임포트: ✅ 완료 (1,815,798행, 2026-03-13)
 - WDC 추출 상태는 은태가 Mac에서 확인 후 알려줄 예정
 
 3단계: Morning Brief 실행
@@ -104,9 +99,9 @@ POTAL Chief Orchestrator 세션 시작.
 
 ## 현재 진행 중인 백그라운드 작업
 
-### KOR AGR 재임포트 (Mac)
-- KOR total 값 불일치 (15,798 vs 1,845,798) — 재임포트 진행중
-- AGR 본체 53/53국은 완료
+### KOR AGR 재임포트 — ✅ 완료
+- KOR total 값 불일치 (15,798 vs 1,845,798) → **재임포트 완료 (1,815,798행, 2026-03-13)**
+- AGR 53/53국 전체 완료
 
 ### WDC 상품 추출 (Mac)
 ```bash
@@ -120,7 +115,7 @@ tail -5 ~/portal/wdc_extract.log
 ## 다음 세션 우선순위 (CW11)
 
 ### 🔴 P0 — 즉시
-1. **KOR AGR 삭제 완료 확인** → 삭제 완료 후 재임포트 실행 (delete_kor_agr_final.sh 배치 진행중)
+1. ~~**KOR AGR 재임포트**~~ ✅ 완료 (1,815,798행, 2026-03-13)
 2. **WDC 추출 완료 확인** → Supabase 업로드 (hs_classification_vectors + product_hs_mappings)
 
 ### 🔴 P1 — 이번 주
@@ -150,7 +145,7 @@ tail -5 ~/portal/wdc_extract.log
 - **모닝브리핑 스킬**: ✅ Cowork 설치 완료 ("모닝브리핑" 트리거)
 - **D15**: ✅ Intelligence Dashboard 구축 완료
 - **Git push**: Mac 터미널 또는 Claude Code (bypass permissions)
-- **AGR**: ✅ 53/53국 완료 (KOR 삭제 진행중 → 재임포트 예정)
+- **AGR**: ✅ 53/53국 완료 (KOR 재임포트 완료 1,815,798행)
 - **Resend API Key**: ✅ 발급 + Vercel 환경변수 세팅 완료
 - **관세최적화 (#1)**: ✅ lookupAllDutyRates() 구현 완료, tariffOptimization 응답
 - **기업별 AD 관세 (#8)**: ✅ firm-specific AD/CVD matching + pg_trgm fuzzy search

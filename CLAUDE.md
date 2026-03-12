@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-13 03:00 KST (CW10 — Private Beta 최종 준비 스프린트 20-Task 완료, 12 console.log 제거, 분류기 86%, tariff_alerts 테이블 생성)
+# 마지막 업데이트: 2026-03-13 16:30 KST (KOR AGR 재임포트 완료 — 1,815,798행 삽입, import_agr_all.py 타임아웃 핸들링 추가)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -67,7 +67,7 @@ portal/
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
 - MIN 관세율: **~113M행 53개국 완료✅** (macmap_min_rates)
-- AGR 관세율: **~144M행 53개국 완료✅** (macmap_agr_rates, KOR 삭제→재임포트 진행중)
+- AGR 관세율: **~144M행 53개국 완료✅** (macmap_agr_rates, KOR 재임포트 완료 1,815,798행)
 - 무역협정: 1,319건 (macmap_trade_agreements)
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
 - **제재 스크리닝**: 21,301건 (OFAC SDN 14,600 + CSL 6,701, 19개 소스) ✅
@@ -121,7 +121,7 @@ portal/
 | macmap_trade_agreements | 1,319 | ✅ |
 | macmap_ntlc_rates | 537,894 | ✅ (MFN 009) |
 | macmap_min_rates | ~113M (53개국) | ✅ 완료 |
-| macmap_agr_rates | ~144M (53개국) | ✅ 완료 (KOR 재임포트중) |
+| macmap_agr_rates | ~144M (53개국) | ✅ 완료 (KOR 재임포트 완료) |
 | trade_remedy_cases | 10,999 | ✅ (세션 33) |
 | trade_remedy_products | 55,259 | ✅ (세션 33) |
 | trade_remedy_duties | 37,513 | ✅ (세션 33) |
@@ -137,7 +137,7 @@ portal/
 ## AGR 임포트 — ✅ 완료
 - **~144M행, 53개국 전체 완료** (2026-03-12 확인)
 - 스크립트: import_agr_all.py + run_agr_loop.sh
-- **KOR 삭제 진행중** (delete_kor_agr_final.sh 배치 실행중, 삭제 완료 후 재임포트 예정)
+- **KOR 재임포트 완료** (2026-03-13, 1,815,798행 삽입, import_agr_all.py 타임아웃 핸들링 추가)
 
 ## WDC 다운로드 — ✅ 완료
 - 외장하드: /Volumes/soulmaten/POTAL/wdc-products (extracted + raw 폴더, 1,903파일)
