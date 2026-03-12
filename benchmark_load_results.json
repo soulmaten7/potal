@@ -1,0 +1,20 @@
+{
+  "timestamp": "2026-03-12T07:03:17.420Z",
+  "concurrency": 100,
+  "totalRequests": 100,
+  "successful": 100,
+  "failed": 0,
+  "totalElapsedMs": 3720,
+  "throughputRps": 26.9,
+  "responseTimes": {
+    "avg": 2477,
+    "p50": 2445,
+    "p75": 2593,
+    "p90": 2868,
+    "p95": 3360,
+    "p99": 3720,
+    "min": 1813,
+    "max": 3720
+  },
+  "errors": []
+}

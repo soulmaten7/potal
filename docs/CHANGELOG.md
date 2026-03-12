@@ -1,5 +1,30 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-12 19:30 KST
+> 마지막 업데이트: 2026-03-12 22:00 KST
+
+## [2026-03-12 22:00 KST] CW10 — P2 벤치마크 + 부하 테스트 완료
+
+### P2-1: AI 분류 파이프라인 벤치마크 (50개 상품)
+- `scripts/benchmark_classification_50.ts` 신규 — 50개 상품 × 3 Stage 벤치마크
+- Stage 1 Keyword: 90% hit rate, 38% HS4 accuracy, 35ms avg
+- Stage 2 Vector: 98% hit rate, 48% HS4 accuracy, 1,374ms avg
+- Stage 3 LLM (GPT-4o-mini): 100% hit rate, 86% HS4 accuracy, 1,275ms avg
+- **Pipeline 통합 정확도: 90% (45/50)**
+- 카테고리별: Electronics 10/10, Apparel 10/10, Sporting 5/5, Food 4/4
+
+### P2-1: Calculate API E2E 테스트 (15개 국가/상품 조합)
+- `scripts/benchmark_calculate_e2e.ts` 신규 — 15개 국가/상품 조합 직접 함수 호출
+- **15/15 통과 (100%)** — US/DE/GB/AU/CA/KR/JP/SG/BR/MX/FR 11개국
+- 평균 916ms, p50=394ms, p95=5,287ms (첫 요청 환율 캐시 로딩)
+- Feature coverage: FTA 15/15, HS 15/15, Incoterms 15/15, De minimis 6/15
+- Duty source 분포: ntlc 9, db 2, min 2, hardcoded 1, external_eu-taric 1
+
+### P2-2: 부하 테스트 (100명 동시 접속)
+- `scripts/benchmark_load_test.ts` 신규 — 100 concurrent requests
+- **100/100 성공 (에러 0건)**
+- Throughput: 26.9 req/s
+- p50=2,445ms, p95=3,360ms, p99=3,720ms
+- 타임아웃(>10s): 0건, >5s: 0건
+- 병목: DB contention (경미, p95 <5s)
 
 ## [2026-03-12 19:30 KST] CW10 — 47기능 37→42개 완료 (5개 기능 추가 구현)
 

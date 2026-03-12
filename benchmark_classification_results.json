@@ -1,0 +1,1046 @@
+{
+  "timestamp": "2026-03-12T07:00:14.365Z",
+  "totalProducts": 50,
+  "stages": {
+    "keyword": {
+      "hitRate": 0.9,
+      "accuracy": 0.38,
+      "avgMs": 35
+    },
+    "vector": {
+      "hitRate": 0.98,
+      "accuracy": 0.48,
+      "avgMs": 1374
+    },
+    "llm": {
+      "hitRate": 1,
+      "accuracy": 0.86,
+      "avgMs": 1275
+    }
+  },
+  "pipeline": {
+    "accuracy": 0.9,
+    "keywordOnly": 0.9,
+    "needsLlm": 0
+  },
+  "categoryBreakdown": {
+    "Electronics": {
+      "total": 10,
+      "kwCorrect": 6,
+      "llmCorrect": 9,
+      "pipeCorrect": 10
+    },
+    "Apparel & Accessories": {
+      "total": 10,
+      "kwCorrect": 2,
+      "llmCorrect": 9,
+      "pipeCorrect": 10
+    },
+    "Home & Garden": {
+      "total": 8,
+      "kwCorrect": 1,
+      "llmCorrect": 5,
+      "pipeCorrect": 5
+    },
+    "Food, Beverages & Tobacco": {
+      "total": 4,
+      "kwCorrect": 3,
+      "llmCorrect": 4,
+      "pipeCorrect": 4
+    },
+    "Health & Beauty": {
+      "total": 6,
+      "kwCorrect": 2,
+      "llmCorrect": 4,
+      "pipeCorrect": 4
+    },
+    "Sporting Goods": {
+      "total": 5,
+      "kwCorrect": 1,
+      "llmCorrect": 5,
+      "pipeCorrect": 5
+    },
+    "Toys & Games": {
+      "total": 1,
+      "kwCorrect": 0,
+      "llmCorrect": 1,
+      "pipeCorrect": 1
+    },
+    "Vehicles & Parts": {
+      "total": 1,
+      "kwCorrect": 1,
+      "llmCorrect": 1,
+      "pipeCorrect": 1
+    },
+    "Hardware": {
+      "total": 2,
+      "kwCorrect": 1,
+      "llmCorrect": 2,
+      "pipeCorrect": 2
+    },
+    "Furniture": {
+      "total": 1,
+      "kwCorrect": 1,
+      "llmCorrect": 1,
+      "pipeCorrect": 1
+    },
+    "Office Supplies": {
+      "total": 2,
+      "kwCorrect": 1,
+      "llmCorrect": 2,
+      "pipeCorrect": 2
+    }
+  },
+  "details": [
+    {
+      "product": "iPhone 15 Pro Max",
+      "expected": "851712",
+      "keyword": {
+        "code": "851710",
+        "correct": true,
+        "ms": 42
+      },
+      "vector": {
+        "code": "851712",
+        "correct": true,
+        "ms": 4492
+      },
+      "llm": {
+        "code": "851712",
+        "correct": true,
+        "ms": 1274
+      }
+    },
+    {
+      "product": "Samsung Galaxy Buds",
+      "expected": "851830",
+      "keyword": {
+        "code": "060390",
+        "correct": false,
+        "ms": 40
+      },
+      "vector": {
+        "code": "851830",
+        "correct": true,
+        "ms": 3247
+      },
+      "llm": {
+        "code": "851830",
+        "correct": true,
+        "ms": 1435
+      }
+    },
+    {
+      "product": "Sony 65-inch OLED TV",
+      "expected": "852872",
+      "keyword": {
+        "code": "852580",
+        "correct": false,
+        "ms": 32
+      },
+      "vector": {
+        "code": "852872",
+        "correct": true,
+        "ms": 1227
+      },
+      "llm": {
+        "code": "852872",
+        "correct": true,
+        "ms": 1969
+      }
+    },
+    {
+      "product": "MacBook Pro 16-inch Laptop",
+      "expected": "847130",
+      "keyword": {
+        "code": "490110",
+        "correct": false,
+        "ms": 31
+      },
+      "vector": {
+        "code": "847130",
+        "correct": true,
+        "ms": 1214
+      },
+      "llm": {
+        "code": "847130",
+        "correct": true,
+        "ms": 2122
+      }
+    },
+    {
+      "product": "Canon EOS R5 Camera",
+      "expected": "852580",
+      "keyword": {
+        "code": "852530",
+        "correct": true,
+        "ms": 32
+      },
+      "vector": {
+        "code": "852580",
+        "correct": true,
+        "ms": 1200
+      },
+      "llm": {
+        "code": "852580",
+        "correct": true,
+        "ms": 1920
+      }
+    },
+    {
+      "product": "USB-C Charging Cable",
+      "expected": "854442",
+      "keyword": {
+        "code": "854442",
+        "correct": true,
+        "ms": 28
+      },
+      "vector": {
+        "code": "847160",
+        "correct": false,
+        "ms": 1188
+      },
+      "llm": {
+        "code": "854442",
+        "correct": true,
+        "ms": 1275
+      }
+    },
+    {
+      "product": "Wireless Bluetooth Mouse",
+      "expected": "847160",
+      "keyword": {
+        "code": "847160",
+        "correct": true,
+        "ms": 29
+      },
+      "vector": {
+        "code": "847160",
+        "correct": true,
+        "ms": 1309
+      },
+      "llm": {
+        "code": "847160",
+        "correct": true,
+        "ms": 1078
+      }
+    },
+    {
+      "product": "Portable Power Bank 20000mAh",
+      "expected": "850760",
+      "keyword": {
+        "code": "850440",
+        "correct": false,
+        "ms": 35
+      },
+      "vector": {
+        "code": "-",
+        "correct": false,
+        "ms": 1240
+      },
+      "llm": {
+        "code": "850760",
+        "correct": true,
+        "ms": 1901
+      }
+    },
+    {
+      "product": "Smart Watch Fitness Tracker",
+      "expected": "910111",
+      "keyword": {
+        "code": "910120",
+        "correct": true,
+        "ms": 32
+      },
+      "vector": {
+        "code": "910111",
+        "correct": true,
+        "ms": 1252
+      },
+      "llm": {
+        "code": "910212",
+        "correct": false,
+        "ms": 1727
+      }
+    },
+    {
+      "product": "Gaming Mechanical Keyboard",
+      "expected": "847160",
+      "keyword": {
+        "code": "847160",
+        "correct": true,
+        "ms": 28
+      },
+      "vector": {
+        "code": "847130",
+        "correct": true,
+        "ms": 1270
+      },
+      "llm": {
+        "code": "847160",
+        "correct": true,
+        "ms": 1440
+      }
+    },
+    {
+      "product": "Men's Cotton T-Shirt",
+      "expected": "610910",
+      "keyword": {
+        "code": "520512",
+        "correct": false,
+        "ms": 39
+      },
+      "vector": {
+        "code": "610510",
+        "correct": false,
+        "ms": 1220
+      },
+      "llm": {
+        "code": "610910",
+        "correct": true,
+        "ms": 2014
+      }
+    },
+    {
+      "product": "Women's Denim Jeans",
+      "expected": "620462",
+      "keyword": {
+        "code": "620710",
+        "correct": false,
+        "ms": 67
+      },
+      "vector": {
+        "code": "620342",
+        "correct": false,
+        "ms": 1551
+      },
+      "llm": {
+        "code": "620462",
+        "correct": true,
+        "ms": 1221
+      }
+    },
+    {
+      "product": "Leather Dress Shoes",
+      "expected": "640399",
+      "keyword": {
+        "code": "420500",
+        "correct": false,
+        "ms": 47
+      },
+      "vector": {
+        "code": "640411",
+        "correct": false,
+        "ms": 1309
+      },
+      "llm": {
+        "code": "640399",
+        "correct": true,
+        "ms": 1113
+      }
+    },
+    {
+      "product": "Silk Necktie",
+      "expected": "621510",
+      "keyword": {
+        "code": "500400",
+        "correct": false,
+        "ms": 27
+      },
+      "vector": {
+        "code": "711319",
+        "correct": false,
+        "ms": 1258
+      },
+      "llm": {
+        "code": "621520",
+        "correct": true,
+        "ms": 979
+      }
+    },
+    {
+      "product": "Winter Down Jacket",
+      "expected": "620193",
+      "keyword": {
+        "code": "620210",
+        "correct": false,
+        "ms": 29
+      },
+      "vector": {
+        "code": "620293",
+        "correct": false,
+        "ms": 1240
+      },
+      "llm": {
+        "code": "620192",
+        "correct": true,
+        "ms": 1502
+      }
+    },
+    {
+      "product": "Baby Cotton Onesie",
+      "expected": "611120",
+      "keyword": {
+        "code": "520512",
+        "correct": false,
+        "ms": 28
+      },
+      "vector": {
+        "code": "620342",
+        "correct": false,
+        "ms": 1279
+      },
+      "llm": {
+        "code": "611120",
+        "correct": true,
+        "ms": 1105
+      }
+    },
+    {
+      "product": "Running Sneakers",
+      "expected": "640411",
+      "keyword": {
+        "code": "640210",
+        "correct": false,
+        "ms": 29
+      },
+      "vector": {
+        "code": "640411",
+        "correct": true,
+        "ms": 1219
+      },
+      "llm": {
+        "code": "640299",
+        "correct": false,
+        "ms": 1195
+      }
+    },
+    {
+      "product": "Cashmere Scarf",
+      "expected": "621410",
+      "keyword": {
+        "code": "050110",
+        "correct": false,
+        "ms": 81
+      },
+      "vector": {
+        "code": "620342",
+        "correct": false,
+        "ms": 1230
+      },
+      "llm": {
+        "code": "621410",
+        "correct": true,
+        "ms": 1120
+      }
+    },
+    {
+      "product": "Sunglasses UV Protection",
+      "expected": "900410",
+      "keyword": {
+        "code": "900400",
+        "correct": true,
+        "ms": 30
+      },
+      "vector": {
+        "code": "620293",
+        "correct": false,
+        "ms": 1242
+      },
+      "llm": {
+        "code": "900410",
+        "correct": true,
+        "ms": 1043
+      }
+    },
+    {
+      "product": "Gold Necklace 18K",
+      "expected": "711319",
+      "keyword": {
+        "code": "711311",
+        "correct": true,
+        "ms": 28
+      },
+      "vector": {
+        "code": "711319",
+        "correct": true,
+        "ms": 1325
+      },
+      "llm": {
+        "code": "711319",
+        "correct": true,
+        "ms": 1023
+      }
+    },
+    {
+      "product": "Ceramic Coffee Mug",
+      "expected": "691110",
+      "keyword": {
+        "code": "090111",
+        "correct": false,
+        "ms": 40
+      },
+      "vector": {
+        "code": "732393",
+        "correct": false,
+        "ms": 1308
+      },
+      "llm": {
+        "code": "691200",
+        "correct": false,
+        "ms": 1559
+      }
+    },
+    {
+      "product": "Memory Foam Pillow",
+      "expected": "940490",
+      "keyword": {
+        "code": "630220",
+        "correct": false,
+        "ms": 29
+      },
+      "vector": {
+        "code": "630210",
+        "correct": false,
+        "ms": 1270
+      },
+      "llm": {
+        "code": "940490",
+        "correct": true,
+        "ms": 1123
+      }
+    },
+    {
+      "product": "Stainless Steel Cookware Set",
+      "expected": "732393",
+      "keyword": {
+        "code": "722220",
+        "correct": false,
+        "ms": 37
+      },
+      "vector": {
+        "code": "732393",
+        "correct": true,
+        "ms": 1259
+      },
+      "llm": {
+        "code": "732399",
+        "correct": true,
+        "ms": 1706
+      }
+    },
+    {
+      "product": "LED Desk Lamp",
+      "expected": "940540",
+      "keyword": {
+        "code": "940520",
+        "correct": true,
+        "ms": 29
+      },
+      "vector": {
+        "code": "940540",
+        "correct": true,
+        "ms": 1242
+      },
+      "llm": {
+        "code": "940540",
+        "correct": true,
+        "ms": 1144
+      }
+    },
+    {
+      "product": "Bathroom Towel Set Cotton",
+      "expected": "630260",
+      "keyword": {
+        "code": "520512",
+        "correct": false,
+        "ms": 31
+      },
+      "vector": {
+        "code": "691490",
+        "correct": false,
+        "ms": 1232
+      },
+      "llm": {
+        "code": "630260",
+        "correct": true,
+        "ms": 903
+      }
+    },
+    {
+      "product": "Vacuum Cleaner Robot",
+      "expected": "850940",
+      "keyword": {
+        "code": "340220",
+        "correct": false,
+        "ms": 29
+      },
+      "vector": {
+        "code": "570242",
+        "correct": false,
+        "ms": 1203
+      },
+      "llm": {
+        "code": "850800",
+        "correct": false,
+        "ms": 1287
+      }
+    },
+    {
+      "product": "Wall Clock Wooden",
+      "expected": "910400",
+      "keyword": {
+        "code": "910300",
+        "correct": false,
+        "ms": 28
+      },
+      "vector": {
+        "code": "830629",
+        "correct": false,
+        "ms": 1205
+      },
+      "llm": {
+        "code": "910521",
+        "correct": false,
+        "ms": 725
+      }
+    },
+    {
+      "product": "Garden Hose 50ft",
+      "expected": "391723",
+      "keyword": {
+        "code": "940140",
+        "correct": false,
+        "ms": 28
+      },
+      "vector": {
+        "code": "820190",
+        "correct": false,
+        "ms": 1196
+      },
+      "llm": {
+        "code": "391721",
+        "correct": true,
+        "ms": 1065
+      }
+    },
+    {
+      "product": "Organic Green Tea",
+      "expected": "090210",
+      "keyword": {
+        "code": "090220",
+        "correct": true,
+        "ms": 27
+      },
+      "vector": {
+        "code": "090210",
+        "correct": true,
+        "ms": 1209
+      },
+      "llm": {
+        "code": "090210",
+        "correct": true,
+        "ms": 917
+      }
+    },
+    {
+      "product": "Dark Chocolate Bar 70%",
+      "expected": "180632",
+      "keyword": {
+        "code": "180690",
+        "correct": true,
+        "ms": 30
+      },
+      "vector": {
+        "code": "170490",
+        "correct": false,
+        "ms": 1194
+      },
+      "llm": {
+        "code": "180632",
+        "correct": true,
+        "ms": 1753
+      }
+    },
+    {
+      "product": "Extra Virgin Olive Oil",
+      "expected": "150910",
+      "keyword": {
+        "code": "150910",
+        "correct": true,
+        "ms": 29
+      },
+      "vector": {
+        "code": "210690",
+        "correct": false,
+        "ms": 1220
+      },
+      "llm": {
+        "code": "1509",
+        "correct": true,
+        "ms": 1030
+      }
+    },
+    {
+      "product": "Instant Coffee Powder",
+      "expected": "210111",
+      "keyword": {
+        "code": "090111",
+        "correct": false,
+        "ms": 34
+      },
+      "vector": {
+        "code": "090121",
+        "correct": false,
+        "ms": 1211
+      },
+      "llm": {
+        "code": "210111",
+        "correct": true,
+        "ms": 1320
+      }
+    },
+    {
+      "product": "Vitamin C Supplements",
+      "expected": "293627",
+      "keyword": {
+        "code": "210690",
+        "correct": false,
+        "ms": 120
+      },
+      "vector": {
+        "code": "210690",
+        "correct": false,
+        "ms": 1238
+      },
+      "llm": {
+        "code": "210690",
+        "correct": false,
+        "ms": 1308
+      }
+    },
+    {
+      "product": "Yoga Mat Non-Slip",
+      "expected": "950699",
+      "keyword": {
+        "code": "401600",
+        "correct": false,
+        "ms": 31
+      },
+      "vector": {
+        "code": "950691",
+        "correct": true,
+        "ms": 1201
+      },
+      "llm": {
+        "code": "950699",
+        "correct": true,
+        "ms": 1144
+      }
+    },
+    {
+      "product": "Carbon Fiber Bicycle",
+      "expected": "871200",
+      "keyword": {
+        "code": "283699",
+        "correct": false,
+        "ms": 45
+      },
+      "vector": {
+        "code": "871200",
+        "correct": true,
+        "ms": 1259
+      },
+      "llm": {
+        "code": "871200",
+        "correct": true,
+        "ms": 1137
+      }
+    },
+    {
+      "product": "LEGO Building Set",
+      "expected": "950300",
+      "keyword": {
+        "code": "690410",
+        "correct": false,
+        "ms": 37
+      },
+      "vector": {
+        "code": "950300",
+        "correct": true,
+        "ms": 1918
+      },
+      "llm": {
+        "code": "950300",
+        "correct": true,
+        "ms": 1046
+      }
+    },
+    {
+      "product": "Tennis Racket Professional",
+      "expected": "950651",
+      "keyword": {
+        "code": "950500",
+        "correct": false,
+        "ms": 28
+      },
+      "vector": {
+        "code": "950659",
+        "correct": true,
+        "ms": 1193
+      },
+      "llm": {
+        "code": "950699",
+        "correct": true,
+        "ms": 1203
+      }
+    },
+    {
+      "product": "Electric Scooter",
+      "expected": "871120",
+      "keyword": {
+        "code": "871110",
+        "correct": true,
+        "ms": 26
+      },
+      "vector": {
+        "code": "851290",
+        "correct": false,
+        "ms": 1212
+      },
+      "llm": {
+        "code": "871160",
+        "correct": true,
+        "ms": 819
+      }
+    },
+    {
+      "product": "Fishing Rod Carbon",
+      "expected": "950710",
+      "keyword": {
+        "code": "283699",
+        "correct": false,
+        "ms": 29
+      },
+      "vector": {
+        "code": "950710",
+        "correct": true,
+        "ms": 1333
+      },
+      "llm": {
+        "code": "950710",
+        "correct": true,
+        "ms": 1079
+      }
+    },
+    {
+      "product": "Camping Tent 4-Person",
+      "expected": "630622",
+      "keyword": {
+        "code": "630612",
+        "correct": true,
+        "ms": 29
+      },
+      "vector": {
+        "code": "630622",
+        "correct": true,
+        "ms": 1185
+      },
+      "llm": {
+        "code": "630622",
+        "correct": true,
+        "ms": 1298
+      }
+    },
+    {
+      "product": "Industrial Drill Press",
+      "expected": "846729",
+      "keyword": {
+        "code": "846721",
+        "correct": true,
+        "ms": 29
+      },
+      "vector": {
+        "code": "853690",
+        "correct": false,
+        "ms": 1282
+      },
+      "llm": {
+        "code": "846721",
+        "correct": true,
+        "ms": 995
+      }
+    },
+    {
+      "product": "Office Chair Ergonomic",
+      "expected": "940130",
+      "keyword": {
+        "code": "940110",
+        "correct": true,
+        "ms": 29
+      },
+      "vector": {
+        "code": "940130",
+        "correct": true,
+        "ms": 1300
+      },
+      "llm": {
+        "code": "940161",
+        "correct": true,
+        "ms": 948
+      }
+    },
+    {
+      "product": "Printer Ink Cartridge",
+      "expected": "844399",
+      "keyword": {
+        "code": "844332",
+        "correct": true,
+        "ms": 27
+      },
+      "vector": {
+        "code": "480256",
+        "correct": false,
+        "ms": 1190
+      },
+      "llm": {
+        "code": "844399",
+        "correct": true,
+        "ms": 1854
+      }
+    },
+    {
+      "product": "Cardboard Shipping Box",
+      "expected": "481910",
+      "keyword": {
+        "code": "482010",
+        "correct": false,
+        "ms": 32
+      },
+      "vector": {
+        "code": "480256",
+        "correct": false,
+        "ms": 1229
+      },
+      "llm": {
+        "code": "481910",
+        "correct": true,
+        "ms": 943
+      }
+    },
+    {
+      "product": "Stainless Steel Bolts M10",
+      "expected": "731815",
+      "keyword": {
+        "code": "722220",
+        "correct": false,
+        "ms": 48
+      },
+      "vector": {
+        "code": "731815",
+        "correct": true,
+        "ms": 1206
+      },
+      "llm": {
+        "code": "731815",
+        "correct": true,
+        "ms": 918
+      }
+    },
+    {
+      "product": "Organic Face Cream",
+      "expected": "330499",
+      "keyword": {
+        "code": "330499",
+        "correct": true,
+        "ms": 30
+      },
+      "vector": {
+        "code": "330499",
+        "correct": true,
+        "ms": 1518
+      },
+      "llm": {
+        "code": "330499",
+        "correct": true,
+        "ms": 1604
+      }
+    },
+    {
+      "product": "Hair Dryer Professional",
+      "expected": "851631",
+      "keyword": {
+        "code": "330510",
+        "correct": false,
+        "ms": 28
+      },
+      "vector": {
+        "code": "330510",
+        "correct": false,
+        "ms": 1231
+      },
+      "llm": {
+        "code": "851631",
+        "correct": true,
+        "ms": 1023
+      }
+    },
+    {
+      "product": "Perfume Eau de Parfum 100ml",
+      "expected": "330300",
+      "keyword": {
+        "code": "330300",
+        "correct": true,
+        "ms": 32
+      },
+      "vector": {
+        "code": "330300",
+        "correct": true,
+        "ms": 1315
+      },
+      "llm": {
+        "code": "330300",
+        "correct": true,
+        "ms": 1028
+      }
+    },
+    {
+      "product": "Electric Toothbrush",
+      "expected": "851010",
+      "keyword": {
+        "code": "850240",
+        "correct": false,
+        "ms": 25
+      },
+      "vector": {
+        "code": "330610",
+        "correct": false,
+        "ms": 1258
+      },
+      "llm": {
+        "code": "850980",
+        "correct": false,
+        "ms": 1039
+      }
+    },
+    {
+      "product": "Nail Polish Set",
+      "expected": "330430",
+      "keyword": {
+        "code": "731010",
+        "correct": false,
+        "ms": 27
+      },
+      "vector": {
+        "code": "330499",
+        "correct": true,
+        "ms": 1379
+      },
+      "llm": {
+        "code": "330499",
+        "correct": true,
+        "ms": 1390
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-12 19:30 KST (CW10 — 47기능 42개 완료: #17 실시간관세 + #37 Drawback + #2 EU VAT세분화 + #40 MCP9tools + #20 Incoterms)
+# 마지막 업데이트: 2026-03-12 22:00 KST (CW10 — P2 벤치마크+부하테스트 완료: 분류 90%정확도, Calculate 15/15통과, 100동시접속 26.9req/s)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
