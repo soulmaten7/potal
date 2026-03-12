@@ -67,7 +67,7 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
       { id: 'd4-exchange-rate', label: '환율 자동 업데이트', source: 'app_builtin' },
       { id: 'd4-gov-api', label: '7개국 정부 API 가용성 (매 12시간)', source: 'cron_log', cronEndpoint: 'gov-api-health', maxAgeMinutes: 780 },
       { id: 'd4-min-rates', label: 'MIN 관세율 ~113M행', source: 'health_check_logs' },
-      { id: 'd4-agr-rates', label: 'AGR 관세율 임포트 진행중', source: 'manual' },
+      { id: 'd4-agr-rates', label: 'AGR 관세율 ~144M행 53개국', source: 'app_builtin' },
     ],
   },
   {

@@ -1,17 +1,22 @@
 /**
  * POTAL API v1 — /api/v1/admin/morning-brief
  *
- * Layer 2 Monitor — Morning Brief API.
- * health_check_logs에서 최신 Cron 결과를 조회하여
- * 15개 Division 상태를 Green/Yellow/Red로 요약.
+ * Layer 2 Monitor — Enhanced Morning Brief API.
+ * 1. health_check_logs에서 최신 Cron 결과를 조회하여 15개 Division 상태를 평가
+ * 2. Yellow/Red 항목을 Layer 1/2/3으로 분류
+ * 3. Layer 1-2 이슈는 자동 수정 시도 (auto-remediation)
+ * 4. 결과를 auto_resolved / needs_attention / all_green 3섹션으로 반환
  *
- * GET /api/v1/admin/morning-brief — 전체 Division 상태 요약
+ * GET /api/v1/admin/morning-brief — 전체 Division 상태 요약 + 자동 수정
+ * GET /api/v1/admin/morning-brief?auto_fix=false — 자동 수정 없이 상태만 조회
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { DIVISION_CHECKLISTS, type CheckItem, type DivisionChecklist } from '@/app/lib/monitoring/division-checklists';
 import type { CheckStatus } from '@/app/lib/monitoring/health-monitor';
+import { classifyIssue, type ClassifiedIssue } from '@/app/lib/monitoring/issue-classifier';
+import { runAutoRemediation, type RemediationResult } from '@/app/lib/monitoring/auto-remediation';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -47,14 +52,9 @@ interface DivisionStatus {
   }>;
 }
 
-/**
- * health_check_logs에서 각 Cron 엔드포인트의 최신 로그를 가져온다.
- * source 필드가 없는 경우 checks 배열의 name으로 판별.
- */
 async function getLatestCronLogs(): Promise<Map<string, CronLogEntry>> {
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // 최근 100개 로그를 가져와서 엔드포인트별로 최신 것만 추출
   const { data, error } = await supabase
     .from('health_check_logs')
     .select('*')
@@ -62,11 +62,9 @@ async function getLatestCronLogs(): Promise<Map<string, CronLogEntry>> {
     .limit(100);
 
   const map = new Map<string, CronLogEntry>();
-
   if (error || !data) return map;
 
   for (const row of data) {
-    // source 필드가 있으면 사용, 없으면 checks의 첫 번째 name으로 추정
     const source = row.source || inferSource(row.checks);
     if (source && !map.has(source)) {
       map.set(source, {
@@ -81,10 +79,8 @@ async function getLatestCronLogs(): Promise<Map<string, CronLogEntry>> {
   return map;
 }
 
-/** checks 배열의 name 패턴으로 source를 추정 */
 function inferSource(checks: Array<{ name: string }> | null): string | null {
   if (!checks || checks.length === 0) return null;
-
   const names = checks.map(c => c.name);
 
   if (names.includes('database') && names.includes('auth')) return 'health-check';
@@ -96,6 +92,7 @@ function inferSource(checks: Array<{ name: string }> | null): string | null {
   if (names.some(n => n.includes('Zonos') || n.includes('competitor'))) return 'competitor-scan';
   if (names.some(n => n.includes('tariff'))) return 'update-tariffs';
   if (names.some(n => n.includes('overage') || n.includes('billing'))) return 'billing-overage';
+  if (names.some(n => n.includes('remediation'))) return 'auto-remediation';
 
   return null;
 }
@@ -105,22 +102,18 @@ function evaluateCheck(
   cronLogs: Map<string, CronLogEntry>,
   healthCheckLog: CronLogEntry | undefined,
 ): { status: CheckStatus; message: string; lastChecked?: string } {
-  // app_builtin: 항상 green
   if (check.source === 'app_builtin') {
     return { status: 'green', message: 'App builtin — always active' };
   }
 
-  // external: 외부 서비스 (Make.com, Google Calendar) — 자동 체크 불가, green 처리
   if (check.source === 'external') {
     return { status: 'green', message: 'External service — manual verification' };
   }
 
-  // manual: 수동 확인 필요
   if (check.source === 'manual') {
     return { status: 'yellow', message: 'Manual check required' };
   }
 
-  // cron_log: health_check_logs에서 해당 엔드포인트 최신 로그 확인
   if (check.source === 'cron_log' && check.cronEndpoint) {
     const log = cronLogs.get(check.cronEndpoint);
     if (!log) {
@@ -140,12 +133,11 @@ function evaluateCheck(
 
     return {
       status: log.overall_status,
-      message: log.overall_status === 'green' ? 'OK' : `Issues detected`,
+      message: log.overall_status === 'green' ? 'OK' : 'Issues detected',
       lastChecked: log.checked_at,
     };
   }
 
-  // health_check_logs: D11 health-check의 개별 체크 결과에서 확인
   if (check.source === 'health_check_logs' && healthCheckLog) {
     const matchingCheck = healthCheckLog.checks.find(c => {
       if (check.id.includes('db') || check.id.includes('database')) return c.name === 'database';
@@ -163,7 +155,6 @@ function evaluateCheck(
       };
     }
 
-    // health_check_logs에 데이터가 있으면 green
     return {
       status: 'green',
       message: 'Data verified via health check',
@@ -188,7 +179,6 @@ function getDivisionStatus(
     };
   });
 
-  // Division 전체 상태: 가장 심각한 상태로 결정
   const hasRed = checks.some(c => c.status === 'red');
   const hasYellow = checks.some(c => c.status === 'yellow');
   const overall: CheckStatus = hasRed ? 'red' : hasYellow ? 'yellow' : 'green';
@@ -208,6 +198,7 @@ export async function GET(req: NextRequest) {
   }
 
   const start = Date.now();
+  const autoFix = req.nextUrl.searchParams.get('auto_fix') !== 'false';
 
   try {
     const cronLogs = await getLatestCronLogs();
@@ -217,11 +208,75 @@ export async function GET(req: NextRequest) {
       getDivisionStatus(d, cronLogs, healthCheckLog)
     );
 
+    // --- Layer Classification ---
+    const allIssues: ClassifiedIssue[] = [];
+    for (const div of divisions) {
+      for (const check of div.checks) {
+        if (check.status === 'yellow' || check.status === 'red') {
+          allIssues.push(
+            classifyIssue(div.id, div.name, check.id, check.label, check.status, check.message)
+          );
+        }
+      }
+    }
+
+    // --- Auto-Remediation (Layer 1-2) ---
+    let remediationResults: RemediationResult[] = [];
+    if (autoFix && allIssues.some(i => i.autoRemediable)) {
+      remediationResults = await runAutoRemediation(allIssues);
+    }
+
+    // --- Categorize results ---
+    const autoResolved = remediationResults
+      .filter(r => r.success)
+      .map(r => ({
+        division: r.division,
+        issue: r.checkLabel,
+        action: r.action,
+        result: r.message,
+      }));
+
+    const autoFailed = remediationResults
+      .filter(r => !r.success)
+      .map(r => ({
+        division: r.division,
+        issue: r.checkLabel,
+        action: r.action,
+        result: r.message,
+      }));
+
+    // Issues needing human attention: Layer 3 + failed Layer 1-2
+    const needsAttention = allIssues
+      .filter(i => {
+        // Layer 3 always needs attention
+        if (i.layer === 3) return true;
+        // Layer 1-2 that failed remediation
+        if (i.autoRemediable) {
+          const result = remediationResults.find(r => r.checkId === i.checkId);
+          return result && !result.success;
+        }
+        // Layer 2 non-remediable
+        return !i.autoRemediable;
+      })
+      .map(i => ({
+        division: i.division,
+        divisionName: i.divisionName,
+        issue: i.checkLabel,
+        status: i.status,
+        layer: i.layer,
+        layerLabel: i.layerLabel,
+        recommendation: i.recommendation,
+        message: i.message,
+      }));
+
+    const allGreen = divisions
+      .filter(d => d.status === 'green')
+      .map(d => ({ division: d.id, name: d.name }));
+
+    // --- Summary ---
     const greenCount = divisions.filter(d => d.status === 'green').length;
     const yellowDivisions = divisions.filter(d => d.status === 'yellow');
     const redDivisions = divisions.filter(d => d.status === 'red');
-
-    // Overall status
     const hasRed = redDivisions.length > 0;
     const hasYellow = yellowDivisions.length > 0;
     const overall: CheckStatus = hasRed ? 'red' : hasYellow ? 'yellow' : 'green';
@@ -237,6 +292,14 @@ export async function GET(req: NextRequest) {
         red: redDivisions.length,
         total: 15,
       },
+
+      // Enhanced: 3-section response
+      auto_resolved: autoResolved,
+      auto_failed: autoFailed,
+      needs_attention: needsAttention,
+      all_green: allGreen,
+
+      // Legacy fields (backward compatible)
       yellowAlerts: yellowDivisions.map(d => ({
         id: d.id,
         name: d.name,
