@@ -1,5 +1,21 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-12 14:30 KST
+> 마지막 업데이트: 2026-03-12 17:00 KST
+
+## [2026-03-12 17:00 KST] CW10 — P1 #8 기업별AD관세 + P1 #9 heading세분화
+
+### P1 #8 기업별 AD 관세 적용 강화
+- `app/lib/cost-engine/trade-remedy-lookup.ts` — firm-specific AD/CVD duty matching 개선
+- matchType 버그 수정: `exact : exact` → `exact : fuzzy` (fuzzy 매칭 시 정확히 표시)
+- `matchScore` 필드 추가 (0-1, fuzzy 매칭 점수)
+- pg_trgm 서버사이드 fuzzy search 추가: `searchFirmByTrgm()` — in-code fuzzy 실패 시 DB 트라이그램 검색
+- `supabase/migrations/022_search_firm_trgm.sql` — search_firm_trgm() DB 함수 생성
+
+### P1 #9 heading 세분화
+- `app/lib/cost-engine/hs-code/heading-subdivider.ts` 신규 — HS4 heading 내 HS6 subheading 자동 선택
+- 3단계 전략: material(25패턴) → gender(3패턴) → description keyword overlap → "90" fallback
+- textile(Ch.50-63), metal, wood, glass, ceramic, plastic 소재별 suffix 매핑
+- `app/lib/cost-engine/hs-code/classifier.ts` — subdivideHeading() 통합, confidence boost 적용
+- **47기능 35→37개 완료 (#8, #9 추가)**
 
 ## [2026-03-12 14:30 KST] CW10 — P1 #1 관세최적화 + Vector DB 시딩 + Vercel 환경변수
 

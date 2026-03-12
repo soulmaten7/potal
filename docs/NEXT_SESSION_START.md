@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-12 14:30 KST (CW10 — P1#1 관세최적화, Vector DB 시딩 163건, Vercel 환경변수 세팅 완료)
+> 마지막 업데이트: 2026-03-12 17:00 KST (CW10 — P1#8 기업별AD관세 + P1#9 heading세분화, 47기능 37개 완료)
 
 ---
 
@@ -77,7 +77,10 @@ POTAL Chief Orchestrator 세션 시작.
 - **모닝브리핑 스킬**: Cowork에서 "모닝브리핑" 입력 시 Gmail + CLAUDE.md 기반 일일 브리핑 자동 실행
 - **자동 수정 시스템**: issue-classifier.ts (15 Division Layer 분류) + auto-remediation.ts (Cron 3x 재시도)
 - **이메일 리뷰**: Paddle Live, Khurram Shoaib 보안 리포트 (답장 완료), Shopify, Product Hunt
-- **P1 #1 관세최적화**: lookupAllDutyRates() — MIN/AGR/NTLC 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답. 47기능 35개 완료
+- **P1 #1 관세최적화**: lookupAllDutyRates() — MIN/AGR/NTLC 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답
+- **P1 #8 기업별 AD 관세**: trade-remedy-lookup.ts firm-specific 강화 + pg_trgm fuzzy search(search_firm_trgm DB함수)
+- **P1 #9 heading 세분화**: heading-subdivider.ts 신규 — material/gender/description 3단계 전략, classifier.ts 통합
+- 47기능 37개 완료
 - **Vector DB 시딩**: product_hs_mappings 164건 → hs_classification_vectors 163건. 파이프라인 정확도 55%→100%
 - **Vercel 환경변수 세팅 완료**: RESEND_API_KEY + MORNING_BRIEF_EMAIL_TO + MORNING_BRIEF_EMAIL_FROM
 
@@ -116,8 +119,8 @@ tail -5 ~/portal/wdc_extract.log
 2. **WDC 추출 완료 확인** → Supabase 업로드 (hs_classification_vectors + product_hs_mappings)
 
 ### 🔴 P1 — 이번 주
-3. **#8 기업별 AD 관세** — 반덤핑 기업별 세율 적용
-4. **#9 heading 세분화** — HS 4자리 heading 내 세부 분류 개선
+3. ~~**#8 기업별 AD 관세**~~ ✅ 완료
+4. ~~**#9 heading 세분화**~~ ✅ 완료
 5. **벤치마크 실행** — 분류 정확도 측정 (Vector DB 시딩 후 실환경 검증)
 
 ### 🟡 P2 — 다음 주
@@ -144,7 +147,10 @@ tail -5 ~/portal/wdc_extract.log
 - **Git push**: Mac 터미널 또는 Claude Code (bypass permissions)
 - **AGR**: ✅ 53/53국 완료 (KOR 삭제 진행중 → 재임포트 예정)
 - **Resend API Key**: ✅ 발급 + Vercel 환경변수 세팅 완료
-- **관세최적화 (#1)**: ✅ lookupAllDutyRates() 구현 완료, tariffOptimization 응답. 47기능 35개 완료
+- **관세최적화 (#1)**: ✅ lookupAllDutyRates() 구현 완료, tariffOptimization 응답
+- **기업별 AD 관세 (#8)**: ✅ firm-specific AD/CVD matching + pg_trgm fuzzy search
+- **heading 세분화 (#9)**: ✅ heading-subdivider.ts — material/gender/description 3단계 subheading 선택
+- 47기능 37개 완료
 - **Vector DB 시딩**: ✅ hs_classification_vectors 163건, 파이프라인 정확도 100%
 
 ---

@@ -45,8 +45,10 @@ export interface TradeRemedyMeasure {
   isActive: boolean;
   /** Firm name that matched (if firm-specific) */
   firmName?: string;
-  /** How the firm was matched: 'exact', 'all_others', 'country_wide' */
-  matchType?: 'exact' | 'all_others' | 'country_wide';
+  /** How the firm was matched */
+  matchType?: 'exact' | 'fuzzy' | 'all_others' | 'country_wide';
+  /** Fuzzy match score (0-1, only for fuzzy matches) */
+  matchScore?: number;
   /** Measure type: AVD (ad valorem), SD (specific duty), PU (price undertaking) */
   measureType?: string;
 }
@@ -260,7 +262,7 @@ export async function lookupTradeRemedies(
       }
 
       // Firm-specific matching logic
-      const { rate, firmName: matchedFirm, matchType, measureType } = resolveFirmDuty(
+      const { rate, firmName: matchedFirm, matchType, matchScore, measureType } = await resolveFirmDuty(
         caseDuties,
         origin,
         options?.firmName,
@@ -278,6 +280,7 @@ export async function lookupTradeRemedies(
         isActive: true,
         firmName: matchedFirm,
         matchType,
+        matchScore,
         measureType: measureType || c.measure_type,
       });
     }
@@ -299,7 +302,8 @@ export async function lookupTradeRemedies(
 interface ResolvedDuty {
   rate: number;        // duty_rate (percentage, e.g. 25.5)
   firmName: string | undefined;
-  matchType: 'exact' | 'all_others' | 'country_wide';
+  matchType: 'exact' | 'fuzzy' | 'all_others' | 'country_wide';
+  matchScore?: number;
   measureType: string | undefined;
 }
 
@@ -313,11 +317,11 @@ interface ResolvedDuty {
  * 4. Country-wide rate (target_country match, no firm)
  * 5. Highest available rate (conservative fallback)
  */
-function resolveFirmDuty(
+async function resolveFirmDuty(
   duties: any[],
   originCountry: string,
   queryFirmName?: string,
-): ResolvedDuty {
+): Promise<ResolvedDuty> {
   if (duties.length === 0) {
     return { rate: 0, firmName: undefined, matchType: 'country_wide', measureType: undefined };
   }
@@ -346,9 +350,32 @@ function resolveFirmDuty(
       return {
         rate: parseFloat(bestMatch.duty.duty_rate) || 0,
         firmName: bestMatch.duty.firm_name,
-        matchType: bestMatch.score >= 0.95 ? 'exact' : 'exact',
+        matchType: bestMatch.score >= 0.95 ? 'exact' : 'fuzzy',
+        matchScore: Math.round(bestMatch.score * 100) / 100,
         measureType: bestMatch.duty.measure_type,
       };
+    }
+  }
+
+  // 1b. pg_trgm server-side fuzzy search (if in-code matching failed)
+  if (queryFirmName && queryFirmName.trim() && relevantDuties.some(d => d.firm_name && !isAllOthersEntry(d.firm_name))) {
+    const trgmResult = await searchFirmByTrgm(
+      queryFirmName,
+      relevantDuties.filter(d => d.firm_name && !isAllOthersEntry(d.firm_name)).map(d => d.case_id),
+    );
+    if (trgmResult) {
+      const matchedDuty = relevantDuties.find(d =>
+        d.firm_name && normalizeFirmName(d.firm_name) === normalizeFirmName(trgmResult.firmName)
+      );
+      if (matchedDuty) {
+        return {
+          rate: parseFloat(matchedDuty.duty_rate) || 0,
+          firmName: matchedDuty.firm_name,
+          matchType: trgmResult.similarity >= 0.95 ? 'exact' : 'fuzzy',
+          matchScore: trgmResult.similarity,
+          measureType: matchedDuty.measure_type,
+        };
+      }
     }
   }
 
@@ -383,4 +410,40 @@ function resolveFirmDuty(
     matchType: 'country_wide',
     measureType: highest.duty.measure_type,
   };
+}
+
+// ─── pg_trgm Server-Side Fuzzy Search ────────────
+
+/**
+ * Search for a firm name in trade_remedy_duties using pg_trgm similarity.
+ * Falls back gracefully if the pg_trgm extension or function is unavailable.
+ */
+async function searchFirmByTrgm(
+  queryFirmName: string,
+  caseIds: (string | number)[],
+): Promise<{ firmName: string; similarity: number } | null> {
+  if (caseIds.length === 0) return null;
+
+  const supabase = getSupabase();
+  if (!supabase) return null;
+
+  try {
+    const result: any = await supabase.rpc('search_firm_trgm' as any, {
+      query_name: queryFirmName,
+      case_ids: caseIds,
+      min_similarity: 0.3,
+    });
+
+    if (result.error || !result.data || (result.data as any[]).length === 0) {
+      return null;
+    }
+
+    const best = (result.data as any[])[0];
+    return {
+      firmName: best.firm_name,
+      similarity: parseFloat(best.similarity) || 0,
+    };
+  } catch {
+    return null;
+  }
 }

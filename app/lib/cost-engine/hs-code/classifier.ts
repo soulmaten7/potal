@@ -10,6 +10,7 @@
 
 import type { HsClassificationResult } from './types';
 import { HS_DATABASE } from './hs-database';
+import { subdivideHeading } from './heading-subdivider';
 
 /**
  * Normalize text for matching: lowercase, remove special chars
@@ -130,16 +131,36 @@ export function classifyProduct(
     };
   }
 
-  const best = scored[0];
+  let best = scored[0];
+
+  // Heading subdivision: when top results share the same HS4 heading,
+  // use material/gender/description attributes to pick the right subheading
+  const heading4 = best.entry.code.slice(0, 4);
+  const sameHeadingCandidates = scored
+    .filter(s => s.entry.code.startsWith(heading4) && s.score >= best.score * 0.7)
+    .map(s => ({ code: s.entry.code, description: s.entry.description, score: s.score }));
+
+  let confidenceBoost = 0;
+  if (sameHeadingCandidates.length > 1) {
+    const subdivision = subdivideHeading(sameHeadingCandidates, productName);
+    if (subdivision) {
+      const subdividedEntry = scored.find(s => s.entry.code === subdivision.bestCode);
+      if (subdividedEntry) {
+        best = subdividedEntry;
+        confidenceBoost = subdivision.confidenceBoost;
+      }
+    }
+  }
 
   // Confidence: normalize score (10 = exact single keyword match)
   // Max realistic score ~40-50 for very specific matches
-  const confidence = Math.min(best.score / 30, 1);
+  const confidence = Math.min((best.score / 30) + confidenceBoost, 1);
 
   // Alternatives: next best matches (different HS codes)
   const alternatives = scored
-    .slice(1, 4)
-    .filter((s) => s.score > 3)
+    .slice(0, 5)
+    .filter((s) => s.entry.code !== best.entry.code && s.score > 3)
+    .slice(0, 3)
     .map((s) => ({
       hsCode: s.entry.code,
       description: s.entry.description,
