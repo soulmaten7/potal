@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-13 22:00 KST (Cowork 12 — 147개 경쟁사 기능 분석 96.6%, 240개국 규정 RAG 전략, 데이터 유지보수 자동화 설계, 타겟 거래처 A/B/C 그룹)
+# 마지막 업데이트: 2026-03-14 01:30 KST (Cowork 12 후반 — 44개 MUST 미구현 기능 전부 구현 완료, 102/102 MUST 완료, P0 12+P1 15+P2 17=44/44)
 
 ## 0. 프로젝트 개요
 
@@ -12,7 +12,7 @@
 - **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 50개국어, 63개 FTA, **500M+ HS Code 매핑** (WDC 사전매핑 전략)
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/100 | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
-- **핵심 전략 (세션 28→CW9→CW10)**: "47기능 도장깨기" — CW10에서 42개 작업 완료 (#1+#2+#8+#9+#17+#20+#37+#40). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자"
+- **핵심 전략 (CW12 후반)**: **102/102 MUST 기능 전부 구현 완료** ✅ (기존 58 + 신규 44개). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자"
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 - **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트)
 - **Vercel Cron**: 11개 (CW9.5에서 sdn-sync + exchange-rate-sync 추가)
