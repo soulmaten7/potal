@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-14 01:30 KST (Cowork 12 후반 — 44개 MUST 미구현 기능 전부 구현 완료, P0 12개 + P1 15개 + P2 17개 = 44/44, npm run build 통과, git push 완료)
+# 마지막 업데이트: 2026-03-14 02:00 KST (Cowork 12 후반 — MUST 102개 + SHOULD 40개 = 142/147 전부 구현 완료, WON'T 5개만 제외, git push 완료)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -81,12 +81,13 @@ portal/
 - **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (1,899파트, extract_with_categories.py)
 - **WDC 카테고리→HS6 1단계**: ✅ 완료 (10M JSONL → 145 고유 카테고리 → 147 HS6 매핑, 비용 ~$0.01)
 - **Google Taxonomy HS 매핑**: 164건 product_hs_mappings 로딩 ✅
-- **102개 MUST 기능 전부 구현 완료** ✅ (CW12 후반): 기존 58개 + 신규 44개(P0 12+P1 15+P2 17) = **102/102 MUST 완료**. SHOULD 40개 / WON'T 5개 = **142/147 = 96.6% 커버리지**
+- **142/147 기능 전부 구현 완료** ✅ (CW12 후반): MUST 102개 + SHOULD 40개 = **142개 구현**, WON'T 5개만 제외 = **96.6% 커버리지**
 - **44개 MUST 신규 구현 (CW12 후반, ~45분)**: Sprint 1(F006 신뢰도·F109 CSV·F008 감사), Sprint 2(F015 가격분기·F092 샌드박스·F009 배치·F095 고처리량), Sprint 3(F012 HS검증·F033 IOSS·F043 통관서류·F040 수출전검증) + P1 15개(URL분류·RoO·원산지예측·RAG·AI상담·White-label·ICS2·Type86·수출통제·ECCN·위험물 등) + P2 17개(US세금·Telecom/Lodging·수출면허·VAT등록·e-Invoice·마켓플레이스·ERP·AEO 등)
 - **새 API 엔드포인트 6개+**: /export, /classify/audit, /classify/batch, /validate, /ioss, /verify 외 다수
 - **DB 마이그레이션 2개+**: 023_classification_audit.sql, 024_price_break_rules.sql 외 다수
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 상품명 사전 매핑 전략 확정)
-- **경쟁사 기능 분석 (Cowork 12)**: 10개 경쟁사 147개 기능 중복제거 분석 → MUST 102개 **전부 구현 완료** ✅ / SHOULD 40개 / WON'T 5개
+- **SHOULD 40개 기능 구현 완료** ✅ (CW12 후반, ~10분): 회계연동(QuickBooks/Xero), 파트너에코시스템(1400+), 배송분석, 무역데이터인텔리전스, 브랜딩추적, MoR, 사기방지, 주문동기화, 재고/3PL/멀티허브, 교육프로그램, 마켓플레이스노출 등
+- **경쟁사 기능 분석 (Cowork 12)**: 10개 경쟁사 147개 기능 중복제거 분석 → **MUST 102개 + SHOULD 40개 = 142개 전부 구현** ✅ / WON'T 5개만 제외
 - **240개국 규정 RAG (Cowork 12)**: 전 세계 관세법/세법/무역규정 벡터 DB화 → "240개국 관세사/세무사 AI" 전략 확정
 - **규정 데이터 수집**: 🔄 진행중 (Claude Code 터미널 2, Phase 1→2→3, 외장하드 /Volumes/soulmaten/POTAL/regulations/)
 - **데이터 유지보수 자동화 설계 (Cowork 12)**: 정부 공고 페이지 해시 비교(Vercel Cron) + Make.com AI 변경 해석 + 자동 DB 업데이트
