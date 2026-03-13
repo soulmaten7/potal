@@ -14,6 +14,7 @@
  *   hsCode?: string,                // HS Code (future use)
  *   destinationCountry?: string,    // default "US"
  *   firmName?: string               // Exporter firm name for AD/CVD matching
+ *   shippingTerms?: string,         // Incoterms: "DDP" (default) | "DDU" | "CIF" | "FOB" | "EXW"
  * }
  */
 
@@ -68,6 +69,9 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     productName: typeof body.productName === 'string' ? body.productName : undefined,
     productCategory: typeof body.productCategory === 'string' ? body.productCategory : undefined,
     firmName: typeof body.firmName === 'string' ? body.firmName : undefined,
+    shippingTerms: (['DDP', 'DDU', 'CIF', 'FOB', 'EXW'].includes(String(body.shippingTerms || '').toUpperCase())
+      ? String(body.shippingTerms).toUpperCase() as GlobalCostInput['shippingTerms']
+      : undefined),
   };
 
   // 6. Calculate (DB-backed global engine — supports 58+ countries)

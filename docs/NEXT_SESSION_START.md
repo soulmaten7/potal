@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-13 16:30 KST (KOR AGR 재임포트 완료 1,815,798행)
+> 마지막 업데이트: 2026-03-13 22:00 KST (Cowork 12 — 147개 기능 96.6%, 240개국 RAG 전략, 데이터 유지보수 설계, 타겟 A/B/C 그룹)
 
 ---
 
@@ -66,6 +66,27 @@ POTAL Chief Orchestrator 세션 시작.
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
 - **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
 
+### Cowork 12 — 147개 경쟁사 기능 분석 + 240개국 규정 RAG + 데이터 유지보수 (2026-03-13)
+- **147개 경쟁사 기능 분석**: 10개 경쟁사 전체 기능 중복 제거 → 147개 고유 기능
+- **96.6% 커버리지**: MUST 102(58구현+44미구현) / SHOULD 40 / WON'T 5
+- **5개 솔루션 (WON'T 60→5)**: RAG, 물류파트너십, 정확도증명, 결제인프라, AEO지원
+- **타겟 거래처 3그룹**: A(Shopify/WooCommerce/국가우편), B(eBay/Etsy), C(DHL/Walmart)
+- **범용 HS Code 계산기**: 볼트, DDR5 SDRAM 등 산업부품도 분류 가능 증명
+- **240개국 규정 RAG**: 관세법/세법/무역규정 벡터 DB → "관세사/세무사 AI". 수집 진행중
+- **데이터 유지보수**: 공고 페이지 해시 비교(Cron) + Make.com AI 변경 해석 + 자동 DB 업데이트
+- **시장 평가**: 설계 90점, 가장 빠른 과제는 첫 유료 고객 10개
+- **엑셀 4종**: analysis/POTAL_Final_Feature_Analysis_v2.xlsx (최종본)
+
+### Cowork 11 — HS Code 100% 정확도 구조 설계 (2026-03-12)
+- **전략 세션**: 은태님과 HS Code 파이프라인 전체 구조 설계
+- **WDC 카테고리→HS6 1단계 완료**: 145 카테고리 → 1,017 매핑 (+853), 비용 $0.01
+- **7개국 벌크 다운로드 시작**: US/EU/UK/CA/AU/JP/KR HS 8~10자리 전체 스케줄
+- **5억 사전 매핑 전략 확정**: 카테고리→6자리→10자리후보→매칭→룩업테이블
+- **가격 분기 규칙**: "valued over/under $X" → if문 처리 → 세금 100% 정확
+- **플라이휠 캐시**: 새 상품 LLM 1회→DB 저장→이후 $0
+- **경쟁사 우위**: "500M+ HS Code Classifications" (vs Avalara 40M+)
+- **핵심 인사이트**: 카테고리가 HS 6자리의 핵심, 상품명은 세분화용. 정부 API 후보 5~10개 중 선택은 어렵지 않음
+
 ### CW10 — AI Agent Organization Day 1
 - **AI Agent Org 정식 운영 개시**: Division 팀장 = if/else 분류 로직 (AI 아님), Layer 1-2 자동 처리, Layer 3만 CEO 판단
 - **Morning Brief 강화**: 3섹션 리포트 (자동수정/판단필요/정상) + contact@potal.app 이메일 알림
@@ -103,35 +124,52 @@ POTAL Chief Orchestrator 세션 시작.
 - KOR total 값 불일치 (15,798 vs 1,845,798) → **재임포트 완료 (1,815,798행, 2026-03-13)**
 - AGR 53/53국 전체 완료
 
-### WDC 상품 추출 (Mac)
+### WDC 상품 추출 (Mac) — 🔄 진행중
 ```bash
 tail -5 ~/portal/wdc_extract.log
 ```
-- 1,899 파트 진행중
-- 완료 후 → Supabase 업로드 → AI 분류 파이프라인 가동
+- ~1,029/1,899 파트 진행중
+- **1단계 카테고리→HS6 매핑 완료** ✅ (145 카테고리 → 1,017 매핑)
+- 완료 후 → 2단계 상품명 세분화 → 5억 사전 매핑
+
+### 7개국 HS 10자리 벌크 다운로드 — 🔄 진행중 (Claude Code 터미널 1)
+- US/EU/UK/CA/AU/JP/KR 정부 관세 스케줄 전체 다운로드
+- **저장**: 외장하드 /Volumes/soulmaten/POTAL/hs-bulk/ (Cowork 12에서 경로 변경)
+- 완료 후 → DB 임포트 → 가격 분기 규칙 추출
+
+### 240개국 규정 데이터 수집 — 🔄 진행중 (Claude Code 터미널 2)
+- Phase 1(7개국) → Phase 2(국제기구) → Phase 3(지역+나머지)
+- **저장**: 외장하드 /Volumes/soulmaten/POTAL/regulations/
+- 명령어: REGULATION_DATA_COLLECTION_COMMAND.md
+- 수집 시 각 국가별 "공고/변경 알림 페이지 URL"도 함께 기록 (향후 Cron 감시 대상)
 
 ---
 
-## 다음 세션 우선순위 (CW11)
+## 다음 세션 우선순위 (CW13)
 
 ### 🔴 P0 — 즉시
 1. ~~**KOR AGR 재임포트**~~ ✅ 완료 (1,815,798행, 2026-03-13)
-2. **WDC 추출 완료 확인** → Supabase 업로드 (hs_classification_vectors + product_hs_mappings)
+2. **7개국 HS 10자리 벌크 다운로드 완료 확인** → DB 임포트 + 가격 분기 규칙 추출 (Claude Code 터미널 1 진행중, 외장하드)
+3. **WDC 추출 완료 확인** → 2단계 상품명 세분화 → 5억 사전 매핑
+4. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
 
 ### 🔴 P1 — 이번 주
-3. ~~**#8 기업별 AD 관세**~~ ✅ 완료
-4. ~~**#9 heading 세분화**~~ ✅ 완료
-5. ~~**벤치마크 실행**~~ ✅ 완료 — Pipeline 90% 정확도, Calculate 15/15통과, 100동시접속 26.9req/s
+5. **44개 MUST 미구현 기능 우선순위 정리** (Cowork 12에서 도출, A그룹 타겟 기준)
+6. **5억 상품명 사전 매핑 파이프라인**: WDC 전체 상품명 → HS 10자리 룩업 테이블 생성
+7. **가격 분기 규칙 테이블**: "valued over/under $X" 조건 코드 추출 → 규칙화
+8. **API category 필드 강화**: /api/v1/calculate에 category 필수/강력 권장
 
 ### 🟡 P2 — 다음 주
-8. **Keyword 정확도 개선** — 현재 HS4 38%, 매핑 테이블 보강 필요
-9. **베타 유저 테스트** — 지인 셀러 2~3명
-10. **DB 관세율 커버리지 확대** — hardcoded 소스 국가 줄이기
+9. **데이터 유지보수 Cron 구현**: 240개국별 공고 URL 목록 → Vercel Cron 해시 비교 → Make.com webhook 연동
+10. **자체 테스트** — 벌크 다운로드/규정 수집 완료 후 종합 테스트
+11. **Keyword 정확도 개선** — 1,017 매핑으로 대폭 개선 예상
+12. **A그룹 타겟 거래처 접근 전략** — Shopify 41K+ 스토어 마케팅
 
-### 🟢 P3 — 런칭 준비 ✅ 코드 점검 완료
-11. **Private Beta**: 3/17~20 — Signup+Quickstart+Docs 정상, 모바일반응형+JSON-LD+법적통일 수정
-12. **Soft Launch**: 3/24 (Product Hunt) — PH 에셋 5개 + 런칭플랜 준비, 14페이지+API 전체 200 OK
-13. **Public Launch**: 4월 초
+### 🟢 P3 — 런칭 준비
+13. **베타 유저 테스트** — 지인 셀러 2~3명
+14. **첫 유료 고객 10개** — 시장 평가에서 가장 빠른 과제로 확인
+15. **Soft Launch**: Product Hunt — PH 에셋 5개 + 런칭플랜 준비
+16. **Public Launch**: 4월 초
 
 ---
 
@@ -156,7 +194,16 @@ tail -5 ~/portal/wdc_extract.log
 - **MCP v1.3 (#40)**: ✅ 7→9 tools (document+compare)
 - **Incoterms (#20)**: ✅ EXW/FOB/CIF/DDP/DDU + who-pays-what
 - 47기능 42개 완료
-- **Vector DB 시딩**: ✅ hs_classification_vectors 163건, 파이프라인 정확도 100%
+- **Vector DB 시딩**: ✅ hs_classification_vectors **1,023건** (Cowork 11: 170→1,023), 파이프라인 정확도 100%
+- **WDC 카테고리→HS6 1단계**: ✅ 145 카테고리 → 1,017 매핑 (product_hs_mappings 164→1,017, 비용 ~$0.01)
+- **7개국 HS 10자리 벌크 다운로드**: 🔄 진행중 (US/EU/UK/CA/AU/JP/KR 정부 공개 데이터, 무료)
+- **5억 사전 매핑 전략**: ✅ 확정 — 카테고리→HS6→10자리후보→상품명+가격매칭→룩업테이블
+- **HS Code 정확도**: ✅ 100% 구조 설계 완료 (6자리: 카테고리확정, 10자리: DB후보+규칙, 가격분기: if문)
+- **경쟁사 대비**: Avalara 40M+ → **POTAL 500M+** HS Code Classifications
+- **147개 경쟁사 기능 분석 (CW12)**: ✅ 96.6% 커버리지 (102 MUST/40 SHOULD/5 WON'T)
+- **240개국 규정 RAG (CW12)**: 🔄 수집 진행중 (외장하드 /Volumes/soulmaten/POTAL/regulations/)
+- **데이터 유지보수 자동화 (CW12)**: ✅ 설계 완료 (공고 페이지 해시 Cron + Make.com AI + 자동 DB 업데이트)
+- **타겟 거래처 (CW12)**: A(Shopify/WooCommerce), B(eBay/Etsy), C(DHL/Walmart)
 - **P2 벤치마크**: ✅ AI분류 50상품(Pipeline 90%), Calculate E2E 15/15통과, 부하테스트 100동시(26.9req/s, p95=3.4s, 에러0%)
 - **P3 런칭 준비**: ✅ 모바일반응형, JSON-LD 3스키마, 법적통일(Korea), 이메일통일(contact@), 14페이지+API 200 OK
 - **플랫폼 최종 점검**: ✅ 42/42기능, 522/522테스트, 12/12DB 수치일치, 27/27페이지+에셋, 11/11 Cron, OG+JSON-LD

@@ -16,6 +16,7 @@ import type {
   CertificateOfOrigin,
   RequiredDocumentsResult,
   RequiredDocument,
+  CustomsDeclaration,
 } from './types';
 
 // ─── Invoice Number Generator ───────────────────────
@@ -307,6 +308,61 @@ function getRequiredDocuments(
   return { destinationCountry: dest, originCountry: originCountry.toUpperCase(), hsCode, documents: docs, notes };
 }
 
+// ─── Customs Declaration Generator ──────────────────
+
+function generateDeclarationNumber(): string {
+  const date = new Date();
+  const y = date.getFullYear().toString().slice(-2);
+  const m = (date.getMonth() + 1).toString().padStart(2, '0');
+  const d = date.getDate().toString().padStart(2, '0');
+  const rand = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `CD-${y}${m}${d}-${rand}`;
+}
+
+function buildCustomsDeclaration(
+  input: GenerateDocumentInput,
+  items: ShipmentItem[],
+): CustomsDeclaration {
+  const subtotal = items.reduce((sum, i) => sum + i.totalPrice, 0);
+  const shipping = input.shippingCost || 0;
+  const insurance = input.insuranceCost || 0;
+  const totalDeclaredValue = Math.round((subtotal + shipping + insurance) * 100) / 100;
+
+  const originCountry =
+    items.find(i => i.countryOfOrigin)?.countryOfOrigin ||
+    input.exporter.country;
+
+  const declItems = items.map((item, idx) => ({
+    itemNumber: idx + 1,
+    description: item.description,
+    hsCode: item.hsCode,
+    quantity: item.quantity,
+    unitPrice: item.unitPrice,
+    totalValue: item.totalPrice,
+    countryOfOrigin: item.countryOfOrigin || originCountry,
+    weightKg: item.weightKg,
+  }));
+
+  return {
+    declarationNumber: generateDeclarationNumber(),
+    declarationType: 'import',
+    declarationDate: new Date().toISOString().split('T')[0],
+    declarant: input.importer,
+    exporter: input.exporter,
+    countryOfOrigin: originCountry,
+    countryOfDestination: input.importer.country,
+    items: declItems,
+    totalDeclaredValue,
+    totalDuty: 0, // To be calculated by customs
+    totalVat: 0,  // To be calculated by customs
+    totalFees: 0,
+    totalPayable: 0,
+    incoterm: input.incoterm || 'FOB',
+    currency: input.currency || 'USD',
+    shippingMethod: input.shippingMethod,
+  };
+}
+
 // ─── Main Generator ─────────────────────────────────
 
 /**
@@ -358,6 +414,10 @@ export async function generateDocuments(
       input.exporter.country,
       firstHsCode
     );
+  }
+
+  if (input.type === 'customs_declaration' || isAll) {
+    result.customsDeclaration = buildCustomsDeclaration(input, enrichedItems);
   }
 
   return result;

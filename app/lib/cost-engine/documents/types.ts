@@ -121,7 +121,7 @@ export interface PackingList {
 
 export interface GenerateDocumentInput {
   /** Document type to generate */
-  type: 'commercial_invoice' | 'packing_list' | 'certificate_of_origin' | 'required_documents' | 'both' | 'all';
+  type: 'commercial_invoice' | 'packing_list' | 'certificate_of_origin' | 'required_documents' | 'customs_declaration' | 'both' | 'all';
   /** Seller/exporter info */
   exporter: TradeParty;
   /** Buyer/importer info */
@@ -213,9 +213,66 @@ export interface RequiredDocumentsResult {
   notes: string[];
 }
 
+// ─── Customs Declaration ──────────────────────────
+
+export interface CustomsDeclaration {
+  /** Declaration reference number */
+  declarationNumber: string;
+  /** Declaration type */
+  declarationType: 'import' | 'export' | 'transit';
+  /** Date of declaration */
+  declarationDate: string;
+  /** Importer/declarant */
+  declarant: TradeParty;
+  /** Exporter/sender */
+  exporter: TradeParty;
+  /** Country of origin */
+  countryOfOrigin: string;
+  /** Country of destination */
+  countryOfDestination: string;
+  /** Items declared */
+  items: Array<{
+    itemNumber: number;
+    description: string;
+    hsCode?: string;
+    quantity: number;
+    unitPrice: number;
+    totalValue: number;
+    countryOfOrigin?: string;
+    weightKg?: number;
+    dutyRate?: number;
+    dutyAmount?: number;
+    vatRate?: number;
+    vatAmount?: number;
+  }>;
+  /** Total declared value (FOB/CIF) */
+  totalDeclaredValue: number;
+  /** Total duty payable */
+  totalDuty: number;
+  /** Total VAT/GST payable */
+  totalVat: number;
+  /** Total fees */
+  totalFees: number;
+  /** Grand total payable */
+  totalPayable: number;
+  /** Incoterm */
+  incoterm: string;
+  /** Currency */
+  currency: string;
+  /** Shipping method */
+  shippingMethod?: string;
+  /** Transport document reference (B/L or AWB number) */
+  transportDocumentRef?: string;
+  /** IOSS number (if applicable) */
+  iossNumber?: string;
+  /** EORI number (if applicable) */
+  eoriNumber?: string;
+}
+
 export interface GenerateDocumentResult {
   commercialInvoice?: CommercialInvoice;
   packingList?: PackingList;
   certificateOfOrigin?: CertificateOfOrigin;
   requiredDocuments?: RequiredDocumentsResult;
+  customsDeclaration?: CustomsDeclaration;
 }

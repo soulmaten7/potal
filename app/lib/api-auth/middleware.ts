@@ -45,6 +45,8 @@ export interface ApiAuthContext {
   planId: string;
   subscriptionStatus: string;
   rateLimitPerMinute: number;
+  /** Whether this request is in sandbox/test mode (pk_test_ or sk_test_ key) */
+  sandbox: boolean;
 }
 
 // ─── Extract API Key from Request ────────────────────
@@ -88,9 +90,10 @@ export function withApiAuth(handler: ApiHandler) {
       return apiError(ApiErrorCode.UNAUTHORIZED, 'API key is required. Pass via X-API-Key header or api_key query parameter.');
     }
 
-    // 2. Validate key format
-    if (!apiKey.startsWith('pk_live_') && !apiKey.startsWith('sk_live_')) {
-      return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid API key format.');
+    // 2. Validate key format (live + test/sandbox keys)
+    const isSandbox = apiKey.startsWith('pk_test_') || apiKey.startsWith('sk_test_');
+    if (!apiKey.startsWith('pk_live_') && !apiKey.startsWith('sk_live_') && !isSandbox) {
+      return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid API key format. Use pk_live_, sk_live_, pk_test_, or sk_test_ prefix.');
     }
 
     // 3. Look up key in database
@@ -133,6 +136,7 @@ export function withApiAuth(handler: ApiHandler) {
       planId: keyInfo.planId,
       subscriptionStatus,
       rateLimitPerMinute: keyInfo.rateLimitPerMinute,
+      sandbox: isSandbox,
     };
 
     // 8. Execute handler
@@ -163,6 +167,9 @@ export function withApiAuth(handler: ApiHandler) {
     response.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
     response.headers.set('X-Plan-Usage', String(planCheck.used));
     response.headers.set('X-Plan-Limit', String(planCheck.limit));
+    if (isSandbox) {
+      response.headers.set('X-Sandbox-Mode', 'true');
+    }
     if (planCheck.isOverage) {
       response.headers.set('X-Plan-Overage', String(planCheck.overageCount));
       response.headers.set('X-Plan-Overage-Rate', String(planCheck.overageRate));

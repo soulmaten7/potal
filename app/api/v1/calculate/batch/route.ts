@@ -20,7 +20,8 @@
  *   defaults?: {                     // optional — shared defaults for all items
  *     origin?: string,
  *     zipcode?: string,
- *     destinationCountry?: string
+ *     destinationCountry?: string,
+ *     shippingTerms?: string         // "DDP" | "DDU" | "CIF" | "FOB" | "EXW"
  *   }
  * }
  */
@@ -40,6 +41,7 @@ interface BatchDefaults {
   origin?: string;
   zipcode?: string;
   destinationCountry?: string;
+  shippingTerms?: 'DDP' | 'DDU' | 'CIF' | 'FOB' | 'EXW';
 }
 
 // ─── POST Handler ───────────────────────────────────
@@ -69,8 +71,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   // 3. Parse defaults
   const defaults = (body.defaults || {}) as BatchDefaults;
 
-  // 4. Validate each item and calculate
-  const results: { id: string; result: GlobalLandedCost }[] = [];
+  // 4. Validate and prepare items
+  const validItems: { index: number; id: string; costInput: GlobalCostInput }[] = [];
   const errors: { index: number; id?: string; error: string }[] = [];
 
   for (let i = 0; i < items.length; i++) {
@@ -110,10 +112,41 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
         : defaults.destinationCountry) || undefined,
       productName: typeof item.productName === 'string' ? item.productName : undefined,
       productCategory: typeof item.productCategory === 'string' ? item.productCategory : undefined,
+      shippingTerms: (() => {
+        const raw = String(item.shippingTerms || defaults.shippingTerms || '').toUpperCase();
+        return (['DDP', 'DDU', 'CIF', 'FOB', 'EXW'].includes(raw) ? raw : undefined) as GlobalCostInput['shippingTerms'];
+      })(),
     };
 
-    const result = await calculateGlobalLandedCostAsync(costInput);
-    results.push({ id: item.id, result });
+    validItems.push({ index: i, id: item.id, costInput });
+  }
+
+  // 5. Process with concurrent execution (max 10 parallel)
+  const CONCURRENCY = 10;
+  const results: { id: string; result: GlobalLandedCost }[] = [];
+
+  for (let start = 0; start < validItems.length; start += CONCURRENCY) {
+    const chunk = validItems.slice(start, start + CONCURRENCY);
+    const chunkResults = await Promise.allSettled(
+      chunk.map(async ({ id, costInput }) => {
+        const result = await calculateGlobalLandedCostAsync(costInput);
+        return { id, result };
+      })
+    );
+
+    for (let j = 0; j < chunkResults.length; j++) {
+      const settled = chunkResults[j];
+      if (settled.status === 'fulfilled') {
+        results.push(settled.value);
+      } else {
+        const item = chunk[j];
+        errors.push({
+          index: item.index,
+          id: item.id,
+          error: settled.reason instanceof Error ? settled.reason.message : 'Calculation failed',
+        });
+      }
+    }
   }
 
   // 5. Return response

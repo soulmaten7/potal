@@ -13,4 +13,5 @@ export type {
   CertificateOfOrigin,
   RequiredDocumentsResult,
   RequiredDocument,
+  CustomsDeclaration,
 } from './types';

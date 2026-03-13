@@ -19,6 +19,14 @@ export type { RoOResult, RoOCriterion, RuleOfOrigin } from './fta';
 export { expandHsCode, getBestHs10, collectHs10Data } from './hs10-expander';
 export type { Hs10Variant, Hs10ExpansionResult } from './hs10-expander';
 
+// HS Code Validator
+export { validateHsCode } from './hs-validator';
+export type { HsValidationResult } from './hs-validator';
+
+// Price Break Rules
+export { applyPriceBreakRule, invalidatePriceBreakCache } from './price-break-rules';
+export type { PriceBreakRule, PriceBreakResult } from './price-break-rules';
+
 // Types
 export type { HsCodeEntry, HsCodeDutyRate, HsClassificationResult } from './types';
 export type { FtaResult } from './fta';

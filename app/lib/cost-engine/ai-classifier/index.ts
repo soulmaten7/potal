@@ -23,3 +23,9 @@ export {
 } from './vector-search';
 export type { VectorSearchResult, VectorSearchConfig } from './vector-search';
 export { searchProductMappings, getMappingStats } from './product-mappings';
+export { calculateConfidenceScore } from './confidence-score';
+export type { ClassificationConfidenceScore, ConfidenceGrade, ConfidenceFactor } from './confidence-score';
+export { recordClassificationAudit, queryClassificationAudit } from './audit-trail';
+export { validateProductDescription } from './description-validator';
+export type { DescriptionValidationResult, DescriptionIssue } from './description-validator';
+export type { AuditTrailEntry, AuditTrailQuery, AuditTrailResponse } from './audit-trail';

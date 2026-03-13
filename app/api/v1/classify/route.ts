@@ -13,7 +13,7 @@
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
-import { classifyProductAsync } from '@/app/lib/cost-engine/ai-classifier';
+import { classifyProductAsync, calculateConfidenceScore, recordClassificationAudit, validateProductDescription } from '@/app/lib/cost-engine/ai-classifier';
 import { classifyWithVision } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
@@ -108,10 +108,16 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       return apiError(ApiErrorCode.BAD_REQUEST, 'Image classification failed. Ensure image is clear and try again.');
     }
 
+    const visionConfidence = calculateConfidenceScore(
+      { ...visionResult.result, classificationSource: 'ai' },
+      productHint || productName || undefined,
+    );
+
     return apiSuccess({
       hsCode: visionResult.result.hsCode,
       description: visionResult.result.description,
       confidence: visionResult.result.confidence,
+      confidenceScore: visionConfidence,
       method: 'vision',
       countryOfOrigin: visionResult.result.countryOfOrigin,
       detectedProductName: visionResult.result.detectedProductName,
@@ -127,6 +133,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     });
   }
 
+  const classifyStartMs = Date.now();
+
   // Text-based classification
   if (!productName) {
     return apiError(ApiErrorCode.BAD_REQUEST, 'Provide "productName" for text classification or "imageUrl"/"imageBase64" for image classification.');
@@ -140,13 +148,32 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     return apiError(ApiErrorCode.INTERNAL_ERROR, 'Classification service unavailable. Please try again.');
   }
 
+  const textConfidence = calculateConfidenceScore(result, productName);
+  const processingTimeMs = Date.now() - classifyStartMs;
+
+  // Record audit trail (non-blocking)
+  void recordClassificationAudit({
+    sellerId: context.sellerId,
+    productName,
+    productCategory: category,
+    result,
+    classificationSource: result.classificationSource,
+    confidenceScore: textConfidence,
+    processingTimeMs,
+    ipAddress: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
+  });
+
+  const descriptionCheck = validateProductDescription(productName, category);
+
   return apiSuccess({
     hsCode: result.hsCode,
     description: result.description,
     confidence: result.confidence,
+    confidenceScore: textConfidence,
     method: result.classificationSource,
     countryOfOrigin: result.countryOfOrigin,
     alternatives: result.alternatives,
+    descriptionQuality: descriptionCheck,
   }, {
     sellerId: context.sellerId,
     plan: context.planId,

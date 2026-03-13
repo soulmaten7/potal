@@ -1,5 +1,75 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-13 16:30 KST
+> 마지막 업데이트: 2026-03-13 22:00 KST
+
+## [2026-03-13 22:00 KST] Cowork 12 — 147개 경쟁사 기능 분석 + 240개국 규정 RAG + 데이터 유지보수 설계
+
+### 전략 세션 핵심 결정 (은태님 + Cowork)
+- **147개 경쟁사 기능 분석 완료**: 10개 경쟁사(Avalara, Global-e, Zonos, Easyship, DHL, SimplyDuty, Dutify, Hurricane, TaxJar, Passport) 전체 기능 중복 제거 → 147개 고유 기능
+- **96.6% 커버리지 달성**: MUST 102(58구현+44미구현) / SHOULD 40 / WON'T 5
+  - WON'T 5개: 인간전문가검증, 국제방문자인사, 장바구니이탈방지, Power BI, 700+전문가네트워크
+- **5개 솔루션 전략 (WON'T 60→5)**: 240개국 규정 RAG, 물류파트너십, 정확도증명→MoR불필요, 결제인프라, AEO지원
+- **타겟 거래처 3그룹**: A(Shopify/WooCommerce/국가우편), B(eBay/Etsy/중형물류), C(DHL/Walmart/대기업)
+- **범용 HS Code 계산기 증명**: 볼트 M6x20, DDR5 SDRAM 16GB 등 산업부품/반도체도 분류 가능 확인
+- **"결과가 정해져 있는 시장" 인사이트**: 관세사/세무사 지식 = 공개 법률 → 전부 디지털화 가능
+
+### 240개국 규정 RAG 전략 확정
+- **목표**: 전 세계 관세법/세법/무역규정 벡터 DB → "240개국 관세사/세무사 AI"
+- **수집 3단계**: Phase 1(7개국 정부) → Phase 2(국제기구 WTO/WITS/MacMap) → Phase 3(지역+나머지)
+- **저장**: 외장하드 /Volumes/soulmaten/POTAL/regulations/ (local 저장공간 부족)
+- **명령어 파일**: REGULATION_DATA_COLLECTION_COMMAND.md 작성 완료
+- **상태**: Claude Code 터미널 2에서 수집 진행중
+
+### 데이터 유지보수 자동화 설계
+- **원리**: 정부 규정 변경은 공고 페이지로 사전 공지 (WTO TBT 60일 전 통보)
+- **3단계**: 공고 URL 특정(1회) → Vercel Cron 해시 비교(매일) → Make.com+AI 변경 해석
+- **분류**: 세율변경→자동 DB 업데이트, 새규정→RAG 추가, UI변경→skip
+- **예외**: URL 구조 변경 시 이메일 알림 (연 1~2회)
+- **비용**: 일일 ~$0
+
+### 시장 평가
+- 설계 90점. 핵심 공식: "정해진 답 데이터화 → 사전매핑 → DB 룩업 $0"
+- AI Agent 시대 API 인프라 포지셔닝 정확
+- ARR $1M~$10M 충분히 도달 가능
+- **가장 빠른 과제**: 첫 유료 고객 10개
+
+### 엑셀 파일 4종 생성
+1. analysis/POTAL_Complete_Feature_Analysis.xlsx (147개 전체 기능 + 10개 경쟁사 보유 현황)
+2. analysis/POTAL_Target_Analysis.xlsx (거래처 유형별 필요 기능 + 1차 판정)
+3. analysis/POTAL_Revised_Feature_Analysis.xlsx (RAG+파트너십 적용 후 재판정)
+4. analysis/POTAL_Final_Feature_Analysis_v2.xlsx (최종본 102/40/5)
+
+### 기타
+- 7개국 벌크 다운로드 저장 경로 외장하드로 변경 (/Volumes/soulmaten/POTAL/hs-bulk/)
+- 규정 데이터 수집 저장 경로 외장하드 (/Volumes/soulmaten/POTAL/regulations/)
+
+## [2026-03-12 23:30 KST] Cowork 11 — HS Code 100% 정확도 구조 설계 + 7개국 벌크 다운로드 시작
+
+### 전략 세션 핵심 결정 (은태님 + Cowork)
+- **HS Code 100% 정확도 구조 설계 완료**: 카테고리→HS6(확정) → 7개국10자리후보(DB) → 상품명+가격→최종매칭(규칙) → 룩업테이블
+- **5억 상품명 사전 매핑 전략 확정**: WDC 5억+ 상품명 전부 HS Code 사전 부여 → DB 조회만으로 응답 (AI 호출 $0, 수십ms)
+- **경쟁사 대비 우위**: Avalara 40M+ → **POTAL 500M+** HS Code Classifications
+- **플라이휠 캐시 구조**: 새 상품 → LLM 1회 → DB 저장 → 이후 동일 상품 $0
+- **가격 분기 규칙**: "valued over/under $X" 케이스 → API price 필드로 if문 처리 → 세금 금액 100% 정확
+
+### WDC 카테고리→HS6 1단계 완료
+- 10M JSONL → 145 고유 카테고리 → 147 HS6 매핑
+- product_hs_mappings: 164 → 1,017 (+853, 6배 확장)
+- hs_classification_vectors: 170 → 1,023 (+853, 6배 확장)
+- 키워드 정확도 84% + LLM 폴백 14% = 98% effective
+- DANGEROUS 분류: 1/50 (Glass Lamp only)
+- 비용: ~$0.01
+
+### 7개국 정부 관세 스케줄 벌크 다운로드 시작
+- 대상: US(USITC), EU(TARIC), UK(Trade Tariff), CA(CBSA), AU(ABF), JP(Customs), KR(KCS)
+- 목표: 전체 HS 8~10자리 코드 + 품목설명 + 세율 → DB 임포트
+- 모든 API 무료 (정부 공개 데이터)
+- 완료 시: 실시간 정부 API 호출 없이 DB에서 즉시 10자리 매칭
+
+### Claude Code 명령 전달
+1. 7개국 벌크 다운로드 + DB 임포트 (우선순위: US→EU→KR→나머지)
+2. 가격 분기 규칙 추출 ("valued over/under $X" 코드)
+3. 5억 상품명 사전 매핑 파이프라인 (WDC 추출 완료 후)
+4. API category 필드 강화 (필수/강력 권장)
 
 ## [2026-03-13 16:30 KST] KOR AGR 재임포트 완료
 

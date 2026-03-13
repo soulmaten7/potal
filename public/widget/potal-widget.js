@@ -109,6 +109,7 @@
     locale: 'auto',        // 'auto' = detect from browser, or explicit like 'en', 'ko'
     currency: 'auto',      // 'auto' = detect from destination country
     autoDetectCountry: true, // auto-detect destination from browser locale
+    shippingTerms: 'DDP',  // 'DDP' or 'DDU' — seller configurable
     onCalculate: null,
     onError: null,
     // Custom theme overrides (from widget_configs or PotalWidget.init)
@@ -335,6 +336,7 @@
       origin: params.origin || config.origin,
       destinationCountry: params.destination || config.destination,
       productName: params.productName || config.productName,
+      shippingTerms: params.shippingTerms || config.shippingTerms || 'DDP',
     };
     if (params.zipcode) body.zipcode = params.zipcode;
     if (params.hsCode) body.hsCode = params.hsCode;

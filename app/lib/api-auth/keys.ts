@@ -62,8 +62,10 @@ export interface GeneratedKey {
  * // key.prefix  = "pk_live_"
  * // key.hash    = "a1b2c3d4..."           (store in DB)
  */
-export async function generateApiKey(type: KeyType): Promise<GeneratedKey> {
-  const prefix = type === 'publishable' ? 'pk_live_' : 'sk_live_';
+export async function generateApiKey(type: KeyType, mode: 'live' | 'test' = 'live'): Promise<GeneratedKey> {
+  const prefix = type === 'publishable'
+    ? (mode === 'test' ? 'pk_test_' : 'pk_live_')
+    : (mode === 'test' ? 'sk_test_' : 'sk_live_');
   const randomPart = generateRandomString(KEY_LENGTH);
   const fullKey = prefix + randomPart;
   const hash = await hashKey(fullKey);

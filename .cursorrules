@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-13 16:30 KST (KOR AGR 재임포트 완료 — 1,815,798행)
+# 마지막 업데이트: 2026-03-13 22:00 KST (Cowork 12 — 147개 경쟁사 기능 분석 96.6%, 240개국 규정 RAG 전략, 데이터 유지보수 자동화 설계, 타겟 거래처 A/B/C 그룹)
 
 ## 0. 프로젝트 개요
 
@@ -9,7 +9,7 @@
 - 상세 맥락: `session-context.md` 반드시 먼저 읽을 것
 
 ### 핵심 서비스
-- **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 50개국어, 63개 FTA
+- **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 50개국어, 63개 FTA, **500M+ HS Code 매핑** (WDC 사전매핑 전략)
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/100 | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
 - **핵심 전략 (세션 28→CW9→CW10)**: "47기능 도장깨기" — CW10에서 42개 작업 완료 (#1+#2+#8+#9+#17+#20+#37+#40). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자"
@@ -55,7 +55,10 @@
 - **✅ #2 EU VAT 세분화 (CW10)**: eu-vat-rates.ts — EU 12개국 HS 챕터별 reduced VAT rate(식품/서적/의약품). GlobalCostEngine 자동 적용. 47기능 39→40개 완료
 - **✅ #40 MCP v1.3 (CW10)**: 7→9 tools — generate_document(CI/PL/C/O) + compare_countries(다국 TLC 비교). 47기능 40→41개 완료
 - **✅ #20 Incoterms (CW10)**: EXW/FOB/CIF/DDP/DDU 5개 조건 지원. incotermsBreakdown(sellerPays/buyerPays). 47기능 41→42개 완료
-- **✅ Vector DB 시딩 (CW10)**: product_hs_mappings 164건 → hs_classification_vectors 163건 (OpenAI text-embedding-3-small). AI 분류 정확도 55%→100%. VECTOR_SEARCH_MIN_SIMILARITY=0.85 유지
+- **✅ Vector DB 시딩 (CW10→Cowork 11)**: product_hs_mappings 164→**1,017건**, hs_classification_vectors 170→**1,023건** (WDC 카테고리 매핑 +853). AI 분류 정확도 55%→100%. VECTOR_SEARCH_MIN_SIMILARITY=0.85 유지
+- **✅ WDC 카테고리→HS6 1단계 (Cowork 11)**: 10M JSONL → 145 고유 카테고리 → 147 HS6 매핑. 키워드 84% + LLM 14% = 98%, 비용 ~$0.01
+- **🔄 7개국 HS 10자리 벌크 다운로드 (Cowork 11 시작)**: US/EU/UK/CA/AU/JP/KR 정부 공식 HS 8~10자리 전체 스케줄 → DB 임포트 → 실시간 API 호출 불필요
+- **✅ 5억 상품명 사전 매핑 전략 확정 (Cowork 11)**: 카테고리→HS6(확정) → 7개국10자리후보(DB) → 상품명+가격→최종매칭(규칙) → 룩업테이블. HS Code 정확도 100% 구조. 가격 분기 규칙("valued over/under $X")은 if문으로 처리
 - **✅ Vercel 환경변수 세팅 (CW10)**: RESEND_API_KEY + MORNING_BRIEF_EMAIL_TO + MORNING_BRIEF_EMAIL_FROM (Production+Preview, Vercel REST API)
 - **✅ Morning Brief 이메일 알림 (Cycle 6)**: morning-brief-email.ts Resend API 구현, push cfa4e4e. Vercel 환경변수: RESEND_API_KEY 세팅 필요
 - **✅ Layer 1 자동화 (Cowork 7→9.5)**: Vercel Cron 2→11개. D1 sdn-sync(매일05:00)+trade-remedy-sync(매주월), D4 exchange-rate-sync(매일00:30)+gov-api-health(매12시간), D5 uptime-check(매6시간), D6 plugin-health(매12시간), D8 spot-check(매일), D10 billing-overage(매월1일), D11 health-check(매6시간), D15 competitor-scan(매주월). Division 15/15 전체 완료
@@ -67,7 +70,11 @@
 - **✅ WooCommerce/BigCommerce/Magento 플러그인 완성 (Cowork 5)**: WooCommerce(HPOS/캐싱/sanitize/i18n/uninstall), BigCommerce(DDP cart), Magento(layout XML/ACL/composer.json)
 - **✅ Dashboard UI 통일 (Cowork 5)**: 메인 헤더/푸터 전 페이지 표시(대시보드 포함), 1440px max-width 통일, 유저 메뉴에 Docs 링크 추가
 - **✅ AGR 벌크 임포트 완료 (Cowork 5~9.5→CW10)**: 53개국 ~144M행 전체 완료. KOR 재임포트 완료 (1,815,798행, 2026-03-13)
-- **🔄 WDC 상품 추출 진행중 (CW9.5)**: Mac에서 extract_with_categories.py 실행 중, 1,899 파트, ~50/1899 (예상 3/13 저녁). 완료 후 → Supabase 업로드 → AI 분류 파이프라인
+- **🔄 WDC 상품 추출 진행중 (CW9.5→Cowork 11)**: Mac에서 extract_with_categories.py 실행 중, ~1,029/1,899 파트. 카테고리→HS6 1단계 완료 ✅ (1,017매핑). 완료 후 → 2단계 상품명 세분화 → 5억 사전매핑
+- **✅ 147개 경쟁사 기능 분석 (Cowork 12)**: 10개 경쟁사 147개 고유 기능 → MUST 102(58구현+44미구현)/SHOULD 40/WON'T 5 = 96.6% 커버리지. 5개 솔루션: RAG, 물류파트너십, 정확도증명, 결제인프라, AEO지원. 타겟: A(Shopify/WooCommerce), B(eBay/Etsy), C(DHL/Walmart)
+- **✅ 240개국 규정 RAG 전략 (Cowork 12)**: 관세법/세법/무역규정 벡터 DB화 → "240개국 관세사/세무사 AI". Phase 1(7개국)→2(국제기구)→3(지역). 저장: /Volumes/soulmaten/POTAL/regulations/. 🔄 수집 진행중
+- **✅ 데이터 유지보수 자동화 설계 (Cowork 12)**: 정부 공고 페이지 해시 비교(Cron) + Make.com AI 변경 해석(세율/규정/UI 분류) + 자동 DB 업데이트. 일일 비용 ~$0
+- **✅ 범용 HS Code 계산기 증명 (Cowork 12)**: 산업부품(볼트), 반도체(DDR5 SDRAM), 소비재 모두 분류 가능 확인
 - **✅ WDC 다운로드 완료 확인 (Cowork 5)**: 외장하드(/Volumes/soulmaten/POTAL/wdc-products/) 1,903파일 (extracted+raw 폴더)
 - **✅ AI Agent Organization v3 (Cowork 7)**: 15개 Division, 3 Layer(Automation/Monitor/Active), 1 Chief Orchestrator. Opus 4+에스컬5 (v1 대비 70%+ 토큰 절약). POTAL_AI_Agent_Org.html v3
 - **✅ 47기능 완전정복 전략 (Cowork 6→CW9 실행)**: CW9에서 34개 작업 일괄 완료. 주요: 50개국어 i18n, FTA RoO, ASEAN/India/Turkey 관세, 제재심사, 벡터DB, HS10확장, product_hs_mappings, GraphQL, CSV배치, 사기방지, VAT리포트, 위젯 auto-detect 등
@@ -228,7 +235,7 @@
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
-- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(진행중🔄 ~144M행 53개국), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(pgvector CW9), hs_expansion_rules(CW9), product_hs_mappings(pg_trgm CW9)
+- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(✅ ~144M행 53개국 완료), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(1,023 Cowork11), hs_expansion_rules(CW9), product_hs_mappings(1,017 Cowork11)
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

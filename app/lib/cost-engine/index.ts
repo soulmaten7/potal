@@ -34,3 +34,10 @@ export { classifyProductAsync, classifyWithOverrideAsync } from './ai-classifier
 
 // External Tariff API (with DB caching + circuit breaker)
 export { fetchDutyRateWithFallback, invalidateAllLiveCache } from './tariff-api';
+
+// IOSS/OSS
+export { calculateIoss, calculateOss, checkIossOss } from './ioss-oss';
+export type { IossCalculation, OssCalculation, IossOssResult } from './ioss-oss';
+
+// Documents
+export { generateDocuments } from './documents';

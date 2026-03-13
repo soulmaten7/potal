@@ -1,15 +1,25 @@
 /**
  * POTAL API v1 — /api/v1/support
  *
- * AI Support Agent — FAQ-based auto-response for common questions.
- * Falls back to "contact us" for complex queries.
+ * AI Support Agent — Multilingual FAQ-based auto-response.
+ * Supports 50 languages. Falls back to "contact us" for complex queries.
  *
  * POST /api/v1/support
- * Body: { question: string, context?: { sellerId?: string, plan?: string } }
+ * Body: { question: string, language?: string, context?: { sellerId?: string, plan?: string } }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+
+// ─── Supported Languages ──────────────────────────
+
+const SUPPORTED_LANGUAGES = new Set([
+  'en', 'ko', 'ja', 'zh', 'es', 'fr', 'de', 'pt', 'ru', 'ar',
+  'hi', 'th', 'vi', 'id', 'tr', 'pl', 'nl', 'sv', 'da', 'fi',
+  'nb', 'cs', 'ro', 'hu', 'uk', 'el', 'he', 'ms', 'it', 'bg',
+  'hr', 'sk', 'sl', 'lt', 'lv', 'et', 'mt', 'ga', 'cy', 'is',
+  'mk', 'sq', 'sr', 'bs', 'me', 'ka', 'hy', 'az', 'kk', 'uz',
+]);
 
 // ─── FAQ Knowledge Base ─────────────────────────────
 
@@ -17,15 +27,25 @@ interface FaqEntry {
   keywords: string[];
   question: string;
   answer: string;
+  /** Multilingual answers — key is ISO 639-1 code */
+  i18n?: Record<string, { question: string; answer: string }>;
   category: string;
 }
 
 const FAQ_DATABASE: FaqEntry[] = [
   // Pricing & Plans
   {
-    keywords: ['pricing', 'price', 'cost', 'plan', 'plans', 'free', 'subscription'],
+    keywords: ['pricing', 'price', 'cost', 'plan', 'plans', 'free', 'subscription', '가격', '요금', '플랜', '料金', 'プラン', '价格', '套餐', 'precio', 'prix'],
     question: 'What are the pricing plans?',
     answer: 'POTAL offers 4 plans: Free (100 calc/month, $0), Basic (2,000 calc/month, $20/mo), Pro (10,000 calc/month, $80/mo), Enterprise (50,000 calc/month, $300/mo). Annual billing saves 20%. Overage: $0.015-$0.008/calc depending on plan.',
+    i18n: {
+      ko: { question: '요금제는 어떻게 되나요?', answer: 'POTAL은 4개 요금제를 제공합니다: Free (월 100건, $0), Basic (월 2,000건, $20/월), Pro (월 10,000건, $80/월), Enterprise (월 50,000건, $300/월). 연간 결제 시 20% 할인. 초과 요금: 플랜별 $0.015-$0.008/건.' },
+      ja: { question: '料金プランは？', answer: 'POTALは4つのプランを提供: Free (月100件, $0), Basic (月2,000件, $20/月), Pro (月10,000件, $80/月), Enterprise (月50,000件, $300/月)。年払いで20%割引。超過料金: プランにより$0.015-$0.008/件。' },
+      zh: { question: '价格方案是什么？', answer: 'POTAL提供4个方案：Free（月100次，$0），Basic（月2,000次，$20/月），Pro（月10,000次，$80/月），Enterprise（月50,000次，$300/月）。年付享8折。超额：$0.015-$0.008/次。' },
+      es: { question: '¿Cuáles son los planes de precios?', answer: 'POTAL ofrece 4 planes: Free (100 cálc/mes, $0), Basic (2,000 cálc/mes, $20/mes), Pro (10,000 cálc/mes, $80/mes), Enterprise (50,000 cálc/mes, $300/mes). Facturación anual ahorra 20%.' },
+      fr: { question: 'Quels sont les plans tarifaires ?', answer: 'POTAL propose 4 plans : Free (100 calc/mois, $0), Basic (2 000 calc/mois, $20/mois), Pro (10 000 calc/mois, $80/mois), Enterprise (50 000 calc/mois, $300/mois). Facturation annuelle : -20%.' },
+      de: { question: 'Welche Preispläne gibt es?', answer: 'POTAL bietet 4 Pläne: Free (100 Ber./Monat, $0), Basic (2.000 Ber./Monat, $20/Monat), Pro (10.000 Ber./Monat, $80/Monat), Enterprise (50.000 Ber./Monat, $300/Monat). Jährliche Abrechnung spart 20%.' },
+    },
     category: 'pricing',
   },
   {
@@ -43,9 +63,14 @@ const FAQ_DATABASE: FaqEntry[] = [
   },
   // HS Code
   {
-    keywords: ['hs code', 'hs-code', 'classify', 'classification', 'tariff code'],
+    keywords: ['hs code', 'hs-code', 'classify', 'classification', 'tariff code', 'HS코드', '분류', 'HSコード', '分類', 'HS编码'],
     question: 'How does HS code classification work?',
     answer: 'POTAL uses AI-powered classification: DB cache → keyword matching → AI model. Just provide a product name and we\'ll classify it automatically. You can also provide your own HS code. Classification affects duty rate accuracy.',
+    i18n: {
+      ko: { question: 'HS 코드 분류는 어떻게 작동하나요?', answer: 'POTAL은 AI 기반 분류를 사용합니다: DB 캐시 → 키워드 매칭 → AI 모델. 상품명만 제공하면 자동으로 분류합니다. 직접 HS 코드를 입력할 수도 있습니다. 분류 정확도가 관세율 정확도에 영향을 줍니다.' },
+      ja: { question: 'HSコード分類はどのように機能しますか？', answer: 'POTALはAI分類を使用: DBキャッシュ → キーワードマッチング → AIモデル。商品名を提供するだけで自動分類します。HSコードを直接入力することも可能です。' },
+      zh: { question: 'HS编码分类如何工作？', answer: 'POTAL使用AI分类：DB缓存→关键词匹配→AI模型。只需提供产品名称即可自动分类。您也可以直接输入HS编码。分类准确度影响关税率准确度。' },
+    },
     category: 'technical',
   },
   // Duty Rates
@@ -123,6 +148,18 @@ function findBestMatch(question: string): FaqEntry | null {
   return bestScore >= 3 ? bestMatch : null;
 }
 
+// ─── Localized Fallback Messages ────────────────────
+
+const FALLBACK_MESSAGES: Record<string, string> = {
+  en: 'I couldn\'t find a specific answer to your question. Please contact our support team at support@potal.app or visit our documentation at potal.app/developers/docs for detailed guides.',
+  ko: '질문에 대한 답변을 찾을 수 없습니다. support@potal.app으로 문의하시거나 potal.app/developers/docs에서 상세 가이드를 확인하세요.',
+  ja: 'ご質問に対する回答が見つかりませんでした。support@potal.appまでお問い合わせいただくか、potal.app/developers/docsで詳細ガイドをご覧ください。',
+  zh: '未找到您问题的答案。请联系support@potal.app或访问potal.app/developers/docs查看详细指南。',
+  es: 'No pude encontrar una respuesta específica. Contacte a support@potal.app o visite potal.app/developers/docs.',
+  fr: 'Je n\'ai pas trouvé de réponse spécifique. Contactez support@potal.app ou visitez potal.app/developers/docs.',
+  de: 'Ich konnte keine spezifische Antwort finden. Kontaktieren Sie support@potal.app oder besuchen Sie potal.app/developers/docs.',
+};
+
 // ─── POST Handler ───────────────────────────────────
 
 export async function POST(req: NextRequest) {
@@ -134,6 +171,7 @@ export async function POST(req: NextRequest) {
   }
 
   const question = typeof body.question === 'string' ? body.question.trim() : '';
+  const language = typeof body.language === 'string' ? body.language.toLowerCase().trim() : 'en';
 
   if (!question) {
     return apiError(ApiErrorCode.BAD_REQUEST, 'question field is required.');
@@ -143,32 +181,46 @@ export async function POST(req: NextRequest) {
     return apiError(ApiErrorCode.BAD_REQUEST, 'Question must be under 1000 characters.');
   }
 
+  if (language !== 'en' && !SUPPORTED_LANGUAGES.has(language)) {
+    return apiError(ApiErrorCode.BAD_REQUEST, `Unsupported language "${language}". Supported: ${Array.from(SUPPORTED_LANGUAGES).join(', ')}`);
+  }
+
   const match = findBestMatch(question);
 
   if (match) {
+    // Get localized content or fallback to English
+    const localized = language !== 'en' && match.i18n?.[language];
+    const responseQuestion = localized ? localized.question : match.question;
+    const responseAnswer = localized ? localized.answer : match.answer;
+
     return NextResponse.json({
       success: true,
       data: {
         answered: true,
-        question: match.question,
-        answer: match.answer,
+        question: responseQuestion,
+        answer: responseAnswer,
         category: match.category,
         confidence: 'high',
         source: 'faq',
+        language,
+        availableLanguages: ['en', ...(match.i18n ? Object.keys(match.i18n) : [])],
       },
     });
   }
 
-  // No FAQ match — suggest contact
+  // No FAQ match — suggest contact (localized)
+  const fallbackAnswer = FALLBACK_MESSAGES[language] || FALLBACK_MESSAGES['en'];
+
   return NextResponse.json({
     success: true,
     data: {
       answered: false,
       question: question,
-      answer: 'I couldn\'t find a specific answer to your question. Please contact our support team at support@potal.app or visit our documentation at potal.app/developers/docs for detailed guides.',
+      answer: fallbackAnswer,
       category: 'general',
       confidence: 'low',
       source: 'fallback',
+      language,
       helpfulLinks: [
         { label: 'API Documentation', url: 'https://www.potal.app/developers/docs' },
         { label: 'Quick Start Guide', url: 'https://www.potal.app/developers/quickstart' },
@@ -180,8 +232,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   return NextResponse.json({
-    message: 'POTAL AI Support Agent',
-    usage: 'POST with { question: "How do I get an API key?" }',
+    message: 'POTAL AI Support Agent — Multilingual',
+    usage: 'POST with { question: "How do I get an API key?", language?: "ko" }',
     categories: ['pricing', 'setup', 'coverage', 'technical', 'features', 'integration'],
+    supportedLanguages: Array.from(SUPPORTED_LANGUAGES),
   });
 }
