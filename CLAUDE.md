@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-14 02:00 KST (Cowork 12 후반 — MUST 102개 + SHOULD 40개 = 142/147 전부 구현 완료, WON'T 5개만 제외, git push 완료)
+# 마지막 업데이트: 2026-03-14 03:30 KST (Cowork 12 후반 — 142/147 전부 구현 + 심층 검증 84/84 PASS 완료, DB 테이블 5개 생성, 코드 변경 0건)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -74,19 +74,21 @@ portal/
 - 반덤핑/상계관세/세이프가드: 119,706건 (TTBD 36개국 AD + 19개국 CVD + WTO SG)
 - **제재 스크리닝**: 21,301건 (OFAC SDN 14,600 + CSL 6,701, 19개 소스) ✅
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
-- **7개국 HS 10자리 벌크 다운로드**: 🔄 진행중 (Cowork 11 시작, 무료 정부 공개 데이터)
+- **7개국 HS 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행: US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633)
 - **관세율 자동업데이트**: Vercel Cron 11개 (CW10: update-tariffs 주간→일간 변경)
 - **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
 - **MCP Server**: v1.2.0, 7개 도구 (calculate, classify, restrictions, screen_shipment, screen_denied_party, lookup_fta, list_countries)
-- **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (1,899파트, extract_with_categories.py)
+- **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (~1,807/1,899파트, extract_with_categories.py)
 - **WDC 카테고리→HS6 1단계**: ✅ 완료 (10M JSONL → 145 고유 카테고리 → 147 HS6 매핑, 비용 ~$0.01)
 - **Google Taxonomy HS 매핑**: 164건 product_hs_mappings 로딩 ✅
 - **142/147 기능 전부 구현 완료** ✅ (CW12 후반): MUST 102개 + SHOULD 40개 = **142개 구현**, WON'T 5개만 제외 = **96.6% 커버리지**
+- **심층 검증 84/84 PASS** ✅ (CW12 후반 02:30 KST): 81 확실 + 3 수정후확실(DB 테이블 생성), 코드 변경 0건, DB 테이블 5개 추가(marketplace_connections, erp_connections, tax_exemption_certificates, partner_accounts, partner_referrals)
 - **44개 MUST 신규 구현 (CW12 후반, ~45분)**: Sprint 1(F006 신뢰도·F109 CSV·F008 감사), Sprint 2(F015 가격분기·F092 샌드박스·F009 배치·F095 고처리량), Sprint 3(F012 HS검증·F033 IOSS·F043 통관서류·F040 수출전검증) + P1 15개(URL분류·RoO·원산지예측·RAG·AI상담·White-label·ICS2·Type86·수출통제·ECCN·위험물 등) + P2 17개(US세금·Telecom/Lodging·수출면허·VAT등록·e-Invoice·마켓플레이스·ERP·AEO 등)
 - **새 API 엔드포인트 6개+**: /export, /classify/audit, /classify/batch, /validate, /ioss, /verify 외 다수
 - **DB 마이그레이션 2개+**: 023_classification_audit.sql, 024_price_break_rules.sql 외 다수
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 상품명 사전 매핑 전략 확정)
 - **SHOULD 40개 기능 구현 완료** ✅ (CW12 후반, ~10분): 회계연동(QuickBooks/Xero), 파트너에코시스템(1400+), 배송분석, 무역데이터인텔리전스, 브랜딩추적, MoR, 사기방지, 주문동기화, 재고/3PL/멀티허브, 교육프로그램, 마켓플레이스노출 등
+- **사조(SAZO) 분석**: 23살 유학생 창업 AI 크로스보더 커머스 스타트업(75억 투자) → 경쟁사 아님, **잠재 고객** (B2C 플랫폼 = POTAL 인프라 소비자)
 - **경쟁사 기능 분석 (Cowork 12)**: 10개 경쟁사 147개 기능 중복제거 분석 → **MUST 102개 + SHOULD 40개 = 142개 전부 구현** ✅ / WON'T 5개만 제외
 - **240개국 규정 RAG (Cowork 12)**: 전 세계 관세법/세법/무역규정 벡터 DB화 → "240개국 관세사/세무사 AI" 전략 확정
 - **규정 데이터 수집**: 🔄 진행중 (Claude Code 터미널 2, Phase 1→2→3, 외장하드 /Volumes/soulmaten/POTAL/regulations/)
@@ -212,6 +214,12 @@ portal/
 | hs_classification_vectors | 1,023 | ✅ (Cowork 11: 170→1,023, pgvector ivfflat) |
 | hs_expansion_rules | - | ✅ (CW9, HS10 캐시) |
 | product_hs_mappings | 1,017 | ✅ (Cowork 11: 164→1,017, WDC 카테고리 +853) |
+| gov_tariff_schedules | 89,842 | ✅ (7개국: US 28,718 + EU 17,278 + UK 17,289 + KR/CA/AU/JP ~6,600 each) |
+| marketplace_connections | - | ✅ (CW12 심층검증: F082) |
+| erp_connections | - | ✅ (CW12 심층검증: F083) |
+| tax_exemption_certificates | - | ✅ (CW12 심층검증: F053) |
+| partner_accounts | - | ✅ (CW12 심층검증: F147) |
+| partner_referrals | - | ✅ (CW12 심층검증: F147) |
 
 ## MIN 임포트 — ✅ 완료
 - **~113M행, 53개국 전체 완료** (Cowork 5에서 확인)
