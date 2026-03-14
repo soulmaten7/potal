@@ -1,10 +1,10 @@
 {
-  "name": "@potal/mcp-server",
-  "version": "1.0.0",
-  "description": "POTAL MCP Server — Calculate total landed costs for cross-border purchases directly in Claude",
+  "name": "potal-mcp-server",
+  "version": "1.3.0",
+  "description": "Calculate total landed costs for cross-border commerce. 240 countries, 113M+ tariff records, 63 FTAs, AI HS classification, sanctions screening. MCP server for Claude, Cursor, and any MCP-compatible AI.",
   "type": "module",
   "bin": {
-    "potal-mcp": "./build/index.js"
+    "potal-mcp-server": "./build/index.js"
   },
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
@@ -20,8 +20,20 @@
     "cross-border",
     "duties",
     "taxes",
-    "import"
+    "import",
+    "tariff",
+    "customs",
+    "vat",
+    "hs-code",
+    "trade",
+    "commerce",
+    "ucp"
   ],
+  "homepage": "https://potal.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/soulmaten7/potal"
+  },
   "author": "POTAL",
   "license": "MIT",
   "dependencies": {

@@ -1,8 +1,16 @@
 # POTAL MCP Server
 
-Calculate the total landed cost of cross-border purchases directly in Claude. Get instant breakdowns of import duties, taxes (VAT/GST), customs fees, and shipping for 240 countries.
+Calculate the total landed cost of cross-border commerce directly in Claude, Cursor, and any MCP-compatible AI. Get instant breakdowns of import duties, taxes (VAT/GST), customs fees, and shipping for 240 countries.
 
-## Tools
+**113M+ tariff records | 240 countries | 63 FTAs | AI HS classification | Sanctions screening**
+
+## Quick Start
+
+```bash
+npx potal-mcp-server
+```
+
+## Tools (9)
 
 ### `calculate_landed_cost`
 Calculate the total cost for a product being shipped internationally.
@@ -17,30 +25,73 @@ Calculate the total cost for a product being shipped internationally.
 - `productCategory` — Category: electronics, apparel, footwear, etc.
 - `hsCode` — Harmonized System code if known
 
+### `classify_product`
+AI-powered HS code classification. Provide a product name and get the harmonized system code.
+
+**Parameters:**
+- `productName` (required) — Product name or description
+- `category` — Product category for improved accuracy
+
+### `check_restrictions`
+Check import restrictions and compliance requirements for a product in a destination country.
+
+**Parameters:**
+- `hsCode` (required) — HS code of the product
+- `destinationCountry` (required) — Destination country ISO code
+- `originCountry` — Origin country ISO code
+
+### `screen_shipment`
+Comprehensive pre-shipment screening — combines cost calculation with compliance checks (restrictions, sanctions, denied parties).
+
+**Parameters:**
+- `price` (required) — Product price in USD
+- `origin` (required) — Origin country ISO code
+- `destinationCountry` (required) — Destination country ISO code
+- `productName` — Product name
+- `consigneeName` — Consignee name for denied-party screening
+- `shippingPrice` — Shipping cost in USD
+
+### `screen_denied_party`
+Screen a name against sanctions and denied-party lists (OFAC SDN + CSL, 21K+ entries).
+
+**Parameters:**
+- `name` (required) — Entity or individual name to screen
+- `country` — Country for narrowing results
+
+### `lookup_fta`
+Look up Free Trade Agreement benefits between two countries (63 FTAs covered).
+
+**Parameters:**
+- `originCountry` (required) — Origin country ISO code
+- `destinationCountry` (required) — Destination country ISO code
+- `hsCode` — HS code to check specific preferential rates
+
 ### `list_supported_countries`
 Get all 240 supported countries with VAT/GST rates, duty rates, and de minimis thresholds.
+
+### `generate_document`
+Generate trade documents: Commercial Invoice (CI), Packing List (PL), Certificate of Origin (C/O).
+
+**Parameters:**
+- `documentType` (required) — `commercial_invoice`, `packing_list`, or `certificate_of_origin`
+- `shipmentData` (required) — Shipment details (origin, destination, items, etc.)
+
+### `compare_countries`
+Compare total landed costs across multiple destination countries for the same product.
+
+**Parameters:**
+- `price` (required) — Product price in USD
+- `origin` (required) — Origin country ISO code
+- `destinations` (required) — Array of destination country ISO codes
+- `productName` — Product name
+- `shippingPrice` — Shipping cost in USD
 
 ## Setup
 
 ### 1. Get your API Key
-Sign up at [www.potal.app](https://www.potal.app) and get your API key.
+Sign up at [potal.app](https://potal.app) and get your API key.
 
-### 2. Install
-
-#### Option A: From npm (recommended)
-```bash
-npm install -g @potal/mcp-server
-```
-
-#### Option B: From source
-```bash
-git clone https://github.com/potal-dev/mcp-server.git
-cd mcp-server
-npm install
-npm run build
-```
-
-### 3. Configure Claude Desktop
+### 2. Configure Claude Desktop
 
 Edit your Claude Desktop config file:
 
@@ -52,7 +103,7 @@ Edit your Claude Desktop config file:
   "mcpServers": {
     "potal": {
       "command": "npx",
-      "args": ["-y", "@potal/mcp-server"],
+      "args": ["-y", "potal-mcp-server"],
       "env": {
         "POTAL_API_KEY": "your_api_key_here"
       }
@@ -61,42 +112,28 @@ Edit your Claude Desktop config file:
 }
 ```
 
-Or if installed from source:
+### 3. Restart Claude Desktop
 
-```json
-{
-  "mcpServers": {
-    "potal": {
-      "command": "node",
-      "args": ["/absolute/path/to/mcp-server/build/index.js"],
-      "env": {
-        "POTAL_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
-```
-
-### 4. Restart Claude Desktop
-
-After saving the config, restart Claude Desktop. You should see the POTAL tools available.
+After saving the config, restart Claude Desktop. You should see 9 POTAL tools available.
 
 ## Usage Examples
 
 Once connected, ask Claude:
 
 - "How much will a $50 T-shirt from China cost me in the US including duties?"
-- "I want to buy a €200 jacket from Italy — what's the total cost shipped to New York?"
-- "Compare import costs: buying a laptop from Japan vs Germany, shipped to the US"
-- "What duties will I pay importing shoes from the UK to Canada?"
-- "Is a $400 watch from Switzerland duty-free in the US?"
+- "Classify 'wireless bluetooth earbuds' and give me the HS code"
+- "Check if there are any import restrictions for HS 8471 going to Brazil"
+- "Screen a shipment: $200 leather bag from Italy to New York"
+- "Screen 'Acme Corp' against sanctions lists"
+- "Are there any FTA benefits between Korea and the US for HS 610510?"
+- "Compare import costs for a $500 laptop from China to US, UK, Germany, and Japan"
+- "Generate a commercial invoice for my shipment"
+- "What countries are supported and their VAT rates?"
+
+**Multilingual:**
 - "日本にイタリアの革靴を送ると関税はいくらですか？"
 - "Was kostet ein $100-Produkt aus China nach Deutschland mit Zoll?"
-- "Combien coûte un sac à main de $300 importé d'Italie en France ?"
-- "¿Cuánto cuesta importar un laptop de $500 de EE.UU. a México?"
 - "이 가방을 중국에서 한국으로 보내면 관세 포함 총 얼마야?"
-- "Quanto custa importar um tênis de $150 dos EUA para o Brasil?"
-- "Quanto costa importare scarpe da $200 dalla Cina in Italia?"
 - "从美国买一个$200的包寄到中国，总费用是多少？"
 
 ## Environment Variables
@@ -107,6 +144,6 @@ Once connected, ask Claude:
 
 ## About POTAL
 
-POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. We support 240 countries and cover duties, taxes, and fees.
+POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. 240 countries, 113M+ tariff records, 63 FTAs, sanctions screening, and AI-powered HS classification.
 
-Website: [www.potal.app](https://www.potal.app)
+Website: [potal.app](https://potal.app)
