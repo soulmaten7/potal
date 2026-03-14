@@ -2,7 +2,7 @@
 import type { HsCodeEntry } from '../types';
 
 export const CHAPTER_62: HsCodeEntry[] = [
-  { code: '620110', description: 'Men overcoats & raincoats', chapter: '62', category: 'apparel', keywords: ['overcoat', 'raincoat', 'long coat', 'wool coat', 'dress coat'] },
+  { code: '620110', description: 'Overcoats, raincoats & winter coats', chapter: '62', category: 'apparel', keywords: ['overcoat', 'raincoat', 'long coat', 'wool coat', 'dress coat', 'winter coat', 'coat', 'trench coat', 'parka', 'down coat'] },
   { code: '620111', description: 'Men\\s or boys\\ overcoats, car-coats, capes, cloaks, anoraks (including ski-...', chapter: '62', category: 'apparel', keywords: ['mens', 'boys', 'overcoats', 'car coat', 'coats', 'capes', 'cloaks', 'anoraks', 'ski', 'jackets'] },
   { code: '620112', description: 'Men\\s or boys\\ overcoats, car-coats, capes, cloaks, anoraks (including ski-...', chapter: '62', category: 'apparel', keywords: ['mens', 'boys', 'overcoats', 'car coat', 'coats', 'capes', 'cloaks', 'anoraks', 'ski', 'jackets'] },
   { code: '620113', description: 'Men\\s or boys\\ overcoats, car-coats, capes, cloaks, anoraks (including ski-...', chapter: '62', category: 'apparel', keywords: ['mens', 'boys', 'overcoats', 'car coat', 'coats', 'capes', 'cloaks', 'anoraks', 'ski', 'jackets'] },
@@ -112,7 +112,7 @@ export const CHAPTER_62: HsCodeEntry[] = [
   { code: '621290', description: 'Brassi<KK>res, girdles, corsets, braces, suspenders, garters and similar arti...', chapter: '62', category: 'apparel', keywords: ['brassikkres', 'girdles', 'corsets', 'braces', 'suspenders', 'garters', 'similar', 'knitted', 'crocheted', 'text'] },
   { code: '621320', description: 'Handkerchiefs:Of cotton', chapter: '62', category: 'apparel', keywords: ['handkerchiefsof', 'cotton'] },
   { code: '621390', description: 'Handkerchiefs:Of other textile materials(TEXT 019)', chapter: '62', category: 'apparel', keywords: ['handkerchiefsof', 'textile', 'materials', 'text', '019'] },
-  { code: '621410', description: 'Shawls, scarves, mufflers, mantillas, veils and the like:Of silk or silk waste', chapter: '62', category: 'apparel', keywords: ['shawls', 'scarves', 'mufflers', 'mantillas', 'veils', 'likeof', 'silk', 'waste'] },
+  { code: '621410', description: 'Shawls, scarves & silk scarves', chapter: '62', category: 'apparel', keywords: ['scarf', 'silk scarf', 'shawl', 'scarves', 'muffler', 'wrap', 'pashmina', 'silk', 'bandana'] },
   { code: '621420', description: 'Shawls, scarves, mufflers, mantillas, veils and the like:Of wool or fine anim...', chapter: '62', category: 'apparel', keywords: ['shawls', 'scarves', 'mufflers', 'mantillas', 'veils', 'likeof', 'wool', 'fine', 'animal', 'hair'] },
   { code: '621430', description: 'Shawls, scarves, mufflers, mantillas, veils and the like:Of synthetic fibres', chapter: '62', category: 'apparel', keywords: ['shawls', 'scarves', 'mufflers', 'mantillas', 'veils', 'likeof', 'synthetic', 'fibres'] },
   { code: '621440', description: 'Shawls, scarves, mufflers, mantillas, veils and the like:Of artificial fibres', chapter: '62', category: 'apparel', keywords: ['shawls', 'scarves', 'mufflers', 'mantillas', 'veils', 'likeof', 'artificial', 'fibres'] },

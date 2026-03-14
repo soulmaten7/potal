@@ -18,5 +18,5 @@ export const CHAPTER_21: HsCodeEntry[] = [
   { code: '210420', description: 'Soups and broths and preparations therefore; homogenised composite food prepa...', chapter: '21', category: 'food', keywords: ['soups', 'broths', 'therefore', 'homogenised', 'composite', 'food', 'preparationshomogenised'] },
   { code: '210500', description: 'Ice cream', chapter: '21', category: 'food', keywords: ['ice cream', 'frozen dessert', 'gelato', 'frozen treat', 'ice', 'cream', 'edible', 'cocoacontaining', 'milkfats', 'such'] },
   { code: '210610', description: 'Food preparations not elsewhere specified or included:Protein concentrates an...', chapter: '21', category: 'food', keywords: ['food', 'specified', 'includedprotein', 'concentrates', 'textured', 'protein', 'substancescontaining', 'milkfats', 'sucrose', 'isoglucose'] },
-  { code: '210690', description: 'Food supplements & vitamins', chapter: '21', category: 'health', keywords: ['vitamin', 'supplement', 'protein powder', 'creatine', 'omega-3', 'multivitamin', 'probiotic', 'collagen', 'whey protein', 'fish oil'] },
+  { code: '210690', description: 'Food supplements & vitamins', chapter: '21', category: 'health', keywords: ['vitamin', 'supplement', 'food supplement', 'dietary supplement', 'protein powder', 'creatine', 'omega-3', 'multivitamin', 'probiotic', 'collagen', 'whey protein', 'fish oil', 'capsule'] },
 ];

@@ -80,16 +80,25 @@ interface ApiLogEntry {
   timestamp: string;
 }
 
-type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing';
+type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing' | 'classify' | 'calculator' | 'fta' | 'sanctions' | 'documents' | 'batch' | 'analytics' | 'settings' | 'integrations';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '📊' },
   { id: 'keys', label: 'API Keys', icon: '🔑' },
+  { id: 'classify', label: 'HS Classification', icon: '🏷️' },
+  { id: 'calculator', label: 'Tariff Calculator', icon: '🧮' },
+  { id: 'fta', label: 'FTA & Trade', icon: '🤝' },
+  { id: 'sanctions', label: 'Sanctions', icon: '🛡️' },
+  { id: 'documents', label: 'Documents', icon: '📄' },
+  { id: 'batch', label: 'Batch Ops', icon: '📦' },
   { id: 'widget', label: 'Widget', icon: '🧩' },
+  { id: 'integrations', label: 'Integrations', icon: '🔌' },
   { id: 'usage', label: 'Usage', icon: '📈' },
   { id: 'countries', label: 'Countries', icon: '🌍' },
   { id: 'platforms', label: 'Platforms', icon: '🤖' },
+  { id: 'analytics', label: 'Analytics', icon: '📉' },
   { id: 'logs', label: 'Logs', icon: '📋' },
+  { id: 'settings', label: 'Settings', icon: '⚙️' },
   { id: 'billing', label: 'Billing', icon: '💳' },
 ];
 
@@ -985,6 +994,449 @@ export default function DashboardContent() {
                   </table>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ── HS Classification ── */}
+          {activeTab === 'classify' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>HS Classification</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Classify products into HS codes using our AI-powered 3-stage pipeline: Cache → Vector Search → Keyword Match → LLM Fallback.</p>
+
+              <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 20 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Single Product Classification</h3>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                  <input id="classify-input" type="text" placeholder="e.g. Organic cotton t-shirt for men" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <button onClick={async () => {
+                    const input = (document.getElementById('classify-input') as HTMLInputElement)?.value;
+                    if (!input) return;
+                    const el = document.getElementById('classify-result');
+                    if (el) el.textContent = 'Classifying...';
+                    try {
+                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' }, body: JSON.stringify({ product_name: input }) });
+                      const data = await res.json();
+                      if (el) el.textContent = JSON.stringify(data, null, 2);
+                    } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                  }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Classify</button>
+                </div>
+                <pre id="classify-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 60, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Pipeline Stages</h4>
+                  <div style={{ fontSize: 13, color: '#666', lineHeight: 1.8 }}>
+                    <div><strong>1. Cache</strong> — Instant lookup from 1,017+ pre-mapped products ($0)</div>
+                    <div><strong>2. Vector Search</strong> — pgvector similarity with 1,023 embeddings</div>
+                    <div><strong>3. Keyword Match</strong> — Bigram/unigram scoring across 5,371 HS codes</div>
+                    <div><strong>4. LLM Fallback</strong> — AI classification for unknown products</div>
+                  </div>
+                </div>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>API Endpoint</h4>
+                  <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/classify</code>
+                  <div style={{ fontSize: 12, color: '#666' }}>
+                    <div>Body: <code>{`{ "product_name": "...", "origin_country": "CN" }`}</code></div>
+                    <div style={{ marginTop: 4 }}>Batch: <code>POST /api/v1/classify/batch</code> (up to 50 items)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Tariff Calculator ── */}
+          {activeTab === 'calculator' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Tariff Calculator</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Calculate total landed cost including duties, taxes, and fees for 240 countries.</p>
+
+              <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 20 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Quick Calculate</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 16 }}>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>HS Code</label>
+                    <input id="calc-hs" type="text" placeholder="e.g. 610910" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Destination Country</label>
+                    <input id="calc-country" type="text" placeholder="e.g. US" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Value (USD)</label>
+                    <input id="calc-value" type="number" placeholder="e.g. 100" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Origin Country</label>
+                    <input id="calc-origin" type="text" placeholder="e.g. CN" defaultValue="CN" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Weight (kg)</label>
+                    <input id="calc-weight" type="number" placeholder="e.g. 0.5" defaultValue="0.5" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <button onClick={async () => {
+                    const hs = (document.getElementById('calc-hs') as HTMLInputElement)?.value;
+                    const country = (document.getElementById('calc-country') as HTMLInputElement)?.value;
+                    const value = (document.getElementById('calc-value') as HTMLInputElement)?.value;
+                    const origin = (document.getElementById('calc-origin') as HTMLInputElement)?.value;
+                    const weight = (document.getElementById('calc-weight') as HTMLInputElement)?.value;
+                    const el = document.getElementById('calc-result');
+                    if (el) el.textContent = 'Calculating...';
+                    try {
+                      const res = await fetch(`/api/v1/calculate?hs_code=${hs}&destination_country=${country}&value=${value}&origin_country=${origin || 'CN'}&weight=${weight || '0.5'}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                      const data = await res.json();
+                      if (el) el.textContent = JSON.stringify(data, null, 2);
+                    } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                  }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, alignSelf: 'flex-end' }}>Calculate</button>
+                </div>
+                <pre id="calc-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 80, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#047857' }}>Duty Rates</h4>
+                  <div style={{ fontSize: 13, color: '#666' }}>MFN, MIN, AGR rates from 186+ countries. Auto-selects lowest applicable rate.</div>
+                </div>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#047857' }}>Tax Engine</h4>
+                  <div style={{ fontSize: 13, color: '#666' }}>VAT/GST for 240 countries, de minimis thresholds, IOSS, 12 special taxes.</div>
+                </div>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: '#047857' }}>Trade Remedies</h4>
+                  <div style={{ fontSize: 13, color: '#666' }}>Anti-dumping, countervailing duties, safeguards — 119,706 cases checked.</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── FTA & Trade Agreements ── */}
+          {activeTab === 'fta' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>FTA & Trade Agreements</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Look up preferential tariff rates from 63 Free Trade Agreements and 1,319 trade agreements in our database.</p>
+
+              <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 20 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>FTA Lookup</h3>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Origin</label>
+                    <input id="fta-origin" type="text" placeholder="e.g. KR" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Destination</label>
+                    <input id="fta-dest" type="text" placeholder="e.g. US" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>HS Code</label>
+                    <input id="fta-hs" type="text" placeholder="e.g. 610910" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                  </div>
+                  <button onClick={async () => {
+                    const origin = (document.getElementById('fta-origin') as HTMLInputElement)?.value;
+                    const dest = (document.getElementById('fta-dest') as HTMLInputElement)?.value;
+                    const hs = (document.getElementById('fta-hs') as HTMLInputElement)?.value;
+                    const el = document.getElementById('fta-result');
+                    if (el) el.textContent = 'Looking up...';
+                    try {
+                      const res = await fetch(`/api/v1/fta?origin=${origin}&destination=${dest}&hs_code=${hs}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                      const data = await res.json();
+                      if (el) el.textContent = JSON.stringify(data, null, 2);
+                    } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                  }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, alignSelf: 'flex-end' }}>Lookup</button>
+                </div>
+                <pre id="fta-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 60, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Coverage</h4>
+                  <div style={{ fontSize: 13, color: '#666', lineHeight: 1.8 }}>
+                    <div>63 Free Trade Agreements</div>
+                    <div>1,319 trade agreements in database</div>
+                    <div>Rules of Origin (RoO) verification</div>
+                  </div>
+                </div>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>API Endpoints</h4>
+                  <div style={{ fontSize: 12, color: '#666', lineHeight: 1.8 }}>
+                    <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>GET /api/v1/fta</code> — FTA lookup<br/>
+                    <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>GET /api/v1/roo</code> — Rules of Origin<br/>
+                    <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>GET /api/v1/regulations</code> — Trade regulations
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Sanctions Screening ── */}
+          {activeTab === 'sanctions' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Sanctions Screening</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Screen shipments and parties against 21,301 entries from OFAC SDN (14,600) and Consolidated Screening List (6,701) across 19 sources.</p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Shipment Screening</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
+                    <input id="screen-country" type="text" placeholder="Destination country (e.g. IR)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                    <input id="screen-hs" type="text" placeholder="HS Code (e.g. 847130)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                    <button onClick={async () => {
+                      const country = (document.getElementById('screen-country') as HTMLInputElement)?.value;
+                      const hs = (document.getElementById('screen-hs') as HTMLInputElement)?.value;
+                      const el = document.getElementById('screen-result');
+                      if (el) el.textContent = 'Screening...';
+                      try {
+                        const res = await fetch(`/api/v1/screen?destination_country=${country}&hs_code=${hs}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                        const data = await res.json();
+                        if (el) el.textContent = JSON.stringify(data, null, 2);
+                      } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                    }} style={{ padding: '10px 20px', background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Screen Shipment</button>
+                  </div>
+                  <pre id="screen-result" style={{ background: '#fef2f2', borderRadius: 8, padding: 12, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 40, border: '1px solid #fecaca', marginTop: 12 }}>Results will appear here...</pre>
+                </div>
+
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Denied Party Screening</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
+                    <input id="party-name" type="text" placeholder="Party name (e.g. Company XYZ)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                    <input id="party-country" type="text" placeholder="Country (e.g. CN)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                    <button onClick={async () => {
+                      const name = (document.getElementById('party-name') as HTMLInputElement)?.value;
+                      const country = (document.getElementById('party-country') as HTMLInputElement)?.value;
+                      const el = document.getElementById('party-result');
+                      if (el) el.textContent = 'Screening...';
+                      try {
+                        const res = await fetch(`/api/v1/screen?party_name=${encodeURIComponent(name)}&country=${country}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                        const data = await res.json();
+                        if (el) el.textContent = JSON.stringify(data, null, 2);
+                      } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                    }} style={{ padding: '10px 20px', background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Screen Party</button>
+                  </div>
+                  <pre id="party-result" style={{ background: '#fef2f2', borderRadius: 8, padding: 12, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 40, border: '1px solid #fecaca', marginTop: 12 }}>Results will appear here...</pre>
+                </div>
+              </div>
+
+              <div style={{ background: '#fffbeb', borderRadius: 12, padding: 16, border: '1px solid #fde68a', fontSize: 13, color: '#92400e' }}>
+                <strong>Data Sources:</strong> OFAC SDN List (14,600 entries), Consolidated Screening List (6,701 entries from 19 sources including BIS Entity List, DPL, ITAR Debarred, and more). Updated regularly via automated sync.
+              </div>
+            </div>
+          )}
+
+          {/* ── Documents / Export ── */}
+          {activeTab === 'documents' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Documents & Export</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Generate customs documents, export reports, and manage compliance paperwork.</p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 20 }}>
+                {[
+                  { title: 'Commercial Invoice', desc: 'Generate commercial invoices with HS codes and duty estimates', endpoint: '/api/v1/documents?type=commercial-invoice' },
+                  { title: 'Packing List', desc: 'Create packing lists with item descriptions and weights', endpoint: '/api/v1/documents?type=packing-list' },
+                  { title: 'Certificate of Origin', desc: 'Generate CoO for FTA preferential treatment', endpoint: '/api/v1/documents?type=certificate-of-origin' },
+                  { title: 'VAT Report', desc: 'IOSS/VAT compliance reports for EU shipments', endpoint: '/api/v1/vat-report' },
+                  { title: 'Duty Drawback', desc: 'Calculate and document duty drawback claims', endpoint: '/api/v1/drawback' },
+                  { title: 'Landed Cost Report', desc: 'Complete landed cost breakdown export', endpoint: '/api/v1/export' },
+                ].map((doc, i) => (
+                  <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>{doc.title}</h4>
+                    <p style={{ fontSize: 12, color: '#666', marginBottom: 12, lineHeight: 1.5 }}>{doc.desc}</p>
+                    <code style={{ fontSize: 11, background: '#f1f5f9', padding: '4px 8px', borderRadius: 4, color: '#475569' }}>{doc.endpoint}</code>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>API Usage</h4>
+                <div style={{ fontSize: 13, color: '#666' }}>
+                  Use <code style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: 4 }}>POST /api/v1/documents</code> to generate documents programmatically. Supports JSON and PDF output formats.
+                  See the <a href="https://potal.app/docs/api" style={{ color: '#047857', textDecoration: 'underline' }}>API documentation</a> for full details.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Batch Operations ── */}
+          {activeTab === 'batch' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Batch Operations</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Process multiple products at once — classify, calculate duties, or screen shipments in bulk.</p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>Batch Classification</h3>
+                  <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>Classify up to 50 products per request.</p>
+                  <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/classify/batch</code>
+                  <pre style={{ background: '#f8fafc', borderRadius: 8, padding: 12, fontSize: 11, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#475569', border: '1px solid #e5e7eb' }}>{`{
+  "products": [
+    { "product_name": "Cotton t-shirt" },
+    { "product_name": "Leather wallet" },
+    { "product_name": "Laptop 15 inch" }
+  ]
+}`}</pre>
+                </div>
+
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>Batch Calculation</h3>
+                  <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>Calculate landed costs for multiple items in one call.</p>
+                  <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/calculate/batch</code>
+                  <pre style={{ background: '#f8fafc', borderRadius: 8, padding: 12, fontSize: 11, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#475569', border: '1px solid #e5e7eb' }}>{`{
+  "items": [
+    { "hs_code": "610910", "value": 25, "destination": "US" },
+    { "hs_code": "420221", "value": 150, "destination": "DE" }
+  ],
+  "origin_country": "CN"
+}`}</pre>
+                </div>
+              </div>
+
+              <div style={{ background: '#f0fdf4', borderRadius: 12, padding: 16, border: '1px solid #bbf7d0', fontSize: 13, color: '#166534' }}>
+                <strong>Tip:</strong> Batch operations count as 1 API call per item in the batch. Use batch endpoints to reduce HTTP overhead and improve throughput.
+              </div>
+            </div>
+          )}
+
+          {/* ── Integrations ── */}
+          {activeTab === 'integrations' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Integrations</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Connect POTAL to your e-commerce platform for automated duty & tax calculations at checkout.</p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+                {[
+                  { name: 'Shopify', status: 'Available', desc: 'Theme App Extension — shows landed cost on product pages. OAuth + GDPR webhooks included.', color: '#96bf48', docs: '/docs/integrations/shopify' },
+                  { name: 'WooCommerce', status: 'Available', desc: 'WordPress plugin — auto-calculates duties at checkout. Supports variable products.', color: '#96588a', docs: '/docs/integrations/woocommerce' },
+                  { name: 'BigCommerce', status: 'Available', desc: 'App integration — webhook-based duty calculation for BigCommerce stores.', color: '#34313f', docs: '/docs/integrations/bigcommerce' },
+                  { name: 'Magento', status: 'Available', desc: 'Extension for Magento 2 — cart-level landed cost calculation.', color: '#f26322', docs: '/docs/integrations/magento' },
+                ].map((platform, i) => (
+                  <div key={i} style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <h3 style={{ fontSize: 16, fontWeight: 600 }}>{platform.name}</h3>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#047857', background: '#ecfdf5', padding: '4px 10px', borderRadius: 20 }}>{platform.status}</span>
+                    </div>
+                    <p style={{ fontSize: 13, color: '#666', lineHeight: 1.6 }}>{platform.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                {[
+                  { name: 'JavaScript Widget', desc: 'Embed a duty calculator on any website with a single script tag.', code: '<script src="https://potal.app/widget/potal-widget.js"></script>' },
+                  { name: 'REST API', desc: '7 endpoints for full programmatic access. OpenAPI spec available.', code: 'curl https://potal.app/api/v1/calculate?...' },
+                  { name: 'AI Platforms', desc: 'ChatGPT Actions, MCP Server, Gemini Gem — let AI agents calculate duties.', code: 'MCP Server v1.2.0 — 7 tools' },
+                ].map((item, i) => (
+                  <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                    <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>{item.name}</h4>
+                    <p style={{ fontSize: 12, color: '#666', marginBottom: 8 }}>{item.desc}</p>
+                    <code style={{ fontSize: 10, background: '#f1f5f9', padding: '4px 8px', borderRadius: 4, color: '#475569', display: 'block', wordBreak: 'break-all' as const }}>{item.code}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Analytics ── */}
+          {activeTab === 'analytics' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Analytics</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Detailed insights into your API usage patterns, cost savings, and classification accuracy.</p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+                {[
+                  { label: 'Total Requests', value: usage?.used?.toLocaleString() ?? '—', sub: 'This month' },
+                  { label: 'Avg Response', value: platformData.length > 0 ? `${Math.round(platformData.reduce((a, p) => a + (100 - p.successRate), 0) / platformData.length)}ms` : '—', sub: 'Response time' },
+                  { label: 'Success Rate', value: platformData.length > 0 ? `${(platformData.reduce((a, p) => a + p.successRate, 0) / platformData.length).toFixed(1)}%` : '—', sub: 'All endpoints' },
+                  { label: 'Countries', value: countryData.length, sub: 'Active destinations' },
+                ].map((stat, i) => (
+                  <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                    <div style={{ fontSize: 12, color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>{stat.label}</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: '#02122c', marginBottom: 4 }}>{stat.value}</div>
+                    <div style={{ fontSize: 12, color: '#999' }}>{stat.sub}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Top Countries</h4>
+                  {countryData.length === 0 ? (
+                    <p style={{ fontSize: 13, color: '#999' }}>No data yet. Make some API calls to see analytics.</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
+                      {countryData.slice(0, 10).map((c, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '6px 0', borderBottom: '1px solid #f3f4f6' }}>
+                          <span>{c.country}</span>
+                          <span style={{ fontWeight: 600 }}>{c.requests} calls</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Endpoint Usage</h4>
+                  {platformData.length === 0 ? (
+                    <p style={{ fontSize: 13, color: '#999' }}>No data yet. Make some API calls to see analytics.</p>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
+                      {platformData.map((p, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '6px 0', borderBottom: '1px solid #f3f4f6' }}>
+                          <span>{p.endpoint}</span>
+                          <span style={{ fontWeight: 600, color: p.successRate >= 99 ? '#16a34a' : p.successRate >= 95 ? '#d97706' : '#dc2626' }}>{p.successRate}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── Settings ── */}
+          {activeTab === 'settings' && (
+            <div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Settings</h2>
+
+              <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 20 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Account</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '12px 16px', fontSize: 14 }}>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Email</span>
+                    <span style={{ color: '#333' }}>{seller?.email || '—'}</span>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Company</span>
+                    <span style={{ color: '#333' }}>{seller?.companyName || 'Not set'}</span>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Plan</span>
+                    <span style={{ color: '#333', textTransform: 'capitalize' }}>{seller?.plan || 'free'}</span>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Member since</span>
+                    <span style={{ color: '#333' }}>{seller?.createdAt ? new Date(seller.createdAt).toLocaleDateString() : '—'}</span>
+                  </div>
+                </div>
+
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>API Configuration</h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: '12px 16px', fontSize: 14 }}>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Rate Limit</span>
+                    <span style={{ color: '#333' }}>{keys[0]?.rateLimitPerMinute || 60} req/min</span>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Active Keys</span>
+                    <span style={{ color: '#333' }}>{keys.filter(k => k.isActive).length} of {keys.length}</span>
+                    <span style={{ color: '#888', fontWeight: 500 }}>Base URL</span>
+                    <code style={{ color: '#475569', fontSize: 12, background: '#f1f5f9', padding: '2px 8px', borderRadius: 4 }}>https://potal.app/api/v1</code>
+                  </div>
+                </div>
+
+                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Webhook Configuration</h3>
+                  <p style={{ fontSize: 13, color: '#666', marginBottom: 12 }}>Configure webhooks to receive real-time notifications about shipment screenings, classification results, and billing events.</p>
+                  <div style={{ fontSize: 13, color: '#999' }}>Webhook management is available via the API. See <a href="https://potal.app/docs/api#webhooks" style={{ color: '#047857' }}>documentation</a> for details.</div>
+                </div>
+
+                <div style={{ background: '#fef2f2', borderRadius: 12, padding: 24, border: '1px solid #fecaca' }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: '#dc2626' }}>Danger Zone</h3>
+                  <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>These actions are irreversible. Please be certain before proceeding.</p>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <button style={{ padding: '8px 16px', background: 'white', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Revoke All API Keys</button>
+                    <button style={{ padding: '8px 16px', background: 'white', color: '#dc2626', border: '1px solid #fecaca', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Delete Account</button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

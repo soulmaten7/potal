@@ -2,7 +2,7 @@
 import type { HsCodeEntry } from '../types';
 
 export const CHAPTER_30: HsCodeEntry[] = [
-  { code: '300110', description: 'Glands & organs extracts', chapter: '30', category: 'health', keywords: ['pharmaceutical', 'medicine', 'extract', 'hormone'] },
+  { code: '300110', description: 'Glands & organs extracts', chapter: '30', category: 'health', keywords: ['gland extract', 'organ extract', 'hormone extract', 'pharmaceutical extract'] },
   { code: '300120', description: 'Glands and other organs for organo-therapeutic uses, dried, whether or not po...', chapter: '30', category: 'pharmaceuticals', keywords: ['glands', 'organs', 'organo', 'therapeutic', 'uses', 'dried', 'powdered', 'extracts', 'their', 'secretions'] },
   { code: '300190', description: 'Glands and other organs for organo-therapeutic uses, dried, whether or not po...', chapter: '30', category: 'pharmaceuticals', keywords: ['glands', 'organs', 'organo', 'therapeutic', 'uses', 'dried', 'powdered', 'extracts', 'their', 'secretions'] },
   { code: '300210', description: 'Human blood', chapter: '30', category: 'health', keywords: ['blood', 'plasma', 'medical', 'pharmaceutical', 'human', 'animal', 'prepared', 'therapeutic', 'prophylactic', 'diagnostic'] },

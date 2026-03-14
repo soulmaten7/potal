@@ -30,7 +30,7 @@ const MATERIAL_KEYWORDS = new Set([
   'wood', 'bamboo', 'cork', 'rattan',
   'rubber', 'plastic', 'glass', 'ceramic', 'porcelain', 'crystal',
   'paper', 'cardboard',
-  'organic', 'synthetic', 'natural',
+  'synthetic', 'natural',
 ]);
 
 /**
@@ -44,7 +44,7 @@ const PRODUCT_TYPE_KEYWORDS = new Set([
   'underwear', 'bra', 'socks', 'stockings', 'pajamas', 'robe', 'uniform',
   // Footwear
   'shoes', 'boots', 'sneakers', 'sandals', 'slippers', 'loafers', 'heels', 'flats',
-  'footwear', 'moccasins', 'clogs',
+  'footwear', 'moccasins', 'clogs', 'hiking boots',
   // Bags & accessories
   'bag', 'handbag', 'backpack', 'purse', 'wallet', 'briefcase', 'suitcase', 'luggage',
   'belt', 'gloves', 'hat', 'cap', 'scarf', 'tie', 'umbrella',
@@ -54,7 +54,7 @@ const PRODUCT_TYPE_KEYWORDS = new Set([
   // Electronics
   'laptop', 'computer', 'phone', 'smartphone', 'tablet', 'camera', 'television', 'tv',
   'headphones', 'earbuds', 'speaker', 'monitor', 'keyboard', 'mouse', 'printer',
-  'charger', 'battery', 'cable', 'adapter', 'router', 'modem',
+  'charger', 'battery', 'cable', 'adapter', 'router', 'modem', 'scooter',
   // Home
   'chair', 'table', 'desk', 'sofa', 'bed', 'mattress', 'lamp', 'mirror', 'rug', 'carpet',
   'curtain', 'pillow', 'blanket', 'towel', 'sheet',
@@ -65,16 +65,22 @@ const PRODUCT_TYPE_KEYWORDS = new Set([
   'toy', 'doll', 'puzzle', 'bicycle', 'skateboard', 'racket',
   // Cosmetics
   'perfume', 'lipstick', 'mascara', 'foundation', 'moisturizer', 'sunscreen', 'serum',
-  'shampoo', 'conditioner', 'soap',
+  'shampoo', 'soap', 'balm',
   // Food
   'tea', 'coffee', 'chocolate', 'wine', 'beer', 'juice', 'oil', 'vinegar', 'sauce',
   'cheese', 'butter', 'honey', 'sugar', 'flour', 'rice', 'pasta',
   // Vehicles
-  'car', 'motorcycle', 'bicycle', 'scooter', 'truck',
+  'car', 'motorcycle', 'bicycle', 'scooter', 'truck', 'stroller',
   // Tools
   'drill', 'hammer', 'saw', 'wrench', 'screwdriver', 'pliers',
   // Industrial
   'pipe', 'tube', 'valve', 'pump', 'motor', 'engine', 'generator', 'panel',
+  // Misc
+  'supplement', 'vitamin', 'capsule', 'medicine', 'tablet',
+  'guitar', 'racket', 'skateboard', 'mask',
+  'coat', 'scarf', 'jeans',
+  'bolt', 'foil', 'tire', 'tyre',
+  'bottle', 'conditioner',
 ]);
 
 /**
