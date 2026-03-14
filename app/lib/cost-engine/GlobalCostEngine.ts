@@ -48,6 +48,9 @@ import { lookupUSAdditionalTariffs, type USAdditionalTariffResult } from './sect
 import { getEffectiveDutyRate as getHardcodedEffectiveDutyRate, getDutyRate as getHardcodedDutyRate, hasCountryDutyData as hardcodedHasCountryDutyData } from './hs-code';
 import { applyFtaRate as hardcodedApplyFtaRate } from './hs-code/fta';
 
+// HS 10-digit resolver (7 countries: US/EU/GB/KR/CA/AU/JP)
+import { resolveHs10, type Hs10Resolution } from './hs-code/hs10-resolver';
+
 // ─── Origin Detection ───────────────────────────────
 
 const CHINESE_PLATFORMS = ['aliexpress', 'temu', 'shein', 'wish', 'dhgate', 'banggood'];
@@ -161,6 +164,10 @@ export interface GlobalLandedCost extends LandedCost {
     /** Buyer total */
     buyerTotal: number;
   };
+  /** HS 10-digit resolution result (7 countries) */
+  hs10Resolution?: Hs10Resolution;
+  /** HS code precision: 'HS10' (7 countries with gov schedule) or 'HS6' (233 countries) */
+  hsCodePrecision?: 'HS10' | 'HS6';
   /** AI-detected origin country ISO code (when seller didn't provide origin) */
   detectedOriginCountry?: string;
   /** Accuracy guarantee level based on data quality */
@@ -268,6 +275,25 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   }
 
   const isDomestic = originCountry === profile.code;
+
+  // ━━━ HS 10-digit Resolution (7 countries) ━━━
+  let hs10Result: Hs10Resolution | undefined;
+  if (hsResult && hsResult.hsCode !== '9999' && !isDomestic) {
+    try {
+      hs10Result = await resolveHs10(
+        hsResult.hsCode.substring(0, 6),
+        profile.code,
+        input.productName || '',
+        productPrice,
+      );
+      // If HS10 resolved with a duty rate, use it
+      if (hs10Result.dutyRate !== undefined && hs10Result.hsCodePrecision === 'HS10') {
+        // Will be used as additional context below
+      }
+    } catch {
+      // HS10 resolution failure is non-critical
+    }
+  }
 
   // Determine Duty Rate — MacMap 4단계 폴백 → 정부 API → DB → 하드코딩
   let dutyRate = profile.avgDutyRate;
@@ -841,6 +867,8 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     taxThresholdUsd: !isDomestic ? taxThresholdUsd : undefined,
     destinationCurrency: profile.currency,
     hsClassification: hsResult,
+    hs10Resolution: hs10Result,
+    hsCodePrecision: hs10Result?.hsCodePrecision || 'HS6',
     ftaApplied: ftaResult,
     additionalTariffNote,
     classificationSource,

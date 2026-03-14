@@ -16,6 +16,7 @@ import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { classifyProductAsync, calculateConfidenceScore, recordClassificationAudit, validateProductDescription } from '@/app/lib/cost-engine/ai-classifier';
 import { classifyWithVision } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { resolveHs10 } from '@/app/lib/cost-engine/hs-code/hs10-resolver';
 
 // ─── Input Validation Constants ────────────────────
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -165,6 +166,27 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
   const descriptionCheck = validateProductDescription(productName, category);
 
+  // HS10 resolution if destination_country provided
+  const destCountry = body.destination_country || body.destinationCountry;
+  let hs10Info: Record<string, unknown> | undefined;
+  if (destCountry && result.hsCode && result.hsCode !== '9999') {
+    try {
+      const hs10 = await resolveHs10(
+        result.hsCode.substring(0, 6),
+        String(destCountry),
+        productName,
+        body.price ? Number(body.price) : undefined,
+      );
+      hs10Info = {
+        hsCode10: hs10.hsCode,
+        hsCodePrecision: hs10.hsCodePrecision,
+        classificationMethod: hs10.classificationMethod,
+        hs10Description: hs10.description,
+        hs10Confidence: hs10.confidence,
+      };
+    } catch { /* non-critical */ }
+  }
+
   return apiSuccess({
     hsCode: result.hsCode,
     description: result.description,
@@ -174,6 +196,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     countryOfOrigin: result.countryOfOrigin,
     alternatives: result.alternatives,
     descriptionQuality: descriptionCheck,
+    ...hs10Info,
   }, {
     sellerId: context.sellerId,
     plan: context.planId,
