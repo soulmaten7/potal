@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-14 05:00 KST (CW13 — AI Agent Org v4 업데이트, WDC 2단계 38카테고리 추가 1,055매핑/1,104벡터, 24/7 Division Monitor 구현)
+# 마지막 업데이트: 2026-03-14 16:00 KST (CW13 — Enterprise Sales 자동화 구현, enterprise_leads 테이블, Resend 자동이메일, Telegram 알림, Cron 13개)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -75,7 +75,7 @@ portal/
 - **제재 스크리닝**: 21,301건 (OFAC SDN 14,600 + CSL 6,701, 19개 소스) ✅
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
 - **7개국 HS 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행: US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633)
-- **관세율 자동업데이트**: Vercel Cron 12개 (CW13: division-monitor 매30분 추가)
+- **관세율 자동업데이트**: Vercel Cron 13개 (CW13: division-monitor + enterprise-lead-match 매30분)
 - **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
 - **MCP Server**: v1.2.0, 7개 도구 (calculate, classify, restrictions, screen_shipment, screen_denied_party, lookup_fta, list_countries)
 - **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (~1,807/1,899파트, extract_with_categories.py)
@@ -220,6 +220,7 @@ portal/
 | erp_connections | - | ✅ (CW12 심층검증: F083) |
 | tax_exemption_certificates | - | ✅ (CW12 심층검증: F053) |
 | partner_accounts | - | ✅ (CW12 심층검증: F147) |
+| enterprise_leads | 0 | ✅ (CW13: Enterprise Sales 자동화, UPSERT on contact_email) |
 | partner_referrals | - | ✅ (CW12 심층검증: F147) |
 
 ## MIN 임포트 — ✅ 완료
@@ -392,7 +393,7 @@ Layer 1 자동실행 → 🟡 Layer 2 팀장 체크 → 🟣 Layer 3 Agent Teams
 | D6 | ✅ 완료 | Shopify Webhook ✅ + plugin-health 매12시간 ✅ (위젯/웹훅 엔드포인트 체크) |
 | D7 | ✅ 완료 | plan-checker, rate-limiter 앱 내장 |
 | D8 | ✅ 완료 | CI 테스트 ✅ + spot-check 매일 04:00 ✅ (8개 계산 케이스 자동 검증) |
-| D9 | ✅ 완료 | FAQ 13개 항목 ✅ + Google Rich Snippets ✅ + Crisp 채팅 위젯 준비 ✅ (env: NEXT_PUBLIC_CRISP_WEBSITE_ID) |
+| D9 | ✅ 완료 | FAQ 13개 항목 ✅ + Google Rich Snippets ✅ + Crisp 채팅 위젯 준비 ✅ + Enterprise Sales 자동화 ✅ (폼→API→DB→Resend이메일→Telegram알림) + enterprise-lead-match Cron 매30분 |
 | D10 | ✅ 완료 | Paddle Webhook + Overage Cron + plan-checker |
 | D11 | ✅ 완료 | Vercel CI/CD ✅ + health-check 매6시간 ✅ (DB/API/Auth/데이터 모니터링) |
 | D12 | ✅ 완료 | Make.com Welcome Email + LinkedIn 소셜공유 시나리오 ✅ |

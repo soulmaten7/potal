@@ -47,6 +47,10 @@
     {
       "path": "/api/v1/admin/division-monitor",
       "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/enterprise-lead-match",
+      "schedule": "*/30 * * * *"
     }
   ]
 }

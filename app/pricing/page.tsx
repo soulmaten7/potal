@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 
 const PLANS = [
   {
@@ -131,6 +131,101 @@ const FAQS = [
     a: 'POTAL covers 240 countries with AI-powered HS classification, real-time FTA detection, anti-dumping duty alerts, and 30+ language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
   },
 ];
+
+const inputStyle = {
+  padding: '12px 16px',
+  borderRadius: 10,
+  border: '1px solid #e5e7eb',
+  fontSize: 14,
+  outline: 'none' as const,
+  width: '100%',
+  boxSizing: 'border-box' as const,
+};
+
+function EnterpriseInquiryForm() {
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus('submitting');
+    setErrorMsg('');
+
+    const form = e.currentTarget;
+    const data = {
+      company_name: (form.elements.namedItem('company_name') as HTMLInputElement).value,
+      contact_name: (form.elements.namedItem('contact_name') as HTMLInputElement).value,
+      contact_email: (form.elements.namedItem('contact_email') as HTMLInputElement).value,
+      estimated_volume: (form.elements.namedItem('estimated_volume') as HTMLInputElement).value,
+    };
+
+    try {
+      const res = await fetch('/api/v1/enterprise-inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (result.success) {
+        setStatus('success');
+      } else {
+        setStatus('error');
+        setErrorMsg(result.error || 'Something went wrong');
+      }
+    } catch {
+      setStatus('error');
+      setErrorMsg('Network error. Please try again.');
+    }
+  }
+
+  if (status === 'success') {
+    return (
+      <div style={{ textAlign: 'center', padding: '20px 0' }}>
+        <p style={{ fontSize: 18, fontWeight: 700, color: '#059669', marginBottom: 8 }}>
+          Thank you for your interest!
+        </p>
+        <p style={{ fontSize: 14, color: '#666' }}>
+          We&apos;ve sent our capability overview and requirements questionnaire to your email.
+          Please check your inbox.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <input type="text" name="company_name" placeholder="Company name" required style={inputStyle} />
+        <input type="text" name="contact_name" placeholder="Your name" required style={inputStyle} />
+        <input type="email" name="contact_email" placeholder="Work email" required style={inputStyle} />
+        <input type="text" name="estimated_volume" placeholder="Estimated monthly API calls (e.g. 100,000)" required style={inputStyle} />
+        <button
+          type="submit"
+          disabled={status === 'submitting'}
+          style={{
+            padding: '14px 24px',
+            borderRadius: 12,
+            border: 'none',
+            background: status === 'submitting' ? '#6b7280' : '#02122c',
+            color: 'white',
+            fontSize: 15,
+            fontWeight: 700,
+            cursor: status === 'submitting' ? 'not-allowed' : 'pointer',
+            marginTop: 4,
+          }}
+        >
+          {status === 'submitting' ? 'Submitting...' : 'Get Custom Pricing'}
+        </button>
+      </form>
+      {status === 'error' && (
+        <p style={{ fontSize: 13, color: '#dc2626', marginTop: 8 }}>{errorMsg}</p>
+      )}
+      <p style={{ fontSize: 12, color: '#999', marginTop: 12 }}>
+        We respond within 24 hours on business days.
+      </p>
+    </>
+  );
+}
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
@@ -525,73 +620,7 @@ export default function PricingPage() {
           <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>
             Need 50,000+ API calls? Get custom pricing with a dedicated account manager.
           </p>
-          <form
-            action={`https://formsubmit.co/${encodeURIComponent('contact@potal.app')}`}
-            method="POST"
-            style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
-          >
-            <input type="hidden" name="_subject" value="POTAL Enterprise Inquiry" />
-            <input type="hidden" name="_captcha" value="false" />
-            <input type="hidden" name="_next" value="https://www.potal.app/pricing?submitted=true" />
-            <input
-              type="text"
-              name="name"
-              placeholder="Your name"
-              required
-              style={{
-                padding: '12px 16px',
-                borderRadius: 10,
-                border: '1px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-              }}
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Work email"
-              required
-              style={{
-                padding: '12px 16px',
-                borderRadius: 10,
-                border: '1px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-              }}
-            />
-            <input
-              type="text"
-              name="monthly_volume"
-              placeholder="Estimated monthly API calls (e.g. 100,000)"
-              required
-              style={{
-                padding: '12px 16px',
-                borderRadius: 10,
-                border: '1px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                padding: '14px 24px',
-                borderRadius: 12,
-                border: 'none',
-                background: '#02122c',
-                color: 'white',
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: 'pointer',
-                marginTop: 4,
-              }}
-            >
-              Get Custom Pricing
-            </button>
-          </form>
-          <p style={{ fontSize: 12, color: '#999', marginTop: 12 }}>
-            We respond within 24 hours on business days.
-          </p>
+          <EnterpriseInquiryForm />
         </div>
       </div>
 

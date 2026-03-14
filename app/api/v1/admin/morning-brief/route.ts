@@ -205,6 +205,28 @@ export async function GET(req: NextRequest) {
     const cronLogs = await getLatestCronLogs();
     const healthCheckLog = cronLogs.get('health-check');
 
+    // --- Enterprise Leads 현황 ---
+    const supabaseForLeads = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const { data: enterpriseLeads } = await supabaseForLeads
+      .from('enterprise_leads')
+      .select('status, company_name, contact_email, proposal_sent_at, questionnaire_received_at')
+      .in('status', ['proposal_sent', 'questionnaire_received', 'proposal_customized', 'negotiating']);
+
+    const enterpriseSummary = {
+      total_active: enterpriseLeads?.length || 0,
+      proposal_sent: enterpriseLeads?.filter((l: { status: string }) => l.status === 'proposal_sent').length || 0,
+      questionnaire_received: enterpriseLeads?.filter((l: { status: string }) => l.status === 'questionnaire_received').length || 0,
+      negotiating: enterpriseLeads?.filter((l: { status: string }) => l.status === 'negotiating').length || 0,
+      stale_5days: enterpriseLeads?.filter((l: { status: string; proposal_sent_at: string }) => {
+        if (l.status !== 'proposal_sent') return false;
+        const sentAt = new Date(l.proposal_sent_at);
+        return (Date.now() - sentAt.getTime()) > 5 * 24 * 60 * 60 * 1000;
+      }).length || 0,
+      needs_attention: enterpriseLeads
+        ?.filter((l: { status: string }) => l.status === 'questionnaire_received')
+        .map((l: { company_name: string; contact_email: string }) => ({ company: l.company_name, email: l.contact_email })) || [],
+    };
+
     const divisions = DIVISION_CHECKLISTS.map(d =>
       getDivisionStatus(d, cronLogs, healthCheckLog)
     );
@@ -318,6 +340,9 @@ export async function GET(req: NextRequest) {
       auto_failed: autoFailed,
       needs_attention: needsAttention,
       all_green: allGreen,
+
+      // D9 Enterprise Sales pipeline
+      d9_enterprise: enterpriseSummary,
 
       // Email notification result
       email: emailResult,

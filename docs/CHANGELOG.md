@@ -1,5 +1,26 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-14 05:00 KST
+> 마지막 업데이트: 2026-03-14 16:00 KST
+
+## [2026-03-14 16:00 KST] CW13 — Enterprise Sales 자동화 구현
+
+### Enterprise Sales Pipeline (D9 Layer 1 Full Automation)
+- **Supabase 테이블**: `enterprise_leads` 생성 (14컬럼, UPSERT on contact_email)
+- **API 엔드포인트**: `POST /api/v1/enterprise-inquiry` — 문의 접수 → DB → 이메일 → Telegram
+- **Resend 이메일**: Capability Deck + Requirements Questionnaire PDF 자동 첨부 발송
+- **Telegram 알림**: 새 리드 알림 + Questionnaire 회신 알림 (telegram.ts)
+- **Cron**: `/api/cron/enterprise-lead-match` 매30분 — 미회신 리드 추적 + Make.com webhook 대응
+- **Morning Brief 통합**: d9_enterprise 필드 (활성 리드, 회신, 5일+ 미회신)
+- **가격 페이지 폼**: formsubmit.co → 자체 API 전환 (company_name 필드 추가)
+- **PDF 호스팅**: public/docs/ (Capability_Deck 40KB + Questionnaire 122KB)
+- **Vercel Cron**: 12→13개
+- **Vercel 환경변수**: ENTERPRISE_PDF_BASE_URL 추가
+- 파일 생성: telegram.ts, enterprise-email.ts, enterprise-inquiry/route.ts, enterprise-lead-match/route.ts
+- 파일 수정: vercel.json, morning-brief/route.ts, pricing/page.tsx
+
+### 초정밀 검증 Phase 1 완료
+- 65건 테스트: 관세 계산 15/20 PASS, HS 분류 8/30 PASS, 세금 엔진 6/10 PASS, v4 모니터링 5/5 PASS
+- 총 34/65 PASS (기준 60/65 미달) — HS 분류 키워드/캐시 문제 식별
+- FTA 감지, US 추가관세(S301/S232), VAT/GST, de minimis 모두 정확
 
 ## [2026-03-14 05:00 KST] CW13 — AI Agent Org v4 + WDC 2단계 + 24/7 Division Monitor
 
