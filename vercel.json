@@ -43,6 +43,10 @@
     {
       "path": "/api/v1/admin/sdn-sync",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/v1/admin/division-monitor",
+      "schedule": "*/30 * * * *"
     }
   ]
 }

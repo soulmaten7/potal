@@ -47,6 +47,7 @@ const CLASSIFICATION_RULES: Record<string, ClassificationRule[]> = {
   ],
   D3: [
     { pattern: /classifier|분류/i, layer: 2, recommendation: 'Check AI classifier pipeline health', autoRemediable: false },
+    { pattern: /WDC|mapping|매핑|vector/i, layer: 2, recommendation: 'Check WDC mapping pipeline and vector count', autoRemediable: false },
     { pattern: /model|architecture|아키텍처/i, layer: 3, recommendation: 'ML model architecture issue — needs expert review', autoRemediable: false },
   ],
   D4: [
@@ -54,6 +55,7 @@ const CLASSIFICATION_RULES: Record<string, ClassificationRule[]> = {
     { pattern: /gov.*api|정부.*API/i, layer: 1, recommendation: 'Retry gov-api-health check', autoRemediable: true, remediationAction: 'retry_cron' },
     { pattern: /all.*down|전체.*다운/i, layer: 3, recommendation: 'All government APIs down — external issue, monitor and wait', autoRemediable: false },
     { pattern: /cron|last run/i, layer: 1, recommendation: 'Trigger data pipeline cron manually', autoRemediable: true, remediationAction: 'retry_cron' },
+    { pattern: /regulation|규정.*수집|RAG/i, layer: 2, recommendation: 'Check regulation collection progress', autoRemediable: false },
   ],
   D5: [
     { pattern: /uptime|page.*down|페이지.*다운/i, layer: 1, recommendation: 'Check Vercel deployment, trigger redeployment if needed', autoRemediable: true, remediationAction: 'retry_cron' },
@@ -66,6 +68,7 @@ const CLASSIFICATION_RULES: Record<string, ClassificationRule[]> = {
   ],
   D7: [
     { pattern: /api.*health|endpoint/i, layer: 1, recommendation: 'Check API health endpoint', autoRemediable: true, remediationAction: 'retry_cron' },
+    { pattern: /MCP|mcp.*server/i, layer: 2, recommendation: 'Check MCP server health', autoRemediable: false },
     { pattern: /rate.*limit|plan.*check/i, layer: 2, recommendation: 'Review rate limiting configuration', autoRemediable: false },
   ],
   D8: [
@@ -74,6 +77,8 @@ const CLASSIFICATION_RULES: Record<string, ClassificationRule[]> = {
   ],
   D9: [
     { pattern: /FAQ|crisp|chat/i, layer: 2, recommendation: 'Check customer-facing services', autoRemediable: false },
+    { pattern: /customer.*count|가입|churn|이탈/i, layer: 2, recommendation: 'Review customer metrics', autoRemediable: false },
+    { pattern: /enterprise|영업|partnership/i, layer: 3, recommendation: 'Enterprise customer or partnership deal — CEO decision required', autoRemediable: false },
     { pattern: /content.*update|콘텐츠/i, layer: 3, recommendation: 'Content update needed — requires editorial decision', autoRemediable: false },
   ],
   D10: [

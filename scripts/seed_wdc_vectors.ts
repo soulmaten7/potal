@@ -93,7 +93,7 @@ async function main() {
   }>(
     `SELECT product_name, category, hs6, confidence, source
      FROM product_hs_mappings
-     WHERE source IN ('wdc_category', 'wdc_product')
+     WHERE source IN ('wdc_category', 'wdc_product', 'wdc_category_phase2')
      ORDER BY id;`
   );
   process.stdout.write(`  ${mappings.length} WDC mappings found\n\n`);

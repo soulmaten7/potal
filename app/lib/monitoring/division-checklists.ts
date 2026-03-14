@@ -32,7 +32,7 @@ export interface DivisionChecklist {
 export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   {
     id: 'D1',
-    name: 'Tariff & Trade Rules',
+    name: 'Tariff & Compliance Engine',
     layer1Status: 'done',
     checks: [
       { id: 'd1-tariff-cron', label: '관세율 자동 업데이트 (매주 월)', source: 'cron_log', cronEndpoint: 'update-tariffs', maxAgeMinutes: 10200 },
@@ -52,22 +52,25 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D3',
-    name: 'HS Classification',
+    name: 'HS Classification & Data Intelligence',
     layer1Status: 'done',
     checks: [
       { id: 'd3-classifier', label: 'AI 분류기 정상', source: 'app_builtin' },
       { id: 'd3-hs-data', label: 'HS Code 5,371건 데이터', source: 'app_builtin' },
+      { id: 'd3-wdc-mapping', label: 'WDC 상품명 매핑 파이프라인 정상', source: 'health_check_logs' },
+      { id: 'd3-vector-count', label: 'hs_classification_vectors 1,023건+', source: 'health_check_logs' },
     ],
   },
   {
     id: 'D4',
-    name: 'Data Pipeline',
+    name: 'Data Pipeline & Regulations',
     layer1Status: 'done',
     checks: [
       { id: 'd4-exchange-rate', label: '환율 자동 업데이트', source: 'app_builtin' },
       { id: 'd4-gov-api', label: '7개국 정부 API 가용성 (매 12시간)', source: 'cron_log', cronEndpoint: 'gov-api-health', maxAgeMinutes: 780 },
       { id: 'd4-min-rates', label: 'MIN 관세율 ~113M행', source: 'health_check_logs' },
       { id: 'd4-agr-rates', label: 'AGR 관세율 ~144M행 53개국', source: 'app_builtin' },
+      { id: 'd4-regulation-collection', label: '240개국 규정 수집 진행', source: 'manual' },
     ],
   },
   {
@@ -81,7 +84,7 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D6',
-    name: 'Platform & Plugins',
+    name: 'Platform & Integrations',
     layer1Status: 'done',
     checks: [
       { id: 'd6-plugin-health', label: '위젯/웹훅 엔드포인트 (매 12시간)', source: 'cron_log', cronEndpoint: 'plugin-health', maxAgeMinutes: 780 },
@@ -90,17 +93,18 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D7',
-    name: 'API & Developer',
+    name: 'API & AI Platform',
     layer1Status: 'done',
     checks: [
       { id: 'd7-plan-checker', label: 'Plan Checker 정상', source: 'app_builtin' },
       { id: 'd7-rate-limiter', label: 'Rate Limiter 정상', source: 'app_builtin' },
       { id: 'd7-api-health', label: 'API 엔드포인트 정상', source: 'health_check_logs' },
+      { id: 'd7-mcp-server', label: 'MCP 서버 7개 도구 정상', source: 'app_builtin' },
     ],
   },
   {
     id: 'D8',
-    name: 'QA & Accuracy',
+    name: 'QA & Verification',
     layer1Status: 'done',
     checks: [
       { id: 'd8-spot-check', label: '8개 계산 케이스 Spot Check (매일)', source: 'cron_log', cronEndpoint: 'spot-check', maxAgeMinutes: 1500 },
@@ -109,11 +113,12 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D9',
-    name: 'Customer Success',
+    name: 'Customer Acquisition & Success',
     layer1Status: 'done',
     checks: [
       { id: 'd9-faq', label: 'FAQ 13개 항목 정상', source: 'app_builtin' },
       { id: 'd9-crisp', label: 'Crisp 채팅 위젯 활성화', source: 'app_builtin' },
+      { id: 'd9-customer-count', label: '고객 가입/사용량 추적', source: 'health_check_logs' },
     ],
   },
   {
@@ -138,7 +143,7 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D12',
-    name: 'Marketing & Growth',
+    name: 'Marketing & Partnerships',
     layer1Status: 'done',
     checks: [
       { id: 'd12-welcome-email', label: 'Make.com Welcome Email 시나리오', source: 'external' },
@@ -156,7 +161,7 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D14',
-    name: 'Finance',
+    name: 'Finance & Strategy',
     layer1Status: 'done',
     checks: [
       { id: 'd14-cost-tracking', label: 'Finance Tracker 스프레드시트 운영', source: 'external' },
@@ -164,7 +169,7 @@ export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
   },
   {
     id: 'D15',
-    name: 'Intelligence',
+    name: 'Intelligence & Market',
     layer1Status: 'done',
     checks: [
       { id: 'd15-competitor-scan', label: '10개 경쟁사 스캔 (매주 월)', source: 'cron_log', cronEndpoint: 'competitor-scan', maxAgeMinutes: 10200 },

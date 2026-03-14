@@ -1,5 +1,26 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-14 03:30 KST
+> 마지막 업데이트: 2026-03-14 05:00 KST
+
+## [2026-03-14 05:00 KST] CW13 — AI Agent Org v4 + WDC 2단계 + 24/7 Division Monitor
+
+### AI Agent Organization v4 업데이트
+- **Division 이름 변경 10개**: D1→Tariff & Compliance Engine, D3→HS Classification & Data Intelligence, D4→Data Pipeline & Regulations, D6→Platform & Integrations, D7→API & AI Platform, D8→QA & Verification, D9→Customer Acquisition & Success, D12→Marketing & Partnerships, D14→Finance & Strategy, D15→Intelligence & Market
+- **역할 업데이트**: D3 Data Pipeline Engineer, D4 Regulations Collector, D6 Integration Engineer, D7 AI Platform Engineer, D12 Partnership Manager
+- **Opus 에스컬레이션**: 5→6곳 (D4 규정 법률 해석 추가)
+- 3개 파일 수정: agent-roles.ts, division-checklists.ts, issue-classifier.ts
+
+### WDC 2단계 완료
+- category_stats.json 분석 (377M 상품): 38개 신규 카테고리 식별 → 1,729,533 상품 커버
+- product_hs_mappings: 1,017→**1,055** (+38)
+- hs_classification_vectors: 1,023→**1,104** (+81, 에러 0)
+- 주요 추가: magazines, earrings, hoodies, motorcycles, t-shirts, jeans, sunglasses, sneakers, socks, hats 등
+
+### 24/7 Division Monitor 구현
+- **division-monitor API**: `/api/v1/admin/division-monitor` — 15개 Division 매30분 자동 체크
+- **Telegram 알림**: `telegram-alert.ts` — Layer 3 이슈 즉시 Telegram 전송
+- **3단계 폴백**: Telegram → Make.com → Email (Resend)
+- **Vercel Cron**: 12개째 (`*/30 * * * *`)
+- **auto-remediation 연동**: Layer 1/2 자동 수정 후 Layer 3만 알림
 
 ## [2026-03-14 03:30 KST] Cowork 12 후반 — 142/147 전부 구현 + 심층 검증 84/84 PASS
 

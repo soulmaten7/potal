@@ -37,7 +37,7 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
   // ── D1: Tariff & Trade Rules ──
   {
     divisionId: 'D1',
-    name: 'Tariff & Trade Rules',
+    name: 'Tariff & Compliance Engine',
     leader: {
       role: 'Tariff Team Lead',
       model: 'sonnet',
@@ -49,8 +49,8 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     },
     members: [
       { role: 'FTA/RoO Analyst', model: 'opus', responsibilities: ['FTA 원산지 규정 해석', '관세양허 조건 분석', '특혜관세 적용 판단'] },
-      { role: 'Trade Remedy Researcher', model: 'sonnet', responsibilities: ['반덤핑/상계관세/세이프가드 데이터 수집', 'TTBD/WTO 소스 동기화'] },
-      { role: 'Rate Validator', model: 'sonnet', responsibilities: ['lookup_duty_rate_v2() 결과 검증', '4단계 폴백(MIN→AGR→NTLC→WITS) 정확도 테스트'] },
+      { role: 'Trade Remedy Researcher', model: 'sonnet', responsibilities: ['반덤핑/상계관세/세이프가드 데이터 수집', 'TTBD/WTO 소스 동기화', 'ECCN/Schedule B 분류'] },
+      { role: 'Rate Validator', model: 'sonnet', responsibilities: ['lookup_duty_rate_v2() 결과 검증', '4단계 폴백(MIN→AGR→NTLC→WITS) 정확도 테스트', 'ICS2/Type86 통관 검증', '수출통제(EAR/ITAR) 검증'] },
     ],
     escalation: [
       { condition: 'FTA/RoO 해석 모호 — 법률 판단 필요', action: 'Opus FTA/RoO Analyst에게 에스컬레이션', targetModel: 'opus' },
@@ -82,10 +82,10 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['신규 국가 특수세금 추가', 'IOSS 임계값 업데이트', 'processing fee 체계 개선'],
   },
 
-  // ── D3: HS Classification ──
+  // ── D3: HS Classification & Data Intelligence ──
   {
     divisionId: 'D3',
-    name: 'HS Classification',
+    name: 'HS Classification & Data Intelligence',
     leader: {
       role: 'HS Classification Lead',
       model: 'sonnet',
@@ -97,7 +97,7 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     },
     members: [
       { role: 'ML Architect', model: 'opus', responsibilities: ['분류 모델 아키텍처 설계', '벡터 임베딩 최적화', '이미지 분류기 설계'] },
-      { role: 'Data Labeler', model: 'sonnet', responsibilities: ['WDC 상품명→HS 매핑 데이터 정제', '학습 데이터 품질 관리'] },
+      { role: 'Data Pipeline Engineer', model: 'sonnet', responsibilities: ['WDC 상품명→HS 매핑 대량 처리', '카테고리 추출/정제', '가격 분기 규칙 적용'] },
     ],
     escalation: [
       { condition: '분류 정확도 90% 이하 하락', action: 'Opus ML Architect 투입', targetModel: 'opus' },
@@ -106,10 +106,10 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['WDC 5.95억 상품 HS 매핑 파이프라인', '이미지 기반 HS 분류', '캐시 히트율 최적화'],
   },
 
-  // ── D4: Data Pipeline ──
+  // ── D4: Data Pipeline & Regulations ──
   {
     divisionId: 'D4',
-    name: 'Data Pipeline',
+    name: 'Data Pipeline & Regulations',
     leader: {
       role: 'Data Pipeline Lead',
       model: 'sonnet',
@@ -121,10 +121,11 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     },
     members: [
       { role: 'API Integrator', model: 'sonnet', responsibilities: ['정부 API 응답 파싱', 'API 변경 사항 대응', '새 데이터 소스 연동'] },
-      { role: 'Import Engineer', model: 'sonnet', responsibilities: ['대량 데이터 임포트 스크립트 작성/유지', '데이터 무결성 검증'] },
+      { role: 'Regulations Collector', model: 'sonnet', responsibilities: ['대량 데이터 임포트 스크립트 작성/유지', '데이터 무결성 검증', '240개국 관세법/세법/무역규정 스크래핑', 'RAG 벡터 DB 인덱싱'] },
     ],
     escalation: [
       { condition: '정부 API 스펙 변경 — 파싱 로직 전면 수정', action: 'Chief에게 보고 후 Agent Team 배치', targetModel: 'opus' },
+      { condition: '규정 문서 법률 해석 필요', action: 'Opus + D13 Legal 합동', targetModel: 'opus' },
     ],
     projectExamples: ['AGR 임포트 완료 후 검증', 'WDC 상품명 추출', '신규 정부 API 연동'],
   },
@@ -138,13 +139,13 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
       model: 'sonnet',
       responsibilities: [
         'potal.app UI/UX 품질 관리',
-        '30개국어 i18n 번역 관리',
+        '50개국어 i18n 번역 관리',
         'Core Web Vitals 모니터링',
       ],
     },
     members: [
       { role: 'Frontend Developer', model: 'sonnet', responsibilities: ['React 컴포넌트 구현', '랜딩/가격표/대시보드 페이지'] },
-      { role: 'i18n Specialist', model: 'sonnet', responsibilities: ['30개국어 번역 키 관리', '새 기능 번역 추가'] },
+      { role: 'i18n Specialist', model: 'sonnet', responsibilities: ['50개국어 번역 키 관리', '새 기능 번역 추가'] },
     ],
     escalation: [
       { condition: 'CWV 점수 급락 — 성능 최적화 필요', action: 'Chief에게 보고', targetModel: 'opus' },
@@ -152,10 +153,10 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['신규 페이지 개발', 'UI 리디자인', '성능 최적화'],
   },
 
-  // ── D6: Platform & Plugins ──
+  // ── D6: Platform & Integrations ──
   {
     divisionId: 'D6',
-    name: 'Platform & Plugins',
+    name: 'Platform & Integrations',
     leader: {
       role: 'Platform Lead',
       model: 'sonnet',
@@ -167,7 +168,7 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     },
     members: [
       { role: 'Plugin Developer', model: 'sonnet', responsibilities: ['이커머스 플러그인 코드 작성', '플랫폼별 API 연동'] },
-      { role: 'Widget Engineer', model: 'sonnet', responsibilities: ['potal-widget.js 유지보수', 'DDP Quote 위젯 개선'] },
+      { role: 'Integration Engineer', model: 'sonnet', responsibilities: ['potal-widget.js 유지보수', 'DDP Quote 위젯 개선', '마켓플레이스 연동(marketplace_connections)', 'ERP 연동(QuickBooks/Xero, erp_connections)'] },
     ],
     escalation: [
       { condition: 'Shopify 앱 심사 리젝 — 정책 위반 대응', action: 'Chief + D13 Legal 공동 대응', targetModel: 'opus' },
@@ -175,22 +176,22 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['Shopify 앱 기능 추가', '신규 플랫폼 플러그인 개발', '위젯 v2 리팩토링'],
   },
 
-  // ── D7: API & Developer ──
+  // ── D7: API & AI Platform ──
   {
     divisionId: 'D7',
-    name: 'API & Developer',
+    name: 'API & AI Platform',
     leader: {
       role: 'API Lead',
       model: 'sonnet',
       responsibilities: [
-        '7개 API 엔드포인트 안정성 관리',
+        '10+ API 엔드포인트 안정성 관리',
         'OpenAPI 문서 최신 유지',
-        'SDK 3종(JS/Python/Ruby) 버전 관리',
+        'SDK 3종(JS/Python/cURL) 버전 관리',
       ],
     },
     members: [
-      { role: 'API Developer', model: 'sonnet', responsibilities: ['엔드포인트 구현/수정', 'rate limiting 로직', 'API 버전 관리'] },
-      { role: 'SDK Developer', model: 'sonnet', responsibilities: ['SDK 코드 생성/업데이트', 'AI 플랫폼(GPT/MCP/Gem) 연동'] },
+      { role: 'API Developer', model: 'sonnet', responsibilities: ['엔드포인트 구현/수정', 'rate limiting 로직', 'API 버전 관리', '/export, /classify/audit, /classify/batch, /validate, /ioss, /verify'] },
+      { role: 'AI Platform Engineer', model: 'sonnet', responsibilities: ['SDK 코드 생성/업데이트', 'AI 플랫폼(GPT/MCP/Gem) 연동', 'MCP 서버 7개 도구', 'Gemini Gem 연동', 'AI 상담 봇'] },
     ],
     escalation: [
       { condition: 'API 보안 취약점 발견', action: 'D11 Infrastructure와 합동 대응, Opus 투입', targetModel: 'opus' },
@@ -198,17 +199,18 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['API v2 설계', 'MCP 서버 기능 확장', 'SDK 신규 언어 추가'],
   },
 
-  // ── D8: QA & Accuracy ──
+  // ── D8: QA & Verification ──
   {
     divisionId: 'D8',
-    name: 'QA & Accuracy',
+    name: 'QA & Verification',
     leader: {
       role: 'QA Lead',
       model: 'sonnet',
       responsibilities: [
-        '448건 테스트 스위트 관리',
+        '142기능 테스트 커버리지 관리',
         'Spot Check 8개 케이스 결과 분석',
         '정확도 메트릭 추적',
+        '심층 검증 체계 운영',
       ],
     },
     members: [
@@ -222,10 +224,10 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['Spot Check 케이스 확장', '월간 정확도 리포트 자동화', 'E2E 테스트 구축'],
   },
 
-  // ── D9: Customer Success ──
+  // ── D9: Customer Acquisition & Success ──
   {
     divisionId: 'D9',
-    name: 'Customer Success',
+    name: 'Customer Acquisition & Success',
     leader: {
       role: 'CS Lead',
       model: 'sonnet',
@@ -233,11 +235,12 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
         'FAQ 콘텐츠 관리 (현재 13항목)',
         'Crisp 채팅 응답 품질 관리',
         '고객 온보딩 프로세스 개선',
+        'A/B/C그룹 타겟 고객 전략',
       ],
     },
     members: [
       { role: 'Content Writer', model: 'sonnet', responsibilities: ['FAQ 항목 작성/업데이트', '도움말 문서 작성', 'Rich Snippets 관리'] },
-      { role: 'Support Agent', model: 'sonnet', responsibilities: ['Crisp 채팅 응대 규칙 설정', '고객 이슈 분류/에스컬레이션'] },
+      { role: 'Support Agent', model: 'sonnet', responsibilities: ['Crisp 채팅 응대 규칙 설정', '고객 이슈 분류/에스컬레이션', '50개국어 다국어 CS', '전담 CSM(Enterprise)'] },
     ],
     escalation: [
       { condition: '고객 이탈률 급증 — 긴급 대응', action: 'Chief에게 보고, 원인 분석', targetModel: 'opus' },
@@ -292,10 +295,10 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['RLS 정책 전면 감사', 'DB 백업 자동화', '보안 헤더 강화'],
   },
 
-  // ── D12: Marketing & Growth ──
+  // ── D12: Marketing & Partnerships ──
   {
     divisionId: 'D12',
-    name: 'Marketing & Growth',
+    name: 'Marketing & Partnerships',
     leader: {
       role: 'Marketing Lead',
       model: 'sonnet',
@@ -307,7 +310,7 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     },
     members: [
       { role: 'Content Creator', model: 'sonnet', responsibilities: ['블로그 포스트 작성', '소셜 미디어 콘텐츠', 'SEO 키워드 최적화'] },
-      { role: 'Growth Hacker', model: 'sonnet', responsibilities: ['A/B 테스트 설계', '파트너십 리서치', '이메일 캠페인 관리'] },
+      { role: 'Partnership Manager', model: 'sonnet', responsibilities: ['A/B 테스트 설계', '파트너십 리서치', '이메일 캠페인 관리', '파트너 에코시스템(1400+)'] },
     ],
     escalation: [
       { condition: '대규모 마케팅 캠페인 전략 수립', action: 'Chief에게 전략 검토 요청', targetModel: 'opus' },
@@ -339,10 +342,10 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['DPA(데이터 처리 계약) 템플릿', 'Enterprise SLA 문서', 'GDPR 감사 리포트'],
   },
 
-  // ── D14: Finance ──
+  // ── D14: Finance & Strategy ──
   {
     divisionId: 'D14',
-    name: 'Finance',
+    name: 'Finance & Strategy',
     leader: {
       role: 'Finance Lead',
       model: 'sonnet',
@@ -363,16 +366,16 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
     projectExamples: ['비용 자동 수집 시스템 구축', '투자자 대시보드', '월간 재무 리포트 자동화'],
   },
 
-  // ── D15: Intelligence ──
+  // ── D15: Intelligence & Market ──
   {
     divisionId: 'D15',
-    name: 'Intelligence',
+    name: 'Intelligence & Market',
     leader: {
       role: 'Intelligence Lead',
       model: 'sonnet',
       responsibilities: [
         '10개 경쟁사 주간 스캔 결과 분석',
-        '47기능 비교 매트릭스 업데이트',
+        '147기능 비교 매트릭스 업데이트',
         '무역법 변경 모니터링',
       ],
     },
@@ -384,7 +387,7 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
       { condition: '경쟁사 신규 기능 출시 — 전략 대응 필요', action: 'Opus 경쟁 대응 전략 수립', targetModel: 'opus' },
       { condition: '주요 무역법 변경 — 비즈니스 영향 분석', action: 'Chief + D1 Tariff 합동 대응', targetModel: 'opus' },
     ],
-    projectExamples: ['47기능 Phase 1 (크리티컬 갭 6개) 구현', '경쟁사 대응 전략 문서', '시장 분석 리포트'],
+    projectExamples: ['147기능 커버리지 유지 (현재 142/147 = 96.6%)', '경쟁사 대응 전략 문서', '시장 분석 리포트'],
   },
 ];
 
@@ -392,7 +395,7 @@ export const DIVISION_TEAMS: DivisionTeam[] = [
 export const OPUS_ALWAYS_DIVISIONS = ['D1', 'D3', 'D13'] as const;
 
 /** Opus 에스컬레이션 대상 Division 목록 */
-export const OPUS_ESCALATION_DIVISIONS = ['D1', 'D8', 'D11', 'D14', 'D15'] as const;
+export const OPUS_ESCALATION_DIVISIONS = ['D1', 'D4', 'D8', 'D11', 'D14', 'D15'] as const;
 
 /** Division ID로 팀 정보 조회 */
 export function getTeamByDivision(divisionId: string): DivisionTeam | undefined {
