@@ -1,5 +1,42 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-14 23:30 KST
+> 마지막 업데이트: 2026-03-15 14:00 KST
+
+## [2026-03-15 14:00 KST] CW13 Cowork 후반 — npm publish, MCP 레지스트리, Custom LLM, B2B 아웃리치, UCP, Pre-computing
+
+### npm publish + MCP 공식 레지스트리
+- **potal-mcp-server@1.3.1** npm 공개 패키지 publish 완료 (npmjs.com/package/potal-mcp-server)
+- **MCP 공식 레지스트리** 등록 완료: `io.github.soulmaten7/potal` (registry.modelcontextprotocol.io, status: active)
+- server.json description 100자 제한 수정 후 publish 성공
+- `npx potal-mcp-server`로 누구나 설치 가능
+
+### Custom LLM 3종 전면 리라이트
+- **GPT Actions** (gpt-instructions.md): "쇼핑 어시스턴트" → "Global Landed Cost Infrastructure". B2B CTA, "Powered by POTAL" 푸터, 에러 핸들링
+- **Gemini Gem** (gem-instructions.md): 외부 API 미지원 → 정적 참고 데이터 + potal.app CTA 전략
+- **Meta AI** (ai-studio-instructions.md): Gemini과 동일 정적데이터+CTA 전략
+
+### B2B 아웃리치 전략 수립
+- 15개 타겟 기업 4티어: AI플랫폼(OpenAI/Google/Perplexity/Anthropic/Meta), 이커머스(Shopify/WooCommerce/BigCommerce), 결제/물류(Stripe/PayPal/Royal Mail), 마켓플레이스(eBay/Etsy/Temu·Shein/Amazon)
+- 콜드이메일 3종 템플릿 (AI플랫폼/이커머스/B2B엔터프라이즈)
+- 파일: ai-agents/B2B_OUTREACH_TARGETS.md, ai-agents/LLM_COMMERCE_INTEGRATION_ANALYSIS.md
+
+### UCP (Universal Commerce Protocol) 발견
+- Google + Shopify + Walmart + Target 공동 개발 오픈 표준
+- MCP, A2A, AP2 내장 — 관세 계산은 없음 = POTAL MCP 서버가 UCP 생태계에 직접 진입 가능
+
+### Pre-computing 완료
+- 490 HS6 × 240국 = **117,600 조합** 사전 계산 + git push
+- 캐시 히트 시 <50ms 응답, AI 호출 $0
+
+### HS10 파이프라인 구현
+- 7개국(US/EU/UK/CA/AU/JP/KR) 10자리 파이프라인 완성
+- gov_tariff_schedules 89,842행 기반 매칭
+
+### 경쟁력 자가 평가
+- Data Tier 0, Features Tier 1, Price Tier 0, Architecture Tier 1, Implementation Tier 1, Real-world Validation Tier 3
+
+### 파일 생성/수정
+- 생성: B2B_OUTREACH_TARGETS.md, LLM_COMMERCE_INTEGRATION_ANALYSIS.md, server.json, registry-metadata.json, .npmignore
+- 수정: gpt-instructions.md, gem-instructions.md, ai-studio-instructions.md, mcp-server/package.json, mcp-server/README.md
 
 ## [2026-03-14 23:30 KST] CW13 Cowork — UX Audit, 'Grow With You' 요금제, Paddle 버그 수정, Free 200건
 

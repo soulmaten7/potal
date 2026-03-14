@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-14 23:30 KST (CW13 Cowork — UX Audit TOP10, 'Grow With You' 요금제, Paddle 버그 수정, Free 200건, Cron 14개, Enterprise Sales ✅)
+> 마지막 업데이트: 2026-03-15 14:00 KST (CW13 Cowork 후반 — npm publish potal-mcp-server@1.3.1, MCP 공식 레지스트리, Custom LLM 3종 리라이트, B2B 아웃리치, UCP 발견, Pre-computing 117K, HS10 파이프라인)
 
 ---
 
@@ -65,6 +65,16 @@ POTAL Chief Orchestrator 세션 시작.
 - **사이클 4**: 야간 15 Division 전체 정밀 점검 ✅ — ContactForm 수정, 쿠키 배너, .env 보강
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
 - **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
+
+### CW13 Cowork 후반 — npm publish, MCP 레지스트리, Custom LLM, B2B 전략 (2026-03-15 00:00~14:00 KST)
+- **npm publish ✅**: `potal-mcp-server@1.3.1` npm 공개 패키지 (npmjs.com/package/potal-mcp-server)
+- **MCP 공식 레지스트리 ✅**: `io.github.soulmaten7/potal` (registry.modelcontextprotocol.io, status: active)
+- **Custom LLM 3종 리라이트**: GPT Actions(B2B CTA), Gemini Gem(정적+CTA), Meta AI(정적+CTA)
+- **B2B 아웃리치**: 15개 타겟 4티어 + 콜드이메일 3종 (B2B_OUTREACH_TARGETS.md)
+- **UCP 발견**: Google+Shopify+Walmart+Target Universal Commerce Protocol — MCP 내장, 관세 없음 = POTAL 기회
+- **Pre-computing ✅**: 490 HS6 × 240국 = 117,600 조합 사전 계산 (캐시 <50ms)
+- **HS10 파이프라인 ✅**: 7개국 10자리 파이프라인 구현 완료
+- **경쟁력 평가**: Data Tier0, Features Tier1, Price Tier0, Architecture Tier1, Validation Tier3(고객 부재)
 
 ### CW13 Cowork — UX Audit + 'Grow With You' 요금제 + Paddle 버그 수정 (2026-03-14 15:00~23:30 KST)
 - **Enterprise Sales 자동화 ✅**: 12단계 파이프라인 동작 확인 (enterprise_leads + Telegram 알림 + Resend 이메일)
@@ -183,25 +193,25 @@ tail -5 ~/portal/wdc_extract.log
 
 ### 🔴 P0 — 즉시
 1. **Auth JWT 수정**: Vercel SUPABASE_SERVICE_ROLE_KEY를 JWT 형식(eyJ...)으로 교체 — P1 14개 기능의 Auth 실패 원인
-2. ~~**KOR AGR 재임포트**~~ ✅ 완료
-3. ~~**44개 MUST 미구현 기능 구현**~~ ✅ 완료 (102/102)
-4. ~~**SHOULD 40개 기능 구현**~~ ✅ 완료 (142/147)
-5. ~~**심층 검증 84/84 PASS**~~ ✅ 완료 (코드 변경 0건, DB 테이블 5개 생성)
-6. ~~**7개국 HS 벌크 다운로드**~~ ✅ 완료 (89,842행)
-7. ~~**Enterprise Sales 자동화**~~ ✅ 완료 (Telegram 알림, Resend 이메일, Cron 14개)
-8. ~~**'Grow With You' 요금제 전략**~~ ✅ 완료 (Free 200건, Pro 기능 전면 개방)
-9. ~~**Paddle 구독 취소 버그**~~ ✅ 완료 (subscription-cleanup Cron)
-10. **WDC 추출 완료 확인** → 3단계 상품명 세분화 → 5억 사전 매핑
-11. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
-12. **UX Audit 나머지 43항목**: POTAL_UX_AUDIT_CW13.md 11~53번 구현
+2. ~~**npm publish + MCP 레지스트리**~~ ✅ 완료 (potal-mcp-server@1.3.1 + io.github.soulmaten7/potal)
+3. ~~**Custom LLM 3종 리라이트**~~ ✅ 완료 (GPT Actions/Gemini Gem/Meta AI)
+4. ~~**Pre-computing**~~ ✅ 완료 (117,600 조합)
+5. ~~**HS10 파이프라인**~~ ✅ 완료 (7개국)
+6. **WDC 추출 완료 확인** → 3단계 상품명 세분화 → 5억 사전 매핑
+7. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
+8. **UX Audit 나머지 43항목**: POTAL_UX_AUDIT_CW13.md 11~53번 구현
+9. **GPT Actions 지침 수동 복사**: gpt-instructions.md → ChatGPT GPT 에디터에 복사-붙여넣기
+10. **Gemini Gem 지침 수동 복사**: gem-instructions.md → Google AI Studio에 복사-붙여넣기
+11. **mcp.so / glama.ai / smithery.ai 수동 등록**: MCP 디렉토리 사이트에 POTAL MCP 서버 등록
 
 ### 🔴 P1 — 이번 주
-1. **5억 상품명 사전 매핑 파이프라인**: WDC 전체 상품명 → HS 10자리 룩업 테이블 생성
-2. **가격 분기 규칙 테이블**: "valued over/under $X" 조건 코드 추출 → 규칙화
-3. **첫 유료 고객 10개 확보 전략 실행**: A그룹(Shopify/WooCommerce) + 크로스보더 플랫폼(사조 등) 타겟
-4. **전체 크로스보더 커머스 플랫폼 타겟 리스트업**: 사조 같은 잠재 고객 전수 조사
-5. **API category 필드 강화**: /api/v1/calculate에 category 필수/강력 권장
-6. **Dashboard 142개 기능 UI 확장**: 현재 8개 메뉴 → 전체 기능 노출
+1. **B2B 아웃리치 실행**: 15개 타겟 4티어 콜드이메일 발송 시작 (B2B_OUTREACH_TARGETS.md 기반)
+2. **UCP 생태계 진입 전략**: Google/Shopify UCP에 POTAL MCP 서버 연동 제안
+3. **5억 상품명 사전 매핑 파이프라인**: WDC 전체 상품명 → HS 10자리 룩업 테이블 생성
+4. **가격 분기 규칙 테이블**: "valued over/under $X" 조건 코드 추출 → 규칙화
+5. **첫 유료 고객 10개 확보 전략 실행**: A그룹(Shopify/WooCommerce) + AI플랫폼 + 크로스보더 플랫폼(사조 등)
+6. **API category 필드 강화**: /api/v1/calculate에 category 필수/강력 권장
+7. **Dashboard 142개 기능 UI 확장**: 현재 8개 메뉴 → 전체 기능 노출
 
 ### 🟡 P2 — 다음 주
 1. **데이터 유지보수 Cron 구현**: 240개국별 공고 URL 목록 → Vercel Cron 해시 비교 → Make.com webhook 연동
@@ -240,12 +250,16 @@ tail -5 ~/portal/wdc_extract.log
 - **관세율 실시간 (#17)**: ✅ cron 주간→일간
 - **Drawback (#37)**: ✅ /api/v1/drawback — 16개국 관세 환급 API
 - **EU VAT 세분화 (#2)**: ✅ 12개국 HS 챕터별 reduced rate
-- **MCP v1.3 (#40)**: ✅ 7→9 tools (document+compare)
+- **MCP v1.3.1**: ✅ 9 tools + npm publish (`potal-mcp-server@1.3.1`) + MCP 공식 레지스트리 (`io.github.soulmaten7/potal`)
+- **UCP**: ✅ Universal Commerce Protocol 발견 — Google+Shopify+Walmart+Target, MCP 내장, 관세 없음 = POTAL 기회
+- **Pre-computing**: ✅ 490 HS6 × 240국 = 117,600 조합, 캐시 <50ms
+- **B2B 아웃리치**: ✅ 15개 타겟 4티어 + 콜드이메일 3종 (ai-agents/B2B_OUTREACH_TARGETS.md)
+- **Custom LLM 3종 리라이트**: ✅ GPT Actions(B2B CTA), Gemini Gem(정적+CTA), Meta AI(정적+CTA)
 - **Incoterms (#20)**: ✅ EXW/FOB/CIF/DDP/DDU + who-pays-what
 - 47기능 42개 완료
 - **Vector DB 시딩**: ✅ hs_classification_vectors **1,023건** (Cowork 11: 170→1,023), 파이프라인 정확도 100%
 - **WDC 카테고리→HS6 1단계**: ✅ 145 카테고리 → 1,017 매핑 (product_hs_mappings 164→1,017, 비용 ~$0.01)
-- **7개국 HS 10자리 벌크 다운로드**: 🔄 진행중 (US/EU/UK/CA/AU/JP/KR 정부 공개 데이터, 무료)
+- **7개국 HS 10자리 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행)
 - **5억 사전 매핑 전략**: ✅ 확정 — 카테고리→HS6→10자리후보→상품명+가격매칭→룩업테이블
 - **HS Code 정확도**: ✅ 100% 구조 설계 완료 (6자리: 카테고리확정, 10자리: DB후보+규칙, 가격분기: if문)
 - **경쟁사 대비**: Avalara 40M+ → **POTAL 500M+** HS Code Classifications

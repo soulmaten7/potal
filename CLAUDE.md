@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-14 23:30 KST (CW13 Cowork — Enterprise Sales 자동화, UX Audit TOP10, 'Grow With You' 요금제 전략, Paddle 구독 버그 수정, Compare Plans 통일, Free 200건, Cron 14개)
+# 마지막 업데이트: 2026-03-15 14:00 KST (CW13 Cowork 후반 — npm publish potal-mcp-server@1.3.1, MCP 공식 레지스트리 등록, Custom LLM 3종 리라이트, B2B 아웃리치 15사, UCP 발견, Pre-computing 117K, HS10 파이프라인)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -77,7 +77,12 @@ portal/
 - **7개국 HS 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행: US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633)
 - **관세율 자동업데이트**: Vercel Cron **14개** (CW13: division-monitor + enterprise-lead-match 매30분 + subscription-cleanup 매일 03:00 UTC)
 - **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
-- **MCP Server**: v1.2.0, 7개 도구 (calculate, classify, restrictions, screen_shipment, screen_denied_party, lookup_fta, list_countries)
+- **MCP Server**: v1.3.1, 9개 도구, **npm publish 완료** (`potal-mcp-server@1.3.1`), **MCP 공식 레지스트리 등록 완료** (`io.github.soulmaten7/potal`, registry.modelcontextprotocol.io)
+- **Pre-computing**: ✅ 490 HS6 × 240국 = **117,600 조합** 사전 계산 완료 (캐시 히트 <50ms)
+- **HS10 파이프라인**: ✅ 7개국 10자리 파이프라인 구현 완료
+- **UCP (Universal Commerce Protocol)**: Google+Shopify+Walmart+Target 공동 개발, MCP 내장 — 관세 계산 없음 = **POTAL 기회**
+- **Custom LLM 3종 리라이트**: GPT Actions(API연동, B2B CTA), Gemini Gem(정적데이터+CTA), Meta AI(정적데이터+CTA)
+- **B2B 아웃리치**: 15개 타겟 4티어 (AI플랫폼/이커머스/결제물류/마켓플레이스) + 콜드이메일 3종
 - **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (~1,807/1,899파트, extract_with_categories.py)
 - **WDC 카테고리→HS6 1단계**: ✅ 완료 (10M JSONL → 145 고유 카테고리 → 147 HS6 매핑, 비용 ~$0.01)
 - **WDC 2단계**: ✅ 완료 (377M 상품 → 38 신규 카테고리 → 1,729,533 상품 커버, product_hs_mappings 1,055건, 벡터 1,104건)
@@ -214,6 +219,50 @@ portal/
 **파일 생성/수정:**
 - 생성: telegram.ts, enterprise-email.ts, enterprise-inquiry/route.ts, enterprise-lead-match/route.ts, subscription-cleanup/route.ts
 - 수정: vercel.json, billing/webhook/route.ts, middleware.ts, plan-checker.ts, keys.ts, DashboardContent.tsx, pricing/page.tsx, page.tsx, developers/page.tsx, Header.tsx, Footer.tsx, morning-brief/route.ts
+
+### ⭐ CW13 Cowork 후반 세션 성과 (2026-03-15 00:00~14:00 KST)
+
+**npm publish + MCP 공식 레지스트리:**
+- `potal-mcp-server@1.3.1` npm 공개 패키지 publish ✅ (npmjs.com/package/potal-mcp-server)
+- MCP 공식 레지스트리 등록 ✅ (`io.github.soulmaten7/potal`, registry.modelcontextprotocol.io, status: active)
+- server.json description 100자 제한 수정 후 publish 성공
+
+**Custom LLM 3종 전면 리라이트:**
+- **GPT Actions** (gpt-instructions.md): "쇼핑 어시스턴트" → "Global Landed Cost Infrastructure". 정확한 세율만 (추정 금지), "Powered by POTAL" 푸터, 5건+ 사용 시 B2B CTA, 에러 핸들링
+- **Gemini Gem** (gem-instructions.md): 외부 API 미지원 확인 → 정적 참고 데이터 + "정확한 계산은 potal.app" CTA 전략
+- **Meta AI** (ai-studio-instructions.md): Gemini과 동일 전략 (정적데이터 + CTA)
+
+**B2B 아웃리치 전략:**
+- 15개 타겟 기업 4티어: Tier 1(AI: OpenAI/Google/Perplexity/Anthropic/Meta), Tier 2(이커머스: Shopify/WooCommerce/BigCommerce), Tier 3(결제/물류: Stripe/PayPal/Royal Mail), Tier 4(마켓플레이스: eBay/Etsy/Temu·Shein/Amazon)
+- 콜드이메일 3종 (AI플랫폼용/이커머스용/B2B 엔터프라이즈용)
+- 문서: ai-agents/B2B_OUTREACH_TARGETS.md, ai-agents/LLM_COMMERCE_INTEGRATION_ANALYSIS.md
+
+**UCP (Universal Commerce Protocol) 발견:**
+- Google + Shopify + Walmart + Target 공동 개발 오픈 표준
+- MCP, A2A, AP2 내장 — 관세 계산은 **없음** = POTAL MCP 서버가 UCP 생태계에 직접 연결 가능
+- 핵심 인사이트: POTAL MCP = UCP 생태계 진입 티켓
+
+**Pre-computing 완료:**
+- 490 HS6 코드 × 240국 = **117,600 조합** 사전 계산 + git push
+- 캐시 히트 시 <50ms 응답, AI 호출 $0
+
+**HS10 파이프라인 구현:**
+- 7개국(US/EU/UK/CA/AU/JP/KR) 10자리 파이프라인 완성
+- gov_tariff_schedules 89,842행 기반 매칭
+
+**경쟁력 평가 (은태님 요청):**
+- Data: Tier 0 (경쟁사 없음), Features: Tier 1, Price: Tier 0, Architecture: Tier 1, Implementation: Tier 1, Real-world Validation: Tier 3 (고객 없음 = 유일한 약점)
+
+**파일 생성:**
+- ai-agents/B2B_OUTREACH_TARGETS.md, ai-agents/LLM_COMMERCE_INTEGRATION_ANALYSIS.md
+- mcp-server/server.json, mcp-server/registry-metadata.json, mcp-server/.npmignore
+
+**파일 수정:**
+- ai-agents/custom-gpt/gpt-instructions.md (전면 리라이트)
+- ai-agents/gemini-gem/gem-instructions.md (전면 리라이트)
+- ai-agents/meta-ai/ai-studio-instructions.md (전면 리라이트)
+- mcp-server/package.json (name/version/keywords/homepage)
+- mcp-server/README.md (9 tools 문서화)
 
 ## 절대 규칙
 1. **B2C 코드 수정 금지** — lib/search/, lib/agent/, components/search/ 등. 보존만
