@@ -35,6 +35,103 @@ function CopyableCodeBlock({ label, code, labelColor = '#F59E0B' }: { label: str
   );
 }
 
+const CODE_EXAMPLES = {
+  cURL: `curl -X POST https://www.potal.app/api/v1/calculate \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: YOUR_API_KEY" \\
+  -d '{
+    "from_country": "CN",
+    "to_country": "US",
+    "hs_code": "6109.10",
+    "value": 25.00,
+    "currency": "USD"
+  }'`,
+  JavaScript: `const response = await fetch(
+  "https://www.potal.app/api/v1/calculate",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": "YOUR_API_KEY",
+    },
+    body: JSON.stringify({
+      from_country: "CN",
+      to_country: "US",
+      hs_code: "6109.10",
+      value: 25.00,
+      currency: "USD",
+    }),
+  }
+);
+const data = await response.json();
+console.log(data.total_landed_cost);`,
+  Python: `import requests
+
+response = requests.post(
+    "https://www.potal.app/api/v1/calculate",
+    headers={
+        "Content-Type": "application/json",
+        "X-API-Key": "YOUR_API_KEY",
+    },
+    json={
+        "from_country": "CN",
+        "to_country": "US",
+        "hs_code": "6109.10",
+        "value": 25.00,
+        "currency": "USD",
+    },
+)
+data = response.json()
+print(data["total_landed_cost"])`,
+};
+
+function CodeTabs() {
+  const tabs = Object.keys(CODE_EXAMPLES) as (keyof typeof CODE_EXAMPLES)[];
+  const [active, setActive] = useState<keyof typeof CODE_EXAMPLES>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('potal-code-lang');
+      if (saved && tabs.includes(saved as keyof typeof CODE_EXAMPLES)) return saved as keyof typeof CODE_EXAMPLES;
+    }
+    return 'cURL';
+  });
+
+  const handleTabChange = (tab: keyof typeof CODE_EXAMPLES) => {
+    setActive(tab);
+    localStorage.setItem('potal-code-lang', tab);
+  };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 0, marginBottom: 0 }}>
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => handleTabChange(tab)}
+            style={{
+              padding: '8px 20px',
+              fontSize: 13,
+              fontWeight: active === tab ? 700 : 500,
+              color: active === tab ? '#F59E0B' : 'rgba(255,255,255,0.5)',
+              background: active === tab ? '#1f2937' : '#111827',
+              border: 'none',
+              borderTopLeftRadius: tab === tabs[0] ? 12 : 0,
+              borderTopRightRadius: tab === tabs[tabs.length - 1] ? 12 : 0,
+              cursor: 'pointer',
+              borderBottom: active === tab ? '2px solid #F59E0B' : '2px solid transparent',
+              transition: 'all 0.15s',
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+      <div style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, overflow: 'hidden' }}>
+        <CopyableCodeBlock label={active} code={CODE_EXAMPLES[active]} labelColor="#F59E0B" />
+      </div>
+    </div>
+  );
+}
+
 const SIDEBAR_LINKS = [
   { id: 'quick-start', label: 'Quick Start' },
   { id: 'api-reference', label: 'API Reference' },
@@ -524,46 +621,8 @@ export default function DevelopersPage() {
             </table>
           </div>
 
-          {/* Code Examples */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-            <CopyableCodeBlock label="cURL" code={`curl -X POST https://www.potal.app/api/v1/calculate \\
-  -H "Content-Type: application/json" \\
-  -H "X-API-Key: pk_live_YOUR_KEY" \\
-  -d '{"price": 99.99, "origin": "CN", "destinationCountry": "US"}'`} />
-
-            <CopyableCodeBlock label="JavaScript" code={`const res = await fetch(
-  "https://www.potal.app/api/v1/calculate",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": "pk_live_YOUR_KEY",
-    },
-    body: JSON.stringify({
-      price: 99.99,
-      origin: "CN",
-      destinationCountry: "US",
-    }),
-  }
-);
-const data = await res.json();`} />
-
-            <CopyableCodeBlock label="Python" code={`import requests
-
-resp = requests.post(
-    "https://www.potal.app/api/v1/calculate",
-    headers={
-        "Content-Type": "application/json",
-        "X-API-Key": "pk_live_YOUR_KEY",
-    },
-    json={
-        "price": 99.99,
-        "origin": "CN",
-        "destinationCountry": "US",
-    },
-)
-data = resp.json()`} />
-          </div>
+          {/* Code Examples — Tabbed */}
+          <CodeTabs />
         </section>
 
         {/* Section D: Widget Customization */}

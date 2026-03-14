@@ -18,6 +18,7 @@ import { ShopifyAppBridge } from "@/components/shopify/ShopifyAppBridge";
 import { ShopifyNavMenu } from "@/components/shopify/ShopifyNavMenu";
 import { SupabaseProvider } from "./context/SupabaseProvider";
 import { I18nProvider } from "./context/I18nProvider";
+import { ToastProvider } from "@/components/ui/Toast";
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -181,6 +182,7 @@ export default function RootLayout({
         <ShopifyNavMenu />
         <SupabaseProvider>
           <I18nProvider>
+            <ToastProvider>
 
               <div className="flex flex-col min-h-screen relative">
 
@@ -188,7 +190,7 @@ export default function RootLayout({
                 <Header />
 
                 {/* 메인 컨텐츠 */}
-                <main className="flex-grow w-full">
+                <main className="flex-grow w-full animate-fadeIn">
                   {children}
                 </main>
 
@@ -205,6 +207,7 @@ export default function RootLayout({
 
               </div>
 
+            </ToastProvider>
           </I18nProvider>
         </SupabaseProvider>
       </body>

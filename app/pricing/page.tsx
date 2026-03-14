@@ -298,13 +298,15 @@ export default function PricingPage() {
           </p>
 
           {/* Billing Toggle */}
-          <div style={{
+          <div role="radiogroup" aria-label="Billing cycle" style={{
             display: 'inline-flex',
             background: 'rgba(255,255,255,0.1)',
             borderRadius: 12,
             padding: 4,
           }}>
             <button
+              role="radio"
+              aria-checked={billingCycle === 'monthly'}
               onClick={() => setBillingCycle('monthly')}
               style={{
                 padding: '10px 24px',
@@ -321,6 +323,8 @@ export default function PricingPage() {
               Monthly
             </button>
             <button
+              role="radio"
+              aria-checked={billingCycle === 'annual'}
               onClick={() => setBillingCycle('annual')}
               style={{
                 padding: '10px 24px',
@@ -454,7 +458,9 @@ export default function PricingPage() {
                 textDecoration: 'none',
                 background: plan.highlight
                   ? 'linear-gradient(135deg, #F59E0B 0%, #d97706 100%)'
-                  : '#02122c',
+                  : plan.name === 'Enterprise'
+                    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+                    : '#02122c',
                 color: 'white',
                 marginBottom: 28,
                 transition: 'transform 0.15s, box-shadow 0.15s',
@@ -541,7 +547,7 @@ export default function PricingPage() {
                 ['SLA', '&#8212;', '&#8212;', '99.9%', '99.99%'],
                 ['Rate Limit', '30/min', '60/min', '120/min', 'Unlimited'],
               ].map(([feature, free, basic, pro, enterprise], i) => (
-                <tr key={i} style={{ borderTop: '1px solid #f0f0f0' }}>
+                <tr key={i} style={{ borderTop: '1px solid #f0f0f0', background: i % 2 === 1 ? '#fafafa' : 'transparent' }} className="hover:!bg-slate-100 transition-colors">
                   <td style={{ padding: '14px 20px', color: '#444' }}>{feature}</td>
                   <td
                     style={{ textAlign: 'center', padding: '14px 12px', color: '#888' }}

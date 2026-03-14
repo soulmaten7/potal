@@ -4,7 +4,7 @@
   /* White background + Navy text — Apple Store 스타일 직관성 (세션 10 전환) */
   --background: #ffffff;
   --foreground: #02122c;
-  --muted: #64748b;
+  --muted: #475569;
   /* Brand colors preserved */
   --potal-navy: #02122c;
   --potal-orange: #F59E0B;
@@ -22,7 +22,7 @@
     /* Dark mode도 화이트 배경 유지 — POTAL 브랜드 일관성 */
     --background: #ffffff;
     --foreground: #02122c;
-    --muted: #64748b;
+    --muted: #475569;
   }
 }
 
@@ -30,6 +30,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  line-height: 1.7;
+}
+
+h1, h2, h3, h4 {
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 /* Card / container base */
@@ -118,6 +124,10 @@ body.shopify-embedded main {
 
 /* Landing page responsive overrides */
 @media (max-width: 768px) {
+  section {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
   .hero-grid {
     grid-template-columns: 1fr !important;
     gap: 32px !important;
@@ -144,6 +154,18 @@ body.shopify-embedded main {
   .trust-grid {
     grid-template-columns: 1fr !important;
   }
+}
+
+/* Button active press + focus-visible ring */
+button, a[role="button"], [type="submit"] {
+  transition: transform 0.1s ease;
+}
+button:active, a[role="button"]:active, [type="submit"]:active {
+  transform: scale(0.98);
+}
+button:focus-visible, a:focus-visible, [type="submit"]:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #F59E0B;
+  outline-offset: 2px;
 }
 
 /* Hide native browser clear button for search inputs (we have custom X) */

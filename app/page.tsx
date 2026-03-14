@@ -370,7 +370,7 @@ export default function HomePage() {
                 The infrastructure for global commerce
               </div>
 
-              <h1 className="hero-title" style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.15, marginBottom: 20 }}>
+              <h1 className="hero-title" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)', fontWeight: 800, lineHeight: 1.15, marginBottom: 20 }}>
                 Total Landed Cost,{' '}
                 <span style={{
                   background: 'linear-gradient(135deg, #F59E0B, #f97316)',
@@ -512,14 +512,24 @@ export default function HomePage() {
             { value: '99.2%', label: 'Calculation Accuracy', sub: 'Verified against gov sources' },
             { value: '<200ms', label: 'API Response Time', sub: 'p95 latency globally' },
           ].map((stat) => (
-            <div key={stat.label}>
-              <div style={{ fontSize: 36, fontWeight: 800, color: '#02122c', marginBottom: 4 }}>
+            <div key={stat.label} style={{
+              background: '#f8fafc',
+              border: '1px solid #e5e7eb',
+              borderRadius: 12,
+              padding: '20px 16px',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+              cursor: 'default',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+            >
+              <div style={{ fontSize: 36, fontWeight: 800, color: '#02122c', marginBottom: 4, fontVariantNumeric: 'tabular-nums' }}>
                 {stat.value}
               </div>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#444', marginBottom: 4 }}>
                 {stat.label}
               </div>
-              <div style={{ fontSize: 12, color: '#999' }}>
+              <div style={{ fontSize: 12, color: '#888' }}>
                 {stat.sub}
               </div>
             </div>
@@ -547,7 +557,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ HOW IT WORKS ═══════════ */}
       <FadeInSection>
-      <section style={{ padding: '80px 20px', maxWidth: 1100, margin: '0 auto' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
             How it works
@@ -621,7 +631,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ FEATURES ═══════════════ */}
       <FadeInSection>
-      <section style={{ padding: '80px 20px', background: 'white' }}>
+      <section style={{ padding: '96px 20px', background: 'white' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
@@ -632,7 +642,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
             <FeatureCard
               icon="🌍"
               title="240 Countries"
@@ -670,7 +680,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ API RESPONSE ═══════════ */}
       <FadeInSection>
-      <section style={{ padding: '80px 20px', maxWidth: 1100, margin: '0 auto' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 16 }}>
@@ -702,7 +712,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ WIDGET DEMO ════════════ */}
       <FadeInSection>
-      <section style={{ padding: '80px 20px', background: '#02122c', color: 'white' }}>
+      <section style={{ padding: '96px 20px', background: '#02122c', color: 'white' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, marginBottom: 16 }}>
             Your customers see this
@@ -734,9 +744,79 @@ export default function HomePage() {
       </section>
       </FadeInSection>
 
+      {/* ═══════════════════ BEFORE vs AFTER ═════════ */}
+      <FadeInSection>
+      <section style={{ padding: '96px 20px', maxWidth: 960, margin: '0 auto' }}>
+        <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12, textAlign: 'center' }}>
+          The checkout experience your customers deserve
+        </h2>
+        <p style={{ fontSize: 16, color: '#666', marginBottom: 48, textAlign: 'center' }}>
+          Surprise fees kill conversions. Transparency drives trust.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+          {/* WITHOUT POTAL */}
+          <div style={{
+            background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 16, padding: 32,
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#dc2626', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Without POTAL
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#991b1b', marginBottom: 20 }}>
+              Customer sees $45 at checkout...
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                'Unexpected $18 customs charge at delivery',
+                'Customer refuses package → return shipping costs',
+                'Negative review: "Hidden fees!"',
+                'Lost customer lifetime value',
+              ].map((item, i) => (
+                <li key={i} style={{ fontSize: 14, color: '#7f1d1d', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <span style={{ color: '#dc2626', fontWeight: 700, flexShrink: 0 }}>✕</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <div style={{ marginTop: 24, padding: '12px 16px', background: '#fee2e2', borderRadius: 8, fontSize: 13, color: '#991b1b', fontWeight: 600 }}>
+              Cart abandonment rate: up to 48%
+            </div>
+          </div>
+
+          {/* WITH POTAL */}
+          <div style={{
+            background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 16, padding: 32,
+          }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#16a34a', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              With POTAL
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#14532d', marginBottom: 20 }}>
+              Customer sees $63 total landed cost
+            </div>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[
+                'Duties, taxes & fees shown before checkout',
+                'No surprise charges at delivery',
+                '5-star review: "Exactly what I expected to pay"',
+                'Repeat customer → higher LTV',
+              ].map((item, i) => (
+                <li key={i} style={{ fontSize: 14, color: '#14532d', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                  <span style={{ color: '#16a34a', fontWeight: 700, flexShrink: 0 }}>✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <div style={{ marginTop: 24, padding: '12px 16px', background: '#dcfce7', borderRadius: 8, fontSize: 13, color: '#14532d', fontWeight: 600 }}>
+              Conversion rate increase: up to 25%
+            </div>
+          </div>
+        </div>
+      </section>
+      </FadeInSection>
+
       {/* ═══════════════════ PRICING TEASER ═════════ */}
       <FadeInSection>
-      <section style={{ padding: '80px 20px', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
           Start free, scale as you grow
         </h2>
@@ -786,7 +866,7 @@ export default function HomePage() {
       <section style={{
         background: 'linear-gradient(135deg, #02122c 0%, #0a2540 100%)',
         color: 'white',
-        padding: '80px 20px',
+        padding: '96px 20px',
         textAlign: 'center',
       }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>

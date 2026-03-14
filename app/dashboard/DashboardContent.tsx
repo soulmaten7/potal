@@ -430,13 +430,38 @@ export default function DashboardContent() {
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         minHeight: 'calc(100vh - 80px)',
         background: '#f5f5f5',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        padding: '32px 24px',
       }}>
-        <p style={{ color: '#888', fontSize: 14 }}>
-          {!session ? 'Redirecting to sign in...' : 'Loading dashboard...'}
-        </p>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          {/* Skeleton header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32 }}>
+            <div style={{ width: 180, height: 28, borderRadius: 8, background: '#e5e7eb' }} className="animate-pulse" />
+            <div style={{ width: 120, height: 36, borderRadius: 8, background: '#e5e7eb' }} className="animate-pulse" />
+          </div>
+          {/* Skeleton stat cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                <div style={{ width: 80, height: 12, borderRadius: 4, background: '#e5e7eb', marginBottom: 12 }} className="animate-pulse" />
+                <div style={{ width: 60, height: 28, borderRadius: 6, background: '#e5e7eb' }} className="animate-pulse" />
+              </div>
+            ))}
+          </div>
+          {/* Skeleton content blocks */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            {[1, 2].map(i => (
+              <div key={i} style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', minHeight: 200 }}>
+                <div style={{ width: 140, height: 16, borderRadius: 4, background: '#e5e7eb', marginBottom: 20 }} className="animate-pulse" />
+                <div style={{ width: '100%', height: 12, borderRadius: 4, background: '#f3f4f6', marginBottom: 12 }} className="animate-pulse" />
+                <div style={{ width: '80%', height: 12, borderRadius: 4, background: '#f3f4f6', marginBottom: 12 }} className="animate-pulse" />
+                <div style={{ width: '60%', height: 12, borderRadius: 4, background: '#f3f4f6' }} className="animate-pulse" />
+              </div>
+            ))}
+          </div>
+          <p style={{ color: '#999', fontSize: 13, textAlign: 'center', marginTop: 24 }}>
+            {!session ? 'Redirecting to sign in...' : 'Loading dashboard...'}
+          </p>
+        </div>
       </div>
     );
   }

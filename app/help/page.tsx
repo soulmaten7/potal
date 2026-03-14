@@ -197,13 +197,13 @@ function HelpContent() {
                 return (
                   <div key={item.id}>
                     {idx > 0 && <div style={{ height: '1px', background: '#e2e8f0', margin: '0 20px' }} />}
-                    <button onClick={() => toggleItem(item.id)} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                    <button onClick={() => toggleItem(item.id)} aria-expanded={isOpen} aria-controls={`faq-answer-${item.id}`} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', textAlign: 'left', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                       <span style={{ fontSize: '14px', fontWeight: 700, color: isOpen ? '#F59E0B' : '#02122c', transition: 'color 0.2s', paddingRight: '12px' }}>
                         {item.question}
                       </span>
-                      <Icons.ChevronDown style={{ width: '16px', height: '16px', color: isOpen ? '#F59E0B' : '#94a3b8', transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none', flexShrink: 0 }} />
+                      <Icons.ChevronDown aria-hidden="true" style={{ width: '16px', height: '16px', color: isOpen ? '#F59E0B' : '#94a3b8', transition: 'transform 0.3s', transform: isOpen ? 'rotate(180deg)' : 'none', flexShrink: 0 }} />
                     </button>
-                    <div style={{ overflow: 'hidden', maxHeight: isOpen ? '500px' : '0', opacity: isOpen ? 1 : 0, transition: 'all 0.3s ease' }}>
+                    <div id={`faq-answer-${item.id}`} role="region" aria-labelledby={`faq-q-${item.id}`} style={{ overflow: 'hidden', maxHeight: isOpen ? '500px' : '0', opacity: isOpen ? 1 : 0, transition: 'all 0.3s ease' }}>
                       <div style={{ padding: '0 20px 16px', fontSize: '13px', color: '#64748b', lineHeight: '1.7' }}>{item.answer}</div>
                     </div>
                   </div>
