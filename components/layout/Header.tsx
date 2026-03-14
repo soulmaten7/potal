@@ -25,8 +25,18 @@ export function Header() {
 
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 10);
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -62,7 +72,13 @@ export function Header() {
   const userEmail = session?.user?.email;
 
   return (
-    <header className="bg-white text-[#02122c] w-full border-b border-slate-200 relative z-[5000] hidden md:block">
+    <header
+      className={`text-[#02122c] w-full border-b relative z-[5000] hidden md:block sticky top-0 transition-all duration-200 ${
+        scrolled
+          ? 'bg-white/80 backdrop-blur-xl border-slate-200/50 shadow-sm'
+          : 'bg-white border-slate-200'
+      }`}
+    >
       <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
 
         {/* Logo */}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 // ─── Animated Counter ─────────────────────────────
@@ -161,15 +161,169 @@ function FeatureCard({ icon, title, description }: { icon: string; title: string
       borderRadius: 16,
       padding: 28,
       border: '1px solid #e5e7eb',
-      transition: 'transform 0.2s, box-shadow 0.2s',
+      transition: 'transform 0.3s, box-shadow 0.3s',
       cursor: 'default',
     }}
-    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.08)'; }}
+    onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)'; }}
     onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ fontSize: 32, marginBottom: 16 }}>{icon}</div>
-      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#02122c', marginBottom: 8 }}>{title}</h3>
+      <h3 style={{ fontSize: 18, fontWeight: 700, color: '#02122c', marginBottom: 8, letterSpacing: '-0.01em' }}>{title}</h3>
       <p style={{ fontSize: 14, color: '#666', lineHeight: 1.7 }}>{description}</p>
+    </div>
+  );
+}
+
+// ─── Live Widget Demo ─────────────────────────────
+const DEMO_COUNTRIES = [
+  { code: 'US', name: 'United States', flag: '\uD83C\uDDFA\uD83C\uDDF8' },
+  { code: 'GB', name: 'United Kingdom', flag: '\uD83C\uDDEC\uD83C\uDDE7' },
+  { code: 'DE', name: 'Germany', flag: '\uD83C\uDDE9\uD83C\uDDEA' },
+  { code: 'JP', name: 'Japan', flag: '\uD83C\uDDEF\uD83C\uDDF5' },
+  { code: 'AU', name: 'Australia', flag: '\uD83C\uDDE6\uD83C\uDDFA' },
+  { code: 'KR', name: 'South Korea', flag: '\uD83C\uDDF0\uD83C\uDDF7' },
+  { code: 'BR', name: 'Brazil', flag: '\uD83C\uDDE7\uD83C\uDDF7' },
+  { code: 'CA', name: 'Canada', flag: '\uD83C\uDDE8\uD83C\uDDE6' },
+];
+
+interface DemoResult {
+  importDuty: number;
+  salesTax: number;
+  taxLabel: string;
+  totalLandedCost: number;
+  deMinimisApplied: boolean;
+  dutyRate: string;
+}
+
+const DEMO_PRELOADED: Record<string, DemoResult> = {
+  US: { importDuty: 8.25, salesTax: 4.44, taxLabel: 'Sales Tax', totalLandedCost: 71.18, deMinimisApplied: false, dutyRate: '16.5%' },
+  GB: { importDuty: 0, salesTax: 10.00, taxLabel: 'VAT 20%', totalLandedCost: 68.49, deMinimisApplied: true, dutyRate: '0% (de minimis)' },
+  DE: { importDuty: 0, salesTax: 9.50, taxLabel: 'VAT 19%', totalLandedCost: 68.24, deMinimisApplied: true, dutyRate: '0% (de minimis)' },
+  JP: { importDuty: 5.00, salesTax: 5.50, taxLabel: 'JCT 10%', totalLandedCost: 69.74, deMinimisApplied: false, dutyRate: '10%' },
+  AU: { importDuty: 0, salesTax: 5.00, taxLabel: 'GST 10%', totalLandedCost: 63.49, deMinimisApplied: true, dutyRate: '0% (de minimis)' },
+  KR: { importDuty: 0, salesTax: 5.00, taxLabel: 'VAT 10%', totalLandedCost: 63.49, deMinimisApplied: true, dutyRate: '0% (de minimis)' },
+  BR: { importDuty: 17.50, salesTax: 30.20, taxLabel: 'Import Taxes', totalLandedCost: 106.19, deMinimisApplied: false, dutyRate: '35%' },
+  CA: { importDuty: 9.00, salesTax: 2.95, taxLabel: 'GST 5%', totalLandedCost: 70.44, deMinimisApplied: false, dutyRate: '18%' },
+};
+
+function LiveWidgetDemo() {
+  const [selected, setSelected] = useState('US');
+  const result = DEMO_PRELOADED[selected];
+  const country = DEMO_COUNTRIES.find(c => c.code === selected)!;
+
+  return (
+    <div style={{
+      background: 'white',
+      borderRadius: 16,
+      padding: 32,
+      maxWidth: 420,
+      margin: '0 auto',
+      textAlign: 'left',
+      color: '#1a1a1a',
+    }}>
+      <div style={{ fontSize: 16, fontWeight: 700, color: '#02122c', marginBottom: 16 }}>
+        Total Landed Cost
+      </div>
+
+      {/* Country selector */}
+      <div style={{ marginBottom: 16 }}>
+        <label style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 6, display: 'block' }}>
+          Destination Country
+        </label>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {DEMO_COUNTRIES.map(c => (
+            <button
+              key={c.code}
+              onClick={() => setSelected(c.code)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: 8,
+                border: selected === c.code ? '2px solid #F59E0B' : '1px solid #e5e7eb',
+                background: selected === c.code ? '#FEF3C7' : '#f8fafc',
+                fontSize: 13,
+                fontWeight: selected === c.code ? 700 : 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                color: '#333',
+              }}
+            >
+              {c.flag} {c.code}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ fontSize: 12, color: '#3b82f6', marginBottom: 12 }}>
+        {result.deMinimisApplied
+          ? `De minimis applies — duty-free to ${country.name}`
+          : `Duty rate: ${result.dutyRate} to ${country.name}`}
+      </div>
+
+      {/* Breakdown */}
+      {[
+        ['Product Price', '$49.99'],
+        [`Import Duty (${result.dutyRate})`, `$${result.importDuty.toFixed(2)}`],
+        [`${result.taxLabel}`, `$${result.salesTax.toFixed(2)}`],
+        ['Shipping', '$8.50'],
+      ].map(([label, value], i) => (
+        <div key={i} style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          padding: '8px 0',
+          fontSize: 14,
+          borderBottom: i < 3 ? '1px solid #f0f0f0' : 'none',
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          <span style={{ color: '#666' }}>{label}</span>
+          <span style={{ fontWeight: 600, color: result.importDuty === 0 && i === 1 ? '#10b981' : '#333' }}>
+            {value}
+          </span>
+        </div>
+      ))}
+
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        padding: '14px 0 0',
+        marginTop: 8,
+        borderTop: '2px solid #02122c',
+        fontSize: 16,
+        fontWeight: 700,
+        fontVariantNumeric: 'tabular-nums',
+      }}>
+        <span>Total Landed Cost</span>
+        <span style={{ color: '#02122c' }}>${result.totalLandedCost.toFixed(2)}</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Fade In Section ─────────────────────────────
+function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(32px)',
+        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+      }}
+    >
+      {children}
     </div>
   );
 }
@@ -249,10 +403,10 @@ export default function HomePage() {
                     fontWeight: 700,
                     fontSize: 16,
                     textDecoration: 'none',
-                    transition: 'transform 0.15s',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,158,11,0.35)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
                   Calculate Duties Free
                 </Link>
@@ -285,12 +439,47 @@ export default function HomePage() {
                   { value: 181, suffix: '', label: 'Tariff Countries' },
                 ].map((stat, i) => (
                   <div key={i}>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: '#F59E0B' }}>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: '#F59E0B', fontVariantNumeric: 'tabular-nums' }}>
                       <AnimatedNumber target={stat.value} suffix={stat.suffix} />
                     </div>
                     <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{stat.label}</div>
                   </div>
                 ))}
+              </div>
+
+              {/* Trusted By */}
+              <div style={{ marginTop: 40, paddingTop: 24, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>
+                  Built on official data from
+                </div>
+                <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {[
+                    { name: 'WTO', full: 'World Trade Organization' },
+                    { name: 'USITC', full: 'US International Trade Commission' },
+                    { name: 'EU TARIC', full: 'EU Tariff Database' },
+                    { name: 'UK HMRC', full: 'UK Trade Tariff' },
+                    { name: 'CBSA', full: 'Canada Border Services' },
+                    { name: 'KCS', full: 'Korea Customs Service' },
+                    { name: 'OFAC', full: 'US Sanctions' },
+                  ].map((source) => (
+                    <span
+                      key={source.name}
+                      title={source.full}
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: 'rgba(255,255,255,0.45)',
+                        padding: '4px 10px',
+                        borderRadius: 6,
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {source.name}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -303,6 +492,7 @@ export default function HomePage() {
       </section>
 
       {/* ═══════════════════ TRUST METRICS ═════════ */}
+      <FadeInSection>
       <section style={{
         padding: '48px 20px 40px',
         borderBottom: '1px solid #e5e7eb',
@@ -353,8 +543,10 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+      </FadeInSection>
 
       {/* ═══════════════════ HOW IT WORKS ═══════════ */}
+      <FadeInSection>
       <section style={{ padding: '80px 20px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
@@ -425,8 +617,10 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+      </FadeInSection>
 
       {/* ═══════════════════ FEATURES ═══════════════ */}
+      <FadeInSection>
       <section style={{ padding: '80px 20px', background: 'white' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -472,8 +666,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </FadeInSection>
 
       {/* ═══════════════════ API RESPONSE ═══════════ */}
+      <FadeInSection>
       <section style={{ padding: '80px 20px', maxWidth: 1100, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
@@ -502,8 +698,10 @@ export default function HomePage() {
           <ResponsePreview />
         </div>
       </section>
+      </FadeInSection>
 
       {/* ═══════════════════ WIDGET DEMO ════════════ */}
+      <FadeInSection>
       <section style={{ padding: '80px 20px', background: '#02122c', color: 'white' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, marginBottom: 16 }}>
@@ -511,86 +709,10 @@ export default function HomePage() {
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16, marginBottom: 40, maxWidth: 500, margin: '0 auto 40px' }}>
             The POTAL widget embeds directly into your product page.
-            Buyers select their country and instantly see the full cost.
+            Select a country below to see it in action.
           </p>
 
-          {/* Widget mockup */}
-          <div style={{
-            background: 'white',
-            borderRadius: 16,
-            padding: 32,
-            maxWidth: 400,
-            margin: '0 auto',
-            textAlign: 'left',
-            color: '#1a1a1a',
-          }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#02122c', marginBottom: 16 }}>
-              Total Landed Cost
-            </div>
-            <div style={{
-              background: '#f8fafc',
-              borderRadius: 10,
-              padding: '10px 14px',
-              marginBottom: 16,
-              fontSize: 14,
-              color: '#666',
-              border: '1px solid #e5e7eb',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}>
-              <span>Destination Country</span>
-              <span style={{ fontWeight: 600, color: '#333' }}>United States</span>
-            </div>
-            <div style={{
-              background: '#f8fafc',
-              borderRadius: 10,
-              padding: '10px 14px',
-              marginBottom: 20,
-              fontSize: 14,
-              color: '#666',
-              border: '1px solid #e5e7eb',
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}>
-              <span>ZIP Code</span>
-              <span style={{ fontWeight: 600, color: '#333' }}>10001</span>
-            </div>
-
-            <div style={{ fontSize: 12, color: '#3b82f6', marginBottom: 12 }}>
-              Tax rate based on New York
-            </div>
-
-            {[
-              ['Product Price', '$49.99'],
-              ['Import Duty (16.5%)', '$8.25'],
-              ['Sales Tax (NY 8.875%)', '$5.19'],
-              ['Shipping', '$8.50'],
-            ].map(([label, value], i) => (
-              <div key={i} style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '8px 0',
-                fontSize: 14,
-                borderBottom: i < 3 ? '1px solid #f0f0f0' : 'none',
-              }}>
-                <span style={{ color: '#666' }}>{label}</span>
-                <span style={{ fontWeight: 600, color: '#333' }}>{value}</span>
-              </div>
-            ))}
-
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '14px 0 0',
-              marginTop: 8,
-              borderTop: '2px solid #02122c',
-              fontSize: 16,
-              fontWeight: 700,
-            }}>
-              <span>Total Landed Cost</span>
-              <span style={{ color: '#02122c' }}>$71.93</span>
-            </div>
-          </div>
+          <LiveWidgetDemo />
 
           <div style={{ marginTop: 32 }}>
             <Link
@@ -610,19 +732,21 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </FadeInSection>
 
       {/* ═══════════════════ PRICING TEASER ═════════ */}
+      <FadeInSection>
       <section style={{ padding: '80px 20px', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
           Start free, scale as you grow
         </h2>
         <p style={{ fontSize: 16, color: '#666', marginBottom: 40 }}>
-          100 free API calls per month. No credit card required.
+          200 free API calls per month. No credit card required.
         </p>
 
         <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
           {[
-            { name: 'Free', price: '$0', desc: '100 calls/mo', highlight: false },
+            { name: 'Free', price: '$0', desc: '200 calls/mo', highlight: false },
             { name: 'Basic', price: '$20/mo', desc: '2,000 calls/mo', highlight: false },
             { name: 'Pro', price: '$80/mo', desc: '10,000 calls/mo', highlight: true },
             { name: 'Enterprise', price: '$300/mo', desc: '50,000+ calls/mo', highlight: false },
@@ -655,8 +779,10 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+      </FadeInSection>
 
       {/* ═══════════════════ CTA ════════════════════ */}
+      <FadeInSection>
       <section style={{
         background: 'linear-gradient(135deg, #02122c 0%, #0a2540 100%)',
         color: 'white',
@@ -704,6 +830,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      </FadeInSection>
 
       {/* Footer is provided by layout.tsx */}
     </div>

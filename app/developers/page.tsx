@@ -1,6 +1,39 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
+function CopyableCodeBlock({ label, code, labelColor = '#F59E0B' }: { label: string; code: string; labelColor?: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [code]);
+
+  return (
+    <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24, position: 'relative' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: labelColor }}>{label}</div>
+        <button
+          onClick={handleCopy}
+          style={{
+            background: copied ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.1)',
+            border: 'none',
+            color: copied ? '#10b981' : 'rgba(255,255,255,0.6)',
+            padding: '4px 12px',
+            borderRadius: 6,
+            fontSize: 12,
+            cursor: 'pointer',
+            transition: 'all 0.15s',
+          }}
+        >
+          {copied ? '✓ Copied' : 'Copy'}
+        </button>
+      </div>
+      <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{code}</pre>
+    </div>
+  );
+}
 
 const SIDEBAR_LINKS = [
   { id: 'quick-start', label: 'Quick Start' },
@@ -493,19 +526,12 @@ export default function DevelopersPage() {
 
           {/* Code Examples */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-            {/* curl */}
-            <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', marginBottom: 12 }}>cURL</div>
-              <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`curl -X POST https://www.potal.app/api/v1/calculate \\
+            <CopyableCodeBlock label="cURL" code={`curl -X POST https://www.potal.app/api/v1/calculate \\
   -H "Content-Type: application/json" \\
   -H "X-API-Key: pk_live_YOUR_KEY" \\
-  -d '{"price": 99.99, "origin": "CN", "destinationCountry": "US"}'`}</pre>
-            </div>
+  -d '{"price": 99.99, "origin": "CN", "destinationCountry": "US"}'`} />
 
-            {/* JavaScript */}
-            <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', marginBottom: 12 }}>JavaScript</div>
-              <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`const res = await fetch(
+            <CopyableCodeBlock label="JavaScript" code={`const res = await fetch(
   "https://www.potal.app/api/v1/calculate",
   {
     method: "POST",
@@ -520,13 +546,9 @@ export default function DevelopersPage() {
     }),
   }
 );
-const data = await res.json();`}</pre>
-            </div>
+const data = await res.json();`} />
 
-            {/* Python */}
-            <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#F59E0B', marginBottom: 12 }}>Python</div>
-              <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{`import requests
+            <CopyableCodeBlock label="Python" code={`import requests
 
 resp = requests.post(
     "https://www.potal.app/api/v1/calculate",
@@ -540,8 +562,7 @@ resp = requests.post(
         "destinationCountry": "US",
     },
 )
-data = resp.json()`}</pre>
-            </div>
+data = resp.json()`} />
           </div>
         </section>
 

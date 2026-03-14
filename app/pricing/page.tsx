@@ -11,15 +11,17 @@ const PLANS = [
     priceAnnualTotal: '$0',
     annualSavings: '',
     priceNote: 'forever',
-    description: 'Try POTAL with basic features',
+    description: 'Full features, limited volume',
     highlight: false,
-    overageNote: 'Hard stop at 100 calls',
+    overageNote: 'Hard stop at 200 calls',
     features: [
-      '100 API calls / month',
+      '200 API calls / month',
       'Widget embed (light theme)',
       '240 countries supported',
       'AI-powered HS Code classification',
-      'Basic duty & tax calculation',
+      'Batch API (50 items)',
+      'Webhook notifications',
+      'Basic analytics dashboard',
       'Community support',
     ],
     limitations: [
@@ -47,6 +49,9 @@ const PLANS = [
       'FTA & preferential rate detection',
       'Anti-dumping / CVD duty alerts',
       'Sub-national tax (12 countries)',
+      'Batch API (100 items)',
+      'Webhook notifications',
+      'Advanced analytics dashboard',
       '30+ language support',
       'Email support',
     ],
@@ -66,8 +71,8 @@ const PLANS = [
     overageNote: 'Overage: $0.012 / call',
     features: [
       '10,000 API calls / month',
-      'Custom widget branding',
-      'Batch API (100 items)',
+      'Custom widget branding (no POTAL logo)',
+      'Batch API (500 items)',
       'Webhook notifications',
       'Advanced analytics dashboard',
       'Priority email support',
@@ -116,7 +121,7 @@ const FAQS = [
   },
   {
     q: 'What happens if I exceed my monthly limit?',
-    a: 'For paid plans (Basic, Pro, Enterprise), overage calls are automatically billed at a per-call rate: Basic $0.015, Pro $0.012, Enterprise $0.01 per call. Enterprise customers with 100K+ volume commitments get $0.008 per call. For the Free plan, API calls stop at the 100-call limit.',
+    a: 'For paid plans (Basic, Pro, Enterprise), overage calls are automatically billed at a per-call rate: Basic $0.015, Pro $0.012, Enterprise $0.01 per call. Enterprise customers with 100K+ volume commitments get $0.008 per call. For the Free plan, API calls stop at the 200-call limit.',
   },
   {
     q: 'Do you support all countries?',
@@ -370,12 +375,13 @@ export default function PricingPage() {
             <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>{plan.name}</h3>
             <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>{plan.description}</p>
 
-            <div style={{ marginBottom: 24 }}>
-              <span style={{ fontSize: 42, fontWeight: 800 }}>{getPrice(plan)}</span>
+            <div style={{ marginBottom: 24, fontVariantNumeric: 'tabular-nums' }}>
+              <span style={{ fontSize: 20, fontWeight: 600, color: '#888', verticalAlign: 'top', lineHeight: '1.6' }}>$</span>
+              <span style={{ fontSize: 48, fontWeight: 800, letterSpacing: '-0.02em' }}>{getPrice(plan).replace('$', '')}</span>
               <span style={{ fontSize: 14, color: '#888', marginLeft: 4 }}>
                 {plan.price === '$0'
                   ? plan.priceNote
-                  : billingCycle === 'annual' ? '/ month (billed annually)' : plan.priceNote}
+                  : billingCycle === 'annual' ? '/mo (billed annually)' : plan.priceNote}
               </span>
               {plan.price !== '$0' && plan.annualSavings && billingCycle === 'monthly' && (
                 <div style={{ marginTop: 4 }}>
@@ -498,7 +504,7 @@ export default function PricingPage() {
             </thead>
             <tbody>
               {[
-                ['API Calls / Month', '100', '2,000', '10,000', '50,000+'],
+                ['API Calls / Month', '200', '2,000', '10,000', '50,000+'],
                 ['Countries Supported', '240', '240', '240', '240 + Custom'],
                 ['HS Code Precision', '6-digit', '10-digit', '10-digit', '10-digit'],
                 ['AI HS Classification', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
@@ -506,10 +512,11 @@ export default function PricingPage() {
                 ['FTA Detection', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
                 ['Anti-dumping / CVD Alerts', '&#10007;', '&#10003;', '&#10003;', '&#10003;'],
                 ['Sub-national Tax', '&#10007;', '12 countries', '12 countries', '12 + Custom'],
-                ['Widget Embed', 'Light only', 'All themes', 'Custom brand', 'White-label'],
+                ['Widget Branding', 'POTAL logo', 'POTAL logo', 'Custom brand', 'White-label'],
                 ['Languages', 'English', '30+', '30+', '30+ + Custom'],
-                ['Batch API', '&#10007;', '&#10007;', '100 items', 'Unlimited'],
-                ['Analytics', 'Basic', 'Basic', 'Advanced', 'Full + Export'],
+                ['Batch API', '50 items', '100 items', '500 items', '5,000 items'],
+                ['Webhook Notifications', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
+                ['Analytics Dashboard', 'Basic', 'Advanced', 'Advanced', 'Full + Export'],
                 ['Support', 'Community', 'Email', 'Priority', 'Dedicated'],
                 ['SLA', '&#8212;', '&#8212;', '99.9%', '99.99%'],
                 ['Rate Limit', '30/min', '60/min', '120/min', 'Unlimited'],

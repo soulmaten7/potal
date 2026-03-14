@@ -12,15 +12,36 @@ interface PlanLimitConfig {
   maxCalculationsMonthly: number;
   allowOverage: boolean;
   overageRate: number; // $/call for overage
+  batchApi: boolean;
+  batchMaxItems: number;
+  webhookNotifications: boolean;
+  analyticsDashboard: 'basic' | 'advanced' | 'full';
+  widgetBranding: 'potal' | 'custom' | 'white-label';
 }
 
-// Plan limits — 신 요금제 (세션 28 확정, 세션 37 Overage 추가)
-// Free $0/100건, Basic $20/2K, Pro $80/10K, Enterprise $300/50K
+// Plan limits — 신 요금제 (CW13 업데이트: Free 200건, 전 플랜 기능 동일화)
+// 차별화: API 호출량 + 위젯 브랜딩만. Batch/Webhook/Analytics는 전 플랜 개방
 const PLAN_LIMITS: Record<string, PlanLimitConfig> = {
-  free: { maxCalculationsMonthly: 100, allowOverage: false, overageRate: 0 },
-  basic: { maxCalculationsMonthly: 2000, allowOverage: true, overageRate: 0.015 },
-  pro: { maxCalculationsMonthly: 10000, allowOverage: true, overageRate: 0.012 },
-  enterprise: { maxCalculationsMonthly: 50000, allowOverage: true, overageRate: 0.01 },
+  free: {
+    maxCalculationsMonthly: 200, allowOverage: false, overageRate: 0,
+    batchApi: true, batchMaxItems: 50, webhookNotifications: true,
+    analyticsDashboard: 'basic', widgetBranding: 'potal',
+  },
+  basic: {
+    maxCalculationsMonthly: 2000, allowOverage: true, overageRate: 0.015,
+    batchApi: true, batchMaxItems: 100, webhookNotifications: true,
+    analyticsDashboard: 'advanced', widgetBranding: 'potal',
+  },
+  pro: {
+    maxCalculationsMonthly: 10000, allowOverage: true, overageRate: 0.012,
+    batchApi: true, batchMaxItems: 500, webhookNotifications: true,
+    analyticsDashboard: 'advanced', widgetBranding: 'custom',
+  },
+  enterprise: {
+    maxCalculationsMonthly: 50000, allowOverage: true, overageRate: 0.01,
+    batchApi: true, batchMaxItems: 5000, webhookNotifications: true,
+    analyticsDashboard: 'full', widgetBranding: 'white-label',
+  },
 };
 
 export interface PlanCheckResult {
@@ -71,6 +92,20 @@ export async function checkPlanLimits(
     isOverage: overLimit && limits.allowOverage,
     overageCount,
     overageRate: limits.overageRate,
+  };
+}
+
+/**
+ * Get plan feature flags for a given plan.
+ */
+export function getPlanFeatures(planId: string) {
+  const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
+  return {
+    batchApi: limits.batchApi,
+    batchMaxItems: limits.batchMaxItems,
+    webhookNotifications: limits.webhookNotifications,
+    analyticsDashboard: limits.analyticsDashboard,
+    widgetBranding: limits.widgetBranding,
   };
 }
 
