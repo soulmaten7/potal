@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-14 16:00 KST (CW13 — Enterprise Sales 자동화, enterprise_leads, Cron 13개, 초정밀 검증 Phase 1 완료 34/65)
+> 마지막 업데이트: 2026-03-14 23:30 KST (CW13 Cowork — UX Audit TOP10, 'Grow With You' 요금제, Paddle 버그 수정, Free 200건, Cron 14개, Enterprise Sales ✅)
 
 ---
 
@@ -65,6 +65,21 @@ POTAL Chief Orchestrator 세션 시작.
 - **사이클 4**: 야간 15 Division 전체 정밀 점검 ✅ — ContactForm 수정, 쿠키 배너, .env 보강
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
 - **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
+
+### CW13 Cowork — UX Audit + 'Grow With You' 요금제 + Paddle 버그 수정 (2026-03-14 15:00~23:30 KST)
+- **Enterprise Sales 자동화 ✅**: 12단계 파이프라인 동작 확인 (enterprise_leads + Telegram 알림 + Resend 이메일)
+- **Enterprise Inquiry 버그 수정**: Supabase RLS 비활성화 + lazy init(getSupabase()) → "Failed to save lead" 해결
+- **UX Audit TOP 10 구현**: 53항목 감사 → Glassmorphism Header, Hero "113M+ Tariff Records", Footer 소셜+Trust Badges
+- **'Grow With You' 요금제 전략**: Free 100→200건, Pro 기능 전체 Free/Basic 개방 (Batch API/Webhook/Dashboard)
+- **Batch 한도**: Free 50건 / Basic 100건 / Pro 500건 / Enterprise 5,000건
+- **수익 시뮬레이션**: 현재 $26,164 vs 'Grow With You' $51,558 = +97.1% (POTAL_Pricing_Strategy_Analysis.xlsx)
+- **Paddle 구독 취소 버그**: subscription.cancelled → plan 유지 + current_period_end → 기간 만료 후 Free
+- **subscription-cleanup Cron 신규** (14번째): 매일 03:00 UTC 만료 구독 Free 전환
+- **Compare Plans 테이블 통일**: Free 10-digit HS ✓, FX ✓, FTA ✓, AD-CVD ✓, 12 Countries, 30+ Languages
+- **Seller Profile Auto-Creation**: Dashboard에서 sellers 없으면 자동 생성
+- **Git Commits**: fa9e10f, 05b8f0e, 301aa9e, 72ca35d, 85239e5 + Compare Plans
+- **파일 생성**: subscription-cleanup/route.ts, POTAL_UX_AUDIT_CW13.md, POTAL_Pricing_Strategy_Analysis.xlsx, CLAUDE_CODE_ENTERPRISE_IMPLEMENTATION.md
+- **파일 수정**: vercel.json, webhook/route.ts, middleware.ts, plan-checker.ts, keys.ts, DashboardContent.tsx, pricing/page.tsx, page.tsx, developers/page.tsx, Header.tsx, Footer.tsx
 
 ### Cowork 12 후반 — 142/147 기능 전부 구현 + 심층 검증 84/84 PASS (2026-03-14)
 - **44/44 MUST 구현 완료** (~45분): P0 12개 + P1 15개 + P2 17개
@@ -164,7 +179,7 @@ tail -5 ~/portal/wdc_extract.log
 
 ---
 
-## 다음 세션 우선순위 (CW13)
+## 다음 세션 우선순위 (CW13 후반~CW14)
 
 ### 🔴 P0 — 즉시
 1. **Auth JWT 수정**: Vercel SUPABASE_SERVICE_ROLE_KEY를 JWT 형식(eyJ...)으로 교체 — P1 14개 기능의 Auth 실패 원인
@@ -172,28 +187,34 @@ tail -5 ~/portal/wdc_extract.log
 3. ~~**44개 MUST 미구현 기능 구현**~~ ✅ 완료 (102/102)
 4. ~~**SHOULD 40개 기능 구현**~~ ✅ 완료 (142/147)
 5. ~~**심층 검증 84/84 PASS**~~ ✅ 완료 (코드 변경 0건, DB 테이블 5개 생성)
-6. ~~**7개국 HS 벌크 다운로드**~~ ✅ 완료 (US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633 = 89,842행)
-7. **WDC 추출 완료 확인** → 2단계 상품명 세분화 → 5억 사전 매핑
-8. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
+6. ~~**7개국 HS 벌크 다운로드**~~ ✅ 완료 (89,842행)
+7. ~~**Enterprise Sales 자동화**~~ ✅ 완료 (Telegram 알림, Resend 이메일, Cron 14개)
+8. ~~**'Grow With You' 요금제 전략**~~ ✅ 완료 (Free 200건, Pro 기능 전면 개방)
+9. ~~**Paddle 구독 취소 버그**~~ ✅ 완료 (subscription-cleanup Cron)
+10. **WDC 추출 완료 확인** → 3단계 상품명 세분화 → 5억 사전 매핑
+11. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
+12. **UX Audit 나머지 43항목**: POTAL_UX_AUDIT_CW13.md 11~53번 구현
 
 ### 🔴 P1 — 이번 주
-7. **5억 상품명 사전 매핑 파이프라인**: WDC 전체 상품명 → HS 10자리 룩업 테이블 생성
-8. **가격 분기 규칙 테이블**: "valued over/under $X" 조건 코드 추출 → 규칙화
-9. **첫 유료 고객 10개 확보 전략 실행**: A그룹(Shopify/WooCommerce) + 크로스보더 플랫폼(사조 등) 타겟
-10. **전체 크로스보더 커머스 플랫폼 타겟 리스트업**: 사조 같은 잠재 고객 전수 조사
-8. **API category 필드 강화**: /api/v1/calculate에 category 필수/강력 권장
+1. **5억 상품명 사전 매핑 파이프라인**: WDC 전체 상품명 → HS 10자리 룩업 테이블 생성
+2. **가격 분기 규칙 테이블**: "valued over/under $X" 조건 코드 추출 → 규칙화
+3. **첫 유료 고객 10개 확보 전략 실행**: A그룹(Shopify/WooCommerce) + 크로스보더 플랫폼(사조 등) 타겟
+4. **전체 크로스보더 커머스 플랫폼 타겟 리스트업**: 사조 같은 잠재 고객 전수 조사
+5. **API category 필드 강화**: /api/v1/calculate에 category 필수/강력 권장
+6. **Dashboard 142개 기능 UI 확장**: 현재 8개 메뉴 → 전체 기능 노출
 
 ### 🟡 P2 — 다음 주
-9. **데이터 유지보수 Cron 구현**: 240개국별 공고 URL 목록 → Vercel Cron 해시 비교 → Make.com webhook 연동
-10. **자체 테스트** — 벌크 다운로드/규정 수집 완료 후 종합 테스트
-11. **Keyword 정확도 개선** — 1,017 매핑으로 대폭 개선 예상
-12. **A그룹 타겟 거래처 접근 전략** — Shopify 41K+ 스토어 마케팅
+1. **데이터 유지보수 Cron 구현**: 240개국별 공고 URL 목록 → Vercel Cron 해시 비교 → Make.com webhook 연동
+2. **자체 테스트** — 벌크 다운로드/규정 수집 완료 후 종합 테스트
+3. **Keyword 정확도 개선** — 1,055 매핑으로 대폭 개선 예상
+4. **A그룹 타겟 거래처 접근 전략** — Shopify 41K+ 스토어 마케팅
+5. **Enterprise proposal 스킬 테스트**: enterprise-proposal.skill 실제 발송 테스트
 
 ### 🟢 P3 — 런칭 준비
-13. **베타 유저 테스트** — 지인 셀러 2~3명
-14. **첫 유료 고객 10개** — 시장 평가에서 가장 빠른 과제로 확인
-15. **Soft Launch**: Product Hunt — PH 에셋 5개 + 런칭플랜 준비
-16. **Public Launch**: 4월 초
+1. **베타 유저 테스트** — 지인 셀러 2~3명
+2. **첫 유료 고객 10개** — 시장 평가에서 가장 빠른 과제로 확인
+3. **Soft Launch**: Product Hunt — PH 에셋 5개 + 런칭플랜 준비
+4. **Public Launch**: 4월 초
 
 ---
 
@@ -202,9 +223,12 @@ tail -5 ~/portal/wdc_extract.log
 - **요금제**: ✅ Free/Basic/Pro/Enterprise 완료
 - **제재 스크리닝**: ✅ 21,301건, 19개 소스 (OFAC SDN + CSL)
 - **AI Agent Org v4**: ✅ Chief Orchestrator 정식 운영, 15 Division 전체 Green, Division 이름 10개 변경
-- **Layer 1**: ✅ Vercel Cron 12개 + auto-remediation (Cron 3x 재시도) + division-monitor 매30분
+- **Layer 1**: ✅ Vercel Cron **14개** + auto-remediation (Cron 3x 재시도) + division-monitor 매30분 + enterprise-lead-match 매30분 + subscription-cleanup 매일 03:00 UTC
 - **Layer 2**: ✅ Morning Brief 3섹션 + Dashboard + Division Checklists + issue-classifier
 - **24/7 Monitor**: ✅ division-monitor API + Telegram 알림 + Make.com/Email 폴백
+- **'Grow With You' 요금제**: ✅ Free 200건, 모든 기능 전 플랜 동일, 볼륨+브랜딩만 차별화
+- **Paddle 구독 취소**: ✅ 잔여 기간 유지 + subscription-cleanup Cron으로 만료 시 Free 전환
+- **Enterprise Sales**: ✅ 폼→API→DB→Resend이메일→Telegram알림 전체 파이프라인 동작
 - **모닝브리핑 스킬**: ✅ Cowork 설치 완료 ("모닝브리핑" 트리거)
 - **D15**: ✅ Intelligence Dashboard 구축 완료
 - **Git push**: Mac 터미널 또는 Claude Code (bypass permissions)
@@ -235,7 +259,7 @@ tail -5 ~/portal/wdc_extract.log
 
 ---
 
-## Vercel Cron 전체 목록 (11개)
+## Vercel Cron 전체 목록 (14개)
 
 | # | 엔드포인트 | 스케줄 | Division |
 |---|-----------|--------|----------|
@@ -250,3 +274,6 @@ tail -5 ~/portal/wdc_extract.log
 | 9 | `/admin/billing-overage` | 매월 1일 07:00 UTC | D10 |
 | 10 | `/admin/health-check` | 매 6시간 | D11 |
 | 11 | `/admin/competitor-scan` | 매주 월 08:00 UTC | D15 |
+| 12 | `/v1/admin/division-monitor` | 매 30분 | 전체 |
+| 13 | `/cron/enterprise-lead-match` | 매 30분 | D9 |
+| 14 | `/cron/subscription-cleanup` | 매일 03:00 UTC | D10 |

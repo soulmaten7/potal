@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-14 16:00 KST (CW13 — Enterprise Sales 자동화, enterprise_leads, Cron 13개)
+# 마지막 업데이트: 2026-03-14 23:30 KST (CW13 Cowork — Enterprise Sales ✅, UX Audit TOP10, 'Grow With You' 요금제, Paddle 버그 수정, Free 200건, Cron 14개)
 
 ## 0. 프로젝트 개요
 
@@ -10,12 +10,12 @@
 
 ### 핵심 서비스
 - **핵심 수치**: 240개국/영토, 12개국 특수세금(US/CA/BR/IN/CN/MX/AU/NZ/JP/KR/CH/SG), 50개국어, 63개 FTA, **500M+ HS Code 매핑** (WDC 사전매핑 전략)
-- **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/100 | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
+- **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/**200** | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
 - **핵심 전략 (CW12 후반)**: **102/102 MUST 기능 전부 구현 완료** ✅ (기존 58 + 신규 44개). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자". **심층 검증 84/84 PASS 완료** (코드 변경 0건, DB 테이블 5개 추가)
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 - **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트)
-- **Vercel Cron**: 11개 (CW9.5에서 sdn-sync + exchange-rate-sync 추가)
+- **Vercel Cron**: **14개** (CW13: +division-monitor, enterprise-lead-match 매30분, subscription-cleanup 매일 03:00 UTC)
 
 ### 기술 스택
 - Next.js 14+ App Router + TypeScript
@@ -43,6 +43,7 @@
   - **가능한 이유**: AI 원가 건당 $0.001, 캐시 히트 70-90% 시 실질 $0.0003. 33개 기능 전부 넣어도 건당 $0.008 이하. Basic $20/2K에서 마진 97%
   - **상세 근거**: session-context.md "요금제 변경 배경과 근거" 섹션 참조
 - **✅ 요금제 코드 완전 업데이트 완료 (세션 37 후반)**: paddle.ts, pricing/page.tsx, checkout/route.ts, DashboardContent.tsx, plan-checker.ts, usage/route.ts, i18n 6개 언어 전부 신 요금제 반영. lemonsqueezy.ts 삭제 완료. Overage 빌링 구현 완료 (overage.ts + billing-overage cron)
+- **✅ 'Grow With You' 전략 적용 (CW13 Cowork)**: Free 100→200건, Pro 기능(Batch/Webhook/Dashboard) 전 플랜 개방, 볼륨+브랜딩만 차별화. Paddle 구독 취소 → 잔여 기간 유지 + subscription-cleanup Cron(14번째). Seller profile 자동 생성. UX Audit TOP10 구현
 - **✅ Chief Orchestrator 정식 운영 (CW10)**: 사이클 1~6 완료 (15/15 Division Green). Morning Brief 강화: issue-classifier.ts(Layer 분류) + auto-remediation.ts(자동 수정) + 3섹션 응답. contact@potal.app 이메일 알림. Morning Briefing 스킬 생성 ("모닝브리핑" 명령)
 - **✅ D15 Intelligence Dashboard (Cycle 5)**: /admin/intelligence 페이지 + /api/v1/admin/intelligence API. 경쟁사 10사 스캔 이력+변동 감지
 - **✅ AI 플랫폼 업데이트 (Cycle 5)**: GPT Actions v1.1 (screening, FTA, classify), MCP v1.2 (7 tools), Gemini/Meta AI 설명 업데이트

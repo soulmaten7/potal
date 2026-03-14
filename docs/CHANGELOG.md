@@ -1,5 +1,58 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-14 16:00 KST
+> 마지막 업데이트: 2026-03-14 23:30 KST
+
+## [2026-03-14 23:30 KST] CW13 Cowork — UX Audit, 'Grow With You' 요금제, Paddle 버그 수정, Free 200건
+
+### 'Grow With You' 요금제 전략 적용
+- **Free 100→200건/월 확대**: 마케팅 비용 개념, 월200건으로는 남용 비용 무시 가능
+- **Pro 기능 Free/Basic 개방**: Batch API, Webhook, Analytics Dashboard 모든 플랜 동일
+- **Batch 한도 신설**: Free 50건 / Basic 100건 / Pro 500건 / Enterprise 5,000건
+- **차별화 요소**: 볼륨 + 위젯 브랜딩("Powered by POTAL" Pro+ 제거) + 우선지원 + SLA
+- **수익 시뮬레이션**: +97.1% 수익 증가 (12개월, POTAL_Pricing_Strategy_Analysis.xlsx)
+- 파일 수정: plan-checker.ts, pricing/page.tsx, page.tsx, developers/page.tsx
+
+### Paddle 구독 취소 버그 수정
+- **문제**: subscription.cancelled 이벤트가 즉시 plan_id='free'로 변경 → 잔여 기간 무시
+- **수정 4파일**: billing/webhook/route.ts(plan 유지+current_period_end 저장), middleware.ts(기간 내 접근 허용), DashboardContent.tsx(cancelled 배지+만료일), keys.ts(current_period_end 포함)
+- **subscription-cleanup Cron 신규**: /api/cron/subscription-cleanup, 매일 03:00 UTC, 만료된 구독만 Free 전환
+- Vercel Cron: 13→**14개**
+
+### Compare Plans 테이블 통일
+- pricing/page.tsx 하단 Compare Plans: Free 컬럼 업데이트 (10-digit HS ✓, FX ✓, FTA ✓, AD-CVD ✓, 12 Countries Sub-national, 30+ Languages)
+- 상단 카드와 하단 테이블 데이터 완전 일치
+
+### UX Audit TOP 10 구현
+- 53개 항목 14개 카테고리 감사 실시 (POTAL_UX_AUDIT_CW13.md)
+- Glassmorphism Header (스크롤 시 투명→불투명 전환)
+- Hero 통계 수정: "113M+ HS Codes" → "113M+ Tariff Records"
+- Footer: 소셜 링크(LinkedIn, X, GitHub) + Trust Badges(GDPR, 240 Countries, SOC 2, 99.9% Uptime)
+- 파일 수정: Header.tsx, Footer.tsx, page.tsx
+
+### Seller Profile Auto-Creation
+- Dashboard "Seller profile not found" 에러 수정
+- sellers/me API: auth.users에 있지만 sellers에 없는 경우 자동 생성 (plan_id='free', status='active')
+
+### Enterprise Inquiry 수정
+- "Failed to save lead" 에러 수정: Supabase RLS 비활성화 + lazy init 패턴(getSupabase())
+- Telegram 알림 수신 확인 ✅
+
+### Supabase Lazy Initialization
+- enterprise-inquiry/route.ts: module-level createClient() → getSupabase() 함수 패턴
+- Vercel serverless cold start 시 env var 미해결 문제 방지
+
+### Git Commits
+- fa9e10f, 05b8f0e, 301aa9e, 72ca35d, 85239e5 + Compare Plans commit
+
+### 파일 생성
+- subscription-cleanup/route.ts (Cron 14번째)
+- POTAL_UX_AUDIT_CW13.md
+- POTAL_Pricing_Strategy_Analysis.xlsx
+- CLAUDE_CODE_ENTERPRISE_IMPLEMENTATION.md
+
+### 파일 수정
+- vercel.json, billing/webhook/route.ts, middleware.ts, plan-checker.ts, keys.ts
+- DashboardContent.tsx, pricing/page.tsx, page.tsx, developers/page.tsx
+- Header.tsx, Footer.tsx, morning-brief/route.ts
 
 ## [2026-03-14 16:00 KST] CW13 — Enterprise Sales 자동화 구현
 

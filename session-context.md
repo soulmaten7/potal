@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-14 16:00 KST (CW13 — Enterprise Sales 자동화 구현, enterprise_leads 테이블, Resend 이메일 자동발송, Telegram 알림, Cron 13개, 초정밀 검증 Phase 1 완료 34/65)
+> 마지막 업데이트: 2026-03-14 23:30 KST (CW13 Cowork — Enterprise Sales ✅, UX Audit TOP10, 'Grow With You' 요금제, Paddle 구독 버그 수정, Free 200건, Cron 14개)
 
 ---
 
@@ -81,12 +81,12 @@
 
 **신 요금제 (세션 28 확정, 현재 유효):**
 
-**Layer 1: 셀러 위젯 SaaS** — Free $0/100 calls, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
+**Layer 1: 셀러 위젯 SaaS** — Free $0/**200** calls, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
 **Layer 2: AI 에이전트 API** — 각 LLM 커스텀 앱 + 직접 API 호출 과금
 
 | 플랜 | Monthly | Annual (20% off) | 할당량 | 초과 요금 | 타겟 |
 |------|---------|-----------------|--------|----------|------|
-| Free | $0 | $0 | 100건/월 | - | 체험/Hobby |
+| Free | $0 | $0 | **200건/월** | - | 체험/Hobby |
 | Basic | $20 | $16/mo ($192/yr) | 2,000건/월 | $0.015/건 | Small~Medium |
 | Pro | $80 | $64/mo ($768/yr) | 10,000건/월 | $0.012/건 | Large |
 | Enterprise | $300 | $240/mo ($2,880/yr) | 50,000건/월 | $0.01/건 | Mid-Market |
@@ -159,6 +159,19 @@ LLM 커스텀 앱 등록 → 사용 데이터 축적 → 데이터 기반 셀러
 - **147개 경쟁사 기능 분석**: 10개 경쟁사 전체 기능 중복 제거 → 96.6% 커버리지 (142/147)
 - **데이터 유지보수 자동화**: 공고 페이지 해시 비교(Cron) + Make.com AI 변경 해석 + 자동 DB 업데이트
 - **타겟 거래처**: A그룹(Shopify/WooCommerce/국가우편), B그룹(eBay/Etsy), C그룹(DHL/Walmart/대기업)
+
+**✅ CW13 Cowork 'Grow With You' 전략 (2026-03-14):**
+- **요금제 전략 전환**: 기능 차별화 → 볼륨 차별화 (Stripe/Shopify/Vercel 패턴)
+- **Free 100→200건/월 확대**: 마케팅 비용 개념. 월200건으로 남용 비용 무시 가능
+- **Pro 기능 전면 개방**: Batch API, Webhook, Analytics Dashboard → 모든 플랜 동일
+- **Batch 한도 신설**: Free 50건/Basic 100건/Pro 500건/Enterprise 5,000건
+- **위젯 브랜딩**: "Powered by POTAL" 제거는 Pro+ (유일한 기능 차별화)
+- **수익 시뮬레이션**: 현재 $26,164 vs 'Grow With You' $51,558 = **+97.1%** (12개월, M12 유료 123→302명)
+- **Paddle 구독 취소 버그 수정**: cancelled → plan 유지 + current_period_end → 기간 만료 후 Free 전환
+- **subscription-cleanup Cron 추가**: 매일 03:00 UTC, Vercel Cron **14개**
+- **Enterprise Sales ✅**: 12단계 파이프라인 완료 (폼→API→DB→Resend→Telegram)
+- **UX Audit TOP 10 구현**: Glassmorphism Header, Hero "113M+ Tariff Records", Footer 소셜+Trust Badges
+- **Seller Profile Auto-Creation**: sellers 테이블 자동 생성
 
 ### Roadmap (2026-03-03 확정)
 
