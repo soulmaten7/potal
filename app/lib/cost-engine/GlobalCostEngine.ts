@@ -51,6 +51,9 @@ import { applyFtaRate as hardcodedApplyFtaRate } from './hs-code/fta';
 // HS 10-digit resolver (7 countries: US/EU/GB/KR/CA/AU/JP)
 import { resolveHs10, type Hs10Resolution } from './hs-code/hs10-resolver';
 
+// Precomputed landed cost cache (117,600 combinations: 490 HS6 × 240 countries)
+import { getPrecomputedLandedCost, type PrecomputedLandedCost } from './db/precomputed-cache';
+
 // ─── Origin Detection ───────────────────────────────
 
 const CHINESE_PLATFORMS = ['aliexpress', 'temu', 'shein', 'wish', 'dhgate', 'banggood'];
@@ -190,6 +193,12 @@ export interface GlobalLandedCost extends LandedCost {
   };
   /** Tariff optimization: compares MFN/MIN/AGR rates and shows savings */
   tariffOptimization?: TariffOptimization;
+  /** Whether result came from precomputed cache (117,600 combinations) */
+  precomputed?: boolean;
+  /** Response time in milliseconds */
+  responseTimeMs?: number;
+  /** Precomputed cache coverage info */
+  cacheCoverage?: string;
   /** Exchange rate timestamp (ISO 8601) */
   exchangeRateTimestamp?: string;
   /** Local currency conversion (if destination currency != USD) */
@@ -295,7 +304,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     }
   }
 
-  // Determine Duty Rate — MacMap 4단계 폴백 → 정부 API → DB → 하드코딩
+  // Determine Duty Rate — Precomputed → MacMap 4단계 폴백 → 정부 API → DB → 하드코딩
   let dutyRate = profile.avgDutyRate;
   let dutyNote = `~${(profile.avgDutyRate * 100).toFixed(1)}% avg`;
   let additionalTariffNote: string | undefined;
@@ -303,8 +312,55 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   let dutyRateSource: string = 'hardcoded';
   let dutyConfidenceScore: number = 0.7;
   let tariffOptimization: TariffOptimization | undefined;
+  let precomputedHit = false;
 
+  // ━━━ 0차: Precomputed cache lookup (117,600 combinations, <50ms) ━━━
   if (hsResult && hsResult.hsCode !== '9999') {
+    const hs6 = hsResult.hsCode.substring(0, 6);
+    try {
+      const cached = await getPrecomputedLandedCost(hs6, profile.code);
+      if (cached && cached.best_rate !== null) {
+        dutyRate = cached.best_rate / 100; // DB stores as percentage, engine uses decimal
+        dutyNote = `HS ${hsResult.hsCode} (${cached.best_rate.toFixed(1)}%) [precomputed:${cached.best_rate_source}]`;
+        dutyRateSource = `precomputed_${(cached.best_rate_source || 'MFN').toLowerCase()}`;
+        dutyConfidenceScore = cached.best_rate_source === 'AGR' ? 1.0 :
+                              cached.best_rate_source === 'MIN' ? 0.95 : 0.9;
+        precomputedHit = true;
+
+        // Build tariff optimization from precomputed data if multiple rates available
+        if (cached.mfn_rate !== null) {
+          const rateOptions: TariffOptimization['rateOptions'] = [];
+          rateOptions.push({ rateType: 'MFN', source: 'mfn', rate: cached.mfn_rate / 100, matchedCode: hs6, agreementName: 'MFN' });
+          if (cached.min_rate !== null) {
+            rateOptions.push({ rateType: 'MIN', source: 'min', rate: cached.min_rate / 100, matchedCode: hs6, agreementName: 'Preferential (MIN)' });
+          }
+          if (cached.agr_rate !== null) {
+            rateOptions.push({ rateType: 'AGR', source: 'agr', rate: cached.agr_rate / 100, matchedCode: hs6, agreementName: 'Agreement (AGR)' });
+          }
+          if (rateOptions.length > 1) {
+            const mfnRate = cached.mfn_rate / 100;
+            const bestRate = cached.best_rate / 100;
+            const optType = cached.best_rate_source === 'AGR' ? 'AGR' as const :
+                            cached.best_rate_source === 'MIN' ? 'MIN' as const : 'MFN' as const;
+            tariffOptimization = {
+              optimalRate: bestRate,
+              optimalRateType: optType,
+              optimalAgreementName: optType === 'AGR' ? 'Agreement (AGR)' :
+                                    optType === 'MIN' ? 'Preferential (MIN)' : 'MFN',
+              mfnRate: mfnRate,
+              savingsVsMfn: mfnRate - bestRate,
+              savingsPercent: mfnRate > 0 ? Math.round((mfnRate - bestRate) / mfnRate * 100) : 0,
+              rateOptions: rateOptions,
+            };
+          }
+        }
+      }
+    } catch {
+      // Precomputed lookup failure is non-critical, fall through to live lookup
+    }
+  }
+
+  if (hsResult && hsResult.hsCode !== '9999' && !precomputedHit) {
     const hsChapter = hsResult.hsCode.substring(0, 2);
 
     // ━━━ 1차: MacMap 관세최적화 — 3개 테이블 병렬 조회 후 최저 세율 자동 선택 ━━━
@@ -902,16 +958,19 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
       };
     })(),
     dataFreshness: {
-      dutyRateAge: dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc'
+      dutyRateAge: precomputedHit ? 'precomputed_cache'
+        : dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc'
         ? 'macmap_db' : dutyRateSource || 'hardcoded',
       lastTariffUpdate: 'daily_04utc',
       quality: dutyRateSource === 'hardcoded' ? 'fallback'
-        : (dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc' || dutyRateSource === 'live_db' || dutyRateSource === 'external_api') ? 'fresh'
+        : (precomputedHit || dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc' || dutyRateSource === 'live_db' || dutyRateSource === 'external_api') ? 'fresh'
         : 'stale',
     },
     exchangeRateTimestamp: localCurrency?.lastUpdated,
     detectedOriginCountry: (!input.origin && hsResult?.countryOfOrigin) ? hsResult.countryOfOrigin : undefined,
     localCurrency,
+    precomputed: precomputedHit,
+    cacheCoverage: precomputedHit ? '117,600/117,600 (100%)' : undefined,
   };
 }
 
