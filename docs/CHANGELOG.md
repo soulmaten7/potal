@@ -9,15 +9,29 @@
 - server.json description 100자 제한 수정 후 publish 성공
 - `npx potal-mcp-server`로 누구나 설치 가능
 
-### Custom LLM 3종 전면 리라이트
-- **GPT Actions** (gpt-instructions.md): "쇼핑 어시스턴트" → "Global Landed Cost Infrastructure". B2B CTA, "Powered by POTAL" 푸터, 에러 핸들링
-- **Gemini Gem** (gem-instructions.md): 외부 API 미지원 → 정적 참고 데이터 + potal.app CTA 전략
-- **Meta AI** (ai-studio-instructions.md): Gemini과 동일 정적데이터+CTA 전략
+### Custom LLM 3종 전면 리라이트 + 수동 배포
+- **GPT Actions** (gpt-instructions.md): "쇼핑 어시스턴트" → "Global Landed Cost Infrastructure". 정확한 세율만(추정 금지), B2B CTA, "Powered by POTAL" 푸터, 5건+ 사용 시 요금제 안내, 에러 핸들링. **ChatGPT GPT 에디터에 수동 복사 완료 ✅**
+- **Gemini Gem** (gem-instructions.md): 외부 API 미지원 확인 → 정적 참고 데이터 + potal.app CTA 전략. 설명(description) + 요청사항(instructions) + 지식(CSV) 3개 필드 모두 업데이트. **Google AI Studio에 수동 복사 완료 ✅**
+- **Gemini Gem CSV v2** (country-duty-reference-v2.csv): 신규 생성 — 240개국 + 30개 주요국 상세 노트(US de minimis $0 CN-origin Aug 2025, Section 301/232, 12개국 processing fees, 30+ FTA 참조). 기존 CSV 교체하여 Gem 지식에 업로드 완료 ✅
+- **Meta AI** (ai-studio-instructions.md): Gemini과 동일 정적데이터+CTA 전략. Meta AI Studio 업데이트 시 적용 예정
+
+### LLM 수익화 전략 확정
+- **Custom GPT = "쇼룸"**: POTAL API 직접 호출 (Free 200건/월 제한, 정확한 데이터). 비즈니스 사용자는 자동화/배치/웹훅 필요 → API 유료 전환
+- **Gemini Gem / Meta AI = "광고판"**: 정적 데이터(무제한, 추정치) + "정확한 계산은 potal.app" CTA. 외부 API 미지원이므로 참고 데이터만 제공
+- **API = "공장"**: B2B 수익원. 자동화, 배치(5,000건/요청), 웹훅, 프로그래밍 접근 = 유료 플랜
+- **결론**: 무제한 종속(Gem/Meta) ≠ 수익화 불가. 마케팅 비용(Free 200) + 쇼룸(GPT) + 공장(API) 3단계 구조
 
 ### B2B 아웃리치 전략 수립
 - 15개 타겟 기업 4티어: AI플랫폼(OpenAI/Google/Perplexity/Anthropic/Meta), 이커머스(Shopify/WooCommerce/BigCommerce), 결제/물류(Stripe/PayPal/Royal Mail), 마켓플레이스(eBay/Etsy/Temu·Shein/Amazon)
 - 콜드이메일 3종 템플릿 (AI플랫폼/이커머스/B2B엔터프라이즈)
+- LLM Commerce 통합 분석: 6개 AI 플랫폼(ChatGPT/Claude/Gemini/Perplexity/Meta/Copilot) + Shopify Shop 등 커머스 플랫폼의 쇼핑 기능 분석 → 관세 계산 부재 확인 = POTAL 기회
 - 파일: ai-agents/B2B_OUTREACH_TARGETS.md, ai-agents/LLM_COMMERCE_INTEGRATION_ANALYSIS.md
+
+### MCP 디렉토리 등록
+- **mcp.so**: 제출 완료 ✅ (리뷰 대기). npm 패키지 URL로 등록
+- **glama.ai**: submit 페이지 404 반환 — GitHub auto-crawling 방식으로 추정, 별도 제출 불필요
+- **smithery.ai**: HTTP hosted 서버 필요 — POTAL MCP는 stdio(npx) 방식이므로 해당 없음, 스킵
+- **MCP 공식 레지스트리** (registry.modelcontextprotocol.io): 이미 등록 완료 ✅ — 가장 중요한 레지스트리
 
 ### UCP (Universal Commerce Protocol) 발견
 - Google + Shopify + Walmart + Target 공동 개발 오픈 표준
@@ -34,9 +48,19 @@
 ### 경쟁력 자가 평가
 - Data Tier 0, Features Tier 1, Price Tier 0, Architecture Tier 1, Implementation Tier 1, Real-world Validation Tier 3
 
+### npm 계정 & 패키지
+- npm 계정: potal_official (soulmaten7@gmail.com)
+- Granular Access Token 발급 (Bypass 2FA 설정, publish 권한)
+- 패키지명: potal-mcp-server (unscoped — "potal" org명은 다른 사용자가 이미 점유)
+- server.json description 100자 제한 발견 → 145자→82자로 축소하여 해결
+
+### Git Commits (CW13 후반)
+- 6f8e0c1: npm publish 준비 + MCP 레지스트리 메타데이터
+- e9b102a: Custom LLM 3종 리라이트 + B2B 아웃리치 전략
+
 ### 파일 생성/수정
-- 생성: B2B_OUTREACH_TARGETS.md, LLM_COMMERCE_INTEGRATION_ANALYSIS.md, server.json, registry-metadata.json, .npmignore
-- 수정: gpt-instructions.md, gem-instructions.md, ai-studio-instructions.md, mcp-server/package.json, mcp-server/README.md
+- 생성: B2B_OUTREACH_TARGETS.md, LLM_COMMERCE_INTEGRATION_ANALYSIS.md, server.json, registry-metadata.json, .npmignore, country-duty-reference-v2.csv
+- 수정: gpt-instructions.md, gem-instructions.md, ai-studio-instructions.md, mcp-server/package.json, mcp-server/README.md, server.json(description 100자 제한 수정)
 
 ## [2026-03-14 23:30 KST] CW13 Cowork — UX Audit, 'Grow With You' 요금제, Paddle 버그 수정, Free 200건
 

@@ -51,6 +51,11 @@
 - **✅ UCP 발견 (CW13 후반)**: Universal Commerce Protocol(Google+Shopify+Walmart+Target) — MCP 내장, 관세 계산 없음 = POTAL 기회
 - **✅ Pre-computing (CW13 후반)**: 490 HS6 × 240국 = 117,600 조합 사전 계산, 캐시 <50ms
 - **✅ B2B 아웃리치 (CW13 후반)**: 15개 타겟 4티어 + 콜드이메일 3종 (ai-agents/B2B_OUTREACH_TARGETS.md)
+- **✅ LLM 수익화 전략 (CW13 후반)**: Custom GPT = "쇼룸"(Free 200건/월, API 직접호출, 정확한 데이터), Gemini Gem/Meta AI = "광고판"(정적데이터, 무제한, CTA→potal.app), API = "공장"(B2B 수익원). 비즈니스 사용자는 자동화/배치/웹훅 필요 → 유료 전환
+- **✅ npm 계정 (CW13 후반)**: npmjs.com 계정 potal_official (soulmaten7@gmail.com), Granular Access Token(Bypass 2FA), 패키지명 potal-mcp-server (unscoped, "potal" org명 이미 사용중)
+- **✅ Gemini Gem CSV v2 (CW13 후반)**: country-duty-reference-v2.csv 신규 생성 — 240개국 + 30개 주요국 상세 노트(US de minimis $0 CN-origin, Section 301/232, 12개국 processing fees, 30+ FTA). Gem 지식에 업로드 완료 ✅
+- **✅ Custom LLM 수동 배포 (CW13 후반)**: GPT Actions → ChatGPT GPT 에디터 복사-붙여넣기 완료 ✅ | Gemini Gem → 요청사항(instructions) + 설명(description) + 지식(CSV v2) 업데이트 완료 ✅ | Meta AI → 대기 (Studio 업데이트 시 적용)
+- **✅ mcp.so 등록 (CW13 후반)**: POTAL MCP 서버 mcp.so에 제출 완료 ✅ (리뷰 대기). glama.ai = submit 폼 없음(404, auto-crawling 방식). smithery.ai = HTTP 서버 필요(stdio 미지원, 해당 없음)
 - **✅ AGR 관세율 53/53국 완료 (Cycle 5 확인)**: ~144M행 전체 완료, KOR 재임포트 완료 (1,815,798행, 2026-03-13)
 - **✅ P1 #1 관세최적화 (CW10)**: lookupAllDutyRates() — MIN/AGR/NTLC 3테이블 병렬 조회, macmap_trade_agreements 협정명 resolve, tariffOptimization 응답 필드. 47기능 34→35개 완료
 - **✅ P1 #8 기업별 AD 관세 (CW10)**: trade-remedy-lookup.ts — firm-specific AD/CVD duty matching 강화. pg_trgm 서버사이드 fuzzy search(search_firm_trgm DB함수), matchScore 필드, exact/fuzzy 구분 버그 수정. 47기능 35→36개 완료
@@ -62,7 +67,7 @@
 - **✅ #20 Incoterms (CW10)**: EXW/FOB/CIF/DDP/DDU 5개 조건 지원. incotermsBreakdown(sellerPays/buyerPays). 47기능 41→42개 완료
 - **✅ Vector DB 시딩 (CW10→Cowork 11)**: product_hs_mappings 164→**1,017건**, hs_classification_vectors 170→**1,023건** (WDC 카테고리 매핑 +853). AI 분류 정확도 55%→100%. VECTOR_SEARCH_MIN_SIMILARITY=0.85 유지
 - **✅ WDC 카테고리→HS6 1단계 (Cowork 11)**: 10M JSONL → 145 고유 카테고리 → 147 HS6 매핑. 키워드 84% + LLM 14% = 98%, 비용 ~$0.01
-- **🔄 7개국 HS 10자리 벌크 다운로드 (Cowork 11 시작)**: US/EU/UK/CA/AU/JP/KR 정부 공식 HS 8~10자리 전체 스케줄 → DB 임포트 → 실시간 API 호출 불필요
+- **✅ 7개국 HS 10자리 벌크 다운로드 (Cowork 11→CW13 완료)**: US/EU/UK/CA/AU/JP/KR 정부 공식 HS 8~10자리 전체 스케줄 → DB 임포트 → 실시간 API 호출 불필요. gov_tariff_schedules 89,842행 + HS10 파이프라인 구현 완료
 - **✅ 5억 상품명 사전 매핑 전략 확정 (Cowork 11)**: 카테고리→HS6(확정) → 7개국10자리후보(DB) → 상품명+가격→최종매칭(규칙) → 룩업테이블. HS Code 정확도 100% 구조. 가격 분기 규칙("valued over/under $X")은 if문으로 처리
 - **✅ Vercel 환경변수 세팅 (CW10)**: RESEND_API_KEY + MORNING_BRIEF_EMAIL_TO + MORNING_BRIEF_EMAIL_FROM (Production+Preview, Vercel REST API)
 - **✅ Morning Brief 이메일 알림 (Cycle 6)**: morning-brief-email.ts Resend API 구현, push cfa4e4e. Vercel 환경변수: RESEND_API_KEY 세팅 필요
@@ -99,9 +104,9 @@
 - **✅ Supabase 마이그레이션 010-016 실행 완료 (세션 32)**: Management API (curl + Personal Access Token) 경유. countries 240, vat_gst 240, de_minimis 240, customs_fees 240, trade_agreements 1,319행
 - **✅ MFN 009 데이터 임포트 완료 (세션 32)**: macmap_ntlc_rates 537,894행 53개국. 131MB SQL → 54 BEGIN/COMMIT 블록 → 5개 413에러 → 10분할 재시도 전체 성공
 - **✅ MIN 벌크 임포트 완료 (세션 32→Cowork5)**: macmap_min_rates ~113M행 53개국 전체 완료. import_min_remaining.py 사용
-- **🔄 AGR 벌크 임포트 진행중 (Cowork5)**: macmap_agr_rates 0→진행중/148M행. Mac에서 run_agr_loop.sh 실행 중. ARE 완료(~2M행), 순차 진행
+- **✅ AGR 벌크 임포트 완료 (Cowork5→CW10)**: macmap_agr_rates ~144M행 53개국 전체 완료. KOR 재임포트 완료 (1,815,798행, 2026-03-13)
 - **✅ 반덤핑/상계관세/세이프가드 임포트 완료 (세션 33)**: TTBD (World Bank) 36개국 AD + 19개국 CVD + WTO SG → Supabase 4개 테이블 119,706행 (trade_remedy_cases 10,999, trade_remedy_products 55,259, trade_remedy_duties 37,513, safeguard_exemptions 15,935)
-- **Supabase Management API**: `POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query` (curl만 가능, urllib은 Cloudflare 차단). Token: sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a
+- **Supabase Management API**: `POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query` (curl만 가능, urllib은 Cloudflare 차단). Token: ***REDACTED***
 - **Supabase DB Password**: PotalReview2026!
 - **Supabase Secret Key**: sb_secret_***REDACTED***
 - **016_macmap_bulk_tables.sql**: lookup_duty_rate_v2() 4단계 폴백 (exact MIN → prefix MIN → MFN NTLC → WITS HS6)

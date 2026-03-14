@@ -222,47 +222,76 @@ portal/
 
 ### ⭐ CW13 Cowork 후반 세션 성과 (2026-03-15 00:00~14:00 KST)
 
+**LLM 수익화 전략 결정:**
+- **핵심 인사이트**: Custom LLM = 마케팅 채널 (showroom), B2B API = 매출 (factory)
+- **ChatGPT GPT**: POTAL API 직접 호출 → **Free 200건/월 소진** (정확한 실시간 데이터)
+- **Gemini Gem / Meta AI**: 외부 API 미지원 → **무제한** 사용 가능 (정적 참고 데이터, 추정값만 제공, potal.app CTA)
+- LLM 쇼핑 트렌드: 플랫폼 내 쇼핑 카테고리 추가 형태 (Agent → MCP → POTAL API 호출 구조)
+- Free 200건 = 체험용 마케팅 비용, 비즈니스 자동화 필요 시 API 구독 전환
+
 **npm publish + MCP 공식 레지스트리:**
 - `potal-mcp-server@1.3.1` npm 공개 패키지 publish ✅ (npmjs.com/package/potal-mcp-server)
-- MCP 공식 레지스트리 등록 ✅ (`io.github.soulmaten7/potal`, registry.modelcontextprotocol.io, status: active)
-- server.json description 100자 제한 수정 후 publish 성공
+- **npm 계정**: username `potal_official` (soulmaten7@gmail.com), org 이름 "potal"은 타인 선점 → unscoped 패키지로 결정
+- **npm Granular Access Token**: `***REDACTED***` (Bypass 2FA for publish)
+- MCP 공식 레지스트리 등록 ✅ (`io.github.soulmaten7/potal`, registry.modelcontextprotocol.io, status: active, 2026-03-14T15:14:18)
+- **등록 과정**: mcp-publisher CLI → GitHub device auth → publish. server.json description 145자→82자 수정 (100자 제한)
+- `npx potal-mcp-server`로 누구나 설치 가능
 
-**Custom LLM 3종 전면 리라이트:**
-- **GPT Actions** (gpt-instructions.md): "쇼핑 어시스턴트" → "Global Landed Cost Infrastructure". 정확한 세율만 (추정 금지), "Powered by POTAL" 푸터, 5건+ 사용 시 B2B CTA, 에러 핸들링
-- **Gemini Gem** (gem-instructions.md): 외부 API 미지원 확인 → 정적 참고 데이터 + "정확한 계산은 potal.app" CTA 전략
-- **Meta AI** (ai-studio-instructions.md): Gemini과 동일 전략 (정적데이터 + CTA)
+**Custom LLM 3종 전면 리라이트 + 수동 배포:**
+- **GPT Actions** (gpt-instructions.md): "쇼핑 어시스턴트" → "Global Landed Cost Infrastructure". 정확한 세율만 (추정 금지), "Powered by POTAL" 푸터, 5건+ 사용 시 B2B CTA, 에러 핸들링. **ChatGPT GPT 에디터에 수동 복사 완료 ✅**
+- **Gemini Gem** (gem-instructions.md): 외부 API 미지원 확인 → 정적 참고 데이터 + "정확한 계산은 potal.app" CTA 전략. **설명 업데이트 + CSV v2 교체 + 지침 복사 완료 ✅** (country-duty-reference-v2.csv: 30개국 enhanced notes — US de minimis $0, Section 301/232, 12개국 processing fee, FTA 정보)
+- **Meta AI** (ai-studio-instructions.md): Gemini과 동일 전략 (정적데이터 + CTA). 미국 현지가 아니라 아직 미등록
+
+**MCP 디렉토리 등록:**
+- **mcp.so** ✅ 제출 완료 (관리자 승인 대기 1~3일). Tags: commerce,tariff,customs,landed-cost,trade,duties,vat,hs-code,cross-border,ecommerce
+- **glama.ai** ⏭️ 제출 페이지 없음 (submit URL 404, GitHub 자동 크롤링 방식으로 변경된 것으로 추정)
+- **smithery.ai** ⏭️ HTTP 호스팅 서버 필요 (POTAL MCP는 stdio 방식이라 해당 없음)
 
 **B2B 아웃리치 전략:**
 - 15개 타겟 기업 4티어: Tier 1(AI: OpenAI/Google/Perplexity/Anthropic/Meta), Tier 2(이커머스: Shopify/WooCommerce/BigCommerce), Tier 3(결제/물류: Stripe/PayPal/Royal Mail), Tier 4(마켓플레이스: eBay/Etsy/Temu·Shein/Amazon)
 - 콜드이메일 3종 (AI플랫폼용/이커머스용/B2B 엔터프라이즈용)
 - 문서: ai-agents/B2B_OUTREACH_TARGETS.md, ai-agents/LLM_COMMERCE_INTEGRATION_ANALYSIS.md
+- **LLM 커머스 통합 분석**: 9개 플랫폼별 커머스 통합 방식 분석 (ChatGPT Instant Checkout, Gemini Shopping, Perplexity Buy 등)
 
 **UCP (Universal Commerce Protocol) 발견:**
 - Google + Shopify + Walmart + Target 공동 개발 오픈 표준
 - MCP, A2A, AP2 내장 — 관세 계산은 **없음** = POTAL MCP 서버가 UCP 생태계에 직접 연결 가능
 - 핵심 인사이트: POTAL MCP = UCP 생태계 진입 티켓
+- **전략적 의미**: UCP가 MCP를 내장했으므로, POTAL MCP 서버 하나로 Google/Anthropic/Shopify 생태계 동시 진입 가능
 
 **Pre-computing 완료:**
 - 490 HS6 코드 × 240국 = **117,600 조합** 사전 계산 + git push
 - 캐시 히트 시 <50ms 응답, AI 호출 $0
+- **커버리지**: HS6 매핑 1,055건 × 평균 수십 상품명 = 사실상 대부분 소비재 커버
 
 **HS10 파이프라인 구현:**
 - 7개국(US/EU/UK/CA/AU/JP/KR) 10자리 파이프라인 완성
 - gov_tariff_schedules 89,842행 기반 매칭
+- US/EU/UK: 정부 REST API (HS 8-10자리) / KR/CA/AU/JP: WTO API (HS 6자리)
 
-**경쟁력 평가 (은태님 요청):**
-- Data: Tier 0 (경쟁사 없음), Features: Tier 1, Price: Tier 0, Architecture: Tier 1, Implementation: Tier 1, Real-world Validation: Tier 3 (고객 없음 = 유일한 약점)
+**경쟁력 자가 평가 (은태님 요청):**
+- **Data: Tier 0** — 113M+ 관세율, 119K 무역구제, 21K 제재, 89K 정부스케줄. 경쟁사 중 이 규모 없음
+- **Features: Tier 1** — 142/147 기능 (96.6%). Avalara/Global-e와 동급, 일부 상회
+- **Price: Tier 0** — 건당 $0.01 업계 최저. Avalara $1,500+/월, Zonos $2/주문
+- **Architecture: Tier 1** — API-first, MCP, 위젯, Shopify TEA. 확장 가능 구조
+- **Implementation: Tier 1** — 풀스택 완성 (DB→API→UI→플러그인→AI)
+- **Real-world Validation: Tier 3** — 고객 0 = 유일한 약점. 다음 단계 = 첫 유료 고객 10개
+
+**Git Commits (CW13 Cowork 후반):**
+- 6f8e0c1: npm publish, MCP 레지스트리, Custom LLM, B2B 아웃리치, UCP 발견
+- e9b102a: Gemini Gem CSV v2 업데이트
 
 **파일 생성:**
 - ai-agents/B2B_OUTREACH_TARGETS.md, ai-agents/LLM_COMMERCE_INTEGRATION_ANALYSIS.md
+- ai-agents/gemini-gem/country-duty-reference-v2.csv (240개국, 30개국 enhanced notes)
 - mcp-server/server.json, mcp-server/registry-metadata.json, mcp-server/.npmignore
 
 **파일 수정:**
-- ai-agents/custom-gpt/gpt-instructions.md (전면 리라이트)
-- ai-agents/gemini-gem/gem-instructions.md (전면 리라이트)
-- ai-agents/meta-ai/ai-studio-instructions.md (전면 리라이트)
-- mcp-server/package.json (name/version/keywords/homepage)
-- mcp-server/README.md (9 tools 문서화)
+- ai-agents/custom-gpt/gpt-instructions.md (전면 리라이트 — "Global Landed Cost Infrastructure", B2B CTA, 에러핸들링)
+- ai-agents/gemini-gem/gem-instructions.md (전면 리라이트 — 정적데이터+CTA, 3회 사용 후 전환 프롬프트)
+- ai-agents/meta-ai/ai-studio-instructions.md (전면 리라이트 — Gemini과 동일 전략)
+- mcp-server/package.json (name: potal-mcp-server, version: 1.3.1, mcpName, keywords, homepage)
+- mcp-server/README.md (9 tools 문서화, Quick Start, Claude Desktop config 예시)
 
 ## 절대 규칙
 1. **B2C 코드 수정 금지** — lib/search/, lib/agent/, components/search/ 등. 보존만
@@ -283,7 +312,7 @@ portal/
 - **Management API**: ✅ SQL 실행 가능 (curl만, urllib은 Cloudflare 차단)
   ```bash
   curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query \
-    -H "Authorization: Bearer sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a" \
+    -H "Authorization: Bearer ***REDACTED***" \
     -H "Content-Type: application/json" \
     -d '{"query": "SELECT count(*) FROM macmap_min_rates;"}'
   ```
@@ -339,13 +368,17 @@ portal/
 | Supabase Project ID | zyurflkhiregundhisky |
 | Supabase DB Password | PotalReview2026! |
 | Supabase Secret Key | sb_secret_***REDACTED*** |
-| Management API Token | sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a |
+| Management API Token | ***REDACTED*** |
 | WTO API Key | e6b00ecdb5b34e09aabe15e68ab71d1d |
 | Groq API Key | gsk_***REDACTED*** |
 | AWS Account | 920263653804 |
 | EC2 Instance | i-0c114c6176439b9cb (현재 중지됨) |
 | CRON_SECRET | 8e82e09e218d6147943253fdbffacc3bacda4e4f8d322ce508ea2befde00f297 |
 | Vercel API Token | vcp_***REDACTED*** (Full Account, Never expires) |
+| npm Username | potal_official (soulmaten7@gmail.com) |
+| npm Granular Token | ***REDACTED*** (Bypass 2FA, publish용) |
+| MCP Registry Name | io.github.soulmaten7/potal (registry.modelcontextprotocol.io) |
+| mcp.so Account | soulmaten7@gmail.com (GitHub 로그인, 승인 대기중) |
 
 ## ⚠️ 요금제 (세션 28 확정, 세션 37 Annual/Overage 추가 — 반드시 숙지)
 

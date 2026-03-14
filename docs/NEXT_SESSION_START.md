@@ -41,7 +41,7 @@ Claude Code 터미널에서 새 세션을 시작할 때:
 POTAL Chief Orchestrator 세션 시작.
 1. cat CLAUDE.md | head -200 으로 프로젝트 맥락 파악
 2. cat docs/NEXT_SESSION_START.md 로 현재 상태 + 우선순위 확인
-3. KOR AGR 확인: curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query -H "Authorization: Bearer sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a" -H "Content-Type: application/json" -d '{"query": "SELECT count(*) FROM macmap_agr_rates WHERE reporter_iso2 = '\''KR'\'';"}'
+3. KOR AGR 확인: curl -s -X POST https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query -H "Authorization: Bearer ***REDACTED***" -H "Content-Type: application/json" -d '{"query": "SELECT count(*) FROM macmap_agr_rates WHERE reporter_iso2 = '\''KR'\'';"}'
 4. Morning Brief: curl -s "https://www.potal.app/api/v1/admin/morning-brief" -H "x-cron-secret: 8e82e09e218d6147943253fdbffacc3bacda4e4f8d322ce508ea2befde00f297" | python3 -m json.tool
 5. 결과 종합해서 Morning Brief 포맷으로 보고
 6. 은태 판단 후 P0부터 작업 시작
@@ -69,7 +69,11 @@ POTAL Chief Orchestrator 세션 시작.
 ### CW13 Cowork 후반 — npm publish, MCP 레지스트리, Custom LLM, B2B 전략 (2026-03-15 00:00~14:00 KST)
 - **npm publish ✅**: `potal-mcp-server@1.3.1` npm 공개 패키지 (npmjs.com/package/potal-mcp-server)
 - **MCP 공식 레지스트리 ✅**: `io.github.soulmaten7/potal` (registry.modelcontextprotocol.io, status: active)
-- **Custom LLM 3종 리라이트**: GPT Actions(B2B CTA), Gemini Gem(정적+CTA), Meta AI(정적+CTA)
+- **Custom LLM 3종 리라이트 + 수동 배포**: GPT Actions(B2B CTA) → ChatGPT 에디터 복사 ✅, Gemini Gem(정적+CTA) → AI Studio 업데이트 ✅ (설명+요청사항+CSV v2), Meta AI(정적+CTA) → Studio 업데이트 시 적용
+- **LLM 수익화 전략**: GPT="쇼룸"(API직접호출, Free200), Gem/Meta="광고판"(정적+CTA), API="공장"(B2B수익)
+- **Gemini CSV v2**: country-duty-reference-v2.csv (240국+30개국 상세노트) Gem 지식 업로드 ✅
+- **MCP 디렉토리**: mcp.so 제출 ✅(리뷰대기), glama.ai=auto-crawling(제출폼없음), smithery.ai=HTTP필요(스킵)
+- **npm 계정**: potal_official (Granular Token, Bypass 2FA)
 - **B2B 아웃리치**: 15개 타겟 4티어 + 콜드이메일 3종 (B2B_OUTREACH_TARGETS.md)
 - **UCP 발견**: Google+Shopify+Walmart+Target Universal Commerce Protocol — MCP 내장, 관세 없음 = POTAL 기회
 - **Pre-computing ✅**: 490 HS6 × 240국 = 117,600 조합 사전 계산 (캐시 <50ms)
@@ -150,10 +154,11 @@ POTAL Chief Orchestrator 세션 시작.
 - **Google Taxonomy**: 164건 HS 매핑 → product_hs_mappings
 - **DB 마이그레이션**: sanctions 5테이블 + exchange_rate_history + search_sanctions_fuzzy()
 
-### AI 플랫폼 업데이트 (Cycle 5)
-- Custom GPT: screening, FTA, classify 3개 액션 추가
-- MCP Server: v1.2 (7 tools — screen_denied_party, lookup_fta 추가)
-- Gemini/Meta AI: 제재, FTA, 50개국어, AI 분류 설명 추가
+### AI 플랫폼 업데이트 (Cycle 5 → CW13 후반 전면 리라이트)
+- Custom GPT: ~~screening, FTA, classify 3개 액션 추가~~ → **전면 리라이트** "Global Landed Cost Infrastructure" + calculateLandedCost/listSupportedCountries/screenDeniedParty/lookupFTA/classifyProduct 5개 액션, B2B CTA, "Powered by POTAL" 푸터
+- MCP Server: v1.2→**v1.3.1** (7→9 tools: +generate_document, compare_countries). **npm publish ✅** (`potal-mcp-server@1.3.1`). **MCP 공식 레지스트리 ✅** (`io.github.soulmaten7/potal`)
+- Gemini Gem: **전면 리라이트** — 정적 참고 데이터 + potal.app CTA (외부 API 미지원). CSV v2(240국+30국 상세) 업로드 ✅
+- Meta AI: **전면 리라이트** — Gemini과 동일 정적데이터+CTA 전략
 
 ---
 
@@ -200,9 +205,9 @@ tail -5 ~/portal/wdc_extract.log
 6. **WDC 추출 완료 확인** → 3단계 상품명 세분화 → 5억 사전 매핑
 7. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
 8. **UX Audit 나머지 43항목**: POTAL_UX_AUDIT_CW13.md 11~53번 구현
-9. **GPT Actions 지침 수동 복사**: gpt-instructions.md → ChatGPT GPT 에디터에 복사-붙여넣기
-10. **Gemini Gem 지침 수동 복사**: gem-instructions.md → Google AI Studio에 복사-붙여넣기
-11. **mcp.so / glama.ai / smithery.ai 수동 등록**: MCP 디렉토리 사이트에 POTAL MCP 서버 등록
+9. ~~**GPT Actions 지침 수동 복사**~~ ✅ 완료 (ChatGPT GPT 에디터에 gpt-instructions.md 복사-붙여넣기)
+10. ~~**Gemini Gem 지침 수동 복사**~~ ✅ 완료 (Google AI Studio에 설명+요청사항+지식CSV v2 업데이트)
+11. ~~**mcp.so 등록**~~ ✅ 제출 완료 (리뷰 대기) | glama.ai = submit 폼 없음(auto-crawling) | smithery.ai = HTTP 필요(stdio 미지원, 스킵)
 
 ### 🔴 P1 — 이번 주
 1. **B2B 아웃리치 실행**: 15개 타겟 4티어 콜드이메일 발송 시작 (B2B_OUTREACH_TARGETS.md 기반)
@@ -257,8 +262,8 @@ tail -5 ~/portal/wdc_extract.log
 - **Custom LLM 3종 리라이트**: ✅ GPT Actions(B2B CTA), Gemini Gem(정적+CTA), Meta AI(정적+CTA)
 - **Incoterms (#20)**: ✅ EXW/FOB/CIF/DDP/DDU + who-pays-what
 - 47기능 42개 완료
-- **Vector DB 시딩**: ✅ hs_classification_vectors **1,023건** (Cowork 11: 170→1,023), 파이프라인 정확도 100%
-- **WDC 카테고리→HS6 1단계**: ✅ 145 카테고리 → 1,017 매핑 (product_hs_mappings 164→1,017, 비용 ~$0.01)
+- **Vector DB 시딩**: ✅ hs_classification_vectors **1,104건** (CW13: 1,023→1,104), 파이프라인 정확도 100%
+- **WDC 카테고리→HS6 1~2단계**: ✅ 145+38 카테고리 → 1,055 매핑 (product_hs_mappings 164→1,017→1,055, 벡터 1,104건)
 - **7개국 HS 10자리 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행)
 - **5억 사전 매핑 전략**: ✅ 확정 — 카테고리→HS6→10자리후보→상품명+가격매칭→룩업테이블
 - **HS Code 정확도**: ✅ 100% 구조 설계 완료 (6자리: 카테고리확정, 10자리: DB후보+규칙, 가격분기: if문)
