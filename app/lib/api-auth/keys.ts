@@ -152,6 +152,7 @@ export async function lookupApiKey(
   rateLimitPerMinute: number;
   planId: string;
   subscriptionStatus: string;
+  currentPeriodEnd: string | null;
 } | null> {
   const hash = await hashKey(fullKey);
   const prefix = fullKey.substring(0, 8);
@@ -167,7 +168,8 @@ export async function lookupApiKey(
       revoked_at,
       sellers!inner (
         plan_id,
-        subscription_status
+        subscription_status,
+        current_period_end
       )
     `)
     .eq('key_prefix', prefix)
@@ -184,7 +186,7 @@ export async function lookupApiKey(
     .update({ last_used_at: new Date().toISOString() })
     .eq('id', row.id);
 
-  const seller = row.sellers as { plan_id: string; subscription_status: string };
+  const seller = row.sellers as { plan_id: string; subscription_status: string; current_period_end: string | null };
 
   return {
     keyId: row.id,
@@ -193,6 +195,7 @@ export async function lookupApiKey(
     rateLimitPerMinute: row.rate_limit_per_minute,
     planId: seller.plan_id,
     subscriptionStatus: seller.subscription_status,
+    currentPeriodEnd: seller.current_period_end,
   };
 }
 

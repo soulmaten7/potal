@@ -51,6 +51,10 @@
     {
       "path": "/api/cron/enterprise-lead-match",
       "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/subscription-cleanup",
+      "schedule": "0 3 * * *"
     }
   ]
 }

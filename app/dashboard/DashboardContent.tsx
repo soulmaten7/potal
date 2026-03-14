@@ -1057,11 +1057,13 @@ export default function DashboardContent() {
                         seller?.subscriptionStatus === 'active' ? '#dcfce7' :
                         seller?.subscriptionStatus === 'trialing' ? '#dbeafe' :
                         seller?.subscriptionStatus === 'past_due' ? '#fef3c7' :
+                        seller?.subscriptionStatus === 'canceled' ? '#fee2e2' :
                         '#f3f4f6',
                       color:
                         seller?.subscriptionStatus === 'active' ? '#16a34a' :
                         seller?.subscriptionStatus === 'trialing' ? '#2563eb' :
                         seller?.subscriptionStatus === 'past_due' ? '#d97706' :
+                        seller?.subscriptionStatus === 'canceled' ? '#dc2626' :
                         '#666',
                     }}>
                       {seller?.subscriptionStatus || 'active'}
@@ -1069,7 +1071,7 @@ export default function DashboardContent() {
                   </div>
                   {seller?.currentPeriodEnd && (
                     <div style={{ fontSize: 12, color: '#999', marginTop: 6 }}>
-                      {seller.subscriptionStatus === 'trialing' ? 'Trial ends' : 'Renews'}: {new Date(seller.currentPeriodEnd).toLocaleDateString()}
+                      {seller.subscriptionStatus === 'trialing' ? 'Trial ends' : seller.subscriptionStatus === 'canceled' ? 'Access until' : 'Renews'}: {new Date(seller.currentPeriodEnd).toLocaleDateString()}
                     </div>
                   )}
                 </div>

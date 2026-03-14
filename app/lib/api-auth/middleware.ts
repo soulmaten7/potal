@@ -105,7 +105,12 @@ export function withApiAuth(handler: ApiHandler) {
     // 4. Check subscription status
     const { subscriptionStatus } = keyInfo;
     if (subscriptionStatus === 'canceled') {
-      return apiError(ApiErrorCode.FORBIDDEN, 'Subscription is canceled. Please reactivate your plan.');
+      // Allow access until current billing period ends
+      const periodEnd = keyInfo.currentPeriodEnd ? new Date(keyInfo.currentPeriodEnd) : null;
+      if (!periodEnd || new Date() > periodEnd) {
+        return apiError(ApiErrorCode.FORBIDDEN, 'Subscription has expired. Please reactivate your plan.');
+      }
+      // Still within paid period — treat as active
     }
     if (subscriptionStatus === 'past_due') {
       return apiError(ApiErrorCode.FORBIDDEN, 'Payment is past due. Please update your payment method.');

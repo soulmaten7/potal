@@ -157,12 +157,21 @@ export async function POST(req: NextRequest) {
 
       case 'subscription.canceled': {
         const customerId = data.customer_id;
+        const priceId = data.items?.[0]?.price?.id;
+        const planId = priceId ? mapPriceToPlan(priceId) : undefined;
+        const currentPeriodEnd = data.current_billing_period?.ends_at
+          ? new Date(data.current_billing_period.ends_at)
+          : undefined;
 
         if (customerId) {
+          // Keep current plan until billing period ends.
+          // Plan downgrades to 'free' only after current_period_end passes
+          // (checked at request time in middleware + subscription-cleanup cron).
           await updateSellerSubscription({
             billingCustomerId: customerId,
-            planId: 'free',
+            planId: planId || 'free',
             subscriptionStatus: 'canceled',
+            currentPeriodEnd,
           });
         }
         break;
