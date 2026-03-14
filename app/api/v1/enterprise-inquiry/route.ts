@@ -7,10 +7,12 @@ import { createClient } from '@supabase/supabase-js';
 import { sendEnterpriseProposalEmail } from '@/app/lib/notifications/enterprise-email';
 import { notifyNewEnterpriseLead } from '@/app/lib/notifications/telegram';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
 
 const ALLOWED_ORIGINS = [
   'https://www.potal.app',
@@ -56,6 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. DB에 리드 저장 (UPSERT)
+    const supabase = getSupabase();
     const { data: lead, error: dbError } = await supabase
       .from('enterprise_leads')
       .upsert(

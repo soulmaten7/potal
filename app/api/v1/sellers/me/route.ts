@@ -47,18 +47,40 @@ export async function GET(req: NextRequest) {
       .eq('user_id', user.id)
       .single();
 
+    let sellerRecord = seller as any;
+
     if (sellerError || !seller) {
-      return NextResponse.json(
-        { success: false, error: { message: 'Seller profile not found.' } },
-        { status: 404 }
-      );
+      // Auto-create seller profile for authenticated users
+      const { data: newSeller, error: createError } = await (supabase
+        .from('sellers') as any)
+        .insert({
+          user_id: user.id,
+          contact_email: user.email,
+          plan_id: 'free',
+          subscription_status: 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select('id, user_id, contact_email, company_name, plan_id, subscription_status, billing_customer_id, billing_subscription_id, current_period_end, created_at')
+        .single();
+
+      if (createError || !newSeller) {
+        return NextResponse.json(
+          { success: false, error: { message: 'Failed to create seller profile.', details: createError?.message } },
+          { status: 500 }
+        );
+      }
+      sellerRecord = newSeller;
     }
 
-    // Get API keys
+    const s = sellerRecord;
+
+    // Get API keys (use seller.id, not auth user.id)
+    const sellerId = s.id;
     const { data: keys } = await (supabase
       .from('api_keys') as any)
       .select('id, key_prefix, key_type, name, is_active, rate_limit_per_minute, created_at, last_used_at, revoked_at')
-      .eq('seller_id', user.id)
+      .eq('seller_id', sellerId)
       .order('created_at', { ascending: false });
 
     // Get current month usage
@@ -68,13 +90,11 @@ export async function GET(req: NextRequest) {
     const { data: usageLogs } = await (supabase
       .from('usage_logs') as any)
       .select('id')
-      .eq('seller_id', user.id)
+      .eq('seller_id', sellerId)
       .gte('created_at', startDate);
 
-    const s = seller as any;
-
     const planLimits: Record<string, number> = {
-      free: 100,
+      free: 200,
       basic: 2000,
       pro: 10000,
       enterprise: 50000,

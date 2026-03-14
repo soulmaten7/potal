@@ -147,9 +147,15 @@ const inputStyle = {
   boxSizing: 'border-box' as const,
 };
 
+function formatNumberWithCommas(value: string) {
+  const digits = value.replace(/[^\d]/g, '');
+  return digits ? Number(digits).toLocaleString() : '';
+}
+
 function EnterpriseInquiryForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [volumeDisplay, setVolumeDisplay] = useState('');
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -161,7 +167,7 @@ function EnterpriseInquiryForm() {
       company_name: (form.elements.namedItem('company_name') as HTMLInputElement).value,
       contact_name: (form.elements.namedItem('contact_name') as HTMLInputElement).value,
       contact_email: (form.elements.namedItem('contact_email') as HTMLInputElement).value,
-      estimated_volume: (form.elements.namedItem('estimated_volume') as HTMLInputElement).value,
+      estimated_volume: volumeDisplay.replace(/,/g, ''),
     };
 
     try {
@@ -203,7 +209,15 @@ function EnterpriseInquiryForm() {
         <input type="text" name="company_name" placeholder="Company name" required style={inputStyle} />
         <input type="text" name="contact_name" placeholder="Your name" required style={inputStyle} />
         <input type="email" name="contact_email" placeholder="Work email" required style={inputStyle} />
-        <input type="text" name="estimated_volume" placeholder="Estimated monthly API calls (e.g. 100,000)" required style={inputStyle} />
+        <input
+          type="text"
+          name="estimated_volume"
+          placeholder="Estimated monthly API calls (e.g. 100,000)"
+          required
+          style={inputStyle}
+          value={volumeDisplay}
+          onChange={(e) => setVolumeDisplay(formatNumberWithCommas(e.target.value))}
+        />
         <button
           type="submit"
           disabled={status === 'submitting'}
