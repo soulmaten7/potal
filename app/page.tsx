@@ -434,9 +434,9 @@ export default function HomePage() {
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                 {[
                   { value: 240, suffix: '', label: 'Countries', icon: '🌍' },
-                  { value: 5371, suffix: '', label: 'HS Codes', icon: '🏷' },
+                  { value: 113, suffix: 'M+', label: 'Tariff Records', icon: '📈' },
                   { value: 63, suffix: '', label: 'FTAs', icon: '🤝' },
-                  { value: 181, suffix: '', label: 'Tariff Countries', icon: '📊' },
+                  { value: 50, suffix: '', label: 'Languages', icon: '🌐' },
                 ].map((stat, i) => (
                   <div key={i} style={{
                     background: 'rgba(255,255,255,0.05)',
