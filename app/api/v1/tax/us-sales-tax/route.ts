@@ -87,6 +87,60 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   );
 });
 
-export async function GET() {
-  return apiError(ApiErrorCode.BAD_REQUEST, 'Use POST. Body: { state: "CA" } or { zipcode: "90210", productValue?: 100 }');
-}
+export const GET = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => {
+  const url = new URL(req.url);
+  const state = (url.searchParams.get('state') || '').toUpperCase();
+  const productCategory = url.searchParams.get('product_category') || '';
+  const value = parseFloat(url.searchParams.get('value') || '0');
+
+  if (!state || state.length !== 2 || !STATE_NAMES[state]) {
+    return apiError(ApiErrorCode.BAD_REQUEST, 'state query param required (2-letter code).');
+  }
+
+  // Try DB-backed data
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+    const { data: dbRate } = await sb.from('us_state_tax_rates').select('*').eq('state_code', state).single();
+
+    if (dbRate) {
+      const isExempt =
+        (productCategory === 'food' && dbRate.food_exempt) ||
+        (productCategory === 'clothing' && dbRate.clothing_exempt) ||
+        productCategory === 'prescription_medicine';
+
+      const effectiveRate = isExempt ? 0 : parseFloat(dbRate.combined_rate);
+      const taxAmount = value > 0 ? Math.round(value * effectiveRate) / 100 : null;
+
+      return apiSuccess({
+        state, state_name: dbRate.state_name,
+        state_rate: parseFloat(dbRate.state_rate),
+        avg_local_rate: parseFloat(dbRate.avg_local_rate),
+        combined_rate: parseFloat(dbRate.combined_rate),
+        product_category: productCategory || null,
+        exempt: isExempt,
+        effective_rate: effectiveRate,
+        tax_amount: taxAmount,
+        value: value || null,
+        economic_nexus: {
+          has_nexus: dbRate.has_economic_nexus,
+          revenue_threshold: parseFloat(dbRate.nexus_revenue_threshold),
+          transaction_threshold: dbRate.nexus_transaction_threshold,
+        },
+        food_exempt: dbRate.food_exempt,
+        clothing_exempt: dbRate.clothing_exempt,
+        notes: dbRate.notes,
+        source: 'database',
+      }, { sellerId: ctx.sellerId });
+    }
+  } catch { /* fallback to hardcoded */ }
+
+  // Fallback
+  const rate = STATE_TAX_RATES[state] ?? 0.07;
+  return apiSuccess({
+    state, state_name: STATE_NAMES[state],
+    combined_rate: rate * 100,
+    tax_amount: value > 0 ? Math.round(value * rate * 100) / 100 : null,
+    source: 'hardcoded',
+  }, { sellerId: ctx.sellerId });
+});

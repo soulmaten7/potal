@@ -1,0 +1,47 @@
+<?php /** @var \Potal\LandedCost\Block\DutyDisplay $block */ ?>
+<div id="potal-duty-display" style="display:none;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:12px 0">
+    <div style="font-weight:600;font-size:14px;margin-bottom:8px">Estimated Import Duties & Taxes</div>
+    <div id="potal-duty-loading" style="color:#999;font-size:13px">Calculating...</div>
+    <div id="potal-duty-result" style="display:none">
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:4px">
+            <span>Import Duty</span><span id="potal-duty-amount">$0.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:#555;margin-bottom:4px">
+            <span id="potal-tax-label">VAT/Tax</span><span id="potal-tax-amount">$0.00</span>
+        </div>
+        <div style="border-top:1px solid #e5e7eb;margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-weight:600;font-size:14px">
+            <span>Total Landed Cost</span><span id="potal-total">$0.00</span>
+        </div>
+    </div>
+    <div style="font-size:11px;color:#999;margin-top:8px">Powered by POTAL</div>
+</div>
+
+<script>
+(function() {
+    var apiKey = '<?= $block->escapeJs($block->getApiKey()) ?>';
+    var price = <?= (float)$block->getProductPrice() ?>;
+    if (!apiKey || price <= 0) return;
+
+    var container = document.getElementById('potal-duty-display');
+    container.style.display = 'block';
+
+    fetch('<?= $block->escapeUrl($block->getApiUrl()) ?>', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ price: price, destinationCountry: 'US' })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data && data.data) {
+            var d = data.data;
+            document.getElementById('potal-duty-amount').textContent = '$' + (d.importDuty || 0).toFixed(2);
+            document.getElementById('potal-tax-label').textContent = d.vatLabel || 'VAT/Tax';
+            document.getElementById('potal-tax-amount').textContent = '$' + (d.vat || 0).toFixed(2);
+            document.getElementById('potal-total').textContent = '$' + (d.totalLandedCost || 0).toFixed(2);
+            document.getElementById('potal-duty-loading').style.display = 'none';
+            document.getElementById('potal-duty-result').style.display = 'block';
+        }
+    })
+    .catch(function() { container.style.display = 'none'; });
+})();
+</script>
