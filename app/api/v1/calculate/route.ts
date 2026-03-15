@@ -23,6 +23,7 @@ import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { calculateGlobalLandedCostAsync } from '@/app/lib/cost-engine';
 import type { GlobalCostInput } from '@/app/lib/cost-engine/GlobalCostEngine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { getCountryFtas } from '@/app/lib/cost-engine/hs-code/fta';
 
 // ─── POST Handler ───────────────────────────────────
 
@@ -81,8 +82,39 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   try {
     const result = await calculateGlobalLandedCostAsync(costInput);
 
-    // 7. Return response
-    return apiSuccess(result, {
+    // 7. Build fta_utilization from tariffOptimization
+    const origin = costInput.origin || '';
+    const dest = costInput.destinationCountry || 'US';
+    const resultObj = result as unknown as Record<string, unknown>;
+    const tariffOpt = resultObj.tariffOptimization as { optimalRateType?: string; optimalAgreementName?: string; savingsVsMfn?: number; rateOptions?: { rateType: string; agreementName?: string; rate: number }[] } | undefined;
+
+    let ftaUtilization = null;
+    if (tariffOpt) {
+      const isFtaApplied = tariffOpt.optimalRateType === 'AGR' || tariffOpt.optimalRateType === 'FTA';
+      const productValue = typeof costInput.price === 'number' ? costInput.price : parseFloat(String(costInput.price)) || 0;
+
+      // Find alternative FTAs from rate options
+      const altFtas = (tariffOpt.rateOptions || [])
+        .filter(r => (r.rateType === 'AGR' || r.rateType === 'FTA') && r.agreementName !== tariffOpt.optimalAgreementName)
+        .map(r => ({ name: r.agreementName || r.rateType, rate: r.rate }));
+
+      // Also check hardcoded FTA list for available FTAs
+      const originFtas = getCountryFtas(origin);
+      const destFtas = getCountryFtas(dest);
+      const originCodes = new Set(originFtas.map(f => f.code));
+      const sharedFtaCount = destFtas.filter(f => originCodes.has(f.code)).length;
+
+      ftaUtilization = {
+        fta_available: sharedFtaCount > 0,
+        fta_count: sharedFtaCount,
+        fta_applied: isFtaApplied ? (tariffOpt.optimalAgreementName || 'FTA') : null,
+        savings: isFtaApplied ? Math.round((tariffOpt.savingsVsMfn || 0) * productValue * 100) / 100 : 0,
+        alternative_ftas: altFtas,
+      };
+    }
+
+    // 8. Return response with fta_utilization
+    return apiSuccess({ ...resultObj, fta_utilization: ftaUtilization }, {
       sellerId: context.sellerId,
       plan: context.planId,
     });

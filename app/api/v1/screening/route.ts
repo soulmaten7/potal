@@ -24,6 +24,24 @@ import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { screenParty, screenParties, type ScreeningInput, type ScreeningList } from '@/app/lib/cost-engine/screening';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+function logScreening(queryName: string, queryCountry: string | undefined, matchedCount: number, topScore: number, decision: string, sellerId?: string) {
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    void supabase.from('screening_logs').insert({
+      query_name: queryName,
+      query_country: queryCountry || null,
+      matched_count: matchedCount,
+      top_match_score: topScore,
+      decision,
+      seller_id: sellerId || null,
+    });
+  } catch { /* non-blocking */ }
+}
 
 const VALID_LISTS: ScreeningList[] = ['OFAC_SDN', 'OFAC_CONS', 'BIS_ENTITY', 'BIS_DENIED', 'BIS_UNVERIFIED', 'EU_SANCTIONS', 'UN_SANCTIONS', 'UK_SANCTIONS'];
 const MAX_BATCH = 50;
@@ -72,6 +90,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     const results = screenParties(inputs);
     const hasAnyMatch = results.some(r => r.hasMatches);
 
+    // Log each screening (non-blocking)
+    for (let i = 0; i < results.length; i++) {
+      const r = results[i];
+      const topScore = r.matches.length > 0 ? Math.max(...r.matches.map(m => m.matchScore)) : 0;
+      logScreening(inputs[i].name, inputs[i].country, r.totalMatches, topScore, r.status, context.sellerId);
+    }
+
     return apiSuccess({
       batchMode: true,
       overallStatus: hasAnyMatch ? 'matches_found' : 'all_clear',
@@ -97,6 +122,10 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   };
 
   const result = screenParty(input);
+
+  // Log screening (non-blocking)
+  const topScore = result.matches.length > 0 ? Math.max(...result.matches.map(m => m.matchScore)) : 0;
+  logScreening(input.name, input.country, result.totalMatches, topScore, result.status, context.sellerId);
 
   return apiSuccess(result, {
     sellerId: context.sellerId,

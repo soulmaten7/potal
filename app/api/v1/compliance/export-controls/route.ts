@@ -22,6 +22,81 @@
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+function getSupabase() {
+  return createClient(supabaseUrl, supabaseKey);
+}
+
+// HS chapter → likely ECCN group mapping for AI-free ECCN suggestion
+const HS_TO_ECCN_MAP: Record<string, { eccnGroup: string; description: string }[]> = {
+  '84': [{ eccnGroup: '2B', description: 'Machine tools and manufacturing equipment' }],
+  '85': [{ eccnGroup: '3A', description: 'Electronic components and equipment' }, { eccnGroup: '5A', description: 'Telecom and info security equipment' }],
+  '87': [{ eccnGroup: '0A', description: 'Ground vehicles' }],
+  '88': [{ eccnGroup: '9A', description: 'Aircraft and spacecraft' }],
+  '89': [{ eccnGroup: '8A', description: 'Marine vessels and equipment' }],
+  '90': [{ eccnGroup: '6A', description: 'Sensors, lasers, and optical equipment' }],
+  '93': [{ eccnGroup: '0A', description: 'Firearms and military equipment (likely ITAR)' }],
+  '28': [{ eccnGroup: '1C', description: 'Chemical precursors' }],
+  '29': [{ eccnGroup: '1C', description: 'Organic chemical compounds' }],
+  '38': [{ eccnGroup: '1C', description: 'Dual-use chemical products' }],
+};
+
+interface ExportControlChartEntry {
+  eccn_group: string;
+  reason_for_control: string;
+  license_required: boolean;
+  license_exceptions: string[] | null;
+}
+
+async function lookupExportControlChart(eccnGroup: string, countryCode: string): Promise<ExportControlChartEntry[]> {
+  try {
+    const supabase = getSupabase();
+    const { data } = await supabase
+      .from('export_control_chart')
+      .select('eccn_group, reason_for_control, license_required, license_exceptions')
+      .eq('eccn_group', eccnGroup)
+      .eq('country_code', countryCode);
+    return (data || []) as ExportControlChartEntry[];
+  } catch {
+    return [];
+  }
+}
+
+async function suggestEccnFromProduct(productName: string, hsCode?: string): Promise<{ eccnGroup: string; description: string; isEar99: boolean } | null> {
+  // First try HS-based mapping
+  if (hsCode) {
+    const chapter = hsCode.replace(/[^0-9]/g, '').substring(0, 2);
+    const mappings = HS_TO_ECCN_MAP[chapter];
+    if (mappings && mappings.length > 0) {
+      return { ...mappings[0], isEar99: false };
+    }
+  }
+
+  // Check product name for obvious keywords
+  const lowerName = productName.toLowerCase();
+  if (/semiconductor|chip|processor|integrated circuit/i.test(lowerName)) {
+    return { eccnGroup: '3A', description: 'Electronic components (semiconductor)', isEar99: false };
+  }
+  if (/laser|lidar|sensor|camera.*infrared/i.test(lowerName)) {
+    return { eccnGroup: '6A', description: 'Sensors and lasers', isEar99: false };
+  }
+  if (/encryption|crypto|vpn|secure comm/i.test(lowerName)) {
+    return { eccnGroup: '5A', description: 'Information security / encryption', isEar99: false };
+  }
+  if (/drone|uav|unmanned/i.test(lowerName)) {
+    return { eccnGroup: '9A', description: 'Unmanned aerial vehicles', isEar99: false };
+  }
+  if (/nuclear|centrifuge|isotope/i.test(lowerName)) {
+    return { eccnGroup: '0B', description: 'Nuclear-related equipment', isEar99: false };
+  }
+
+  // Most commercial goods are EAR99
+  return { eccnGroup: 'EAR99', description: 'Not controlled — eligible for export without license to most destinations', isEar99: true };
+}
 
 // ─── Export Control Data ───────────────────────────
 
@@ -219,8 +294,41 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
   const issues = screenExportControls(productName, destinationCountry, hsCode, eccn, endUse, endUser);
 
+  // ECCN suggestion if not provided
+  const eccnSuggestion = !eccn ? await suggestEccnFromProduct(productName, hsCode) : null;
+  const effectiveEccnGroup = eccn ? eccn.substring(0, 2) : eccnSuggestion?.eccnGroup || null;
+
+  // DB chart lookup for license requirements
+  let chartResults: ExportControlChartEntry[] = [];
+  let licenseRequiredByChart = false;
+  let availableExceptions: string[] = [];
+  if (effectiveEccnGroup && effectiveEccnGroup !== 'EAR99') {
+    chartResults = await lookupExportControlChart(effectiveEccnGroup, destinationCountry);
+    const requiresLicense = chartResults.filter(c => c.license_required);
+    licenseRequiredByChart = requiresLicense.length > 0;
+
+    // Collect all available license exceptions
+    const exceptionSet = new Set<string>();
+    for (const c of chartResults) {
+      if (c.license_exceptions) {
+        for (const ex of c.license_exceptions) exceptionSet.add(ex);
+      }
+    }
+    availableExceptions = Array.from(exceptionSet);
+
+    if (licenseRequiredByChart) {
+      const reasons = requiresLicense.map(c => c.reason_for_control).join(', ');
+      issues.push({
+        type: 'ear',
+        severity: 'license_required',
+        message: `BIS Commerce Country Chart: ECCN ${effectiveEccnGroup} to ${destinationCountry} requires license for: ${reasons}`,
+        regulation: 'EAR Part 738, Commerce Country Chart',
+      });
+    }
+  }
+
   const blocked = issues.some(i => i.severity === 'blocked');
-  const licenseRequired = issues.some(i => i.severity === 'license_required');
+  const licenseRequired = issues.some(i => i.severity === 'license_required') || licenseRequiredByChart;
 
   const status: 'clear' | 'license_required' | 'blocked' =
     blocked ? 'blocked'
@@ -233,7 +341,21 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       productName,
       destinationCountry,
       eccn: eccn || null,
+      eccn_suggestion: eccnSuggestion ? {
+        eccn_group: eccnSuggestion.eccnGroup,
+        description: eccnSuggestion.description,
+        is_ear99: eccnSuggestion.isEar99,
+      } : null,
+      ear99: eccnSuggestion?.isEar99 ?? (eccn ? eccn.includes('99') : null),
+      license_required: licenseRequired,
+      available_exceptions: availableExceptions,
       issues,
+      chart_results: chartResults.length > 0 ? chartResults.map(c => ({
+        eccn_group: c.eccn_group,
+        reason: c.reason_for_control,
+        license_required: c.license_required,
+        exceptions: c.license_exceptions,
+      })) : null,
       countryGroups: {
         E1_embargo: COUNTRY_GROUP_E1.has(destinationCountry),
         D1_national_security: COUNTRY_GROUP_D1.has(destinationCountry),
@@ -242,7 +364,11 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       recommendations: blocked
         ? ['Export to this destination is prohibited. Contact legal counsel before proceeding.']
         : licenseRequired
-          ? ['BIS export license may be required. Consult export compliance counsel.', 'File license application via BIS SNAP-R system.']
+          ? [
+              'BIS export license may be required. Consult export compliance counsel.',
+              'File license application via BIS SNAP-R system.',
+              ...(availableExceptions.length > 0 ? [`Possible license exceptions: ${availableExceptions.join(', ')}`] : []),
+            ]
           : ['No export control issues detected based on provided information.', 'This screening does not replace professional export compliance review.'],
     },
     {
