@@ -57,3 +57,30 @@ export interface HsClassificationResult {
   /** AI-detected country of origin (ISO 2-letter code, e.g. "CN", "US", "DE") */
   countryOfOrigin?: string;
 }
+
+// ─── F001 Explainability ────────────────────────────
+
+export interface ReasoningStep {
+  step: 'lookup' | 'vector' | 'keyword' | 'chapter_note' | 'llm' | 'price_break' | 'cache' | 'manual';
+  detail: string;
+  confidence: number;
+}
+
+export interface RulingReference {
+  ruling_id: string;
+  ruling_date: string;
+  summary: string;
+  source: string;
+}
+
+// ─── F006 Multi-dimensional Confidence ──────────────
+
+export interface MultiDimensionalConfidence {
+  overall: number;
+  semantic_match: number;
+  keyword_overlap: number;
+  category_certainty: number;
+  price_consistency: number;
+  review_recommended: boolean;
+  review_required: boolean;
+}

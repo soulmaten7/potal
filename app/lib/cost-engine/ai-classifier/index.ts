@@ -29,3 +29,5 @@ export { recordClassificationAudit, queryClassificationAudit } from './audit-tra
 export { validateProductDescription } from './description-validator';
 export type { DescriptionValidationResult, DescriptionIssue } from './description-validator';
 export type { AuditTrailEntry, AuditTrailQuery, AuditTrailResponse } from './audit-trail';
+export { buildReasoningChain, lookupRulingReference, buildMultiDimensionalConfidence, getChapterNote } from './explainability';
+export type { } from './explainability';

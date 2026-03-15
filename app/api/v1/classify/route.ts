@@ -13,7 +13,7 @@
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
-import { classifyProductAsync, calculateConfidenceScore, recordClassificationAudit, validateProductDescription } from '@/app/lib/cost-engine/ai-classifier';
+import { classifyProductAsync, calculateConfidenceScore, recordClassificationAudit, validateProductDescription, buildReasoningChain, buildMultiDimensionalConfidence, getChapterNote, lookupRulingReference } from '@/app/lib/cost-engine/ai-classifier';
 import { classifyWithVision } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 import { resolveHs10 } from '@/app/lib/cost-engine/hs-code/hs10-resolver';
@@ -23,6 +23,39 @@ const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_IMAGE_FORMATS = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 const MAX_TEXT_LENGTH = 500; // productName / category / productHint max chars
 const ALLOWED_IMAGE_URL_PATTERN = /^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i;
+
+/**
+ * Extract og:image, title, description from a product URL
+ */
+async function extractProductUrlMeta(url: string): Promise<{ ogImage?: string; title?: string; description?: string } | null> {
+  try {
+    const res = await fetch(url, {
+      signal: AbortSignal.timeout(8000),
+      headers: { 'User-Agent': 'POTAL-Bot/1.0 (+https://potal.app)' },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    // Limit parsing to first 50KB for performance
+    const head = html.slice(0, 50000);
+
+    const ogImageMatch = head.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+      || head.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+    const titleMatch = head.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
+      || head.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i)
+      || head.match(/<title[^>]*>([^<]+)<\/title>/i);
+    const descMatch = head.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
+      || head.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)
+      || head.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']description["']/i);
+
+    return {
+      ogImage: ogImageMatch?.[1] || undefined,
+      title: titleMatch?.[1]?.trim() || undefined,
+      description: descMatch?.[1]?.trim() || undefined,
+    };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * Sanitize text input: strip control chars, limit length, remove prompt injection patterns
@@ -75,11 +108,28 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     return apiError(ApiErrorCode.BAD_REQUEST, 'Invalid JSON body.');
   }
 
-  const productName = typeof body.productName === 'string' ? sanitizeText(body.productName) : '';
+  let productName = typeof body.productName === 'string' ? sanitizeText(body.productName) : '';
   const category = typeof body.category === 'string' ? sanitizeText(body.category, 200) : undefined;
-  const imageUrl = typeof body.imageUrl === 'string' ? body.imageUrl.trim() : undefined;
+  let imageUrl = typeof body.imageUrl === 'string' ? body.imageUrl.trim() : undefined;
   const imageBase64 = typeof body.imageBase64 === 'string' ? body.imageBase64 : undefined;
   const productHint = typeof body.productHint === 'string' ? sanitizeText(body.productHint, 200) : undefined;
+  const productUrl = typeof body.product_url === 'string' ? body.product_url.trim() : undefined;
+
+  // product_url: extract og:image + title/description for enriched classification
+  let urlMeta: { ogImage?: string; title?: string; description?: string } | null = null;
+  if (productUrl) {
+    urlMeta = await extractProductUrlMeta(productUrl);
+    if (urlMeta) {
+      // Use og:image for vision classification if no image provided
+      if (!imageUrl && !imageBase64 && urlMeta.ogImage) {
+        imageUrl = urlMeta.ogImage;
+      }
+      // Enrich productName with page title/description
+      if (!productName && urlMeta.title) {
+        productName = sanitizeText(urlMeta.title);
+      }
+    }
+  }
 
   // Image-based classification
   if (imageUrl || imageBase64) {
@@ -114,20 +164,53 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       productHint || productName || undefined,
     );
 
+    const visionDetected = visionResult.result.detectedProductName || productHint || productName || '';
+    const visionReasoningChain = [
+      {
+        step: 'lookup' as const,
+        detail: `Image analyzed: detected "${visionDetected.substring(0, 50)}"`,
+        confidence: 0.9,
+      },
+      ...buildReasoningChain({
+        classificationSource: 'ai',
+        productName: visionDetected,
+        hsCode: visionResult.result.hsCode,
+        description: visionResult.result.description,
+        confidence: visionResult.result.confidence,
+        category: category,
+      }),
+    ];
+    const visionMultiConfidence = buildMultiDimensionalConfidence({
+      classificationSource: 'ai',
+      baseConfidence: visionResult.result.confidence,
+      productName: visionDetected,
+      hsCode: visionResult.result.hsCode,
+      description: visionResult.result.description,
+      category: category,
+      alternatives: visionResult.result.alternatives,
+    });
+    const visionChapterNote = getChapterNote(visionResult.result.hsCode);
+    const visionRulingRef = lookupRulingReference(visionResult.result.hsCode, visionDetected);
+
     return apiSuccess({
       hsCode: visionResult.result.hsCode,
       description: visionResult.result.description,
-      confidence: visionResult.result.confidence,
+      confidence: visionMultiConfidence.overall,
+      confidence_detail: visionMultiConfidence,
       confidenceScore: visionConfidence,
       method: 'vision',
       countryOfOrigin: visionResult.result.countryOfOrigin,
       detectedProductName: visionResult.result.detectedProductName,
       alternatives: visionResult.result.alternatives,
+      reasoning_chain: visionReasoningChain,
+      chapter_note: visionChapterNote,
+      ruling_reference: visionRulingRef,
       meta: {
         provider: visionResult.meta.provider,
         tokensUsed: visionResult.meta.tokensUsed,
         estimatedCostUsd: visionResult.meta.estimatedCostUsd,
       },
+      ...(productUrl ? { product_url: productUrl, url_meta: urlMeta } : {}),
     }, {
       sellerId: context.sellerId,
       plan: context.planId,
@@ -187,16 +270,43 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     } catch { /* non-critical */ }
   }
 
-  return apiSuccess({
+  // Build explainability
+  const reasoningChain = buildReasoningChain({
+    classificationSource: result.classificationSource,
+    productName,
     hsCode: result.hsCode,
     description: result.description,
     confidence: result.confidence,
+    category,
+    alternatives: result.alternatives,
+  });
+  const multiConfidence = buildMultiDimensionalConfidence({
+    classificationSource: result.classificationSource,
+    baseConfidence: result.confidence,
+    productName,
+    hsCode: result.hsCode,
+    description: result.description,
+    category,
+    alternatives: result.alternatives,
+  });
+  const chapterNote = getChapterNote(result.hsCode);
+  const rulingRef = lookupRulingReference(result.hsCode, productName);
+
+  return apiSuccess({
+    hsCode: result.hsCode,
+    description: result.description,
+    confidence: multiConfidence.overall,
+    confidence_detail: multiConfidence,
     confidenceScore: textConfidence,
     method: result.classificationSource,
     countryOfOrigin: result.countryOfOrigin,
     alternatives: result.alternatives,
+    reasoning_chain: reasoningChain,
+    chapter_note: chapterNote,
+    ruling_reference: rulingRef,
     descriptionQuality: descriptionCheck,
     ...hs10Info,
+    ...(productUrl ? { product_url: productUrl, url_meta: urlMeta } : {}),
   }, {
     sellerId: context.sellerId,
     plan: context.planId,

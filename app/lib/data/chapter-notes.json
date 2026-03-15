@@ -1,0 +1,183 @@
+{
+  "33": {
+    "chapter": 33,
+    "title": "Essential oils and resinoids; perfumery, cosmetic or toilet preparations",
+    "key_notes": [
+      "Note 1: Heading 33.01 applies only to crude products. Essential oils that have been deterpenated or rectified are excluded.",
+      "Note 2: Heading 33.02 covers mixtures of odoriferous substances used as raw materials in the perfumery, food or other industries.",
+      "Note 3: Headings 33.03 to 33.07 apply to products put up for retail sale as cosmetics/toiletries. Heading 33.04 includes skin care (moisturizers, sunscreens). Heading 33.05 covers hair preparations (shampoo, conditioner, hair dye)."
+    ]
+  },
+  "34": {
+    "chapter": 34,
+    "title": "Soap, organic surface-active agents, washing preparations, lubricating preparations, artificial waxes, prepared waxes, polishing or scouring preparations, candles and similar articles, modelling pastes, dental waxes and dental preparations with a basis of plaster",
+    "key_notes": [
+      "Note 1(a): Heading 34.01 applies only to soap and organic surface-active products in the form of bars, cakes, moulded pieces or shapes, and paper, wadding, felt and nonwovens impregnated with soap.",
+      "Note 2: Heading 34.02 does not apply to surface-active agents or preparations put up as soap (34.01) or as a medicament (30.03/30.04)."
+    ]
+  },
+  "39": {
+    "chapter": 39,
+    "title": "Plastics and articles thereof",
+    "key_notes": [
+      "Note 1: Throughout the Nomenclature the expression 'plastics' means materials of headings 39.01 to 39.14 which are or have been capable of being formed under external influence (usually heat and pressure) into a shape which they retain on removal of the external influence.",
+      "Note 2(l): This Chapter does not cover articles of Section XI (textiles). Articles made of plastics in textile form (monofilament >=1mm, strips >=5mm) are classified in Chapter 54 or 55.",
+      "Note 2(u): Articles of Chapter 96 (e.g., buttons, slide fasteners of plastics) are excluded from Chapter 39."
+    ]
+  },
+  "42": {
+    "chapter": 42,
+    "title": "Articles of leather; saddlery and harness; travel goods, handbags and similar containers; articles of animal gut (other than silk-worm gut)",
+    "key_notes": [
+      "Note 1: This Chapter does not cover articles of technical use (heading 42.05 or 42.06 depending on use).",
+      "Note 2(A): Articles of heading 42.02 include: trunks, suit-cases, vanity-cases, attache cases, brief-cases, school satchels, spectacle cases, binocular cases, camera cases, musical instrument cases.",
+      "Note 3: Heading 42.03 covers gloves, mittens and mitts of leather or composition leather, whether or not lined."
+    ]
+  },
+  "44": {
+    "chapter": 44,
+    "title": "Wood and articles of wood; wood charcoal",
+    "key_notes": [
+      "Note 1: This Chapter does not cover wood in the form of tools or tool handles (heading 44.17), broom or brush bodies (heading 96.03), or footwear (Chapter 64).",
+      "Note 2: Bamboo and other materials of a woody nature are considered 'wood' for this Chapter.",
+      "Note 5: Headings 44.14 to 44.21 cover articles of the wood categories described therein, including articles of particle board, fibreboard, and plywood."
+    ]
+  },
+  "48": {
+    "chapter": 48,
+    "title": "Paper and paperboard; articles of paper pulp, of paper or of paperboard",
+    "key_notes": [
+      "Note 1: This Chapter does not cover articles of Chapter 30 (pharmaceutical), Chapter 32 (inks/paints on paper), Chapter 49 (printed books/newspapers), or Chapter 95 (toys).",
+      "Note 3: Paper and paperboard 'coated' includes products coated with kaolin, other inorganic substances, or plastics (heading 48.10/48.11).",
+      "Note 6: Heading 48.23 covers paper, paperboard, cellulose wadding and webs of cellulose fibres, cut to size or shape, not elsewhere specified."
+    ]
+  },
+  "61": {
+    "chapter": 61,
+    "title": "Articles of apparel and clothing accessories, knitted or crocheted",
+    "key_notes": [
+      "Note 1: This Chapter applies only to made up knitted or crocheted articles. Chapters 61 and 62 are distinguished by the method of construction: Chapter 61 = knitted/crocheted, Chapter 62 = woven/non-knitted.",
+      "Note 2(a): Goods classifiable in both Chapter 61 and 62 are classified in Chapter 61 (knitted takes precedence for articles that could be either).",
+      "Note 4: Headings 61.05 and 61.06 do not cover garments with pockets below the waist, a ribbed waistband or other means of tightening at the bottom. Such garments fall in heading 61.01 or 61.02.",
+      "Note 9: Garments made from knitted or crocheted fabric of heading 59.03, 59.06 or 59.07 are classified in this Chapter."
+    ]
+  },
+  "62": {
+    "chapter": 62,
+    "title": "Articles of apparel and clothing accessories, not knitted or crocheted",
+    "key_notes": [
+      "Note 1: This Chapter applies only to made up articles of any textile fabric other than wadding, excluding knitted or crocheted articles (Chapter 61).",
+      "Note 3(a): Shirts are classified in heading 62.05 (men's/boys') or 62.06 (women's/girls'). The distinction is based on the side on which the garment buttons: right over left = men's, left over right = women's.",
+      "Note 4: Heading 62.09 covers babies' garments and clothing accessories for young children of a body height not exceeding 86 cm."
+    ]
+  },
+  "64": {
+    "chapter": 64,
+    "title": "Footwear, gaiters and the like; parts of such articles",
+    "key_notes": [
+      "Note 1: This Chapter does not cover disposable foot coverings of flimsy material (heading 63.07).",
+      "Note 2: Footwear is classified by the material of the outer sole AND the upper: rubber/plastics (64.01-64.02), leather (64.03), textile (64.04).",
+      "Note 3(a): 'Rubber' and 'plastics' include woven fabrics or other textile products with an external layer of rubber or plastics being visible to the naked eye.",
+      "Note 4(a): Subject matter of the upper is determined by the constituent material having the greatest external surface area."
+    ]
+  },
+  "69": {
+    "chapter": 69,
+    "title": "Ceramic products",
+    "key_notes": [
+      "Note 1: This Chapter applies only to ceramic products which have been fired. Headings 69.04 to 69.14 apply only to such products other than those classifiable in headings 69.01 to 69.03.",
+      "Note 2: Heading 69.09 covers ceramic wares for laboratory, chemical, or other technical uses. Heading 69.11 covers tableware of porcelain/china. Heading 69.12 covers other ceramic tableware (not porcelain)."
+    ]
+  },
+  "70": {
+    "chapter": 70,
+    "title": "Glass and glassware",
+    "key_notes": [
+      "Note 1: This Chapter does not cover glass beads, imitation precious stones, or imitation pearls (heading 71.17/71.18).",
+      "Note 2(c): Glass classified by type: float glass (70.05), safety glass (70.07), mirrors (70.09), bottles/jars (70.10), glassware for table/kitchen/toilet (70.13)."
+    ]
+  },
+  "71": {
+    "chapter": 71,
+    "title": "Natural or cultured pearls, precious or semi-precious stones, precious metals, metals clad with precious metal, and articles thereof; imitation jewellery; coin",
+    "key_notes": [
+      "Note 1: All articles consisting wholly or partly of natural or cultured pearls, precious or semi-precious stones (natural, synthetic or reconstructed), are to be classified in this Chapter (subject to exceptions in Note 1(a)).",
+      "Note 2(A): Headings 71.13, 71.14 and 71.15 do not cover articles in which precious metal or metal clad with precious metal is present as minor constituents only.",
+      "Note 3: 'Imitation jewellery' (heading 71.17) covers articles of base metal, whether or not plated, that imitate jewellery and have no individual component of precious metal."
+    ]
+  },
+  "73": {
+    "chapter": 73,
+    "title": "Articles of iron or steel",
+    "key_notes": [
+      "Note 1: In this Chapter the expression 'cast iron' applies to products containing by weight 2% or more of carbon.",
+      "Note 2: Heading 73.25 covers cast articles of non-malleable cast iron. Heading 73.26 covers other articles of iron or steel. The distinction matters for duty rates.",
+      "Note 3: Screws, bolts, nuts, washers fall under heading 73.18 (stainless steel) or 73.18 (other iron/steel)."
+    ]
+  },
+  "84": {
+    "chapter": 84,
+    "title": "Nuclear reactors, boilers, machinery and mechanical appliances; parts thereof",
+    "key_notes": [
+      "Note 1: This Chapter does not cover millstones, hand-operated grinders (heading 68.04), machinery or appliances of precious metal (Chapter 71), or articles of Chapter 82 (tools).",
+      "Note 2: Subject to Note 1, parts of machines are classified in this Chapter when identifiable as suitable for use solely or principally with a particular kind of machine.",
+      "Note 5(A): 'Automatic data-processing machines' (heading 84.71) means machines capable of storing, retrieving, and processing data. Laptops, desktops, servers are classified here.",
+      "Note 5(E): Machines performing a specific function other than data processing are classified in the heading appropriate to that function, even if they incorporate a computer."
+    ]
+  },
+  "85": {
+    "chapter": 85,
+    "title": "Electrical machinery and equipment and parts thereof; sound recorders and reproducers, television image and sound recorders and reproducers, and parts and accessories of such articles",
+    "key_notes": [
+      "Note 1: This Chapter does not cover electrically warmed blankets (heading 63.01), glass for lamps (Chapter 70), or machines of heading 84.86 (semiconductor manufacturing).",
+      "Note 3: Heading 85.09 covers electro-mechanical domestic appliances with self-contained electric motor, normally held in the hand (e.g., food grinders, juice extractors).",
+      "Note 4: Heading 85.23 covers solid-state non-volatile storage devices (SSDs, USB flash drives, memory cards).",
+      "Note 6: Heading 85.28 covers monitors and projectors. A monitor is distinguished from a TV by not having a TV tuner."
+    ]
+  },
+  "87": {
+    "chapter": 87,
+    "title": "Vehicles other than railway or tramway rolling-stock, and parts and accessories thereof",
+    "key_notes": [
+      "Note 1: This Chapter does not cover railway rolling stock (Chapter 86) or children's bicycles/tricycles (heading 95.03).",
+      "Note 2: 'Tractors' means vehicles constructed essentially for hauling or pushing another vehicle, appliance or load.",
+      "Note 3: Motor vehicle chassis fitted with cab fall in heading 87.02 to 87.04, not 87.06."
+    ]
+  },
+  "90": {
+    "chapter": 90,
+    "title": "Optical, photographic, cinematographic, measuring, checking, precision, medical or surgical instruments and apparatus; parts and accessories thereof",
+    "key_notes": [
+      "Note 1: This Chapter does not cover articles of a kind used in machines/appliances or for technical purposes, of rubber (Chapter 40), leather (Chapter 42), or textile (Chapters 50-63).",
+      "Note 2: Parts and accessories of this Chapter are classified in their own heading (e.g., 90.33 for parts of instruments) UNLESS identifiable for a specific instrument.",
+      "Note 6: Heading 90.21 covers orthopaedic appliances, including crutches, surgical belts, trusses, splints, hearing aids, and pacemakers."
+    ]
+  },
+  "94": {
+    "chapter": 94,
+    "title": "Furniture; bedding, mattresses, mattress supports, cushions and similar stuffed furnishings; lamps and lighting fittings, not elsewhere specified or included; illuminated signs, illuminated name-plates and the like; prefabricated buildings",
+    "key_notes": [
+      "Note 1: This Chapter does not cover pneumatic or water mattresses (Chapter 39, 40 or 63), mirrors designed to stand on the floor (Chapter 70), or articles of Chapter 71.",
+      "Note 2: Articles of heading 94.01 to 94.03 are classified in those headings only if designed for placing on the floor or ground. Wall-mounted furniture is also included if designed to be hung/fixed to walls.",
+      "Note 3: Heading 94.04 covers mattress supports (bed bases) and articles of bedding (mattresses, quilts, eiderdowns, cushions, pouffes, pillows)."
+    ]
+  },
+  "95": {
+    "chapter": 95,
+    "title": "Toys, games and sports requisites; parts and accessories thereof",
+    "key_notes": [
+      "Note 1(b): This Chapter does not cover fancy dress of textiles (Chapters 61/62), sports clothing of textiles (Chapters 61/62), sports footwear (Chapter 64), or sports headgear (heading 65.06).",
+      "Note 1(t): This Chapter does not cover pumps for liquids (heading 84.13), tables for casino games (heading 94.04), or video game consoles using a TV receiver (heading 95.04).",
+      "Note 3: Heading 95.03 covers articles primarily designed for amusement (dolls, toy vehicles, puzzles, models). Heading 95.04 covers video game consoles and articles for parlour games."
+    ]
+  },
+  "96": {
+    "chapter": 96,
+    "title": "Miscellaneous manufactured articles",
+    "key_notes": [
+      "Note 1: This Chapter does not cover pencils for cosmetic use (Chapter 33), articles of Chapter 66 (umbrellas), or imitation jewellery (heading 71.17).",
+      "Note 2: Heading 96.01 covers buttons, press-fasteners, snap-fasteners, press-studs, button moulds and other parts.",
+      "Note 3: Heading 96.08 covers ball point pens, felt tipped pens, fountain pens, and other writing instruments. Heading 96.09 covers pencils, crayons, and chalks."
+    ]
+  }
+}
