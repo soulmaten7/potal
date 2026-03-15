@@ -25,10 +25,15 @@ import type { GlobalCostInput } from '@/app/lib/cost-engine/GlobalCostEngine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 import { getCountryFtas } from '@/app/lib/cost-engine/hs-code/fta';
 import { createClient } from '@supabase/supabase-js';
+import shippingRatesData from '@/app/lib/data/shipping-rates.json';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 function getSupabase() { return createClient(supabaseUrl, supabaseKey); }
+
+const EU_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE']);
+
+const shippingRates = shippingRatesData as { route: string; origin: string; destination: string; weight_brackets: { max_kg: number; air_usd: number; sea_usd: number }[] }[];
 
 // ─── POST Handler ───────────────────────────────────
 
@@ -188,7 +193,136 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       };
     }
 
-    // 12. Return enriched response
+    // 12. F027 — Dangerous goods check
+    let dangerousGoods: { is_dangerous: boolean; un_number?: string; class?: string; proper_shipping_name?: string; air_restriction?: boolean; sea_restriction?: boolean } = { is_dangerous: false };
+    const hsCode = (resultObj.hsClassification as { hsCode?: string } | undefined)?.hsCode || costInput.hsCode || '';
+    if (hsCode.length >= 4) {
+      try {
+        const sb = getSupabase();
+        const hs4 = hsCode.substring(0, 4);
+        const { data: dg } = await sb.from('dangerous_goods')
+          .select('un_number, class, proper_shipping_name, air_allowed, sea_allowed, hs_codes')
+          .limit(50);
+        if (dg) {
+          const match = dg.find((d: { hs_codes: string[] | null }) => d.hs_codes?.some((h: string) => hs4.startsWith(h.substring(0, 4)) || h.startsWith(hs4)));
+          if (match) {
+            dangerousGoods = {
+              is_dangerous: true,
+              un_number: match.un_number,
+              class: match.class,
+              proper_shipping_name: match.proper_shipping_name,
+              air_restriction: !match.air_allowed,
+              sea_restriction: !match.sea_allowed,
+            };
+          }
+        }
+      } catch { /* non-blocking */ }
+    }
+
+    // 13. F032 — ICS2 data for EU destinations
+    let ics2Data = null;
+    if (EU_COUNTRIES.has(dest)) {
+      ics2Data = {
+        required: true,
+        hs6_code: hsCode.substring(0, 6) || null,
+        item_description_min_chars: 300,
+        trader_id_required: true,
+        release: '3',
+        transport_modes: ['air', 'sea', 'road', 'rail'],
+        note: 'ICS2 Release 3: HS 6-digit code mandatory, item description min 300 chars recommended.',
+      };
+    }
+
+    // 14. F033 — IOSS/VRN auto-include
+    let iossVrn = null;
+    if (EU_COUNTRIES.has(dest) && priceNum <= 150) {
+      const vatRate = (resultObj.vatRate as number) || 0;
+      iossVrn = {
+        ioss_eligible: true,
+        ioss_vat_rate: Math.round(vatRate * 10000) / 100,
+        note: 'IOSS: Seller can collect VAT at point of sale for goods ≤€150.',
+      };
+    } else if (dest === 'GB' && priceNum <= 135) {
+      iossVrn = {
+        vrn_applicable: true,
+        uk_vat_rate: 20,
+        note: 'UK: Seller must register for UK VAT and collect 20% at point of sale for goods ≤£135.',
+      };
+    }
+
+    // 15. F014 — Restricted items check
+    let restrictions: { restricted: boolean; items?: { type: string; description: string; license_info: string; direction: string }[] } = { restricted: false };
+    if (hsCode.length >= 4) {
+      try {
+        const sb = getSupabase();
+        const hs2 = hsCode.substring(0, 2);
+        const hs4 = hsCode.substring(0, 4);
+        const { data: ri } = await sb.from('restricted_items')
+          .select('hs_code_pattern, restriction_type, description, license_info, direction, destination_country, origin_country')
+          .or(`hs_code_pattern.like.${hs2}%,hs_code_pattern.like.${hs4}%`)
+          .limit(20);
+        if (ri && ri.length > 0) {
+          const matches = ri.filter((r: { destination_country: string | null; origin_country: string | null }) => {
+            if (r.destination_country && r.destination_country !== dest) return false;
+            if (r.origin_country && r.origin_country !== origin) return false;
+            return true;
+          });
+          if (matches.length > 0) {
+            restrictions = {
+              restricted: true,
+              items: matches.map((r: { restriction_type: string; description: string; license_info: string; direction: string }) => ({
+                type: r.restriction_type, description: r.description, license_info: r.license_info, direction: r.direction,
+              })),
+            };
+          }
+        }
+      } catch { /* non-blocking */ }
+    }
+
+    // 16. F060 — Shipping estimate
+    let shippingEstimate = null;
+    const weightKg = costInput.weight_kg;
+    const dimensions = body.dimensions as { length_cm?: number; width_cm?: number; height_cm?: number } | undefined;
+    let billableWeight = weightKg;
+    let dimWeight: number | undefined;
+
+    if (dimensions?.length_cm && dimensions?.width_cm && dimensions?.height_cm) {
+      dimWeight = (dimensions.length_cm * dimensions.width_cm * dimensions.height_cm) / 5000;
+      billableWeight = Math.max(weightKg || 0, dimWeight);
+    }
+
+    if (billableWeight && billableWeight > 0) {
+      const destForRate = EU_COUNTRIES.has(dest) ? 'EU' : dest;
+      const route = shippingRates.find(r => r.origin === origin && r.destination === destForRate);
+      if (route) {
+        const bracket = route.weight_brackets.find(b => billableWeight! <= b.max_kg) || route.weight_brackets[route.weight_brackets.length - 1];
+        shippingEstimate = {
+          air_estimate: bracket.air_usd,
+          sea_estimate: bracket.sea_usd,
+          currency: 'USD',
+          billable_weight_kg: Math.round(billableWeight * 100) / 100,
+          dimensional_weight_kg: dimWeight ? Math.round(dimWeight * 100) / 100 : undefined,
+          note: 'Estimate only. Contact carrier for exact rates.',
+        };
+      }
+    }
+
+    // 17. DDP total (F064)
+    let ddpTotal = null;
+    if (costInput.shippingTerms === 'DDP' && shippingEstimate) {
+      const tlc = (resultObj.totalLandedCost as number) || 0;
+      ddpTotal = {
+        ddp_total: Math.round((tlc + shippingEstimate.air_estimate) * 100) / 100,
+        breakdown: {
+          product: priceNum,
+          duty: (resultObj.importDuty as number) || 0,
+          tax: (resultObj.vat as number) || 0,
+          shipping_estimate: shippingEstimate.air_estimate,
+        },
+      };
+    }
+
+    // 18. Return enriched response
     return apiSuccess({
       ...resultObj,
       fta_utilization: ftaUtilization,
@@ -196,6 +330,12 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       de_minimis_detail: deMinimisDetail,
       regulatory_warnings: regulatoryWarnings.length > 0 ? regulatoryWarnings : undefined,
       trade_remedies_detail: tradeRemediesEnhanced,
+      dangerous_goods: dangerousGoods,
+      ics2_data: ics2Data,
+      ioss_vrn: iossVrn,
+      restrictions: restrictions.restricted ? restrictions : undefined,
+      shipping_estimate: shippingEstimate,
+      ddp_quote: ddpTotal,
     }, {
       sellerId: context.sellerId,
       plan: context.planId,

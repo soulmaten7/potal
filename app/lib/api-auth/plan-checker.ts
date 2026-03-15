@@ -17,6 +17,7 @@ interface PlanLimitConfig {
   webhookNotifications: boolean;
   analyticsDashboard: 'basic' | 'advanced' | 'full';
   widgetBranding: 'potal' | 'custom' | 'white-label';
+  retentionDays: number; // F115: data retention period
 }
 
 // Plan limits — 신 요금제 (CW13 업데이트: Free 200건, 전 플랜 기능 동일화)
@@ -25,22 +26,22 @@ const PLAN_LIMITS: Record<string, PlanLimitConfig> = {
   free: {
     maxCalculationsMonthly: 200, allowOverage: false, overageRate: 0,
     batchApi: true, batchMaxItems: 50, webhookNotifications: true,
-    analyticsDashboard: 'basic', widgetBranding: 'potal',
+    analyticsDashboard: 'basic', widgetBranding: 'potal', retentionDays: 30,
   },
   basic: {
     maxCalculationsMonthly: 2000, allowOverage: true, overageRate: 0.015,
     batchApi: true, batchMaxItems: 100, webhookNotifications: true,
-    analyticsDashboard: 'advanced', widgetBranding: 'potal',
+    analyticsDashboard: 'advanced', widgetBranding: 'potal', retentionDays: 90,
   },
   pro: {
     maxCalculationsMonthly: 10000, allowOverage: true, overageRate: 0.012,
     batchApi: true, batchMaxItems: 500, webhookNotifications: true,
-    analyticsDashboard: 'advanced', widgetBranding: 'custom',
+    analyticsDashboard: 'advanced', widgetBranding: 'custom', retentionDays: 365,
   },
   enterprise: {
     maxCalculationsMonthly: 50000, allowOverage: true, overageRate: 0.01,
     batchApi: true, batchMaxItems: 5000, webhookNotifications: true,
-    analyticsDashboard: 'full', widgetBranding: 'white-label',
+    analyticsDashboard: 'full', widgetBranding: 'white-label', retentionDays: 99999,
   },
 };
 
