@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 function getSupabase() { return createClient(supabaseUrl, supabaseKey); }
@@ -28,15 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export async function generateStaticParams() {
-  const countries = ['US', 'GB', 'DE', 'FR', 'JP', 'KR', 'AU', 'CA', 'CN', 'IN'];
-  const hsCodes = ['610910', '854231', '640411', '420231', '330300', '850710', '940360', '611020', '640299', '392690'];
-  const params: { country: string; hs: string }[] = [];
-  for (const c of countries) {
-    for (const h of hsCodes) {
-      params.push({ country: c.toLowerCase(), hs: h });
-    }
-  }
-  return params;
+  return [];
 }
 
 export default async function TariffPage({ params }: PageProps) {
