@@ -27,6 +27,10 @@ export interface CostInput {
   hsCode?: string;
   /** Destination country ISO code (default: "US") */
   destinationCountry?: string;
+  /** Weight in kilograms (for specific/compound duty calculation) */
+  weight_kg?: number;
+  /** Quantity (for per-unit specific duties) */
+  quantity?: number;
 }
 
 // ─── Output Types ────────────────────────────────────

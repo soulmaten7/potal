@@ -17,7 +17,7 @@ export { CHINA_IMPORT_DUTY_RATE, MPF_INFORMAL, STATE_TAX_RATES } from './CostEng
 // Global multi-country calculator (sync = hardcoded, async = DB-backed)
 export { calculateGlobalLandedCost, calculateGlobalBatchLandedCosts } from './GlobalCostEngine';
 export { calculateGlobalLandedCostAsync, calculateGlobalBatchLandedCostsAsync } from './GlobalCostEngine';
-export type { GlobalLandedCost, GlobalCostInput } from './GlobalCostEngine';
+export type { GlobalLandedCost, GlobalCostInput, DetailedCostBreakdown, DetailedCostItem, IncotermsComparison, RateOptimizationResult, DutyType } from './GlobalCostEngine';
 
 // DB layer (cache control)
 export { invalidateAllCaches, invalidateCache, getCacheStatus } from './db';

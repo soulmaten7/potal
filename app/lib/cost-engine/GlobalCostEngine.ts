@@ -104,7 +104,58 @@ export interface GlobalCostInput extends CostInput {
   shippingTerms?: 'DDP' | 'DDU' | 'CIF' | 'FOB' | 'EXW';
   /** Exporter/manufacturer firm name for firm-specific AD/CVD matching */
   firmName?: string;
+  /** Weight in kilograms (for specific/compound duty types) */
+  weight_kg?: number;
+  /** Quantity (for per-unit specific duties) */
+  quantity?: number;
+  /** Annual import volume for savings projection */
+  annualVolume?: number;
 }
+
+// ─── 15-Item Detailed Cost Breakdown ────────────────
+
+export interface DetailedCostItem {
+  amount: number;
+  calculation_basis: string;
+}
+
+export interface DetailedCostBreakdown {
+  product_price: DetailedCostItem;
+  import_duty: DetailedCostItem;
+  anti_dumping_duty: DetailedCostItem;
+  countervailing_duty: DetailedCostItem;
+  safeguard_duty: DetailedCostItem;
+  vat_gst: DetailedCostItem;
+  customs_processing_fee: DetailedCostItem;
+  merchandise_processing_fee: DetailedCostItem;
+  harbor_maintenance_fee: DetailedCostItem;
+  insurance_estimate: DetailedCostItem;
+  freight_estimate: DetailedCostItem;
+  broker_fee_estimate: DetailedCostItem;
+  documentation_fee: DetailedCostItem;
+  currency_conversion_cost: DetailedCostItem;
+  total_landed_cost: DetailedCostItem;
+}
+
+// ─── Incoterms Comparison ───────────────────────────
+
+export interface IncotermsComparison {
+  DDP: { total: number; breakdown: string; buyer_owes: number };
+  DAP: { total: number; breakdown: string; buyer_owes: number };
+  EXW: { total: number; breakdown: string; buyer_owes: number };
+}
+
+// ─── Rate Optimization ──────────────────────────────
+
+export interface RateOptimizationResult {
+  available_rates: { type: string; rate: number; condition?: string }[];
+  optimal: { type: string; rate: number; reason: string };
+  savings_vs_mfn: { per_unit: number; annual_estimate?: number };
+}
+
+// ─── Duty Type ──────────────────────────────────────
+
+export type DutyType = 'ad_valorem' | 'specific' | 'compound' | 'mixed';
 
 // ─── Global Landed Cost Result ──────────────────────
 
@@ -214,6 +265,19 @@ export interface GlobalLandedCost extends LandedCost {
     /** Last updated timestamp */
     lastUpdated: string;
   };
+
+  // ─── S-Grade Extensions (CW14) ──────────────────
+
+  /** 15-item detailed cost breakdown with calculation basis */
+  detailedCostBreakdown?: DetailedCostBreakdown;
+  /** Incoterms comparison: DDP vs DAP vs EXW */
+  incotermsComparison?: IncotermsComparison;
+  /** Rate optimization: all available rates + optimal + savings */
+  rateOptimization?: RateOptimizationResult;
+  /** Duty calculation type used */
+  dutyType?: DutyType;
+  /** Weight-based duty component (if specific/compound) */
+  weightBasedDuty?: number;
 }
 
 // ════════════════════════════════════════════════════
@@ -884,6 +948,43 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   const originClass: 'CN' | 'OTHER' | 'DOMESTIC' =
     isDomestic ? 'DOMESTIC' : originCountry === 'CN' ? 'CN' : 'OTHER';
 
+  // ━━━ S-Grade: Duty Type Calculation ━━━
+  const weightKg = input.weight_kg ?? 0;
+  const dutyType: DutyType = 'ad_valorem'; // Default; specific/compound/mixed from tariff schedule data
+  const dutyCalc = calculateDutyByType(dutyType, declaredValue, baseDutyRate, weightKg, 0);
+
+  // ━━━ S-Grade: Additional fees ━━━
+  const hmf = getHarborMaintenanceFee(profile.code, declaredValue, isDomestic);
+  const docFee = getDocumentationFee(profile.code, isDomestic);
+  const brokerEstimate = !isDomestic ? getBrokerFeeEstimate(profile.code) : 0;
+  // Use calculated broker or country estimate (whichever is higher for formal entries)
+  const effectiveBrokerFee = brokerageFee > 0 ? brokerageFee : (!isDomestic && declaredValue > 800 ? brokerEstimate : 0);
+
+  // Include HMF + docFee in total
+  const totalWithAllFees = totalWithMpf + hmf + docFee + (effectiveBrokerFee - brokerageFee);
+
+  // ━━━ S-Grade: 15-Item Detailed Breakdown ━━━
+  const detailedCostBreakdown = buildDetailedCostBreakdown({
+    productPrice, importDuty, dutyRate: baseDutyRate, declaredValue,
+    tradeRemedies: tradeRemedyResult, vat, vatRate: effectiveVatRate, vatLabel: effectiveVatLabel,
+    mpf, countryCode: profile.code, insurance, shippingCost,
+    brokerageFee: effectiveBrokerFee, hmf, docFee,
+    totalLandedCost: totalWithAllFees, isDomestic, deMinimisApplied,
+    dutyType, dutyBasis: dutyCalc.basis,
+  });
+
+  // ━━━ S-Grade: Incoterms Comparison ━━━
+  const incotermsComparison = !isDomestic ? buildIncotermsComparison({
+    productPrice, shippingCost, importDuty, vat, mpf,
+    insurance, brokerageFee: effectiveBrokerFee, hmf, docFee,
+  }) : undefined;
+
+  // ━━━ S-Grade: Rate Optimization ━━━
+  const rateOptimization = !isDomestic ? buildRateOptimization(
+    tariffOptimization, baseDutyRate, declaredValue, ftaResult,
+    (input as GlobalCostInput).annualVolume,
+  ) : undefined;
+
   // 환율 변환 (목적지 통화가 USD가 아니면 현지 통화로 변환)
   let localCurrency: GlobalLandedCost['localCurrency'];
   if (profile.currency !== 'USD') {
@@ -971,6 +1072,13 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     localCurrency,
     precomputed: precomputedHit,
     cacheCoverage: precomputedHit ? '117,600/117,600 (100%)' : undefined,
+
+    // S-Grade Extensions
+    detailedCostBreakdown,
+    incotermsComparison,
+    rateOptimization,
+    dutyType,
+    weightBasedDuty: weightKg > 0 ? round(dutyCalc.duty) : undefined,
   };
 }
 
@@ -1340,6 +1448,225 @@ export function calculateGlobalBatchLandedCosts(
     costMap.set(item.id, calculateGlobalLandedCost(item));
   }
   return costMap;
+}
+
+// ─── Broker Fee by Country ──────────────────────────
+
+const BROKER_FEE_BY_COUNTRY: Record<string, number> = {
+  US: 200, CA: 180, GB: 120, AU: 150, JP: 180, KR: 130, DE: 150, FR: 150,
+  IT: 150, ES: 140, NL: 140, BE: 140, AT: 140, SE: 160, NO: 170, CH: 200,
+  DK: 160, FI: 160, PL: 100, CZ: 90, HU: 80, RO: 70, BG: 60,
+  CN: 80, IN: 60, BR: 100, MX: 90, SG: 120, HK: 100, TW: 100,
+  TH: 70, VN: 60, ID: 60, MY: 80, PH: 50, TR: 80, AE: 150, SA: 150,
+  ZA: 90, NG: 70, KE: 60, EG: 70, IL: 130, NZ: 140,
+};
+
+function getBrokerFeeEstimate(countryCode: string): number {
+  return BROKER_FEE_BY_COUNTRY[countryCode] ?? 100;
+}
+
+// ─── HMF (Harbor Maintenance Fee) ───────────────────
+
+function getHarborMaintenanceFee(countryCode: string, declaredValue: number, isDomestic: boolean): number {
+  if (isDomestic) return 0;
+  // US HMF: 0.125% of declared value (applies to ocean shipments)
+  if (countryCode === 'US') return declaredValue * 0.00125;
+  return 0;
+}
+
+// ─── Documentation Fee ──────────────────────────────
+
+function getDocumentationFee(countryCode: string, isDomestic: boolean): number {
+  if (isDomestic) return 0;
+  // Standard documentation/filing fee estimate
+  const fees: Record<string, number> = {
+    US: 35, CA: 25, GB: 20, AU: 30, JP: 40, KR: 25, DE: 25, FR: 25, CN: 20, IN: 15, BR: 30,
+  };
+  return fees[countryCode] ?? 15;
+}
+
+// ─── Duty Type Calculation ──────────────────────────
+
+function calculateDutyByType(
+  dutyType: DutyType,
+  declaredValue: number,
+  adValoremRate: number,
+  weightKg: number,
+  specificRatePerKg: number,
+): { duty: number; basis: string } {
+  switch (dutyType) {
+    case 'specific': {
+      const duty = weightKg * specificRatePerKg;
+      return { duty, basis: `Specific: ${weightKg}kg x $${specificRatePerKg}/kg = $${round(duty)}` };
+    }
+    case 'compound': {
+      const adVal = declaredValue * adValoremRate;
+      const spec = weightKg * specificRatePerKg;
+      const duty = adVal + spec;
+      return { duty, basis: `Compound: (${(adValoremRate * 100).toFixed(1)}% x $${declaredValue}) + (${weightKg}kg x $${specificRatePerKg}/kg) = $${round(duty)}` };
+    }
+    case 'mixed': {
+      const adVal = declaredValue * adValoremRate;
+      const spec = weightKg * specificRatePerKg;
+      const duty = Math.max(adVal, spec);
+      return { duty, basis: `Mixed: MAX(${(adValoremRate * 100).toFixed(1)}% = $${round(adVal)}, ${weightKg}kg x $${specificRatePerKg}/kg = $${round(spec)}) = $${round(duty)}` };
+    }
+    default: { // ad_valorem
+      const duty = declaredValue * adValoremRate;
+      return { duty, basis: `Ad valorem: ${(adValoremRate * 100).toFixed(1)}% on $${round(declaredValue)} = $${round(duty)}` };
+    }
+  }
+}
+
+// ─── 15-Item Detailed Breakdown Builder ─────────────
+
+function buildDetailedCostBreakdown(params: {
+  productPrice: number;
+  importDuty: number;
+  dutyRate: number;
+  declaredValue: number;
+  tradeRemedies?: TradeRemedyResult;
+  vat: number;
+  vatRate: number;
+  vatLabel: string;
+  mpf: number;
+  countryCode: string;
+  insurance: number;
+  shippingCost: number;
+  brokerageFee: number;
+  hmf: number;
+  docFee: number;
+  totalLandedCost: number;
+  isDomestic: boolean;
+  deMinimisApplied: boolean;
+  dutyType: DutyType;
+  dutyBasis: string;
+}): DetailedCostBreakdown {
+  const p = params;
+  const adRate = (ad: number) => `${(ad * 100).toFixed(1)}%`;
+
+  // Split trade remedies into AD, CVD, SG
+  let adDuty = 0, cvdDuty = 0, sgDuty = 0;
+  if (p.tradeRemedies?.hasRemedies) {
+    for (const m of p.tradeRemedies.measures) {
+      const amount = p.declaredValue * m.dutyRate;
+      if (m.type === 'AD') adDuty += amount;
+      else if (m.type === 'CVD') cvdDuty += amount;
+      else if (m.type === 'SG') sgDuty += amount;
+    }
+  }
+
+  return {
+    product_price: { amount: round(p.productPrice), calculation_basis: `Product price: $${round(p.productPrice)}` },
+    import_duty: {
+      amount: round(p.importDuty),
+      calculation_basis: p.isDomestic ? 'Domestic — no duty' :
+        p.deMinimisApplied ? 'De minimis exempt' :
+        p.dutyBasis,
+    },
+    anti_dumping_duty: { amount: round(adDuty), calculation_basis: adDuty > 0 ? `AD duty on $${round(p.declaredValue)}` : 'No anti-dumping duty applicable' },
+    countervailing_duty: { amount: round(cvdDuty), calculation_basis: cvdDuty > 0 ? `CVD on $${round(p.declaredValue)}` : 'No countervailing duty applicable' },
+    safeguard_duty: { amount: round(sgDuty), calculation_basis: sgDuty > 0 ? `Safeguard on $${round(p.declaredValue)}` : 'No safeguard duty applicable' },
+    vat_gst: { amount: round(p.vat), calculation_basis: p.vat > 0 ? `${p.vatLabel} ${adRate(p.vatRate)} on $${round(p.declaredValue + p.importDuty)} = $${round(p.vat)}` : 'No VAT/GST applicable' },
+    customs_processing_fee: { amount: round(p.mpf), calculation_basis: p.mpf > 0 ? `${p.countryCode} customs processing fee` : 'No customs processing fee' },
+    merchandise_processing_fee: {
+      amount: p.countryCode === 'US' ? round(p.mpf) : 0,
+      calculation_basis: p.countryCode === 'US' && p.mpf > 0
+        ? `US MPF: 0.3464% of $${round(p.declaredValue)} = $${round(p.mpf)}`
+        : 'MPF applies to US entries only',
+    },
+    harbor_maintenance_fee: { amount: round(p.hmf), calculation_basis: p.hmf > 0 ? `US HMF: 0.125% of $${round(p.declaredValue)} = $${round(p.hmf)}` : 'No HMF applicable' },
+    insurance_estimate: { amount: round(p.insurance), calculation_basis: p.insurance > 0 ? `Insurance estimate on $${round(p.declaredValue)}` : 'No insurance (domestic)' },
+    freight_estimate: { amount: round(p.shippingCost), calculation_basis: p.shippingCost > 0 ? `Freight/shipping cost: $${round(p.shippingCost)}` : 'Free shipping' },
+    broker_fee_estimate: { amount: round(p.brokerageFee), calculation_basis: p.brokerageFee > 0 ? `${p.countryCode} broker fee estimate: $${round(p.brokerageFee)}` : 'No broker fee (domestic or below threshold)' },
+    documentation_fee: { amount: round(p.docFee), calculation_basis: p.docFee > 0 ? `${p.countryCode} documentation/filing fee` : 'No documentation fee' },
+    currency_conversion_cost: { amount: 0, calculation_basis: 'Included in exchange rate (no separate fee)' },
+    total_landed_cost: { amount: round(p.totalLandedCost), calculation_basis: `Sum of all cost components = $${round(p.totalLandedCost)}` },
+  };
+}
+
+// ─── Incoterms Comparison Builder ───────────────────
+
+function buildIncotermsComparison(params: {
+  productPrice: number;
+  shippingCost: number;
+  importDuty: number;
+  vat: number;
+  mpf: number;
+  insurance: number;
+  brokerageFee: number;
+  hmf: number;
+  docFee: number;
+}): IncotermsComparison {
+  const p = params;
+  const allCosts = p.productPrice + p.shippingCost + p.importDuty + p.vat + p.mpf + p.insurance + p.brokerageFee + p.hmf + p.docFee;
+  const dutyTaxCosts = p.importDuty + p.vat + p.mpf + p.hmf;
+  const logisticsCosts = p.shippingCost + p.insurance + p.brokerageFee + p.docFee;
+
+  return {
+    DDP: {
+      total: round(allCosts),
+      breakdown: 'Seller pays all costs including duty, tax, shipping, and delivery',
+      buyer_owes: 0,
+    },
+    DAP: {
+      total: round(allCosts),
+      breakdown: 'Seller pays shipping + insurance. Buyer pays duty + tax at import',
+      buyer_owes: round(dutyTaxCosts),
+    },
+    EXW: {
+      total: round(allCosts),
+      breakdown: 'Buyer pays all logistics, insurance, duty, and tax',
+      buyer_owes: round(logisticsCosts + dutyTaxCosts),
+    },
+  };
+}
+
+// ─── Rate Optimization Builder ──────────────────────
+
+function buildRateOptimization(
+  tariffOpt: TariffOptimization | undefined,
+  dutyRate: number,
+  declaredValue: number,
+  ftaResult: FtaResult | undefined,
+  annualVolume?: number,
+): RateOptimizationResult {
+  const availableRates: RateOptimizationResult['available_rates'] = [];
+
+  if (tariffOpt) {
+    for (const opt of tariffOpt.rateOptions) {
+      availableRates.push({
+        type: opt.rateType === 'AGR' ? `FTA_${opt.agreementName}` : opt.rateType,
+        rate: round(opt.rate * 100),
+        condition: opt.rateType === 'AGR' ? 'Preferential — verify Rules of Origin' : undefined,
+      });
+    }
+  }
+
+  if (availableRates.length === 0) {
+    availableRates.push({ type: 'MFN', rate: round(dutyRate * 100) });
+  }
+
+  // Find optimal
+  const sorted = [...availableRates].sort((a, b) => a.rate - b.rate);
+  const optimal = sorted[0];
+  const mfnRate = availableRates.find(r => r.type === 'MFN')?.rate ?? optimal.rate;
+  const savingsPerUnit = round(declaredValue * (mfnRate - optimal.rate) / 100);
+
+  return {
+    available_rates: availableRates,
+    optimal: {
+      type: optimal.type,
+      rate: optimal.rate,
+      reason: optimal.type === 'MFN'
+        ? 'MFN rate (no preferential rate available)'
+        : `${optimal.type} offers ${round(mfnRate - optimal.rate)}% savings vs MFN${ftaResult?.ftaName ? ` via ${ftaResult.ftaName}` : ''}`,
+    },
+    savings_vs_mfn: {
+      per_unit: savingsPerUnit,
+      annual_estimate: annualVolume ? round(savingsPerUnit * annualVolume) : undefined,
+    },
+  };
 }
 
 // ─── Utility ────────────────────────────────────────
