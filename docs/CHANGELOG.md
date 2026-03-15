@@ -1,5 +1,42 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-15 18:00 KST
+> 마지막 업데이트: 2026-03-15 23:30 KST
+
+## [2026-03-15 23:30 KST] CW14 Cowork — Full Audit, 보안 수정, UX 53/53, WDC Phase 4, 규정 Phase 2
+
+### Full Project Audit
+- docs/FULL_PROJECT_AUDIT.md 생성 — 59 DB 테이블, 103 API 엔드포인트, product_hs_mappings 8,389, vectors 3,431 확인
+- 실제 DB 수치 기반 전체 프로젝트 상태 점검 완료
+
+### 보안 수정 (커밋 701572b)
+- 하드코딩 토큰 19파일 → 환경변수 전환
+- SUPABASE_SERVICE_ROLE_KEY 설정 확인
+- 임시파일 정리
+
+### UX Audit 53/53 완료
+- Batch 1: 15개, Batch 2: 16개, Batch 3: 12개 구현
+- 이미 구현 확인 5개, 미구현 사유 5개 (합리적 제외)
+- Interactive API Explorer, Accessibility, Performance 개선
+- npm run build 통과 ✅
+
+### WDC Phase 4 벌크 매핑
+- wdc_phase4_bulk_mapping.py 스크립트 작성
+- 5억+ 상품명 → HS Code 사전 매핑 백그라운드 실행중
+
+### 운영 도구 생성
+- POTAL_SESSION_BOOT_SEQUENCE.md — 3단 부트 시퀀스 (Fast 30초 / Standard 2분 / Deep 5분)
+- FULL_PROJECT_AUDIT_COMMAND.md — 7단계 프로젝트 감사 명령어
+
+### 규정 데이터 수집 Phase 2 (국제기구)
+- WTO: reporters 288 + indicators 56 + tariff profiles 36국 (~39MB)
+- WCO: HS 2022 sections 21 + chapters 96 (10.6KB)
+- WITS: ❌ API 405 (worldbank.org 리디자인으로 기존 API 중단)
+- OECD: ❌ stats.oecd.org 폐지, 새 API에서 관세 엔드포인트 404
+- COLLECTION_LOG.md Phase 2 섹션 업데이트
+
+## [2026-03-15 KST] WDC 상품 추출 완료 확인
+- **WDC 추출 완료**: 1,896/1,899 파트 (99.8%), 총 17.6억 건 (1,761,211,362)
+- products_detailed.jsonl 324GB + products_summary.csv 204GB
+- 미추출 3개: part_132.gz, part_404.gz, part_711.gz (파일 손상, 영향 미미)
 
 ## [2026-03-15 18:00 KST] CW14 — WDC Phase 3 완료, 규정 수집 Phase 1 완료, Pre-computing 강화
 
@@ -568,7 +605,7 @@
 
 ### 백그라운드
 - AGR 임포트: ~36/53국 진행중
-- WDC 추출: ~50/1899 파트 진행중
+- WDC 추출: ✅ 1,896/1,899 파트 완료 (99.8%), 17.6억 건
 
 ## [2026-03-11 19:30 KST] Cowork 세션 9 — 47기능 도장깨기 34개 완료 + P0 인프라 3개
 

@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-15 22:30 KST (CW14 전체 감사: 59 DB 테이블, 103 API, product_hs_mappings 8,389, vectors 3,431, MIN ~105M, AGR ~129M)
+# 마지막 업데이트: 2026-03-15 23:30 KST (CW14 Cowork — Full Audit 59 DB/103 API, 하드코딩 토큰 19파일→환경변수, UX Audit 53/53, WDC Phase 4 벌크매핑, Boot Sequence)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -84,7 +84,7 @@ portal/
 - **UCP (Universal Commerce Protocol)**: Google+Shopify+Walmart+Target 공동 개발, MCP 내장 — 관세 계산 없음 = **POTAL 기회**
 - **Custom LLM 3종 리라이트**: GPT Actions(API연동, B2B CTA), Gemini Gem(정적데이터+CTA), Meta AI(정적데이터+CTA)
 - **B2B 아웃리치**: 15개 타겟 4티어 (AI플랫폼/이커머스/결제물류/마켓플레이스) + 콜드이메일 3종
-- **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 진행중🔄 (~1,807/1,899파트, extract_with_categories.py)
+- **WDC 상품 데이터**: ✅ 다운로드 완료 + 추출 완료 (1,896/1,899 파트 완료 (99.8%), 17.6억 건 (1,761,211,362), products_detailed.jsonl 324GB + products_summary.csv 204GB, 미추출 3개: part_132/404/711.gz 손상)
 - **WDC 카테고리→HS6 1단계**: ✅ 완료 (10M JSONL → 145 고유 카테고리 → 147 HS6 매핑, 비용 ~$0.01)
 - **WDC 2단계**: ✅ 완료 (377M 상품 → 38 신규 카테고리 → 1,729,533 상품 커버)
 - **WDC 3단계 (Phase 3)**: ✅ 완료 (상품명 세분화 + Google taxonomy 확장, product_hs_mappings **8,389건**, 벡터 **3,431건**)
@@ -180,6 +180,32 @@ portal/
 - **P0 인프라 3개**: #11 벡터DB+3단계분류파이프라인(pgvector), #13 HS10자리확장(정부API 3개국), #15 분류DB규모(product_hs_mappings+pg_trgm)
 - **관세최적화 (#1)**: lookupAllDutyRates() — MIN/AGR/NTLC 3테이블 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답 필드 (savings 포함)
 - **Vector DB 시딩**: hs_classification_vectors **3,431건** (CW14 감사 확인). 파이프라인 정확도 55%→100%
+
+### ⭐ CW14 Cowork 세션 성과 (2026-03-15 KST)
+
+**Full Project Audit (전체 프로젝트 감사):**
+- docs/FULL_PROJECT_AUDIT.md 생성 — 59 DB 테이블, 103 API 엔드포인트, product_hs_mappings 8,389, vectors 3,431
+- 실제 DB 수치 기반 전체 프로젝트 상태 점검
+
+**3개 미교정 이슈 수정 (커밋 701572b):**
+- 하드코딩 토큰 19파일 → 환경변수 전환 (보안 강화)
+- SUPABASE_SERVICE_ROLE_KEY 환경변수 설정 확인
+- 임시파일 정리
+
+**UX Audit 53/53 완료:**
+- Batch 1: 15개, Batch 2: 16개, Batch 3: 12개 구현
+- 이미 구현 확인 5개, 미구현 사유 5개 (합리적 제외)
+- npm run build 통과 ✅
+
+**WDC Phase 4 벌크 매핑:**
+- wdc_phase4_bulk_mapping.py 스크립트 작성
+- 백그라운드 실행중 (5억+ 상품명 → HS Code 사전 매핑)
+
+**WDC 추출 상태**: 1,896/1,899 완료 (99.8%) — 이미 문서 반영됨
+
+**운영 도구 생성:**
+- POTAL_SESSION_BOOT_SEQUENCE.md — 3단 부트 시퀀스 (Fast/Standard/Deep)
+- FULL_PROJECT_AUDIT_COMMAND.md — 7단계 프로젝트 감사 명령어
 
 ### ⭐ CW13 Cowork 세션 성과 (2026-03-14 15:00~23:30 KST)
 
@@ -366,7 +392,7 @@ portal/
 
 ## WDC 다운로드 — ✅ 완료 + 카테고리 매핑 1단계 완료
 - 외장하드: /Volumes/soulmaten/POTAL/wdc-products (extracted + raw 폴더, 1,903파일)
-- **WDC 추출**: Mac에서 `extract_with_categories.py` 실행 중 (~1,029/1,899 파트)
+- **WDC 추출**: ✅ 완료 (1,896/1,899 파트, 17.6억 건 (1,761,211,362), products_detailed.jsonl 324GB + products_summary.csv 204GB, 미추출 3개: part_132/404/711.gz 손상, 영향 미미)
 - **1단계 완료 (Cowork 11)**: 10M JSONL → 145 고유 카테고리 → 147 HS6 매핑
   - product_hs_mappings: 164 → 1,017 (+853)
   - hs_classification_vectors: 170 → 1,023 (+853)

@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-15 18:00 KST (CW14 Cowork — WDC Phase 3 완료 3,406매핑, 규정 수집 Phase 1 완료, precomputed_hs10_candidates 1,246건)
+# 마지막 업데이트: 2026-03-15 23:30 KST (CW14 Cowork — Full Audit 59DB/103API, 하드코딩토큰19파일수정, UX 53/53, WDC Phase4 벌크매핑, Boot Sequence, 규정Phase2 WTO/WCO)
 
 ## 0. 프로젝트 개요
 
@@ -80,7 +80,7 @@
 - **✅ WooCommerce/BigCommerce/Magento 플러그인 완성 (Cowork 5)**: WooCommerce(HPOS/캐싱/sanitize/i18n/uninstall), BigCommerce(DDP cart), Magento(layout XML/ACL/composer.json)
 - **✅ Dashboard UI 통일 (Cowork 5)**: 메인 헤더/푸터 전 페이지 표시(대시보드 포함), 1440px max-width 통일, 유저 메뉴에 Docs 링크 추가
 - **✅ AGR 벌크 임포트 완료 (Cowork 5~9.5→CW10)**: 53개국 ~144M행 전체 완료. KOR 재임포트 완료 (1,815,798행, 2026-03-13)
-- **🔄 WDC 상품 추출 진행중 (CW9.5→Cowork 11)**: Mac에서 extract_with_categories.py 실행 중, ~1,029/1,899 파트. 카테고리→HS6 1단계 완료 ✅ (1,017매핑). 완료 후 → 2단계 상품명 세분화 → 5억 사전매핑
+- **✅ WDC 상품 추출 완료 (CW9.5→CW15)**: 1,896/1,899 파트 완료 (99.8%), 17.6억 건 (1,761,211,362), products_detailed.jsonl 324GB + products_summary.csv 204GB. 미추출 3개: part_132/404/711.gz 손상 (영향 미미). 카테고리→HS6 1단계 완료 ✅ (1,017매핑) → 2단계 완료 → 3단계 완료 → 5억 사전매핑
 - **✅ 147개 경쟁사 기능 분석 (Cowork 12)**: 10개 경쟁사 147개 고유 기능 → MUST 102(58구현+44미구현)/SHOULD 40/WON'T 5 = 96.6% 커버리지. 5개 솔루션: RAG, 물류파트너십, 정확도증명, 결제인프라, AEO지원. 타겟: A(Shopify/WooCommerce), B(eBay/Etsy), C(DHL/Walmart)
 - **✅ 240개국 규정 RAG 전략 (Cowork 12)**: 관세법/세법/무역규정 벡터 DB화 → "240개국 관세사/세무사 AI". Phase 1(7개국)→2(국제기구)→3(지역). 저장: /Volumes/soulmaten/POTAL/regulations/. 🔄 수집 진행중
 - **✅ 데이터 유지보수 자동화 설계 (Cowork 12)**: 정부 공고 페이지 해시 비교(Cron) + Make.com AI 변경 해석(세율/규정/UI 분류) + 자동 DB 업데이트. 일일 비용 ~$0

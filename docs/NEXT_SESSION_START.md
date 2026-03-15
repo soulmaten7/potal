@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-15 18:00 KST (CW14 Cowork — WDC Phase 3 완료 3,406매핑, 규정 수집 Phase 1 완료 5소스, precomputed_hs10_candidates 1,246건)
+> 마지막 업데이트: 2026-03-15 23:30 KST (CW14 Cowork — Full Audit, 하드코딩토큰19파일수정, UX 53/53, WDC Phase4, Boot Sequence, 규정Phase2 WTO/WCO)
 
 ---
 
@@ -19,7 +19,7 @@ POTAL Chief Orchestrator 세션 시작.
 
 2단계: 백그라운드 작업 확인
 - KOR AGR 재임포트: ✅ 완료 (1,815,798행, 2026-03-13)
-- WDC 추출 상태는 은태가 Mac에서 확인 후 알려줄 예정
+- WDC 추출: ✅ 완료 (1,896/1,899 파트, 17.6억 건)
 
 3단계: Morning Brief 실행
 - Gmail에서 "Morning Brief" 또는 "health-check" 관련 이메일 확인
@@ -66,6 +66,14 @@ POTAL Chief Orchestrator 세션 시작.
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
 - **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
 
+### CW14 Cowork — Full Audit, 보안 수정, UX 53/53, WDC Phase 4, 규정 Phase 2 (2026-03-15)
+- **Full Project Audit ✅**: docs/FULL_PROJECT_AUDIT.md 생성 (59 DB 테이블, 103 API 엔드포인트, product_hs_mappings 8,389, vectors 3,431)
+- **보안 수정 ✅** (커밋 701572b): 하드코딩 토큰 19파일 → 환경변수, SERVICE_ROLE_KEY 설정, 임시파일 정리
+- **UX Audit 53/53 완료 ✅**: Batch 1(15) + Batch 2(16) + Batch 3(12) + 이미구현5 + 미구현사유5, 빌드 통과
+- **WDC Phase 4 ✅**: wdc_phase4_bulk_mapping.py 작성 + 백그라운드 실행중 (5억+ 상품명 사전 매핑)
+- **운영 도구 ✅**: POTAL_SESSION_BOOT_SEQUENCE.md (3단 부트), FULL_PROJECT_AUDIT_COMMAND.md (7단계 감사)
+- **규정 수집 Phase 2**: WTO(reporters 288, indicators 56, tariff profiles 36국/39MB) + WCO(sections 21, chapters 96). WITS ❌(API 405), OECD ❌(폐지)
+
 ### CW13 Cowork 후반 — npm publish, MCP 레지스트리, Custom LLM, B2B 전략 (2026-03-15 00:00~14:00 KST)
 - **npm publish ✅**: `potal-mcp-server@1.3.1` npm 공개 패키지 (npmjs.com/package/potal-mcp-server)
 - **MCP 공식 레지스트리 ✅**: `io.github.soulmaten7/potal` (registry.modelcontextprotocol.io, status: active)
@@ -106,7 +114,7 @@ POTAL Chief Orchestrator 세션 시작.
 
 ### 백그라운드 작업 상태
 - 터미널 2: ✅ CBP CROSS Rulings 수집 완료 (220,114/220,153건, 99.98%) — 규정 Phase 1 전체 완료
-- 터미널 3: 🔄 WDC 추출 진행중 (~1807/1899 파트)
+- 터미널 3: ✅ WDC 추출 완료 (1,896/1,899 파트, 17.6억 건, 미추출: part_132/404/711.gz 손상)
 - WDC Phase 3: ✅ 완료 (product_hs_mappings 3,406, 벡터 3,431, hs10_candidates 1,246, commit dbc5e59 push 완료)
 
 ### Cowork 12 — 147개 경쟁사 기능 분석 + 240개국 규정 RAG + 데이터 유지보수 (2026-03-13)
@@ -168,29 +176,32 @@ POTAL Chief Orchestrator 세션 시작.
 - KOR total 값 불일치 (15,798 vs 1,845,798) → **재임포트 완료 (1,815,798행, 2026-03-13)**
 - AGR 53/53국 전체 완료
 
-### WDC 상품 추출 (Mac) — 🔄 진행중
-```bash
-tail -5 ~/portal/wdc_extract.log
-```
-- ~1,807/1,899 파트 진행중
+### WDC 상품 추출 (Mac) — ✅ 완료
+- **1,896/1,899 파트 완료 (99.8%)** — 17.6억 건 (1,761,211,362)
+- products_detailed.jsonl 324GB + products_summary.csv 204GB
+- 미추출 3개: part_132.gz, part_404.gz, part_711.gz (손상, 영향 미미)
 - **1단계 카테고리→HS6 매핑 완료** ✅ (145 카테고리 → 1,017 매핑)
 - **2단계 카테고리 확장 완료** ✅ (38 신규 카테고리 → 1,055 매핑, 1,104 벡터)
-- 다음 → 3단계 상품명 세분화 → 5억 사전 매핑
+- **3단계 상품명 세분화 완료** ✅ (product_hs_mappings 8,389, 벡터 3,431)
 
 ### 7개국 HS 벌크 다운로드 — ✅ 완료
 - **gov_tariff_schedules**: US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633 = **89,842행**
 - US/EU/UK: 정부 REST API (HS 8-10자리) / KR/CA/AU/JP: WTO API (HS 6자리, 정부 API 없음)
 - **저장**: 외장하드 /Volumes/soulmaten/POTAL/hs-bulk/ + Supabase DB 직접 임포트
 
-### CBP CROSS Rulings 다운로드 — 🔄 진행중 (터미널 2)
-- Playwright headless, PID 20448, 예상 2-3시간
-- 240개국 규정 RAG Phase 1
+### CBP CROSS Rulings 다운로드 — ✅ 완료
+- 220,114/220,153건 수집 (99.98%), 244MB, 37 JSON 파일
 
-### 240개국 규정 데이터 수집 — 🔄 진행중 (Claude Code 터미널 2)
-- Phase 1(7개국) → Phase 2(국제기구) → Phase 3(지역+나머지)
+### 240개국 규정 데이터 수집 — 🔄 진행중
+- Phase 1(7개국): ✅ 완료 (USITC+CBP CROSS+eCFR×2+OFAC SDN)
+- Phase 2(국제기구): 🔄 부분 완료 (WTO 36/227국, WCO ✅, WITS ❌, OECD ❌)
+- Phase 3(지역+나머지): 대기
 - **저장**: 외장하드 /Volumes/soulmaten/POTAL/regulations/
-- 명령어: REGULATION_DATA_COLLECTION_COMMAND.md
-- 수집 시 각 국가별 "공고/변경 알림 페이지 URL"도 함께 기록 (향후 Cron 감시 대상)
+- WTO tariff profiles 재실행 시 기존 36국 skip, 나머지부터 수집 (resume 지원)
+
+### WDC Phase 4 벌크 매핑 — 🔄 실행중
+- wdc_phase4_bulk_mapping.py 백그라운드 실행중
+- 5억+ 상품명 → HS Code 사전 매핑
 
 ---
 
@@ -204,7 +215,7 @@ tail -5 ~/portal/wdc_extract.log
 5. ~~**HS10 파이프라인**~~ ✅ 완료 (7개국)
 6. ~~**WDC Phase 3 상품명 세분화**~~ ✅ 완료 (product_hs_mappings 1,055→3,406, 벡터 3,431, hs10_candidates 1,246)
 7. ~~**240개국 규정 수집 Phase 1**~~ ✅ 완료 (5소스: USITC+CBP CROSS 220,114건+eCFR×2+OFAC SDN). Phase 2~3 대기
-8. **UX Audit 나머지 43항목**: POTAL_UX_AUDIT_CW13.md 11~53번 구현
+8. ~~**UX Audit 나머지 43항목**~~ ✅ 완료 (53/53, Batch 1+2+3 전부 구현, 빌드 통과)
 9. ~~**GPT Actions 지침 수동 복사**~~ ✅ 완료 (ChatGPT GPT 에디터에 gpt-instructions.md 복사-붙여넣기)
 10. ~~**Gemini Gem 지침 수동 복사**~~ ✅ 완료 (Google AI Studio에 설명+요청사항+지식CSV v2 업데이트)
 11. ~~**mcp.so 등록**~~ ✅ 제출 완료 (리뷰 대기) | glama.ai = submit 폼 없음(auto-crawling) | smithery.ai = HTTP 필요(stdio 미지원, 스킵)
@@ -269,7 +280,12 @@ tail -5 ~/portal/wdc_extract.log
 - **HS Code 정확도**: ✅ 100% 구조 설계 완료 (6자리: 카테고리확정, 10자리: DB후보+규칙, 가격분기: if문)
 - **경쟁사 대비**: Avalara 40M+ → **POTAL 500M+** HS Code Classifications
 - **147개 경쟁사 기능 분석 (CW12)**: ✅ 96.6% 커버리지 (102 MUST/40 SHOULD/5 WON'T)
-- **240개국 규정 RAG Phase 1**: ✅ 완료 (5소스: USITC 35,733 + CBP CROSS 220,114 + eCFR Title 19/15 + OFAC SDN). Phase 2~3 대기
+- **240개국 규정 RAG Phase 1**: ✅ 완료 (5소스: USITC 35,733 + CBP CROSS 220,114 + eCFR Title 19/15 + OFAC SDN)
+- **규정 RAG Phase 2**: 🔄 부분 완료 (WTO 36/227국+WCO ✅, WITS/OECD ❌)
+- **UX Audit**: ✅ 53/53 완료 (Batch 1+2+3, 빌드 통과)
+- **Full Project Audit**: ✅ docs/FULL_PROJECT_AUDIT.md (59 DB, 103 API, product_hs_mappings 8,389)
+- **보안 수정**: ✅ 하드코딩 토큰 19파일→환경변수 (커밋 701572b)
+- **Boot Sequence**: ✅ POTAL_SESSION_BOOT_SEQUENCE.md (3단 부트) + FULL_PROJECT_AUDIT_COMMAND.md (7단계 감사)
 - **데이터 유지보수 자동화 (CW12)**: ✅ 설계 완료 (공고 페이지 해시 Cron + Make.com AI + 자동 DB 업데이트)
 - **타겟 거래처 (CW12)**: A(Shopify/WooCommerce), B(eBay/Etsy), C(DHL/Walmart)
 - **P2 벤치마크**: ✅ AI분류 50상품(Pipeline 90%), Calculate E2E 15/15통과, 부하테스트 100동시(26.9req/s, p95=3.4s, 에러0%)
