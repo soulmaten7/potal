@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 import { createClient } from '@supabase/supabase-js';
+import { generateTablePdf } from '@/app/lib/cost-engine/documents/pdf-generator';
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -37,6 +38,10 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
   const reportType = typeof body.reportType === 'string' ? body.reportType : '';
   const format = typeof body.format === 'string' ? body.format.toLowerCase() : 'csv';
+  const validFormats = ['csv', 'json', 'pdf'];
+  if (!validFormats.includes(format)) {
+    return apiError(ApiErrorCode.BAD_REQUEST, `Invalid format. Options: ${validFormats.join(', ')}`);
+  }
   const limit = typeof body.limit === 'number' ? Math.min(body.limit, 10000) : 1000;
   const startDate = typeof body.startDate === 'string' ? body.startDate : undefined;
   const endDate = typeof body.endDate === 'string' ? body.endDate : undefined;
@@ -76,6 +81,18 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
     const columns = ['timestamp', 'product_name', 'product_category', 'hs_code_result', 'hs_description', 'confidence', 'confidence_grade', 'classification_source', 'processing_time_ms'];
 
+    if (format === 'pdf') {
+      const dateRange = [startDate, endDate].filter(Boolean).join(' to ') || 'All time';
+      const pdfBytes = await generateTablePdf('Classification Audit Report', columns, rows, { dateRange, total: rows.length });
+      return new Response(Buffer.from(pdfBytes), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="classification_audit_${new Date().toISOString().split('T')[0]}.pdf"`,
+        },
+      });
+    }
+
     if (format === 'csv') {
       const csv = toCsv(columns, rows);
       return new Response(csv, {
@@ -114,6 +131,18 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
     const columns = ['timestamp', 'endpoint', 'method', 'status_code', 'response_time_ms'];
 
+    if (format === 'pdf') {
+      const dateRange = [startDate, endDate].filter(Boolean).join(' to ') || 'All time';
+      const pdfBytes = await generateTablePdf('Usage Log Report', columns, rows, { dateRange, total: rows.length });
+      return new Response(Buffer.from(pdfBytes), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename="usage_log_${new Date().toISOString().split('T')[0]}.pdf"`,
+        },
+      });
+    }
+
     if (format === 'csv') {
       const csv = toCsv(columns, rows);
       return new Response(csv, {
@@ -131,4 +160,4 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   return apiError(ApiErrorCode.BAD_REQUEST, 'Unknown reportType. Options: classification_audit, usage_log.');
 });
 
-export async function GET() { return apiError(ApiErrorCode.BAD_REQUEST, 'Use POST. Body: { reportType: "classification_audit"|"usage_log", format?: "csv"|"json", limit?: 1000, startDate?, endDate? }'); }
+export async function GET() { return apiError(ApiErrorCode.BAD_REQUEST, 'Use POST. Body: { reportType: "classification_audit"|"usage_log", format?: "csv"|"json"|"pdf", limit?: 1000, startDate?, endDate? }'); }
