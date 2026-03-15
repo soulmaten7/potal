@@ -19,12 +19,24 @@ export async function middleware(request: NextRequest) {
       });
     }
 
-    // For actual requests, add CORS headers and skip Supabase session
-    const response = NextResponse.next({ request: { headers: request.headers } });
-    response.headers.set("Access-Control-Allow-Origin", "*");
-    response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key");
-    return response;
+    // For actual requests, add CORS headers
+    const apiResponse = NextResponse.next({ request: { headers: request.headers } });
+    apiResponse.headers.set("Access-Control-Allow-Origin", "*");
+    apiResponse.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    apiResponse.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key");
+
+    // ─── RBAC: Route-level role hints via header ────
+    // Actual enforcement is in each API route, but we set a hint header
+    // so routes can quickly check the required access level.
+    if (pathname.startsWith("/api/v1/admin/")) {
+      apiResponse.headers.set("X-Required-Role", "admin");
+    } else if (pathname.startsWith("/api/v1/billing/") || pathname.startsWith("/api/v1/team/")) {
+      apiResponse.headers.set("X-Required-Role", "manager");
+    } else if (pathname.startsWith("/api/v1/")) {
+      apiResponse.headers.set("X-Required-Role", "analyst");
+    }
+
+    return apiResponse;
   }
 
   if (pathname === "/auth/callback") {

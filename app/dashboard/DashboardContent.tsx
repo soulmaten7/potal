@@ -6,6 +6,9 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
+import dynamic from 'next/dynamic';
+
+const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), { ssr: false });
 
 // Paddle.js global type
 declare global {
@@ -80,7 +83,7 @@ interface ApiLogEntry {
   timestamp: string;
 }
 
-type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing' | 'classify' | 'calculator' | 'fta' | 'sanctions' | 'documents' | 'batch' | 'analytics' | 'settings' | 'integrations';
+type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing' | 'classify' | 'calculator' | 'fta' | 'sanctions' | 'documents' | 'batch' | 'analytics' | 'settings' | 'integrations' | 'team';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'overview', label: 'Overview', icon: '📊' },
@@ -100,6 +103,7 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'logs', label: 'Logs', icon: '📋' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
   { id: 'billing', label: 'Billing', icon: '💳' },
+  { id: 'team', label: 'Team', icon: '👥' },
 ];
 
 // Plan display config (mirrors paddle.ts PLAN_CONFIG — 세션 28 신 요금제)
@@ -1334,57 +1338,49 @@ export default function DashboardContent() {
             </div>
           )}
 
-          {/* ── Analytics ── */}
-          {activeTab === 'analytics' && (
+          {/* ── Analytics (Recharts) ── */}
+          {activeTab === 'analytics' && session && (
+            <AnalyticsCharts accessToken={session.access_token} />
+          )}
+
+          {/* ── Team ── */}
+          {activeTab === 'team' && (
             <div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Analytics</h2>
-              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Detailed insights into your API usage patterns, cost savings, and classification accuracy.</p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-                {[
-                  { label: 'Total Requests', value: usage?.used?.toLocaleString() ?? '—', sub: 'This month' },
-                  { label: 'Avg Response', value: platformData.length > 0 ? `${Math.round(platformData.reduce((a, p) => a + (100 - p.successRate), 0) / platformData.length)}ms` : '—', sub: 'Response time' },
-                  { label: 'Success Rate', value: platformData.length > 0 ? `${(platformData.reduce((a, p) => a + p.successRate, 0) / platformData.length).toFixed(1)}%` : '—', sub: 'All endpoints' },
-                  { label: 'Countries', value: countryData.length, sub: 'Active destinations' },
-                ].map((stat, i) => (
-                  <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                    <div style={{ fontSize: 12, color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>{stat.label}</div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: '#02122c', marginBottom: 4 }}>{stat.value}</div>
-                    <div style={{ fontSize: 12, color: '#999' }}>{stat.sub}</div>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700 }}>Team Management</h2>
+                <a
+                  href="/dashboard/team"
+                  style={{
+                    padding: '8px 20px',
+                    background: '#02122c',
+                    color: 'white',
+                    borderRadius: 8,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Open Team Page
+                </a>
               </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Top Countries</h4>
-                  {countryData.length === 0 ? (
-                    <p style={{ fontSize: 13, color: '#999' }}>No data yet. Make some API calls to see analytics.</p>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
-                      {countryData.slice(0, 10).map((c, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '6px 0', borderBottom: '1px solid #f3f4f6' }}>
-                          <span>{c.country}</span>
-                          <span style={{ fontWeight: 600 }}>{c.requests} calls</span>
-                        </div>
-                      ))}
+              <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                <p style={{ color: '#666', fontSize: 14, lineHeight: 1.8 }}>
+                  Manage your team members, invite colleagues, and control access levels with role-based permissions.
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16 }}>
+                  {[
+                    { role: 'Admin', desc: 'Full access to everything', color: '#dc2626' },
+                    { role: 'Manager', desc: 'Billing, team, API (no delete)', color: '#d97706' },
+                    { role: 'Analyst', desc: 'Read + API usage only', color: '#2563eb' },
+                    { role: 'Viewer', desc: 'Read-only dashboards', color: '#6b7280' },
+                  ].map(r => (
+                    <div key={r.role} style={{ padding: 16, background: '#f8fafc', borderRadius: 8, border: '1px solid #e5e7eb' }}>
+                      <span style={{ display: 'inline-block', padding: '2px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: r.color, color: 'white', marginBottom: 8 }}>
+                        {r.role}
+                      </span>
+                      <p style={{ fontSize: 12, color: '#666', margin: 0 }}>{r.desc}</p>
                     </div>
-                  )}
-                </div>
-                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Endpoint Usage</h4>
-                  {platformData.length === 0 ? (
-                    <p style={{ fontSize: 13, color: '#999' }}>No data yet. Make some API calls to see analytics.</p>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 8 }}>
-                      {platformData.map((p, i) => (
-                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '6px 0', borderBottom: '1px solid #f3f4f6' }}>
-                          <span>{p.endpoint}</span>
-                          <span style={{ fontWeight: 600, color: p.successRate >= 99 ? '#16a34a' : p.successRate >= 95 ? '#d97706' : '#dc2626' }}>{p.successRate}%</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
             </div>
