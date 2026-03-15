@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-15 23:30 KST (CW14 Cowork — Full Audit 59 DB/103 API, 하드코딩 토큰 19파일→환경변수, UX Audit 53/53, WDC Phase 4 벌크매핑, Boot Sequence)
+# 마지막 업데이트: 2026-03-16 03:00 KST (CW14 Cowork 후반 — Core 16 + Trade 21 = 37개 기능 S+ 업그레이드, ~45 API Routes + ~25 Library Files + 111 Tests + 1 Migration, 142-feature S+ Master Plan Excel 생성, PDF 라이브러리 추가, B2B 채널 마케팅 전략)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -90,6 +90,8 @@ portal/
 - **WDC 3단계 (Phase 3)**: ✅ 완료 (상품명 세분화 + Google taxonomy 확장, product_hs_mappings **8,389건**, 벡터 **3,431건**)
 - **Google Taxonomy HS 매핑**: 164건 product_hs_mappings 로딩 ✅
 - **142/147 기능 전부 구현 완료** ✅ (CW12 후반): MUST 102개 + SHOULD 40개 = **142개 구현**, WON'T 5개만 제외 = **96.6% 커버리지**
+- **Core 16 + Trade 21 = 37개 기능 S+ 업그레이드** ✅ (CW14 후반): ~45 API Routes + ~25 Library Files + 111 Tests + 1 Migration, 32분 19초 완료
+- **API 엔드포인트**: 103개 → **~148개** (CW14 후반: +45 S+ 업그레이드 라우트)
 - **심층 검증 84/84 PASS** ✅ (CW12 후반 02:30 KST): 81 확실 + 3 수정후확실(DB 테이블 생성), 코드 변경 0건, DB 테이블 5개 추가(marketplace_connections, erp_connections, tax_exemption_certificates, partner_accounts, partner_referrals)
 - **44개 MUST 신규 구현 (CW12 후반, ~45분)**: Sprint 1(F006 신뢰도·F109 CSV·F008 감사), Sprint 2(F015 가격분기·F092 샌드박스·F009 배치·F095 고처리량), Sprint 3(F012 HS검증·F033 IOSS·F043 통관서류·F040 수출전검증) + P1 15개(URL분류·RoO·원산지예측·RAG·AI상담·White-label·ICS2·Type86·수출통제·ECCN·위험물 등) + P2 17개(US세금·Telecom/Lodging·수출면허·VAT등록·e-Invoice·마켓플레이스·ERP·AEO 등)
 - **새 API 엔드포인트 6개+**: /export, /classify/audit, /classify/batch, /validate, /ioss, /verify 외 다수
@@ -180,6 +182,37 @@ portal/
 - **P0 인프라 3개**: #11 벡터DB+3단계분류파이프라인(pgvector), #13 HS10자리확장(정부API 3개국), #15 분류DB규모(product_hs_mappings+pg_trgm)
 - **관세최적화 (#1)**: lookupAllDutyRates() — MIN/AGR/NTLC 3테이블 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답 필드 (savings 포함)
 - **Vector DB 시딩**: hs_classification_vectors **3,431건** (CW14 감사 확인). 파이프라인 정확도 55%→100%
+
+### ⭐ CW14 Cowork 후반 세션 성과 (2026-03-16 00:00~03:00 KST)
+
+**Core 16 + Trade 21 = 37개 기능 S+ 업그레이드 (Claude Code, 32분 19초):**
+- **~45 API Routes** 신규 생성 (trade-remedies, sanctions, export-controls, roo, valuation, incoterms, documents/bundle, drawback, temporary-import, origin, sez, licensing, ioss, ddp-vs-ddu, returns, broker, calculate/breakdown, calculate/compare, calculate/whatif 등)
+- **~25 Library Files** 신규 생성 (feedback-loop.ts, explainability.ts, multi-language.ts, confidence-calibration.ts, hs-validator.ts, breakdown.ts, roo-engine.ts, customs-valuation.ts, fuzzy-screening.ts, export-controls.ts, product-restrictions.ts, insurance-calculator.ts, shipping-calculator.ts, price-break-engine.ts, remedy-calculator.ts, origin-predictor.ts, returns-calculator.ts, broker-data-export.ts, incoterms.ts, sez-database.ts, import-licensing.ts, ioss-engine.ts, duty-drawback.ts, temporary-import.ts, doc-auto-populate.ts)
+- **111 Test Cases** 작성 (37 기능 × 3 테스트: happy path + edge case + 실데이터 검증)
+- **1 DB Migration**: 037_s_grade_upgrade.sql (api_audit_log, classification_feedback 등)
+- **8개 빌드 에러 수정**: 타입 불일치, 중복 키, 잘못된 속성명 등
+- **TypeScript 컴파일 통과** (0 errors) ✅
+- **S_GRADE_VERIFICATION_REPORT.md** 생성 (docs/)
+- SSG 페이지 타임아웃은 기존 이슈 (Supabase 네트워크 의존성, S+ 변경과 무관, Vercel 배포 시 정상)
+
+**142-Feature S+ Master Plan Excel 생성:**
+- analysis/POTAL_142_S_Grade_Complete_Plan.xlsx (15시트, 143개 기능, 전부 S+ 타겟)
+- 시트: Summary, All 142 Features, Core/Trade/Tax/Platform/Integration/Shipping/Web/Legal/Security/Support/Business/Marketing, Sprint Roadmap
+- Sprint 배분: S1(16개, Critical) / S2(46개, Depth) / S3(81개, Ecosystem)
+- 37개(Core+Trade) 먼저 독보적 S+ 완성 → 나머지 106개 이어서 진행 결정
+
+**PDF 라이브러리 추가 (커밋 fc066d0):**
+- pdf-lib 설치 (pure JS, Vercel serverless 호환)
+- pdf-generator.ts: 5종 문서 + 테이블 리포트 + 배송 라벨
+- /api/v1/documents/pdf: binary + base64 출력
+- /api/v1/reports/export: format=pdf 옵션 추가
+- /api/v1/shipping/labels: 4x6 inch 라벨 PDF
+
+**B2B 채널 마케팅 전략 (Cowork에서 논의):**
+- MVP 홍보 채널 리스트 확정: Show HN, Product Hunt, Shopify Community, LinkedIn, Reddit(r/SaaS, r/ecommerce), DEV.to, GitHub awesome-mcp
+- 핵심 메시지: "파트너가 되고 싶다, 중간업자가 아니다" — 최고 품질 + 최저 가격 + 피드백 기반 개선
+- 채널별 글 작성 예정 (핵심 구조 확정, 은태님 피드백 반영 중)
+- 수정 사항: 8,389 매핑 → "1.7B+ product names, any product classifiable" 표현 전환, 내부 숫자(89,842행 등) 비노출, 경쟁사 상위 10개 기능+가격 비교표 포함
 
 ### ⭐ CW14 Cowork 세션 성과 (2026-03-15 KST)
 

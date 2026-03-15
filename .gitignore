@@ -67,3 +67,6 @@ supabase/migrations/007_wits_duty_rates.sql
 supabase/migrations/008_merged_duty_rates.sql
 supabase/migrations/009_macmap_ntlc_rates.sql
 archive/vercel_env_backup_2026-03-10.txt
+
+# MCP registry tokens
+.mcpregistry_*

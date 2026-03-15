@@ -46,7 +46,7 @@ export const el = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Ιδανικό για να ξεκινήσετε',
-  'pricing.free.feature1': '100 υπολογισμοί/μήνα',
+  'pricing.free.feature1': '200 υπολογισμοί/μήνα',
   'pricing.free.feature2': 'Βασική προσαρμογή widget',
   'pricing.free.feature3': 'Υποστήριξη κοινότητας',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const el = {
   'pricing.faq.q2': 'Τι συμβαίνει αν υπερβώ το όριο υπολογισμών μου;',
   'pricing.faq.a2': 'Οι χρεώσεις υπέρβασης εφαρμόζονται αυτόματα. Basic: $0.015/υπολογισμό, Pro: $0.012/υπολογισμό, Enterprise: $0.01/υπολογισμό.',
   'pricing.faq.q3': 'Προσφέρετε δωρεάν πλάνο;',
-  'pricing.faq.a3': 'Ναι, το Free πλάνο περιλαμβάνει 100 υπολογισμούς ανά μήνα χωρίς κόστος.',
+  'pricing.faq.a3': 'Ναι, το Free πλάνο περιλαμβάνει 200 υπολογισμούς ανά μήνα χωρίς κόστος.',
   'pricing.faq.q4': 'Ποιες μεθόδους πληρωμής δέχεστε;',
   'pricing.faq.a4': 'Δεχόμαστε όλες τις μεγάλες πιστωτικές κάρτες και ψηφιακές μεθόδους πληρωμής μέσω Paddle, τον ασφαλή συνεργάτη πληρωμών μας.',
 

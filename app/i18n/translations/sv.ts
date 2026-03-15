@@ -46,7 +46,7 @@ export const sv = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Perfekt för att komma igång',
-  'pricing.free.feature1': '100 beräkningar/månad',
+  'pricing.free.feature1': '200 beräkningar/månad',
   'pricing.free.feature2': 'Grundläggande widget-anpassning',
   'pricing.free.feature3': 'Community-support',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const sv = {
   'pricing.faq.q2': 'Vad händer om jag överskrider min beräkningsgräns?',
   'pricing.faq.a2': 'Överförbrukningsavgifter tillkommer automatiskt. Basic: $0.015/beräkning, Pro: $0.012/beräkning, Enterprise: $0.01/beräkning.',
   'pricing.faq.q3': 'Erbjuder ni en gratisplan?',
-  'pricing.faq.a3': 'Ja, Free-planen inkluderar 100 beräkningar per månad utan kostnad.',
+  'pricing.faq.a3': 'Ja, Free-planen inkluderar 200 beräkningar per månad utan kostnad.',
   'pricing.faq.q4': 'Vilka betalningsmetoder accepterar ni?',
   'pricing.faq.a4': 'Vi accepterar alla större kreditkort och digitala betalningsmetoder via Paddle, vår säkra betalningspartner.',
 

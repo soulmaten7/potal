@@ -46,7 +46,7 @@ export const tr = {
   'pricing.free.name': 'Ücretsiz',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Başlamak için ideal',
-  'pricing.free.feature1': '100 hesaplama/ay',
+  'pricing.free.feature1': '200 hesaplama/ay',
   'pricing.free.feature2': 'Temel widget özelleştirmesi',
   'pricing.free.feature3': 'Topluluk desteği',
   'pricing.basic.name': 'Temel',
@@ -83,7 +83,7 @@ export const tr = {
   'pricing.faq.q2': 'Hesaplama limitimi aşarsam ne olur?',
   'pricing.faq.a2': 'Aşım ücretleri otomatik olarak uygulanır. Temel: $0,015/hesaplama, Pro: $0,012/hesaplama, Kurumsal: $0,01/hesaplama.',
   'pricing.faq.q3': 'Ücretsiz bir plan sunuyor musunuz?',
-  'pricing.faq.a3': 'Evet, ücretsiz plan herhangi bir ücret olmadan ayda 100 hesaplama içerir.',
+  'pricing.faq.a3': 'Evet, ücretsiz plan herhangi bir ücret olmadan ayda 200 hesaplama içerir.',
   'pricing.faq.q4': 'Hangi ödeme yöntemlerini kabul ediyorsunuz?',
   'pricing.faq.a4': 'Güvenli ödeme ortağımız Paddle aracılığıyla tüm büyük kredi kartlarını ve dijital ödeme yöntemlerini kabul ediyoruz.',
 

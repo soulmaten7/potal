@@ -46,7 +46,7 @@ export const uz = {
   'pricing.free.name': 'Bepul',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Boshlash uchun ideal',
-  'pricing.free.feature1': '100 ta hisob/oy',
+  'pricing.free.feature1': '200 ta hisob/oy',
   'pricing.free.feature2': 'Asosiy vidjet sozlamalari',
   'pricing.free.feature3': 'Hamjamiyat qo\'llab-quvvatlashi',
   'pricing.basic.name': 'Asosiy',
@@ -83,7 +83,7 @@ export const uz = {
   'pricing.faq.q2': 'Hisoblash chegarasidan oshib ketsam nima bo\'ladi?',
   'pricing.faq.a2': 'Ortiqcha to\'lovlar avtomatik ravishda qo\'llaniladi. Asosiy: $0.015/hisob, Professional: $0.012/hisob, Korporativ: $0.01/hisob.',
   'pricing.faq.q3': 'Bepul reja taklif qilasizmi?',
-  'pricing.faq.a3': 'Ha, bepul reja oyiga 100 ta bepul hisob-kitobni o\'z ichiga oladi.',
+  'pricing.faq.a3': 'Ha, bepul reja oyiga 200 ta bepul hisob-kitobni o\'z ichiga oladi.',
   'pricing.faq.q4': 'Qanday to\'lov usullarini qabul qilasiz?',
   'pricing.faq.a4': 'Ishonchli to\'lov hamkorimiz Paddle orqali barcha asosiy kredit kartalar va raqamli to\'lov usullarini qabul qilamiz.',
 

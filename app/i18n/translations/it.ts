@@ -46,7 +46,7 @@ export const it = {
   'pricing.free.name': 'Gratuito',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Ideale per iniziare',
-  'pricing.free.feature1': '100 calcoli/mese',
+  'pricing.free.feature1': '200 calcoli/mese',
   'pricing.free.feature2': 'Personalizzazione base del widget',
   'pricing.free.feature3': 'Supporto community',
   'pricing.basic.name': 'Base',
@@ -83,7 +83,7 @@ export const it = {
   'pricing.faq.q2': 'Cosa succede se supero il limite di calcoli?',
   'pricing.faq.a2': 'I costi di eccedenza vengono applicati automaticamente. Base: $0,015/calcolo, Pro: $0,012/calcolo, Enterprise: $0,01/calcolo.',
   'pricing.faq.q3': 'Offrite un piano gratuito?',
-  'pricing.faq.a3': 'Sì, il piano gratuito include 100 calcoli al mese senza alcun costo.',
+  'pricing.faq.a3': 'Sì, il piano gratuito include 200 calcoli al mese senza alcun costo.',
   'pricing.faq.q4': 'Quali metodi di pagamento accettate?',
   'pricing.faq.a4': 'Accettiamo tutte le principali carte di credito e metodi di pagamento digitali tramite Paddle, il nostro partner di pagamento sicuro.',
 

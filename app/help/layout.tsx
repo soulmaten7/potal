@@ -55,7 +55,7 @@ const faqStructuredData = {
       name: 'What happens if I exceed my plan\'s API call limit?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'On the Free plan, API calls stop at the 100-call limit. On paid plans (Basic, Pro, Enterprise), overage calls are automatically billed: Basic $0.015/call, Pro $0.012/call, Enterprise $0.01/call.',
+        text: 'On the Free plan, API calls stop at the 200-call limit. On paid plans (Basic, Pro, Enterprise), overage calls are automatically billed: Basic $0.015/call, Pro $0.012/call, Enterprise $0.01/call.',
       },
     },
     {
@@ -63,7 +63,7 @@ const faqStructuredData = {
       name: 'Is there a free plan?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes! Our Free plan includes 100 API calls per month — no credit card required. Paid plans (Basic, Pro, Enterprise) come with a 14-day free trial. A payment method is collected at signup, but you won\'t be charged until the trial ends.',
+        text: 'Yes! Our Free plan includes 200 API calls per month — no credit card required. Paid plans (Basic, Pro, Enterprise) come with a 14-day free trial. A payment method is collected at signup, but you won\'t be charged until the trial ends.',
       },
     },
     {
@@ -79,7 +79,7 @@ const faqStructuredData = {
       name: 'Which countries and currencies does POTAL support?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 30 languages in the UI and display costs in local currencies using daily-updated exchange rates.',
+        text: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 50 languages in the UI and display costs in local currencies using daily-updated exchange rates.',
       },
     },
     {

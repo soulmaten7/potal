@@ -46,7 +46,7 @@ export const ja = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': '始めるのに最適',
-  'pricing.free.feature1': '月間100回計算',
+  'pricing.free.feature1': '月間200回計算',
   'pricing.free.feature2': '基本的なウィジェットカスタマイズ',
   'pricing.free.feature3': 'コミュニティサポート',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const ja = {
   'pricing.faq.q2': '計算回数の上限を超えたらどうなりますか？',
   'pricing.faq.a2': '超過料金が自動適用されます。Basic: $0.015/回、Pro: $0.012/回、Enterprise: $0.01/回。',
   'pricing.faq.q3': '無料プランはありますか？',
-  'pricing.faq.a3': 'はい、Freeプランは月間100回の計算まで無料です。',
+  'pricing.faq.a3': 'はい、Freeプランは月間200回の計算まで無料です。',
   'pricing.faq.q4': 'どのような決済方法に対応していますか？',
   'pricing.faq.a4': '主要なクレジットカード、Paddleを通じたデジタル決済に対応しています。',
 

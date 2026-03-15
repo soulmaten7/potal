@@ -66,7 +66,7 @@ This plugin is fully compatible with WooCommerce Blocks:
 
 = Do I need a paid plan? =
 
-POTAL offers a free tier with 100 calculations per month. Paid plans start at $20/month for 2,000 calculations.
+POTAL offers a free tier with 200 calculations per month. Paid plans start at $20/month for 2,000 calculations.
 
 = Which countries are supported? =
 

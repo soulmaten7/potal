@@ -46,7 +46,7 @@ export const cs = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Ideální pro začátek',
-  'pricing.free.feature1': '100 výpočtů/měsíc',
+  'pricing.free.feature1': '200 výpočtů/měsíc',
   'pricing.free.feature2': 'Základní přizpůsobení widgetu',
   'pricing.free.feature3': 'Komunitní podpora',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const cs = {
   'pricing.faq.q2': 'Co se stane, když překročím svůj limit výpočtů?',
   'pricing.faq.a2': 'Poplatky za překročení se účtují automaticky. Basic: $0.015/výpočet, Pro: $0.012/výpočet, Enterprise: $0.01/výpočet.',
   'pricing.faq.q3': 'Nabízíte bezplatný plán?',
-  'pricing.faq.a3': 'Ano, plán Free zahrnuje 100 výpočtů měsíčně zdarma.',
+  'pricing.faq.a3': 'Ano, plán Free zahrnuje 200 výpočtů měsíčně zdarma.',
   'pricing.faq.q4': 'Jaké platební metody přijímáte?',
   'pricing.faq.a4': 'Přijímáme všechny hlavní kreditní karty a digitální platební metody prostřednictvím Paddle, našeho bezpečného platebního partnera.',
 

@@ -46,7 +46,7 @@ export const bg = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Идеален за начало',
-  'pricing.free.feature1': '100 изчисления/месец',
+  'pricing.free.feature1': '200 изчисления/месец',
   'pricing.free.feature2': 'Основна персонализация на widget',
   'pricing.free.feature3': 'Поддръжка от общността',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const bg = {
   'pricing.faq.q2': 'Какво се случва, ако надвиша лимита си за изчисления?',
   'pricing.faq.a2': 'Таксите за превишаване се прилагат автоматично. Basic: $0.015/изчисление, Pro: $0.012/изчисление, Enterprise: $0.01/изчисление.',
   'pricing.faq.q3': 'Предлагате ли безплатен план?',
-  'pricing.faq.a3': 'Да, планът Free включва 100 изчисления на месец безплатно.',
+  'pricing.faq.a3': 'Да, планът Free включва 200 изчисления на месец безплатно.',
   'pricing.faq.q4': 'Какви методи на плащане приемате?',
   'pricing.faq.a4': 'Приемаме всички основни кредитни карти и дигитални методи на плащане чрез Paddle, нашия сигурен партньор за плащания.',
 

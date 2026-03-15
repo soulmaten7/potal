@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-15 23:30 KST (CW14 Cowork — Full Audit, 하드코딩토큰19파일수정, UX 53/53, WDC Phase4, Boot Sequence, 규정Phase2 WTO/WCO)
+> 마지막 업데이트: 2026-03-16 03:00 KST (CW14 후반 — 37개 S+ 업그레이드, 142 Excel, PDF lib, B2B 마케팅 전략)
 
 ---
 
@@ -56,6 +56,31 @@ POTAL Chief Orchestrator 세션 시작.
 
 ---
 
+## 🎯 다음 세션 우선순위 (CW14 후반 기준)
+
+### P0: B2B 마케팅 글 작성 & 배포 (즉시)
+- 7개 채널별 글 작성 (Show HN, Product Hunt, Shopify Community, LinkedIn, Reddit, DEV.to, GitHub)
+- 핵심 구조 확정 완료 — 채널별 톤/포맷만 조절
+- 은태님 피드백 반영: 요금제별 가격, 전체 기능 나열, 경쟁사 10개 비교표, "1.7B+ products" 표현
+
+### P1: 나머지 106개 기능 S+ 업그레이드
+- POTAL_142_S_Grade_Complete_Plan.xlsx의 S2(46개) + S3(81개) = 106개
+- Tax 7 + Platform 44 + Integration 15 + Shipping 11 + Web 4 + Legal 6 + Security 5 + Support 8 + Business 5 + Marketing 1
+- 명령어 파일 생성 → Claude Code 실행 → 검증
+
+### P2: 첫 유료 고객 확보
+- B2B 아웃리치 실행 (15개 타겟, 4티어)
+- Shopify App Store 심사 결과 확인
+- mcp.so 승인 확인
+- Product Hunt 런칭 일정 확정
+
+### P3: git push + Vercel 배포
+- 37개 S+ 업그레이드 코드 push (Mac 터미널에서)
+- Vercel 자동 배포 확인
+- SSG 타임아웃 이슈 모니터링 (기존 Supabase 의존성 문제)
+
+---
+
 ## ⚠️ CW9.5 + Cycle 4-5에서 완료된 사항
 
 ### Chief Orchestrator 사이클 1~5
@@ -65,6 +90,13 @@ POTAL Chief Orchestrator 세션 시작.
 - **사이클 4**: 야간 15 Division 전체 정밀 점검 ✅ — ContactForm 수정, 쿠키 배너, .env 보강
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
 - **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
+
+### CW14 Cowork 후반 — 37개 S+ 업그레이드, 142 Excel, PDF lib, B2B 전략 (2026-03-16 00:00~03:00 KST)
+- **37개 기능 S+ 업그레이드 ✅** (Core 16 + Trade 21, 32분 19초): ~45 API Routes + ~25 Library Files + 111 Tests + 1 Migration, TypeScript 0 errors, API 103→~148개
+- **142-Feature S+ Master Plan Excel ✅**: analysis/POTAL_142_S_Grade_Complete_Plan.xlsx (15시트, S1/S2/S3)
+- **PDF 라이브러리 ✅** (커밋 fc066d0): pdf-lib + pdf-generator.ts + 3개 API 엔드포인트
+- **B2B 마케팅 전략 ✅**: 7개 채널 확정 + 핵심 메시지 + 글 작성 예정
+- **S_GRADE_VERIFICATION_REPORT.md 생성 ✅**
 
 ### CW14 Cowork — Full Audit, 보안 수정, UX 53/53, WDC Phase 4, 규정 Phase 2 (2026-03-15)
 - **Full Project Audit ✅**: docs/FULL_PROJECT_AUDIT.md 생성 (59 DB 테이블, 103 API 엔드포인트, product_hs_mappings 8,389, vectors 3,431)

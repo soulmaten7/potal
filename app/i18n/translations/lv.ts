@@ -46,7 +46,7 @@ export const lv = {
   'pricing.free.name': 'Bezmaksas',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Ideāli sākumam',
-  'pricing.free.feature1': '100 aprēķini/mēnesī',
+  'pricing.free.feature1': '200 aprēķini/mēnesī',
   'pricing.free.feature2': 'Pamata logrīka pielāgošana',
   'pricing.free.feature3': 'Kopienas atbalsts',
   'pricing.basic.name': 'Pamata',
@@ -83,7 +83,7 @@ export const lv = {
   'pricing.faq.q2': 'Kas notiek, ja es pārsniedzu aprēķinu limitu?',
   'pricing.faq.a2': 'Pārsniegšanas maksas tiek piemērotas automātiski. Pamata: $0,015/aprēķinā, Profesionāls: $0,012/aprēķinā, Uzņēmumu: $0,01/aprēķinā.',
   'pricing.faq.q3': 'Vai jūs piedāvājat bezmaksas plānu?',
-  'pricing.faq.a3': 'Jā, bezmaksas plāns ietver 100 aprēķinus mēnesī bez maksas.',
+  'pricing.faq.a3': 'Jā, bezmaksas plāns ietver 200 aprēķinus mēnesī bez maksas.',
   'pricing.faq.q4': 'Kādus maksājumu veidus jūs pieņemat?',
   'pricing.faq.a4': 'Mēs pieņemam visas galvenās kredītkartes un digitālos maksājumu veidus, izmantojot Paddle, mūsu drošo maksājumu partneri.',
 

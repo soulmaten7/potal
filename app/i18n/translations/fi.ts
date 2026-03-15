@@ -46,7 +46,7 @@ export const fi = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Täydellinen alkuun pääsemiseen',
-  'pricing.free.feature1': '100 laskelmaa/kuukausi',
+  'pricing.free.feature1': '200 laskelmaa/kuukausi',
   'pricing.free.feature2': 'Perus widget-muokkaus',
   'pricing.free.feature3': 'Yhteisötuki',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const fi = {
   'pricing.faq.q2': 'Mitä tapahtuu, jos ylitän laskelmarajani?',
   'pricing.faq.a2': 'Ylitysmaksut peritään automaattisesti. Basic: $0.015/laskelma, Pro: $0.012/laskelma, Enterprise: $0.01/laskelma.',
   'pricing.faq.q3': 'Tarjoatteko ilmaisen suunnitelman?',
-  'pricing.faq.a3': 'Kyllä, Free-suunnitelma sisältää 100 laskelmaa kuukaudessa ilmaiseksi.',
+  'pricing.faq.a3': 'Kyllä, Free-suunnitelma sisältää 200 laskelmaa kuukaudessa ilmaiseksi.',
   'pricing.faq.q4': 'Mitä maksutapoja hyväksytte?',
   'pricing.faq.a4': 'Hyväksymme kaikki tärkeimmät luottokortit ja digitaaliset maksutavat Paddlen, turvallisen maksupartnerimme kautta.',
 

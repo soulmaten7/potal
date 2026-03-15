@@ -1,7 +1,7 @@
 /**
  * POTAL — Multi-language Country Names
  *
- * Provides country names in 30 languages:
+ * Provides country names in 50 languages:
  * - en: English
  * - ko: 한국어
  * - ja: 日本語

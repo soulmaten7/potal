@@ -46,7 +46,7 @@ export const he = {
   'pricing.free.name': 'חינם',
   'pricing.free.price': '$0',
   'pricing.free.description': 'מושלם להתחלה',
-  'pricing.free.feature1': '100 חישובים/חודש',
+  'pricing.free.feature1': '200 חישובים/חודש',
   'pricing.free.feature2': 'התאמה בסיסית של widget',
   'pricing.free.feature3': 'תמיכת קהילה',
   'pricing.basic.name': 'בסיסי',
@@ -83,7 +83,7 @@ export const he = {
   'pricing.faq.q2': 'מה קורה אם אני חורג ממגבלת החישובים שלי?',
   'pricing.faq.a2': 'חיובי חריגה חלים אוטומטית. בסיסי: $0.015/חישוב, מקצועי: $0.012/חישוב, ארגוני: $0.01/חישוב.',
   'pricing.faq.q3': 'האם יש תוכנית חינמית?',
-  'pricing.faq.a3': 'כן, התוכנית החינמית כוללת 100 חישובים בחודש ללא עלות.',
+  'pricing.faq.a3': 'כן, התוכנית החינמית כוללת 200 חישובים בחודש ללא עלות.',
   'pricing.faq.q4': 'אילו אמצעי תשלום אתם מקבלים?',
   'pricing.faq.a4': 'אנחנו מקבלים את כל כרטיסי האשראי המרכזיים ואמצעי תשלום דיגיטליים דרך Paddle, שותף התשלומים המאובטח שלנו.',
 

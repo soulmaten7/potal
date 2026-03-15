@@ -112,7 +112,7 @@ We're starting our Private Beta and I'd love your feedback as an active seller.
 **What POTAL does:**
 - Instant duty, VAT, customs fee calculation for 240+ countries
 - Shopify widget (shows "Total Landed Cost" on product pages)
-- REST API (100 calls/month free)
+- REST API (200 calls/month free)
 
 **Beta perks:**
 - Basic plan ($20/mo) free for 3 months

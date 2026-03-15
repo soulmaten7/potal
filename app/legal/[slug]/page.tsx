@@ -19,7 +19,7 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
       },
       {
         heading: '3. API Usage and Rate Limits',
-        body: 'API access is subject to rate limits based on your subscription plan: Free (100 calls/month), Basic (2,000 calls/month, $20/mo), Pro (10,000 calls/month, $80/mo), and Enterprise (50,000 calls/month, $300/mo). For paid plans, overage calls are automatically billed at per-call rates. Exceeding your Free plan limit will result in blocked requests until the next billing cycle.',
+        body: 'API access is subject to rate limits based on your subscription plan: Free (200 calls/month), Basic (2,000 calls/month, $20/mo), Pro (10,000 calls/month, $80/mo), and Enterprise (50,000 calls/month, $300/mo). For paid plans, overage calls are automatically billed at per-call rates. Exceeding your Free plan limit will result in blocked requests until the next billing cycle.',
       },
       {
         heading: '4. User Obligations',

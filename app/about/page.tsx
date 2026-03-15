@@ -7,7 +7,7 @@ const STATS = [
   { value: "240", label: "Countries", description: "Global duty & tax coverage" },
   { value: "120ms", label: "Avg Response", description: "Real-time API calculations" },
   { value: "99.9%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
-  { value: "50+", label: "HS Categories", description: "AI-powered classification" },
+  { value: "8,389+", label: "Product-HS Mappings", description: "AI-powered classification" },
 ];
 
 // [DATA] Core Values

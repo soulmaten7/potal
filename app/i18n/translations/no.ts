@@ -46,7 +46,7 @@ export const no = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Perfekt for å komme i gang',
-  'pricing.free.feature1': '100 beregninger/måned',
+  'pricing.free.feature1': '200 beregninger/måned',
   'pricing.free.feature2': 'Grunnleggende widget-tilpasning',
   'pricing.free.feature3': 'Community-støtte',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const no = {
   'pricing.faq.q2': 'Hva skjer hvis jeg overskrider beregningsgrensen min?',
   'pricing.faq.a2': 'Overforbruksavgifter påløper automatisk. Basic: $0.015/beregning, Pro: $0.012/beregning, Enterprise: $0.01/beregning.',
   'pricing.faq.q3': 'Tilbyr dere en gratisplan?',
-  'pricing.faq.a3': 'Ja, Free-planen inkluderer 100 beregninger per måned uten kostnad.',
+  'pricing.faq.a3': 'Ja, Free-planen inkluderer 200 beregninger per måned uten kostnad.',
   'pricing.faq.q4': 'Hvilke betalingsmetoder aksepterer dere?',
   'pricing.faq.a4': 'Vi aksepterer alle store kredittkort og digitale betalingsmetoder via Paddle, vår sikre betalingspartner.',
 

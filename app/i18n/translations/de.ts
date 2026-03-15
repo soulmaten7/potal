@@ -46,7 +46,7 @@ export const de = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Perfekt für den Einstieg',
-  'pricing.free.feature1': '100 Berechnungen/Monat',
+  'pricing.free.feature1': '200 Berechnungen/Monat',
   'pricing.free.feature2': 'Grundlegende Widget-Anpassung',
   'pricing.free.feature3': 'Community-Support',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const de = {
   'pricing.faq.q2': 'Was passiert, wenn ich mein Berechnungslimit überschreite?',
   'pricing.faq.a2': 'Überschreitungsgebühren werden automatisch berechnet. Basic: $0,015/Ber., Pro: $0,012/Ber., Enterprise: $0,01/Ber.',
   'pricing.faq.q3': 'Gibt es einen kostenlosen Plan?',
-  'pricing.faq.a3': 'Ja, der Free-Plan umfasst 100 Berechnungen pro Monat kostenlos.',
+  'pricing.faq.a3': 'Ja, der Free-Plan umfasst 200 Berechnungen pro Monat kostenlos.',
   'pricing.faq.q4': 'Welche Zahlungsmethoden akzeptieren Sie?',
   'pricing.faq.a4': 'Wir akzeptieren alle gängigen Kreditkarten und digitale Zahlungsmethoden über Paddle, unseren sicheren Zahlungspartner.',
 

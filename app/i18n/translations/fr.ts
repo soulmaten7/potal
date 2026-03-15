@@ -46,7 +46,7 @@ export const fr = {
   'pricing.free.name': 'Gratuit',
   'pricing.free.price': '0 $',
   'pricing.free.description': 'Idéal pour commencer',
-  'pricing.free.feature1': '100 calculs/mois',
+  'pricing.free.feature1': '200 calculs/mois',
   'pricing.free.feature2': 'Personnalisation basique du widget',
   'pricing.free.feature3': 'Support communautaire',
   'pricing.basic.name': 'Basique',
@@ -83,7 +83,7 @@ export const fr = {
   'pricing.faq.q2': 'Que se passe-t-il si je dépasse ma limite de calculs ?',
   'pricing.faq.a2': 'Des frais de dépassement s\'appliquent automatiquement. Basique : 0,015 $/calcul, Pro : 0,012 $/calcul, Entreprise : 0,01 $/calcul.',
   'pricing.faq.q3': 'Proposez-vous un forfait gratuit ?',
-  'pricing.faq.a3': 'Oui, le forfait gratuit inclut 100 calculs par mois sans aucun coût.',
+  'pricing.faq.a3': 'Oui, le forfait gratuit inclut 200 calculs par mois sans aucun coût.',
   'pricing.faq.q4': 'Quels modes de paiement acceptez-vous ?',
   'pricing.faq.a4': 'Nous acceptons toutes les principales cartes de crédit et méthodes de paiement numériques via Paddle, notre partenaire de paiement sécurisé.',
 

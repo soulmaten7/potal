@@ -46,7 +46,7 @@ export const id = {
   'pricing.free.name': 'Gratis',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Ideal untuk memulai',
-  'pricing.free.feature1': '100 perhitungan/bulan',
+  'pricing.free.feature1': '200 perhitungan/bulan',
   'pricing.free.feature2': 'Kustomisasi widget dasar',
   'pricing.free.feature3': 'Dukungan komunitas',
   'pricing.basic.name': 'Dasar',
@@ -83,7 +83,7 @@ export const id = {
   'pricing.faq.q2': 'Apa yang terjadi jika saya melebihi batas perhitungan?',
   'pricing.faq.a2': 'Biaya kelebihan diterapkan secara otomatis. Dasar: $0,015/perhitungan, Pro: $0,012/perhitungan, Enterprise: $0,01/perhitungan.',
   'pricing.faq.q3': 'Apakah Anda menawarkan paket gratis?',
-  'pricing.faq.a3': 'Ya, paket gratis mencakup 100 perhitungan per bulan tanpa biaya apa pun.',
+  'pricing.faq.a3': 'Ya, paket gratis mencakup 200 perhitungan per bulan tanpa biaya apa pun.',
   'pricing.faq.q4': 'Metode pembayaran apa yang Anda terima?',
   'pricing.faq.a4': 'Kami menerima semua kartu kredit utama dan metode pembayaran digital melalui Paddle, mitra pembayaran aman kami.',
 

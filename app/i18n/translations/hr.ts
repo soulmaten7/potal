@@ -46,7 +46,7 @@ export const hr = {
   'pricing.free.name': 'Besplatno',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Idealno za početak',
-  'pricing.free.feature1': '100 izračuna/mjesec',
+  'pricing.free.feature1': '200 izračuna/mjesec',
   'pricing.free.feature2': 'Osnovna prilagodba widgeta',
   'pricing.free.feature3': 'Podrška zajednice',
   'pricing.basic.name': 'Osnovni',
@@ -83,7 +83,7 @@ export const hr = {
   'pricing.faq.q2': 'Što se događa ako premašim ograničenje izračuna?',
   'pricing.faq.a2': 'Naknade za prekoračenje automatski se primjenjuju. Osnovni: $0,015/izračun, Profesionalni: $0,012/izračun, Poslovni: $0,01/izračun.',
   'pricing.faq.q3': 'Nudite li besplatni plan?',
-  'pricing.faq.a3': 'Da, besplatni plan uključuje 100 izračuna mjesečno bez naknade.',
+  'pricing.faq.a3': 'Da, besplatni plan uključuje 200 izračuna mjesečno bez naknade.',
   'pricing.faq.q4': 'Koje načine plaćanja prihvaćate?',
   'pricing.faq.a4': 'Prihvaćamo sve glavne kreditne kartice i digitalne načine plaćanja putem Paddlea, našeg sigurnog partnera za plaćanje.',
 

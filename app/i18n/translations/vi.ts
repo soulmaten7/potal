@@ -46,7 +46,7 @@ export const vi = {
   'pricing.free.name': 'Miễn phí',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Hoàn hảo để bắt đầu',
-  'pricing.free.feature1': '100 lượt tính/tháng',
+  'pricing.free.feature1': '200 lượt tính/tháng',
   'pricing.free.feature2': 'Tùy chỉnh widget cơ bản',
   'pricing.free.feature3': 'Hỗ trợ cộng đồng',
   'pricing.basic.name': 'Cơ bản',
@@ -83,7 +83,7 @@ export const vi = {
   'pricing.faq.q2': 'Điều gì xảy ra nếu tôi vượt quá giới hạn tính toán?',
   'pricing.faq.a2': 'Phí vượt mức được áp dụng tự động. Cơ bản: $0.015/lượt, Pro: $0.012/lượt, Doanh nghiệp: $0.01/lượt.',
   'pricing.faq.q3': 'Có gói miễn phí không?',
-  'pricing.faq.a3': 'Có, gói Miễn phí bao gồm 100 lượt tính mỗi tháng miễn phí.',
+  'pricing.faq.a3': 'Có, gói Miễn phí bao gồm 200 lượt tính mỗi tháng miễn phí.',
   'pricing.faq.q4': 'Chấp nhận những phương thức thanh toán nào?',
   'pricing.faq.a4': 'Chúng tôi chấp nhận tất cả thẻ tín dụng chính và phương thức thanh toán kỹ thuật số thông qua Paddle, đối tác thanh toán an toàn của chúng tôi.',
 

@@ -1,5 +1,32 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-15 23:30 KST
+> 마지막 업데이트: 2026-03-16 03:00 KST
+
+## [2026-03-16 03:00 KST] CW14 Cowork 후반 — 37개 S+ 업그레이드, 142 Excel, PDF lib, B2B 전략
+
+### Core 16 + Trade 21 = 37개 기능 S+ 업그레이드 (Claude Code, 32분 19초)
+- **Phase 1 (Core 16)**: 분류 피드백 루프 + 설명가능성 + 다국어 분류 + 비용 분해/비교/what-if + FTA/RoO 엔진 + 환율 히스토리/잠금 + 감사 로그(tamper-proof) + 비동기 배치(webhook) + 가격 분기 확장 + 제품 제한 검사 + HS 크로스-국가 검증 + 보험 카테고리별 + 배송 DIM weight + 신뢰도 보정
+- **Phase 2 (Trade 21)**: 무역구제 계산(AD/CVD/SG) + 제재 fuzzy matching(Levenshtein+Soundex) + 수출통제 ECCN + RoO(RVC/CTH/CC) + 관세평가 WTO 6단계 + IOSS 비교 + DDP/DDU/DAP + 원산지 예측 + 관세 환급 + 임시수입/ATA + SEZ/FTZ + 수입 라이선스 + 크로스보더 반품 + 브로커 데이터 + 서류 자동 채우기
+- ~45 API Routes + ~25 Library Files + 111 Test Cases + 1 DB Migration (037_s_grade_upgrade.sql)
+- 8개 빌드 에러 수정, TypeScript 0 errors ✅
+- docs/S_GRADE_VERIFICATION_REPORT.md 생성
+- API 엔드포인트: 103 → ~148개
+
+### 142-Feature S+ Master Plan Excel
+- analysis/POTAL_142_S_Grade_Complete_Plan.xlsx 생성
+- 15시트 (Summary + All 142 Features + 12 카테고리 + Sprint Roadmap)
+- 143개 기능 전부 S+ 타겟, Sprint S1(16)/S2(46)/S3(81) 배분
+- Core+Trade 37개 먼저 S+ 완료, 나머지 106개 후속 예정
+
+### PDF 라이브러리 추가 (커밋 fc066d0)
+- pdf-lib 설치 (pure JS, Vercel serverless 호환)
+- pdf-generator.ts: 5종 문서 + 테이블 리포트 + 배송 라벨
+- /api/v1/documents/pdf (binary + base64), reports/export format=pdf, shipping/labels 4x6 PDF
+
+### B2B 채널 마케팅 전략 (Cowork 논의)
+- MVP 홍보 채널 확정: Show HN, Product Hunt, Shopify Community, LinkedIn, Reddit, DEV.to, GitHub
+- 핵심 메시지: "파트너 — 중간업자 아닌 인프라" + 피드백 기반 개선
+- 은태님 피드백: 요금제별 가격 명시, 모든 기능 나열, Enterprise custom, 경쟁사 10개 비교표
+- 마케팅 표현 수정: "8,389 매핑" → "1.7B+ product names", 내부 행수 비노출
 
 ## [2026-03-15 23:30 KST] CW14 Cowork — Full Audit, 보안 수정, UX 53/53, WDC Phase 4, 규정 Phase 2
 

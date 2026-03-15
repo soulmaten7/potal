@@ -27,7 +27,7 @@ const PLANS = [
       'Batch API (50 items)',
       'Webhook notifications',
       'Basic analytics dashboard',
-      '30+ language support',
+      '50 language support',
       'Community support',
     ],
     limitations: [
@@ -58,7 +58,7 @@ const PLANS = [
       'Batch API (100 items)',
       'Webhook notifications',
       'Advanced analytics dashboard',
-      '30+ language support',
+      '50 language support',
       'Email support',
     ],
     limitations: [],
@@ -139,7 +139,7 @@ const FAQS = [
   },
   {
     q: 'What makes POTAL different from competitors?',
-    a: 'POTAL covers 240 countries with AI-powered HS classification, real-time FTA detection, anti-dumping duty alerts, and 30+ language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
+    a: 'POTAL covers 240 countries with AI-powered HS classification, real-time FTA detection, anti-dumping duty alerts, and 50 language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
   },
 ];
 
@@ -540,7 +540,7 @@ export default function PricingPage() {
                 ['Anti-dumping / CVD Alerts', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
                 ['Sub-national Tax', '12 countries', '12 countries', '12 countries', '12 + Custom'],
                 ['Widget Branding', 'POTAL logo', 'POTAL logo', 'Custom brand', 'White-label'],
-                ['Languages', '30+', '30+', '30+', '30+ + Custom'],
+                ['Languages', '50', '50', '50', '50 + Custom'],
                 ['Batch API', '50 items', '100 items', '500 items', '5,000 items'],
                 ['Webhook Notifications', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
                 ['Analytics Dashboard', 'Basic', 'Advanced', 'Advanced', 'Full + Export'],

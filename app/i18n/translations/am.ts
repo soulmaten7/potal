@@ -46,7 +46,7 @@ export const am = {
   'pricing.free.name': 'ነጻ',
   'pricing.free.price': '$0',
   'pricing.free.description': 'ለመጀመር ተስማሚ',
-  'pricing.free.feature1': '100 ስሌቶች/ወር',
+  'pricing.free.feature1': '200 ስሌቶች/ወር',
   'pricing.free.feature2': 'መሰረታዊ ዊጀት ማስተካከያ',
   'pricing.free.feature3': 'የማህበረሰብ ድጋፍ',
   'pricing.basic.name': 'መሰረታዊ',
@@ -83,7 +83,7 @@ export const am = {
   'pricing.faq.q2': 'የስሌት ገደቤን ካለፍኩ ምን ይሆናል?',
   'pricing.faq.a2': 'የትርፍ ክፍያዎች በራስ-ሰር ይተገበራሉ። መሰረታዊ: $0.015/ስሌት፣ ፕሮ: $0.012/ስሌት፣ ድርጅት: $0.01/ስሌት።',
   'pricing.faq.q3': 'ነጻ ዕቅድ ታቀርባላችሁ?',
-  'pricing.faq.a3': 'አዎ፣ ነጻ ዕቅዱ በወር 100 ስሌቶችን ያለምንም ክፍያ ያካትታል።',
+  'pricing.faq.a3': 'አዎ፣ ነጻ ዕቅዱ በወር 200 ስሌቶችን ያለምንም ክፍያ ያካትታል።',
   'pricing.faq.q4': 'ምን ዓይነት የክፍያ ዘዴዎችን ትቀበላላችሁ?',
   'pricing.faq.a4': 'ሁሉንም ዋና ዋና የክሬዲት ካርዶች እና ዲጂታል የክፍያ ዘዴዎችን በ Paddle፣ ደህንነቱ በተጠበቀ የክፍያ አጋራችን በኩል እንቀበላለን።',
 

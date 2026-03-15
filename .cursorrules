@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-15 23:30 KST (CW14 Cowork — Full Audit 59DB/103API, 하드코딩토큰19파일수정, UX 53/53, WDC Phase4 벌크매핑, Boot Sequence, 규정Phase2 WTO/WCO)
+# 마지막 업데이트: 2026-03-16 03:00 KST (CW14 후반 — 37개 S+ 업그레이드 ~45 Routes/~25 Libs/111 Tests, 142-feature Excel, PDF lib, B2B 마케팅 전략)
 
 ## 0. 프로젝트 개요
 
@@ -13,9 +13,11 @@
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/**200** | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
 - **핵심 전략 (CW12 후반)**: **102/102 MUST 기능 전부 구현 완료** ✅ (기존 58 + 신규 44개). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자". **심층 검증 84/84 PASS 완료** (코드 변경 0건, DB 테이블 5개 추가)
+- **S+ 업그레이드 (CW14 후반)**: Core 16 + Trade 21 = **37개 기능 S+ 완료** ✅. ~45 API Routes + ~25 Library Files + 111 Tests. API 엔드포인트 103→**~148개**. 나머지 106개 후속 예정
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
-- **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트)
+- **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트) + **fuzzy matching** (Levenshtein+Soundex, CW14 S+)
 - **Vercel Cron**: **14개** (CW13: +division-monitor, enterprise-lead-match 매30분, subscription-cleanup 매일 03:00 UTC)
+- **S+ 신규 라이브러리** (CW14 후반): feedback-loop, explainability, multi-language, confidence-calibration, hs-validator, breakdown, roo-engine, customs-valuation, fuzzy-screening, export-controls, product-restrictions, insurance-calculator, shipping-calculator, price-break-engine, remedy-calculator, origin-predictor, returns-calculator, broker-data-export, incoterms(확장), sez-database, import-licensing, ioss-engine, duty-drawback, temporary-import, doc-auto-populate
 
 ### 기술 스택
 - Next.js 14+ App Router + TypeScript

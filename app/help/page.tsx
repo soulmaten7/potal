@@ -45,13 +45,13 @@ const FAQ_ITEMS = [
     id: '5',
     category: 'pricing',
     question: 'What happens if I exceed my plan\'s API call limit?',
-    answer: 'On the Free plan, API calls stop at the 100-call limit. On paid plans (Basic, Pro, Enterprise), overage calls are automatically billed: Basic $0.015/call, Pro $0.012/call, Enterprise $0.01/call. Enterprise customers with 100K+ volume commitments get $0.008/call. You can upgrade your plan anytime from the Dashboard.'
+    answer: 'On the Free plan, API calls stop at the 200-call limit. On paid plans (Basic, Pro, Enterprise), overage calls are automatically billed: Basic $0.015/call, Pro $0.012/call, Enterprise $0.01/call. Enterprise customers with 100K+ volume commitments get $0.008/call. You can upgrade your plan anytime from the Dashboard.'
   },
   {
     id: '6',
     category: 'pricing',
     question: 'Is there a free plan?',
-    answer: 'Yes! Our Free plan includes 100 API calls per month — no credit card required. Paid plans (Basic, Pro, Enterprise) come with a 14-day free trial. A payment method is collected at signup, but you won\'t be charged until the trial ends.'
+    answer: 'Yes! Our Free plan includes 200 API calls per month — no credit card required. Paid plans (Basic, Pro, Enterprise) come with a 14-day free trial. A payment method is collected at signup, but you won\'t be charged until the trial ends.'
   },
   {
     id: '7',
@@ -63,7 +63,7 @@ const FAQ_ITEMS = [
     id: '8',
     category: 'about',
     question: 'Which countries and currencies does POTAL support?',
-    answer: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 30 languages in the UI and display costs in local currencies using daily-updated exchange rates.'
+    answer: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 50 languages in the UI and display costs in local currencies using daily-updated exchange rates.'
   },
   {
     id: '9',

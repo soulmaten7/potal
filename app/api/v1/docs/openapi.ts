@@ -213,7 +213,7 @@ export const openApiSpec = {
     '/countries': {
       get: {
         summary: 'List supported countries',
-        description: 'Get a list of all supported destination countries (240) with their VAT/GST rates, de minimis thresholds, and customs fees. Results include 30 language translations for each country.',
+        description: 'Get a list of all supported destination countries (240) with their VAT/GST rates, de minimis thresholds, and customs fees. Results include 50 language translations for each country.',
         operationId: 'listCountries',
         tags: ['Reference'],
         responses: {

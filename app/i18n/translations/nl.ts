@@ -46,7 +46,7 @@ export const nl = {
   'pricing.free.name': 'Gratis',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Perfect om te beginnen',
-  'pricing.free.feature1': '100 berekeningen/maand',
+  'pricing.free.feature1': '200 berekeningen/maand',
   'pricing.free.feature2': 'Basis widget-aanpassing',
   'pricing.free.feature3': 'Community-ondersteuning',
   'pricing.basic.name': 'Basis',
@@ -83,7 +83,7 @@ export const nl = {
   'pricing.faq.q2': 'Wat gebeurt er als ik mijn berekeningslimiet overschrijd?',
   'pricing.faq.a2': 'Overschrijdingskosten worden automatisch in rekening gebracht. Basis: $0.015/berekening, Pro: $0.012/berekening, Enterprise: $0.01/berekening.',
   'pricing.faq.q3': 'Bieden jullie een gratis plan aan?',
-  'pricing.faq.a3': 'Ja, het Gratis plan bevat 100 berekeningen per maand zonder kosten.',
+  'pricing.faq.a3': 'Ja, het Gratis plan bevat 200 berekeningen per maand zonder kosten.',
   'pricing.faq.q4': 'Welke betaalmethoden accepteren jullie?',
   'pricing.faq.a4': 'Wij accepteren alle gangbare creditcards en digitale betaalmethoden via Paddle, onze beveiligde betalingspartner.',
 

@@ -46,7 +46,7 @@ export const en = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Perfect for getting started',
-  'pricing.free.feature1': '100 calculations/month',
+  'pricing.free.feature1': '200 calculations/month',
   'pricing.free.feature2': 'Basic widget customization',
   'pricing.free.feature3': 'Community support',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const en = {
   'pricing.faq.q2': 'What happens if I exceed my calculation limit?',
   'pricing.faq.a2': 'Overage charges apply automatically. Basic: $0.015/calc, Pro: $0.012/calc, Enterprise: $0.01/calc.',
   'pricing.faq.q3': 'Do you offer a free plan?',
-  'pricing.faq.a3': 'Yes, the Free plan includes 100 calculations per month at no cost.',
+  'pricing.faq.a3': 'Yes, the Free plan includes 200 calculations per month at no cost.',
   'pricing.faq.q4': 'What payment methods do you accept?',
   'pricing.faq.a4': 'We accept all major credit cards and digital payment methods through Paddle, our secure payment partner.',
 

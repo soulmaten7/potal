@@ -46,7 +46,7 @@ export const ro = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Perfect pentru a începe',
-  'pricing.free.feature1': '100 calcule/lună',
+  'pricing.free.feature1': '200 calcule/lună',
   'pricing.free.feature2': 'Personalizare de bază a widget-ului',
   'pricing.free.feature3': 'Suport comunitate',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const ro = {
   'pricing.faq.q2': 'Ce se întâmplă dacă depășesc limita de calcule?',
   'pricing.faq.a2': 'Taxele de depășire se aplică automat. Basic: $0.015/calcul, Pro: $0.012/calcul, Enterprise: $0.01/calcul.',
   'pricing.faq.q3': 'Oferiți un plan gratuit?',
-  'pricing.faq.a3': 'Da, planul Free include 100 de calcule pe lună fără costuri.',
+  'pricing.faq.a3': 'Da, planul Free include 200 de calcule pe lună fără costuri.',
   'pricing.faq.q4': 'Ce metode de plată acceptați?',
   'pricing.faq.a4': 'Acceptăm toate cardurile de credit importante și metodele de plată digitale prin Paddle, partenerul nostru securizat de plăți.',
 

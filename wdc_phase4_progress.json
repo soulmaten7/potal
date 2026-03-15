@@ -1,0 +1,12 @@
+{
+  "lines_processed": 12390000,
+  "tier1_hits": 1250446,
+  "tier2_hits": 120205,
+  "tier3_hits": 0,
+  "tier3_misses": 3020105,
+  "skipped": 7999244,
+  "inserted": 1362900,
+  "errors": 16,
+  "started_at": "2026-03-15T14:32:24.747232",
+  "last_updated": "2026-03-15T23:44:26.507178"
+}

@@ -46,7 +46,7 @@ export const pl = {
   'pricing.free.name': 'Darmowy',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Idealny na start',
-  'pricing.free.feature1': '100 obliczeń/miesiąc',
+  'pricing.free.feature1': '200 obliczeń/miesiąc',
   'pricing.free.feature2': 'Podstawowa personalizacja widgetu',
   'pricing.free.feature3': 'Wsparcie społeczności',
   'pricing.basic.name': 'Podstawowy',
@@ -83,7 +83,7 @@ export const pl = {
   'pricing.faq.q2': 'Co się stanie, jeśli przekroczę limit obliczeń?',
   'pricing.faq.a2': 'Opłaty za nadwyżkę są naliczane automatycznie. Podstawowy: $0.015/obliczenie, Pro: $0.012/obliczenie, Enterprise: $0.01/obliczenie.',
   'pricing.faq.q3': 'Czy oferujecie darmowy plan?',
-  'pricing.faq.a3': 'Tak, plan Darmowy obejmuje 100 obliczeń miesięcznie bez opłat.',
+  'pricing.faq.a3': 'Tak, plan Darmowy obejmuje 200 obliczeń miesięcznie bez opłat.',
   'pricing.faq.q4': 'Jakie metody płatności akceptujecie?',
   'pricing.faq.a4': 'Akceptujemy wszystkie główne karty kredytowe i cyfrowe metody płatności przez Paddle, naszego bezpiecznego partnera płatniczego.',
 

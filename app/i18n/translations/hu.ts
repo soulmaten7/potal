@@ -46,7 +46,7 @@ export const hu = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Tökéletes a kezdéshez',
-  'pricing.free.feature1': '100 számítás/hónap',
+  'pricing.free.feature1': '200 számítás/hónap',
   'pricing.free.feature2': 'Alapvető widget testreszabás',
   'pricing.free.feature3': 'Közösségi támogatás',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const hu = {
   'pricing.faq.q2': 'Mi történik, ha túllépem a számítási limitemet?',
   'pricing.faq.a2': 'A túllépési díjak automatikusan érvényesülnek. Basic: $0.015/számítás, Pro: $0.012/számítás, Enterprise: $0.01/számítás.',
   'pricing.faq.q3': 'Kínálnak ingyenes csomagot?',
-  'pricing.faq.a3': 'Igen, a Free csomag havi 100 számítást tartalmaz díjmentesen.',
+  'pricing.faq.a3': 'Igen, a Free csomag havi 200 számítást tartalmaz díjmentesen.',
   'pricing.faq.q4': 'Milyen fizetési módokat fogadnak el?',
   'pricing.faq.a4': 'Minden főbb hitelkártyát és digitális fizetési módot elfogadunk a Paddle-ön, biztonságos fizetési partnerünkön keresztül.',
 

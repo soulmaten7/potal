@@ -46,7 +46,7 @@ export const ko = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': '시작하기에 완벽함',
-  'pricing.free.feature1': '월 100건 계산',
+  'pricing.free.feature1': '월 200건 계산',
   'pricing.free.feature2': '기본 위젯 커스터마이징',
   'pricing.free.feature3': '커뮤니티 지원',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const ko = {
   'pricing.faq.q2': '계산 한도를 초과하면 어떻게 되나요?',
   'pricing.faq.a2': '초과 요금이 자동 적용됩니다. Basic: $0.015/건, Pro: $0.012/건, Enterprise: $0.01/건.',
   'pricing.faq.q3': '무료 요금제가 있나요?',
-  'pricing.faq.a3': '네, Free 요금제는 월 100건까지 무료로 사용 가능합니다.',
+  'pricing.faq.a3': '네, Free 요금제는 월 200건까지 무료로 사용 가능합니다.',
   'pricing.faq.q4': '어떤 결제 수단을 받나요?',
   'pricing.faq.a4': '모든 주요 신용 카드, Paddle을 통한 디지털 결제 수단을 받습니다.',
 

@@ -121,7 +121,7 @@ const PLANS = [
       '10-digit HS Code precision',
       'FTA & preferential rate detection',
       'Anti-dumping / CVD duty alerts',
-      '30+ language support',
+      '50 language support',
       'Email support',
     ],
   },

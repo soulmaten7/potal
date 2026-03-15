@@ -46,7 +46,7 @@ export const ar = {
   'pricing.free.name': 'مجاني',
   'pricing.free.price': '$0',
   'pricing.free.description': 'مثالي للبدء',
-  'pricing.free.feature1': '100 عملية حساب/شهر',
+  'pricing.free.feature1': '200 عملية حساب/شهر',
   'pricing.free.feature2': 'تخصيص أساسي للـ widget',
   'pricing.free.feature3': 'دعم المجتمع',
   'pricing.basic.name': 'أساسي',
@@ -83,7 +83,7 @@ export const ar = {
   'pricing.faq.q2': 'ماذا يحدث إذا تجاوزت حد العمليات الحسابية؟',
   'pricing.faq.a2': 'تُطبّق رسوم التجاوز تلقائياً. أساسي: $0.015/عملية، احترافي: $0.012/عملية، المؤسسات: $0.01/عملية.',
   'pricing.faq.q3': 'هل تقدمون خطة مجانية؟',
-  'pricing.faq.a3': 'نعم، تتضمن الخطة المجانية 100 عملية حساب شهرياً بدون تكلفة.',
+  'pricing.faq.a3': 'نعم، تتضمن الخطة المجانية 200 عملية حساب شهرياً بدون تكلفة.',
   'pricing.faq.q4': 'ما طرق الدفع التي تقبلونها؟',
   'pricing.faq.a4': 'نقبل جميع بطاقات الائتمان الرئيسية وطرق الدفع الرقمية عبر Paddle، شريك الدفع الآمن لدينا.',
 

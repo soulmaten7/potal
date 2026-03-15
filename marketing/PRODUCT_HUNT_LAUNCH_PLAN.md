@@ -65,7 +65,7 @@ One API call → instant breakdown of import duties, VAT/GST, customs fees for 2
 - REST API with <100ms response time
 - Shopify Theme App Extension (1-click install)
 - AI agent integrations: Custom GPT, Claude MCP, Gemini Gem
-- Free: 100 calls/mo | Basic: $20/2K | Pro: $80/10K | Enterprise: $300/50K
+- Free: 200 calls/mo | Basic: $20/2K | Pro: $80/10K | Enterprise: $300/50K
 
 **What makes it different:**
 - 10-75x cheaper per API call than competitors

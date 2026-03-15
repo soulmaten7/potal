@@ -46,7 +46,7 @@ export const ms = {
   'pricing.free.name': 'Percuma',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Sesuai untuk bermula',
-  'pricing.free.feature1': '100 pengiraan/bulan',
+  'pricing.free.feature1': '200 pengiraan/bulan',
   'pricing.free.feature2': 'Penyesuaian widget asas',
   'pricing.free.feature3': 'Sokongan komuniti',
   'pricing.basic.name': 'Asas',
@@ -83,7 +83,7 @@ export const ms = {
   'pricing.faq.q2': 'Apa yang berlaku jika saya melebihi had pengiraan?',
   'pricing.faq.a2': 'Caj lebihan dikenakan secara automatik. Asas: $0.015/pengiraan, Pro: $0.012/pengiraan, Enterprise: $0.01/pengiraan.',
   'pricing.faq.q3': 'Adakah anda menawarkan pelan percuma?',
-  'pricing.faq.a3': 'Ya, pelan percuma termasuk 100 pengiraan sebulan tanpa sebarang kos.',
+  'pricing.faq.a3': 'Ya, pelan percuma termasuk 200 pengiraan sebulan tanpa sebarang kos.',
   'pricing.faq.q4': 'Apakah kaedah pembayaran yang anda terima?',
   'pricing.faq.a4': 'Kami menerima semua kad kredit utama dan kaedah pembayaran digital melalui Paddle, rakan pembayaran selamat kami.',
 

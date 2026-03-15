@@ -46,7 +46,7 @@ export const tl = {
   'pricing.free.name': 'Libre',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Mainam para magsimula',
-  'pricing.free.feature1': '100 kalkulasyon/buwan',
+  'pricing.free.feature1': '200 kalkulasyon/buwan',
   'pricing.free.feature2': 'Pangunahing widget customization',
   'pricing.free.feature3': 'Suporta ng komunidad',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const tl = {
   'pricing.faq.q2': 'Ano ang mangyayari kung lumampas ako sa aking limitasyon sa kalkulasyon?',
   'pricing.faq.a2': 'Awtomatikong inilalapat ang overage fees. Basic: $0.015/kalkulasyon, Pro: $0.012/kalkulasyon, Enterprise: $0.01/kalkulasyon.',
   'pricing.faq.q3': 'Nag-aalok ba kayo ng libreng plano?',
-  'pricing.faq.a3': 'Oo, ang libreng plano ay may kasamang 100 kalkulasyon bawat buwan nang walang bayad.',
+  'pricing.faq.a3': 'Oo, ang libreng plano ay may kasamang 200 kalkulasyon bawat buwan nang walang bayad.',
   'pricing.faq.q4': 'Anong mga paraan ng pagbabayad ang tinatanggap ninyo?',
   'pricing.faq.a4': 'Tinatanggap namin ang lahat ng pangunahing credit card at digital na paraan ng pagbabayad sa pamamagitan ng Paddle, ang aming secure na payment partner.',
 

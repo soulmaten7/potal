@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Pricing Plans — Free to Enterprise',
   description:
-    'Simple, transparent pricing for total landed cost API. Free 100 calls/month, Basic $20/mo, Pro $80/mo, Enterprise $300/mo. All paid plans include a 14-day free trial.',
+    'Simple, transparent pricing for total landed cost API. Free 200 calls/month, Basic $20/mo, Pro $80/mo, Enterprise $300/mo. All paid plans include a 14-day free trial.',
   keywords: [
     'total landed cost pricing',
     'duty calculator API pricing',

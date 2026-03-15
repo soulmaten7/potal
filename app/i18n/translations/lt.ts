@@ -46,7 +46,7 @@ export const lt = {
   'pricing.free.name': 'Nemokama',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Puikiai tinka pradžiai',
-  'pricing.free.feature1': '100 skaičiavimų/mėn.',
+  'pricing.free.feature1': '200 skaičiavimų/mėn.',
   'pricing.free.feature2': 'Bazinis valdiklio pritaikymas',
   'pricing.free.feature3': 'Bendruomenės palaikymas',
   'pricing.basic.name': 'Bazinis',
@@ -83,7 +83,7 @@ export const lt = {
   'pricing.faq.q2': 'Kas atsitinka, jei viršiju skaičiavimų limitą?',
   'pricing.faq.a2': 'Viršijimo mokesčiai taikomi automatiškai. Bazinis: $0,015/skaičiavimą, Profesionalus: $0,012/skaičiavimą, Verslo: $0,01/skaičiavimą.',
   'pricing.faq.q3': 'Ar siūlote nemokamą planą?',
-  'pricing.faq.a3': 'Taip, nemokamas planas apima 100 skaičiavimų per mėnesį nemokamai.',
+  'pricing.faq.a3': 'Taip, nemokamas planas apima 200 skaičiavimų per mėnesį nemokamai.',
   'pricing.faq.q4': 'Kokius mokėjimo būdus priimate?',
   'pricing.faq.a4': 'Priimame visas pagrindines kredito korteles ir skaitmeninius mokėjimo būdus per Paddle, mūsų saugų mokėjimų partnerį.',
 

@@ -46,7 +46,7 @@ export const sw = {
   'pricing.free.name': 'Bure',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Bora kuanza',
-  'pricing.free.feature1': 'Mahesabu 100/mwezi',
+  'pricing.free.feature1': 'Mahesabu 200/mwezi',
   'pricing.free.feature2': 'Ubinafsishaji wa msingi wa wijeti',
   'pricing.free.feature3': 'Msaada wa jamii',
   'pricing.basic.name': 'Msingi',
@@ -83,7 +83,7 @@ export const sw = {
   'pricing.faq.q2': 'Nini kinatokea nikizidi kikomo changu cha mahesabu?',
   'pricing.faq.a2': 'Ada za ziada zinatumika kiotomatiki. Msingi: $0.015/hesabu, Pro: $0.012/hesabu, Shirika: $0.01/hesabu.',
   'pricing.faq.q3': 'Je, mnatoa mpango wa bure?',
-  'pricing.faq.a3': 'Ndiyo, mpango wa bure unajumuisha mahesabu 100 kwa mwezi bila gharama yoyote.',
+  'pricing.faq.a3': 'Ndiyo, mpango wa bure unajumuisha mahesabu 200 kwa mwezi bila gharama yoyote.',
   'pricing.faq.q4': 'Je, mnakubali njia gani za malipo?',
   'pricing.faq.a4': 'Tunakubali kadi zote kuu za mkopo na njia za malipo za kidijitali kupitia Paddle, mshirika wetu salama wa malipo.',
 

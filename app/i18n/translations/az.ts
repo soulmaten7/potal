@@ -46,7 +46,7 @@ export const az = {
   'pricing.free.name': 'Pulsuz',
   'pricing.free.price': '$0',
   'pricing.free.description': 'Başlamaq üçün ideal',
-  'pricing.free.feature1': '100 hesablama/ay',
+  'pricing.free.feature1': '200 hesablama/ay',
   'pricing.free.feature2': 'Əsas vidjet fərdiləşdirməsi',
   'pricing.free.feature3': 'İcma dəstəyi',
   'pricing.basic.name': 'Əsas',
@@ -83,7 +83,7 @@ export const az = {
   'pricing.faq.q2': 'Hesablama limitimi aşsam nə baş verir?',
   'pricing.faq.a2': 'Aşma haqları avtomatik tətbiq edilir. Əsas: $0.015/hesablama, Peşəkar: $0.012/hesablama, Korporativ: $0.01/hesablama.',
   'pricing.faq.q3': 'Pulsuz plan təklif edirsiniz?',
-  'pricing.faq.a3': 'Bəli, pulsuz plan ayda 100 pulsuz hesablama daxildir.',
+  'pricing.faq.a3': 'Bəli, pulsuz plan ayda 200 pulsuz hesablama daxildir.',
   'pricing.faq.q4': 'Hansı ödəniş üsullarını qəbul edirsiniz?',
   'pricing.faq.a4': 'Etibarlı ödəniş tərəfdaşımız Paddle vasitəsilə bütün əsas kredit kartlarını və rəqəmsal ödəniş üsullarını qəbul edirik.',
 

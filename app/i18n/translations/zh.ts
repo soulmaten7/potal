@@ -46,7 +46,7 @@ export const zh = {
   'pricing.free.name': 'Free',
   'pricing.free.price': '$0',
   'pricing.free.description': '适合起步阶段',
-  'pricing.free.feature1': '每月100次计算',
+  'pricing.free.feature1': '每月200次计算',
   'pricing.free.feature2': '基础组件自定义',
   'pricing.free.feature3': '社区支持',
   'pricing.basic.name': 'Basic',
@@ -83,7 +83,7 @@ export const zh = {
   'pricing.faq.q2': '超出计算限额会怎样？',
   'pricing.faq.a2': '超额费用自动计算。Basic: $0.015/次，Pro: $0.012/次，Enterprise: $0.01/次。',
   'pricing.faq.q3': '有免费套餐吗？',
-  'pricing.faq.a3': '有，Free套餐每月100次计算完全免费。',
+  'pricing.faq.a3': '有，Free套餐每月200次计算完全免费。',
   'pricing.faq.q4': '接受哪些支付方式？',
   'pricing.faq.a4': '我们接受所有主流信用卡以及通过Paddle的数字支付方式。',
 
