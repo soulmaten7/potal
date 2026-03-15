@@ -24,6 +24,11 @@ import { calculateGlobalLandedCostAsync } from '@/app/lib/cost-engine';
 import type { GlobalCostInput } from '@/app/lib/cost-engine/GlobalCostEngine';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 import { getCountryFtas } from '@/app/lib/cost-engine/hs-code/fta';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+function getSupabase() { return createClient(supabaseUrl, supabaseKey); }
 
 // ─── POST Handler ───────────────────────────────────
 
@@ -114,14 +119,90 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       };
     }
 
-    // 8. Return response with fta_utilization
-    return apiSuccess({ ...resultObj, fta_utilization: ftaUtilization }, {
+    // 8. F011 — Rate lock: save rate + quote_id
+    const rateLockMinutes = typeof body.rate_lock_minutes === 'number' ? Math.min(body.rate_lock_minutes, 1440) : 0;
+    let rateLock = null;
+    if (rateLockMinutes > 0) {
+      const quoteId = `Q-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+      const lockedUntil = new Date(Date.now() + rateLockMinutes * 60 * 1000).toISOString();
+      try {
+        const sb = getSupabase();
+        await sb.from('locked_rates').insert({
+          quote_id: quoteId,
+          seller_id: context.sellerId,
+          locked_rate: JSON.stringify(resultObj),
+          locked_until: lockedUntil,
+        });
+      } catch { /* non-blocking */ }
+      rateLock = { quote_id: quoteId, locked_until: lockedUntil, lock_minutes: rateLockMinutes };
+    }
+
+    // 9. F013 — De minimis detail
+    let deMinimisDetail = null;
+    try {
+      const sb = getSupabase();
+      const { data: dm } = await sb.from('de_minimis_thresholds').select('*').eq('country_code', dest).single();
+      const shipmentType = typeof body.shipment_type === 'string' ? body.shipment_type : 'goods';
+      if (dm) {
+        const threshold = parseFloat(dm.threshold_usd || dm.amount || '0');
+        const { data: exceptions } = await sb.from('de_minimis_exceptions')
+          .select('*').eq('country_code', dest).limit(5);
+        deMinimisDetail = {
+          threshold,
+          currency: dm.currency || dm.threshold_currency || 'USD',
+          applied: threshold > 0 && priceNum <= threshold,
+          shipment_type: shipmentType,
+          exceptions: (exceptions || []).map((e: { product_category: string; exception_type: string; description: string }) => ({
+            category: e.product_category, type: e.exception_type, description: e.description,
+          })),
+        };
+      }
+    } catch { /* non-blocking */ }
+
+    // 10. F007 — Regulatory warnings from country_regulatory_notes
+    let regulatoryWarnings: { category: string; note: string; effective_date: string | null }[] = [];
+    try {
+      const sb = getSupabase();
+      const { data: notes } = await sb.from('country_regulatory_notes')
+        .select('category, note_text, effective_date')
+        .eq('country_code', dest).limit(10);
+      if (notes && notes.length > 0) {
+        regulatoryWarnings = notes.map((n: { category: string; note_text: string; effective_date: string | null }) => ({
+          category: n.category, note: n.note_text, effective_date: n.effective_date,
+        }));
+      }
+    } catch { /* non-blocking */ }
+
+    // 11. F020-F021 — Enhanced trade remedies
+    let tradeRemediesEnhanced = null;
+    const tradeRemedies = resultObj.tradeRemedies as { hasRemedies?: boolean; cases?: { caseType: string; orderNumber?: string; dutyRate?: number; scope?: string }[] } | undefined;
+    if (tradeRemedies?.hasRemedies && tradeRemedies.cases) {
+      tradeRemediesEnhanced = {
+        ...tradeRemedies,
+        cases: tradeRemedies.cases.map(c => ({
+          ...c,
+          rate_type: c.dutyRate !== undefined ? (c.dutyRate > 0 ? 'ad_valorem' : 'zero') : 'unknown',
+          enforcement: 'active',
+        })),
+        total_additional_duty: tradeRemedies.cases.reduce((s, c) => s + (c.dutyRate || 0), 0),
+      };
+    }
+
+    // 12. Return enriched response
+    return apiSuccess({
+      ...resultObj,
+      fta_utilization: ftaUtilization,
+      rate_lock: rateLock,
+      de_minimis_detail: deMinimisDetail,
+      regulatory_warnings: regulatoryWarnings.length > 0 ? regulatoryWarnings : undefined,
+      trade_remedies_detail: tradeRemediesEnhanced,
+    }, {
       sellerId: context.sellerId,
       plan: context.planId,
     });
   } catch (err) {
-    console.error('[calculate] Calculation failed:', err instanceof Error ? err.message : err);
-    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Calculation failed. Please try again.');
+    const errMsg = err instanceof Error ? err.message : String(err);
+    return apiError(ApiErrorCode.INTERNAL_ERROR, `Calculation failed: ${errMsg}`);
   }
 });
 

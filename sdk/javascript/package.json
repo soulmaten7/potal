@@ -1,0 +1,19 @@
+{
+  "name": "@potal/sdk",
+  "version": "1.0.0",
+  "description": "POTAL — Total Landed Cost API SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["potal", "landed-cost", "tariff", "customs", "hs-code", "trade"],
+  "author": "POTAL <contact@potal.app>",
+  "license": "MIT",
+  "homepage": "https://www.potal.app/developers",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

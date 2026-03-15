@@ -43,6 +43,27 @@ function logScreening(queryName: string, queryCountry: string | undefined, match
   } catch { /* non-blocking */ }
 }
 
+async function checkEmbargo(countryCode: string): Promise<{ embargoed: boolean; programs: { program_type: string; program_name: string; description: string; sectors: string[] | null }[] }> {
+  if (!countryCode) return { embargoed: false, programs: [] };
+  try {
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    const { data } = await supabase.from('embargo_programs')
+      .select('program_type, program_name, description, sectors')
+      .eq('country_code', countryCode.toUpperCase());
+    if (!data || data.length === 0) return { embargoed: false, programs: [] };
+    const comprehensive = data.some((e: { program_type: string }) => e.program_type === 'comprehensive');
+    return {
+      embargoed: comprehensive,
+      programs: data.map((e: { program_type: string; program_name: string; description: string; sectors: string[] | null }) => ({
+        program_type: e.program_type,
+        program_name: e.program_name,
+        description: e.description,
+        sectors: e.sectors,
+      })),
+    };
+  } catch { return { embargoed: false, programs: [] }; }
+}
+
 const VALID_LISTS: ScreeningList[] = ['OFAC_SDN', 'OFAC_CONS', 'BIS_ENTITY', 'BIS_DENIED', 'BIS_UNVERIFIED', 'EU_SANCTIONS', 'UN_SANCTIONS', 'UK_SANCTIONS'];
 const MAX_BATCH = 50;
 
@@ -90,6 +111,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     const results = screenParties(inputs);
     const hasAnyMatch = results.some(r => r.hasMatches);
 
+    // Check embargoes for each unique country
+    const uniqueCountries = [...new Set(inputs.map(i => i.country).filter(Boolean))] as string[];
+    const embargoMap: Record<string, Awaited<ReturnType<typeof checkEmbargo>>> = {};
+    for (const cc of uniqueCountries) {
+      embargoMap[cc] = await checkEmbargo(cc);
+    }
+
     // Log each screening (non-blocking)
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
@@ -97,12 +125,20 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       logScreening(inputs[i].name, inputs[i].country, r.totalMatches, topScore, r.status, context.sellerId);
     }
 
+    const enrichedResults = results.map((r, i) => ({
+      ...r,
+      embargo: inputs[i].country ? embargoMap[inputs[i].country!] || null : null,
+    }));
+
+    const hasEmbargo = enrichedResults.some(r => r.embargo?.embargoed);
+
     return apiSuccess({
       batchMode: true,
-      overallStatus: hasAnyMatch ? 'matches_found' : 'all_clear',
+      overallStatus: hasAnyMatch || hasEmbargo ? 'matches_found' : 'all_clear',
       totalScreened: results.length,
       totalWithMatches: results.filter(r => r.hasMatches).length,
-      results,
+      embargo_flags: hasEmbargo ? uniqueCountries.filter(cc => embargoMap[cc]?.embargoed) : [],
+      results: enrichedResults,
     }, {
       sellerId: context.sellerId,
     });
@@ -123,11 +159,14 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
   const result = screenParty(input);
 
+  // Embargo check
+  const embargo = input.country ? await checkEmbargo(input.country) : null;
+
   // Log screening (non-blocking)
   const topScore = result.matches.length > 0 ? Math.max(...result.matches.map(m => m.matchScore)) : 0;
   logScreening(input.name, input.country, result.totalMatches, topScore, result.status, context.sellerId);
 
-  return apiSuccess(result, {
+  return apiSuccess({ ...result, embargo }, {
     sellerId: context.sellerId,
   });
 });
