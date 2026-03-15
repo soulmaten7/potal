@@ -6,10 +6,11 @@ Reads from gov_tariff_schedules and inserts into precomputed_hs10_candidates.
 import json
 import subprocess
 import time
+import os
 
 LOG_FILE = "/Users/maegbug/portal/precompute.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
-SUPABASE_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 HS10_COUNTRIES = ['US', 'EU', 'GB', 'KR', 'CA', 'AU', 'JP']
 
 def log(msg):

@@ -12,7 +12,7 @@ import os
 
 LOG_FILE = "/Users/maegbug/portal/wdc_phase3.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
-SUPABASE_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
 def log(msg):
     ts = time.strftime("%Y-%m-%d %H:%M:%S")

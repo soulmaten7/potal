@@ -93,7 +93,7 @@ function testKeyword(product: TestProduct): StageResult {
   return { hsCode, confidence: result.confidence, timeMs, hit, correct };
 }
 
-const MGMT_TOKEN = 'sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a';
+const MGMT_TOKEN = process.env.SUPABASE_MGMT_TOKEN || '';
 const MGMT_URL = 'https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query';
 const VECTOR_THRESHOLD = 0.55; // test threshold (production: 0.85)
 

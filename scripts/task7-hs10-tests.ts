@@ -33,7 +33,7 @@ function log(msg: string) {
 }
 
 const SUPABASE_URL = 'https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query';
-const AUTH_TOKEN = 'sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a';
+const AUTH_TOKEN = process.env.SUPABASE_MGMT_TOKEN || '';
 
 async function runSQL(query: string) {
   const res = await fetch(SUPABASE_URL, {

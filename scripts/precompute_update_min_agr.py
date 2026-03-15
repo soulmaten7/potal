@@ -8,10 +8,11 @@ import json
 import subprocess
 import time
 import sys
+import os
 
 LOG_FILE = "/Users/maegbug/portal/precompute.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
-SUPABASE_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
 MIN_AGR_COUNTRIES = [
     'AE', 'AR', 'AU', 'BD', 'BH', 'BR', 'CA', 'CH', 'CL', 'CN', 'CO', 'CR',

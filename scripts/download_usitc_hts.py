@@ -14,11 +14,12 @@ import subprocess
 import time
 import re
 import sys
+import os
 from datetime import datetime
 
 USITC_API = "https://hts.usitc.gov/reststop/search"
 MGMT_URL = "https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query"
-MGMT_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
 # HTS chapters: 01-99 (some don't exist but API returns empty)
 CHAPTERS = [str(i).zfill(2) for i in range(1, 100)]

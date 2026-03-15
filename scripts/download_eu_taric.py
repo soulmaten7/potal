@@ -11,12 +11,13 @@ import json
 import subprocess
 import time
 import re
+import os
 import urllib.request
 from datetime import datetime
 
 TARIFF_API = "https://www.trade-tariff.service.gov.uk/xi/api/v2"
 MGMT_URL = "https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query"
-MGMT_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
 CHAPTERS = [str(i).zfill(2) for i in range(1, 100)]
 

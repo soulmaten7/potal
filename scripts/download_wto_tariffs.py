@@ -16,12 +16,13 @@ import json
 import subprocess
 import sys
 import time
+import os
 from datetime import datetime
 
 WTO_API = "https://api.wto.org/timeseries/v1"
 WTO_KEY = "e6b00ecdb5b34e09aabe15e68ab71d1d"
 MGMT_URL = "https://api.supabase.com/v1/projects/zyurflkhiregundhisky/database/query"
-MGMT_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
 # WTO reporter codes
 COUNTRY_MAP = {

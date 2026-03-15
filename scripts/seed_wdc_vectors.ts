@@ -26,7 +26,7 @@ try {
 } catch {}
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY!;
-const MGMT_TOKEN = 'sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a';
+const MGMT_TOKEN = process.env.SUPABASE_MGMT_TOKEN || '';
 const PROJECT_ID = 'zyurflkhiregundhisky';
 const MGMT_URL = `https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`;
 const BATCH_SIZE = 20;

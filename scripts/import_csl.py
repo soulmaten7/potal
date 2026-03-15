@@ -20,7 +20,7 @@ import os
 
 # Supabase Management API config
 PROJECT_ID = "zyurflkhiregundhisky"
-MGMT_TOKEN = "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a"
+MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 MGMT_URL = f"https://api.supabase.com/v1/projects/{PROJECT_ID}/database/query"
 
 CSV_URL = "https://data.trade.gov/downloadable_consolidated_screening_list/v1/consolidated.csv"

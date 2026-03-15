@@ -30,7 +30,7 @@ SDN_ADVANCED_XML_URL = "https://www.treasury.gov/ofac/downloads/sanctions/1.0/sd
 
 SUPABASE_URL = os.environ.get("NEXT_PUBLIC_SUPABASE_URL", "https://zyurflkhiregundhisky.supabase.co")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "sbp_c96b42dce1f4204ae9f03b776ea42087a8dd6b6a")
+MGMT_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 PROJECT_ID = "zyurflkhiregundhisky"
 
 # SDN XML namespace (OFAC uses this namespace for all elements)
