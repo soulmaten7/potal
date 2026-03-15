@@ -42,7 +42,7 @@ export function ContactForm({ initialTopic }: { initialTopic: string }) {
       <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-slate-100 text-center">
         <div className="text-4xl mb-4">&#10003;</div>
         <h3 className="text-xl font-bold text-[#02122c] mb-2">Message Sent!</h3>
-        <p className="text-slate-500">We will reply within 24 hours to your email.</p>
+        <p className="text-slate-600">We will reply within 24 hours to your email.</p>
       </div>
     );
   }

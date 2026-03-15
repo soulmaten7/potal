@@ -94,7 +94,7 @@ export function AuthForm({ onMagicLinkSent, onError }: AuthFormProps) {
       {/* OR divider */}
       <div className="flex items-center gap-3 w-full">
         <span className="flex-1 h-px bg-slate-200" aria-hidden />
-        <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+        <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
           or
         </span>
         <span className="flex-1 h-px bg-slate-200" aria-hidden />

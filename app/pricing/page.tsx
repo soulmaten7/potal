@@ -371,9 +371,9 @@ export default function PricingPage() {
               background: 'white',
               borderRadius: 16,
               padding: 32,
-              border: plan.highlight ? '2px solid #F59E0B' : '1px solid #e5e7eb',
+              border: plan.highlight ? '2px solid #6366f1' : '1px solid #e5e7eb',
               boxShadow: plan.highlight
-                ? '0 20px 40px rgba(245,158,11,0.15)'
+                ? '0 0 0 2px #6366f1, 0 20px 40px rgba(99,102,241,0.15)'
                 : '0 1px 3px rgba(0,0,0,0.08)',
               position: 'relative',
               transform: plan.highlight ? 'scale(1.03)' : 'none',
@@ -382,15 +382,16 @@ export default function PricingPage() {
             {plan.highlight && (
               <div style={{
                 position: 'absolute',
-                top: -14,
+                top: -12,
                 left: '50%',
                 transform: 'translateX(-50%)',
-                background: '#F59E0B',
-                color: '#02122c',
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                color: 'white',
                 padding: '4px 16px',
                 borderRadius: 20,
                 fontSize: 12,
                 fontWeight: 700,
+                whiteSpace: 'nowrap',
               }}>
                 MOST POPULAR
               </div>
@@ -459,7 +460,7 @@ export default function PricingPage() {
                 background: plan.highlight
                   ? 'linear-gradient(135deg, #F59E0B 0%, #d97706 100%)'
                   : plan.name === 'Enterprise'
-                    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+                    ? 'linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)'
                     : '#02122c',
                 color: 'white',
                 marginBottom: 28,
@@ -547,24 +548,23 @@ export default function PricingPage() {
                 ['SLA', '&#8212;', '&#8212;', '99.9%', '99.99%'],
                 ['Rate Limit', '30/min', '60/min', '120/min', 'Unlimited'],
               ].map(([feature, free, basic, pro, enterprise], i) => (
-                <tr key={i} style={{ borderTop: '1px solid #f0f0f0', background: i % 2 === 1 ? '#fafafa' : 'transparent' }} className="hover:!bg-slate-100 transition-colors">
-                  <td style={{ padding: '14px 20px', color: '#444' }}>{feature}</td>
-                  <td
-                    style={{ textAlign: 'center', padding: '14px 12px', color: '#888' }}
-                    dangerouslySetInnerHTML={{ __html: free }}
-                  />
-                  <td
-                    style={{ textAlign: 'center', padding: '14px 12px', color: '#666' }}
-                    dangerouslySetInnerHTML={{ __html: basic }}
-                  />
-                  <td
-                    style={{ textAlign: 'center', padding: '14px 12px', color: '#444', fontWeight: 500 }}
-                    dangerouslySetInnerHTML={{ __html: pro }}
-                  />
-                  <td
-                    style={{ textAlign: 'center', padding: '14px 12px', color: '#444' }}
-                    dangerouslySetInnerHTML={{ __html: enterprise }}
-                  />
+                <tr key={i} style={{ borderTop: '1px solid #f0f0f0', background: i % 2 === 1 ? '#fafafa' : 'transparent' }} className="hover:!bg-slate-50 transition-colors">
+                  <td style={{ padding: '14px 20px', color: '#333', fontWeight: 500 }}>{feature}</td>
+                  {[free, basic, pro, enterprise].map((val, j) => {
+                    const isCheck = val === '&#10003;';
+                    const isDash = val === '&#8212;';
+                    return (
+                      <td key={j} style={{ textAlign: 'center', padding: '14px 12px', color: j === 2 ? '#444' : j === 0 ? '#888' : '#666', fontWeight: j === 2 ? 500 : 400 }}>
+                        {isCheck ? (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '50%', background: '#dcfce7', color: '#16a34a', fontSize: 13, fontWeight: 700 }}>&#10003;</span>
+                        ) : isDash ? (
+                          <span style={{ color: '#d1d5db' }}>&mdash;</span>
+                        ) : (
+                          <span>{val}</span>
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
@@ -594,6 +594,8 @@ export default function PricingPage() {
             >
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                aria-expanded={openFaq === i}
+                aria-controls={`pricing-faq-${i}`}
                 style={{
                   width: '100%',
                   textAlign: 'left',
@@ -610,7 +612,7 @@ export default function PricingPage() {
                 }}
               >
                 {faq.q}
-                <span style={{
+                <span aria-hidden="true" style={{
                   fontSize: 20,
                   color: '#999',
                   transform: openFaq === i ? 'rotate(45deg)' : 'none',
@@ -620,12 +622,16 @@ export default function PricingPage() {
                 </span>
               </button>
               {openFaq === i && (
-                <div style={{
-                  padding: '0 20px 18px',
-                  fontSize: 14,
-                  color: '#555',
-                  lineHeight: 1.7,
-                }}>
+                <div
+                  id={`pricing-faq-${i}`}
+                  role="region"
+                  style={{
+                    padding: '0 20px 18px',
+                    fontSize: 14,
+                    color: '#555',
+                    lineHeight: 1.7,
+                  }}
+                >
                   {faq.a}
                 </div>
               )}

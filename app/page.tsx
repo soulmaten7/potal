@@ -44,7 +44,7 @@ function CodeBlock() {
 
   return (
     <div style={{
-      background: '#0f172a',
+      background: '#0d1117',
       borderRadius: 16,
       overflow: 'hidden',
       boxShadow: '0 25px 50px rgba(0,0,0,0.25)',
@@ -108,7 +108,7 @@ function CodeBlock() {
 function ResponsePreview() {
   return (
     <div style={{
-      background: '#0f172a',
+      background: '#0d1117',
       borderRadius: 16,
       overflow: 'hidden',
       border: '1px solid rgba(255,255,255,0.1)',
@@ -338,7 +338,7 @@ export default function HomePage() {
     }}>
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section style={{
-        background: 'linear-gradient(135deg, #02122c 0%, #0a2540 40%, #1a365d 100%)',
+        background: 'linear-gradient(135deg, #02122c 0%, #0a1e3d 50%, #1a365d 100%)',
         color: 'white',
         padding: '100px 20px 80px',
         position: 'relative',
@@ -352,7 +352,7 @@ export default function HomePage() {
           backgroundSize: '24px 24px',
         }} />
 
-        <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 1152, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
             {/* Left: Text */}
             <div>
@@ -431,18 +431,26 @@ export default function HomePage() {
               </div>
 
               {/* Stats */}
-              <div style={{ display: 'flex', gap: 40 }}>
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                 {[
-                  { value: 240, suffix: '', label: 'Countries' },
-                  { value: 5371, suffix: '', label: 'HS Codes' },
-                  { value: 63, suffix: '', label: 'FTAs' },
-                  { value: 181, suffix: '', label: 'Tariff Countries' },
+                  { value: 240, suffix: '', label: 'Countries', icon: '🌍' },
+                  { value: 5371, suffix: '', label: 'HS Codes', icon: '🏷' },
+                  { value: 63, suffix: '', label: 'FTAs', icon: '🤝' },
+                  { value: 181, suffix: '', label: 'Tariff Countries', icon: '📊' },
                 ].map((stat, i) => (
-                  <div key={i}>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: '#F59E0B', fontVariantNumeric: 'tabular-nums' }}>
-                      <AnimatedNumber target={stat.value} suffix={stat.suffix} />
+                  <div key={i} style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 12,
+                    padding: '12px 20px',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 16 }}>{stat.icon}</span>
+                      <span style={{ fontSize: 24, fontWeight: 800, color: '#F59E0B', fontVariantNumeric: 'tabular-nums' }}>
+                        <AnimatedNumber target={stat.value} suffix={stat.suffix} />
+                      </span>
                     </div>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{stat.label}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -494,7 +502,7 @@ export default function HomePage() {
       {/* ═══════════════════ TRUST METRICS ═════════ */}
       <FadeInSection>
       <section style={{
-        padding: '48px 20px 40px',
+        padding: '96px 20px',
         borderBottom: '1px solid #e5e7eb',
         background: 'white',
       }}>
@@ -557,7 +565,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ HOW IT WORKS ═══════════ */}
       <FadeInSection>
-      <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 1024, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
             How it works
@@ -567,7 +575,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
           {[
             {
               step: '01',
@@ -642,7 +650,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 32 }}>
+          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             <FeatureCard
               icon="🌍"
               title="240 Countries"
@@ -842,7 +850,7 @@ export default function HomePage() {
               }}
             >
               <div style={{ fontSize: 14, fontWeight: 600, color: '#888', marginBottom: 8 }}>{plan.name}</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: '#02122c', marginBottom: 8 }}>{plan.price}</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: '#02122c', marginBottom: 8, fontVariantNumeric: 'tabular-nums' }}>{plan.price}</div>
               <div style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>{plan.desc}</div>
               <Link
                 href="/pricing"

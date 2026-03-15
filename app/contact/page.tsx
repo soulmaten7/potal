@@ -50,7 +50,7 @@ export default function ContactPage() {
         <div className="max-w-md w-full text-center">
           <div className="text-6xl mb-6">✅</div>
           <h2 className="text-2xl font-extrabold text-[#02122c] mb-3">Message Sent</h2>
-          <p className="text-slate-500 mb-8">Thank you for reaching out. We'll get back to you within 24 hours.</p>
+          <p className="text-slate-600 mb-8">Thank you for reaching out. We'll get back to you within 24 hours.</p>
           <a href="/" className="inline-flex items-center gap-2 px-6 py-3 bg-[#02122c] text-white font-bold rounded-xl hover:bg-[#F59E0B] transition-colors">
             <Icons.ArrowRight className="w-4 h-4 rotate-180" /> Back to POTAL
           </a>
@@ -65,7 +65,7 @@ export default function ContactPage() {
       <section className="bg-white text-[#02122c] pt-32 pb-16">
         <div className="max-w-[800px] mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Contact Us</h1>
-          <p className="text-slate-500 text-lg">Have a question, partnership idea, or feedback? We'd love to hear from you.</p>
+          <p className="text-slate-600 text-lg">Have a question, partnership idea, or feedback? We'd love to hear from you.</p>
         </div>
       </section>
 
@@ -74,7 +74,7 @@ export default function ContactPage() {
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 space-y-6">
           {/* Type Selector */}
           <div>
-            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 block">Inquiry Type</label>
+            <label className="text-sm font-bold text-slate-600 uppercase tracking-wider mb-3 block">Inquiry Type</label>
             <div className="grid grid-cols-2 gap-2">
               {CONTACT_TYPES.map(ct => (
                 <button
@@ -96,7 +96,7 @@ export default function ContactPage() {
 
           {/* Name */}
           <div>
-            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Name</label>
+            <label className="text-sm font-bold text-slate-600 uppercase tracking-wider mb-1.5 block">Name</label>
             <input
               type="text"
               value={name}
@@ -109,7 +109,7 @@ export default function ContactPage() {
 
           {/* Email */}
           <div>
-            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Email</label>
+            <label className="text-sm font-bold text-slate-600 uppercase tracking-wider mb-1.5 block">Email</label>
             <input
               type="email"
               value={email}
@@ -122,7 +122,7 @@ export default function ContactPage() {
 
           {/* Message */}
           <div>
-            <label className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Message</label>
+            <label className="text-sm font-bold text-slate-600 uppercase tracking-wider mb-1.5 block">Message</label>
             <textarea
               value={message}
               onChange={e => setMessage(e.target.value)}

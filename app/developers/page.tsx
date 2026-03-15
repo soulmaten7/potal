@@ -11,7 +11,7 @@ function CopyableCodeBlock({ label, code, labelColor = '#F59E0B' }: { label: str
   }, [code]);
 
   return (
-    <div style={{ backgroundColor: '#1f2937', borderRadius: 12, padding: 24, position: 'relative' }}>
+    <div style={{ backgroundColor: '#0d1117', borderRadius: 12, padding: 24, position: 'relative' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: labelColor }}>{label}</div>
         <button
@@ -112,7 +112,7 @@ function CodeTabs() {
               fontSize: 13,
               fontWeight: active === tab ? 700 : 500,
               color: active === tab ? '#F59E0B' : 'rgba(255,255,255,0.5)',
-              background: active === tab ? '#1f2937' : '#111827',
+              background: active === tab ? '#0d1117' : '#010409',
               border: 'none',
               borderTopLeftRadius: tab === tabs[0] ? 12 : 0,
               borderTopRightRadius: tab === tabs[tabs.length - 1] ? 12 : 0,
@@ -132,8 +132,150 @@ function CodeTabs() {
   );
 }
 
+// ─── Mock Response Data for API Explorer ─────────
+const EXPLORER_MOCK: Record<string, { duty: number; dutyRate: string; tax: number; taxLabel: string; hsCode: string; deMinimis: boolean; fta: boolean }> = {
+  US: { duty: 8.25, dutyRate: '16.5%', tax: 4.44, taxLabel: 'Sales Tax', hsCode: '6109.10.0012', deMinimis: false, fta: false },
+  GB: { duty: 0, dutyRate: '0% (de minimis)', tax: 10.00, taxLabel: 'VAT 20%', hsCode: '6109.10.00', deMinimis: true, fta: false },
+  DE: { duty: 5.90, dutyRate: '12%', tax: 9.50, taxLabel: 'VAT 19%', hsCode: '6109.10.00', deMinimis: false, fta: false },
+  JP: { duty: 5.00, dutyRate: '10%', tax: 5.50, taxLabel: 'JCT 10%', hsCode: '6109.10.010', deMinimis: false, fta: false },
+  KR: { duty: 6.50, dutyRate: '13%', tax: 5.00, taxLabel: 'VAT 10%', hsCode: '6109.10.0000', deMinimis: false, fta: false },
+  AU: { duty: 0, dutyRate: '0% (de minimis)', tax: 5.00, taxLabel: 'GST 10%', hsCode: '6109.10.00', deMinimis: true, fta: false },
+  CA: { duty: 9.00, dutyRate: '18%', tax: 2.95, taxLabel: 'GST 5%', hsCode: '6109.10.00.12', deMinimis: false, fta: false },
+  BR: { duty: 17.50, dutyRate: '35%', tax: 30.20, taxLabel: 'Import Taxes', hsCode: '6109.10.00', deMinimis: false, fta: false },
+};
+
+function ApiExplorer() {
+  const [origin, setOrigin] = useState('CN');
+  const [destination, setDestination] = useState('US');
+  const [value, setValue] = useState('49.99');
+  const [hsCode, setHsCode] = useState('6109.10');
+  const [showResponse, setShowResponse] = useState(false);
+
+  const numValue = parseFloat(value) || 0;
+  const mock = EXPLORER_MOCK[destination] || EXPLORER_MOCK['US'];
+  const scaledDuty = mock.deMinimis ? 0 : +(numValue * parseFloat(mock.dutyRate) / 100).toFixed(2);
+  const scaledTax = +((numValue + scaledDuty) * (mock.taxLabel.includes('20%') ? 0.20 : mock.taxLabel.includes('19%') ? 0.19 : mock.taxLabel.includes('10%') ? 0.10 : mock.taxLabel.includes('5%') ? 0.05 : mock.taxLabel.includes('35%') ? 0.35 : 0.089)).toFixed(2);
+  const shipping = 8.50;
+  const total = +(numValue + scaledDuty + scaledTax + shipping).toFixed(2);
+
+  const curlCode = `curl -X POST https://www.potal.app/api/v1/calculate \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: YOUR_API_KEY" \\
+  -d '{
+    "from_country": "${origin}",
+    "to_country": "${destination}",
+    "hs_code": "${hsCode}",
+    "value": ${numValue.toFixed(2)},
+    "currency": "USD"
+  }'`;
+
+  const responseJson = `{
+  "success": true,
+  "data": {
+    "totalLandedCost": ${total},
+    "breakdown": {
+      "productPrice": ${numValue.toFixed(2)},
+      "importDuty": ${scaledDuty.toFixed(2)},
+      "tax": ${scaledTax.toFixed(2)},
+      "shipping": ${shipping.toFixed(2)},
+      "taxLabel": "${mock.taxLabel}"
+    },
+    "hsCode": "${mock.hsCode}",
+    "deMinimis": ${mock.deMinimis},
+    "fta": ${mock.fta}
+  }
+}`;
+
+  const inputStyle: React.CSSProperties = {
+    padding: '10px 14px',
+    borderRadius: 8,
+    border: '1px solid #e5e7eb',
+    fontSize: 14,
+    outline: 'none',
+    width: '100%',
+    boxSizing: 'border-box',
+    background: '#f9fafb',
+  };
+
+  const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: '#6b7280', marginBottom: 4, display: 'block' };
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 24 }}>
+      {/* Input Panel */}
+      <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24 }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#02122c', marginBottom: 20 }}>Parameters</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div>
+            <label style={labelStyle}>Origin Country</label>
+            <select value={origin} onChange={e => setOrigin(e.target.value)} style={inputStyle}>
+              {['CN', 'US', 'DE', 'JP', 'KR', 'GB', 'VN', 'IN', 'TW', 'TH'].map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>Destination Country</label>
+            <select value={destination} onChange={e => { setDestination(e.target.value); setShowResponse(false); }} style={inputStyle}>
+              {Object.keys(EXPLORER_MOCK).map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label style={labelStyle}>HS Code</label>
+            <input type="text" value={hsCode} onChange={e => setHsCode(e.target.value)} style={inputStyle} placeholder="6109.10" />
+          </div>
+          <div>
+            <label style={labelStyle}>Product Value (USD)</label>
+            <input type="number" value={value} onChange={e => { setValue(e.target.value); setShowResponse(false); }} style={inputStyle} placeholder="49.99" min="0" step="0.01" />
+          </div>
+          <button
+            onClick={() => setShowResponse(true)}
+            style={{
+              padding: '12px 20px',
+              borderRadius: 10,
+              border: 'none',
+              background: '#F59E0B',
+              color: '#02122c',
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: 'pointer',
+              marginTop: 4,
+              transition: 'transform 0.15s',
+            }}
+          >
+            Send Request
+          </button>
+        </div>
+      </div>
+
+      {/* Code + Response Panel */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <CopyableCodeBlock label="Request (cURL)" code={curlCode} labelColor="#F59E0B" />
+        {showResponse && (
+          <div style={{ backgroundColor: '#0d1117', borderRadius: 12, padding: 24, position: 'relative', animation: 'fadeIn 0.3s ease-out' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: '#22c55e' }}>200 OK</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>~{80 + Math.floor(Math.random() * 60)}ms</span>
+              </div>
+            </div>
+            <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{responseJson}</pre>
+          </div>
+        )}
+        {!showResponse && (
+          <div style={{ backgroundColor: '#0d1117', borderRadius: 12, padding: 40, textAlign: 'center', border: '1px dashed rgba(255,255,255,0.15)' }}>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Click &ldquo;Send Request&rdquo; to see the response</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 const SIDEBAR_LINKS = [
   { id: 'quick-start', label: 'Quick Start' },
+  { id: 'api-explorer', label: 'Try It Live' },
   { id: 'api-reference', label: 'API Reference' },
   { id: 'authentication', label: 'Authentication' },
   { id: 'widget-customization', label: 'Widget Customization' },
@@ -356,6 +498,19 @@ export default function DevelopersPage() {
           >
             View Full Docs →
           </a>
+        </section>
+
+        {/* Section: API Explorer */}
+        <section id="api-explorer" style={{ marginBottom: '80px', scrollMarginTop: 80 }}>
+          <div style={{ marginBottom: '32px' }}>
+            <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#02122c', marginBottom: '12px' }}>
+              Try It Live
+            </h2>
+            <p style={{ fontSize: '16px', color: '#6b7280', lineHeight: '1.6' }}>
+              Change the parameters below and see the request and response update in real-time. Mock data — sign up for a free API key to make real calls.
+            </p>
+          </div>
+          <ApiExplorer />
         </section>
 
         {/* Section B: API Reference */}
@@ -726,7 +881,7 @@ export default function DevelopersPage() {
                 <div>
                   <span style={{ fontWeight: 'bold', color: '#02122c', display: 'block', marginBottom: '8px' }}>Dark Theme</span>
                   <div style={{
-                    backgroundColor: '#1f2937',
+                    backgroundColor: '#0d1117',
                     border: '1px solid #374151',
                     borderRadius: '6px',
                     padding: '12px',

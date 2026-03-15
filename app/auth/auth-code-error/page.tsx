@@ -15,7 +15,7 @@ export default function AuthCodeErrorPage() {
       >
         Back to Sign in
       </Link>
-      <Link href="/" className="mt-4 text-sm text-slate-500 hover:text-slate-700 underline">
+      <Link href="/" className="mt-4 text-sm text-slate-600 hover:text-slate-700 underline">
         Home
       </Link>
     </div>

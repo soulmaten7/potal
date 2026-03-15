@@ -109,7 +109,7 @@ export default function JoinPage() {
             </svg>
           </div>
           <h2 className="text-xl font-bold text-[#02122c] mb-2">Check your email</h2>
-          <p className="text-slate-500 text-sm mb-6">
+          <p className="text-slate-600 text-sm mb-6">
             We sent a confirmation link to <span className="text-[#02122c] font-semibold">{email}</span>. Click the link to activate your account.
           </p>
           <Link href="/auth/login" className="text-[#F59E0B] font-bold text-sm hover:underline">
@@ -131,7 +131,7 @@ export default function JoinPage() {
             POTAL
           </Link>
           <h1 className="text-xl font-bold text-[#02122c]">Create your account</h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-600 text-sm mt-1">
             Join POTAL to calculate landed costs for 240 countries.
           </p>
         </div>
@@ -237,7 +237,7 @@ export default function JoinPage() {
                 <path d="M3 7L5.5 9.5L11 4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <label htmlFor="terms" className="text-xs text-slate-500 leading-snug cursor-pointer select-none">
+            <label htmlFor="terms" className="text-xs text-slate-600 leading-snug cursor-pointer select-none">
               I agree to POTAL's <Link href="/legal/terms" className="text-[#02122c] hover:underline">Terms of Service</Link> and <Link href="/legal/privacy" className="text-[#02122c] hover:underline">Privacy Policy</Link>.
             </label>
           </div>

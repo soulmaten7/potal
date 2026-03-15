@@ -20,7 +20,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
         </div>
 
         <h2 className="text-xl font-bold text-slate-900 mb-2">Get deals, tips, and alerts</h2>
-        <p className="text-slate-500 text-sm mb-8 leading-relaxed">
+        <p className="text-slate-600 text-sm mb-8 leading-relaxed">
           Now you've signed in, stay one step ahead with POTAL's AI price drops and shipping updates.
         </p>
 

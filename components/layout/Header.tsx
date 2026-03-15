@@ -25,9 +25,25 @@ export function Header() {
 
   const [showLangDropdown, setShowLangDropdown] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [pathname]);
+
+  // Scroll lock when mobile menu is open
+  useEffect(() => {
+    if (showMobileMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [showMobileMenu]);
 
   useEffect(() => {
     function handleScroll() {
@@ -72,8 +88,9 @@ export function Header() {
   const userEmail = session?.user?.email;
 
   return (
+    <>
     <header
-      className={`text-[#02122c] w-full border-b relative z-[5000] hidden md:block sticky top-0 transition-all duration-200 ${
+      className={`text-[#02122c] w-full border-b relative z-[5000] sticky top-0 transition-all duration-200 ${
         scrolled
           ? 'bg-white/80 backdrop-blur-xl border-slate-200/50 shadow-sm'
           : 'bg-white border-slate-200'
@@ -85,6 +102,7 @@ export function Header() {
         <button
           onClick={() => router.push('/')}
           className="hover:opacity-90 focus:outline-none cursor-pointer flex items-center"
+          aria-label="POTAL home"
         >
           <span className="text-[22px] sm:text-[28px] font-extrabold tracking-tight">
             <span className="text-[#02122c]">P</span>
@@ -93,32 +111,36 @@ export function Header() {
           </span>
         </button>
 
-        {/* Navigation */}
-        <div className="hidden md:flex items-center gap-6 text-[#02122c]">
-          <Link
-            href="/developers"
-            className={`text-sm font-bold cursor-pointer transition-colors uppercase ${isActive('/developers') ? 'text-[#F59E0B]' : 'hover:text-[#F59E0B]'}`}
-          >
-            {t('nav.developers')}
-          </Link>
-          <Link
-            href="/pricing"
-            className={`text-sm font-bold cursor-pointer transition-colors uppercase ${isActive('/pricing') ? 'text-[#F59E0B]' : 'hover:text-[#F59E0B]'}`}
-          >
-            {t('nav.pricing')}
-          </Link>
-          <Link
-            href="/dashboard"
-            className={`text-sm font-bold cursor-pointer transition-colors uppercase ${isActive('/dashboard') ? 'text-[#F59E0B]' : 'hover:text-[#F59E0B]'}`}
-          >
-            {t('nav.dashboard')}
-          </Link>
-          <Link
-            href="/help"
-            className={`text-sm font-bold cursor-pointer transition-colors uppercase ${isActive('/help') ? 'text-[#F59E0B]' : 'hover:text-[#F59E0B]'}`}
-          >
-            {t('nav.help')}
-          </Link>
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={() => setShowMobileMenu(!showMobileMenu)}
+          className="md:hidden flex flex-col justify-center items-center w-10 h-10 cursor-pointer focus:outline-none"
+          aria-label="Toggle menu"
+          aria-expanded={showMobileMenu}
+        >
+          <span className={`block w-5 h-0.5 bg-[#02122c] transition-all duration-300 ${showMobileMenu ? 'rotate-45 translate-y-[3px]' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-[#02122c] mt-1 transition-all duration-300 ${showMobileMenu ? 'opacity-0' : ''}`} />
+          <span className={`block w-5 h-0.5 bg-[#02122c] mt-1 transition-all duration-300 ${showMobileMenu ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+        </button>
+
+        {/* Desktop Navigation */}
+        <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-[#02122c]">
+          {[
+            { href: '/developers', label: t('nav.developers') },
+            { href: '/pricing', label: t('nav.pricing') },
+            { href: '/dashboard', label: t('nav.dashboard') },
+            { href: '/help', label: t('nav.help') },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={isActive(link.href) ? 'page' : undefined}
+              className={`relative text-sm font-bold cursor-pointer transition-colors uppercase pb-1 ${isActive(link.href) ? 'text-indigo-600 font-medium' : 'hover:text-[#F59E0B]'}`}
+            >
+              {link.label}
+              {isActive(link.href) && <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-indigo-600 rounded-full" aria-hidden="true" />}
+            </Link>
+          ))}
 
           {/* Divider */}
           <div className="w-px h-5 bg-slate-200" />
@@ -128,8 +150,10 @@ export function Header() {
             <button
               onClick={() => setShowLangDropdown(!showLangDropdown)}
               className="flex items-center gap-1.5 hover:text-[#F59E0B] focus:outline-none cursor-pointer"
+              aria-label="Select language"
+              aria-expanded={showLangDropdown}
             >
-              <Icons.Globe className="w-4 h-4" />
+              <Icons.Globe className="w-4 h-4" aria-hidden="true" />
               <span className="text-sm font-bold">
                 {currentLang.short}
               </span>
@@ -144,7 +168,7 @@ export function Header() {
                   <button
                     key={lang.code}
                     onClick={() => handleLanguageChange(lang.code)}
-                    className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between hover:bg-slate-50 cursor-pointer ${language === lang.code ? 'text-[#02122c] bg-slate-50' : 'text-slate-500'}`}
+                    className={`w-full text-left px-4 py-2.5 text-sm font-bold flex items-center justify-between hover:bg-slate-50 cursor-pointer ${language === lang.code ? 'text-[#02122c] bg-slate-50' : 'text-slate-600'}`}
                   >
                     <span>{lang.label}</span>
                     {language === lang.code && <Icons.Check className="w-4 h-4 text-[#02122c]" />}
@@ -217,8 +241,96 @@ export function Header() {
               </Link>
             </div>
           )}
-        </div>
+        </nav>
       </div>
     </header>
+
+    {/* Mobile Menu Overlay */}
+    {showMobileMenu && (
+      <div className="fixed inset-0 z-[4999] md:hidden" onClick={() => setShowMobileMenu(false)}>
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      </div>
+    )}
+
+    {/* Mobile Slide-in Menu */}
+    <div
+      className={`fixed top-[64px] right-0 bottom-0 w-72 bg-white z-[5001] md:hidden transition-transform duration-300 ease-out shadow-2xl ${
+        showMobileMenu ? 'translate-x-0' : 'translate-x-full'
+      }`}
+    >
+      <nav className="flex flex-col py-4">
+        {[
+          { href: '/developers', label: t('nav.developers') },
+          { href: '/pricing', label: t('nav.pricing') },
+          { href: '/dashboard', label: t('nav.dashboard') },
+          { href: '/help', label: t('nav.help') },
+        ].map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`px-6 py-3 text-base font-bold transition-colors ${
+              isActive(link.href) ? 'text-indigo-600 bg-indigo-50' : 'text-[#02122c] hover:bg-slate-50'
+            }`}
+          >
+            {link.label}
+          </Link>
+        ))}
+
+        <div className="h-px bg-slate-200 mx-6 my-3" />
+
+        {/* Language */}
+        <div className="px-6 py-2">
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{t('nav.language')}</div>
+          <div className="flex flex-wrap gap-2">
+            {LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLanguageChange(lang.code)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-colors ${
+                  language === lang.code
+                    ? 'bg-[#02122c] text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {lang.short}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="h-px bg-slate-200 mx-6 my-3" />
+
+        {/* Auth */}
+        <div className="px-6 py-2">
+          {session ? (
+            <div className="flex flex-col gap-2">
+              <div className="text-xs font-bold text-slate-400 truncate">{userEmail}</div>
+              <button
+                onClick={handleSignOut}
+                className="w-full text-left py-2.5 text-sm font-bold text-red-500 cursor-pointer"
+              >
+                {t('nav.signOut')}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/auth/login"
+                className="block text-center py-2.5 text-sm font-bold text-[#02122c] border border-slate-200 rounded-xl"
+              >
+                {t('nav.signIn')}
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="block text-center py-2.5 text-sm font-bold bg-[#F59E0B] text-[#02122c] rounded-xl"
+              >
+                {t('nav.signUp')}
+              </Link>
+            </div>
+          )}
+        </div>
+      </nav>
+    </div>
+    </>
   );
 }

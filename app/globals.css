@@ -30,11 +30,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 h1, h2, h3, h4 {
-  letter-spacing: -0.025em;
+  letter-spacing: -0.02em;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -125,8 +126,8 @@ body.shopify-embedded main {
 /* Landing page responsive overrides */
 @media (max-width: 768px) {
   section {
-    padding-left: 20px !important;
-    padding-right: 20px !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
   }
   .hero-grid {
     grid-template-columns: 1fr !important;
@@ -156,6 +157,11 @@ body.shopify-embedded main {
   }
 }
 
+/* Button size system: Small h-8, Medium h-10, Large h-12 */
+.btn-sm { height: 2rem; padding: 0 0.75rem; font-size: 0.8125rem; }
+.btn-md { height: 2.5rem; padding: 0 1.25rem; font-size: 0.875rem; }
+.btn-lg { height: 3rem; padding: 0 2rem; font-size: 1rem; }
+
 /* Button active press + focus-visible ring */
 button, a[role="button"], [type="submit"] {
   transition: transform 0.1s ease;
@@ -164,7 +170,7 @@ button:active, a[role="button"]:active, [type="submit"]:active {
   transform: scale(0.98);
 }
 button:focus-visible, a:focus-visible, [type="submit"]:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid #F59E0B;
+  outline: 2px solid #6366f1;
   outline-offset: 2px;
 }
 

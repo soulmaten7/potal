@@ -22,7 +22,7 @@ export default function NotFound() {
       <h1 className="text-2xl font-bold text-slate-900 mb-3">
         This page doesn&apos;t exist
       </h1>
-      <p className="text-slate-500 text-sm mb-8 max-w-md leading-relaxed">
+      <p className="text-slate-600 text-sm mb-8 max-w-md leading-relaxed">
         Looks like you&apos;ve crossed a border we don&apos;t have data for yet.
         Let&apos;s get you back to calculating duties.
       </p>
@@ -39,6 +39,12 @@ export default function NotFound() {
           className="px-6 py-2.5 bg-[#F59E0B] text-[#02122c] text-sm font-bold rounded-xl hover:bg-[#e8930a] transition-colors"
         >
           Try the API
+        </Link>
+        <Link
+          href="/developers/playground"
+          className="px-6 py-2.5 bg-indigo-50 text-indigo-700 text-sm font-bold rounded-xl hover:bg-indigo-100 transition-colors"
+        >
+          Widget Playground
         </Link>
         <Link
           href="/help"

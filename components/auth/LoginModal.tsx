@@ -104,7 +104,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 transition-colors z-10"
         >
-          {Icons.X ? <Icons.X className="w-5 h-5 text-slate-500" /> : <span className="text-slate-500 font-bold">✕</span>}
+          {Icons.X ? <Icons.X className="w-5 h-5 text-slate-600" /> : <span className="text-slate-600 font-bold">✕</span>}
         </button>
 
         <div className="p-8 pt-10 text-center">
@@ -115,7 +115,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           <h3 className="text-xl font-bold text-[#02122c] mb-2">
             Get the full experience
           </h3>
-          <p className="text-slate-500 mb-8 text-sm leading-relaxed">
+          <p className="text-slate-600 mb-8 text-sm leading-relaxed">
             Track prices, set your Zipcode, and enjoy faster AI searching.
           </p>
 

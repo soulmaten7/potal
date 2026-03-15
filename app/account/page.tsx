@@ -138,7 +138,7 @@ export default function AccountPage() {
                 {name.charAt(0).toUpperCase()}
               </div>
               <h1 className="text-xl font-bold text-[#02122c] mb-1">{name}</h1>
-              <p className="text-slate-500 text-sm font-medium break-all">{email}</p>
+              <p className="text-slate-600 text-sm font-medium break-all">{email}</p>
             </div>
 
             <nav className="space-y-2">
@@ -164,7 +164,7 @@ export default function AccountPage() {
           {/* [Right Content] Settings Form */}
           <div className="flex-1 max-w-[800px]">
             <div className="mb-6 ml-1">
-                <span className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 block">Settings</span>
+                <span className="text-xs text-slate-600 font-bold uppercase tracking-wider mb-1 block">Settings</span>
                 <h2 className="text-3xl font-black text-[#02122c] tracking-tight">Account Preferences</h2>
             </div>
 
@@ -186,7 +186,7 @@ export default function AccountPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h3 className="text-lg font-bold text-[#02122c]">Primary Zipcode</h3>
-                    <p className="text-slate-500 text-sm">
+                    <p className="text-slate-600 text-sm">
                       This location is automatically used for shipping estimates.
                     </p>
                   </div>
@@ -265,7 +265,7 @@ export default function AccountPage() {
                   <label htmlFor="subs" className="text-[#02122c] font-bold block mb-1 cursor-pointer">
                     Marketing emails
                   </label>
-                  <p className="text-sm text-slate-500 leading-relaxed">
+                  <p className="text-sm text-slate-600 leading-relaxed">
                     I'd like to get the latest deals, news and inspiration sent straight to my inbox.
                   </p>
                 </div>

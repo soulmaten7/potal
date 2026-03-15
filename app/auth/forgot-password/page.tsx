@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
             </svg>
           </div>
           <h2 className="text-xl font-bold text-[#02122c] mb-2">Check your email</h2>
-          <p className="text-slate-500 text-sm mb-6">
+          <p className="text-slate-600 text-sm mb-6">
             We sent a password reset link to <span className="text-[#02122c] font-semibold">{email}</span>. Click the link to set a new password.
           </p>
           <Link href="/auth/login" className="text-[#F59E0B] font-bold text-sm hover:underline">
@@ -76,7 +76,7 @@ export default function ForgotPasswordPage() {
             POTAL
           </Link>
           <h1 className="text-xl font-bold text-[#02122c]">Reset your password</h1>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-600 text-sm mt-1">
             Enter your email and we&apos;ll send you a link to reset your password.
           </p>
         </div>

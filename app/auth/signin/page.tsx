@@ -56,7 +56,7 @@ export default function SignInPage() {
           />
           <Link
             href="/"
-            className="mt-8 text-sm text-slate-500 hover:text-slate-700 underline"
+            className="mt-8 text-sm text-slate-600 hover:text-slate-700 underline"
           >
             Back to home
           </Link>
