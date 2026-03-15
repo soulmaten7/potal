@@ -300,6 +300,11 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     confidenceScore: textConfidence,
     method: result.classificationSource,
     countryOfOrigin: result.countryOfOrigin,
+    origin_detail: result.countryOfOrigin ? {
+      detected_origin: result.countryOfOrigin,
+      origin_type: 'non_preferential' as const,
+      origin_note: `Origin ${result.countryOfOrigin} detected from product description/brand analysis. Use /api/v1/origin/determine for preferential origin verification.`,
+    } : null,
     alternatives: result.alternatives,
     reasoning_chain: reasoningChain,
     chapter_note: chapterNote,

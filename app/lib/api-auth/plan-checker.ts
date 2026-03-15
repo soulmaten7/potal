@@ -85,6 +85,14 @@ export async function checkPlanLimits(
   // Free plan: hard block
   const allowed = limits.allowOverage ? true : !overLimit;
 
+  // F086: Usage alert triggers (non-blocking)
+  const percentUsed = Math.round((used / limits.maxCalculationsMonthly) * 100);
+  if (percentUsed >= 80 && percentUsed < 100) {
+    void triggerUsageAlert(sellerId, 'usage-alert-80', used, limits.maxCalculationsMonthly, percentUsed, planId);
+  } else if (percentUsed >= 100) {
+    void triggerUsageAlert(sellerId, 'usage-alert-100', used, limits.maxCalculationsMonthly, percentUsed, planId);
+  }
+
   return {
     allowed,
     used,
@@ -93,6 +101,33 @@ export async function checkPlanLimits(
     overageCount,
     overageRate: limits.overageRate,
   };
+}
+
+/**
+ * Trigger usage alert email (non-blocking, deduplicated)
+ */
+async function triggerUsageAlert(sellerId: string, alertType: 'usage-alert-80' | 'usage-alert-100', used: number, limit: number, percentUsed: number, planId: string) {
+  try {
+    const { sendEmail } = await import('@/app/lib/email/send');
+    const sb = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+    const { data: seller } = await (sb.from('sellers') as ReturnType<ReturnType<typeof createClient>['from']>)
+      .select('email')
+      .eq('id', sellerId)
+      .single();
+
+    const sellerData = seller as { email?: string } | null;
+    if (sellerData?.email) {
+      await sendEmail(alertType, sellerData.email, {
+        used,
+        limit,
+        planName: planId.charAt(0).toUpperCase() + planId.slice(1),
+        percentUsed,
+      }, { sellerId });
+    }
+  } catch { /* non-blocking */ }
 }
 
 /**

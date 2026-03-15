@@ -76,6 +76,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     weight_kg: typeof body.weight_kg === 'number' ? body.weight_kg : undefined,
     quantity: typeof body.quantity === 'number' ? body.quantity : undefined,
     annualVolume: typeof body.annualVolume === 'number' ? body.annualVolume : undefined,
+    buyerVatNumber: typeof body.buyer_vat_number === 'string' ? body.buyer_vat_number.trim() : undefined,
   };
 
   // 6. Calculate (DB-backed global engine — supports 58+ countries)

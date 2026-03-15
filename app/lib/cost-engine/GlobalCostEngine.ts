@@ -110,6 +110,8 @@ export interface GlobalCostInput extends CostInput {
   quantity?: number;
   /** Annual import volume for savings projection */
   annualVolume?: number;
+  /** Buyer VAT registration number (triggers B2B reverse charge) */
+  buyerVatNumber?: string;
 }
 
 // ─── 15-Item Detailed Cost Breakdown ────────────────
@@ -264,6 +266,15 @@ export interface GlobalLandedCost extends LandedCost {
     rateSource: string;
     /** Last updated timestamp */
     lastUpdated: string;
+  };
+
+  /** VAT rate type applied: standard, reduced, zero, exempt, or reverse_charge */
+  vatRateType?: 'standard' | 'reduced' | 'zero' | 'exempt' | 'reverse_charge';
+  /** B2B reverse charge info (when buyer provides VAT number) */
+  reverseCharge?: {
+    applied: boolean;
+    buyerVatNumber: string;
+    note: string;
   };
 
   // ─── S-Grade Extensions (CW14) ──────────────────
@@ -561,8 +572,49 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   let vat = 0;
   let effectiveVatRate = profile.vatRate;
   let effectiveVatLabel = profile.vatLabel;
+  let vatRateType: 'standard' | 'reduced' | 'zero' | 'exempt' | 'reverse_charge' = 'standard';
 
-  if (profile.code === 'US' && input.zipcode) {
+  // F003: B2B Reverse Charge — if buyer has VAT number, VAT = 0
+  const isReverseCharge = !!input.buyerVatNumber && !isDomestic;
+  if (isReverseCharge) {
+    vat = 0;
+    effectiveVatRate = 0;
+    vatRateType = 'reverse_charge';
+    effectiveVatLabel = `${profile.vatLabel} (Reverse Charge)`;
+  }
+
+  // F003: Product-specific VAT rate lookup from DB
+  let productVatApplied = false;
+  if (!isReverseCharge && hsResult?.hsCode && hsResult.hsCode !== '9999') {
+    const hsChapter = hsResult.hsCode.substring(0, 2);
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const sb = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      );
+      const { data: vatProduct } = await sb
+        .from('vat_product_rates')
+        .select('rate, rate_type, description')
+        .eq('country_code', profile.code)
+        .eq('hs_chapter', hsChapter)
+        .neq('rate_type', 'standard')
+        .order('rate', { ascending: true })
+        .limit(1)
+        .single();
+
+      if (vatProduct) {
+        effectiveVatRate = parseFloat(vatProduct.rate);
+        vatRateType = vatProduct.rate_type as typeof vatRateType;
+        effectiveVatLabel = `${profile.vatLabel} (${vatProduct.description || vatProduct.rate_type})`;
+        productVatApplied = true;
+      }
+    } catch { /* no product-specific rate, use standard */ }
+  }
+
+  if (isReverseCharge) {
+    // Already handled above — skip all VAT calculation
+  } else if (profile.code === 'US' && input.zipcode) {
     // US uses state-level sales tax, not national VAT
     const state = zipcodeToState(input.zipcode);
     const stateTaxRate = state ? (STATE_TAX_RATES[state] ?? 0.07) : 0.07;
@@ -690,9 +742,9 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
       effectiveVatLabel = 'None';
     }
   } else if (isDomestic) {
-    vat = declaredValue * profile.vatRate;
+    vat = declaredValue * (productVatApplied ? effectiveVatRate : profile.vatRate);
   } else {
-    vat = (declaredValue + importDuty) * profile.vatRate;
+    vat = (declaredValue + importDuty) * (productVatApplied ? effectiveVatRate : profile.vatRate);
   }
 
   const totalLandedCost = productPrice + shippingCost + importDuty + vat;
@@ -1017,6 +1069,12 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     vat: round(vat),
     vatLabel: effectiveVatLabel,
     vatRate: effectiveVatRate,
+    vatRateType,
+    reverseCharge: isReverseCharge ? {
+      applied: true,
+      buyerVatNumber: input.buyerVatNumber!,
+      note: 'B2B transaction: reverse charge applies. Buyer self-assesses VAT.',
+    } : undefined,
     deMinimisApplied,
     dutyExempt: isDomestic ? false : dutyExempt,
     taxExempt: isDomestic ? false : taxExempt,
