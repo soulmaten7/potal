@@ -84,7 +84,17 @@ export async function middleware(request: NextRequest) {
   });
 
   // Refresh session if expired and sync cookies with response
-  await supabase.auth.getUser();
+  // Fail-open: if Supabase is slow/down, skip auth check and let the request through
+  try {
+    await Promise.race([
+      supabase.auth.getUser(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Supabase auth timeout")), 5000)
+      ),
+    ]);
+  } catch {
+    // Timeout or network error — pass request through without auth refresh
+  }
 
   return response;
 }
