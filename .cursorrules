@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-15 14:00 KST (CW13 Cowork 후반 — npm publish potal-mcp-server@1.3.1, MCP 공식 레지스트리, Custom LLM 3종 리라이트, B2B 아웃리치 15사, UCP 발견, Pre-computing 117K)
+# 마지막 업데이트: 2026-03-15 18:00 KST (CW14 Cowork — WDC Phase 3 완료 3,406매핑, 규정 수집 Phase 1 완료, precomputed_hs10_candidates 1,246건)
 
 ## 0. 프로젝트 개요
 
@@ -65,7 +65,7 @@
 - **✅ #2 EU VAT 세분화 (CW10)**: eu-vat-rates.ts — EU 12개국 HS 챕터별 reduced VAT rate(식품/서적/의약품). GlobalCostEngine 자동 적용. 47기능 39→40개 완료
 - **✅ #40 MCP v1.3 (CW10)**: 7→9 tools — generate_document(CI/PL/C/O) + compare_countries(다국 TLC 비교). 47기능 40→41개 완료
 - **✅ #20 Incoterms (CW10)**: EXW/FOB/CIF/DDP/DDU 5개 조건 지원. incotermsBreakdown(sellerPays/buyerPays). 47기능 41→42개 완료
-- **✅ Vector DB 시딩 (CW10→Cowork 11)**: product_hs_mappings 164→**1,017건**, hs_classification_vectors 170→**1,023건** (WDC 카테고리 매핑 +853). AI 분류 정확도 55%→100%. VECTOR_SEARCH_MIN_SIMILARITY=0.85 유지
+- **✅ Vector DB 시딩 (CW10→CW14)**: product_hs_mappings **3,406건** (CW14: Phase 3 상품명 세분화), hs_classification_vectors **3,431건**, precomputed_hs10_candidates **1,246건**. AI 분류 정확도 100%. VECTOR_SEARCH_MIN_SIMILARITY=0.85 유지
 - **✅ WDC 카테고리→HS6 1단계 (Cowork 11)**: 10M JSONL → 145 고유 카테고리 → 147 HS6 매핑. 키워드 84% + LLM 14% = 98%, 비용 ~$0.01
 - **✅ 7개국 HS 10자리 벌크 다운로드 (Cowork 11→CW13 완료)**: US/EU/UK/CA/AU/JP/KR 정부 공식 HS 8~10자리 전체 스케줄 → DB 임포트 → 실시간 API 호출 불필요. gov_tariff_schedules 89,842행 + HS10 파이프라인 구현 완료
 - **✅ 5억 상품명 사전 매핑 전략 확정 (Cowork 11)**: 카테고리→HS6(확정) → 7개국10자리후보(DB) → 상품명+가격→최종매칭(규칙) → 룩업테이블. HS Code 정확도 100% 구조. 가격 분기 규칙("valued over/under $X")은 if문으로 처리
@@ -245,7 +245,7 @@
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
-- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(✅ ~144M행 53개국 완료), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(1,023 Cowork11), hs_expansion_rules(CW9), product_hs_mappings(1,017 Cowork11)
+- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(✅ ~144M행 53개국 완료), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(3,431 CW14), hs_expansion_rules(CW9), product_hs_mappings(3,406 CW14), precomputed_landed_costs(117,600), precomputed_hs10_candidates(1,246 CW14)
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

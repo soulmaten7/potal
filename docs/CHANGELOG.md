@@ -1,5 +1,26 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-15 14:00 KST
+> 마지막 업데이트: 2026-03-15 18:00 KST
+
+## [2026-03-15 18:00 KST] CW14 — WDC Phase 3 완료, 규정 수집 Phase 1 완료, Pre-computing 강화
+
+### WDC Phase 3 상품명 세분화 완료 (Claude Code)
+- product_hs_mappings: 1,055 → **3,406건** (+2,351)
+- hs_classification_vectors: 1,104 → **3,431건** (+2,327)
+- precomputed_hs10_candidates: **1,246건** 신규 (US/EU/GB HS10 후보)
+- precomputed_landed_costs: 117,600 조합 유지 + 22,290건 MFN 세율 매핑
+- 커버리지: 500M+ 상품명 × 240개국 = 1,200억 건 조회 가능 (HS6 매핑 경유)
+- Git: commit dbc5e59, push origin/main ✅
+
+### 240개국 규정 수집 Phase 1 완료 (Claude Code)
+- **CBP CROSS Rulings**: 220,114/220,153건 수집 (99.98%), 244MB, 37 JSON 파일
+  - 방법 1: Playwright 적응형 스캔 → 39,430건 (전문 텍스트 포함)
+  - 방법 2: 검색 API (page=1~) → 180,684건 (메타데이터)
+  - 핵심 해결: page=0 → 500 에러, page=1부터 정상
+- **eCFR Title 19 (Customs)**: 10MB XML, ecfr.gov API
+- **eCFR Title 15 (EAR)**: 13.3MB XML, 수출통제규정
+- **OFAC SDN (제재리스트)**: 122MB CSV+XML
+- **USITC HTSUS 2026 Rev4**: 35,733 items (이전 완료)
+- Phase 2(국제기구) / Phase 3(지역+나머지) 대기
 
 ## [2026-03-15 14:00 KST] CW13 Cowork 후반 — npm publish, MCP 레지스트리, Custom LLM, B2B 아웃리치, UCP, Pre-computing
 

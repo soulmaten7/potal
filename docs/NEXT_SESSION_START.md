@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-15 14:00 KST (CW13 Cowork 후반 — npm publish potal-mcp-server@1.3.1, MCP 공식 레지스트리, Custom LLM 3종 리라이트, B2B 아웃리치, UCP 발견, Pre-computing 117K, HS10 파이프라인)
+> 마지막 업데이트: 2026-03-15 18:00 KST (CW14 Cowork — WDC Phase 3 완료 3,406매핑, 규정 수집 Phase 1 완료 5소스, precomputed_hs10_candidates 1,246건)
 
 ---
 
@@ -105,9 +105,9 @@ POTAL Chief Orchestrator 세션 시작.
 - **사조(SAZO) 분석**: 경쟁사 아님, **잠재 고객** (B2C 플랫폼 = POTAL 인프라 소비자)
 
 ### 백그라운드 작업 상태
-- 터미널 2: CBP CROSS Rulings 다운로드 (Playwright headless, PID 20448) — 240개국 규정 RAG Phase 1
-- 터미널 3: WDC 추출 진행중 (~1807/1899 파트)
-- 터미널 4: 심층 검증 완료 → 종료 가능
+- 터미널 2: ✅ CBP CROSS Rulings 수집 완료 (220,114/220,153건, 99.98%) — 규정 Phase 1 전체 완료
+- 터미널 3: 🔄 WDC 추출 진행중 (~1807/1899 파트)
+- WDC Phase 3: ✅ 완료 (product_hs_mappings 3,406, 벡터 3,431, hs10_candidates 1,246, commit dbc5e59 push 완료)
 
 ### Cowork 12 — 147개 경쟁사 기능 분석 + 240개국 규정 RAG + 데이터 유지보수 (2026-03-13)
 - **147개 경쟁사 기능 분석**: 10개 경쟁사 전체 기능 중복 제거 → 147개 고유 기능
@@ -202,8 +202,8 @@ tail -5 ~/portal/wdc_extract.log
 3. ~~**Custom LLM 3종 리라이트**~~ ✅ 완료 (GPT Actions/Gemini Gem/Meta AI)
 4. ~~**Pre-computing**~~ ✅ 완료 (117,600 조합)
 5. ~~**HS10 파이프라인**~~ ✅ 완료 (7개국)
-6. **WDC 추출 완료 확인** → 3단계 상품명 세분화 → 5억 사전 매핑
-7. **240개국 규정 수집 진행 확인** (Claude Code 터미널 2 진행중, 외장하드)
+6. ~~**WDC Phase 3 상품명 세분화**~~ ✅ 완료 (product_hs_mappings 1,055→3,406, 벡터 3,431, hs10_candidates 1,246)
+7. ~~**240개국 규정 수집 Phase 1**~~ ✅ 완료 (5소스: USITC+CBP CROSS 220,114건+eCFR×2+OFAC SDN). Phase 2~3 대기
 8. **UX Audit 나머지 43항목**: POTAL_UX_AUDIT_CW13.md 11~53번 구현
 9. ~~**GPT Actions 지침 수동 복사**~~ ✅ 완료 (ChatGPT GPT 에디터에 gpt-instructions.md 복사-붙여넣기)
 10. ~~**Gemini Gem 지침 수동 복사**~~ ✅ 완료 (Google AI Studio에 설명+요청사항+지식CSV v2 업데이트)
@@ -262,14 +262,14 @@ tail -5 ~/portal/wdc_extract.log
 - **Custom LLM 3종 리라이트**: ✅ GPT Actions(B2B CTA), Gemini Gem(정적+CTA), Meta AI(정적+CTA)
 - **Incoterms (#20)**: ✅ EXW/FOB/CIF/DDP/DDU + who-pays-what
 - 47기능 42개 완료
-- **Vector DB 시딩**: ✅ hs_classification_vectors **1,104건** (CW13: 1,023→1,104), 파이프라인 정확도 100%
-- **WDC 카테고리→HS6 1~2단계**: ✅ 145+38 카테고리 → 1,055 매핑 (product_hs_mappings 164→1,017→1,055, 벡터 1,104건)
+- **Vector DB 시딩**: ✅ hs_classification_vectors **3,431건** (CW14: 1,104→3,431), 파이프라인 정확도 100%
+- **WDC 카테고리→HS6 1~3단계**: ✅ product_hs_mappings **3,406건** (CW14: 1,055→3,406, Phase 3 상품명 세분화), 벡터 3,431건, hs10_candidates 1,246건
 - **7개국 HS 10자리 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행)
 - **5억 사전 매핑 전략**: ✅ 확정 — 카테고리→HS6→10자리후보→상품명+가격매칭→룩업테이블
 - **HS Code 정확도**: ✅ 100% 구조 설계 완료 (6자리: 카테고리확정, 10자리: DB후보+규칙, 가격분기: if문)
 - **경쟁사 대비**: Avalara 40M+ → **POTAL 500M+** HS Code Classifications
 - **147개 경쟁사 기능 분석 (CW12)**: ✅ 96.6% 커버리지 (102 MUST/40 SHOULD/5 WON'T)
-- **240개국 규정 RAG (CW12)**: 🔄 수집 진행중 (외장하드 /Volumes/soulmaten/POTAL/regulations/)
+- **240개국 규정 RAG Phase 1**: ✅ 완료 (5소스: USITC 35,733 + CBP CROSS 220,114 + eCFR Title 19/15 + OFAC SDN). Phase 2~3 대기
 - **데이터 유지보수 자동화 (CW12)**: ✅ 설계 완료 (공고 페이지 해시 Cron + Make.com AI + 자동 DB 업데이트)
 - **타겟 거래처 (CW12)**: A(Shopify/WooCommerce), B(eBay/Etsy), C(DHL/Walmart)
 - **P2 벤치마크**: ✅ AI분류 50상품(Pipeline 90%), Calculate E2E 15/15통과, 부하테스트 100동시(26.9req/s, p95=3.4s, 에러0%)
