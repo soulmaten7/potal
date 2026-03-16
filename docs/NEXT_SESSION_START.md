@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-16 14:30 KST (CW15 Cowork 후반 — UI/UX 10Phase, B2B Channel Strategy 13시트, 파일 정리 25+→archive, 규정 카탈로그, 7 Cron(21개), psql 직접 연결)
+> 마지막 업데이트: 2026-03-16 16:00 KST (CW15 Cowork 전체 — B2B 채널 전략 13시트, CBP 벤치마크 100건, CBP CROSS 142K 매핑, HS 데이터소스, 포스트 톤 전략 변경, 파일 정리 25+→archive)
 
 ---
 
@@ -61,10 +61,12 @@ POTAL Chief Orchestrator 세션 시작.
 
 ## 🎯 다음 세션 우선순위 (CW15 후반 기준)
 
-### P0: WDC v2 업로드 완료 + 후처리 (진행중)
+### P0: WDC v2 업로드 완료 + CBP 매핑 적재 + 벤치마크 (진행중)
 - \copy 10개 CSV 완료 확인 → 중복 제거 (`DELETE FROM product_hs_mappings a USING product_hs_mappings b WHERE a.id > b.id AND a.product_name = b.product_name AND a.hs6_code = b.hs6_code`)
 - unique constraint 복원 (`CREATE UNIQUE INDEX idx_product_hs_mappings_name_unique ON product_hs_mappings (product_name)`)
+- **CBP CROSS 142,251건 \copy 적재** (cbp_cross_combined_mappings.csv → product_hs_mappings)
 - product_hs_mappings 최종 건수 확인 → CLAUDE.md/session-context.md 수치 업데이트
+- **CBP 벤치마크 실행**: DB 정상화 후 benchmark_test_data.json 100건으로 POTAL API 정확도 테스트
 - **ePing 구독 재시도**: https://www.epingalert.org/ → contact@potal.app
 
 ### P0-B: B2B 마케팅 글 작성 & 배포 (즉시)

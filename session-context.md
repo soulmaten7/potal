@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-16 14:30 KST (CW15 Cowork 후반 — UI/UX 10Phase 정밀점검, B2B Channel Strategy 13시트 업데이트, 파일 정리 25+→archive, 규정 카탈로그 60+소스, 7 Cron(21개), psql 직접 연결)
+> 마지막 업데이트: 2026-03-16 16:00 KST (CW15 Cowork 전체 — B2B 채널 전략 13시트, CBP 벤치마크 100건, CBP CROSS 142K 매핑 추출, HS 데이터소스 마스터 목록, 포스트 톤 전략 변경, 파일 정리 25+→archive)
 
 ---
 
@@ -186,6 +186,16 @@ LLM 커스텀 앱 등록 → 사용 데이터 축적 → 데이터 기반 셀러
 - **B2B 채널 마케팅 전략**: Show HN / Product Hunt / Shopify Community / LinkedIn / Reddit / DEV.to / GitHub
   - 핵심 메시지: "파트너 — 중간업자 아닌 인프라" + 피드백 기반 개선
   - 수정 지침: 8,389→"1.7B+ products", 내부 행수 비노출, 경쟁사 10개 비교표, 요금제별 가격 명시, Enterprise custom 언급
+
+**✅ CW15 Cowork 전체 성과 (2026-03-16 09:30~16:00+ KST):**
+- B2B Channel Strategy 엑셀 전체 업데이트 (13시트, CW15 수치 반영, Update Log/X Twitter/LinkedIn POST 추가)
+- CBP Benchmark Test 준비 (arXiv:2412.14179 방법론, 100건 테스트 데이터, 95 HS 챕터)
+- CBP CROSS HS Mappings 추출 완료: **142,251건** (산업용 38%, 소비재 62%, DB 적재 예정)
+- HS 분류 데이터 소스 마스터 목록 (docs/HS_CLASSIFICATION_DATA_SOURCES.md) 조사 진행 중
+- product_hs_mappings 벌크 업로드 진행 중 (Claude Code 2번에서 \copy)
+- 포스트 톤 전략 변경: "CBP benchmark XX% 정확도" + 약점 공개 + 투명 공유 (스타트업다운 톤)
+- 신규 Cron 후보 5개 설계 (ebti-ruling/uk-atar/cbp-cross-update/wco-classification/usda-agricultural)
+- product_hs_mappings 수치: **~1.36M + CBP 142K = ~1.5M** (v2 \copy 완료 시 ~50M+)
 
 **✅ CW15 Cowork 후반 — 규정 카탈로그 + 7 Cron + psql 직접 연결 (2026-03-16 09:30~13:00 KST):**
 

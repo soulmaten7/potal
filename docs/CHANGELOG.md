@@ -1,5 +1,35 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-16 14:30 KST
+> 마지막 업데이트: 2026-03-16 16:00 KST
+
+## [2026-03-16 16:00 KST] CW15 Cowork 전체 — B2B 채널 전략, CBP 벤치마크, CBP CROSS 매핑, 파일 정리
+
+### B2B Channel Strategy 엑셀 전체 업데이트 (13시트)
+- 10개 채널 포스트 CW15 수치 반영 (50M+ mappings, ~148 endpoints, 21 crons, MCP registry, 60+ sources, UCP)
+- Update Log 시트 신규 추가, X Twitter 단독 트윗 3개, LinkedIn POST 4 (UCP/AI Commerce)
+
+### CBP Benchmark Test 준비
+- arXiv:2412.14179 논문 방법론 재현 — CBP CROSS rulings 100건 무작위 테스트 데이터
+- /Volumes/soulmaten/POTAL/benchmark_test_data.json (100건, 95 HS 챕터, 39.4KB)
+- 경쟁사 벤치마크: Tarifflo 89%, Avalara 80%, Zonos 44%, WCO BACUDA 13%
+
+### CBP CROSS HS Mappings 추출
+- 220,114 rulings → cbp_cross_combined_mappings.csv **142,251건** (중복 제거)
+- 산업용 53,540건 (38%) + 소비재 88,711건 (62%)
+- scripts/extract_cbp_cross_mappings.py 생성
+- \copy로 product_hs_mappings DB 적재 예정
+
+### HS 분류 데이터 소스 마스터 목록
+- docs/HS_CLASSIFICATION_DATA_SOURCES.md 조사 진행 중 (5개 카테고리)
+- 신규 Cron 후보 5개 설계 (ebti-ruling/uk-atar/cbp-cross-update/wco-classification/usda-agricultural)
+
+### 포스트 톤 전략 변경
+- "The most accurate..." → "CBP benchmark XX% 정확도" + 약점 공개 + 투명 공유
+
+### 파일 정리
+- 25+ 파일 → archive/ 이동 (구버전 엑셀, 1회성 명령어)
+- .~lock 파일 정리
+
+---
 
 ## [2026-03-16 14:30 KST] CW15 Cowork 후반 — UI/UX 10Phase 정밀점검, B2B Channel Strategy, 파일 정리
 

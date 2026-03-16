@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-16 14:30 KST (CW15 Cowork 후반 — UI/UX 10Phase 정밀점검, B2B Channel Strategy 13시트 업데이트, 파일 정리 25+파일→archive, 규정 카탈로그 60+소스, 7 Cron(21개), psql 직접 연결)
+# 마지막 업데이트: 2026-03-16 16:00 KST (CW15 Cowork 전체 — B2B 채널 전략 13시트, CBP 벤치마크 100건, CBP CROSS 142K 매핑 추출, HS 데이터소스 마스터 목록, 포스트 톤 전략 변경, 파일 정리 25+→archive)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -65,7 +65,7 @@ portal/
 ## 핵심 수치 (CW15 기준)
 - 240개국/영토, **50개국어** (세션 34: 7→30, CW9: 30→50 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
-- **HS Code 매핑**: product_hs_mappings **~1.36M건** (CW15: 8,389→1,362,900, WDC Phase 4 v1 성과)
+- **HS Code 매핑**: product_hs_mappings **~1.36M건 + CBP 142K = ~1.5M** (CW15: 8,389→1,362,900 WDC v1 + CBP CROSS 142,251건 추출 완료, v2 \copy 완료 시 ~50M+)
 - **HS 분류 벡터**: hs_classification_vectors **3,431건** (CW14: 1,104→3,431)
 - **HS10 후보 사전계산**: precomputed_hs10_candidates **1,090건** (US/EU/GB HS10 후보)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
@@ -236,6 +236,63 @@ portal/
 
 **GitHub Push Protection 이슈 해결:**
 - mcp-server/.mcpregistry_github_token 시크릿 파일 → git rm + .gitignore에 `.mcpregistry_*` 추가
+
+### ⭐ CW15 Cowork 전체 성과 (2026-03-16 09:30~16:00+ KST)
+
+**B2B Channel Strategy 엑셀 전체 업데이트 (POTAL_B2B_Channel_Strategy.xlsx, 13시트):**
+- 10개 채널 포스트 CW15 수치 반영 (50M+ mappings, ~148 endpoints, 21 crons, MCP registry, 60+ sources, UCP)
+- Core Messaging 업데이트 (경쟁사 비교표)
+- Channel Overview 업데이트
+- Update Log 시트 신규 추가
+- X Twitter 단독 트윗 3개 + LinkedIn POST 4 (UCP/AI Commerce) 신규
+
+**CBP Benchmark Test 준비:**
+- arXiv:2412.14179 논문 방법론 재현 — CBP CROSS rulings 100건 무작위 테스트 데이터 준비
+- /Volumes/soulmaten/POTAL/benchmark_test_data.json (100건, 95 HS 챕터, 39.4KB)
+- 경쟁사 벤치마크: Tarifflo 89%, Avalara 80%, Zonos 44%, WCO BACUDA 13%
+- DB 정상화 후 POTAL API 벤치마크 실행 예정
+- CBP_BENCHMARK_TEST_COMMAND.md 생성
+
+**CBP CROSS HS Mappings 추출 완료:**
+- CBP CROSS rulings 220,114건에서 product_hs_mappings 형식으로 변환
+- cbp_cross_combined_mappings.csv: **142,251건** (중복 제거, DB 로딩용)
+  - 산업용 53,540건 (38%) — Ch.84 기계, Ch.85 전기, Ch.29 유기화학, Ch.39 플라스틱, Ch.73 철강, Ch.90 정밀기기
+  - 소비재 88,711건 (62%) — 의류, 완구, 가구 등
+- cbp_cross_hs_mappings.csv: 23,611건 (full text, description 포함)
+- cbp_cross_search_mappings.csv: 120,571건 (subject만, description 없음)
+- 스크립트: scripts/extract_cbp_cross_mappings.py
+- 저장: /Volumes/soulmaten/POTAL/
+- **\copy로 DB 적재 예정** (product_hs_mappings에 추가)
+
+**HS 분류 데이터 소스 마스터 목록 (docs/HS_CLASSIFICATION_DATA_SOURCES.md):**
+- Claude Code 1번에서 조사 진행 중
+- 5개 카테고리: 국가별 분류 결정문, 신상품/신기술, 농산물/식품, 군수/이중용도, B2B 산업 데이터
+- 각 소스별 URL, 형식, 건수, 접근방법, 자동화 가능 여부
+
+**product_hs_mappings 벌크 업로드 진행 중:**
+- Claude Code 2번에서 chunk별 \copy 진행 중
+- part_01: 11개 chunk (각 50만줄, 71-79MB)
+- part_02~10: 아직 미분할
+
+**포스트 톤 전략 변경:**
+- 기존: "The most accurate landed cost API on the planet" (근거 없는 주장)
+- 변경: "CBP benchmark XX% 정확도" + 약점 공개 + 개선 과정 투명 공유 (스타트업다운 톤)
+- 벤치마크 결과 공개 자체가 마케팅 콘텐츠 (DEV.to, HN 소재)
+
+**신규 Cron 후보 (HS 데이터 소스 자동화, 기존 21개에 추가):**
+- `ebti-ruling-monitor` — EU EBTI 분류 결정문 변경 감지 (매주)
+- `uk-atar-monitor` — UK ATaR 새 결정문 감지 (매주)
+- `cbp-cross-update` — CBP CROSS 신규 rulings 수집 (매주)
+- `wco-classification-monitor` — WCO 분류 의견서 업데이트 (매월)
+- `usda-agricultural-monitor` — USDA 농산물 분류 변경 (매월)
+- 패턴: 기존 Cron과 동일 (CRON_SECRET 인증 + health_check_logs + Resend 이메일 알림)
+
+**데이터 파이프라인 설계 (수집 → DB):**
+1. Cron이 소스 변경 감지
+2. 새 ruling/결정문 다운로드
+3. product_name + hs_code 추출 (GPT-4o or 스크립트)
+4. product_hs_mappings에 INSERT
+5. hs_classification_vectors 업데이트 (필요 시)
 
 ### ⭐ CW15 Cowork 후반 세션 성과 (2026-03-16 09:30~13:00 KST)
 
