@@ -513,13 +513,13 @@ export default function PricingPage() {
           Detailed feature comparison across all plans
         </p>
 
-        <div style={{
+        <div className="compare-table-wrapper" style={{
           background: 'white',
           borderRadius: 16,
           overflow: 'hidden',
           border: '1px solid #e5e7eb',
         }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 600 }}>
             <thead>
               <tr style={{ background: '#f8fafc' }}>
                 <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 600, color: '#666', width: '28%' }}>Feature</th>

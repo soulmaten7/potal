@@ -167,7 +167,7 @@ function FeatureCard({ icon, title, description }: { icon: string; title: string
     onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-6px)'; e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)'; }}
     onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
     >
-      <div style={{ fontSize: 32, marginBottom: 16 }}>{icon}</div>
+      <div style={{ fontSize: 32, marginBottom: 16 }} aria-hidden="true">{icon}</div>
       <h3 style={{ fontSize: 18, fontWeight: 700, color: '#02122c', marginBottom: 8, letterSpacing: '-0.01em' }}>{title}</h3>
       <p style={{ fontSize: 14, color: '#666', lineHeight: 1.7 }}>{description}</p>
     </div>
@@ -394,7 +394,7 @@ export default function HomePage() {
 
               <div style={{ display: 'flex', gap: 14, marginBottom: 48 }}>
                 <Link
-                  href="/developers"
+                  href="/auth/signup"
                   style={{
                     padding: '16px 32px',
                     borderRadius: 12,
@@ -411,7 +411,7 @@ export default function HomePage() {
                   Calculate Duties Free
                 </Link>
                 <Link
-                  href="/developers/docs"
+                  href="/developers"
                   style={{
                     padding: '16px 32px',
                     borderRadius: 12,
@@ -445,7 +445,7 @@ export default function HomePage() {
                     padding: '12px 20px',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 16 }}>{stat.icon}</span>
+                      <span style={{ fontSize: 16 }} aria-hidden="true">{stat.icon}</span>
                       <span style={{ fontSize: 24, fontWeight: 800, color: '#F59E0B', fontVariantNumeric: 'tabular-nums' }}>
                         <AnimatedNumber target={stat.value} suffix={stat.suffix} />
                       </span>

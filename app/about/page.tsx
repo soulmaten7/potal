@@ -5,9 +5,9 @@ import React from 'react';
 // [DATA] Platform Metrics
 const STATS = [
   { value: "240", label: "Countries", description: "Global duty & tax coverage" },
-  { value: "120ms", label: "Avg Response", description: "Real-time API calculations" },
-  { value: "99.9%", label: "Uptime SLA", description: "Enterprise-grade reliability" },
-  { value: "8,389+", label: "Product-HS Mappings", description: "AI-powered classification" },
+  { value: "113M+", label: "Tariff Records", description: "MFN + preferential rates" },
+  { value: "148+", label: "API Endpoints", description: "Full commerce coverage" },
+  { value: "50", label: "Languages", description: "Localized widget & API" },
 ];
 
 // [DATA] Core Values

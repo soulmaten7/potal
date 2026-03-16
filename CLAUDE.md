@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-16 03:00 KST (CW14 Cowork 후반 — Core 16 + Trade 21 = 37개 기능 S+ 업그레이드, ~45 API Routes + ~25 Library Files + 111 Tests + 1 Migration, 142-feature S+ Master Plan Excel 생성, PDF 라이브러리 추가, B2B 채널 마케팅 전략)
+# 마지막 업데이트: 2026-03-16 13:00 KST (CW15 Cowork 후반 — 규정 소스 카탈로그 60+소스, 데이터 유지보수 7 Cron 구현(Vercel 14→21개), Supabase psql 직접 연결(IPv4), WDC Phase 4 v2 업로드 진행중)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -62,10 +62,10 @@ portal/
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션: https://www.potal.app
 
-## 핵심 수치 (CW14 기준)
+## 핵심 수치 (CW15 기준)
 - 240개국/영토, **50개국어** (세션 34: 7→30, CW9: 30→50 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
-- **HS Code 매핑**: product_hs_mappings **8,389건** (CW14 감사: Google taxonomy 확장 포함)
+- **HS Code 매핑**: product_hs_mappings **~1.36M건** (CW15: 8,389→1,362,900, WDC Phase 4 v1 성과)
 - **HS 분류 벡터**: hs_classification_vectors **3,431건** (CW14: 1,104→3,431)
 - **HS10 후보 사전계산**: precomputed_hs10_candidates **1,090건** (US/EU/GB HS10 후보)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
@@ -76,7 +76,8 @@ portal/
 - **제재 스크리닝**: sanctions_entries 21,301건 + aliases 22,328 + addresses 24,176 + ids 8,000 ✅
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
 - **7개국 HS 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행: US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633)
-- **관세율 자동업데이트**: Vercel Cron **14개** (CW13: division-monitor + enterprise-lead-match 매30분 + subscription-cleanup 매일 03:00 UTC)
+- **관세율 자동업데이트**: Vercel Cron **21개** (CW15 후반: +7 데이터 유지보수 Cron — federal-register/taric-rss/tariff-change/classification-ruling/macmap-update/wco-news/fta-change)
+- **규정 소스 카탈로그**: docs/REGULATION_SOURCE_CATALOG.md (600줄, 60+소스, 50개국 공고 URL, 8단계 구현 완료)
 - **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
 - **MCP Server**: v1.3.1, 9개 도구, **npm publish 완료** (`potal-mcp-server@1.3.1`), **MCP 공식 레지스트리 등록 완료** (`io.github.soulmaten7/potal`, registry.modelcontextprotocol.io)
 - **Pre-computing**: ✅ 490 HS6 × 240국 = **117,600 조합** 사전 계산 완료 (캐시 히트 <50ms) + 22,290건 MFN 세율 매핑
@@ -182,6 +183,93 @@ portal/
 - **P0 인프라 3개**: #11 벡터DB+3단계분류파이프라인(pgvector), #13 HS10자리확장(정부API 3개국), #15 분류DB규모(product_hs_mappings+pg_trgm)
 - **관세최적화 (#1)**: lookupAllDutyRates() — MIN/AGR/NTLC 3테이블 병렬 조회, 최저 세율 자동 선택, tariffOptimization 응답 필드 (savings 포함)
 - **Vector DB 시딩**: hs_classification_vectors **3,431건** (CW14 감사 확인). 파이프라인 정확도 55%→100%
+
+### ⭐ CW15 Cowork 세션 성과 (2026-03-16 03:00~09:30 KST)
+
+**홈페이지 UX 전체 동기화 (~60개 파일 수정):**
+- i18n 49개 언어 파일 + 소스/문서 11개 파일 = **~60개 파일** 일괄 업데이트
+- 주요 변경: "30+" → "50" 언어, "100 calls/month" → "200 calls/month", "1,100+" → "8,389+" HS매핑, "10+ endpoints" → "~148 endpoints", "10 req/min" → "30 req/min" (Free)
+- 수정 파일: app/pricing/page.tsx, app/help/page.tsx, app/help/layout.tsx, app/about/layout.tsx, app/pricing/layout.tsx, app/faq/page.tsx, app/about/page.tsx, app/legal/[slug]/page.tsx, app/lib/billing/paddle.ts, app/dashboard/DashboardContent.tsx, app/i18n/translations/en.ts, app/i18n/translations/*.ts(49개), app/api/v1/docs/openapi.ts, app/lib/cost-engine/country-i18n.ts, app/api/v1/support/route.ts, plugins/woocommerce/readme.txt, marketing/PRODUCT_HUNT_LAUNCH_PLAN.md, PRIVATE_BETA_LAUNCH_CHECKLIST.md
+- TypeScript 에러 0개 ✅
+- **커밋 0d70c0c**: git push 완료, Vercel 배포 완료
+
+**Middleware fail-open 수정 (504 GATEWAY_TIMEOUT 해결):**
+- middleware.ts에 `Promise.race` 5초 타임아웃 추가
+- Supabase 타임아웃/에러 시 인증 체크 건너뛰고 요청 통과 (fail-open 패턴)
+- **커밋 aa02b92**: git push 완료, www.potal.app 정상화 ✅
+
+**Tariff 페이지 SSG→SSR 전환 (Vercel 빌드 타임아웃 해결):**
+- `generateStaticParams()` → 빈 배열 반환으로 변경
+- `export const dynamic = 'force-dynamic'` 추가
+- 빌드 타임에 Supabase 호출 0건 → 빌드 36초 성공 (기존 3분+타임아웃)
+- **커밋 0c0a221**: git push 완료
+
+**Hero 수치 변경:**
+- 기존: 240 Countries / 5,371 HS Codes / 63 FTAs / 181 Tariff Countries
+- 변경: **240 Countries / 113M+ Tariff Records / 63 FTAs / 50 Languages**
+- AnimatedNumber 0→113 카운트업 + "M+" suffix
+- **커밋 1864653**: git push 완료
+
+**WDC Phase 4 v1→v2 전환 (로컬 병렬 매칭):**
+- **v1 문제점**: Management API curl 1건씩 INSERT → Supabase 과부하 → www.potal.app 504 다운
+- **v1 성과 (멈출 때까지)**: 12.39M줄 처리(0.7%), product_hs_mappings 8,389 → **1,362,900건** DB 삽입 완료
+- **v2 설계 (은태님 아이디어)**: DB에서 매핑 테이블 다운 → 로컬 메모리에서 병렬 매칭 → 결과 외장하드 저장 → 마지막에만 DB 업로드
+- **v2 테스트 결과**: 14,329 lines/sec (**v1 대비 28배**), 1M줄 70초 처리, 매칭률 6.6%
+- **v2 풀 런 실행 중**: PID 80966, 워커 2개 (과부하 방지), nice -n 15 (CPU 최하위), 16청크×~19GB, --no-upload
+- **v2 ETA**: ~4일 (Mac 정상 사용 가능, 사이트 과부하 없음)
+- 결과 저장: `/Volumes/soulmaten/POTAL/wdc-products/v2_results/`
+- 모니터링: `tail -f /Volumes/soulmaten/POTAL/wdc-products/v2_results/v2.log`
+- 중지: `kill 80966` / 재개: `--resume`
+
+**B2B 채널 전략 엑셀 생성:**
+- POTAL_B2B_Channel_Strategy.xlsx (12시트)
+- Sheet 1: Channel Overview — 10개 채널 비교 (HN, PH, Reddit×2, LinkedIn, Shopify, DEV.to, GitHub, Indie Hackers, X/Twitter)
+- Sheet 2: Core Messaging — 헤드라인 3종, 요금제 전체, 기능 리스트, 신뢰 시그널, 경쟁사 8사 10기능 비교표, 파트너 메시지(한/영)
+- Sheet 3~12: 채널별 실제 포스트 초안 + 포스팅 규칙/주의사항
+- 은태님 피드백 전부 반영: 요금제별 가격, 전체 기능 나열, "1.7B+ products", 경쟁사 비교, "파트너" 메시지, AI 정확도/신뢰 강조
+
+**Git 커밋 (CW15 Cowork):**
+- 0d70c0c: UX sync — 60개 파일 업데이트 (50 languages, 200 free, ~148 endpoints, 8389 mappings)
+- aa02b92: fix — middleware Supabase auth 5초 타임아웃 + fail-open
+- 0c0a221: fix — tariff pages SSR 전환 (빌드 타임아웃 해결)
+- 1864653: update — hero stats 113M+ tariff records, 50 languages
+
+**GitHub Push Protection 이슈 해결:**
+- mcp-server/.mcpregistry_github_token 시크릿 파일 → git rm + .gitignore에 `.mcpregistry_*` 추가
+
+### ⭐ CW15 Cowork 후반 세션 성과 (2026-03-16 09:30~13:00 KST)
+
+**규정 소스 카탈로그 완성 (docs/REGULATION_SOURCE_CATALOG.md):**
+- 600줄, **60+ 소스** 조사 완료 (URL 검증 포함)
+- 국제기구 15 + 지역기구 15 (CPTPP/RCEP/USMCA/Pacific Alliance/EFTA/ECOWAS/COMESA 추가) + 개별국가 10그룹 + FTA 11
+- **50개국 관세 변경 공고 URL** 확보 (해시 비교 자동화용)
+- **데이터 유지보수 6개 영역** 문서화: HS 매핑 검증, WCO HS 2028, 7개국 관세율표, FTA 변경, MacMap/WITS, 240개국 공고
+- **8단계 구현 계획** 전부 완료 (Cron 7개 + ePing 구독 가이드)
+
+**데이터 유지보수 7개 Cron 구현 (Vercel Cron 14→21개):**
+- `federal-register-monitor` (매일 06:00 UTC) — US Federal Register API 연동
+- `taric-rss-monitor` (매일 07:00 UTC) — EU TARIC RSS + 페이지 해시
+- `tariff-change-monitor` (매주 일 05:00 UTC) — 48개국 관세청 페이지 해시 비교
+- `classification-ruling-monitor` (매주 수 06:00 UTC) — CBP CROSS + EU EBTI + UK ATaR + WCO + SARS
+- `macmap-update-monitor` (매월 1일 08:00 UTC) — MacMap/WITS/WTO TTD 데이터 갱신 감지
+- `wco-news-monitor` (매월 15일 08:00 UTC) — WCO 뉴스룸 + HS 2028 키워드 감지
+- `fta-change-monitor` (매주 금 06:00 UTC) — WTO RTA-IS + 7개국 FTA 포털
+- 모든 Cron: CRON_SECRET 인증 + health_check_logs 기록 + Resend 이메일 알림
+- **커밋 5f430be**: 9파일 변경, 1,971줄 추가
+
+**Supabase psql 직접 연결 확보:**
+- Supabase IPv4 add-on 구매 ($4/월)
+- DB 비밀번호 변경: PotalReview2026! → potalqwepoi2@
+- Homebrew + libpq(psql 18.3) Mac에 설치
+- `\copy` 벌크 임포트 가능 (Management API curl 대비 수백배 빠름)
+
+**WDC Phase 4 v2 업로드 진행 중:**
+- JSONL→CSV 변환 완료 (49,265,581건 → 10개 CSV, 각 ~800MB, 총 ~7.8GB)
+- unique constraint 제거 후 `\copy` 진행 중
+- 완료 후: 중복 제거 + constraint 복원 예정
+- product_hs_mappings **~1.36M → ~50M+ 예상** (v2 업로드 후)
+
+**ePing 구독**: WTO 사이트 버그로 가입 실패, 나중에 재시도
 
 ### ⭐ CW14 Cowork 후반 세션 성과 (2026-03-16 00:00~03:00 KST)
 
@@ -367,8 +455,13 @@ portal/
 9. **문서 업데이트 시 날짜+시간(KST) 기록 필수** — 예: 2026-03-11 14:30 KST. session-context.md, .cursorrules, CLAUDE.md, CHANGELOG.md, NEXT_SESSION_START.md 헤더에 마지막 업데이트 시간 포함
 10. **Cowork 작업도 5개 문서 동기화 필수** — Cowork(은태님+Claude Cowork)에서 진행한 작업도 반드시 동일하게 5개 문서(CLAUDE.md, session-context.md, .cursorrules, CHANGELOG.md, NEXT_SESSION_START.md)에 업데이트해야 함. Cowork 작업은 Claude Code가 모르므로, 은태님이 알려주면 즉시 반영할 것
 
-## Supabase 연결 방법 (세션 32 확인)
-- **직접 PostgreSQL**: ❌ 포트 5432 차단 (VM/EC2에서)
+## Supabase 연결 방법 (CW15 후반 업데이트)
+- **직접 PostgreSQL (psql)**: ✅ **가능** (CW15: IPv4 add-on $4/월 구매 + 비밀번호 변경)
+  ```bash
+  PGPASSWORD='potalqwepoi2@' psql -h db.zyurflkhiregundhisky.supabase.co -p 5432 -U postgres -d postgres
+  ```
+  - Mac에 Homebrew + libpq(psql 18.3) 설치 완료
+  - `\copy` 벌크 임포트 가능 (Management API curl보다 수백배 빠름)
 - **REST API (PostgREST)**: ✅ CRUD 가능, DDL 불가
 - **Pooler**: ❌ 비밀번호 인증 실패 (원인 미확인)
 - **Management API**: ✅ SQL 실행 가능 (curl만, urllib은 Cloudflare 차단)
@@ -437,7 +530,7 @@ portal/
 | 항목 | 값 |
 |------|-----|
 | Supabase Project ID | zyurflkhiregundhisky |
-| Supabase DB Password | PotalReview2026! |
+| Supabase DB Password | potalqwepoi2@ (CW15 변경) |
 | Supabase Secret Key | sb_secret_***REDACTED*** |
 | Management API Token | ***REDACTED*** |
 | WTO API Key | e6b00ecdb5b34e09aabe15e68ab71d1d |

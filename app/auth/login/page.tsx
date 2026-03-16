@@ -19,13 +19,23 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      setLoading(false);
+      return;
+    }
+
     const { error: loginError } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
       password,
     });
 
     if (loginError) {
-      setError(loginError.message);
+      setError(
+        loginError.message === 'Invalid login credentials'
+          ? 'Email or password is incorrect. Please try again.'
+          : loginError.message
+      );
       setLoading(false);
       return;
     }
@@ -161,6 +171,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Your password"
               required
+              minLength={6}
               style={{
                 width: '100%',
                 padding: '12px 14px',
@@ -178,7 +189,9 @@ export default function LoginPage() {
 
           {/* Forgot password */}
           <div style={{ textAlign: 'right', marginBottom: 20 }}>
-            <span style={{ fontSize: 13, color: '#94a3b8' }}>Forgot password?</span>
+            <Link href="/auth/forgot-password" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none', fontWeight: 500 }}>
+              Forgot password?
+            </Link>
           </div>
 
           {/* Error */}

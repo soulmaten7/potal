@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-16 03:00 KST (CW14 Cowork 후반 — 37개 S+ 업그레이드, 142-feature Excel, PDF lib, B2B 마케팅 전략)
+> 마지막 업데이트: 2026-03-16 13:00 KST (CW15 Cowork 후반 — 규정 소스 카탈로그 60+소스, 데이터 유지보수 7 Cron(14→21개), Supabase psql 직접 연결(IPv4), WDC Phase 4 v2 업로드 진행중)
 
 ---
 
@@ -186,6 +186,84 @@ LLM 커스텀 앱 등록 → 사용 데이터 축적 → 데이터 기반 셀러
 - **B2B 채널 마케팅 전략**: Show HN / Product Hunt / Shopify Community / LinkedIn / Reddit / DEV.to / GitHub
   - 핵심 메시지: "파트너 — 중간업자 아닌 인프라" + 피드백 기반 개선
   - 수정 지침: 8,389→"1.7B+ products", 내부 행수 비노출, 경쟁사 10개 비교표, 요금제별 가격 명시, Enterprise custom 언급
+
+**✅ CW15 Cowork 후반 — 규정 카탈로그 + 7 Cron + psql 직접 연결 (2026-03-16 09:30~13:00 KST):**
+
+**1. 규정 소스 카탈로그 완성 (docs/REGULATION_SOURCE_CATALOG.md):**
+- 600줄, 60+ 소스 조사 (URL 검증 포함)
+- 국제기구 15 + 지역기구 15 + 개별국가 10그룹 + FTA 11 + 유지보수 6영역
+- 50개국 관세 변경 공고 URL 확보 + 8단계 구현 계획
+
+**2. 데이터 유지보수 7 Cron 구현 (Vercel Cron 14→21개):**
+- federal-register-monitor (매일) — US Federal Register API
+- taric-rss-monitor (매일) — EU TARIC RSS + 해시
+- tariff-change-monitor (매주 일) — 48개국 관세청 해시
+- classification-ruling-monitor (매주 수) — CBP CROSS + EU EBTI + UK ATaR + WCO + SARS
+- macmap-update-monitor (매월 1일) — MacMap/WITS/WTO TTD
+- wco-news-monitor (매월 15일) — WCO 뉴스룸 + HS 2028
+- fta-change-monitor (매주 금) — WTO RTA-IS + 7개국 FTA
+- 커밋: 5f430be (9파일, 1,971줄)
+
+**3. Supabase psql 직접 연결 확보:**
+- IPv4 add-on 구매 ($4/월), DB 비밀번호: potalqwepoi2@
+- libpq(psql 18.3) Mac 설치 완료
+- \copy 벌크 임포트 가능 (Management API 대비 수백배 빠름)
+
+**4. WDC Phase 4 v2 업로드 진행 중:**
+- JSONL→CSV 변환 (49,265,581건 → 10 CSV, 7.8GB)
+- unique constraint 제거 후 \copy 진행 중
+- 완료 후: 중복 제거 + constraint 복원
+
+**5. ePing 구독**: WTO 사이트 버그로 가입 실패, 재시도 예정
+
+---
+
+**✅ CW15 Cowork — 홈페이지 UX 동기화 + 프로덕션 안정화 + WDC Phase 4 v2 + B2B 채널 전략 (2026-03-16 03:00~09:30 KST):**
+
+**1. B2B 채널 전략 엑셀 생성:**
+- POTAL_B2B_Channel_Strategy.xlsx 생성 — 12시트, 10개 B2B 채널 상세 분석
+- Sheet 1: Channel Overview (10채널 × Audience/MAU/POTAL Fit/Format/Rules/Best Time/ROI/Priority)
+- Sheet 2: Core Messaging (headlines, pricing, features, trust signals, 경쟁사 8사 비교표, 파트너 메시지 KR/EN)
+- Sheet 3-12: 채널별 포스트 초안 (Show HN, Product Hunt, Reddit r/ecommerce, Reddit r/SaaS, LinkedIn, Shopify Community, DEV.to, GitHub Awesome, Indie Hackers, X/Twitter)
+
+**2. 홈페이지 UX 전체 동기화 (Claude Code 실행):**
+- HOMEPAGE_UX_SYNC_COMMAND.md 명령어 작성 → Claude Code 실행
+- **~60개 파일 수정**: 최신 수치와 불일치하는 텍스트 전부 교정
+- 주요 변경: "30+" → "50" languages, "100 calls/month" → "200 calls/month", "1,100+" → "8,389+" mappings, "10+ endpoints" → "~148 endpoints", "10 req/min" → "30 req/min"
+- 대상 파일: app/pricing/page.tsx, app/help/page.tsx, app/about/page.tsx, app/faq/page.tsx, app/dashboard/DashboardContent.tsx, app/i18n/translations/en.ts + 49개 언어 파일, app/api/v1/docs/openapi.ts, plugins/woocommerce/readme.txt 등
+
+**3. Vercel 프로덕션 배포 문제 해결:**
+- **문제 1: Tariff SSG 빌드 타임아웃** — `app/tariff/[country]/[hs]/page.tsx`가 `generateStaticParams()`로 100개 라우트 생성, 각각 4개 Supabase 쿼리 → 60초 타임아웃 초과
+  - **수정**: `export const dynamic = 'force-dynamic'` + `generateStaticParams()` → 빈 배열 반환. 빌드 시간 36초로 단축 (커밋 0c0a221)
+- **문제 2: www.potal.app 504 GATEWAY_TIMEOUT** — middleware.ts의 `supabase.auth.getUser()`가 DB 과부하로 타임아웃
+  - **수정**: `Promise.race` 5초 타임아웃 + fail-open 패턴 (타임아웃/에러 시 auth 스킵하고 요청 통과) (커밋 aa02b92)
+- **GitHub Push Protection 차단**: mcp-server/.mcpregistry_github_token 비밀 파일 감지 → `git rm --cached` + `.gitignore`에 `.mcpregistry_*` 추가
+
+**4. Hero 수치 변경 (커밋 1864653):**
+- `{ value: 5371, suffix: '', label: 'HS Codes' }` → `{ value: 113, suffix: 'M+', label: 'Tariff Records', icon: '📈' }`
+- `{ value: 181, suffix: '', label: 'Tariff Countries' }` → `{ value: 50, suffix: '', label: 'Languages', icon: '🌐' }`
+- 은태님 인사이트: "5,371 HS Codes"는 인상적이지 않음 → "113M+ Tariff Records"가 마케팅에 효과적
+
+**5. WDC Phase 4 v1→v2 전환:**
+- **v1 (중단)**: Management API curl per-row INSERT (500/s, ETA 40일, DB 과부하 원인)
+  - 12M 처리, ~1.34M 삽입 후 중단 (www.potal.app 504 + Vercel 빌드 실패 원인)
+- **v2 설계 (은태님 핵심 인사이트)**: "Supabase에서 매핑 테이블을 로컬로 다운 → 메모리에서 병렬 매칭 → 결과만 업로드"
+  - WDC_PHASE4_V2_COMMAND.md 명령어 작성
+  - scripts/wdc_phase4_v2_parallel.py 작성 (Python multiprocessing, byte offset 분할)
+  - 테스트 결과: 1M줄 처리 → 14,329/s (v1의 28배), 73,159건 매칭 (7.3% 매칭률)
+  - **Mac 과부하**: 처음 8 workers → Mac 전체 프리즈 → 2 workers + `nice -n 15`로 조정
+  - 전체 실행 시작: PID 80966, 2 workers, ETA ~4일 (v1의 40일→4일)
+  - 결과 저장: /Volumes/soulmaten/POTAL/wdc-products/v2_results/
+  - product_hs_mappings: 8,389 → **~1.36M** (v1 결과 포함)
+
+**6. Git Commits (CW15 Cowork):**
+- Claude Code UX sync + middleware fix + tariff SSR + hero stats 등 다수
+- 주요: aa02b92 (middleware fail-open), 0c0a221 (tariff SSR), 1864653 (hero stats)
+- .gitignore: `.mcpregistry_*` 패턴 추가
+
+**7. 운영 도구:**
+- HOMEPAGE_UX_SYNC_COMMAND.md — 홈페이지 텍스트 전체 동기화 명령어 (26개 파일 체크리스트)
+- WDC_PHASE4_V2_COMMAND.md — 로컬 병렬 매칭 명령어 (6단계 프로세스)
 
 ### Roadmap (2026-03-03 확정)
 

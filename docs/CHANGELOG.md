@@ -1,5 +1,94 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-16 03:00 KST
+> 마지막 업데이트: 2026-03-16 13:00 KST
+
+## [2026-03-16 13:00 KST] CW15 Cowork 후반 — 규정 소스 카탈로그, 데이터 유지보수 7 Cron, psql 직접 연결
+
+### 규정 소스 카탈로그 (docs/REGULATION_SOURCE_CATALOG.md)
+- 600줄, 60+ 소스 조사 (URL 검증 포함)
+- 국제기구 15 + 지역기구 15 (CPTPP/RCEP/USMCA/Pacific Alliance/EFTA/ECOWAS/COMESA 추가) + 개별국가 10그룹 + FTA 11
+- 50개국 관세 변경 공고 URL 확보 + 데이터 유지보수 6개 영역 문서화
+- 8단계 구현 계획 + ePing 구독 가이드
+
+### 데이터 유지보수 7 Cron 구현 (Vercel Cron 14→21개)
+- federal-register-monitor (매일) — US Federal Register API 연동
+- taric-rss-monitor (매일) — EU TARIC RSS + consultation 페이지 해시
+- tariff-change-monitor (매주 일) — 48개국 관세청 페이지 해시 비교
+- classification-ruling-monitor (매주 수) — CBP CROSS + EU EBTI + UK ATaR + WCO + SARS
+- macmap-update-monitor (매월 1일) — MacMap/WITS/WTO TTD 데이터 갱신 감지
+- wco-news-monitor (매월 15일) — WCO 뉴스룸 + HS 2028 키워드 감지
+- fta-change-monitor (매주 금) — WTO RTA-IS + 7개국 FTA 포털
+- 모든 Cron: CRON_SECRET 인증 + health_check_logs + Resend 이메일 알림
+
+### Supabase psql 직접 연결 확보
+- Supabase IPv4 add-on 구매 ($4/월)
+- DB 비밀번호 변경: potalqwepoi2@
+- Homebrew + libpq(psql 18.3) Mac에 설치
+- \copy 벌크 임포트 가능 (Management API 대비 수백배 빠름)
+
+### WDC Phase 4 v2 업로드 진행 중
+- JSONL→CSV 변환 (49,265,581건 → 10 CSV, 각 ~800MB, 총 ~7.8GB)
+- unique constraint 제거 후 \copy 진행 중 (part_01~10)
+- 완료 후: 중복 제거 + constraint 복원 예정
+
+### 파일 생성
+- docs/REGULATION_SOURCE_CATALOG.md (규정 소스 카탈로그, 600줄)
+- app/api/v1/cron/federal-register-monitor/route.ts
+- app/api/v1/cron/taric-rss-monitor/route.ts
+- app/api/v1/cron/tariff-change-monitor/route.ts
+- app/api/v1/cron/classification-ruling-monitor/route.ts
+- app/api/v1/cron/macmap-update-monitor/route.ts
+- app/api/v1/cron/wco-news-monitor/route.ts
+- app/api/v1/cron/fta-change-monitor/route.ts
+
+### 파일 수정
+- vercel.json (crons 14→21개)
+
+---
+
+## [2026-03-16 09:30 KST] CW15 Cowork — 홈페이지 UX 동기화, 프로덕션 안정화, WDC Phase 4 v2, B2B 채널 전략
+
+### B2B 채널 전략 엑셀 생성
+- POTAL_B2B_Channel_Strategy.xlsx 생성 (12시트, 10개 B2B 채널)
+- Sheet 1: Channel Overview — 10채널 상세 분석 (Audience/MAU/POTAL Fit/Format/Rules/Best Time/ROI/Priority)
+- Sheet 2: Core Messaging — headlines, pricing, features, trust signals, 경쟁사 8사 비교표
+- Sheet 3-12: 채널별 포스트 초안 (Show HN, Product Hunt, Reddit r/ecommerce, Reddit r/SaaS, LinkedIn, Shopify Community, DEV.to, GitHub Awesome, Indie Hackers, X/Twitter)
+
+### 홈페이지 UX 전체 동기화 (~60개 파일 수정)
+- HOMEPAGE_UX_SYNC_COMMAND.md 명령어 작성 → Claude Code 실행
+- 주요 변경: "30+" → "50" languages, "100 calls/month" → "200 calls/month", "1,100+" → "8,389+" mappings, "10+ endpoints" → "~148 endpoints", "10 req/min" → "30 req/min"
+- 대상: pricing/help/about/faq/dashboard + 49개 i18n 언어 파일 + openapi.ts + woocommerce readme + marketing docs
+
+### Vercel 프로덕션 안정화 (3개 이슈 해결)
+- **Tariff SSG → SSR 전환** (커밋 0c0a221): `generateStaticParams()` → 빈 배열 + `dynamic = 'force-dynamic'`. 빌드 시간 60초+ → 36초
+- **Middleware fail-open** (커밋 aa02b92): `Promise.race` 5초 타임아웃 + fail-open 패턴 (auth 실패 시 요청 통과). www.potal.app 504 해결
+- **GitHub Push Protection**: .mcpregistry_github_token → `git rm --cached` + `.gitignore`에 `.mcpregistry_*` 추가
+
+### Hero 수치 변경 (커밋 1864653)
+- "5,371 HS Codes" → "113M+ Tariff Records" (더 인상적인 마케팅 수치)
+- "181 Tariff Countries" → "50 Languages" (언어 지원 강조)
+
+### WDC Phase 4 v1→v2 전환
+- **v1 중단**: curl per-row INSERT (500/s, ETA 40일) → DB 과부하로 www.potal.app 504 + Vercel 빌드 실패 원인
+  - 성과: 12M 처리, ~1.34M 삽입 (product_hs_mappings 8,389→~1.36M)
+- **v2 설계 (은태님 인사이트)**: 매핑 테이블 로컬 다운 → 메모리에서 병렬 매칭 → 결과만 업로드
+  - WDC_PHASE4_V2_COMMAND.md 명령어 작성 + scripts/wdc_phase4_v2_parallel.py 생성
+  - 테스트: 1M줄 → 14,329/s (v1의 28배), 73,159건 매칭 (7.3%)
+  - Mac 과부하: 8 workers → 전체 프리즈 → 2 workers + `nice -n 15`
+  - 전체 실행: PID 80966, ETA ~4일
+  - 결과 저장: /Volumes/soulmaten/POTAL/wdc-products/v2_results/
+
+### 파일 생성
+- POTAL_B2B_Channel_Strategy.xlsx (12시트, 10개 채널 전략)
+- HOMEPAGE_UX_SYNC_COMMAND.md (홈페이지 동기화 명령어)
+- WDC_PHASE4_V2_COMMAND.md (Phase 4 v2 명령어)
+
+### 파일 수정 (Claude Code)
+- ~60개 파일 UX 동기화 (pricing, help, about, faq, dashboard, i18n 49개 언어, openapi, woocommerce 등)
+- middleware.ts (fail-open 패턴)
+- app/tariff/[country]/[hs]/page.tsx (SSR 전환)
+- app/page.tsx (Hero 수치 변경)
+- .gitignore (.mcpregistry_* 패턴)
+- scripts/wdc_phase4_v2_parallel.py (Phase 4 v2 스크립트)
 
 ## [2026-03-16 03:00 KST] CW14 Cowork 후반 — 37개 S+ 업그레이드, 142 Excel, PDF lib, B2B 전략
 

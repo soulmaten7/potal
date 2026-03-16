@@ -108,7 +108,9 @@ export default function RootLayout({
         {/* viewport: iOS 네이티브(TabletViewController)에서 태블릿 1440px 강제 처리 */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Shopify App Bridge — must be FIRST script, meta tag before it */}
-        <meta name="shopify-api-key" content={process.env.NEXT_PUBLIC_SHOPIFY_API_KEY || '2fa34ed65342ffb7fac08dd916f470b8'} />
+        {process.env.NEXT_PUBLIC_SHOPIFY_API_KEY && (
+          <meta name="shopify-api-key" content={process.env.NEXT_PUBLIC_SHOPIFY_API_KEY} />
+        )}
         <script src="https://cdn.shopify.com/shopifycloud/app-bridge.js"></script>
       </head>
       <body className={`${inter.variable} ${geistMono.variable} antialiased font-sans text-slate-900`}>

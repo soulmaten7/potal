@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
+import { fetchWithTimeout } from '@/app/lib/fetch-with-timeout';
 import dynamic from 'next/dynamic';
 
 const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), { ssr: false });
@@ -226,7 +227,9 @@ export default function DashboardContent() {
   const [logData, setLogData] = useState<ApiLogEntry[]>([]);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
-  // ─── Load Data ────────────────────────────────────
+  // ─── Load Data (with timeout + auto-retry) ──────
+  const retryCountRef = useRef(0);
+
   const loadData = useCallback(async () => {
     if (!session) return;
 
@@ -235,8 +238,9 @@ export default function DashboardContent() {
 
     try {
       const token = session.access_token;
-      const res = await fetch('/api/v1/sellers/me', {
+      const res = await fetchWithTimeout('/api/v1/sellers/me', {
         headers: { Authorization: `Bearer ${token}` },
+        timeout: 10000,
       });
       const data = await res.json();
 
@@ -246,14 +250,26 @@ export default function DashboardContent() {
         } else {
           setError(data.error?.message || 'Failed to load dashboard.');
         }
+        // Fallback plan display so the page isn't blank
+        setSeller(prev => prev ?? { id: '', email: session.user?.email || '', companyName: null, plan: 'free', subscriptionStatus: 'active', createdAt: new Date().toISOString() });
         return;
       }
 
+      retryCountRef.current = 0;
       setSeller(data.data.seller);
       setKeys(data.data.keys);
       setUsage(data.data.usage);
     } catch {
-      setError('Failed to connect. Please try again.');
+      // Auto-retry once after 5 seconds
+      if (retryCountRef.current < 1) {
+        retryCountRef.current += 1;
+        setTimeout(() => loadData(), 5000);
+        setError('Loading is slow. Retrying...');
+      } else {
+        setError('Failed to connect. Please try again.');
+      }
+      // Fallback plan so page isn't blank
+      setSeller(prev => prev ?? { id: '', email: session.user?.email || '', companyName: null, plan: 'free', subscriptionStatus: 'active', createdAt: new Date().toISOString() });
     } finally {
       setLoading(false);
     }
@@ -270,15 +286,25 @@ export default function DashboardContent() {
     loadData();
   }, [session, loadData, router]);
 
-  // ─── Load Analytics (lazy — only when tab is selected) ──
+  // ─── Load Analytics (lazy, debounced, abortable) ──
+  const analyticsAbortRef = useRef<AbortController | null>(null);
+  const analyticsDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   const loadAnalytics = useCallback(async (type: 'countries' | 'platforms' | 'logs') => {
     if (!session) return;
+
+    // Abort previous request
+    if (analyticsAbortRef.current) analyticsAbortRef.current.abort();
+    const controller = new AbortController();
+    analyticsAbortRef.current = controller;
+
     setAnalyticsLoading(true);
     try {
       const limit = type === 'logs' ? '100' : '';
       const url = `/api/v1/sellers/analytics?type=${type}${limit ? `&limit=${limit}` : ''}`;
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${session.access_token}` },
+        signal: controller.signal,
       });
       const data = await res.json();
       if (data.success) {
@@ -286,15 +312,27 @@ export default function DashboardContent() {
         else if (type === 'platforms') setPlatformData(data.data.platforms || []);
         else if (type === 'logs') setLogData(data.data.logs || []);
       }
-    } catch { /* silent fail */ }
+    } catch { /* silent — aborted or failed */ }
     finally { setAnalyticsLoading(false); }
   }, [session]);
 
-  // Load analytics when tab changes
+  // Load analytics when tab changes (debounced 300ms)
   useEffect(() => {
-    if (activeTab === 'countries' && countryData.length === 0) loadAnalytics('countries');
-    if (activeTab === 'platforms' && platformData.length === 0) loadAnalytics('platforms');
-    if (activeTab === 'logs' && logData.length === 0) loadAnalytics('logs');
+    const analyticsTab = activeTab === 'countries' || activeTab === 'platforms' || activeTab === 'logs';
+    if (!analyticsTab) return;
+
+    const alreadyLoaded =
+      (activeTab === 'countries' && countryData.length > 0) ||
+      (activeTab === 'platforms' && platformData.length > 0) ||
+      (activeTab === 'logs' && logData.length > 0);
+    if (alreadyLoaded) return;
+
+    clearTimeout(analyticsDebounceRef.current);
+    analyticsDebounceRef.current = setTimeout(() => {
+      loadAnalytics(activeTab as 'countries' | 'platforms' | 'logs');
+    }, 300);
+
+    return () => clearTimeout(analyticsDebounceRef.current);
   }, [activeTab, countryData.length, platformData.length, logData.length, loadAnalytics]);
 
   // ─── Create Key (uses secret key from keys list) ──
@@ -471,7 +509,7 @@ export default function DashboardContent() {
               </div>
             ))}
           </div>
-          <p style={{ color: '#999', fontSize: 13, textAlign: 'center', marginTop: 24 }}>
+          <p aria-live="polite" style={{ color: '#999', fontSize: 13, textAlign: 'center', marginTop: 24 }}>
             {!session ? 'Redirecting to sign in...' : 'Loading dashboard...'}
           </p>
         </div>
@@ -504,13 +542,50 @@ export default function DashboardContent() {
         }}
       />
 
-      <div style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '24px 24px', gap: 24 }}>
-        {/* Sidebar */}
-        <div style={{ width: 200, flexShrink: 0 }}>
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {/* Mobile horizontal tab bar */}
+      <style>{`
+        .dashboard-mobile-tabs { display: none; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 12px 16px 0; max-width: 1440; margin: 0 auto; }
+        .dashboard-mobile-tabs::-webkit-scrollbar { display: none; }
+        @media (max-width: 768px) {
+          .dashboard-mobile-tabs { display: flex !important; }
+          .dashboard-sidebar { display: none !important; }
+          .dashboard-layout { padding: 12px 12px !important; }
+        }
+      `}</style>
+      <div className="dashboard-mobile-tabs">
+        <div role="tablist" aria-label="Dashboard sections" style={{ display: 'flex', gap: 8 }}>
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-controls={`tabpanel-${tab.id}`}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px',
+                borderRadius: 20, border: 'none', whiteSpace: 'nowrap', flexShrink: 0,
+                background: activeTab === tab.id ? '#02122c' : '#e5e7eb',
+                color: activeTab === tab.id ? 'white' : '#666',
+                fontWeight: activeTab === tab.id ? 700 : 500, fontSize: 13, cursor: 'pointer',
+              }}
+            >
+              <span style={{ fontSize: 14 }} aria-hidden="true">{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="dashboard-layout" style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '24px 24px', gap: 24 }}>
+        {/* Sidebar (desktop) */}
+        <div className="dashboard-sidebar" style={{ width: 200, flexShrink: 0 }}>
+          <nav role="tablist" aria-label="Dashboard sections" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {TABS.map(tab => (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-controls={`tabpanel-${tab.id}`}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
                   display: 'flex',
@@ -528,7 +603,7 @@ export default function DashboardContent() {
                   boxShadow: activeTab === tab.id ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
                 }}
               >
-                <span>{tab.icon}</span>
+                <span aria-hidden="true">{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
@@ -536,7 +611,7 @@ export default function DashboardContent() {
         </div>
 
         {/* Main */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        <div role="tabpanel" id={`tabpanel-${activeTab}`} style={{ flex: 1, minWidth: 0 }}>
           {error && (
             <div style={{ background: '#fef2f2', color: '#dc2626', padding: '12px 16px', borderRadius: 10, fontSize: 13, marginBottom: 16 }}>
               {error}

@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-16 03:00 KST (CW14 후반 — 37개 S+ 업그레이드, 142 Excel, PDF lib, B2B 마케팅 전략)
+> 마지막 업데이트: 2026-03-16 13:00 KST (CW15 Cowork 후반 — 규정 소스 카탈로그, 7 Cron(14→21개), psql 직접 연결, WDC v2 업로드 진행중)
 
 ---
 
@@ -20,6 +20,9 @@ POTAL Chief Orchestrator 세션 시작.
 2단계: 백그라운드 작업 확인
 - KOR AGR 재임포트: ✅ 완료 (1,815,798행, 2026-03-13)
 - WDC 추출: ✅ 완료 (1,896/1,899 파트, 17.6억 건)
+- WDC Phase 4 v2 매칭: ✅ 완료 (49,265,581건 매칭 결과)
+- WDC Phase 4 v2 업로드: 🔄 psql \copy 진행 중 (10 CSV, 7.8GB → product_hs_mappings)
+  → 완료 후: 중복 제거 + unique constraint 복원
 
 3단계: Morning Brief 실행
 - Gmail에서 "Morning Brief" 또는 "health-check" 관련 이메일 확인
@@ -56,10 +59,17 @@ POTAL Chief Orchestrator 세션 시작.
 
 ---
 
-## 🎯 다음 세션 우선순위 (CW14 후반 기준)
+## 🎯 다음 세션 우선순위 (CW15 후반 기준)
 
-### P0: B2B 마케팅 글 작성 & 배포 (즉시)
-- 7개 채널별 글 작성 (Show HN, Product Hunt, Shopify Community, LinkedIn, Reddit, DEV.to, GitHub)
+### P0: WDC v2 업로드 완료 + 후처리 (진행중)
+- \copy 10개 CSV 완료 확인 → 중복 제거 (`DELETE FROM product_hs_mappings a USING product_hs_mappings b WHERE a.id > b.id AND a.product_name = b.product_name AND a.hs6_code = b.hs6_code`)
+- unique constraint 복원 (`CREATE UNIQUE INDEX idx_product_hs_mappings_name_unique ON product_hs_mappings (product_name)`)
+- product_hs_mappings 최종 건수 확인 → CLAUDE.md/session-context.md 수치 업데이트
+- **ePing 구독 재시도**: https://www.epingalert.org/ → contact@potal.app
+
+### P0-B: B2B 마케팅 글 작성 & 배포 (즉시)
+- 10개 채널별 글 최종 완성 (POTAL_B2B_Channel_Strategy.xlsx 초안 기반)
+- 채널별: Show HN, Product Hunt, Reddit r/ecommerce, Reddit r/SaaS, LinkedIn, Shopify Community, DEV.to, GitHub Awesome, Indie Hackers, X/Twitter
 - 핵심 구조 확정 완료 — 채널별 톤/포맷만 조절
 - 은태님 피드백 반영: 요금제별 가격, 전체 기능 나열, 경쟁사 10개 비교표, "1.7B+ products" 표현
 
@@ -74,10 +84,10 @@ POTAL Chief Orchestrator 세션 시작.
 - mcp.so 승인 확인
 - Product Hunt 런칭 일정 확정
 
-### P3: git push + Vercel 배포
-- 37개 S+ 업그레이드 코드 push (Mac 터미널에서)
-- Vercel 자동 배포 확인
-- SSG 타임아웃 이슈 모니터링 (기존 Supabase 의존성 문제)
+### P3: WDC Phase 4 v2 업로드 후처리
+- ✅ v2 매칭 완료 + JSONL→CSV 변환 완료 (49M건, 10 CSV, 7.8GB)
+- 🔄 psql \copy 진행 중 → P0에서 후처리 예정
+- 목표: product_hs_mappings ~1.36M → ~50M+ 확장
 
 ---
 
@@ -90,6 +100,16 @@ POTAL Chief Orchestrator 세션 시작.
 - **사이클 4**: 야간 15 Division 전체 정밀 점검 ✅ — ContactForm 수정, 쿠키 배너, .env 보강
 - **사이클 5**: D15 Intelligence Dashboard + AI 플랫폼 업데이트 + QA + 문서 동기화
 - **사이클 6 (CW10)**: Morning Brief 3섹션 강화 (auto_resolved/needs_attention/all_green) + issue-classifier.ts + auto-remediation.ts
+
+### CW15 Cowork — 홈페이지 UX 동기화 + 프로덕션 안정화 + WDC Phase 4 v2 (2026-03-16 03:00~09:30 KST)
+- **B2B 채널 전략 엑셀 ✅**: POTAL_B2B_Channel_Strategy.xlsx (12시트, 10채널, 경쟁사 비교표, 채널별 포스트 초안)
+- **홈페이지 UX 동기화 ✅**: ~60파일 수정 (수치 불일치 전부 교정, Claude Code 실행)
+- **Vercel 프로덕션 안정화 ✅**: Tariff SSR 전환(빌드 36초), Middleware fail-open(5s), 504 해결
+- **Hero 수치 변경 ✅**: "5,371 HS Codes"→"113M+ Tariff Records", "181 Countries"→"50 Languages"
+- **WDC Phase 4 v1→v2 전환**: v1 중단(DB 과부하) → v2 로컬 병렬 매칭(14,329/s, 28배 속도, ETA ~4일)
+- **product_hs_mappings**: 8,389 → **~1.36M** (v1 결과 포함)
+- **Git Commits**: aa02b92(middleware), 0c0a221(tariff SSR), 1864653(hero stats)
+- **명령어 파일**: HOMEPAGE_UX_SYNC_COMMAND.md, WDC_PHASE4_V2_COMMAND.md
 
 ### CW14 Cowork 후반 — 37개 S+ 업그레이드, 142 Excel, PDF lib, B2B 전략 (2026-03-16 00:00~03:00 KST)
 - **37개 기능 S+ 업그레이드 ✅** (Core 16 + Trade 21, 32분 19초): ~45 API Routes + ~25 Library Files + 111 Tests + 1 Migration, TypeScript 0 errors, API 103→~148개
@@ -145,9 +165,14 @@ POTAL Chief Orchestrator 세션 시작.
 - **사조(SAZO) 분석**: 경쟁사 아님, **잠재 고객** (B2C 플랫폼 = POTAL 인프라 소비자)
 
 ### 백그라운드 작업 상태
+- **WDC Phase 4 v2**: 🔄 실행중 (PID 80966, 2 workers, `nice -n 15`, ETA ~4일)
+  - 모니터링: `tail -f /Volumes/soulmaten/POTAL/wdc-products/v2_results/v2.log`
+  - 결과 저장: /Volumes/soulmaten/POTAL/wdc-products/v2_results/matched_part_*.csv
+  - 완료 후: 결과 합치기 → 중복 제거 → Supabase 벌크 업로드 (500건씩 batch)
 - 터미널 2: ✅ CBP CROSS Rulings 수집 완료 (220,114/220,153건, 99.98%) — 규정 Phase 1 전체 완료
 - 터미널 3: ✅ WDC 추출 완료 (1,896/1,899 파트, 17.6억 건, 미추출: part_132/404/711.gz 손상)
 - WDC Phase 3: ✅ 완료 (product_hs_mappings 3,406, 벡터 3,431, hs10_candidates 1,246, commit dbc5e59 push 완료)
+- WDC Phase 4 v1: ✅ 중단 (12M 처리, ~1.34M 삽입 → DB 과부하로 중단, v2로 대체)
 
 ### Cowork 12 — 147개 경쟁사 기능 분석 + 240개국 규정 RAG + 데이터 유지보수 (2026-03-13)
 - **147개 경쟁사 기능 분석**: 10개 경쟁사 전체 기능 중복 제거 → 147개 고유 기능
@@ -326,7 +351,7 @@ POTAL Chief Orchestrator 세션 시작.
 
 ---
 
-## Vercel Cron 전체 목록 (14개)
+## Vercel Cron 전체 목록 (21개)
 
 | # | 엔드포인트 | 스케줄 | Division |
 |---|-----------|--------|----------|
@@ -344,3 +369,10 @@ POTAL Chief Orchestrator 세션 시작.
 | 12 | `/v1/admin/division-monitor` | 매 30분 | 전체 |
 | 13 | `/cron/enterprise-lead-match` | 매 30분 | D9 |
 | 14 | `/cron/subscription-cleanup` | 매일 03:00 UTC | D10 |
+| 15 | `/v1/cron/federal-register-monitor` | 매일 06:00 UTC | D4 |
+| 16 | `/v1/cron/taric-rss-monitor` | 매일 07:00 UTC | D4 |
+| 17 | `/v1/cron/tariff-change-monitor` | 매주 일 05:00 UTC | D4 |
+| 18 | `/v1/cron/classification-ruling-monitor` | 매주 수 06:00 UTC | D3 |
+| 19 | `/v1/cron/macmap-update-monitor` | 매월 1일 08:00 UTC | D4 |
+| 20 | `/v1/cron/wco-news-monitor` | 매월 15일 08:00 UTC | D4 |
+| 21 | `/v1/cron/fta-change-monitor` | 매주 금 06:00 UTC | D1 |

@@ -22,7 +22,7 @@ function NewsletterForm() {
       setStatus('success');
       setEmail('');
     } catch {
-      setStatus('success'); // Still show success — email captured client-side
+      setStatus('error');
     }
   }
 
@@ -30,6 +30,14 @@ function NewsletterForm() {
     return (
       <p className="text-sm text-emerald-400 font-medium mt-3">
         Subscribed! We&apos;ll keep you updated.
+      </p>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <p className="text-sm text-red-400 font-medium mt-3">
+        Failed to subscribe. Please try again.
       </p>
     );
   }

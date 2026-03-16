@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-16 03:00 KST (CW14 후반 — 37개 S+ 업그레이드 ~45 Routes/~25 Libs/111 Tests, 142-feature Excel, PDF lib, B2B 마케팅 전략)
+# 마지막 업데이트: 2026-03-16 13:00 KST (CW15 Cowork 후반 — 규정 소스 카탈로그 60+소스, 데이터 유지보수 7 Cron(14→21개), Supabase psql 직접 연결(IPv4), WDC Phase 4 v2 업로드 진행중)
 
 ## 0. 프로젝트 개요
 
@@ -14,9 +14,12 @@
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
 - **핵심 전략 (CW12 후반)**: **102/102 MUST 기능 전부 구현 완료** ✅ (기존 58 + 신규 44개). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자". **심층 검증 84/84 PASS 완료** (코드 변경 0건, DB 테이블 5개 추가)
 - **S+ 업그레이드 (CW14 후반)**: Core 16 + Trade 21 = **37개 기능 S+ 완료** ✅. ~45 API Routes + ~25 Library Files + 111 Tests. API 엔드포인트 103→**~148개**. 나머지 106개 후속 예정
+- **CW15 Cowork**: 홈페이지 UX 동기화(~60파일), Middleware fail-open(Promise.race 5s), Tariff SSR 전환(빌드 36초), Hero→"113M+ Tariff Records"+"50 Languages", WDC Phase 4 v1→v2(로컬 병렬 매칭, 28배 속도향상, ETA 4일), product_hs_mappings **~1.36M**, B2B 채널 전략 엑셀(10채널)
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 - **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트) + **fuzzy matching** (Levenshtein+Soundex, CW14 S+)
-- **Vercel Cron**: **14개** (CW13: +division-monitor, enterprise-lead-match 매30분, subscription-cleanup 매일 03:00 UTC)
+- **Vercel Cron**: **21개** (CW15 후반: +7 데이터 유지보수 Cron — federal-register/taric-rss/tariff-change/classification-ruling/macmap-update/wco-news/fta-change)
+- **규정 소스 카탈로그**: docs/REGULATION_SOURCE_CATALOG.md (60+소스, 50개국 공고 URL)
+- **Supabase psql 직접 연결**: ✅ IPv4 add-on + `PGPASSWORD='potalqwepoi2@' psql -h db.zyurflkhiregundhisky.supabase.co -p 5432 -U postgres -d postgres`
 - **S+ 신규 라이브러리** (CW14 후반): feedback-loop, explainability, multi-language, confidence-calibration, hs-validator, breakdown, roo-engine, customs-valuation, fuzzy-screening, export-controls, product-restrictions, insurance-calculator, shipping-calculator, price-break-engine, remedy-calculator, origin-predictor, returns-calculator, broker-data-export, incoterms(확장), sez-database, import-licensing, ioss-engine, duty-drawback, temporary-import, doc-auto-populate
 
 ### 기술 스택
@@ -50,6 +53,10 @@
 - **✅ D15 Intelligence Dashboard (Cycle 5)**: /admin/intelligence 페이지 + /api/v1/admin/intelligence API. 경쟁사 10사 스캔 이력+변동 감지
 - **✅ AI 플랫폼 업데이트 (CW13 후반)**: GPT Actions 전면 리라이트(B2B CTA), MCP v1.3.1(9 tools, npm publish, 공식 레지스트리), Gemini Gem/Meta AI 정적데이터+CTA
 - **✅ npm publish (CW13 후반)**: `potal-mcp-server@1.3.1` npm 공개 패키지 + MCP 공식 레지스트리 `io.github.soulmaten7/potal`
+- **✅ CW15 홈페이지 UX 동기화 (CW15 Cowork)**: ~60파일 수정 — 30+→50 languages, 100→200 free calls, 1,100+→8,389+ mappings, 10+→~148 endpoints, 10→30 req/min. pricing/help/about/faq/dashboard + 49 i18n 파일 + openapi.ts + woocommerce readme
+- **✅ CW15 프로덕션 안정화 (CW15 Cowork)**: Tariff SSR 전환(dynamic='force-dynamic', 빌드 36초), Middleware fail-open(Promise.race 5s 타임아웃), Hero "113M+ Tariff Records"+"50 Languages"
+- **✅ WDC Phase 4 v1→v2 전환 (CW15 Cowork)**: v1 중단(curl per-row, 500/s, DB 과부하 원인) → v2 로컬 병렬 매칭(14,329/s, 2 workers+nice -n 15, ETA ~4일). product_hs_mappings 8,389→**~1.36M**. 은태님 핵심 인사이트: 매핑 테이블 로컬 다운→메모리 매칭→결과만 업로드
+- **✅ B2B 채널 전략 엑셀 (CW15 Cowork)**: POTAL_B2B_Channel_Strategy.xlsx (12시트, 10채널: Show HN/Product Hunt/Reddit×2/LinkedIn/Shopify Community/DEV.to/GitHub/Indie Hackers/X)
 - **✅ UCP 발견 (CW13 후반)**: Universal Commerce Protocol(Google+Shopify+Walmart+Target) — MCP 내장, 관세 계산 없음 = POTAL 기회
 - **✅ Pre-computing (CW13 후반)**: 490 HS6 × 240국 = 117,600 조합 사전 계산, 캐시 <50ms
 - **✅ B2B 아웃리치 (CW13 후반)**: 15개 타겟 4티어 + 콜드이메일 3종 (ai-agents/B2B_OUTREACH_TARGETS.md)

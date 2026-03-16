@@ -118,6 +118,37 @@ const LEGAL_DOCS: Record<string, { title: string; lastUpdated: string; sections:
     ],
   },
 
+  'refund': {
+    title: 'Refund Policy',
+    lastUpdated: '2026-03-05',
+    sections: [
+      {
+        heading: '1. Subscription Refunds',
+        body: 'POTAL subscriptions are billed monthly or annually through Paddle, our Merchant of Record. You may cancel your subscription at any time from your Dashboard billing settings. Upon cancellation, you retain access to your paid plan features until the end of the current billing period. No partial refunds are issued for unused time within a billing cycle.',
+      },
+      {
+        heading: '2. Free Trial',
+        body: 'All paid plans include a 14-day free trial. If you cancel before the trial period ends, you will not be charged. A payment method is required at signup to ensure uninterrupted service after the trial.',
+      },
+      {
+        heading: '3. Billing Disputes',
+        body: 'If you believe you were incorrectly charged, please contact us at contact@potal.app within 30 days of the charge. We will review the dispute and issue a refund if the charge was made in error.',
+      },
+      {
+        heading: '4. Overage Charges',
+        body: 'Overage charges for API calls exceeding your plan limit are billed at the end of each billing cycle. These charges are non-refundable as they reflect actual API usage. You can monitor your usage in real-time from the Dashboard to avoid unexpected overage.',
+      },
+      {
+        heading: '5. Enterprise Plans',
+        body: 'Enterprise customers with custom agreements may have different refund terms as specified in their individual contracts. Please refer to your Enterprise agreement or contact your dedicated account manager.',
+      },
+      {
+        heading: '6. Contact',
+        body: 'For refund requests or billing questions, email contact@potal.app. We aim to respond within 24 hours on business days.',
+      },
+    ],
+  },
+
   'privacy-settings': {
     title: 'Privacy Settings',
     lastUpdated: '2026-03-05',
