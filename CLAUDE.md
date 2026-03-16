@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-16 13:00 KST (CW15 Cowork 후반 — 규정 소스 카탈로그 60+소스, 데이터 유지보수 7 Cron 구현(Vercel 14→21개), Supabase psql 직접 연결(IPv4), WDC Phase 4 v2 업로드 진행중)
+# 마지막 업데이트: 2026-03-16 14:30 KST (CW15 Cowork 후반 — UI/UX 10Phase 정밀점검, B2B Channel Strategy 13시트 업데이트, 파일 정리 25+파일→archive, 규정 카탈로그 60+소스, 7 Cron(21개), psql 직접 연결)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -270,6 +270,24 @@ portal/
 - product_hs_mappings **~1.36M → ~50M+ 예상** (v2 업로드 후)
 
 **ePing 구독**: WTO 사이트 버그로 가입 실패, 나중에 재시도
+
+**UI/UX 10Phase 정밀 점검 (커밋 0504f05):**
+- 14 코드 파일 + 2 신규 파일 수정 (843줄 추가)
+- Phase 1: fetchWithTimeout 유틸, Dashboard 자동 재시도+fallback, Login 검증 강화
+- Phase 2: Header 로고 Link, ESC 모바일 메뉴, Footer newsletter 버그 수정
+- Phase 3: error.tsx 브랜드화, tariff 페이지 try-catch, /refund slug 추가
+- Phase 5: Hero CTA 경로 수정, About 수치 최신화 (1.36M+)
+- Phase 6: Dashboard 모바일 pill 탭, Pricing 가로 스크롤
+- Phase 7: ARIA(tablist/tab/tabpanel), aria-live, aria-hidden
+- Phase 8: faq/layout.tsx FAQPage JSON-LD (10 items)
+- Phase 9: Shopify API key 하드코딩 제거
+
+**B2B Channel Strategy 엑셀 전체 업데이트 (POTAL_B2B_Channel_Strategy.xlsx, 13시트):**
+- 10개 채널 포스트 CW15 수치 반영 (50M+ mappings, ~148 endpoints, 21 crons, MCP registry, 60+ sources, UCP)
+- Core Messaging 업데이트 (경쟁사 비교표)
+- Update Log 시트 신규, X Twitter 단독 트윗 3개, LinkedIn POST 4 (UCP/AI Commerce)
+
+**파일 정리**: 25+ 파일 → archive/ 이동 (구버전 엑셀, 1회성 실행 명령어), .~lock 파일 4개 삭제
 
 ### ⭐ CW14 Cowork 후반 세션 성과 (2026-03-16 00:00~03:00 KST)
 

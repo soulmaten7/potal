@@ -1,5 +1,29 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-16 13:00 KST
+> 마지막 업데이트: 2026-03-16 14:30 KST
+
+## [2026-03-16 14:30 KST] CW15 Cowork 후반 — UI/UX 10Phase 정밀점검, B2B Channel Strategy, 파일 정리
+
+### UI/UX 10Phase 정밀 점검 (커밋 0504f05)
+- 14 코드 파일 + 2 신규 파일, 19파일 커밋, +843/-179줄
+- Phase 1: fetch-with-timeout.ts 신규, Dashboard fetchWithTimeout+자동재시도+plan fallback, Login 검증
+- Phase 2: Header 로고 Link, ESC 모바일 메뉴, Footer newsletter 에러 수정
+- Phase 3: error.tsx 브랜드화+Go Home, tariff try-catch, /refund slug 추가
+- Phase 5: Hero CTA 경로(/auth/signup), About 수치 최신화(1.36M+)
+- Phase 6: Dashboard 모바일 pill 탭(768px), Pricing Compare Plans 가로 스크롤
+- Phase 7: ARIA(tablist/tab/tabpanel), aria-live, aria-hidden
+- Phase 8: faq/layout.tsx FAQPage JSON-LD (10 items)
+- Phase 9: Shopify API key 하드코딩 fallback 제거
+
+### B2B Channel Strategy 엑셀 업데이트 (13시트)
+- 10개 채널 포스트 CW15 수치 반영 (50M+ mappings, ~148 endpoints, 21 crons, MCP registry, 60+ sources, UCP)
+- Update Log 시트 신규, X Twitter 단독 트윗 3개, LinkedIn POST 4 (UCP/AI Commerce)
+
+### 파일 정리
+- 25+ 파일 → archive/ 이동 (구버전 엑셀, 1회성 실행 명령어)
+- .~lock 파일 4개 삭제
+- 루트/analysis/ 중복 엑셀 정리
+
+---
 
 ## [2026-03-16 13:00 KST] CW15 Cowork 후반 — 규정 소스 카탈로그, 데이터 유지보수 7 Cron, psql 직접 연결
 
