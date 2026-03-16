@@ -55,6 +55,34 @@
     {
       "path": "/api/cron/subscription-cleanup",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/v1/cron/federal-register-monitor",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/v1/cron/taric-rss-monitor",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/v1/cron/tariff-change-monitor",
+      "schedule": "0 5 * * 0"
+    },
+    {
+      "path": "/api/v1/cron/classification-ruling-monitor",
+      "schedule": "0 6 * * 3"
+    },
+    {
+      "path": "/api/v1/cron/macmap-update-monitor",
+      "schedule": "0 8 1 * *"
+    },
+    {
+      "path": "/api/v1/cron/wco-news-monitor",
+      "schedule": "0 8 15 * *"
+    },
+    {
+      "path": "/api/v1/cron/fta-change-monitor",
+      "schedule": "0 6 * * 5"
     }
   ]
 }
