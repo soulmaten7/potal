@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-16 16:00 KST (CW15 Cowork 전체 — B2B 채널 전략 13시트, CBP 벤치마크 100건, CBP CROSS 142K 매핑 추출, HS 데이터소스 마스터 목록, 포스트 톤 전략 변경, 파일 정리 25+→archive)
+# 마지막 업데이트: 2026-03-17 22:00 KST (CW16 Cowork — GRI Agent Team 설계, HS Code 분류 엔진 역설계, 7개국 규칙 수집 완료, DB read-only 복구 진행)
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -65,7 +65,14 @@ portal/
 ## 핵심 수치 (CW15 기준)
 - 240개국/영토, **50개국어** (세션 34: 7→30, CW9: 30→50 확장), 63개 FTA, 12개국 특수세금
 - HS Code: 5,371 (WCO HS 2022 6자리)
-- **HS Code 매핑**: product_hs_mappings **~1.36M건 + CBP 142K = ~1.5M** (CW15: 8,389→1,362,900 WDC v1 + CBP CROSS 142,251건 추출 완료, v2 \copy 완료 시 ~50M+)
+- **HS Code 매핑**: product_hs_mappings **~1.36M건** (WDC v2 36M건은 부정확 추정 매핑으로 판명 → 삭제 진행 중. GRI 기반 정확 매핑으로 재구축 예정)
+- **GRI 분류 참고자료**: ✅ **2.1MB 수집 완료** (/Volumes/soulmaten/POTAL/hs_classification_rules/, 14개 파일)
+  - Section Notes 21개 (45KB) + Chapter Notes 96개 (358KB) + Subheading Notes 37개 (97KB)
+  - GRI 1-6 규칙 + CBP 사례 (35KB) + CBP Classification Guide 43페이지 (97KB)
+  - 7개국 추가 규칙: US/EU/UK/KR/JP/AU/CA 전부 완료 + SUMMARY.md
+  - COMPLETE_GRI_REFERENCE.md (42KB) + COMPLETE_GRI1_REFERENCE.md (475KB)
+- **EU EBTI 수집 완료**: 269,730 rulings → 231,727 고유 product-HS 매핑 추출 (/Volumes/soulmaten/POTAL/regulations/eu_ebti/)
+- **DB 상태**: ⚠️ read-only (디스크 53GB 초과) → WDC v2 36M건 삭제 진행 중 → 완료 후 VACUUM FULL → read-write 복구 예정
 - **HS 분류 벡터**: hs_classification_vectors **3,431건** (CW14: 1,104→3,431)
 - **HS10 후보 사전계산**: precomputed_hs10_candidates **1,090건** (US/EU/GB HS10 후보)
 - MFN 관세율: WITS+WTO 1,027,674건 186개국 + MacMap NTLC 537,894건 53개국
@@ -76,7 +83,7 @@ portal/
 - **제재 스크리닝**: sanctions_entries 21,301건 + aliases 22,328 + addresses 24,176 + ids 8,000 ✅
 - 정부 API: USITC, UK Tariff, EU TARIC, Canada CBSA, Australia ABF, Japan Customs, Korea KCS (7개)
 - **7개국 HS 벌크 다운로드**: ✅ 완료 (gov_tariff_schedules 89,842행: US 28,718 + EU 17,278 + UK 17,289 + KR 6,646 + CA 6,626 + AU 6,652 + JP 6,633)
-- **관세율 자동업데이트**: Vercel Cron **21개** (CW15 후반: +7 데이터 유지보수 Cron — federal-register/taric-rss/tariff-change/classification-ruling/macmap-update/wco-news/fta-change)
+- **관세율 자동업데이트**: Vercel Cron **22개** (CW15 후반: +7 데이터 유지보수 Cron — federal-register/taric-rss/tariff-change/classification-ruling/macmap-update/wco-news/fta-change)
 - **규정 소스 카탈로그**: docs/REGULATION_SOURCE_CATALOG.md (600줄, 60+소스, 50개국 공고 URL, 8단계 구현 완료)
 - **D15 Intelligence Dashboard**: `/admin/intelligence` (경쟁사 10사 스캔 이력+변동 감지)
 - **MCP Server**: v1.3.1, 9개 도구, **npm publish 완료** (`potal-mcp-server@1.3.1`), **MCP 공식 레지스트리 등록 완료** (`io.github.soulmaten7/potal`, registry.modelcontextprotocol.io)
@@ -236,6 +243,204 @@ portal/
 
 **GitHub Push Protection 이슈 해결:**
 - mcp-server/.mcpregistry_github_token 시크릿 파일 → git rm + .gitignore에 `.mcpregistry_*` 추가
+
+### ⭐ CW16 Cowork 세션 성과 (2026-03-17 KST)
+
+**HS Code 분류 엔진 근본적 재설계 — "시스템을 바꾸지 말고 사람을 대체하라":**
+
+핵심 인사이트 (은태님):
+- 기존 접근: "AI한테 상품명 주고 HS Code 맞춰봐" → 시스템을 새로 만들려 한 것 → 오류 지속 (v2~v10, 최고 38%)
+- 새 접근: "관세사가 하는 것과 똑같은 과정을 자동화" → 시스템은 그대로, 사람만 AI로 대체
+- "이미 정답이 있는 시스템을 바꾸려 하니 오류가 생겼다. 사람이 하는 구조를 유지한 채 사람을 대체해야 한다"
+
+**GRI (General Rules of Interpretation) 기반 분류 엔진 설계:**
+- GRI 1~6 순차 적용 구조 (관세사가 실제 분류하는 방식 그대로)
+- GRI 1: Section/Chapter Notes + Heading 설명 → 90% 분류 (주관 없음, 규칙 적용)
+- GRI 2~5: 미완성/혼합/복수heading/포장 → 8% (판단 필요, 판례 참조)
+- GRI 6: Subheading 레벨에서 GRI 1~5 재적용 → 최종 6자리 확정
+- 핵심: 11단계 중 AI "생각"이 필요한 건 1~2단계뿐, 나머지는 코드/DB 룩업
+
+**7개국 Country Agent 하위에이전트 설계 (은태님 아이디어):**
+- 도착지별 전용 Agent (US/EU/UK/KR/JP/AU/CA)
+- 각 Agent에 해당 국가 규칙 + 판례 패턴 내장
+- API 호출 시 도착지가 이미 정해져 있으므로 1개 Agent만 작동 → 토큰 1/7 절약 + 정확도 향상
+- 나머지 233국: 6자리에서 끝 (7~10자리 없음)
+
+**"판례 → 대립 패턴" 규칙화 설계 (은태님 아이디어):**
+- 기존: 22만 CBP 판례를 날것으로 검색 → 매번 다른 결과 가능
+- 새 방식: 챕터별 "대립 패턴"으로 1회 정리
+  - 각 패턴: 대립 후보(A vs B) + 정답 + 판단 근거 + 탈락 이유 + 예외 조건
+  - AI가 "생각"이 아닌 "매칭"으로 분류 → 일관성 + 속도 + 감사추적
+- 판례 소스: CBP CROSS 220,114건 + EU EBTI 269,730건 = ~50만건
+- 6자리 판단은 CBP+EBTI 공통 (전 세계 6자리 동일), 7~10자리는 해당 국가만
+
+**단계별 코드 체인 구조:**
+```
+Step 1: [코드] 상품명 키워드 추출
+Step 2: [코드] Section 매칭 (21개)
+Step 3: [코드] Section Note 포함/제외 체크
+Step 4: [코드] Chapter 매칭 (97개)
+Step 5: [코드] Chapter Note 포함/제외 체크
+Step 6: [코드] Heading 매칭 (1,228개)
+Step 7: [AI 1회] 대립 패턴 매칭 (필요 시만)
+Step 8: [코드] Subheading 매칭 (5,371개)
+Step 9: [코드] Country Router → 해당 Country Agent
+Step 10: [코드] 가격 분기/추가 규칙 적용
+Step 11: [코드] 최종 7~10자리 확정
+→ AI 호출 0~2회, 나머지 전부 코드. 비용 기존 대비 1/10 이하
+```
+
+**12개 Total Landed Cost 계산 영역 — 같은 방식 적용 계획:**
+1. HS Code — GRI Agent Team (지금 설계 중)
+2. Duty Rate — DB 룩업 (113M+ 이미 있음, AI 0회)
+3. AD/CVD — DB 매칭 (119,706건, AI 0회)
+4. VAT/GST — DB 룩업 (240개국, AI 0회)
+5. De Minimis — if문 1개 (AI 0회)
+6. Special Tax — 테이블 (12개국, AI 0회)
+7. Customs Fees — 고정값 (AI 0회)
+8. Rules of Origin — FTA PSR 매칭 (복잡 시 AI 1회)
+9. Export Controls — ECCN 매트릭스 (이중용도 시 AI 1회)
+10. Sanctions — 퍼지 매칭 (21,301건, AI 0회)
+11. Currency — API (AI 0회)
+12. Insurance/Shipping — 수식 (AI 0회)
+→ 12개 중 AI 필요: HS Code(1~2회) + RoO(가끔 1회) + Export Controls(가끔 1회). 나머지 9개는 코드만.
+
+**전략 방향 전환:**
+- "모든 기능을 이런 관점(사람 프로세스 역설계 → 코드화 → AI 최소화)으로 접근"
+- Beta 출시 → Pro 모델까지 개방 → 142개 기능 계속 파이프라인 확장
+- 이 구조가 경쟁사(Avalara/Zonos)가 못 따라오는 이유: 그들은 "AI로 분류"하지만, POTAL은 "공식 자체를 코드로" 만듦
+
+**GRI 참고자료 수집 완료 (2.1MB, 14개 파일):**
+- 터미널 1: Section/Chapter Notes + GRI 1-6 규칙 + CBP Guide ✅
+- 터미널 2: 7개국(US/EU/UK/KR/JP/AU/CA) 추가 규칙 ✅
+- EU EBTI: 269,730 rulings, 231,727 매핑 추출 ✅
+- 저장: /Volumes/soulmaten/POTAL/hs_classification_rules/
+
+**벤치마크 히스토리 (HS Code 분류 정확도):**
+- v2 (GPT-4o-mini): 6-digit 25%
+- v8 (GPT-4o): 6-digit 37%
+- v10 (GPT-4o + GRI prompt): 6-digit 38%
+- 경쟁사: Tarifflo 89%, Avalara 80%, Zonos 44%, WCO BACUDA 13%
+- 다음 목표: GRI Agent Team으로 89%+ (Tarifflo 수준)
+
+**DB read-only 긴급 복구:**
+- 원인: WDC v2 벌크 업로드로 product_hs_mappings 37.3M건 (8.75GB) → DB 53GB → Supabase 디스크 초과
+- WDC v2 데이터 = 카테고리 기반 추정 매핑 (GRI 미적용, 부정확) → 삭제 결정
+- 터미널 3에서 36M건 배치 삭제 진행 중 (50만건씩, ~2~3시간)
+- 삭제 후: 기존 1.3M건 유지 + VACUUM FULL + read-write 복구
+- 향후: GRI 엔진으로 분류한 결과만 DB에 저장 (정확한 매핑만)
+
+**파일 생성/수집:**
+- /Volumes/soulmaten/POTAL/hs_classification_rules/ (14개 파일, 2.1MB)
+  - section_notes.json, chapter_notes.json, subheading_notes.json
+  - COMPLETE_GRI1_REFERENCE.md, COMPLETE_GRI_REFERENCE.md
+  - gri_full_text.md, gri1~6_rules_and_cases.md
+  - cbp_classification_guide.md
+  - us_additional_rules.md, eu_cn_rules.md, uk_tariff_rules.md
+  - kr_classification_rules.md, jp_tariff_rules.md, au_tariff_rules.md
+  - ca_tariff_rules.md, SUMMARY.md
+- /Volumes/soulmaten/POTAL/regulations/eu_ebti/ (269,730 rulings)
+
+### ⭐ AI Agent Organization 확장 계획 (CW16 Cowork — 2026-03-17)
+
+**핵심 원칙: "사람 프로세스 역설계 → 코드화 → AI 최소화"를 모든 영역에 적용**
+
+이 원칙은 HS Code에서 처음 적용하지만, 최종적으로 12개 TLC 계산 → 142개 기능 전체로 확장 예정.
+각 영역이 완성될 때마다 아래 구조를 업데이트할 것.
+
+**확장 로드맵 (구조만 잡아두고 완성 시 채움):**
+
+1단계 — HS Code 분류 엔진 (현재 진행 중):
+- GRI Agent Team (GRI 1~6 순차 적용, 11단계 코드 체인)
+- 7개국 Country Agent (US/EU/UK/KR/JP/AU/CA 하위에이전트)
+- 판례 대립 패턴 DB (CBP 22만 + EBTI 27만 → 챕터별 규칙화)
+- 자동 업데이트: 새 판례 감지 → 대립 패턴 추가, WCO HS 개정 반영, 7개국 규칙 변경 반영
+- 상태: 🔄 설계 완료, 구축 대기
+
+2단계 — 나머지 11개 TLC 계산 영역:
+- 각 영역별 "사람이 하는 프로세스" 역설계 → 단계별 코드 체인 구축
+- Duty Rate, AD/CVD, VAT/GST, De Minimis, Special Tax, Customs Fees, RoO, Export Controls, Sanctions, Currency, Insurance/Shipping
+- 대부분 이미 DB/코드로 동작 중 → 정확도 검증 + 엣지 케이스 보완
+- 상태: ⏳ HS Code 완성 후 순차 진행
+
+3단계 — 142개 기능 전체:
+- 각 기능마다 동일 접근: 실무자가 어떻게 하는지 파악 → 그 과정을 자동화
+- 기능 완성될 때마다 AI Agent Organization에 반영
+- 상태: ⏳ 12개 TLC 구조화 후
+
+**AI Agent Organization 변경 예정 사항:**
+- D3 (HS Classification): GRI Agent Team + Country Agent 구조로 재편
+- D1 (Tariff & Compliance): 12개 TLC 계산별 서브 Agent 구조화
+- D4 (Data Pipeline): 자동 업데이트 모니터링 (판례, 규칙 변경, HS 개정)
+- 각 Division에 "자동 업데이트 가이드북" 포함 (어떤 데이터가 언제 바뀌는지, 어떤 Cron/Agent가 감시하는지)
+- 구체적 구조는 각 단계 완성 시 업데이트 (지금은 빈 구조만 잡아둠)
+
+**⚠️ Claude 세션 지침: 이 섹션을 매 세션마다 확인하고, 기능이 완성될 때마다 해당 단계의 상태를 업데이트할 것. 대화에서 까먹지 않도록 여기가 기준점.**
+
+### ⭐ CW15 Cowork 2차 세션 성과 (2026-03-16 16:00~21:00 KST)
+
+**전문 자격증 & 벤치마크 데이터베이스 (POTAL_Certification_Benchmark_Database.xlsx, 11시트):**
+- 57개 항목: 12개국 관세사 시험 + 8 Trade Compliance + 7 Tax/VAT + 9 Logistics/SCM + 9 HS 벤치마크 + 6 Customer + 8 Industry Rating
+- Sheet 1: Overview — 전체 요약, 테스트 가능 16개, 전략 4가지
+- Sheet 2: Customs Broker Exams — CBLE(US), 관세사(KR), 通関士(JP), AEO(EU), LCB(AU), CSCB(CA), WCO HS cert 등 12개
+- Sheet 3: HS Benchmarks — arXiv:2412.14179(103건), ATLAS(18,731건), HSCodeComp(632건), CBLE 기출, CBP CROSS, EBTI 등 9개
+- Sheet 4: Trade Compliance — CCS, CES, MTC, LCB, CTCP, IATA DG, CGBP, CITP 8개
+- Sheet 5: Tax & VAT — CPA, EA, VAT specialist, CTA, 세무사, 税理士, Transfer Pricing 7개
+- Sheet 6: Logistics & SCM — FIATA, CILT, CSCP, CPIM, CLP, IATA, C-TPAT, Incoterms, DGSA 9개
+- Sheet 7: POTAL Test Plan — P0(CBLE/CBP/EBTI/ATLAS) → P1(HSCodeComp/한국/일본) → P2(G2/SOC2) 실행 계획
+- Sheet 8: Competitor Knowledge Map — 경쟁사 고용 12종 전문가 역할별 연봉 + POTAL 대체 기능 매핑
+- Sheet 9: Customer Certs — 거래처 직원 자격증 6개 + POTAL 도움 방식
+- Sheet 10: Industry Ratings — G2, Capterra, TrustRadius, Gartner, Forrester, Product Hunt 등 8개
+- Sheet 11: Cost Savings — 인간 전문가 10종 vs POTAL 연간 비용 비교 (수식 자동 계산, 총 절감 ~$862K/년)
+
+**142기능 × 벤치마크 GAP 분석 (POTAL_142_Benchmark_Gap_Analysis.xlsx, 5시트):**
+- Sheet 1: Summary — MVP 필수 98개 / MVP 보완 12개 / 확장 시 32개
+- Sheet 2: 142 Features × Benchmark — 전체 기능을 시험/벤치마크 영역에 매핑 + 현재 상태 + 갭 + 필요 데이터
+- Sheet 3: MVP 보완 필요 — 16개 항목별 다운로드 소스 URL + 수집 방법 + 예상 건수
+  - F001 HS Classification: EBTI 50-100K, ECICS 70K, ATaR 10K+, ATLAS 18,731, HSCodeComp 632, CBLE 기출, 한국 관세사, 日本 通関士
+  - F006 Confidence Score: 벤치마크 기반 보정
+  - F012 HS Validation: 교차검증 ground truth
+  - F016 Restricted Items: UN 위험물 + 각국 금지품목
+  - F022 Export Controls: BIS CCL ECCN 전체 목록
+  - F023 Rules of Origin: FTA PSR 목록
+  - F024 Customs Valuation: WTO 관세평가협정
+  - F038 VAT/GST: CN코드별 경감세율
+  - F039 Special Tax: 각국 특별소비세
+- Sheet 4: 확장 시 필요 — 14개 카테고리 (캐리어 API, SEZ/Licensing, SSO, White Label, ERP/CRM 등)
+- Sheet 5: Claude Code Commands — P0 8개 + P1 5개 = 13개 데이터 소스별 수집 명령어 상세
+
+**3터미널 자동화 파이프라인 설계:**
+- **터미널 1 (CLAUDE_CODE_TERMINAL_1_COLLECT.md)**: P0 8개(CBLE, EBTI, ECICS, ATaR, ATLAS, HSCodeComp, 한국 관세사, 日本 通関士) + P1 5개(BIS CCL, UN DG, WTO Valuation, FTA PSR, EU TARIC VAT) 순차 수집. 완료 시 각 폴더에 DONE 파일 생성
+- **터미널 2 (CLAUDE_CODE_TERMINAL_2_BENCHMARK.md)**: DONE 감시 → BIS/UN DG 즉시 DB 적재(별도 테이블, 과부하 없음) → 벤치마크 실행(CBP 100건→CBLE→ATLAS→HSCodeComp→한국→일본) → 틀린 문제 원인 분류(NO_MAPPING/WRONG_MAPPING/PRICE_BREAK/AMBIGUOUS/INDUSTRIAL/COUNTRY_SPECIFIC) → 142기능별 약점 매핑 → 즉시 수정 가능한 것 자동 수정 → 마케팅 요약 생성
+- **터미널 3 (CLAUDE_CODE_TERMINAL_3_ADDON.md)**: 기존 part_01~10 업로드 완료 후 → CBP CROSS 142K + EBTI/ECICS/ATaR → product_hs_mappings \copy → 중복 제거 → 인덱스 복원 → ANALYZE
+- 핵심: DONE 파일 기반 터미널 간 자동 연계 — 수집 완료 → 벤치마크 자동 실행 → 분석 자동 생성
+
+**벤치마크 전략 결정:**
+- 벤치마크 = 단순 점수가 아니라 "실무에 필요한 기능 파악 도구"
+- 기출문제 분석 → 142기능 중 약한 영역 특정 → 필요한 데이터 수집 → 기능 보완
+- CBLE/관세사/通関士 시험이 테스트하는 영역 = 고객이 돈 내는 실무 영역
+- "점수 올리기"가 아니라 "틀린 문제가 알려주는 실무 갭 채우기"
+
+**미수집 데이터 과부하 방지 전략:**
+- product_hs_mappings 동일 테이블: 터미널 3 끝난 후에만 적재 (EBTI/ECICS/ATaR)
+- 별도 테이블 (export_controls, restricted_items): 수집 즉시 적재 OK (BIS CCL ~2K, UN DG ~3K)
+- 벤치마크: DB 적재 없이 로컬 파일 기반으로 즉시 API 호출 가능
+
+**터미널 3 상태 (part_01 업로드 진행 중):**
+- run_upload.sh 스크립트가 99개 chunk 자동 순차 업로드 중
+- chunk_001: ✅ 완료, chunk_002: ✅ 완료 (15분), chunk_003~099: 진행 중
+- 인덱스 드롭 완료 (속도 향상)
+- chunk당 ~15분 × 96개 = ~24시간 예상
+- 모니터링: tail -f /Volumes/soulmaten/POTAL/wdc-products/v2_results/upload_chunks/upload.log
+- part_01 끝나면 part_02~10도 같은 방식으로 자동 이어서 진행 예정
+
+**생성된 파일:**
+- POTAL_Certification_Benchmark_Database.xlsx (11시트, 57개 자격증/벤치마크 항목)
+- POTAL_142_Benchmark_Gap_Analysis.xlsx (5시트, 142기능 GAP 분석)
+- CLAUDE_CODE_TERMINAL_1_COLLECT.md (터미널 1 수집 명령어)
+- CLAUDE_CODE_TERMINAL_2_BENCHMARK.md (터미널 2 벤치마크+분석 명령어)
+- CLAUDE_CODE_TERMINAL_3_ADDON.md (터미널 3 추가 적재 명령어)
+- CLAUDE_CODE_DATA_COLLECTION_COMMAND.md (초기 통합 명령어, 이후 3개로 분리)
 
 ### ⭐ CW15 Cowork 전체 성과 (2026-03-16 09:30~16:00+ KST)
 
@@ -564,7 +769,7 @@ portal/
 | safeguard_exemptions | 15,935 | ✅ (세션 33) |
 | hs_classification_vectors | 3,431 | ✅ (CW14: 1,104→3,431, WDC Phase 3) |
 | hs_expansion_rules | - | ✅ (CW9, HS10 캐시) |
-| product_hs_mappings | 8,389 | ✅ (CW14 감사: Google taxonomy 확장 포함) |
+| product_hs_mappings | ~1.36M (WDC v2 36M건 삭제 중) | ✅ (GRI 기반 재구축 예정) |
 | precomputed_landed_costs | 117,600 | ✅ (490 HS6 × 240국, 캐시 <50ms) |
 | precomputed_hs10_candidates | 1,090 | ✅ (CW14 감사: US/EU/GB HS10 후보) |
 | gov_tariff_schedules | 89,842 | ✅ (7개국: US 28,718 + EU 17,278 + UK 17,289 + KR/CA/AU/JP ~6,600 each) |

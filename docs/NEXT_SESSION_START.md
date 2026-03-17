@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-16 16:00 KST (CW15 Cowork 전체 — B2B 채널 전략 13시트, CBP 벤치마크 100건, CBP CROSS 142K 매핑, HS 데이터소스, 포스트 톤 전략 변경, 파일 정리 25+→archive)
+> 마지막 업데이트: 2026-03-17 22:00 KST (CW16 Cowork — GRI Agent Team 설계, 7개국 규칙 수집 완료, DB 복구 진행)
 
 ---
 
@@ -18,11 +18,14 @@ POTAL Chief Orchestrator 세션 시작.
 - docs/NEXT_SESSION_START.md 읽어서 현재 진행 상황 + 우선순위 확인
 
 2단계: 백그라운드 작업 확인
-- KOR AGR 재임포트: ✅ 완료 (1,815,798행, 2026-03-13)
-- WDC 추출: ✅ 완료 (1,896/1,899 파트, 17.6억 건)
-- WDC Phase 4 v2 매칭: ✅ 완료 (49,265,581건 매칭 결과)
-- WDC Phase 4 v2 업로드: 🔄 psql \copy 진행 중 (10 CSV, 7.8GB → product_hs_mappings)
-  → 완료 후: 중복 제거 + unique constraint 복원
+- KOR AGR 재임포트: ✅ 완료
+- WDC 추출: ✅ 완료 (1,896/1,899 파트)
+- WDC Phase 4 v2 매칭: ✅ 완료 (49,265,581건)
+- WDC Phase 4 v2 업로드: ❌ 중단 — 36M건은 카테고리 추정 매핑(부정확) → 삭제 결정 → 삭제 진행 후 완료 확인 필요
+- DB read-only: ⚠️ 36M건 삭제 + VACUUM FULL 후 복구 확인 필요
+- GRI 참고자료 수집: ✅ 완료 (14개 파일, 2.1MB, /Volumes/soulmaten/POTAL/hs_classification_rules/)
+- EU EBTI 수집: ✅ 완료 (269,730 rulings, 231,727 매핑)
+- 7개국 추가 규칙: ✅ 완료 (US/EU/UK/KR/JP/AU/CA)
 
 3단계: Morning Brief 실행
 - Gmail에서 "Morning Brief" 또는 "health-check" 관련 이메일 확인
@@ -59,37 +62,30 @@ POTAL Chief Orchestrator 세션 시작.
 
 ---
 
-## 🎯 다음 세션 우선순위 (CW15 후반 기준)
+## 🎯 다음 세션 우선순위
 
-### P0: WDC v2 업로드 완료 + CBP 매핑 적재 + 벤치마크 (진행중)
-- \copy 10개 CSV 완료 확인 → 중복 제거 (`DELETE FROM product_hs_mappings a USING product_hs_mappings b WHERE a.id > b.id AND a.product_name = b.product_name AND a.hs6_code = b.hs6_code`)
-- unique constraint 복원 (`CREATE UNIQUE INDEX idx_product_hs_mappings_name_unique ON product_hs_mappings (product_name)`)
-- **CBP CROSS 142,251건 \copy 적재** (cbp_cross_combined_mappings.csv → product_hs_mappings)
-- product_hs_mappings 최종 건수 확인 → CLAUDE.md/session-context.md 수치 업데이트
-- **CBP 벤치마크 실행**: DB 정상화 후 benchmark_test_data.json 100건으로 POTAL API 정확도 테스트
-- **ePing 구독 재시도**: https://www.epingalert.org/ → contact@potal.app
+### P0 — 즉시 (DB 복구 + GRI 엔진)
+1. **DB read-only 복구 확인** — 36M건 삭제 완료 + VACUUM FULL + read-write 확인 + www.potal.app 정상 동작 확인
+2. **판례 → 대립 패턴 규칙화** — CBP CROSS 22만건 + EBTI 27만건을 챕터별로 정리
+   - 각 패턴: 대립 후보 + 정답 + 근거 + 탈락이유 + 예외
+   - 97 Chapter × 평균 10~20 패턴 = ~1,000~2,000 규칙
+3. **GRI Agent Team 구축** — 11단계 코드 체인 + AI 최소 호출
+4. **7 Country Agent 구축** — US/EU/UK/KR/JP/AU/CA 각각 전용 프롬프트 + 규칙 파일
+5. **CBP 100건 벤치마크 테스트** — 이전 v10(38%) 대비 개선 확인, 목표 89%+
 
-### P0-B: B2B 마케팅 글 작성 & 배포 (즉시)
-- 10개 채널별 글 최종 완성 (POTAL_B2B_Channel_Strategy.xlsx 초안 기반)
-- 채널별: Show HN, Product Hunt, Reddit r/ecommerce, Reddit r/SaaS, LinkedIn, Shopify Community, DEV.to, GitHub Awesome, Indie Hackers, X/Twitter
-- 핵심 구조 확정 완료 — 채널별 톤/포맷만 조절
-- 은태님 피드백 반영: 요금제별 가격, 전체 기능 나열, 경쟁사 10개 비교표, "1.7B+ products" 표현
+### P1 — 이번 주 (12개 TLC 구조화)
+6. **12개 TLC 계산 영역 전체 구조화** — 각 영역의 "사람 프로세스" 역설계 → 코드화
+7. **142개 기능 동일 접근** — 각 기능마다 실무자 프로세스 역설계 → 단계별 자동화
 
-### P1: 나머지 106개 기능 S+ 업그레이드
-- POTAL_142_S_Grade_Complete_Plan.xlsx의 S2(46개) + S3(81개) = 106개
-- Tax 7 + Platform 44 + Integration 15 + Shipping 11 + Web 4 + Legal 6 + Security 5 + Support 8 + Business 5 + Marketing 1
-- 명령어 파일 생성 → Claude Code 실행 → 검증
+### P2 — Beta 출시 준비
+8. **Beta 출시** — Pro 모델까지 개방, 핵심 12개 계산 완성 후
+9. **파이프라인 확장** — 142개 기능 계속 추가
 
-### P2: 첫 유료 고객 확보
-- B2B 아웃리치 실행 (15개 타겟, 4티어)
-- Shopify App Store 심사 결과 확인
-- mcp.so 승인 확인
-- Product Hunt 런칭 일정 확정
-
-### P3: WDC Phase 4 v2 업로드 후처리
-- ✅ v2 매칭 완료 + JSONL→CSV 변환 완료 (49M건, 10 CSV, 7.8GB)
-- 🔄 psql \copy 진행 중 → P0에서 후처리 예정
-- 목표: product_hs_mappings ~1.36M → ~50M+ 확장
+### ⭐ 핵심 전략 변화 (CW16 Cowork)
+- **"시스템을 바꾸지 말고 사람을 대체하라"** — 관세사/세무사의 실무 프로세스를 그대로 자동화
+- **"한 마디로 AI한테 시키지 말고, 공식을 찾아서 단계별 코드로 만들고, 판단 필요한 곳만 AI"**
+- 이 원칙을 HS Code뿐 아니라 12개 TLC 전체 → 142개 기능 전체에 적용
+- GRI Agent Team = 첫 번째 적용 사례, 성공하면 나머지에 동일 패턴 확장
 
 ---
 

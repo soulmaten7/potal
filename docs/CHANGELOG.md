@@ -1,5 +1,104 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-16 16:00 KST
+> 마지막 업데이트: 2026-03-17 22:00 KST
+
+## [2026-03-17 22:00 KST] CW16 Cowork — GRI Agent Team 설계, HS Code 분류 엔진 역설계, 7개국 규칙 수집 완료
+
+### HS Code 분류 전략 근본 전환
+- "시스템을 바꾸지 말고 사람을 대체하라" — 관세사의 분류 프로세스를 그대로 자동화
+- GRI 1~6 순차 적용 → 11단계 코드 체인 (AI 호출 최대 1~2회)
+- 벤치마크: v2(25%) → v8(37%) → v10(38%) → 다음: GRI Agent Team(목표 89%+)
+
+### GRI Agent Team + 7 Country Agent 아키텍처 설계
+- Layer 1: GRI Agent (6자리, 전 세계 공통) — 코드 위주 + AI 최소
+- Layer 2: Country Agent 7개 (US/EU/UK/KR/JP/AU/CA) — 7~10자리, 도착지 기준 1개만 호출
+- 판례 규칙화: CBP 22만 + EBTI 27만 → 챕터별 "대립 패턴" (1회성 정리)
+
+### GRI 참고자료 수집 완료 (2.1MB, 14개 파일)
+- Section Notes (21개, 45KB) + Chapter Notes (96개, 358KB) + Subheading Notes (37개, 97KB)
+- GRI 1-6 규칙 + 사례 (35KB) + CBP Classification Guide (97KB)
+- 7개국 추가 규칙: US, EU, UK, KR, JP, AU, CA ✅
+- COMPLETE_GRI_REFERENCE.md (42KB) + COMPLETE_GRI1_REFERENCE.md (475KB)
+- 저장: /Volumes/soulmaten/POTAL/hs_classification_rules/
+
+### EU EBTI 수집 완료
+- 269,730 rulings → 231,727 고유 product-HS 매핑 추출
+- 7개 CSV (2004~2010), 96 HS chapters
+- 저장: /Volumes/soulmaten/POTAL/regulations/eu_ebti/
+
+### DB read-only 긴급 복구
+- 원인: WDC v2 벌크 업로드 → product_hs_mappings 37.3M건 → DB 53GB → 디스크 초과
+- WDC v2 = 카테고리 추정 매핑 (부정확) → 삭제 결정
+- 36M건 배치 삭제 진행 (50만건씩) → 완료 후 VACUUM FULL + read-write 복구
+
+### 12개 TLC 계산 영역 구조화 계획
+- HS Code(GRI엔진) / Duty(DB) / AD/CVD(DB) / VAT(DB) / De Minimis(if문) / Special Tax(테이블) / Customs Fees(고정값) / RoO(FTA PSR+AI) / Export Controls(ECCN+AI) / Sanctions(퍼지매칭) / Currency(API) / Insurance(수식)
+- 12개 중 9개 = 코드만, 3개만 AI 필요
+
+## [2026-03-16 21:00 KST] CW15 Cowork 2차 — 자격증/벤치마크 DB, 142기능 GAP 분석, 3터미널 자동화 파이프라인
+
+### POTAL 자격증/벤치마크 데이터베이스 (POTAL_Certification_Benchmark_Database.xlsx, 11시트)
+- 57개 전문 자격증/시험/벤치마크 — POTAL이 대체하는 인력의 지식 기반 전체 매핑
+- Sheet 1: Overview (12개국, 57항목)
+- Sheet 2: Customs Broker Exams (CBLE/관세사/通関士 등 12개)
+- Sheet 3: HS Benchmarks (ATLAS 18,731/HSCodeComp 632/CBP 100 등 9개)
+- Sheet 4: Trade Compliance (AEO/C-TPAT/ECCN 등 8개)
+- Sheet 5: Tax & VAT (IOSS/US Sales Tax/GST 등 7개)
+- Sheet 6: Logistics & SCM (FIATA/Incoterms/CITP 등 9개)
+- Sheet 7: POTAL Test Plan (P0~P2 10항목)
+- Sheet 8: Competitor Knowledge Map (12개 직무 × POTAL 대체 기능)
+- Sheet 9: Customer Certs (거래처가 갖고 있는 자격증 6개)
+- Sheet 10: Industry Ratings (산업 평가/인증 8개)
+- Sheet 11: Cost Savings (10개 직무 × 연봉 × POTAL 대체 비용 계산, 27개 수식)
+- openpyxl 생성, 수식 검증 0 에러
+
+### 142기능 × 벤치마크 GAP 분석 (POTAL_142_Benchmark_Gap_Analysis.xlsx, 5시트)
+- Sheet 1: Summary — MVP필수 98 / MVP보완필요 12 / 확장시 32
+- Sheet 2: 142 Features × Benchmark — 모든 기능별 관련 시험, 현재 상태, 갭, 미수집 데이터 매핑
+- Sheet 3: MVP 보완 필요 — 16항목, 다운로드 소스 URL + 수집 방법 + 예상 건수
+- Sheet 4: 확장 시 필요 — 14개 카테고리 (향후)
+- Sheet 5: Claude Code Commands — P0 8개 + P1 5개 = 13개 데이터 소스 수집 명령어
+- 핵심 인사이트: "벤치마크 틀린 문제 = 실무에서 필요한 데이터 갭" (은태님 전략)
+
+### 3터미널 자동화 파이프라인 설계
+- **DONE 파일 기반 inter-process 코디네이션**:
+  - 터미널 1 (수집) → DONE 파일 생성 → 터미널 2/3 감지 → 자동 진행
+- **CLAUDE_CODE_TERMINAL_1_COLLECT.md**: P0 8개 + P1 5개 = 13개 데이터 소스 순차 수집
+  - CBLE (CBP 기출), EBTI 50-100K, ECICS 70K, ATaR 10K+, ATLAS 18,731, HSCodeComp 632, 한국 관세사, 일본 通関士
+  - BIS CCL ~2K, UN DG ~3K, WTO Valuation, FTA PSR, EU TARIC VAT
+- **CLAUDE_CODE_TERMINAL_2_BENCHMARK.md**: DB 적재(BIS/UN DG) + 벤치마크 6종 실행 + 종합 분석
+  - CBP 100건 → CBLE → ATLAS → HSCodeComp → Korea → Japan 벤치마크
+  - 틀린 문제 원인 분류 (NO_MAPPING/WRONG_MAPPING/PRICE_BREAK_MISSING/AMBIGUOUS_PRODUCT/INDUSTRIAL_SPECIALTY/COUNTRY_SPECIFIC)
+  - 142기능별 약점 매핑 + 경쟁사 비교 + 즉시 수정 실행 + 마케팅 요약
+- **CLAUDE_CODE_TERMINAL_3_ADDON.md**: part_01~10 업로드 후 추가 적재
+  - CBP CROSS 142K → UK ATaR ~10K → ECICS ~70K → EBTI 50-100K
+  - 중복 제거 + 인덱스 재생성 + ANALYZE
+
+### 전략적 인사이트
+- **벤치마크 = GAP 분석 도구**: 관세사/通関士 기출 틀린 문제가 POTAL 실무 갭을 정확히 가리킴
+- **142기능에 매핑**: 일반적 영역 분류가 아닌 POTAL 기존 142개 기능에 직접 매핑
+- **DB 과부하 방지**: 같은 테이블(product_hs_mappings) 동시 \copy 금지, 다른 테이블(export_controls/restricted_items)은 병행 가능
+
+### 파일 생성
+- POTAL_Certification_Benchmark_Database.xlsx (11시트, 57개 자격증)
+- POTAL_142_Benchmark_Gap_Analysis.xlsx (5시트, 142기능 GAP)
+- CLAUDE_CODE_TERMINAL_1_COLLECT.md (수집 명령어)
+- CLAUDE_CODE_TERMINAL_2_BENCHMARK.md (벤치마크 명령어)
+- CLAUDE_CODE_TERMINAL_3_ADDON.md (추가 적재 명령어)
+- CLAUDE_CODE_DATA_COLLECTION_COMMAND.md (통합 명령어, 후에 3터미널로 분리)
+
+### 터미널 3 상태
+- part_01 업로드 진행 중 (99 chunks, 각 50만줄, chunk_003+/099)
+- 인덱스 사전 삭제 → 성능 개선
+- ETA: ~24시간 (part_01만), 전체 part_01~10은 수일
+
+### 5개 문서 업데이트
+- CLAUDE.md ✅ (헤더 21:00 KST + CW15 2차 세션 전체 추가)
+- session-context.md ✅ (백그라운드 작업 #6-9, 워크로그, 파일 인덱스)
+- CHANGELOG.md ✅ (이 항목)
+- NEXT_SESSION_START.md ✅
+- .cursorrules ✅
+
+---
 
 ## [2026-03-16 16:00 KST] CW15 Cowork 전체 — B2B 채널 전략, CBP 벤치마크, CBP CROSS 매핑, 파일 정리
 
