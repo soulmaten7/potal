@@ -83,6 +83,10 @@
     {
       "path": "/api/v1/cron/fta-change-monitor",
       "schedule": "0 6 * * 5"
+    },
+    {
+      "path": "/api/v1/admin/morning-brief",
+      "schedule": "0 0 * * *"
     }
   ]
 }
