@@ -7,16 +7,14 @@
 import type { NormalizedInputV3 } from '../../types';
 import { getHeadingConditions } from '../../data/codified-headings';
 import { getSubheadingConditions } from '../../data/codified-subheadings';
-import * as fs from 'fs';
-import * as path from 'path';
-
 // Load extended keyword→heading mappings (13,449 keywords from 7-country codification)
+// Use dynamic import to avoid fs.readFileSync (Vercel serverless compatible)
 let _extendedKw: Record<string, string[]> | null = null;
 function getExtendedKeywords(): Record<string, string[]> {
   if (_extendedKw) return _extendedKw;
   try {
-    const filePath = path.join(__dirname, '../../data/extended-heading-keywords.json');
-    _extendedKw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    _extendedKw = require('../../data/extended-heading-keywords.json') as Record<string, string[]>;
     return _extendedKw!;
   } catch {
     _extendedKw = {};

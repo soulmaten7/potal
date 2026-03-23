@@ -10,20 +10,16 @@
 
 import { callLLM } from '../../utils/llm-call';
 import type { ClassifyInputV3 } from '../../types';
-import * as fs from 'fs';
-import * as path from 'path';
-
 // Load reference data (lazy — only when step 0.5 is used)
+// Vercel serverless compatible — no fs
 let _referenceData: string | null = null;
 
 function getReferenceData(): string {
   if (_referenceData) return _referenceData;
 
-  // Try loading from JSON file
-  const jsonPath = path.join(__dirname, '../../data/9field_reference.json');
   try {
-    const raw = fs.readFileSync(jsonPath, 'utf-8');
-    const data = JSON.parse(raw);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const data = require('../../data/9field_reference.json');
 
     // Build a compact reference string for the prompt
     // Focus on the most useful parts for field extraction

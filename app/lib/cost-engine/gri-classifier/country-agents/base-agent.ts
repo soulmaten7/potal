@@ -4,8 +4,6 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import * as fs from 'fs';
-import * as path from 'path';
 import type { CountryAgentResult } from '../types';
 
 function getSupabase() {
@@ -15,17 +13,17 @@ function getSupabase() {
   return createClient(url, key);
 }
 
-// Lazy-load codified data per country
+// Lazy-load codified data per country (Vercel serverless compatible — no fs)
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const _cache: Record<string, Record<string, any[]>> = {};
 
 function loadCodified(countryCode: string): Record<string, any[]> {
   const cc = countryCode.toLowerCase();
   if (_cache[cc]) return _cache[cc];
 
-  const filePath = path.join(__dirname, 'data', `${cc}_codified.json`);
   try {
-    const raw = fs.readFileSync(filePath, 'utf-8');
-    _cache[cc] = JSON.parse(raw);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    _cache[cc] = require(`./data/${cc}_codified.json`);
     return _cache[cc];
   } catch {
     _cache[cc] = {};
