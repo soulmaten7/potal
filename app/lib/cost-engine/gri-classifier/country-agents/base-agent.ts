@@ -13,22 +13,15 @@ function getSupabase() {
   return createClient(url, key);
 }
 
-// Lazy-load codified data per country (Vercel serverless compatible — no fs)
+// Country codified data — loaded from DB at runtime (Vercel compatible)
+// JSON files are too large (21MB total) for static import/bundling
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const _cache: Record<string, Record<string, any[]>> = {};
 
-function loadCodified(countryCode: string): Record<string, any[]> {
-  const cc = countryCode.toLowerCase();
-  if (_cache[cc]) return _cache[cc];
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    _cache[cc] = require(`./data/${cc}_codified.json`);
-    return _cache[cc];
-  } catch {
-    _cache[cc] = {};
-    return _cache[cc];
-  }
+function loadCodified(_countryCode: string): Record<string, any[]> {
+  // Country codified data is loaded from gov_tariff_schedules DB via Supabase
+  // The 7 JSON files (21MB) are for local dev/benchmark only
+  // In production, baseClassify() queries DB directly (already implemented below)
+  return {};
 }
 
 export interface EnhancedInput {
