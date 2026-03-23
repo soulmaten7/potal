@@ -36,6 +36,8 @@ export interface CountryTaxProfile {
   hasFtaWithChina: boolean;
   /** Additional notes */
   notes?: string;
+  /** Origin-specific de minimis exceptions (e.g., US $0 for CN/HK per IEEPA Aug 2025) */
+  deMinimisExceptions?: Record<string, number>;
 }
 
 // ─── Country Database ────────────────────────────────
@@ -45,9 +47,10 @@ export const COUNTRY_DATA: Record<string, CountryTaxProfile> = {
   US: {
     code: 'US', name: 'United States', region: 'North America',
     vatRate: 0, vatLabel: 'Sales Tax', avgDutyRate: 0.05, // state-level sales tax handled separately
-    deMinimis: 0, deMinimsCurrency: 'USD', deMinimisUsd: 0, // eliminated for CN Aug 2025
+    deMinimis: 800, deMinimsCurrency: 'USD', deMinimisUsd: 800,
+    deMinimisExceptions: { CN: 0, HK: 0 }, // IEEPA Aug 2025: China & HK de minimis eliminated
     currency: 'USD', hasFtaWithChina: false,
-    notes: 'State sales tax varies 0-10.25%. China de minimis eliminated Aug 2025.'
+    notes: 'State sales tax varies 0-10.25%. De minimis $800 except CN/HK origin ($0 per IEEPA Aug 2025).'
   },
   CA: {
     code: 'CA', name: 'Canada', region: 'North America',
@@ -191,67 +194,67 @@ export const COUNTRY_DATA: Record<string, CountryTaxProfile> = {
   BG: {
     code: 'BG', name: 'Bulgaria', region: 'Europe',
     vatRate: 0.20, vatLabel: 'DDC', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'BGN', deMinimisUsd: 0,
+    deMinimis: 294, deMinimsCurrency: 'BGN', deMinimisUsd: 160, // EU EUR 150 ≈ 294 BGN
     currency: 'BGN', hasFtaWithChina: false,
   },
   HR: {
     code: 'HR', name: 'Croatia', region: 'Europe',
     vatRate: 0.25, vatLabel: 'PDV', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160, // EU EUR 150
     currency: 'EUR', hasFtaWithChina: false,
   },
   SK: {
     code: 'SK', name: 'Slovakia', region: 'Europe',
     vatRate: 0.20, vatLabel: 'DPH', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   SI: {
     code: 'SI', name: 'Slovenia', region: 'Europe',
     vatRate: 0.22, vatLabel: 'DDV', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   LT: {
     code: 'LT', name: 'Lithuania', region: 'Europe',
     vatRate: 0.21, vatLabel: 'PVM', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   LV: {
     code: 'LV', name: 'Latvia', region: 'Europe',
     vatRate: 0.21, vatLabel: 'PVN', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   EE: {
     code: 'EE', name: 'Estonia', region: 'Europe',
     vatRate: 0.22, vatLabel: 'KM', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   CY: {
     code: 'CY', name: 'Cyprus', region: 'Europe',
     vatRate: 0.19, vatLabel: 'FPA', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   MT: {
     code: 'MT', name: 'Malta', region: 'Europe',
     vatRate: 0.18, vatLabel: 'VAT', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   LU: {
     code: 'LU', name: 'Luxembourg', region: 'Europe',
     vatRate: 0.17, vatLabel: 'TVA', avgDutyRate: 0.045,
-    deMinimis: 0, deMinimsCurrency: 'EUR', deMinimisUsd: 0,
+    deMinimis: 150, deMinimsCurrency: 'EUR', deMinimisUsd: 160,
     currency: 'EUR', hasFtaWithChina: false,
   },
   IS: {
     code: 'IS', name: 'Iceland', region: 'Europe',
     vatRate: 0.24, vatLabel: 'VSK', avgDutyRate: 0.03,
-    deMinimis: 0, deMinimsCurrency: 'ISK', deMinimisUsd: 0,
+    deMinimis: 10000, deMinimsCurrency: 'ISK', deMinimisUsd: 71, // ISK 10,000
     currency: 'ISK', hasFtaWithChina: false,
   },
   RS: {

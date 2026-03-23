@@ -122,8 +122,32 @@ export const BRAZIL_STATE_ICMS_RATES: Record<string, number> = {
   'SE': 0.19,   'SP': 0.18,   'TO': 0.20,
 };
 
-/** Brazil federal import taxes (fixed rates) */
-export const BRAZIL_IPI_DEFAULT = 0.10;       // ~10% avg for general merchandise
+/** Brazil IPI rates by NCM chapter (simplified from TIPI table)
+ * Source: Receita Federal TIPI — https://www.gov.br/receitafederal/pt-br/ */
+const BRAZIL_IPI_BY_CHAPTER: Record<string, number> = {
+  // 0% — essential/exempt
+  '01':0,'02':0,'03':0,'04':0,'05':0,'06':0,'07':0,'08':0,'09':0,'10':0,
+  '11':0,'12':0,'13':0,'14':0,'15':0,'16':0,'17':0,'18':0,'19':0,'20':0,
+  '21':0,'23':0,'25':0,'26':0,'27':0,'30':0,'31':0,'41':0,'43':0,
+  '44':0,'45':0,'46':0,'47':0,'48':0,'49':0,
+  '50':0,'51':0,'52':0,'53':0,'54':0,'55':0,'56':0,'57':0,'58':0,'59':0,'60':0,
+  '61':0,'62':0,'63':0,
+  // 5%
+  '34':0.05,'35':0.05,'39':0.05,'40':0.05,'64':0.05,'68':0.05,'69':0.05,'70':0.05,
+  '73':0.05,'74':0.05,'76':0.05,'82':0.05,'83':0.05,'94':0.05,'96':0.05,
+  // 10%
+  '28':0.10,'29':0.10,'32':0.10,'36':0.10,'37':0.10,'38':0.10,
+  '65':0.10,'66':0.10,'67':0.10,'84':0.10,'86':0.10,'89':0.10,
+  '90':0.10,'91':0.10,'92':0.10,'97':0.10,
+  // 12-25%
+  '71':0.12,'33':0.22,'85':0.15,'87':0.25,'93':0.15,'95':0.20,'22':0.20,
+  // 300% — tobacco
+  '24':3.00,
+};
+export function getBrazilIpiRate(hsCode: string): number {
+  return BRAZIL_IPI_BY_CHAPTER[hsCode.substring(0, 2)] ?? 0.10;
+}
+export const BRAZIL_IPI_DEFAULT = 0.10;       // fallback avg
 export const BRAZIL_PIS_IMPORT = 0.021;       // 2.1%
 export const BRAZIL_COFINS_IMPORT = 0.0965;   // 9.65%
 
@@ -175,9 +199,10 @@ export function cepToState(cep: string): string | null {
 export function calculateBrazilImportTaxes(
   declaredValue: number,
   importDuty: number,
-  icmsRate: number
+  icmsRate: number,
+  ipiRate?: number,
 ): { ipi: number; pisCofins: number; icms: number; totalTax: number; effectiveRate: number } {
-  const ipi = (declaredValue + importDuty) * BRAZIL_IPI_DEFAULT;
+  const ipi = (declaredValue + importDuty) * (ipiRate ?? BRAZIL_IPI_DEFAULT);
   const pisCofins = declaredValue * (BRAZIL_PIS_IMPORT + BRAZIL_COFINS_IMPORT);
   // ICMS "por dentro": base = (CIF + II + IPI + PIS + COFINS) / (1 - ICMS rate)
   const preIcmsTotal = declaredValue + importDuty + ipi + pisCofins;
@@ -196,26 +221,29 @@ export const INDIA_SWS_RATE = 0.10;
 /** India standard IGST rate (most goods) */
 export const INDIA_IGST_STANDARD = 0.18;
 
-/** India IGST rates by category (simplified) */
+/** India IGST rates by HS chapter (97 chapters, CBIC GST Rate Schedule)
+ * Source: https://cbic-gst.gov.in/gst-goods-services-rates.html */
 export const INDIA_IGST_RATES: Record<string, number> = {
+  // 3% — precious metals/jewelry (SPECIAL)
+  '71': 0.03,   // Gold, silver, precious stones, jewelry
   // 5% — essential goods
-  '01': 0.05, '02': 0.05, '03': 0.05, '04': 0.05, '07': 0.05,
-  '08': 0.05, '09': 0.05, '10': 0.05, '11': 0.05, '12': 0.05,
-  '19': 0.05, '23': 0.05,
-  // 12%
-  '15': 0.12, '16': 0.12, '17': 0.12, '20': 0.12, '21': 0.12,
-  '22': 0.12, '33': 0.12, '34': 0.12,
+  '01':0.05,'02':0.05,'03':0.05,'04':0.05,'05':0.05,'07':0.05,'08':0.05,'09':0.05,
+  '10':0.05,'11':0.05,'12':0.05,'13':0.05,'14':0.05,'15':0.05,'17':0.05,'19':0.05,
+  '23':0.05,'25':0.05,'49':0.05,'50':0.05,'51':0.05,'52':0.05,'53':0.05,
+  // 12% — processed goods
+  '06':0.12,'16':0.12,'18':0.12,'20':0.12,'21':0.12,'22':0.12,'30':0.12,
+  '34':0.12,'48':0.12,'61':0.12,'62':0.12,'63':0.12,'64':0.12,'97':0.12,
   // 18% — standard (most manufactured goods)
-  '28': 0.18, '29': 0.18, '30': 0.18, '32': 0.18, '38': 0.18,
-  '39': 0.18, '40': 0.18, '42': 0.18, '44': 0.18, '48': 0.18,
-  '49': 0.18, '54': 0.18, '55': 0.18, '56': 0.18, '59': 0.18,
-  '61': 0.18, '62': 0.18, '63': 0.18, '64': 0.18, '68': 0.18,
-  '69': 0.18, '70': 0.18, '72': 0.18, '73': 0.18, '74': 0.18,
-  '76': 0.18, '82': 0.18, '83': 0.18, '84': 0.18, '85': 0.18,
-  '87': 0.18, '90': 0.18, '94': 0.18, '96': 0.18,
-  // 28% — luxury / demerit goods
-  '24': 0.28, '71': 0.28, '95': 0.28,
-  // Note: '87' (vehicles) is in 18% bracket above; luxury vehicles may attract 28% + cess but simplified to 18%
+  '26':0.18,'27':0.18,'28':0.18,'29':0.18,'31':0.18,'32':0.18,'33':0.18,
+  '35':0.18,'36':0.18,'37':0.18,'38':0.18,'39':0.18,'40':0.18,'41':0.18,
+  '42':0.18,'43':0.18,'44':0.18,'45':0.18,'46':0.18,'47':0.18,
+  '54':0.18,'55':0.18,'56':0.18,'57':0.18,'58':0.18,'59':0.18,'60':0.18,
+  '65':0.18,'66':0.18,'67':0.18,'68':0.18,'69':0.18,'70':0.18,
+  '72':0.18,'73':0.18,'74':0.18,'75':0.18,'76':0.18,'78':0.18,'79':0.18,
+  '80':0.18,'81':0.18,'82':0.18,'83':0.18,'84':0.18,'85':0.18,'86':0.18,
+  '88':0.18,'89':0.18,'90':0.18,'91':0.18,'92':0.18,'94':0.18,'95':0.18,'96':0.18,
+  // 28% — luxury/demerit
+  '24':0.28,'87':0.28,'93':0.28,
 };
 
 /**
@@ -278,14 +306,18 @@ const CHINA_CBEC_DISCOUNT = 0.70;
 const CHINA_CBEC_SINGLE_LIMIT_USD = 700; // ~¥5,000 / 7.1 exchange rate
 const CHINA_CBEC_ANNUAL_LIMIT_USD = 3660; // ~¥26,000
 
-/** Consumption tax rates by HS chapter (luxury/excise goods) */
+/** China Consumption Tax by HS heading (中华人民共和国消费税暂行条例)
+ * Source: http://www.chinatax.gov.cn/ */
 const CHINA_CONSUMPTION_TAX: Record<string, number> = {
-  '22': 0.10, // Beverages, spirits, vinegar
-  '24': 0.36, // Tobacco
-  '33': 0.15, // Cosmetics (high-end)
-  '71': 0.10, // Jewelry
-  '87': 0.05, // Vehicles (under 2.0L)
-  '91': 0.20, // Watches (luxury, >¥10k)
+  '22': 0.10, // Wine 10%, spirits 20% (avg 10% for chapter level)
+  '24': 0.36, // Tobacco (cigarettes 56% Class A, avg 36%)
+  '33': 0.15, // High-end cosmetics 15%
+  '36': 0.15, // Fireworks 15%
+  '71': 0.10, // Precious jewelry 10%
+  '85': 0.04, // Batteries 4%
+  '87': 0.09, // Vehicles 3-40% (avg ~9% for 1.5-3.0L)
+  '89': 0.10, // Yachts 10%
+  '91': 0.20, // Luxury watches (>¥10k) 20%
 };
 
 export function getChinaConsumptionTaxRate(hsChapter: string): number {
@@ -347,14 +379,30 @@ export function calculateChinaCBECTaxes(
  * Applied to specific goods: alcohol, tobacco, sugary drinks, etc.
  * On top of IVA 16%.
  */
+/** Mexico IEPS by HS heading (Ley del IEPS, SAT)
+ * Source: https://www.sat.gob.mx/ */
 const MEXICO_IEPS_RATES: Record<string, number> = {
-  '22': 0.265, // Alcoholic beverages (26.5-53% depending on alcohol content)
-  '24': 1.60,  // Tobacco (160%)
-  '20': 0.08,  // Sugary drinks (8% or MXN ~1.4908/L)
+  // Alcoholic beverages (Art. 2, Fracción I, inciso A)
+  '2203': 0.265,  // Beer ≤14% ABV → 26.5%
+  '2204': 0.265,  // Wine ≤14% ABV → 26.5%
+  '2205': 0.265,  // Vermouth ≤14% ABV → 26.5%
+  '2206': 0.265,  // Other fermented ≤14% ABV → 26.5%
+  '2207': 0.53,   // Ethyl alcohol → 53%
+  '2208': 0.53,   // Spirits/liqueurs >20% ABV → 53% (tequila, whisky, vodka)
+  // Tobacco
+  '24': 1.60,     // Tobacco 160%
+  // Sugary drinks
+  '2202': 0.08,   // Sugary non-alcoholic beverages ~8%
+  // Junk food (>275 kcal/100g)
+  '1704': 0.08,'1806': 0.08,'1905': 0.08,
 };
 
-export function getMexicoIepsRate(hsChapter: string): number {
-  return MEXICO_IEPS_RATES[hsChapter] ?? 0;
+export function getMexicoIepsRate(hsCode: string): number {
+  // Try 4-digit heading first, then 2-digit chapter
+  const h4 = hsCode.replace(/\./g, '').substring(0, 4);
+  if (MEXICO_IEPS_RATES[h4]) return MEXICO_IEPS_RATES[h4];
+  const ch = hsCode.replace(/\./g, '').substring(0, 2);
+  return MEXICO_IEPS_RATES[ch] ?? 0;
 }
 
 export function calculateMexicoImportTaxes(
@@ -539,7 +587,8 @@ export function calculateLandedCost(input: CostInput): LandedCost {
     const dutyRate = originCountry === 'CN' ? CHINA_IMPORT_DUTY_RATE : OTHER_IMPORT_DUTY_RATE;
     const importDuty = totalDeclaredValue * dutyRate;
 
-    const mpf = originCountry === 'CN' ? MPF_INFORMAL : 0;
+    // US MPF applies to ALL origins (19 CFR 24.23), not just CN
+    const mpf = totalDeclaredValue <= 2500 ? 2.00 : Math.min(Math.max(totalDeclaredValue * 0.003464, 32.71), 634.04);
 
     const isDutyFree = originCountry === 'OTHER' && totalDeclaredValue === 0;
 

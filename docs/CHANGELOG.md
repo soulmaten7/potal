@@ -1,5 +1,373 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-17 22:00 KST
+> 마지막 업데이트: 2026-03-23 KST (CW18 Cowork 5차 — 12 TLC 시스템화 46건 수정)
+
+## [2026-03-23 KST] CW18 Cowork 5차 — 12 TLC 시스템화 완료
+
+### 12 TLC 영역 코드 감사 (46건 수정)
+- **P0 CRITICAL**: US de minimis $0→$800(비중국), Math.random→deterministic(export-controls)
+- **P1 URGENT**: Section 232 Aluminum 25%, exempt countries revoked, EU-Mercosur inactive, EU-UK TCA added, fuzzy-screening SQL escape, Belarus sanctioned
+- **P2 IMPORTANT**: MPF $32.71/$634.04 통일, EU 10국+Iceland de minimis
+- **Special Tax 전면 개편**:
+  - Brazil IPI: 일괄 10% → 95-chapter별 (의류 0%, 화장품 22%, 차량 25%, 담배 300%)
+  - India IGST: 47ch→97ch (금/보석 Ch.71: 28%→**3%**, 식품 5%, 차량 28%+Cess)
+  - Mexico IEPS: Ch.22 일괄 26.5% → heading별 (맥주 26.5%, spirits **53%**, 담배 160%)
+  - China CT: 6→10항목 (배터리/페인트 4% 추가)
+- **EU VAT**: 12국→**27국 완성** (FI,DK,CZ,RO,HU,BG,HR,SK,SI,LT,LV,EE,LU,CY,MT 추가)
+- **FTA**: EU-UK TCA 추가, EU-Mercosur→inactive
+- **Shipping**: GB EU에서 분리, AU/NZ→OCEANIA
+- **검증**: npm run build ✅ (5회 연속), Duty Rate 55/55 PASS 100%
+- **수정 파일**: 10개
+- **엑셀**: POTAL_12Area_Code_Audit.xlsx + POTAL_46Issue_Fix_Log.xlsx + POTAL_35Issue_Complete_Fix.xlsx
+
+---
+
+## [2026-03-22 KST] CW18 Cowork 4차 — Layer 2 v1~v7 전체 실험 완료 + 에러 분석
+
+### Layer 구조 확립
+- Layer 1 = 9-field 완벽 → 100% (절대값, AI 0회)
+- Layer 2 = 불완전 입력 → 9-field 자동 보정 (Tier 1-2, LLM ~$0.00003/건)
+- Layer 3 = custom 변환 (Tier 3 Enterprise, 미시작)
+
+### Layer 2 실험 7회 (HSCodeComp 632건)
+- v1 (자유 LLM): material 99% 추출, HS6 8% (MATERIAL_KEYWORDS 밖 값 출력)
+- v2 (material 강제): **S57%/Ch46%/H19%/HS6=8%** — **HS6 최적** ✅
+- v3 (전체 강제): S49%/Ch39%/HS6=5%. 과도한 제약으로 하락
+- v4 (POTAL 128 category 강제): S52%/Ch37%/HS6=6%. category 자체 오류 많음
+- v5 (WCO 97 Chapter 강제): S56%/Ch42%/HS6=6%. v4보다 나으나 v2보다 못함
+- v6 (WCO raw text 이해): **S65% (역대 최고)** / Ch44% / HS6=6%. Section은 최고지만 Chapter→HS6 변환 손실
+- v7 (코드 교집합 + LLM 선택): **Chapter 52% (역대 최고) ⭐** / S59% / BUT Layer1 통과 시 HS6=5% (Layer1이 chapter 재파생)
+
+### v6 에러 상세 분석 (256건 오답)
+- Pattern E (LLM 실수, 단서 있음): 106/256 (41%) — GPT-4o-mini 한계
+- Pattern B (WCO Chapter 경계 혼동): 67/256 (26%) — 인접 Chapter 혼동 (Ch.61↔62, Ch.84↔85)
+- Pattern A (셀러 category 오도): 56/256 (21%) — 셀러 카테고리 ≠ WCO Chapter
+- Pattern D (Material 의존): 25/256 (9%) — material 정보 필요
+- Pattern C (정보 부족): 2/256 (0%)
+- 최다 오분류: Ch.96→39(15건), Ch.61→62(13건), Ch.84→90(11건), Ch.84→85(9건)
+
+### v7 핵심 발견 — 코드 교집합 + LLM 선택
+- **코드 교집합**: 97 chapters → 평균 10 후보로 축소, 76% 정답 포함
+- **LLM 선택**: 후보 중 52% 정답 선택 (Chapter 역대 최고)
+- **⚠️ BUT Layer 1이 chapter를 text 기반으로 재파생** → 52%가 43%로 하락
+- **결론**: v7 방식이 chapter 선택에 효과적이나, Layer 1에 confirmed_chapter 직접 전달 필요
+
+### Layer 2 최종 결론 (v1~v7 종합)
+- **HS6 기준**: v2 (material만 강제) = 최적 (HS6 8%)
+- **Chapter 기준**: v7 (코드 교집합 + LLM 선택) = 최고 (52%) — Layer 1 직접 전달 필요
+- **Section 기준**: v6 (WCO raw text) = 최고 (S65%)
+- **모든 category 강제 버전 (v3/v4/v5)**: v2보다 하락
+- **병목**: (1) Layer 1이 Layer 2 결과를 활용 못함 (text 재파생) (2) KEYWORD_TO_HEADINGS 사전 부족
+
+### Layer 2 매핑 순서 확정
+- category → material → description (이 순서가 100% 달성 핵심)
+- material은 MATERIAL_KEYWORDS 79그룹에서만 강제 선택
+- category가 material보다 먼저 (material 판단의 맥락)
+
+### Layer 1 Category 매핑 업그레이드 (CATEGORY_TO_SECTION → WCO CHAPTER_KEYWORDS)
+- step2-1-section-candidate.ts에 CHAPTER_DESCRIPTIONS + CHAPTER_TO_SECTION import 추가
+- buildChapterKeywords(): WCO 97 Chapter 설명에서 키워드 자동 추출
+- Tier A (WCO 법적 기준) → Tier B (기존 128개 fallback) 2단계 매칭
+- category_tokens만 사용 (product_name 제외 — "coffee mug"에서 "coffee"→Ch.9 false positive 방지)
+- Generic stop words 추가 (origin, organic, food, metals 등)
+- **Regression: Clean 20 = 20/20 ✅, v2 HS6=8% 유지 ✅**
+- **v7→L1 결과**: Section **66%**(+11%p) / Chapter **53%**(+10%p) / Heading 19%(+4%p) / HS6 6%(+1%p)
+- **v2→L1 결과**: Section 57%(=) / Chapter 47%(+1%p) / HS6 8%(=)
+- **Section 66% + Chapter 53% = 역대 최고 ⭐**
+
+### 빌드 수정
+- types.ts: CountryAgentResult.method에 pattern_single/pattern_strong/pattern_match/pattern_catch_all/db_keyword_match 추가
+- step2-1-section-candidate.ts: MATERIAL_TO_SECTION 중복 키 제거 (meat, grain)
+- step3-heading.ts: KEYWORD_TO_HEADINGS 중복 키 제거 (fish, nuts→tree nuts, chocolate)
+- **npm run build ✅** (0 errors)
+
+### 핵심 인사이트
+- 9-field 완벽 = 현실 6.8%. 나머지 93.2% = Layer 2 대상 = 실제 비즈니스
+- POTAL = AI가 답을 추측하지 않고, AI가 질문을 정리하고 코드가 답을 확정
+- 프로덕션: Make → Supabase(코드화 목록) → LLM API → POTAL API
+
+---
+
+## [2026-03-21 KST] CW18 Cowork 3차 — Step 4~6 완성, 7개국 10자리 패턴 매칭, 1,183건 벤치마크
+
+### Step 4~6 파이프라인 완성
+- step5-country-router.ts: EnhancedInput (Step 3 결과 + 9-field 전체) 전달
+- step6-price-break.ts: hs_price_break_rules (18건) 기반 가격분기
+- step7-final.ts: async 전환 + macmap 세율 조회 통합
+- duty-rate-lookup.ts (신규): macmap_ntlc_rates → macmap_min_rates fallback, EU 27개국 매핑
+- pipeline-v3.ts: Step 4/5/6 호출 + destination_country 전달
+
+### Step 4 Country Router — 7개국 독립 패턴 매칭
+- base-agent.ts 전면 재작성: keyword scoring → 패턴 기반 매칭 (11종 패턴, 가중치 scoring)
+- 7개 country-agents: 각 나라별 codified_national JSON 로드 → 독립 패턴 매칭
+- US indent 트리 (0~11레벨), EU/GB flat, KR/JP/AU/CA flat
+- country-agents/data/*.json (신규 7개): 나라별 HS6 인덱싱 코드화 데이터
+
+### 데이터 수집 + 코드화
+- gov_tariff_schedules: 89,842 → **125,576행** (+35,734, KR 10자리 +11,293 / JP 9자리 +9,443 / AU 8자리 +6,806 / CA 8자리 +7,103 / US +1,089)
+- 7개국 관세율표 코드화: 125,576행 × 11패턴 × 5회 검수 → 오류 0건
+- macmap_ntlc_rates: WTO API 60개국 336,408행 INSERT (총 874,302행, 140국)
+- MATERIAL_KEYWORDS: 32→79그룹, MATERIAL_TO_SECTION: 12→21/21 Section (100%)
+- KEYWORD_TO_HEADINGS: 400 inline + 13,449 extended = 13,849개
+- extended-heading-keywords.json (신규, 325KB)
+
+### 세율 분리 리팩토링
+- gov_tariff_schedules = HS 코드 확장 전용 (duty_rate 제거)
+- macmap = 세율 조회 전용 (duty-rate-lookup.ts)
+- EU 회원국 27개 → 'EU' 자동 매핑
+
+### 벤치마크 결과
+- Amazon 350건 수집 + 169건(9-field 유효) 벤치마크
+- 7개국 1,183건: US/KR/AU/CA 100%, JP 99%, EU/GB 75% 확장
+- 세율: 7개국 전부 100%
+- MISMATCH: 0건 (HS6 100% 정확)
+- Regression: 20/20 유지
+
+### 엑셀 로깅 시스템
+- CLAUDE.md 절대 규칙 11번: POTAL_Claude_Code_Work_Log.xlsx
+- 시트명 YYMMDDHHMM, 열: 순번/시간/구분/상세/파일/상태
+
+---
+
+## [2026-03-20 KST] CW18 Cowork 2차 — v3 절대값 확정, Tier 분리, 세관/플랫폼 필드 조사, Step 0.5
+
+### ⚠️ 핵심 전략 결정
+- **v3 파이프라인 = 절대값** — 9-field 입력 → 100%. 수정/실험 금지. Tier 1-2 전용
+- **Tier 1-2 (Free/Basic/Pro)**: 고객이 9-field 직접 입력 + 빈 필드 진단만 표시
+- **Tier 3 (Enterprise Custom)**: v3 복사본 + Step 0.5 + 키워드 확장. 별도 파이프라인
+- **HSCodeComp 6.3% = 불완전 입력 결과** (파이프라인 한계 아님)
+- **키워드 사전 확장 = Enterprise Custom 전용** (기존 v3 건드리지 않음)
+
+### 240개국 세관 필드 조사
+- POTAL_240_Customs_Fields_Raw.xlsx (6시트, 181국 커버)
+- 전 세계 공통 6필드: Description, HS Code, Value, Origin, Weight, Quantity
+- material 별도 필드: ~2%만 (중국 申报要素가 유일한 18개 구조화)
+
+### 30개 플랫폼 필드 조사
+- POTAL_Platform_Product_Fields_Raw.xlsx (6시트, 30플랫폼)
+- 필드 차이 = 국가별 아닌 플랫폼별. material 별도: 12/30 (40%)
+
+### Step 0.5 Enterprise Custom 벤치마크
+- GPT-4o-mini 필드 추출: material 57%→82.4%, category 2%→82.4%, 평균 3.5→6.2 필드
+- HS6 정확도: 6.3% → 5.1% (미개선 — Step 3/4 키워드 사전이 병목)
+- 비용: 632건 = ~$0.06
+
+### 코드화 데이터 현황 확인
+- heading-descriptions.ts: 1,233개 WCO 원본 (wig/wrench/towel 존재)
+- codified_headings_v3.json: 10,222 키워드 (BUT wig/wrench 변환 시 누락)
+- KEYWORD_TO_HEADINGS: 179개 수동 하드코딩
+- "sticker"는 WCO에도 없음 → Enterprise Custom 동의어 매핑 필요
+
+### 생성 파일
+- POTAL_240_Customs_Fields_Raw.xlsx, POTAL_Platform_Product_Fields_Raw.xlsx
+- CLAUDE_CODE_CUSTOMS_FIELD_INVESTIGATION.md, CLAUDE_CODE_PLATFORM_FIELD_INVESTIGATION.md
+- CLAUDE_CODE_STEP05_LLM_EXTRACTION.md, 9field_reference.json, step05-field-extraction.ts, step05_benchmark_results.json
+
+---
+
+## [2026-03-20 KST] CW18 Cowork 1차 — Amazon 50건 벤치마크 100%, 466조합 Ablation, HSCodeComp 632건 독립 벤치마크
+
+### Amazon 50건 자체 벤치마크
+- Amazon Product API 50개 상품 (실제 이커머스 데이터)
+- 9-Field 완전 입력 시: Section/Chapter/Heading/HS6 전부 100% ✅
+- 6개 구조 버그 발견 + 수정:
+  1. straw→raw word boundary (regex \b 매칭으로 수정)
+  2. jewelry category override 누락 (Section XIV 강제 매핑)
+  3. clothing keyword 누락 (sweater/hoodie/jacket 추가)
+  4. passive accessory→electronics 오분류 (PASSIVE_ACCESSORY_WORDS 분리)
+  5. steel raw vs article 혼동 (ARTICLE_KEYWORDS 추가)
+  6. yoga mat heading 누락 (KEYWORD_TO_HEADINGS 추가)
+
+### 466조합 Ablation 체계 테스트
+- C(9,0)+...+C(9,6) = 466 조합 × 50 상품 = 23,300 파이프라인 실행
+- 13,114건 오류 ALL FIELD_DEPENDENT, 코드 버그 0건
+- Level별 HS6: L9=100%, L8=87%, L7=74%, L6=60%, L5=47%, L4=33%, L3=21%
+- Field Importance: material +45.1%, category +32.8%, product_name +18.0%, description +4.8%
+- "Magic 3" 확정: product_name + material + category = 98% HS6
+
+### HSCodeComp 632건 독립 벤치마크
+- HuggingFace AIDC-AI/HSCodeComp, AliExpress 실데이터 + 확정 US HTS 10자리
+- 결과: Chapter 42.6%, Heading 15.5%, HS6 6.3%
+- 오류: KEYWORD_MISSING 429건(72.5%), FIELD_DEPENDENT 163건(27.5%)
+- 커버리지 갭: Ch.67(가발 0%), Ch.82(공구 0%), Ch.83(잡금속 0%), Ch.49(인쇄물 0%), Ch.63(섬유 0%)
+- 결론: 파이프라인 로직 버그 0건, 키워드 사전 확장이 P0
+
+### v3 파이프라인 Step별 필드 사용 문서화
+- Step 0: ALL 9 fields → 정규화
+- Step 2-1: material_keywords + category_tokens → Section 후보
+- Step 2-2: codified_rules 592개 → Section 확정
+- Step 2-3: material + processing + category → Chapter 후보
+- Step 3-1: product_name + category + description → Heading (KEYWORD_TO_HEADINGS ~500+)
+- Step 3-2: composition + weight_spec + price + description → Subheading
+
+### 생성된 파일
+- POTAL_Ablation_V2.xlsx (15시트: Amazon 11 + HSCodeComp 4)
+- CLAUDE_CODE_ABLATION_V2.md (466조합 ablation 명령어)
+- CLAUDE_CODE_HSCODECOMP_BENCHMARK.md (HSCodeComp 632건 명령어)
+
+---
+
+## [2026-03-19 KST] CW17 Cowork — 7-Field API 대전환, v3 파이프라인, 7,446개 HS 규칙 코드화
+
+### HS Code v3 파이프라인 구현
+- 9-Field API 설계: product_name + material + category + description + processing + composition + weight_spec + price + origin_country
+- v3 파이프라인 Step 0~4 TypeScript 코드 구현 (10개 파일, steps/v3/)
+- Step 2 (Section+Chapter) 100% 달성 (20/20, AI 0회)
+- 필드 빼기 테스트: material=CRITICAL(-55%), processing/composition=None, description=Low(-5%)
+- 실제 필수 필드 = product_name + material + category (3개로 Section/Chapter 100%)
+
+### 7,446개 HS 규칙 코드화
+- Section/Chapter Notes: 592개 규칙 (codified_rules.json) — 100% 코드화
+- Heading: 1,233개 (codified_headings.json) — product_type 100% 추출
+- Subheading: 5,621개 (codified_subheadings.json) — 미분류 865건 전부 해결, 0건 남음
+- AI 필요 4건 → category 필드로 전부 해결 → 최종 AI 필요 0건
+- 3중 교차검증 통과 (원문 대조 98.5% → 수정 후 100%)
+
+### Description 문법 구조 전수 분석
+- 6,854개 100% 구조 파악, 구조화 불가 0건
+- 88%: 세미콜론 구조 [product_type] of [material]; [conditions]
+- 12%: 비세미콜론 — A(단순)+B(나열)+C(of소재)+D(상태)+H(Parts)+L(가공)+G(Other)
+- 55건 특수 케이스 전수 조사 → 새 패턴 0건
+
+### 판결문 통합 규칙 엔진
+- CBP CROSS 343,445 + EU EBTI 231,727 = 575,172건 통합 분석
+- master_classification_engine.json (15MB): 433규칙 + 21,340 키워드
+- AI 4건 판결문 전수 검색 12,550건 (Ch.9/40/42/95)
+
+### 벤치마크/테스트
+- V3_TEST_LOG.md 생성 (15개 테스트 기록)
+- 20건 클린 벤치마크: Section 100%, Chapter 100%, Heading 45~60%, 6-digit 20~25%
+- 경쟁사 벤치마크 데이터 공개 여부 조사 (10사, 대부분 비공개)
+- HSCodeComp 632건 독립 벤치마크 전략 확정
+
+### DB 복구
+- read-write 복구 완료 (53GB→45GB, 1,332,287건)
+
+### 12 TLC 경쟁사 벤치마크
+- POTAL_12_TLC_Competitor_Benchmark.xlsx (14시트) 완성
+- POTAL 이미 1위: Duty Rate, VAT/GST(240국), De Minimis(240국), Customs Fees(240국)
+
+### 핵심 원칙
+- "시스템화 = 코드화 가능" — 정부/국제기구 시스템은 100% 코드화 가능, AI 불필요
+- 타겟 3-Tier 지원 전략: Tier1(자동변환) + Tier2(데이터정리API) + Tier3(Custom지원)
+
+## [2026-03-19 KST] CW17 Cowork — 7-Field API 대전환 + Notes 코드화
+
+### HS Code v3 파이프라인 설계
+- **API 8-Field 확장**: product_name + material + category + description + processing + composition + weight_spec + price + origin_country
+- **v3 파이프라인 확정**: Step 0(INPUT) → Step 1(CACHE) → Step 2(Section+Chapter, 2-1~2-4) → Step 3(Heading+Subheading, 3-1~3-2) → Step 4(Country) → Step 5(Price Break) → Step 6(Final)
+- **핵심 전환**: "상품명으로 AI 추측" → "거래처 데이터로 코드 확정"
+- **AI 호출**: 4~5회 → 0~2회 / 비용: ~$0.002 → $0~$0.001
+
+### Notes 592개 규칙 코드화
+- Section Notes 9개 + Chapter Notes 94개 = 103개 Notes 분석
+- **592개 구조화 규칙 생성**: numeric_threshold 210, inclusion 121, exclusion 108, material_condition 89, definition 55, ai_derived 5, ai_required 4
+- **코드화 99.3% (588개)**, AI 필요 4건 → category 필드로 해결 → **최종 전부 코드**
+- codified_rules.json 생성
+
+### AI 4건 판결문 분석 (12,550건)
+- Ch.9 향신료 728건, Ch.40 고무 4,199건, Ch.42 가죽 4,117건, Ch.95 완구 3,506건
+- 21개 추가 규칙 추출, 판결문별 JSON 저장
+
+### CBP CROSS 7-Field 데이터 추출
+- 220,114건 스캔 → 7/7 완전 92건 + 6/7 595건 = 687건 벤치마크 데이터
+- 6/7 빠진 필드: price 81% (분류 영향 적음)
+
+### 벤치마크 테스트 (GPT-4o-mini 1회 호출)
+- A: name only → 0%/38%/55%
+- B: name+material+origin → 0%/38%/58%
+- C: all 7 fields → 4%/39%/59%
+- Chapter 59% = GPT-4o-mini 천장 (v3 다단계 코드 체인으로 재테스트 필요)
+
+### 12 TLC 경쟁사 벤치마크
+- POTAL_12_TLC_Competitor_Benchmark.xlsx (14시트)
+- POTAL 이미 1위: Duty Rate, VAT/GST, De Minimis, Customs Fees
+
+### DB 복구
+- DB read-write 복구 완료 (53GB → 45GB)
+- product_hs_mappings: 1,332,287건 (v2 36M건 삭제 완료)
+- 인덱스 5개 재생성 + ANALYZE 완료
+
+### 파일 생성
+- POTAL_7Field_Pipeline_Diagram.html
+- codified_rules.json (592개 규칙)
+- merged_7of7.json (92건) + merged_6of7.json (595건)
+- ai4_rulings_ch09/40/42/95.json (12,550건)
+- POTAL_12_TLC_Competitor_Benchmark.xlsx (14시트)
+
+## [2026-03-18 18:00 KST] CW16 Cowork 후반 완료 — HS 엔진 전략 대전환
+
+### 벤치마크 진행 (v1.2 → v3.0)
+- v1.2 (keyword): 6%/16%/35%
+- v2.0 (LLM 4회): 13%/28%/44%
+- v2.1 (+Step1 LLM): 20%/36%/52%
+- v2.2 (pre-filter): 16%/28%/49% — REGRESSION 롤백
+- **v3.0 (관세사 사고방식 추론 체인): 24%/42%/59%** ⭐
+- Vector Search (순수 임베딩): Top-1 15%, Top-3 26%, Top-5 33%, Top-10 44%
+  - 오류: CATEGORY_ERROR 50건, HEADING_ERROR 22건, SUBHEADING_ERROR 13건
+  - HS Code 설명 언어와 상품명 사이 "언어 갭" 확인 ("steel beams" → 442110 나무프레임 등)
+- 경쟁사: Tarifflo 89%, Avalara 80%, Zonos 44%, WCO BACUDA 13%
+- 비용: 4o-mini ~$0.001/건(마진 83~93%), 4o ~$0.019/건(마진 70%)
+- GPT-4o는 정확도 89%+ 달성 후 Enterprise 프리미엄 티어 제공 예정
+
+### ⭐ 전략 대전환 — Expert Rules 기반 엔진
+- 핵심 인사이트 6개 도출 (검색 vs 추론, 조립이 핵심, 룩업은 캐시, Expert Rules=판례 사유, 95%↑=100%, 경쟁사 리버스)
+- Expert Rules: CBP 판례 97 Chapter × 5건 = ~500건 분석 → Chapter별 decision tree
+- 다음 목표: Expert Rules 엔진 + 35만건 RAG 검색 결합 → 89%+
+
+### HS Correlation Table 변환
+- CBP 142,251 + EBTI 231,726 = 373,977건 → HS 2022 변환
+- 확정 사용: 352,916건 (94.4%)
+- 저장: /Volumes/soulmaten/POTAL/hs_correlation/
+
+### 11 TLC 파이프라인 데이터 수집 (18/18, 100%)
+- 11개 영역 설계서: docs/pipelines/ (11파일, 266KB)
+- 수집 데이터: 27파일, 22MB (ECCN 658건, Country Chart 200국, Section 301/232/IEEPA 235건, AD/CVD 4,057건, VAT 46국, Special Tax 4국, PSR 375규칙, ECB 환율, Incoterms 11개)
+
+### WDC 데이터 필드 확인
+- name + description + category + brand + price + gtin + url 포함
+- category→Chapter 힌트, description→Heading 힌트, price→10자리 가격분기
+- name+description+category로 6자리, +price로 10자리까지 이론적 확정 가능
+
+### 세상 물건 종류 추정
+- HS 분류 기준 실질 상품: ~1,000만~2,000만 종
+- 국경 실거래: ~1,000만~3,000만, 필요 매핑 ~5,000만 (Avalara 40M+과 일치)
+- 화학 CAS 2억+ → HS 수천 코드 그룹핑, 상품명 변형 무한이나 "종류"는 유한
+
+### DB 삭제 진행
+- 26.2M/36M 삭제 완료, 남은 ~12M (~4시간)
+- 완료 후 VACUUM FULL + 인덱스 재생성 + 35만건 HS2022 데이터 DB 적재 예정
+
+### 파일 생성
+- CLAUDE_CODE_CUSTOMS_BROKER_THINKING_TEST.md
+- CLAUDE_CODE_VECTOR_SEARCH_BENCHMARK.md
+- scripts/vector_search_benchmark.ts, scripts/hs_correlation_convert.py
+- /Volumes/soulmaten/POTAL/hs_correlation/ (6파일: cbp_cross_hs2022.csv, ebti_hs2022.csv, split_judgment_records.csv, 변환맵 JSON)
+- /Volumes/soulmaten/POTAL/tlc_data/ (27파일, 22MB)
+
+---
+
+## [2026-03-18 03:00 KST] CW16 Cowork 후반 — GRI Complete Fix 6단계, 벤치마크 v1.2, GRI 근본 문제 발견
+
+### GRI Complete Fix 6단계 (11분 6초, 28파일 변경)
+- Stage 1: Step 2 Section 키워드 자동 보강 (heading-descriptions.ts 1,229개에서 추출, stem 매칭)
+- Stage 2: Step 3 Section Notes 내장 (21개 → 코드 내장, fs 제거)
+- Stage 3: Step 5 Chapter Notes 내장 (96개 → 코드 내장, fs 제거, 356KB)
+- Stage 4: Step 7 Conflict Patterns 내장 (11,640→1,563 패턴 top20, fs 제거, 1,393KB)
+- Stage 5: 빌드 검증 — /Volumes 0개, fs 0개, npm run build ✅
+- Stage 6: 재벤치마크 v1.2
+
+### 벤치마크 결과
+- v1.0 (최초 GRI): 0% / 0% / 24%
+- v1.1 (부품 파일 추가): 4% / 12% / 33%
+- **v1.2 (키워드+Notes 내장): 6% / 16% / 35%** (6-digit / 4-digit / 2-digit)
+- v1.2 오분류: Chapter miss 65건, Heading miss 19건, Subheading miss 10건
+
+### ⭐ GRI 엔진 근본 문제 발견 (은태님)
+- 핵심: Step 2~6이 키워드 매칭 → 관세사의 "의미 이해"를 대체하지 못함
+- 키워드 매칭 상한 ~40%, 89% 달성에는 의미 매칭(AI) 필요
+- 다음 과제: GRI 파이프라인 재설계 (어떤 Step에 AI를 넣을 것인가)
+
+---
 
 ## [2026-03-17 22:00 KST] CW16 Cowork — GRI Agent Team 설계, HS Code 분류 엔진 역설계, 7개국 규칙 수집 완료
 

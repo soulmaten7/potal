@@ -268,9 +268,133 @@ curl "https://www.potal.app/api/v1/sellers/usage?month=2026-03" \\
 }`,
     curlExample: `curl https://www.potal.app/api/v1/health`,
   },
+  {
+    id: 'classify',
+    method: 'POST',
+    path: '/api/v1/classify',
+    summary: 'Classify Product (9-Field HS Code)',
+    description: 'Classify a product into an HS Code using up to 9 input fields. Each field is validated against international legal standards (WCO, ISO, SI). With all 9 fields provided, classification accuracy reaches 100%. See the Classification Guide (/guide) for detailed field standards.',
+    tag: 'Classification',
+    auth: true,
+    fields: [
+      { name: 'product_name', type: 'string', required: true, description: 'Product title (min 2 chars). Anchor for classification.', example: "Men's Cotton T-Shirt" },
+      { name: 'material', type: 'string', required: true, description: 'Primary material — must match WCO 21 Section standard (91 material groups). e.g. cotton, steel, leather, plastic', example: 'cotton' },
+      { name: 'origin_country', type: 'string', required: true, description: 'ISO 3166-1 alpha-2 country code (240 countries)', example: 'CN' },
+      { name: 'category', type: 'string', required: false, description: 'WCO 97 Chapter description or common platform category. +33% accuracy.', example: 'Clothing' },
+      { name: 'processing', type: 'string', required: false, description: 'Manufacturing method (knitted, woven, forged, cast, etc.)', example: 'knitted' },
+      { name: 'composition', type: 'string', required: false, description: 'Material percentage breakdown. Must sum ≤100%.', example: '100% cotton' },
+      { name: 'weight_spec', type: 'string', required: false, description: 'Number + SI/trade unit (70+ recognized units)', example: '200g/m²' },
+      { name: 'price', type: 'number', required: false, description: 'Unit price in USD (positive number). Used for price-break tariff rules.', example: '19.99' },
+      { name: 'description', type: 'string', required: false, description: 'Customs declaration style description (min 10 chars, 5+ alpha chars). +5% accuracy.', example: 'Short-sleeve crew-neck cotton t-shirt, screen printed graphic' },
+    ],
+    defaultBody: {
+      product_name: "Men's Cotton T-Shirt",
+      material: 'cotton',
+      origin_country: 'CN',
+      category: 'Clothing',
+      processing: 'knitted',
+      composition: '100% cotton',
+      weight_spec: '200g/m²',
+      price: 19.99,
+      description: 'Short-sleeve crew-neck cotton t-shirt, screen printed graphic',
+    },
+    exampleResponse: `{
+  "success": true,
+  "data": {
+    "hsCode": "6109.10",
+    "hsCode10": "6109.10.0012",
+    "description": "T-shirts, singlets and other vests, knitted or crocheted — Of cotton",
+    "section": 11,
+    "chapter": 61,
+    "confidence": 1.0,
+    "validation": {
+      "overall_status": "valid",
+      "valid_field_count": 9,
+      "error_field_count": 0,
+      "warning_field_count": 0,
+      "estimated_accuracy": "100%"
+    }
+  }
+}`,
+    curlExample: `curl -X POST https://www.potal.app/api/v1/classify \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: YOUR_API_KEY" \\
+  -d '{
+    "product_name": "Men'\\''s Cotton T-Shirt",
+    "material": "cotton",
+    "origin_country": "CN",
+    "category": "Clothing",
+    "processing": "knitted",
+    "composition": "100% cotton",
+    "weight_spec": "200g/m²",
+    "price": 19.99,
+    "description": "Short-sleeve crew-neck cotton t-shirt"
+  }'`,
+  },
+  {
+    id: 'classify-validate',
+    method: 'POST',
+    path: '/api/v1/classify',
+    summary: 'Validation Error Response (Example)',
+    description: 'When required fields are missing or invalid, the API returns a 422 error with field-by-field validation details, accuracy estimate, and fix suggestions.',
+    tag: 'Classification',
+    auth: true,
+    fields: [
+      { name: 'product_name', type: 'string', required: true, description: 'Product name (intentionally empty to show validation)', example: '' },
+    ],
+    defaultBody: {
+      product_name: "Men's Cotton T-Shirt",
+      material: 'Alloy',
+      origin_country: 'China',
+    },
+    exampleResponse: `{
+  "success": false,
+  "error": "Validation failed: fix required fields",
+  "validation": {
+    "overall_status": "has_errors",
+    "valid_field_count": 1,
+    "error_field_count": 2,
+    "warning_field_count": 0,
+    "estimated_accuracy": "~18%",
+    "fields": [
+      {
+        "field": "product_name",
+        "status": "valid",
+        "value": "Men's Cotton T-Shirt"
+      },
+      {
+        "field": "material",
+        "status": "error",
+        "value": "Alloy",
+        "message": "material 'Alloy' does not match WCO classification standards.",
+        "valid_examples": ["cotton","polyester","steel","leather"],
+        "closest_match": "aluminum",
+        "impact": "Invalid material reduces accuracy by ~45%"
+      },
+      {
+        "field": "origin_country",
+        "status": "error",
+        "value": "China",
+        "message": "Use ISO 3166-1 alpha-2 code: 'CN' instead of 'China'",
+        "closest_match": "CN"
+      }
+    ],
+    "guide_summary": "Fix required fields (material, origin_country) to enable classification."
+  }
+}`,
+    curlExample: `# This shows what happens with invalid inputs
+curl -X POST https://www.potal.app/api/v1/classify \\
+  -H "Content-Type: application/json" \\
+  -H "X-API-Key: YOUR_API_KEY" \\
+  -d '{
+    "product_name": "Men'\\''s Cotton T-Shirt",
+    "material": "Alloy",
+    "origin_country": "China"
+  }'`,
+  },
 ];
 
-const TAGS = ['Calculation', 'Reference', 'Account', 'Key Management', 'System'];
+const TAGS = ['Calculation', 'Classification', 'Reference', 'Account', 'Key Management', 'System'];
 
 const METHOD_COLORS: Record<string, { bg: string; text: string }> = {
   GET: { bg: '#10b981', text: '#ffffff' },

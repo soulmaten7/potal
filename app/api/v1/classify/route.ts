@@ -17,6 +17,8 @@ import { classifyProductAsync, calculateConfidenceScore, recordClassificationAud
 import { classifyWithVision } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 import { resolveHs10 } from '@/app/lib/cost-engine/hs-code/hs10-resolver';
+import { classifyWithGRI } from '@/app/lib/cost-engine/gri-classifier';
+import { validateFields } from '@/app/lib/cost-engine/gri-classifier/field-validator';
 
 // ─── Input Validation Constants ────────────────────
 const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -218,6 +220,74 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   }
 
   const classifyStartMs = Date.now();
+
+  // GRI Engine (if enabled via environment variable)
+  const useGriEngine = process.env.CLASSIFICATION_ENGINE === 'gri';
+  if (useGriEngine && productName) {
+    // ── Layer 2: 9-Field Validation ──
+    const validationInput = {
+      product_name: productName,
+      material: typeof body.material === 'string' ? body.material : undefined,
+      origin_country: typeof body.origin_country === 'string' ? body.origin_country :
+                      typeof body.originCountry === 'string' ? body.originCountry : undefined,
+      category: category,
+      description: typeof body.description === 'string' ? body.description : undefined,
+      processing: typeof body.processing === 'string' ? body.processing : undefined,
+      composition: typeof body.composition === 'string' ? body.composition : undefined,
+      weight_spec: typeof body.weight_spec === 'string' ? body.weight_spec :
+                   typeof body.weightSpec === 'string' ? body.weightSpec : undefined,
+      price: body.price ? Number(body.price) : undefined,
+    };
+
+    const validation = validateFields(validationInput);
+
+    // has_errors → 422 (don't classify)
+    if (validation.overall_status === 'has_errors') {
+      return apiError(
+        ApiErrorCode.BAD_REQUEST,
+        `Field validation failed. ${validation.error_field_count} field(s) have errors.`,
+        { validation, docs_url: 'https://potal.app/docs/api/fields' }
+      );
+    }
+
+    // has_warnings or valid → classify
+    try {
+      const destCountryGri = body.destination_country || body.destinationCountry;
+      const griResult = await classifyWithGRI({
+        productName,
+        description: typeof body.description === 'string' ? body.description : undefined,
+        category: category,
+        price: body.price ? Number(body.price) : undefined,
+        material: typeof body.material === 'string' ? body.material : undefined,
+        originCountry: typeof body.origin_country === 'string' ? body.origin_country :
+                       typeof body.originCountry === 'string' ? body.originCountry : undefined,
+        processing: typeof body.processing === 'string' ? body.processing : undefined,
+        composition: typeof body.composition === 'string' ? body.composition : undefined,
+        weightSpec: typeof body.weight_spec === 'string' ? body.weight_spec :
+                    typeof body.weightSpec === 'string' ? body.weightSpec : undefined,
+        destinationCountry: destCountryGri ? String(destCountryGri) : 'US',
+      });
+      return apiSuccess({
+        hsCode: griResult.hsCode,
+        description: griResult.description,
+        confidence: griResult.confidence,
+        hsCodePrecision: griResult.hsCodePrecision,
+        alternatives: griResult.alternatives,
+        decisionPath: griResult.decisionPath,
+        griRulesApplied: griResult.griRulesApplied,
+        aiCallCount: griResult.aiCallCount,
+        classificationMethod: griResult.classificationMethod,
+        processingTimeMs: griResult.processingTimeMs,
+        countrySpecific: griResult.countrySpecific,
+        ...(validation.overall_status === 'has_warnings' ? { validation } : {}),
+      }, {
+        sellerId: context.sellerId,
+        plan: context.planId,
+      });
+    } catch {
+      // GRI engine failed — fall through to legacy engine
+    }
+  }
 
   // Text-based classification
   if (!productName) {

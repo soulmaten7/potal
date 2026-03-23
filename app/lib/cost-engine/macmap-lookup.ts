@@ -63,6 +63,19 @@ const CONFIDENCE_MAP: Record<DutySource, number> = {
   mfn: 0.7,
 };
 
+// ─── EU Member → "EU" mapping ─────────────────────
+// macmap DB stores EU data as destination_country='EU', not individual members.
+const EU_MEMBERS = new Set([
+  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR',
+  'DE','GR','HU','IE','IT','LV','LT','LU','MT','NL',
+  'PL','PT','RO','SK','SI','ES','SE',
+]);
+
+/** Map EU member states → 'EU' for DB queries */
+function mapCountryForDb(iso2: string): string {
+  return EU_MEMBERS.has(iso2) ? 'EU' : iso2;
+}
+
 // ─── Supabase Client ───────────────────────────────
 
 function getSupabase() {
@@ -218,7 +231,7 @@ export async function lookupMacMapDutyRate(
   const supabase = getSupabase();
   if (!supabase) return null;
 
-  const reporter = destinationCountry.toUpperCase();
+  const reporter = mapCountryForDb(destinationCountry.toUpperCase());
   const partner = originCountry.toUpperCase();
   const productCode = hsCode.replace(/\./g, '').trim();
 
@@ -326,7 +339,7 @@ export async function lookupAllDutyRates(
   const supabase = getSupabase();
   if (!supabase) return { best: null, optimization: null };
 
-  const reporter = destinationCountry.toUpperCase();
+  const reporter = mapCountryForDb(destinationCountry.toUpperCase());
   const partner = originCountry.toUpperCase();
   const productCode = hsCode.replace(/\./g, '').trim();
 

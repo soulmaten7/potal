@@ -51,12 +51,10 @@ const SECTION_301_LISTS: Section301List[] = [
 const SECTION_232_STEEL_CHAPTERS = ['72', '73'];
 const SECTION_232_ALUMINUM_CHAPTERS = ['76'];
 
-/** Countries exempt from Section 232 (as of 2026) */
-const SECTION_232_EXEMPT_COUNTRIES = new Set([
-  'AU', // Australia
-  'AR', // Argentina (quota)
-  'BR', // Brazil (quota)
-  'KR', // South Korea (quota)
+/** Countries exempt from Section 232 — ALL REVOKED per Executive Order, March 12, 2025 */
+const SECTION_232_EXEMPT_COUNTRIES = new Set<string>([
+  // All previous exemptions (AU, AR, BR, KR, CA, MX, EU, UK, JP) were revoked.
+  // 25% tariff now applies to ALL origins for steel/aluminum.
 ]);
 
 // ─── Types ─────────────────────────────────────────
@@ -145,9 +143,9 @@ export function checkSection232(
   if (SECTION_232_ALUMINUM_CHAPTERS.includes(chapter)) {
     return {
       applies: true,
-      rate: 0.10,
+      rate: 0.25, // Increased from 10% to 25% per Executive Order, March 12, 2025
       material: 'aluminum',
-      note: `Section 232 Aluminum: +10% (${originCountry} origin)`,
+      note: `Section 232 Aluminum: +25% (${originCountry} origin, rate increased March 2025)`,
     };
   }
 

@@ -58,9 +58,9 @@ const ALL_LISTS: ScreeningList[] = [
 ];
 
 // Comprehensively sanctioned countries (US perspective)
-const SANCTIONED_COUNTRIES = new Set(['CU', 'IR', 'KP', 'SY', 'RU']);
+const SANCTIONED_COUNTRIES = new Set(['CU', 'IR', 'KP', 'SY', 'RU', 'BY']);
 const COUNTRY_NAMES: Record<string, string> = {
-  CU: 'Cuba', IR: 'Iran', KP: 'North Korea', SY: 'Syria', RU: 'Russia',
+  CU: 'Cuba', IR: 'Iran', KP: 'North Korea', SY: 'Syria', RU: 'Russia', BY: 'Belarus',
 };
 
 // ─── DB Screening ─────────────────────────────────

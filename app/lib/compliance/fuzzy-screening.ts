@@ -75,10 +75,9 @@ export async function fuzzyMatch(query: string, threshold = 0.85): Promise<Scree
   const queryNorm = query.trim().toLowerCase();
   if (!queryNorm) return [];
 
-  // Search both SDN and denied parties
+  // Search sanctions_entries (unified table, replaces legacy sanctions_sdn/denied_parties)
   const tables = [
-    { table: 'sanctions_sdn', nameField: 'name', sourceField: 'source', typeField: 'sdn_type' },
-    { table: 'denied_parties', nameField: 'name', sourceField: 'source', typeField: 'entity_type' },
+    { table: 'sanctions_entries', nameField: 'name', sourceField: 'source', typeField: 'entry_type' },
   ];
 
   const results: ScreeningResult[] = [];
@@ -88,7 +87,7 @@ export async function fuzzyMatch(query: string, threshold = 0.85): Promise<Scree
     const { data: exact } = await sb
       .from(table)
       .select(`${nameField}, ${sourceField}, ${typeField}`)
-      .ilike(nameField, `%${queryNorm}%`)
+      .ilike(nameField, `%${queryNorm.replace(/%/g, '\\%').replace(/_/g, '\\_')}%`)
       .limit(20);
 
     for (const row of exact || []) {

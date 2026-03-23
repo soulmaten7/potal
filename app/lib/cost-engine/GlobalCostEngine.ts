@@ -12,7 +12,7 @@
  */
 
 import type { CostInput, LandedCost, CostBreakdownItem } from './types';
-import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes, calculateIndiaImportTaxes, getIndiaIgstRate, calculateChinaCBECTaxes, calculateMexicoImportTaxes, getMexicoIepsRate } from './CostEngine';
+import { calculateLandedCost as calculateUSLandedCost, parsePriceToNumber, zipcodeToState, STATE_TAX_RATES, postalCodeToProvince, CANADA_PROVINCE_TAX_RATES, cepToState, BRAZIL_STATE_ICMS_RATES, calculateBrazilImportTaxes, getBrazilIpiRate, calculateIndiaImportTaxes, getIndiaIgstRate, calculateChinaCBECTaxes, calculateMexicoImportTaxes, getMexicoIepsRate } from './CostEngine';
 import { getCountryProfile, type CountryTaxProfile } from './country-data';
 import { classifyWithOverride } from './hs-code';
 import type { HsClassificationResult } from './hs-code';
@@ -553,10 +553,14 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   // Many countries have different thresholds for duty vs tax exemption
   // EU: duty exempt ≤€150 but VAT always applies (IOSS); AU: no duty/GST exemption post-2018 for LVG
   // US: $800 de minimis covers both duty and tax; UK: £135 duty de minimis, VAT always applies
-  const dutyThresholdUsd = profile.deMinimisUsd;
+  // Origin-specific exceptions: US $0 for CN/HK (IEEPA Aug 2025)
+  let dutyThresholdUsd = profile.deMinimisUsd;
+  if (profile.deMinimisExceptions && originCountry in profile.deMinimisExceptions) {
+    dutyThresholdUsd = profile.deMinimisExceptions[originCountry];
+  }
   // Tax threshold: most countries = same as duty, but UK/EU/AU have $0 (tax always applies on imports)
   const taxAlwaysAppliesCountries = new Set([...EU_IOSS_COUNTRIES, 'GB', 'AU', 'NZ', 'NO', 'CH']);
-  const taxThresholdUsd = taxAlwaysAppliesCountries.has(profile.code) ? 0 : profile.deMinimisUsd;
+  const taxThresholdUsd = taxAlwaysAppliesCountries.has(profile.code) ? 0 : dutyThresholdUsd;
 
   const dutyExempt = !isDomestic && declaredValue > 0 && declaredValue <= dutyThresholdUsd && dutyThresholdUsd > 0;
   const taxExempt = !isDomestic && declaredValue > 0 && declaredValue <= taxThresholdUsd && taxThresholdUsd > 0;
@@ -645,7 +649,9 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     // Brazil: cascading tax (IPI + PIS/COFINS + ICMS por dentro)
     const brState = input.zipcode ? cepToState(input.zipcode) : null;
     const icmsRate = brState ? (BRAZIL_STATE_ICMS_RATES[brState] ?? 0.18) : 0.18;
-    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate);
+    const brHsChapter = hsResult?.hsCode ? hsResult.hsCode.substring(0, 2) : '';
+    const brIpiRate = brHsChapter ? getBrazilIpiRate(brHsChapter + '0000') : undefined;
+    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate, brIpiRate);
     vat = brTaxes.totalTax;
     effectiveVatRate = brTaxes.effectiveRate;
     effectiveVatLabel = brState ? `ICMS ${brState}` : 'Import Taxes';
@@ -831,8 +837,8 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   if (!isDomestic && !deMinimisApplied) {
     if (profile.code === 'US') {
       if (entryType === 'formal') {
-        // Formal entry (>$2500): MPF 0.3464%, min $31.67, max $614.35
-        mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+        // Formal entry (>$2500): MPF 0.3464%, min $32.71, max $634.04 (FY2025/2026)
+        mpf = Math.min(Math.max(declaredValue * 0.003464, 32.71), 634.04);
         breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF (formal entry)' });
       } else {
         // Informal entry (≤$2500): flat $2.00-$6.00 (avg $2)
@@ -1270,7 +1276,7 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
   } else if (profile.code === 'BR' && !isDomestic && !deMinimisApplied) {
     const brState = input.zipcode ? cepToState(input.zipcode) : null;
     const icmsRate = brState ? (BRAZIL_STATE_ICMS_RATES[brState] ?? 0.18) : 0.18;
-    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate);
+    const brTaxes = calculateBrazilImportTaxes(declaredValue, importDuty, icmsRate); // sync path: no HS available
     vat = brTaxes.totalTax;
     effectiveVatRateSync = brTaxes.effectiveRate;
     effectiveVatLabelSync = brState ? `ICMS ${brState}` : 'Import Taxes';
@@ -1363,7 +1369,7 @@ function calculateWithProfileSync(input: GlobalCostInput, profile: CountryTaxPro
   let mpf = 0;
   if (!isDomestic && !deMinimisApplied) {
     if (profile.code === 'US') {
-      mpf = Math.min(Math.max(declaredValue * 0.003464, 31.67), 614.35);
+      mpf = Math.min(Math.max(declaredValue * 0.003464, 32.71), 634.04); // FY2025/2026
       breakdown.push({ label: 'Processing Fee', amount: round(mpf), note: 'CBP MPF' });
     } else if (profile.code === 'AU') {
       mpf = 56;

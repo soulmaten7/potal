@@ -201,6 +201,108 @@ const EU_REDUCED_VAT: Record<string, Record<string, EuVatOverride>> = {
     '30': { rate: 0.06, label: 'Super-reduced (pharmaceuticals)' },
     '49': { rate: 0.06, label: 'Super-reduced (books)' },
   },
+  // ── Added CW18: 15 EU member states (EU TEDB) ──
+  // Finland: Standard 25.5%, Reduced 14%, Super-reduced 10%
+  FI: {
+    '01':{rate:0.14,label:'Reduced'},'02':{rate:0.14,label:'Reduced'},'03':{rate:0.14,label:'Reduced'},
+    '04':{rate:0.14,label:'Reduced'},'07':{rate:0.14,label:'Reduced'},'08':{rate:0.14,label:'Reduced'},
+    '09':{rate:0.14,label:'Reduced'},'10':{rate:0.14,label:'Reduced'},'11':{rate:0.14,label:'Reduced'},
+    '15':{rate:0.14,label:'Reduced'},'16':{rate:0.14,label:'Reduced'},'19':{rate:0.14,label:'Reduced'},
+    '20':{rate:0.14,label:'Reduced'},'21':{rate:0.14,label:'Reduced'},
+    '30':{rate:0.10,label:'Super-reduced (pharma)'},'49':{rate:0.10,label:'Super-reduced (books)'},
+  },
+  // Denmark: Standard 25%, NO reduced rate — empty entry
+  DK: {},
+  // Czech Republic: Standard 21%, Reduced 12%
+  CZ: {
+    '01':{rate:0.12,label:'Reduced'},'02':{rate:0.12,label:'Reduced'},'03':{rate:0.12,label:'Reduced'},
+    '04':{rate:0.12,label:'Reduced'},'07':{rate:0.12,label:'Reduced'},'08':{rate:0.12,label:'Reduced'},
+    '09':{rate:0.12,label:'Reduced'},'10':{rate:0.12,label:'Reduced'},'15':{rate:0.12,label:'Reduced'},
+    '16':{rate:0.12,label:'Reduced'},'19':{rate:0.12,label:'Reduced'},'20':{rate:0.12,label:'Reduced'},
+    '30':{rate:0.12,label:'Reduced (pharma)'},'49':{rate:0.12,label:'Reduced (books)'},
+  },
+  // Romania: Standard 19%, Reduced 9%, Super-reduced 5%
+  RO: {
+    '01':{rate:0.09,label:'Reduced'},'02':{rate:0.09,label:'Reduced'},'03':{rate:0.09,label:'Reduced'},
+    '04':{rate:0.09,label:'Reduced'},'07':{rate:0.09,label:'Reduced'},'08':{rate:0.09,label:'Reduced'},
+    '10':{rate:0.09,label:'Reduced'},'15':{rate:0.09,label:'Reduced'},'16':{rate:0.09,label:'Reduced'},
+    '19':{rate:0.09,label:'Reduced'},'20':{rate:0.09,label:'Reduced'},
+    '30':{rate:0.09,label:'Reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Hungary: Standard 27%, Reduced 18%, Super-reduced 5%
+  HU: {
+    '01':{rate:0.18,label:'Reduced'},'02':{rate:0.18,label:'Reduced'},'03':{rate:0.18,label:'Reduced'},
+    '04':{rate:0.18,label:'Reduced'},'07':{rate:0.18,label:'Reduced'},'08':{rate:0.18,label:'Reduced'},
+    '10':{rate:0.18,label:'Reduced'},'16':{rate:0.18,label:'Reduced'},'19':{rate:0.18,label:'Reduced'},
+    '20':{rate:0.18,label:'Reduced'},'21':{rate:0.18,label:'Reduced'},
+    '30':{rate:0.05,label:'Super-reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Bulgaria: Standard 20%, Reduced 9%
+  BG: {
+    '01':{rate:0.09,label:'Reduced'},'02':{rate:0.09,label:'Reduced'},'03':{rate:0.09,label:'Reduced'},
+    '04':{rate:0.09,label:'Reduced'},'07':{rate:0.09,label:'Reduced'},'08':{rate:0.09,label:'Reduced'},
+    '10':{rate:0.09,label:'Reduced'},'49':{rate:0.09,label:'Reduced (books)'},
+  },
+  // Croatia: Standard 25%, Reduced 13%, Super-reduced 5%
+  HR: {
+    '01':{rate:0.13,label:'Reduced'},'02':{rate:0.13,label:'Reduced'},'03':{rate:0.13,label:'Reduced'},
+    '04':{rate:0.13,label:'Reduced'},'07':{rate:0.05,label:'Super-reduced'},
+    '08':{rate:0.05,label:'Super-reduced'},'10':{rate:0.05,label:'Super-reduced'},
+    '30':{rate:0.05,label:'Super-reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Slovakia: Standard 23%, Reduced 10%, Super-reduced 5%
+  SK: {
+    '01':{rate:0.10,label:'Reduced'},'02':{rate:0.10,label:'Reduced'},'03':{rate:0.10,label:'Reduced'},
+    '04':{rate:0.10,label:'Reduced'},'07':{rate:0.10,label:'Reduced'},'08':{rate:0.10,label:'Reduced'},
+    '10':{rate:0.10,label:'Reduced'},'30':{rate:0.10,label:'Reduced (pharma)'},
+    '49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Slovenia: Standard 22%, Reduced 9.5%, Super-reduced 5%
+  SI: {
+    '01':{rate:0.095,label:'Reduced'},'02':{rate:0.095,label:'Reduced'},'03':{rate:0.095,label:'Reduced'},
+    '04':{rate:0.095,label:'Reduced'},'07':{rate:0.095,label:'Reduced'},'08':{rate:0.095,label:'Reduced'},
+    '30':{rate:0.095,label:'Reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Lithuania: Standard 21%, Reduced 9%, Super-reduced 5%
+  LT: {
+    '01':{rate:0.09,label:'Reduced'},'02':{rate:0.09,label:'Reduced'},'03':{rate:0.09,label:'Reduced'},
+    '04':{rate:0.09,label:'Reduced'},'07':{rate:0.09,label:'Reduced'},'08':{rate:0.09,label:'Reduced'},
+    '30':{rate:0.05,label:'Super-reduced (pharma)'},'49':{rate:0.09,label:'Reduced (books)'},
+  },
+  // Latvia: Standard 21%, Reduced 12%, Super-reduced 5%
+  LV: {
+    '01':{rate:0.12,label:'Reduced'},'02':{rate:0.12,label:'Reduced'},'03':{rate:0.12,label:'Reduced'},
+    '04':{rate:0.12,label:'Reduced'},'07':{rate:0.12,label:'Reduced'},'08':{rate:0.12,label:'Reduced'},
+    '30':{rate:0.12,label:'Reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Estonia: Standard 22%, Reduced 9%
+  EE: {
+    '01':{rate:0.09,label:'Reduced'},'02':{rate:0.09,label:'Reduced'},'03':{rate:0.09,label:'Reduced'},
+    '04':{rate:0.09,label:'Reduced'},'07':{rate:0.09,label:'Reduced'},'08':{rate:0.09,label:'Reduced'},
+    '30':{rate:0.09,label:'Reduced (pharma)'},'49':{rate:0.09,label:'Reduced (books)'},
+  },
+  // Luxembourg: Standard 17%, Reduced 8%, Super-reduced 3%
+  LU: {
+    '01':{rate:0.03,label:'Super-reduced'},'02':{rate:0.03,label:'Super-reduced'},
+    '03':{rate:0.03,label:'Super-reduced'},'04':{rate:0.03,label:'Super-reduced'},
+    '07':{rate:0.03,label:'Super-reduced'},'08':{rate:0.03,label:'Super-reduced'},
+    '10':{rate:0.03,label:'Super-reduced'},
+    '30':{rate:0.03,label:'Super-reduced (pharma)'},'49':{rate:0.03,label:'Super-reduced (books)'},
+  },
+  // Cyprus: Standard 19%, Reduced 9%, Super-reduced 5%
+  CY: {
+    '01':{rate:0.05,label:'Super-reduced'},'02':{rate:0.05,label:'Super-reduced'},
+    '03':{rate:0.05,label:'Super-reduced'},'04':{rate:0.05,label:'Super-reduced'},
+    '07':{rate:0.05,label:'Super-reduced'},'08':{rate:0.05,label:'Super-reduced'},
+    '30':{rate:0.05,label:'Super-reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
+  // Malta: Standard 18%, Reduced 7%, Super-reduced 5%
+  MT: {
+    '01':{rate:0.05,label:'Super-reduced'},'02':{rate:0.05,label:'Super-reduced'},
+    '03':{rate:0.05,label:'Super-reduced'},'04':{rate:0.05,label:'Super-reduced'},
+    '07':{rate:0.05,label:'Super-reduced'},'08':{rate:0.05,label:'Super-reduced'},
+    '30':{rate:0.05,label:'Super-reduced (pharma)'},'49':{rate:0.05,label:'Super-reduced (books)'},
+  },
 };
 
 /**

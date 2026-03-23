@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-16 16:00 KST (CW15 Cowork 전체 — B2B 채널 전략 13시트, CBP 벤치마크 100건, CBP CROSS 142K 매핑, HS 데이터소스, 포스트 톤 전략 변경, 파일 정리 25+→archive)
+# 마지막 업데이트: 2026-03-23 KST (CW18 Cowork 5차 — 12 TLC 시스템화 46건 수정, EU VAT 27국, India Ch.71 3%, Cron 23개, npm run build ✅)
 
 ## 0. 프로젝트 개요
 
@@ -15,9 +15,12 @@
 - **핵심 전략 (CW12 후반)**: **102/102 MUST 기능 전부 구현 완료** ✅ (기존 58 + 신규 44개). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자". **심층 검증 84/84 PASS 완료** (코드 변경 0건, DB 테이블 5개 추가)
 - **S+ 업그레이드 (CW14 후반)**: Core 16 + Trade 21 = **37개 기능 S+ 완료** ✅. ~45 API Routes + ~25 Library Files + 111 Tests. API 엔드포인트 103→**~148개**. 나머지 106개 후속 예정
 - **CW15 Cowork 전체**: 홈페이지 UX 동기화(~60파일), Middleware fail-open, Tariff SSR, Hero 113M+, WDC Phase 4 v2(28배), product_hs_mappings **~1.5M** (1.36M + CBP 142K), B2B 채널 전략 13시트, CBP 벤치마크 100건 준비, CBP CROSS 142,251건 추출, HS 데이터소스 마스터 목록, 포스트 톤 전략 변경(투명 공유), Cron 후보 +5개
+- **CW15 Cowork 2차**: 자격증/벤치마크 DB(57개 자격증 11시트), 142기능 GAP 분석(MVP필수98/보완12/확장32), 3터미널 자동화 파이프라인(수집→벤치마크→DB적재), 13개 데이터 소스 수집 명령어, 벤치마크 6종 실행+분석 명령어, "틀린 문제가 실무 갭을 알려준다" 전략
+- **CW16 Cowork**: GRI Agent Team 설계, HS Code 분류 엔진 역설계("사람을 대체하라"), 7개국 규칙 수집(14파일 2.1MB), DB read-only 복구(WDC v2 36M건 삭제), 벤치마크 v2→v10(25%→38%)
+- **CW16 Cowork 후반 완료**: HS 엔진 전략 대전환. **벤치마크 v3.0: 24%/42%/59%** ⭐ (v1.2 6%→v3.0 24%). Expert Rules 전략 확정(CBP 판례→Chapter별 decision tree). 35만건 HS2022 변환(94.4% 확정). 11 TLC 데이터 18/18 수집완료(27파일 22MB). 비용: 4o-mini $0.001/건(마진 83~93%), 4o $0.019/건(Enterprise 프리미엄). 벡터 검색 Top-1 15%/Top-10 44%(언어갭 발견). WDC 필드: name+desc+category+brand+price+gtin+url. 세상 물건 ~2,000만 종, 필요 매핑 ~5,000만. 인사이트: "검색 vs 추론", "Expert Rules = 공개 판례에서 추출", "95%↑이면 사실상 100%", "경쟁사 리버스"
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 - **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트) + **fuzzy matching** (Levenshtein+Soundex, CW14 S+)
-- **Vercel Cron**: **21개** (CW15 후반: +7 데이터 유지보수 Cron — federal-register/taric-rss/tariff-change/classification-ruling/macmap-update/wco-news/fta-change)
+- **Vercel Cron**: **22개** (CW15 후반: +7 데이터 유지보수 + morning-brief 매일 00:00 UTC/09:00 KST)
 - **규정 소스 카탈로그**: docs/REGULATION_SOURCE_CATALOG.md (60+소스, 50개국 공고 URL)
 - **Supabase psql 직접 연결**: ✅ IPv4 add-on + `PGPASSWORD='potalqwepoi2@' psql -h db.zyurflkhiregundhisky.supabase.co -p 5432 -U postgres -d postgres`
 - **S+ 신규 라이브러리** (CW14 후반): feedback-loop, explainability, multi-language, confidence-calibration, hs-validator, breakdown, roo-engine, customs-valuation, fuzzy-screening, export-controls, product-restrictions, insurance-calculator, shipping-calculator, price-break-engine, remedy-calculator, origin-predictor, returns-calculator, broker-data-export, incoterms(확장), sez-database, import-licensing, ioss-engine, duty-drawback, temporary-import, doc-auto-populate
@@ -54,8 +57,33 @@
 - **✅ AI 플랫폼 업데이트 (CW13 후반)**: GPT Actions 전면 리라이트(B2B CTA), MCP v1.3.1(9 tools, npm publish, 공식 레지스트리), Gemini Gem/Meta AI 정적데이터+CTA
 - **✅ npm publish (CW13 후반)**: `potal-mcp-server@1.3.1` npm 공개 패키지 + MCP 공식 레지스트리 `io.github.soulmaten7/potal`
 - **✅ CW15 전체 (2026-03-16)**: B2B 채널 13시트 업데이트, CBP 벤치마크 100건 준비(arXiv:2412.14179), CBP CROSS 142,251건 HS 매핑 추출, HS 데이터소스 마스터 목록 작성중, 포스트 톤 전략→투명 공유, 신규 Cron 후보 5개 설계, 파일 정리 25+→archive
+- **✅ CW15 2차 (2026-03-16)**: POTAL_Certification_Benchmark_Database.xlsx(57개 자격증 11시트), POTAL_142_Benchmark_Gap_Analysis.xlsx(142기능 GAP 5시트), 3터미널 자동화(DONE 파일 코디네이션), 13개 데이터 소스 수집 명령어(P0 8+P1 5), 벤치마크 6종+분석+즉시수정, 과부하 방지(같은 테이블 동시 \copy 금지)
 - **✅ CW15 홈페이지 UX 동기화 (CW15 Cowork)**: ~60파일 수정 — 30+→50 languages, 100→200 free calls, 1,100+→8,389+ mappings, 10+→~148 endpoints, 10→30 req/min. pricing/help/about/faq/dashboard + 49 i18n 파일 + openapi.ts + woocommerce readme
 - **✅ CW15 프로덕션 안정화 (CW15 Cowork)**: Tariff SSR 전환(dynamic='force-dynamic', 빌드 36초), Middleware fail-open(Promise.race 5s 타임아웃), Hero "113M+ Tariff Records"+"50 Languages"
+- **⚠️⚠️⚠️ HS Code v3 파이프라인 Step 0~6 전체 = 절대값 (CW18 3차 확정 — 절대 수정 금지) ⚠️⚠️⚠️**:
+  - **9-Field API**: product_name, material, category, description, processing, composition, weight_spec, price, origin_country + destination_country
+  - **필수 3개 "Magic 3"**: product_name + material + category = 98% HS6 (자체 데이터 기준)
+  - **v3 파이프라인**: Step 0→1→2(2-1~2-4)→3(3-1~3-2)→4(Country)→5(Price Break)→6(Final). **Tier 1-2 전용, 수정/실험 금지**
+  - **Step 0~3 규칙 데이터 (절대값)**: codified_rules(592) + codified_headings(1,233) + codified_subheadings(5,621) + MATERIAL_KEYWORDS(79그룹, 21/21 Section) + KEYWORD_TO_HEADINGS(400 inline + 13,449 extended) — **수정 금지, 추가만 가능**
+  - **Step 4~6 규칙 데이터 (절대값, CW18 3차)**: gov_tariff_schedules(**131,794행**, 7개국) + codified_national_full_final.json×7(**131,794행 코드화, 5회 검수 오류 0건**) + base-agent.ts(**패턴 기반 매칭 11종 + pattern_single**) + duty-rate-lookup.ts(macmap 세율, EU 27국 매핑) — **수정 금지, 추가만 가능**
+  - **7개국 벤치마크 1,183건**: **7개국 전부 100%** (US/EU/GB/KR/JP/AU/CA 모두 100%). 세율 7개국 100%. **이 수치가 떨어지면 안 됨**
+  - **AI 호출**: 0회 (전 단계 코드 + DB + 패턴 매칭만)
+  - **DB 상태**: ✅ read-write 복구 (45GB, product_hs_mappings 1,332,287건)
+  - **⚠️ 벤치마크 오류 시 → `POTAL_Ablation_V2.xlsx` 대조 필수**: 466조합×50상품=23,300회 Ablation 결과. material 빠지면 Section -55%, category -33%. material은 반드시 21 Section 기준 79그룹 안의 값이어야 함. 이 밖의 값은 material이 아님.
+- **⚠️⚠️⚠️ Layer 구조 (CW18 3차 확정) ⚠️⚠️⚠️**:
+  - **Layer 1**: 9-field 완벽 → HS Code 100% (절대값, 코드+DB만, AI 0회)
+  - **Layer 2**: 불완전 입력 → 9-field 자동 보정 → Layer 1에 전달 (Tier 1-2 고객용, LLM 1회 ~$0.00003/건)
+  - **Layer 3**: 9-field 자체가 없는 데이터 → custom 변환 → Layer 1에 전달 (Tier 3 Enterprise용)
+  - **Layer 1은 절대 수정 금지. Layer 2/3은 Layer 1 위에 덧씌우는 전처리 레이어**
+- **⚠️⚠️⚠️ Tier 분리 원칙 (CW18 2차 확정) ⚠️⚠️⚠️**:
+  - **Tier 1-2 (Free/Basic/Pro)**: 모든 플랜 동일 기능. 고객이 9-field 직접 입력 → 100%. 빈 필드 진단 표시 ("material 빠지면 -45%")
+  - **Tier 3 (Enterprise Custom)**: 9-field 못 채우는 고객용. v3 **복사본** + Step 0.5 (LLM 필드 추출) + 키워드 확장. 기존 v3와 완전 분리
+  - **HSCodeComp 632건 6.3% = 불완전 입력의 결과** (파이프라인 한계 아님). Tier 3 Enterprise Custom 벤치마크
+  - **키워드 사전 확장 = Enterprise Custom 전용** (기존 v3 건드리지 않음)
+- **✅ 240개국 세관 + 30플랫폼 필드 조사 (CW18 2차)**:
+  - 세관: 전 세계 공통 6필드, material 별도 필드는 ~2%만 (중국 申报要素만 18개 구조화)
+  - 플랫폼: 필드 차이 = 국가별 아닌 플랫폼별, material 별도 12/30 (40%)
+- **✅ Step 0.5 Enterprise Custom 벤치마크 (CW18 2차)**: 필드 추출 성공(material 82%, category 82%) BUT HS6 미개선(5.1%), 키워드 사전이 병목. 비용 632건=$0.06
 - **✅ WDC Phase 4 v1→v2 전환 (CW15 Cowork)**: v1 중단(curl per-row, 500/s, DB 과부하 원인) → v2 로컬 병렬 매칭(14,329/s, 2 workers+nice -n 15, ETA ~4일). product_hs_mappings 8,389→**~1.36M**. 은태님 핵심 인사이트: 매핑 테이블 로컬 다운→메모리 매칭→결과만 업로드
 - **✅ B2B 채널 전략 엑셀 (CW15 Cowork)**: POTAL_B2B_Channel_Strategy.xlsx (12시트, 10채널: Show HN/Product Hunt/Reddit×2/LinkedIn/Shopify Community/DEV.to/GitHub/Indie Hackers/X)
 - **✅ UCP 발견 (CW13 후반)**: Universal Commerce Protocol(Google+Shopify+Walmart+Target) — MCP 내장, 관세 계산 없음 = POTAL 기회
@@ -255,7 +283,8 @@
 
 ## 6. Supabase 테이블
 - **B2B (활성)**: plans, sellers, api_keys, widget_configs, usage_logs, shopify_stores + seller_monthly_usage VIEW
-- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(✅ ~144M행 53개국 완료), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(3,431 CW14), hs_expansion_rules(CW9), product_hs_mappings(3,406 CW14), precomputed_landed_costs(117,600), precomputed_hs10_candidates(1,246 CW14)
+- **관세 데이터 (세션 36+CW9)**: countries(240), vat_gst_rates(240), de_minimis_thresholds(240), customs_fees(240), macmap_trade_agreements(1,319), macmap_ntlc_rates(537,894), macmap_min_rates(~113M 53개국 완료✅), macmap_agr_rates(✅ ~144M행 53개국 완료), trade_remedy_cases(10,999), trade_remedy_products(55,259), trade_remedy_duties(37,513), safeguard_exemptions(15,935), hs_classification_vectors(3,431 CW14), hs_expansion_rules(CW9), product_hs_mappings(✅ 1,332,287건 CW17), precomputed_landed_costs(117,600), precomputed_hs10_candidates(1,246 CW14)
+- **DB 상태**: ✅ read-write 복구 완료 (CW17, 45GB, 1,332,287건)
 - **B2C (보존)**: search_logs, search_signals, contact_messages
 
 ## 7. 유저(Euntae) 스타일

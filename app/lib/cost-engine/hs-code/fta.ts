@@ -205,7 +205,7 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
     isActive: true,
   },
 
-  // ─── EU-Mercosur (pending but partially active) ───
+  // ─── EU-Mercosur (NOT RATIFIED — political agreement Dec 2024 only) ───
   {
     name: 'EU-Mercosur Association Agreement',
     code: 'EU-MERCOSUR',
@@ -215,8 +215,23 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
       'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
       'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
     ],
-    preferentialMultiplier: 0.3, // Partially active, negotiation ongoing
+    preferentialMultiplier: 0.3,
     excludedChapters: ['24'],
+    isActive: false, // NOT ratified as of March 2026. DO NOT apply preferential rates.
+  },
+
+  // ─── EU-UK TCA (Trade and Cooperation Agreement, 2021-01-01) ───
+  {
+    name: 'EU-UK Trade and Cooperation Agreement',
+    code: 'EU-UK-TCA',
+    members: [
+      'GB',
+      'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+      'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+      'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
+    ],
+    preferentialMultiplier: 0, // Duty-free for originating goods
+    excludedChapters: [],
     isActive: true,
   },
 
