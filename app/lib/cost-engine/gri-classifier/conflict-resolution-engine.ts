@@ -278,21 +278,8 @@ let expertRulesCache: Record<string, Record<string, unknown>[]> | null = null;
 
 function loadExpertRules(): Record<string, Record<string, unknown>[]> {
   if (expertRulesCache) return expertRulesCache;
-  try {
-    const fs = require('fs');
-    const path = '/Volumes/soulmaten/POTAL/hs_correlation/chapter_expert_rules.json';
-    if (fs.existsSync(path)) {
-      const data = JSON.parse(fs.readFileSync(path, 'utf-8'));
-      expertRulesCache = {};
-      for (const [ch, chData] of Object.entries(data)) {
-        const rules = (chData as Record<string, unknown>).decision_rules;
-        if (Array.isArray(rules)) {
-          expertRulesCache[ch] = rules;
-        }
-      }
-      return expertRulesCache;
-    }
-  } catch { /* fall through */ }
+  // Expert rules are optional — external drive data, not available on Vercel
+  // Gracefully returns empty object (strategy 5 scores 0 for all headings)
   expertRulesCache = {};
   return expertRulesCache;
 }
