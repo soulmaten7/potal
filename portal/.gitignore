@@ -1,0 +1,75 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+
+# vercel
+.vercel
+
+# iOS signing
+*.mobileprovision
+*.p12
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# build artifacts
+repomix-output.xml
+mcp-server/node_modules/
+mcp-server/build/
+
+# logs
+wdc_download.log
+*.log
+!.env.example
+
+# python cache
+__pycache__/
+*.pyc
+
+# Large data files (already in Supabase DB)
+data/itc_macmap/
+data/tariff-research/*.csv
+data/wits_tariffline/
+supabase/migrations/007_wits_duty_rates.sql
+supabase/migrations/008_merged_duty_rates.sql
+supabase/migrations/009_macmap_ntlc_rates.sql
+archive/vercel_env_backup_2026-03-10.txt
+
+# MCP registry tokens
+.mcpregistry_*
+
+# Country codified JSON (21MB, loaded from DB in production)
+app/lib/cost-engine/gri-classifier/country-agents/data/*.json
