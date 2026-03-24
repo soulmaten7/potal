@@ -112,6 +112,8 @@ export interface GlobalCostInput extends CostInput {
   annualVolume?: number;
   /** Buyer VAT registration number (triggers B2B reverse charge) */
   buyerVatNumber?: string;
+  /** Seller plan ID for guarantee tier determination */
+  planId?: string;
 }
 
 // ─── 15-Item Detailed Cost Breakdown ────────────────
@@ -1112,7 +1114,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
           : (precomputedHit || dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc') ? 'fresh' as const
           : 'stale' as const;
         return assessGuarantee({
-          planId: 'pro',
+          planId: input.planId || 'free',
           confidenceScore,
           dataQuality,
           dutyRateSource: dutyRateSource || 'unknown',
