@@ -1,3 +1,18 @@
+/**
+ * POTAL API v1 — GET /api/v1/classify/confidence
+ *
+ * Returns detailed confidence breakdown for a given HS code or product.
+ * Uses the single-source confidence-calibration module with real DB data.
+ *
+ * Query params:
+ *   hs_code - HS code to assess (required unless product_name given)
+ *   product_name - Product name (required unless hs_code given)
+ *   country - ISO 2-letter code for 10-digit availability check
+ *   match_score - Raw match score from classification (0-1, default 0.85)
+ *   stage - Classification stage (default 'db_keyword_match')
+ *   field_count - Number of input fields provided (0-9)
+ */
+
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
@@ -10,18 +25,22 @@ export const GET = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => 
   const country = url.searchParams.get('country') || undefined;
   const matchScoreParam = url.searchParams.get('match_score');
   const stageParam = url.searchParams.get('stage');
+  const fieldCountParam = url.searchParams.get('field_count');
 
-  if (!hsCode && !productName) return apiError(ApiErrorCode.BAD_REQUEST, 'hs_code or product_name required.');
+  if (!hsCode && !productName) {
+    return apiError(ApiErrorCode.BAD_REQUEST, 'hs_code or product_name required.');
+  }
 
-  // Use provided match_score/stage from classification result, or defaults for lookup-only requests
-  const matchScore = matchScoreParam ? parseFloat(matchScoreParam) : 0.85;
+  const matchScore = matchScoreParam ? Math.max(0, Math.min(1, parseFloat(matchScoreParam) || 0)) : 0.85;
   const stage = stageParam || 'db_keyword_match';
+  const fieldCount = fieldCountParam ? Math.max(0, Math.min(9, parseInt(fieldCountParam, 10) || 0)) : undefined;
 
   const breakdown = await getConfidenceBreakdown({
-    matchScore: Math.max(0, Math.min(1, matchScore)),
+    matchScore,
     stage,
     hsCode: hsCode || '000000',
     country,
+    fieldCount,
   });
 
   const routing = routeByConfidence(breakdown.overall);
@@ -32,6 +51,8 @@ export const GET = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => 
     product_name: productName || undefined,
     country: country || undefined,
     confidence: breakdown.overall,
+    grade: breakdown.grade,
+    gradeLabel: breakdown.gradeLabel,
     breakdown: breakdown.components,
     data_sources: breakdown.dataSources,
     routing,

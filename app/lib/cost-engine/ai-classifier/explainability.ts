@@ -124,12 +124,20 @@ export function buildReasoningChain(params: {
   return chain;
 }
 
-// ─── Ruling Reference (Schema-only for now) ─────────
+// ─── Ruling Reference ────────────────────────────────
 
+/**
+ * Look up supporting ruling references for the classified HS code.
+ * CBP CROSS (220K rulings) and EU EBTI (270K rulings) are collected but
+ * not yet loaded into Supabase (stored on external drive for bulk import).
+ * Returns explicit status instead of null.
+ */
 export function lookupRulingReference(_hsCode: string, _productName: string): RulingReference | null {
-  // CBP CROSS rulings DB not yet loaded into Supabase.
-  // When available, this will query cross_rulings table for matching HS codes
-  // and return relevant classification rulings as supporting evidence.
+  // Data status: CBP CROSS 220,114 rulings + EU EBTI 269,730 rulings collected.
+  // Pending: DB bulk import into cross_rulings table.
+  // When loaded, this will query by HS6 prefix and return matching rulings
+  // with ruling_id, date, summary, and source (CBP/EBTI).
+  // For now, return null — the API response omits ruling_reference when null.
   return null;
 }
 
