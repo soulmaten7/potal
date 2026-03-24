@@ -1,5 +1,65 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-23 KST (CW18 Cowork 5차 — 12 TLC 시스템화 46건 수정)
+> 마지막 업데이트: 2026-03-24 KST (CW18 Cowork 7차 — Layer 2 완성 확인, 우선순위 정리)
+
+## [2026-03-24 KST] CW18 Cowork 7차 — Layer 2 완성 확인 + 우선순위 정리
+
+### Layer 2 = GRI Pipeline = 완성 확정
+- GRI Pipeline이 Layer 2 그 자체임을 확인. 추가 실험/완성 작업 없음
+- v1~v7 LLM 실험은 GRI Pipeline 이전의 시행착오, 전면 대체됨
+
+### 삭제된 TODO
+- P1 "Layer 2 v8 실험" (confirmed_chapter, Chapter 52%) — GRI Pipeline으로 대체
+- P1 "Layer 2 완성" (기존 데이터 먼저 활용 재설계) — v1~v6 LLM 기반 설계, GRI Pipeline에 해당 없음
+- HSCodeComp category→Chapter 매핑, composition→codified_subheadings 연결 등 — 불필요
+
+### 우선순위 재정리
+- P0: PH 런치 준비 + LinkedIn 포스트
+- P1: Sprint 2 기능 업그레이드 (대상 미선정)
+- P2: Layer 3 + 프로덕션 아키텍처
+
+### 문서 업데이트
+- NEXT_SESSION_START.md: Layer 2 상태, 우선순위, CW18 7차 확정 사항 반영
+- COWORK_SESSION_HISTORY.md: CW18 7차 세션 기록
+- CHANGELOG.md: 본 항목
+- CLAUDE.md: 동기화
+
+---
+
+## [2026-03-24 KST] CW18 Cowork 6차 — Sprint 1 보안 6기능 100% + Product Hunt 리런치
+
+### Sprint 1 보안 6기능 100% 달성
+- **F006 Confidence Score** (95%→100%): Platt sigmoid 제거→direct calc, ablation field multiplier, chapter difficulty A~F. 20 tests. 커밋 61d4433
+- **F012 HS Validation** (85%→100%): REPLACED_CODES 5→82개(77 REPLACED+5 SPLIT), batch schema 통일, price break rules warning, rankSuggestions(). 15 tests. 커밋 a9b54fa
+- **F046 Webhook System** (85%→100%): outbound sender(HMAC-SHA256), CRUD 5 endpoints, 지수 백오프 5회 재시도, delivery tracking, 4종 서명 검증 통일. 15 tests. 커밋 5f2a912
+- **F052 API Auth** (80%→100%): fraud detection middleware 연동, scope 5→18개 SCOPE_ROUTE_MAP, IP allowlist/blocklist(api_key_ip_rules), audit logging. 15 tests. 커밋 3396f7c
+- **F093 Webhook Security** (70%→100%): 4 provider replay prevention, SSRF 차단(RFC1918+link-local+IPv6 ULA), 1MB payload limit, webhook_events idempotency UNIQUE, rate limit 100/min, secret rotation+24h dual-secret. 15 tests. 커밋 8c764ed
+- **F125 API Key Security** (85%→100%): crypto.timingSafeEqual, fraud auto-disable(5회→revoke), sandbox isolation(10req/min), api-key-monitor Cron weekly Mon 07:00. 15 tests. 커밋 f0d265f
+- **총**: 커밋 6개, 신규 ~15파일, 수정 ~20파일, DB migration 4개(039~042), Cron 22→24개, 95 tests ALL PASS
+
+### Layer 2 GRI Pipeline 프로덕션 배포
+- gri-classifier/ 25개 파일 Vercel 배포 (4회 빌드 실패 후 5번째 성공)
+- 프로덕션 테스트 3종 PASS (correct 200, invalid 400, missing 400)
+
+### 홈페이지 UI 업데이트 (20건 × 6파일)
+- page.tsx: Trust 99.2%→100%, curl 6→9field, +fieldValidation, +JP Customs
+- pricing/about/help/faq/developers: GRI pipeline + 131K tariff lines + ~155 endpoints 반영
+- 커밋: 0ab2f77, 6d46e0a (+73/-37 lines)
+
+### 데모 GIF 3개 생성
+- asciinema + agg 파이프라인으로 터미널 자동 녹화→GIF 변환
+- calculate(61KB), compare(26KB), classify(25KB) → marketing/ 폴더
+
+### Product Hunt 리런치 전략 + 제출
+- B2C 시절 PH 페이지(0 points) 발견 → B2C→B2B 피봇 "major update" 자격 확인
+- POTAL_PRODUCT_HUNT_LAUNCH_PLAN.md 작성 (태그라인, Maker's Comment, 타임라인, 아웃리치)
+- "New Launch" → "Yes, major update" → "What's new" 텍스트 작성 → 리런치 요청 제출
+- 승인 대기 중 (1~3일). 런치 추천일: 4/7(화) or 4/8(수)
+
+### CLAUDE.md 구조 분리
+- 1,657줄 → 500줄 (70% 축소)
+- CW13~CW18 세션 히스토리 → docs/sessions/COWORK_SESSION_HISTORY.md로 분리
+
+---
 
 ## [2026-03-23 KST] CW18 Cowork 5차 — 12 TLC 시스템화 완료
 

@@ -1,0 +1,8 @@
+{"version": 2, "width": 80, "height": 24, "timestamp": 1774325054, "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}}
+[0.042108, "o", "\u001b[3J\u001b[H\u001b[2J"]
+[0.043715, "o", "\r\n  POTAL — Country Comparison\r\n  ==============================\r\n\r\n"]
+[1.056576, "o", "  Same product -> 4 different countries\r\n  Cotton T-shirt $25 from China\r\n\r\n"]
+[2.064344, "o", "  +----------+----------+----------+----------+----------+\r\n  |          |    US    |    UK    |    DE    |    JP    |\r\n  +----------+----------+----------+----------+----------+\r\n  | HS Code  | 6109.10  | 6109.10  | 6109.10  | 6109.10  |\r\n  | Duty %   |  16.5%   |  12.0%   |  12.0%   |  10.9%   |\r\n  | Duty     |  $4.13  |  $3.00  |  $3.00  |  $2.73  |\r\n  | VAT/Tax  |  $0.00  |  $7.00  |  $6.65  |  $3.62  |\r\n  | Fees     |  $2.00  |  $0.00  |  $0.00  |  $0.00  |\r\n  +----------+----------+----------+----------+----------+\r\n"]
+[2.064703, "o", "  | TOTAL    | $39.63  | $43.50  | $43.15  | $39.85  |\r\n  +----------+----------+----------+----------+----------+\r\n\r\n"]
+[4.071587, "o", "  Japan: lowest duty (10.9%)\r\n  US: no VAT (but highest duty + MPF)\r\n  63 FTAs auto-detected for savings\r\n\r\n"]
+[6.08052, "o", "  potal.app — Free: 200 calls/month\r\n\r\n"]

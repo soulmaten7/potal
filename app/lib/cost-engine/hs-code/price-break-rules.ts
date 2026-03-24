@@ -165,8 +165,8 @@ async function getRulesForHsCode(
       thresholdValue: row.threshold_value as number,
       thresholdUnit: (row.threshold_unit as string) as PriceBreakRule['thresholdUnit'],
       thresholdCurrency: (row.threshold_currency as string) || 'USD',
-      dutyRateUnder: row.duty_rate_under as number,
-      dutyRateOver: row.duty_rate_over as number,
+      dutyRateUnder: Number(row.duty_rate_under ?? 0),
+      dutyRateOver: Number(row.duty_rate_over ?? 0),
       descriptionUnder: row.description_under as string,
       descriptionOver: row.description_over as string,
     }));

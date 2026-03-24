@@ -1,0 +1,8 @@
+{"version": 2, "width": 80, "height": 24, "timestamp": 1774325037, "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}}
+[0.02151, "o", "\u001b[3J\u001b[H\u001b[2J"]
+[0.022248, "o", "\r\n  POTAL — Total Landed Cost API\r\n  =================================\r\n\r\n"]
+[1.034323, "o", "  Calculating import cost: Cotton T-shirt, China -> US\r\n\r\n"]
+[2.0433, "o", "  $ curl https://www.potal.app/api/v1/calculate \\\r\n      -H \"X-API-Key: pk_live_***\" \\\r\n      -d {\"productName\":\"cotton t-shirt\",\"origin\":\"CN\",\"destination\":\"US\",\"price\":25}\r\n\r\n"]
+[3.04849, "o", "  Calculating...\r\n"]
+[4.056252, "o", "\r\n  Response:\r\n  +-------------------------------------+\r\n  |  Product:      Cotton T-shirt       |\r\n  |  Origin:       China (CN)           |\r\n  |  Destination:  United States (US)   |\r\n  |-------------------------------------|\r\n  |  HS Code:      6109.10              |\r\n  |  Duty Rate:    16.5%                |\r\n  |  Duty:         $4.13               |\r\n  |  MPF:          $2.00               |\r\n  |  VAT/Tax:      $0.00               |\r\n  |-------------------------------------|\r\n  |  Product:      $25.00              |\r\n  |  Shipping:     $8.50               |\r\n  |  Total Landed: $39.63              |\r\n  +-------------------------------------+\r\n\r\n"]
+[6.070412, "o", "  240 countries | 113M+ tariff records | Free: 200 calls/month\r\n  potal.app\r\n\r\n"]

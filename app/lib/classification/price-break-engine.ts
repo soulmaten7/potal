@@ -41,10 +41,10 @@ export async function evaluatePriceBreaks(hs10: string, price: number, country: 
   try {
     const sb = getSupabase();
     const { data: rules, error } = await sb
-      .from('price_break_rules')
+      .from('hs_price_break_rules')
       .select('*')
       .eq('country_code', country.toUpperCase())
-      .like('hs_code', `${hs10.slice(0, 6)}%`)
+      .like('parent_hs_code', `${hs10.slice(0, 6)}%`)
       .limit(10);
 
     if (error || !rules || rules.length === 0) return null;
@@ -99,10 +99,10 @@ export async function getOptimizationSuggestions(hsCode: string, price: number, 
   const sb = getSupabase();
 
   const { data: rules } = await sb
-    .from('price_break_rules')
+    .from('hs_price_break_rules')
     .select('*')
     .eq('country_code', country.toUpperCase())
-    .like('hs_code', `${hsCode.slice(0, 6)}%`)
+    .like('parent_hs_code', `${hsCode.slice(0, 6)}%`)
     .order('price_threshold', { ascending: true })
     .limit(20);
 

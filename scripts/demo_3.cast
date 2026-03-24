@@ -1,0 +1,9 @@
+{"version": 2, "width": 80, "height": 24, "timestamp": 1774325063, "env": {"SHELL": "/bin/zsh", "TERM": "xterm-256color"}}
+[0.018239, "o", "\u001b[3J\u001b[H\u001b[2J"]
+[0.019273, "o", "\r\n  POTAL — HS Code Classification\r\n  ====================================\r\n\r\n"]
+[1.027212, "o", "  $ curl https://www.potal.app/api/v1/classify \\\r\n"]
+[1.027843, "o", "      -d {\"productName\":\"cotton t-shirt\",\"material\":\"cotton\",\"category\":\"apparel\"}\r\n\r\n"]
+[2.038423, "o", "  Classification Result:\r\n  +-----------------------------------------+\r\n  |  Product:    Cotton T-shirt             |\r\n"]
+[2.03878, "o", "  |  Material:   Cotton                     |\r\n  |  Category:   Apparel                    |\r\n  |-----------------------------------------|\r\n  |  Section:    XI  Textiles               |\r\n  |  Chapter:    61  Knitted apparel        |\r\n  |  Heading:    6109  T-shirts, singlets   |\r\n  |  HS Code:    6109.10                    |\r\n  |  Confidence: 100%                       |\r\n  +-----------------------------------------+\r\n\r\n"]
+[4.052377, "o", "  9-field input -> 100% accuracy\r\n  WCO GRI rules — not AI guessing\r\n  5,371 HS codes | 592 codified rules\r\n\r\n"]
+[6.064917, "o", "  potal.app\r\n\r\n"]

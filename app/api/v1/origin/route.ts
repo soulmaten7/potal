@@ -21,6 +21,7 @@ import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { classifyProductAsync } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { BRAND_ORIGINS } from '@/app/lib/data/brand-origins';
 
 // Known manufacturing hubs by product category keyword
 const MANUFACTURING_HUBS: Record<string, { country: string; code: string; confidence: number }[]> = {
@@ -90,16 +91,7 @@ const MANUFACTURING_HUBS: Record<string, { country: string; code: string; confid
   ],
 };
 
-// Brand → origin mapping (well-known brands)
-const BRAND_ORIGINS: Record<string, string> = {
-  'samsung': 'KR', 'lg': 'KR', 'hyundai': 'KR', 'kia': 'KR',
-  'sony': 'JP', 'toyota': 'JP', 'honda': 'JP', 'nintendo': 'JP', 'canon': 'JP', 'panasonic': 'JP',
-  'apple': 'CN', 'nike': 'VN', 'adidas': 'VN',
-  'bmw': 'DE', 'mercedes': 'DE', 'volkswagen': 'DE', 'siemens': 'DE', 'bosch': 'DE',
-  'ikea': 'CN', 'zara': 'ES', 'h&m': 'BD',
-  'louis vuitton': 'FR', 'chanel': 'FR', 'dior': 'FR',
-  'gucci': 'IT', 'prada': 'IT', 'ferrari': 'IT',
-};
+// BRAND_ORIGINS imported from @/app/lib/data/brand-origins
 
 // HS Chapter → likely origin
 const HS_CHAPTER_ORIGINS: Record<string, { code: string; confidence: number }[]> = {
@@ -222,9 +214,18 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   const hsCode = typeof body.hsCode === 'string' ? body.hsCode.trim() : undefined;
   const brand = typeof body.brand === 'string' ? body.brand.trim() : undefined;
   const category = typeof body.category === 'string' ? body.category.trim() : undefined;
+  const price = typeof body.price === 'number' ? body.price : undefined;
 
   if (!productName) {
     return apiError(ApiErrorCode.BAD_REQUEST, '"productName" is required.');
+  }
+
+  if (price !== undefined && price < 0) {
+    return apiError(ApiErrorCode.BAD_REQUEST, '"price" must be >= 0.');
+  }
+
+  if (hsCode && !/^\d{4,10}$/.test(hsCode.replace(/\./g, ''))) {
+    return apiError(ApiErrorCode.BAD_REQUEST, '"hsCode" must be 4-10 digits.');
   }
 
   // Run AI classification to get origin prediction

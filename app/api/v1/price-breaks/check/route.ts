@@ -11,7 +11,8 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   const price = typeof body.price === 'number' ? body.price : 0;
   const country = typeof body.country === 'string' ? body.country.toUpperCase() : 'US';
 
-  if (!hsCode || price <= 0) return apiError(ApiErrorCode.BAD_REQUEST, 'hs_code and price required.');
+  if (!hsCode || !/^\d{6,10}$/.test(hsCode)) return apiError(ApiErrorCode.BAD_REQUEST, 'Valid hs_code (6-10 digits) required.');
+  if (price < 0) return apiError(ApiErrorCode.BAD_REQUEST, 'price must be >= 0.');
 
   const result = await evaluatePriceBreaks(hsCode, price, country);
   return apiSuccess(result || { message: 'No price break rules found for this HS code.' }, { sellerId: ctx.sellerId });

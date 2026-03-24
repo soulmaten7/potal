@@ -38,7 +38,7 @@ export async function applyPriceBreak(
     const { data, error } = await supabase
       .from('hs_price_break_rules')
       .select('*')
-      .in('hs_code', hs6List);
+      .in('parent_hs_code', hs6List);
 
     if (error || !data || data.length === 0) {
       return { filteredCandidates: candidates, priceBreakApplied: false };
@@ -50,7 +50,7 @@ export async function applyPriceBreak(
 
     for (const candidate of candidates) {
       const hs6 = candidate.substring(0, 6);
-      const rule = data.find((r: Record<string, unknown>) => r.hs_code === hs6);
+      const rule = data.find((r: Record<string, unknown>) => r.parent_hs_code === hs6);
 
       if (!rule) {
         filtered.push(candidate);

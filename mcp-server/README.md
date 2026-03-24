@@ -2,7 +2,7 @@
 
 Calculate the total landed cost of cross-border commerce directly in Claude, Cursor, and any MCP-compatible AI. Get instant breakdowns of import duties, taxes (VAT/GST), customs fees, and shipping for 240 countries.
 
-**113M+ tariff records | 240 countries | 63 FTAs | AI HS classification | Sanctions screening**
+**257M+ tariff records | 240 countries | 131K gov tariff schedules | 1.36M product-HS mappings | 63 FTAs | 9-field 100% HS accuracy (GRI Pipeline) | Sanctions screening (21K+)**
 
 ## Quick Start
 
@@ -26,7 +26,7 @@ Calculate the total cost for a product being shipped internationally.
 - `hsCode` — Harmonized System code if known
 
 ### `classify_product`
-AI-powered HS code classification. Provide a product name and get the harmonized system code.
+HS code classification using GRI Pipeline (592 codified rules, 9-field input → 100% accuracy). Provide a product name and get the harmonized system code.
 
 **Parameters:**
 - `productName` (required) — Product name or description
@@ -144,6 +144,6 @@ Once connected, ask Claude:
 
 ## About POTAL
 
-POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. 240 countries, 113M+ tariff records, 63 FTAs, sanctions screening, and AI-powered HS classification.
+POTAL is the infrastructure for global commerce — providing Total Landed Cost calculations for cross-border transactions. 240 countries, 257M+ tariff records, 131,794 government tariff schedules (7 countries, 10-digit), 1.36M product-HS mappings, 63 FTAs, sanctions screening (21,301 entries), and GRI Pipeline HS classification (592 codified rules, 9-field input → 100% accuracy, AI 0 calls).
 
 Website: [potal.app](https://potal.app)

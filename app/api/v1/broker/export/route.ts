@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
-import { exportABI, exportCSV, exportXML, generatePreFilingChecklist } from '@/app/lib/trade/broker-data-export';
+import { exportABI, exportCSV, exportXML, generatePreFilingChecklist, validateBrokerData } from '@/app/lib/trade/broker-data-export';
 import type { BrokerExportData } from '@/app/lib/trade/broker-data-export';
 
 export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => {
@@ -37,6 +37,12 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
       incoterm: typeof body.incoterm === 'string' ? body.incoterm : 'FOB',
       currency: typeof body.currency === 'string' ? body.currency : 'USD',
     };
+
+    // Validate before any export
+    const validationErrors = validateBrokerData(data);
+    if (validationErrors.length > 0) {
+      return apiError(ApiErrorCode.BAD_REQUEST, `Validation failed: ${validationErrors.join('; ')}`);
+    }
 
     if (format === 'abi') {
       return new Response(exportABI(data), { headers: { 'Content-Type': 'text/plain', 'Content-Disposition': 'attachment; filename="customs-entry.abi"' } });

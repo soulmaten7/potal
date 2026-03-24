@@ -1,6 +1,6 @@
 {
   "name": "potal-mcp-server",
-  "description": "Calculate total landed costs for cross-border commerce. 240 countries, 113M+ tariff records, 63 FTAs, AI HS classification, sanctions screening.",
+  "description": "Calculate total landed costs for cross-border commerce. 240 countries, 257M+ tariff records, 131K gov tariff schedules, 1.36M HS mappings, 63 FTAs, 9-field 100% HS accuracy, sanctions screening (21K+).",
   "repository": "https://github.com/soulmaten7/potal",
   "homepage": "https://potal.app",
   "tools": [

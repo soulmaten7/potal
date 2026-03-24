@@ -1,21 +1,15 @@
 /**
- * F035: Origin Prediction
+ * F041: Origin Prediction
  * Brand→origin, category→production country mapping.
  */
+
+import { BRAND_ORIGINS } from '@/app/lib/data/brand-origins';
 
 export interface OriginPrediction {
   predictedOrigins: Array<{ country: string; probability: number; basis: 'brand' | 'category' | 'trade_pattern' | 'keyword' }>;
   confidence: number;
   needsVerification: boolean;
 }
-
-const BRAND_ORIGINS: Record<string, string> = {
-  samsung: 'KR', apple: 'CN', sony: 'JP', toyota: 'JP', bmw: 'DE', mercedes: 'DE',
-  nike: 'VN', adidas: 'VN', puma: 'VN', zara: 'ES', hm: 'BD', uniqlo: 'CN',
-  huawei: 'CN', xiaomi: 'CN', lg: 'KR', panasonic: 'JP', bosch: 'DE', siemens: 'DE',
-  gucci: 'IT', prada: 'IT', ferrari: 'IT', volvo: 'SE', ikea: 'CN', nestle: 'CH',
-  louis_vuitton: 'FR', chanel: 'FR', loreal: 'FR', honda: 'JP',
-};
 
 const CATEGORY_ORIGINS: Record<string, Array<{ country: string; share: number }>> = {
   textiles: [{ country: 'CN', share: 0.35 }, { country: 'BD', share: 0.15 }, { country: 'VN', share: 0.12 }, { country: 'IN', share: 0.10 }],
@@ -37,7 +31,8 @@ const KEYWORD_TO_CATEGORY: Record<string, string> = {
 };
 
 export function predictOrigin(productName: string, brand?: string, category?: string): OriginPrediction {
-  const nameLower = productName.toLowerCase();
+  try {
+  const nameLower = (productName || '').toLowerCase();
   const results: Array<{ country: string; probability: number; basis: OriginPrediction['predictedOrigins'][0]['basis'] }> = [];
 
   // Brand check
@@ -49,7 +44,7 @@ export function predictOrigin(productName: string, brand?: string, category?: st
   }
 
   // Check brand in product name
-  for (const [b, origin] of Object.entries(BRAND_ORIGINS)) {
+  for (const [b, origin] of Object.entries(BRAND_ORIGINS) as [string, string][]) {
     if (nameLower.includes(b)) {
       results.push({ country: origin, probability: 0.80, basis: 'brand' });
       break;
@@ -86,4 +81,7 @@ export function predictOrigin(productName: string, brand?: string, category?: st
     confidence: Math.round(confidence * 100) / 100,
     needsVerification: confidence < 0.7,
   };
+  } catch {
+    return { predictedOrigins: [], confidence: 0, needsVerification: true };
+  }
 }

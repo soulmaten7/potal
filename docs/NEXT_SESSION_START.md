@@ -1,16 +1,39 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-23 KST (CW18 Cowork 5차 — 12 TLC 시스템화 46건 수정, EU VAT 27국, India Ch.71 3%)
+> 마지막 업데이트: 2026-03-24 KST (CW18 7차 — Layer 2 완성 확인, 우선순위 정리, v8 실험/Layer 2 완성 TODO 삭제)
 
 ---
 
 ## 현재 상태 요약
 
-### 12 TLC 시스템화 (완성 ✅ — 2026-03-23):
-- **46건 코드 감사 이슈 전부 수정**: P0(2)+P1(6)+P2(3)+P3(8)+MEDIUM(20)+LOW(3)+EU VAT(15국)
-- **특수세금 전면 개편**: Brazil IPI 95ch, India IGST 97ch(Ch.71 금 3%!), Mexico IEPS 53%, China CBEC+CT
-- **EU VAT 27국 완성**: 12국→27국 경감세율 (FI,DK,CZ,RO,HU,BG,HR,SK,SI,LT,LV,EE,LU,CY,MT)
-- **검증**: npm run build ✅ (5회), Duty Rate 55/55 PASS 100%
-- **수정 파일 10개**, 엑셀 3개
+### ✅ Sprint 1 보안 6기능 100% 달성 (2026-03-24):
+| 기능 | 시작 → 완료 | 커밋 | 테스트 |
+|------|-----------|------|--------|
+| F006 Confidence Score | 95% → 100% | 61d4433 | 20 PASS |
+| F012 HS Validation | 85% → 100% | a9b54fa | 15 PASS |
+| F046 Webhook System | 85% → 100% | 5f2a912 | 15 PASS |
+| F052 API Auth | 80% → 100% | 3396f7c | 15 PASS |
+| F093 Webhook Security | 70% → 100% | 8c764ed | 15 PASS |
+| F125 API Key Security | 85% → 100% | f0d265f | 15 PASS |
+- 커밋 6개, 신규파일 ~15개, 수정파일 ~20개, DB migration 4개 (039~042)
+- Vercel Cron 22→24개 (+data-management, +api-key-monitor)
+- API 엔드포인트 ~148→~155개+
+- 95 unit tests ALL PASS, npm run build clean
+
+### ✅ 12 TLC 시스템화 (완성 — 2026-03-23):
+- 46건 코드 감사 이슈 전부 수정, EU VAT 27국 완성, 특수세금 전면 개편
+- Duty Rate 55/55 PASS 100%, 7개 E2E 테스트 PASS
+
+### ✅ Layer 2 GRI Pipeline 프로덕션 배포 (2026-03-24):
+- gri-classifier/ 25개 파일 Vercel 배포 성공, 프로덕션 테스트 3종 PASS
+
+### ✅ 홈페이지 UI 업데이트 (2026-03-24):
+- 6개 공개 페이지 20건 수정 (9-field 100% HS Accuracy 반영)
+
+### ⏳ Product Hunt 리런치 (승인 대기 중):
+- B2C→B2B 피봇 "major update"로 리런치 요청 제출 (2026-03-24)
+- PH팀 승인 1~3일 대기
+- 런치 추천일: 4/7(화) 또는 4/8(수)
+- 미완료: Hero Image 1270×760px, Gallery slides 4~5장, 최종 콘텐츠
 
 ### Layer 1 (절대값 — 완성 ✅):
 - **Step 0~6 전체 파이프라인**: 9-field → HS 10자리 + 세율
@@ -23,16 +46,13 @@
 - **AI 호출**: 0회, 비용: $0
 - **Regression**: 20/20 유지
 
-### Layer 2 (실험 6회 완료 — v2 = HS6 최적, v6 = Section 최고):
-- **v1 (LLM 자유)**: material 99% 추출, HS6 8%. 유효하지 않은 material 출력
-- **v2 (material 강제)**: S57%/Ch46%/H19%/HS6=8%. **HS6 최적** ✅
-- **v3 (전체 강제)**: S49%/Ch39%/HS6=5%. 과도한 제약으로 하락 ❌
-- **v4 (POTAL 128 category)**: S52%/Ch37%/HS6=6%. 하락 ❌
-- **v5 (WCO 97 Chapter)**: S56%/Ch42%/HS6=6%. v4보다 나으나 v2보다 못함 ❌
-- **v6 (WCO raw text)**: **S65% (역대 최고)** / Ch44% / HS6=6%. Section 최고지만 HS6 변환 손실 ❌
-- **v6 에러 분석** (256건): Pattern E(LLM실수 41%) > Pattern B(경계혼동 26%) > Pattern A(카테고리오도 21%) > Pattern D(material의존 9%)
-- **최다 오분류**: Ch.96→39(15건), Ch.61→62(13건), Ch.84→90(11건)
-- **병목**: (1) GPT-4o-mini Chapter 판단 한계 (2) Layer 1 KEYWORD_TO_HEADINGS 사전 부족 (Jewelry Ch.71, Electronics Ch.85, Tools Ch.82)
+### Layer 2 (✅ GRI Pipeline 프로덕션 배포 완료 — 2026-03-24):
+- **GRI Pipeline**: gri-classifier/ 25개 파일, Vercel 프로덕션 배포 성공
+- **접근법**: v1~v7 LLM 실험 → 전면 폐기. "관세사가 하는 GRI 1~6 순차 적용을 코드로 자동화"
+- **프로덕션 테스트**: 3종 PASS (correct input 200 OK, invalid 400, missing 400)
+- **v3 파이프라인 구조**: step0-input → step1-cache → step2-1-section-candidate → step2-2-section-notes → step2-3-chapter-candidate → step2-4-chapter-notes → step3-heading → step4-subheading
+- **codified_rules**: 592개 규칙 TypeScript 내장, AI 0회, $0
+- **(참고) v1~v6 LLM 실험 히스토리**: docs/sessions/COWORK_SESSION_HISTORY.md 참조
 
 ### Layer 3 (미시작)
 
@@ -216,43 +236,48 @@ Layer 3: 9-field 자체가 없는 데이터 → custom 변환 → Layer 1에 전
 
 ---
 
+## ⚠️ CW18 7차 Cowork 세션에서 확정된 사항 (2026-03-24)
+
+### Layer 2 = GRI Pipeline = 완성. 더 이상 실험/완성 작업 없음.
+- GRI Pipeline(gri-classifier/ 25개 파일)이 **Layer 2 그 자체**다.
+- "관세사가 하는 GRI 1~6 순차 적용을 코드로 자동화"한 것이 Layer 2의 최종 형태.
+- 프로덕션 배포 완료 + 테스트 3종 PASS = **Layer 2 끝.**
+- v1~v7 LLM 실험은 GRI Pipeline 이전의 시행착오. GRI Pipeline이 전면 대체함.
+
+### 삭제된 TODO들 (이유: GRI Pipeline으로 이미 완성)
+- ~~P1: Layer 2 v8 실험 — confirmed_chapter → Layer 1 직접 전달, Chapter 52% 올리기~~ → **삭제**. v7→v8은 LLM 실험 시절 TODO. GRI Pipeline이 대체.
+- ~~P1: Layer 2 완성 — "기존 데이터 먼저 활용" 구조로 재설계 + 벤치마크~~ → **삭제**. 이 설계 자체가 v1~v6 LLM 기반. GRI Pipeline은 아예 다른 접근법(코드로 GRI 규칙 적용)이므로 해당 없음.
+- ~~HSCodeComp 632건 AliExpress category → Ch.XX 매핑 테이블~~ → **삭제**. GRI Pipeline 구조에서 불필요.
+- ~~composition → codified_subheadings 5,621개 연결~~ → **삭제**. 위와 동일.
+
+### Sprint 2 기능 업그레이드 — 대상 기능 아직 미선정
+- Sprint 1(보안 6기능)은 완료. Sprint 2에서 어떤 기능을 올릴지 은태님이 선정해야 함.
+- 142개 구현 기능 중 아직 100%가 아닌 것들이 후보.
+- 워크플로우는 동일: Cowork GAP분석 → 명령어 파일(.md) → Claude Code 실행.
+
+### ⚠️ 이 파일의 "이전 세션 핵심 인사이트" 섹션(1~8번) 참고 사항
+- 해당 인사이트들(1~8번)은 v1~v6 LLM 실험 시절에 작성된 것.
+- Layer 2가 GRI Pipeline으로 완성된 지금, "Layer 2 매핑 순서", "Layer 2 프로세스" 등의 설명은 **과거 기록**으로 참고만 할 것.
+- GRI Pipeline의 실제 구조: step0-input → step1-cache → step2-section → step2-notes → step2-chapter → step2-chapter-notes → step3-heading → step4-subheading (592 codified rules, AI 0회)
+
+---
+
 ## 다음 할 일 (우선순위)
 
-### P0: git push (CW18 5차 변경사항)
-- 10개 파일 수정 + 5개 문서 동기화 → push
+### P0: Product Hunt 런치 준비 (승인 후)
+- PH 승인 확인 → Hero Image 1270×760px 제작 → Gallery slides 4~5장
+- Maker's First Comment 최종 검토
+- 런치일 확정 (4/7 or 4/8) → 아웃리치 50명 목록 준비
 
-### P1: Layer 2 v8 실험
-- v7 코드교집합+LLM 방식에서 **Layer 1에 confirmed_chapter 직접 전달** (Step 2 건너뛰기)
-- v7 standalone Chapter 52% → Layer 1 통과 시에도 52% 유지 목표
+### P0: LinkedIn 포스트 작성
+- PH 런치와 연동할 LinkedIn 포스트 초안
 
-### P2: Layer 2 완성 — "기존 데이터 먼저 활용" 구조로 재설계 + 벤치마크
-**Layer 2 = 실제 서비스 (93.2%의 현실 데이터 처리).**
+### P1: Sprint 2 기능 업그레이드
+- Sprint 1 완료 (F006/F012/F046/F052/F093/F125 전부 100%)
+- Sprint 2 대상 기능 선정 → 동일 워크플로우 (Cowork GAP분석 → 명령어 → Claude Code 실행)
 
-⭐ **v1~v6 실험에서 배운 것**:
-- v2 (material만 규칙 기반) = HS6 최적 (S57%/Ch46%/H19%/HS6=8%)
-- v6 (WCO raw text) = Section 최고 (S65%) but HS6에서는 v2보다 못함 (6% vs 8%)
-- category를 LLM이 새로 고르게 하면 → 무조건 하락 (v4: -2%p, v5: -2%p, v3: -3%p)
-- **근본 원인**: HSCodeComp 632건에 category가 100% 있는데 이걸 무시하고 LLM한테 새로 고르라고 함
-- **LLM Chapter 자체 정확도 = 39%**. LLM이 97개 Chapter에서 올바른 걸 고르는 것 자체가 어려움
-- v6 에러 5패턴: LLM실수(41%), 경계혼동(26%), 카테고리오도(21%), material의존(9%), 정보부족(0%)
-- **핵심 오분류 패턴**: Ch.96→39(15), Ch.61→62(13), Ch.84→90(11) — 인접 Chapter 경계가 가장 큰 문제
-- WCO 법적 기준(v5) > POTAL 임의 키워드(v4) — 법적 규칙이 더 나은 건 맞음 (Ch 42% vs 37%)
-
-⭐ **다음 해야 할 것**:
-- **기존 category 데이터를 먼저 WCO 97 Chapter에 매핑** (LLM이 새로 고르지 X)
-- HSCodeComp 632건의 AliExpress 5단계 category → Ch.XX 매핑 테이블 만들기
-- 매핑된 category + material 규칙 기반 → 벤치마크
-- composition → codified_subheadings 5,621개 연결 (아직 안 됨)
-- weight_spec 국제 기준 파일 확인
-- description 법적 기준 (WCO Heading descriptions)
-
-⭐ **절대 반복하면 안 되는 실수**:
-- 데이터에 이미 있는 field를 무시하고 LLM한테 새로 고르라고 하는 것
-- "강제"로 프레이밍하는 것 — WCO는 강제가 아니라 규칙
-
-### P1: Layer 3 설계 (Enterprise Custom)
-### P2: 12개 TLC(Total Landed Cost) 통합 테스트 — 12개 계산 영역(HS Code + 관세 + VAT + De Minimis + 수수료 + 환율 등)을 하나의 API 요청으로 통합
-### P3: 프로덕션 아키텍처 — Make → Supabase → LLM API → POTAL API
+### P2: Layer 3 설계 (Enterprise Custom)
+### P2: 프로덕션 아키텍처 — Make → Supabase → LLM API → POTAL API
 
 ---
 
