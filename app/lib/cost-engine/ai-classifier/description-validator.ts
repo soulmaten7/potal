@@ -75,6 +75,27 @@ export function validateProductDescription(
   const descLower = desc.toLowerCase();
   const words = descLower.split(/\s+/);
 
+  // Check for numeric-only input
+  if (/^\d+$/.test(desc)) {
+    issues.push({
+      type: 'generic',
+      severity: 'error',
+      message: 'Description contains only numbers. Product type and details are required.',
+      suggestion: 'Describe the actual product, e.g., "cotton t-shirt" instead of "12345".',
+    });
+  }
+
+  // Check for non-alphabetic input (special characters only)
+  const alphaChars = desc.replace(/[^a-zA-Z]/g, '');
+  if (alphaChars.length < 3 && desc.length >= 3) {
+    issues.push({
+      type: 'generic',
+      severity: 'error',
+      message: 'Description must contain meaningful text (at least 3 alphabetic characters).',
+      suggestion: 'Use words to describe the product.',
+    });
+  }
+
   // Check minimum length
   if (desc.length < 3) {
     issues.push({

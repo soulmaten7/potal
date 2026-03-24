@@ -18,7 +18,9 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
     return apiError(ApiErrorCode.BAD_REQUEST, 'Invalid JSON body.');
   }
 
-  const description = typeof body.description === 'string' ? body.description.trim() : '';
+  const rawDescription = typeof body.description === 'string' ? body.description.trim() : '';
+  // Strip HTML tags to prevent XSS in responses
+  const description = rawDescription.replace(/<[^>]*>/g, '');
   if (!description) {
     return apiError(ApiErrorCode.BAD_REQUEST, 'Field "description" is required.');
   }
