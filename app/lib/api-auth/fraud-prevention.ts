@@ -57,6 +57,11 @@ const DUPLICATE_LIMIT = 10; // max 10 identical requests per minute
 const CLEANUP_INTERVAL = 300_000; // 5 minutes
 let lastCleanup = Date.now();
 
+/** Track fraud strikes per key for auto-disable (5 strikes in 1 hour = disable) */
+const FRAUD_STRIKE_WINDOW_MS = 3_600_000; // 1 hour
+const FRAUD_STRIKE_THRESHOLD = 5;
+const fraudStrikes = new Map<string, number[]>(); // keyPrefix -> timestamps of fraud blocks
+
 function cleanupStore() {
   const now = Date.now();
   if (now - lastCleanup < CLEANUP_INTERVAL) return;
@@ -175,7 +180,24 @@ export function checkFraud(
   };
 }
 
+/**
+ * Record a fraud strike for a key and check if auto-disable threshold is reached.
+ * Returns true if key should be auto-disabled (5 strikes within 1 hour).
+ */
+export function recordFraudStrike(keyPrefix: string): boolean {
+  const now = Date.now();
+  const cutoff = now - FRAUD_STRIKE_WINDOW_MS;
+
+  let strikes = fraudStrikes.get(keyPrefix) || [];
+  strikes = strikes.filter(ts => ts > cutoff); // Keep only recent strikes
+  strikes.push(now);
+  fraudStrikes.set(keyPrefix, strikes);
+
+  return strikes.length >= FRAUD_STRIKE_THRESHOLD;
+}
+
 /** Reset fraud stores — for testing only */
 export function _resetFraudStoreForTesting(): void {
   fingerprintStore.clear();
+  fraudStrikes.clear();
 }

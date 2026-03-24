@@ -21,7 +21,8 @@ import { checkRateLimit } from './rate-limiter';
 import { logUsage } from './usage-logger';
 import { checkPlanLimits } from './plan-checker';
 import { apiError, ApiErrorCode } from './response';
-import { generateFingerprint, hashRequestBody, checkFraud } from './fraud-prevention';
+import { generateFingerprint, hashRequestBody, checkFraud, recordFraudStrike } from './fraud-prevention';
+import { revokeApiKey } from './keys';
 
 // ─── Supabase Service Client ─────────────────────────
 
@@ -215,17 +216,28 @@ export function withApiAuth(handler: ApiHandler) {
     const userAgent = req.headers.get('user-agent') || '';
     const fingerprint = generateFingerprint(clientIp, userAgent, apiKey);
     const endpoint = req.nextUrl.pathname;
-    const bodyHash = hashRequestBody(endpoint); // Lightweight hash for fraud check
+    const bodyHash = hashRequestBody(endpoint);
     const fraudResult = checkFraud(fingerprint, endpoint, bodyHash);
     if (!fraudResult.allowed) {
+      // Record fraud strike — auto-disable key after 5 strikes in 1 hour
+      const shouldDisable = recordFraudStrike(apiKey.substring(0, 12));
+      if (shouldDisable) {
+        revokeApiKey(supabase as any, keyInfo.keyId, keyInfo.sellerId).catch(() => {});
+        logKeyAuditEvent(supabase as any, 'key_auto_disabled', {
+          key_id: keyInfo.keyId, seller_id: keyInfo.sellerId,
+          reason: 'fraud_threshold_exceeded', flags: fraudResult.flags,
+        }).catch(() => {});
+      }
       return apiError(ApiErrorCode.RATE_LIMITED, fraudResult.reason || 'Request blocked by fraud detection.');
     }
 
-    // 8. Rate limiting
-    const rateLimitResult = checkRateLimit(keyInfo.keyId, keyInfo.rateLimitPerMinute);
+    // 8. Rate limiting (sandbox keys get reduced limits)
+    const SANDBOX_RATE_LIMIT = 10; // 10 req/min for test keys
+    const effectiveRateLimit = isSandbox ? Math.min(keyInfo.rateLimitPerMinute, SANDBOX_RATE_LIMIT) : keyInfo.rateLimitPerMinute;
+    const rateLimitResult = checkRateLimit(keyInfo.keyId, effectiveRateLimit);
     if (!rateLimitResult.allowed) {
-      const response = apiError(ApiErrorCode.RATE_LIMITED, `Rate limit exceeded. ${keyInfo.rateLimitPerMinute} requests/minute allowed.`);
-      response.headers.set('X-RateLimit-Limit', String(keyInfo.rateLimitPerMinute));
+      const response = apiError(ApiErrorCode.RATE_LIMITED, `Rate limit exceeded. ${effectiveRateLimit} requests/minute allowed.`);
+      response.headers.set('X-RateLimit-Limit', String(effectiveRateLimit));
       response.headers.set('X-RateLimit-Remaining', '0');
       response.headers.set('X-RateLimit-Reset', String(rateLimitResult.resetAt));
       response.headers.set('Retry-After', String(Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)));
@@ -272,7 +284,7 @@ export function withApiAuth(handler: ApiHandler) {
     }).catch(() => {});
 
     // 13. Response headers
-    response.headers.set('X-RateLimit-Limit', String(keyInfo.rateLimitPerMinute));
+    response.headers.set('X-RateLimit-Limit', String(effectiveRateLimit));
     response.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
     response.headers.set('X-Plan-Usage', String(planCheck.used));
     response.headers.set('X-Plan-Limit', String(planCheck.limit));

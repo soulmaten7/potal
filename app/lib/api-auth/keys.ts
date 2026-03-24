@@ -12,6 +12,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { timingSafeEqual } from 'crypto';
 
 // ─── Key Generation ──────────────────────────────────
 
@@ -74,11 +75,16 @@ export async function generateApiKey(type: KeyType, mode: 'live' | 'test' = 'liv
 }
 
 /**
- * Verify an API key against its stored hash.
+ * Verify an API key against its stored hash using timing-safe comparison.
+ * Prevents timing attacks that could leak hash bytes.
  */
 export async function verifyApiKey(fullKey: string, storedHash: string): Promise<boolean> {
   const hash = await hashKey(fullKey);
-  return hash === storedHash;
+  try {
+    return timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(storedHash, 'hex'));
+  } catch {
+    return false; // Length mismatch or invalid hex
+  }
 }
 
 // ─── Database Operations ─────────────────────────────
@@ -182,12 +188,15 @@ export async function lookupApiKey(
   const hash = await hashKey(fullKey);
   const prefix = fullKey.substring(0, 8);
 
-  const { data, error } = await (supabase
+  // Query by prefix only, then timing-safe compare hash in code.
+  // This prevents DB-level timing leaks from the hash comparison.
+  const { data: candidates, error } = await (supabase
     .from('api_keys') as any)
     .select(`
       id,
       seller_id,
       key_type,
+      key_hash,
       rate_limit_per_minute,
       is_active,
       revoked_at,
@@ -201,12 +210,27 @@ export async function lookupApiKey(
       )
     `)
     .eq('key_prefix', prefix)
-    .eq('key_hash', hash)
-    .single();
+    .eq('is_active', true)
+    .is('revoked_at', null);
 
-  if (error || !data) return null;
-  const row = data as any;
-  if (!row.is_active || row.revoked_at) return null;
+  if (error || !candidates || candidates.length === 0) return null;
+
+  // Timing-safe hash comparison against all candidates with this prefix
+  let row: any = null;
+  const hashBuf = Buffer.from(hash, 'hex');
+  for (const candidate of candidates) {
+    try {
+      const candidateHashBuf = Buffer.from(candidate.key_hash, 'hex');
+      if (hashBuf.length === candidateHashBuf.length && timingSafeEqual(hashBuf, candidateHashBuf)) {
+        row = candidate;
+        break;
+      }
+    } catch {
+      continue; // Invalid hex in DB — skip
+    }
+  }
+
+  if (!row) return null;
 
   // Check key expiration
   if (row.expires_at && new Date(row.expires_at) < new Date()) {

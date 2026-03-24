@@ -87,6 +87,10 @@
     {
       "path": "/api/v1/admin/morning-brief",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/v1/cron/api-key-monitor",
+      "schedule": "0 7 * * 1"
     }
   ]
 }
