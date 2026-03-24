@@ -1,8 +1,8 @@
 /**
- * Webhook Event Log — idempotency + event logging for all webhook sources.
+ * Webhook Event Log — atomic idempotency + event logging.
  *
- * Uses health_check_logs table (already exists) for event tracking.
- * Checks event_id uniqueness to prevent duplicate processing.
+ * Uses webhook_events table with UNIQUE(source, event_id) constraint
+ * for race-condition-safe duplicate prevention.
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -15,32 +15,35 @@ function getSupabase() {
 }
 
 /**
- * Check if a webhook event has already been processed (idempotency).
- * Returns true if already processed (skip), false if new (process).
+ * Atomically check + mark a webhook event as processed.
+ * INSERT with ON CONFLICT (source, event_id) DO NOTHING.
+ * Returns true if already processed (skip), false if newly inserted (process).
  */
 export async function isEventProcessed(source: string, eventId: string): Promise<boolean> {
   const supabase = getSupabase();
-  if (!supabase) return false; // No DB = can't check, proceed
+  if (!supabase) return false;
 
   try {
-    const { data } = await supabase
-      .from('health_check_logs')
-      .select('id')
-      .eq('check_type', `webhook_event_${source}`)
-      .eq('details', eventId)
-      .limit(1);
+    const { data } = await (supabase.from('webhook_events') as any)
+      .insert({ source, event_id: eventId, status: 'processing' })
+      .select('id');
 
-    return data !== null && data.length > 0;
+    // If insert succeeded (data has row), this is new
+    if (data && data.length > 0) return false;
+
+    // Conflict = already exists = already processed
+    return true;
   } catch {
-    return false;
+    // On conflict error, already processed
+    return true;
   }
 }
 
 /**
- * Log a webhook event (success or failure).
+ * Log webhook event result (success or failure).
  */
 export async function logWebhookEvent(params: {
-  source: string;   // 'paddle' | 'shopify' | 'bigcommerce'
+  source: string;
   eventId: string;
   topic: string;
   status: 'success' | 'error';
@@ -50,20 +53,15 @@ export async function logWebhookEvent(params: {
   if (!supabase) return;
 
   try {
-    await supabase
-      .from('health_check_logs')
-      .insert({
-        check_type: `webhook_event_${params.source}`,
-        status: params.status === 'success' ? 'healthy' : 'degraded',
-        details: params.eventId,
-        response_time_ms: 0,
-        metadata: {
-          topic: params.topic,
-          error: params.errorMessage || null,
-          processed_at: new Date().toISOString(),
-        },
-      });
+    await (supabase.from('webhook_events') as any)
+      .update({
+        topic: params.topic,
+        status: params.status,
+        error_message: params.errorMessage || null,
+      })
+      .eq('source', params.source)
+      .eq('event_id', params.eventId);
   } catch {
-    // Fire-and-forget — don't block webhook response
+    // Fire-and-forget
   }
 }

@@ -21,12 +21,34 @@ function getSupabase() {
 }
 
 const URL_PATTERN = /^https:\/\/.+/;
-const BLOCKED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];
+const MAX_URL_LENGTH = 2048;
 
+/** Check if a hostname is a private/reserved IP or dangerous domain */
 function isUrlBlocked(url: string): boolean {
   try {
     const parsed = new URL(url);
-    return BLOCKED_HOSTS.includes(parsed.hostname);
+    const h = parsed.hostname;
+
+    // Direct blocked hostnames
+    if (['localhost', '0.0.0.0'].includes(h)) return true;
+
+    // Dangerous domain suffixes
+    if (h.endsWith('.local') || h.endsWith('.internal') || h.endsWith('.localhost')) return true;
+
+    // IPv4 private ranges (RFC 1918 + loopback + link-local)
+    if (/^127\./.test(h)) return true;                           // 127.0.0.0/8
+    if (/^10\./.test(h)) return true;                            // 10.0.0.0/8
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(h)) return true;      // 172.16.0.0/12
+    if (/^192\.168\./.test(h)) return true;                      // 192.168.0.0/16
+    if (/^169\.254\./.test(h)) return true;                      // 169.254.0.0/16 link-local
+    if (/^0\./.test(h)) return true;                             // 0.0.0.0/8
+
+    // IPv6 private ranges
+    if (h === '::1' || h === '[::1]') return true;               // Loopback
+    if (/^(fc|fd)/i.test(h) || /^\[(fc|fd)/i.test(h)) return true; // Unique local (ULA)
+    if (/^fe80/i.test(h) || /^\[fe80/i.test(h)) return true;    // Link-local
+
+    return false;
   } catch {
     return true;
   }
@@ -58,8 +80,9 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   // Validate URL
   const url = typeof body.url === 'string' ? body.url.trim() : '';
   if (!url) return apiError(ApiErrorCode.BAD_REQUEST, 'url is required.');
+  if (url.length > MAX_URL_LENGTH) return apiError(ApiErrorCode.BAD_REQUEST, `url exceeds ${MAX_URL_LENGTH} character limit.`);
   if (!URL_PATTERN.test(url)) return apiError(ApiErrorCode.BAD_REQUEST, 'url must use HTTPS.');
-  if (isUrlBlocked(url)) return apiError(ApiErrorCode.BAD_REQUEST, 'url cannot point to localhost or private IPs.');
+  if (isUrlBlocked(url)) return apiError(ApiErrorCode.BAD_REQUEST, 'url cannot point to localhost, private IPs, or reserved networks.');
 
   // Validate events
   const events = Array.isArray(body.events) ? body.events as string[] : [];

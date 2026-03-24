@@ -17,6 +17,8 @@ import { createClient } from '@supabase/supabase-js';
 const MAX_RETRY_ATTEMPTS = 5;
 const BASE_DELAY_MS = 1000;
 const SEND_TIMEOUT_MS = 10000;
+const MAX_PAYLOAD_BYTES = 1 * 1024 * 1024; // 1MB
+const MAX_RESPONSE_BYTES = 1 * 1024 * 1024; // 1MB
 
 export const SUPPORTED_EVENTS = [
   'calculation.completed',
@@ -87,20 +89,12 @@ async function recordDelivery(params: {
   if (!supabase) return;
 
   try {
-    await supabase.from('health_check_logs').insert({
-      check_type: `webhook_delivery_${params.webhookId}`,
-      status: params.status === 'success' ? 'healthy' : 'degraded',
-      response_time_ms: params.durationMs,
-      details: `attempt:${params.attemptNumber} status:${params.responseStatus || 'timeout'} event:${params.eventType}`,
-      metadata: {
-        webhook_id: params.webhookId,
-        event_type: params.eventType,
-        response_status: params.responseStatus,
-        response_body: params.responseBody.substring(0, 500),
-        attempt_number: params.attemptNumber,
-        delivery_status: params.status,
-        error: params.errorMessage || null,
-      },
+    await (supabase.from('webhook_events') as any).insert({
+      source: `delivery_${params.webhookId}`,
+      event_id: `${params.eventType}_attempt${params.attemptNumber}_${Date.now()}`,
+      topic: params.eventType,
+      status: params.status,
+      error_message: params.errorMessage || null,
     });
   } catch {
     // Fire-and-forget
@@ -125,14 +119,19 @@ async function sendRequest(
       headers: {
         'Content-Type': 'application/json',
         'X-Webhook-Signature': signature,
+        'X-Webhook-Timestamp': new Date().toISOString(),
         'User-Agent': 'POTAL-Webhook/1.0',
       },
       body: payloadStr,
       signal: controller.signal,
     });
 
-    const body = await response.text().catch(() => '');
-    return { status: response.status, body, durationMs: Date.now() - start };
+    // Limit response body read to MAX_RESPONSE_BYTES
+    const contentLength = parseInt(response.headers.get('content-length') || '0', 10);
+    const body = contentLength > MAX_RESPONSE_BYTES
+      ? '(response too large, truncated)'
+      : await response.text().catch(() => '');
+    return { status: response.status, body: body.substring(0, 1024), durationMs: Date.now() - start };
   } catch (err) {
     return {
       status: 0,
@@ -159,6 +158,17 @@ async function deliverToWebhook(
   payload: WebhookPayload,
 ): Promise<{ success: boolean; attempts: number; lastStatus: number | null }> {
   const payloadStr = JSON.stringify(payload);
+
+  // Reject oversized payloads before sending
+  if (Buffer.byteLength(payloadStr) > MAX_PAYLOAD_BYTES) {
+    await recordDelivery({
+      webhookId: registration.id, eventType: payload.type, payload: payload.data,
+      responseStatus: null, responseBody: 'Payload exceeds 1MB limit',
+      attemptNumber: 1, status: 'failed', errorMessage: 'Payload too large', durationMs: 0,
+    });
+    return { success: false, attempts: 0, lastStatus: null };
+  }
+
   const signature = signPayload(payloadStr, registration.secret);
 
   for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {

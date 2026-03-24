@@ -15,10 +15,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyShopifyWebhook, markShopUninstalled, deleteShopData } from '@/app/lib/shopify/shopify-auth';
 import { isEventProcessed, logWebhookEvent } from '@/app/lib/monitoring/webhook-event-log';
+import { checkWebhookRateLimit } from '@/app/lib/webhooks/webhook-rate-limit';
 
 export async function POST(req: NextRequest) {
+  // Rate limit (100/min per shop)
+  const shopDomainForRate = req.headers.get('x-shopify-shop-domain') || 'unknown';
+  if (!checkWebhookRateLimit(`shopify_${shopDomainForRate}`)) {
+    return NextResponse.json({ error: 'Too many webhook events' }, { status: 429 });
+  }
+
   // ━━━ 1. Raw body 읽기 (HMAC 검증용) ━━━
   const rawBody = await req.text();
+
+  // Payload size limit (1MB)
+  if (rawBody.length > 1_048_576) {
+    return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+  }
 
   // ━━━ 2. HMAC 검증 ━━━
   const hmacHeader = req.headers.get('x-shopify-hmac-sha256');

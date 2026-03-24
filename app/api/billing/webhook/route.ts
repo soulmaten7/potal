@@ -24,6 +24,7 @@ import {
 } from '@/app/lib/billing/subscription';
 import { mapPriceToPlan } from '@/app/lib/billing/paddle';
 import { isEventProcessed, logWebhookEvent } from '@/app/lib/monitoring/webhook-event-log';
+import { checkWebhookRateLimit } from '@/app/lib/webhooks/webhook-rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -87,11 +88,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
   }
 
+  // Inbound rate limit (100/min)
+  if (!checkWebhookRateLimit('paddle')) {
+    return NextResponse.json({ error: 'Too many webhook events' }, { status: 429 });
+  }
+
   let rawBody: string;
   let event: any;
 
   try {
     rawBody = await getRawBody(req);
+
+    // Payload size limit (1MB)
+    if (rawBody.length > 1_048_576) {
+      return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+    }
+
     const signature = req.headers.get('paddle-signature');
 
     if (!signature) {
