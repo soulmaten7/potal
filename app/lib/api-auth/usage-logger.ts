@@ -39,7 +39,6 @@ export async function logUsage(
     product_price_cents: entry.productPriceCents || null,
   });
 
-  if (error) {
-    console.error('[POTAL] Usage log failed:', error.message);
-  }
+  // Silently ignore log failures — fire-and-forget
+  void error;
 }

@@ -10,3 +10,6 @@ export { createApiKey, revokeApiKey, generateApiKey, verifyApiKey, type KeyType,
 
 // Response helpers
 export { apiSuccess, apiError, ApiErrorCode } from './response';
+
+// Audit
+export { logKeyAuditEvent } from './middleware';

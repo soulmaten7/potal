@@ -143,6 +143,15 @@ export async function createApiKey(
     throw new Error(`Failed to create API key: ${error.message}`);
   }
 
+  // Audit log (fire-and-forget)
+  (supabase.from('health_check_logs') as any).insert({
+    check_type: 'api_key_audit',
+    status: 'healthy',
+    response_time_ms: 0,
+    details: 'key_created',
+    metadata: { seller_id: sellerId, key_id: (data as any).id, key_type: type, scopes, expires_at: expiresAt },
+  }).then(() => {}).catch(() => {});
+
   return {
     fullKey: generated.fullKey,
     keyId: (data as any).id,
@@ -244,6 +253,17 @@ export async function revokeApiKey(
     })
     .eq('id', keyId)
     .eq('seller_id', sellerId);
+
+  if (!error) {
+    // Audit log (fire-and-forget)
+    (supabase.from('health_check_logs') as any).insert({
+      check_type: 'api_key_audit',
+      status: 'healthy',
+      response_time_ms: 0,
+      details: 'key_revoked',
+      metadata: { seller_id: sellerId, key_id: keyId },
+    }).then(() => {}).catch(() => {});
+  }
 
   return !error;
 }

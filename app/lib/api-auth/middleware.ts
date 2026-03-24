@@ -1,18 +1,17 @@
 /**
  * POTAL API Authentication Middleware
  *
- * Validates API key from request, checks seller status,
- * enforces rate limits, and logs usage.
- *
- * Usage in API routes:
- * ```ts
- * import { withApiAuth } from '@/app/lib/api-auth/middleware';
- *
- * export const GET = withApiAuth(async (req, context) => {
- *   // context.seller, context.keyId, etc. are available
- *   return Response.json({ success: true, data: ... });
- * });
- * ```
+ * Full auth pipeline:
+ * 1. Extract API key (header/bearer/query)
+ * 2. Validate key format + lookup in DB (includes expiration check)
+ * 3. Scope check (18-domain mapping)
+ * 4. Subscription status check
+ * 5. IP rules check (allow/block list)
+ * 6. Fraud detection (burst/flood/enumeration)
+ * 7. Rate limiting (in-memory sliding window)
+ * 8. Plan usage limits
+ * 9. Execute handler
+ * 10. Log usage + add response headers
  */
 
 import { NextRequest } from 'next/server';
@@ -22,17 +21,14 @@ import { checkRateLimit } from './rate-limiter';
 import { logUsage } from './usage-logger';
 import { checkPlanLimits } from './plan-checker';
 import { apiError, ApiErrorCode } from './response';
+import { generateFingerprint, hashRequestBody, checkFraud } from './fraud-prevention';
 
-// ─── Supabase Service Client (server-side only) ─────
+// ─── Supabase Service Client ─────────────────────────
 
 function getServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-  if (!url || !serviceKey) {
-    throw new Error('Missing Supabase environment variables');
-  }
-
+  if (!url || !serviceKey) throw new Error('Missing Supabase environment variables');
   return createClient(url, serviceKey);
 }
 
@@ -45,51 +41,124 @@ export interface ApiAuthContext {
   planId: string;
   subscriptionStatus: string;
   rateLimitPerMinute: number;
-  /** Whether this request is in sandbox/test mode (pk_test_ or sk_test_ key) */
   sandbox: boolean;
 }
 
-// ─── Extract API Key from Request ────────────────────
+// ─── Extract API Key ─────────────────────────────────
 
 function extractApiKey(req: NextRequest): string | null {
-  // 1. X-API-Key header (preferred)
   const headerKey = req.headers.get('X-API-Key') || req.headers.get('x-api-key');
   if (headerKey) return headerKey;
-
-  // 2. Authorization: Bearer <key>
   const authHeader = req.headers.get('Authorization');
-  if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.slice(7);
-  }
-
-  // 3. Query parameter ?api_key=
+  if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
   const urlKey = req.nextUrl.searchParams.get('api_key');
   if (urlKey) return urlKey;
-
   return null;
 }
 
-// ─── Scope Mapping ──────────────────────────────────
+// ─── Extract Client IP ───────────────────────────────
+
+function extractClientIp(req: NextRequest): string {
+  const forwarded = req.headers.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return req.headers.get('x-real-ip') || 'unknown';
+}
+
+// ─── Scope Mapping (18 domains) ──────────────────────
+
+/**
+ * Maps API route paths to scope names.
+ * Key = scope name, Value = path fragments that require this scope.
+ * Covers all ~148 POTAL endpoints.
+ */
+const SCOPE_ROUTE_MAP: Record<string, string[]> = {
+  calculate: ['/calculate', '/cost', '/compare', '/whatif', '/breakdown'],
+  classify: ['/classify'],
+  validate: ['/validate'],
+  screen: ['/screen', '/sanctions', '/screening'],
+  admin: ['/sellers/', '/admin/'],
+  roo: ['/roo'],
+  tax: ['/tax', '/vat', '/ioss'],
+  shipping: ['/shipping', '/incoterms', '/labels'],
+  compliance: ['/export-controls', '/restrictions', '/compliance', '/type86', '/ics2'],
+  customs: ['/customs', '/documents', '/broker'],
+  trade: ['/trade-remedies', '/drawback', '/temporary-import', '/sez'],
+  webhook: ['/webhooks'],
+  billing: ['/billing', '/checkout'],
+  exchange: ['/exchange-rate'],
+  countries: ['/countries'],
+  export: ['/export'],
+  origin: ['/origin'],
+  verify: ['/verify', '/pre-shipment'],
+};
 
 function getRequiredScope(path: string): string | null {
-  if (path.includes('/calculate') || path.includes('/cost')) return 'calculate';
-  if (path.includes('/classify')) return 'classify';
-  if (path.includes('/validate')) return 'validate';
-  if (path.includes('/screen') || path.includes('/sanctions')) return 'screen';
-  if (path.includes('/sellers/') || path.includes('/admin/')) return 'admin';
-  return null; // Public or general endpoints — no scope restriction
+  for (const [scope, patterns] of Object.entries(SCOPE_ROUTE_MAP)) {
+    if (patterns.some(p => path.includes(p))) return scope;
+  }
+  return null; // Unmapped paths = no scope restriction (default allow)
+}
+
+// ─── IP Rules Check ──────────────────────────────────
+
+async function checkIpRules(
+  supabase: ReturnType<typeof createClient>,
+  keyId: string,
+  clientIp: string,
+): Promise<{ allowed: boolean; reason?: string }> {
+  if (clientIp === 'unknown') return { allowed: true };
+
+  try {
+    const { data, error } = await (supabase.from('api_key_ip_rules') as any)
+      .select('ip_address, rule_type')
+      .eq('api_key_id', keyId);
+
+    if (error || !data || data.length === 0) return { allowed: true }; // No rules = allow all
+
+    const allowRules = data.filter((r: { rule_type: string }) => r.rule_type === 'allow');
+    const blockRules = data.filter((r: { rule_type: string }) => r.rule_type === 'block');
+
+    // If allowlist exists, IP must be in it
+    if (allowRules.length > 0) {
+      const allowed = allowRules.some((r: { ip_address: string }) => r.ip_address === clientIp);
+      if (!allowed) return { allowed: false, reason: `IP ${clientIp} not in allowlist.` };
+    }
+
+    // Check blocklist
+    if (blockRules.some((r: { ip_address: string }) => r.ip_address === clientIp)) {
+      return { allowed: false, reason: `IP ${clientIp} is blocked.` };
+    }
+
+    return { allowed: true };
+  } catch {
+    return { allowed: true }; // Fail-open on DB error
+  }
+}
+
+// ─── Audit Logger ────────────────────────────────────
+
+export async function logKeyAuditEvent(
+  supabase: ReturnType<typeof createClient>,
+  eventType: string,
+  details: Record<string, unknown>,
+): Promise<void> {
+  try {
+    await (supabase.from('health_check_logs') as any).insert({
+      check_type: 'api_key_audit',
+      status: 'healthy',
+      response_time_ms: 0,
+      details: eventType,
+      metadata: { ...details, logged_at: new Date().toISOString() },
+    });
+  } catch {
+    // Fire-and-forget
+  }
 }
 
 // ─── Middleware Wrapper ──────────────────────────────
 
-type ApiHandler = (
-  req: NextRequest,
-  context: ApiAuthContext
-) => Promise<Response>;
+type ApiHandler = (req: NextRequest, context: ApiAuthContext) => Promise<Response>;
 
-/**
- * Wrap an API route handler with authentication, rate limiting, and usage logging.
- */
 export function withApiAuth(handler: ApiHandler) {
   return async (req: NextRequest): Promise<Response> => {
     const startTime = Date.now();
@@ -101,7 +170,7 @@ export function withApiAuth(handler: ApiHandler) {
       return apiError(ApiErrorCode.UNAUTHORIZED, 'API key is required. Pass via X-API-Key header or api_key query parameter.');
     }
 
-    // 2. Validate key format (live + test/sandbox keys)
+    // 2. Validate key format
     const isSandbox = apiKey.startsWith('pk_test_') || apiKey.startsWith('sk_test_');
     if (!apiKey.startsWith('pk_live_') && !apiKey.startsWith('sk_live_') && !isSandbox) {
       return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid API key format. Use pk_live_, sk_live_, pk_test_, or sk_test_ prefix.');
@@ -113,7 +182,7 @@ export function withApiAuth(handler: ApiHandler) {
       return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid, revoked, or expired API key.');
     }
 
-    // 3b. Scope check — map request path to required scope
+    // 4. Scope check
     const scopes = keyInfo.scopes || ['*'];
     if (!scopes.includes('*')) {
       const path = req.nextUrl.pathname;
@@ -123,21 +192,36 @@ export function withApiAuth(handler: ApiHandler) {
       }
     }
 
-    // 4. Check subscription status
+    // 5. Subscription status check
     const { subscriptionStatus } = keyInfo;
     if (subscriptionStatus === 'canceled') {
-      // Allow access until current billing period ends
       const periodEnd = keyInfo.currentPeriodEnd ? new Date(keyInfo.currentPeriodEnd) : null;
       if (!periodEnd || new Date() > periodEnd) {
         return apiError(ApiErrorCode.FORBIDDEN, 'Subscription has expired. Please reactivate your plan.');
       }
-      // Still within paid period — treat as active
     }
     if (subscriptionStatus === 'past_due') {
       return apiError(ApiErrorCode.FORBIDDEN, 'Payment is past due. Please update your payment method.');
     }
 
-    // 5. Rate limiting
+    // 6. IP rules check
+    const clientIp = extractClientIp(req);
+    const ipCheck = await checkIpRules(supabase as any, keyInfo.keyId, clientIp);
+    if (!ipCheck.allowed) {
+      return apiError(ApiErrorCode.FORBIDDEN, ipCheck.reason || 'IP address blocked.');
+    }
+
+    // 7. Fraud detection
+    const userAgent = req.headers.get('user-agent') || '';
+    const fingerprint = generateFingerprint(clientIp, userAgent, apiKey);
+    const endpoint = req.nextUrl.pathname;
+    const bodyHash = hashRequestBody(endpoint); // Lightweight hash for fraud check
+    const fraudResult = checkFraud(fingerprint, endpoint, bodyHash);
+    if (!fraudResult.allowed) {
+      return apiError(ApiErrorCode.RATE_LIMITED, fraudResult.reason || 'Request blocked by fraud detection.');
+    }
+
+    // 8. Rate limiting
     const rateLimitResult = checkRateLimit(keyInfo.keyId, keyInfo.rateLimitPerMinute);
     if (!rateLimitResult.allowed) {
       const response = apiError(ApiErrorCode.RATE_LIMITED, `Rate limit exceeded. ${keyInfo.rateLimitPerMinute} requests/minute allowed.`);
@@ -148,13 +232,13 @@ export function withApiAuth(handler: ApiHandler) {
       return response;
     }
 
-    // 6. Plan usage limits (paid plans allow overage, free plan hard-blocks)
+    // 9. Plan usage limits
     const planCheck = await checkPlanLimits(supabase as any, keyInfo.sellerId, keyInfo.planId);
     if (!planCheck.allowed) {
       return apiError(ApiErrorCode.PLAN_LIMIT_EXCEEDED, `Monthly calculation limit reached (${planCheck.used}/${planCheck.limit}). Upgrade your plan for more.`);
     }
 
-    // 7. Build context
+    // 10. Build context
     const context: ApiAuthContext = {
       keyId: keyInfo.keyId,
       sellerId: keyInfo.sellerId,
@@ -165,20 +249,19 @@ export function withApiAuth(handler: ApiHandler) {
       sandbox: isSandbox,
     };
 
-    // 8. Execute handler
+    // 11. Execute handler
     let response: Response;
     let statusCode = 200;
     try {
       response = await handler(req, context);
       statusCode = response.status;
-    } catch (err) {
+    } catch {
       statusCode = 500;
       response = apiError(ApiErrorCode.INTERNAL_ERROR, 'Internal server error.');
     }
 
-    // 9. Log usage (fire-and-forget)
+    // 12. Log usage (fire-and-forget)
     const responseTimeMs = Date.now() - startTime;
-    const endpoint = req.nextUrl.pathname;
     logUsage(supabase as any, {
       sellerId: keyInfo.sellerId,
       apiKeyId: keyInfo.keyId,
@@ -186,34 +269,33 @@ export function withApiAuth(handler: ApiHandler) {
       method: req.method,
       statusCode,
       responseTimeMs,
-    }).catch(() => {}); // Don't block response on log failure
+    }).catch(() => {});
 
-    // 10. Add rate limit & usage headers
+    // 13. Response headers
     response.headers.set('X-RateLimit-Limit', String(keyInfo.rateLimitPerMinute));
     response.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
     response.headers.set('X-Plan-Usage', String(planCheck.used));
     response.headers.set('X-Plan-Limit', String(planCheck.limit));
-    if (isSandbox) {
-      response.headers.set('X-Sandbox-Mode', 'true');
-    }
+    if (isSandbox) response.headers.set('X-Sandbox-Mode', 'true');
     if (planCheck.isOverage) {
       response.headers.set('X-Plan-Overage', String(planCheck.overageCount));
       response.headers.set('X-Plan-Overage-Rate', String(planCheck.overageRate));
     }
+    if (fraudResult.riskScore > 0) {
+      response.headers.set('X-Fraud-Risk', String(fraudResult.riskScore));
+    }
 
     // Key expiration warning (7 days before expiry)
     if (keyInfo.expiresAt) {
-      const expiresIn = new Date(keyInfo.expiresAt).getTime() - Date.now();
-      const daysLeft = Math.ceil(expiresIn / (1000 * 60 * 60 * 24));
+      const daysLeft = Math.ceil((new Date(keyInfo.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
       if (daysLeft <= 7 && daysLeft > 0) {
         response.headers.set('X-API-Key-Expires-In', `${daysLeft}d`);
       }
     }
 
-    // Key age warning (90+ days old)
+    // Key age warning (90+ days)
     if (keyInfo.createdAt) {
-      const ageMs = Date.now() - new Date(keyInfo.createdAt).getTime();
-      const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
+      const ageDays = Math.floor((Date.now() - new Date(keyInfo.createdAt).getTime()) / (1000 * 60 * 60 * 24));
       if (ageDays >= 90) {
         response.headers.set('X-API-Key-Age-Warning', `Key is ${ageDays} days old, consider rotating`);
       }
