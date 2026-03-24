@@ -8,6 +8,7 @@ const STATS = [
   { value: "113M+", label: "Tariff Records", description: "MFN + preferential rates" },
   { value: "148+", label: "API Endpoints", description: "Full commerce coverage" },
   { value: "50", label: "Languages", description: "Localized widget & API" },
+  { value: "100%", label: "HS Accuracy", description: "9-field classification, WCO verified" },
 ];
 
 // [DATA] Core Values

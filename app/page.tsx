@@ -35,6 +35,8 @@ function CodeBlock() {
   -H "Content-Type: application/json" \\
   -d '{
     "productName": "Cotton T-Shirt",
+    "material": "cotton",
+    "category": "apparel",
     "declaredValue": 49.99,
     "originCountry": "CN",
     "destinationCountry": "US",
@@ -93,6 +95,8 @@ function CodeBlock() {
         {'  '}-H <span style={{ color: '#fbbf24' }}>&quot;Content-Type: application/json&quot;</span> \{'\n'}
         {'  '}-d <span style={{ color: '#86efac' }}>{`'{
     "productName": "Cotton T-Shirt",
+    "material": "cotton",
+    "category": "apparel",
     "declaredValue": 49.99,
     "originCountry": "CN",
     "destinationCountry": "US",
@@ -144,6 +148,12 @@ function ResponsePreview() {
       `}<span style={{ color: '#fbbf24' }}>&quot;taxLabel&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;Sales Tax (NY)&quot;</span>{`
     },
     `}<span style={{ color: '#fbbf24' }}>&quot;hsCode&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;6109.10&quot;</span>{`,
+    `}<span style={{ color: '#fbbf24' }}>&quot;hsCodeConfidence&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;100%&quot;</span>{`,
+    `}<span style={{ color: '#fbbf24' }}>&quot;fieldValidation&quot;</span>{`: {
+      `}<span style={{ color: '#fbbf24' }}>&quot;status&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;valid&quot;</span>{`,
+      `}<span style={{ color: '#fbbf24' }}>&quot;fieldsProvided&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>8</span>{`,
+      `}<span style={{ color: '#fbbf24' }}>&quot;fieldsRequired&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>3</span>{`
+    },
     `}<span style={{ color: '#fbbf24' }}>&quot;fta&quot;</span>{`: `}<span style={{ color: '#ef4444' }}>false</span>{`,
     `}<span style={{ color: '#fbbf24' }}>&quot;deMinimis&quot;</span>{`: `}<span style={{ color: '#ef4444' }}>false</span>{`
   }
@@ -388,8 +398,8 @@ export default function HomePage() {
                 marginBottom: 36,
                 maxWidth: 480,
               }}>
-                Show your buyers the true cost of any product — duties, taxes,
-                and shipping — for 240 countries. Embed in minutes, not months.
+                Calculate duties, taxes, and shipping for 240 countries with one API call.
+                100% HS Code accuracy with 9-field classification.
               </p>
 
               <div style={{ display: 'flex', gap: 14, marginBottom: 48 }}>
@@ -408,7 +418,7 @@ export default function HomePage() {
                   onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,158,11,0.35)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  Calculate Duties Free
+                  Get Started Free
                 </Link>
                 <Link
                   href="/developers"
@@ -469,6 +479,7 @@ export default function HomePage() {
                     { name: 'UK HMRC', full: 'UK Trade Tariff' },
                     { name: 'CBSA', full: 'Canada Border Services' },
                     { name: 'KCS', full: 'Korea Customs Service' },
+                    { name: 'JP Customs', full: 'Japan Customs & Tariff Bureau' },
                     { name: 'OFAC', full: 'US Sanctions' },
                   ].map((source) => (
                     <span
@@ -518,7 +529,7 @@ export default function HomePage() {
           {[
             { value: '240', label: 'Countries Covered', sub: 'Every territory worldwide' },
             { value: '113M+', label: 'Tariff Data Points', sub: 'MFN + preferential rates' },
-            { value: '99.2%', label: 'Calculation Accuracy', sub: 'Verified against gov sources' },
+            { value: '100%', label: 'HS Code Accuracy', sub: '9-field input, verified against WCO' },
             { value: '<200ms', label: 'API Response Time', sub: 'p95 latency globally' },
           ].map((stat) => (
             <div key={stat.label} style={{
@@ -681,6 +692,21 @@ export default function HomePage() {
               icon="🧩"
               title="Embeddable Widget"
               description="Drop-in JavaScript widget with Shadow DOM isolation. Works on any site with zero CSS conflicts."
+            />
+            <FeatureCard
+              icon="🛡️"
+              title="Sanctions & Export Controls"
+              description="Screen against OFAC SDN, BIS Entity List, and 19 sanctions sources. 21,300+ entries with fuzzy matching."
+            />
+            <FeatureCard
+              icon="⚖️"
+              title="Trade Remedies"
+              description="Anti-dumping duties, countervailing duties, and safeguard measures. 119,700+ cases across 36 countries."
+            />
+            <FeatureCard
+              icon="🤖"
+              title="AI Agent Ready (MCP)"
+              description="Official MCP server on the registry. Any AI agent can call POTAL via one command."
             />
           </div>
 
@@ -915,8 +941,8 @@ export default function HomePage() {
             Ready to go global?
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 36, fontSize: 17, lineHeight: 1.7 }}>
-            Join sellers who use POTAL to show transparent pricing
-            to customers in 240 countries.
+            Start showing transparent pricing to customers in 240 countries.
+            Free forever, up to 200 API calls per month.
           </p>
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
             <Link

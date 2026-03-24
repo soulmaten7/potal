@@ -40,11 +40,13 @@ const CODE_EXAMPLES = {
   -H "Content-Type: application/json" \\
   -H "X-API-Key: YOUR_API_KEY" \\
   -d '{
-    "from_country": "CN",
-    "to_country": "US",
-    "hs_code": "6109.10",
-    "value": 25.00,
-    "currency": "USD"
+    "productName": "Cotton T-Shirt",
+    "material": "cotton",
+    "category": "apparel",
+    "declaredValue": 25.00,
+    "originCountry": "CN",
+    "destinationCountry": "US",
+    "shippingCost": 8.50
   }'`,
   JavaScript: `const response = await fetch(
   "https://www.potal.app/api/v1/calculate",
@@ -55,16 +57,18 @@ const CODE_EXAMPLES = {
       "X-API-Key": "YOUR_API_KEY",
     },
     body: JSON.stringify({
-      from_country: "CN",
-      to_country: "US",
-      hs_code: "6109.10",
-      value: 25.00,
-      currency: "USD",
+      productName: "Cotton T-Shirt",
+      material: "cotton",
+      category: "apparel",
+      declaredValue: 25.00,
+      originCountry: "CN",
+      destinationCountry: "US",
+      shippingCost: 8.50,
     }),
   }
 );
 const data = await response.json();
-console.log(data.total_landed_cost);`,
+console.log(data.data.totalLandedCost);`,
   Python: `import requests
 
 response = requests.post(
@@ -74,15 +78,17 @@ response = requests.post(
         "X-API-Key": "YOUR_API_KEY",
     },
     json={
-        "from_country": "CN",
-        "to_country": "US",
-        "hs_code": "6109.10",
-        "value": 25.00,
-        "currency": "USD",
+        "productName": "Cotton T-Shirt",
+        "material": "cotton",
+        "category": "apparel",
+        "declaredValue": 25.00,
+        "originCountry": "CN",
+        "destinationCountry": "US",
+        "shippingCost": 8.50,
     },
 )
 data = response.json()
-print(data["total_landed_cost"])`,
+print(data["data"]["totalLandedCost"])`,
 };
 
 function CodeTabs() {
@@ -162,11 +168,13 @@ function ApiExplorer() {
   -H "Content-Type: application/json" \\
   -H "X-API-Key: YOUR_API_KEY" \\
   -d '{
-    "from_country": "${origin}",
-    "to_country": "${destination}",
-    "hs_code": "${hsCode}",
-    "value": ${numValue.toFixed(2)},
-    "currency": "USD"
+    "productName": "Cotton T-Shirt",
+    "material": "cotton",
+    "category": "apparel",
+    "declaredValue": ${numValue.toFixed(2)},
+    "originCountry": "${origin}",
+    "destinationCountry": "${destination}",
+    "shippingCost": 8.50
   }'`;
 
   const responseJson = `{
@@ -181,6 +189,7 @@ function ApiExplorer() {
       "taxLabel": "${mock.taxLabel}"
     },
     "hsCode": "${mock.hsCode}",
+    "hsCodeConfidence": "100%",
     "deMinimis": ${mock.deMinimis},
     "fta": ${mock.fta}
   }

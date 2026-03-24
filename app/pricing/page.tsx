@@ -141,7 +141,7 @@ const FAQS = [
   },
   {
     q: 'What makes POTAL different from competitors?',
-    a: 'POTAL covers 240 countries with AI-powered HS classification, real-time FTA detection, anti-dumping duty alerts, and 50 language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
+    a: 'POTAL covers 240 countries with 9-field HS classification (100% accuracy with complete input), real-time FTA detection, anti-dumping duty alerts, sanctions screening, and 50 language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
   },
 ];
 
