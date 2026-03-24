@@ -1106,21 +1106,30 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     dduBuyerCharges,
     incotermsBreakdown,
     accuracyGuarantee: (() => {
-      const factors: string[] = [];
-      let score = confidenceScore;
-      if (dutyRateSource === 'agr') factors.push('FTA agreement rate');
-      else if (dutyRateSource === 'min') factors.push('Minimum duty rate');
-      else if (dutyRateSource === 'hardcoded') { factors.push('Estimated duty rate'); score *= 0.8; }
-      if (hsResult && hsResult.hsCode !== '9999') factors.push('HS-specific');
-      else { factors.push('No HS classification'); score *= 0.7; }
-      if (ftaResult?.hasFta) factors.push('FTA applied');
-      if (tradeRemedyResult?.hasRemedies) factors.push('Trade remedies included');
-      const level = score >= 0.8 ? 'high' as const : score >= 0.6 ? 'medium' as const : 'low' as const;
-      return {
-        level,
-        estimatedAccuracy: Math.round(score * 100),
-        factors,
-      };
+      try {
+        const { assessGuarantee } = require('./landed-cost-guarantee');
+        const dataQuality = dutyRateSource === 'hardcoded' ? 'fallback' as const
+          : (precomputedHit || dutyRateSource === 'agr' || dutyRateSource === 'min' || dutyRateSource === 'ntlc') ? 'fresh' as const
+          : 'stale' as const;
+        return assessGuarantee({
+          planId: 'pro',
+          confidenceScore,
+          dataQuality,
+          dutyRateSource: dutyRateSource || 'unknown',
+          hsCodeSource: hsResult?.method || 'unknown',
+          hasTradeRemedies: tradeRemedyResult?.hasRemedies || false,
+          isSanctioned: false,
+        });
+      } catch {
+        // Fallback to legacy format if guarantee module fails
+        const factors: string[] = [];
+        let score = confidenceScore;
+        if (dutyRateSource === 'hardcoded') { factors.push('Estimated duty rate'); score *= 0.8; }
+        if (hsResult && hsResult.hsCode !== '9999') factors.push('HS-specific');
+        else { factors.push('No HS classification'); score *= 0.7; }
+        const level = score >= 0.8 ? 'high' as const : score >= 0.6 ? 'medium' as const : 'low' as const;
+        return { level, estimatedAccuracy: Math.round(score * 100), factors };
+      }
     })(),
     dataFreshness: {
       dutyRateAge: precomputedHit ? 'precomputed_cache'

@@ -12,6 +12,30 @@ export interface BrokerExportData {
   currency: string;
 }
 
+/**
+ * Validate broker export data before generating ABI/XML/CSV.
+ */
+export function validateBrokerData(data: BrokerExportData): string[] {
+  const errors: string[] = [];
+  if (!data.importer?.name) errors.push('importer.name is required');
+  if (!data.importer?.country || data.importer.country.length !== 2) errors.push('importer.country must be ISO 2-letter code');
+  if (!data.exporter?.name) errors.push('exporter.name is required');
+  if (!data.exporter?.country || data.exporter.country.length !== 2) errors.push('exporter.country must be ISO 2-letter code');
+  if (!data.items || data.items.length === 0) errors.push('At least one item is required');
+  for (let i = 0; i < (data.items || []).length; i++) {
+    const item = data.items[i];
+    if (!item.hsCode || !/^\d{6,10}$/.test(item.hsCode.replace(/[\s.\-]/g, ''))) {
+      errors.push(`items[${i}].hsCode must be 6-10 digits`);
+    }
+    if (typeof item.value !== 'number' || item.value <= 0) errors.push(`items[${i}].value must be positive`);
+    if (!item.origin || item.origin.length !== 2) errors.push(`items[${i}].origin must be ISO 2-letter code`);
+  }
+  if (typeof data.totals?.declaredValue !== 'number' || data.totals.declaredValue <= 0) {
+    errors.push('totals.declaredValue must be a positive number');
+  }
+  return errors;
+}
+
 export function exportABI(data: BrokerExportData): string {
   // Simplified ABI (Automated Broker Interface) format
   const lines: string[] = [];

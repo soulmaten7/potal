@@ -34,16 +34,20 @@ export interface PriceOptimization {
 }
 
 export async function evaluatePriceBreaks(hs10: string, price: number, country: string): Promise<PriceBreakResult | null> {
-  const sb = getSupabase();
+  if (!hs10 || hs10.length < 6) return null;
+  if (typeof price !== 'number' || price < 0 || !isFinite(price)) return null;
+  if (!country || country.length < 2) return null;
 
-  const { data: rules } = await sb
-    .from('price_break_rules')
-    .select('*')
-    .eq('country_code', country.toUpperCase())
-    .like('hs_code', `${hs10.slice(0, 6)}%`)
-    .limit(10);
+  try {
+    const sb = getSupabase();
+    const { data: rules, error } = await sb
+      .from('price_break_rules')
+      .select('*')
+      .eq('country_code', country.toUpperCase())
+      .like('hs_code', `${hs10.slice(0, 6)}%`)
+      .limit(10);
 
-  if (!rules || rules.length === 0) return null;
+    if (error || !rules || rules.length === 0) return null;
 
   for (const rule of rules) {
     const threshold = parseFloat(rule.price_threshold);
@@ -84,10 +88,14 @@ export async function evaluatePriceBreaks(hs10: string, price: number, country: 
     }
   }
 
-  return null;
+    return null;
+  } catch {
+    return null; // DB failure — graceful fallback, no price break applied
+  }
 }
 
 export async function getOptimizationSuggestions(hsCode: string, price: number, country: string): Promise<PriceOptimization> {
+  try {
   const sb = getSupabase();
 
   const { data: rules } = await sb
@@ -120,4 +128,12 @@ export async function getOptimizationSuggestions(hsCode: string, price: number, 
       : `No price-dependent rules found for ${hsCode} in ${country}.`,
     disclaimer: 'This is informational only. Consult a licensed customs advisor for compliance decisions.',
   };
+  } catch {
+    return {
+      currentRate: 0,
+      pricePoints: [],
+      optimizationNote: 'Price optimization data temporarily unavailable.',
+      disclaimer: 'This is informational only. Consult a licensed customs advisor for compliance decisions.',
+    };
+  }
 }

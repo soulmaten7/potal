@@ -187,6 +187,7 @@ export function detectOrigin(
   sellerName?: string,
   platform?: string,
 ): OriginDetectionResult {
+  try {
   const searchTerms = [
     productName?.toLowerCase() || '',
     brandName?.toLowerCase() || '',
@@ -245,6 +246,9 @@ export function detectOrigin(
     score: 0.3,
     method: 'default',
   };
+  } catch {
+    return { country: 'unknown', confidence: 'low', score: 0, method: 'default' };
+  }
 }
 
 /** Get count of brand mappings */

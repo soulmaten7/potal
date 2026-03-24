@@ -46,6 +46,40 @@ export interface PopulatedDocument {
   fields: Record<string, string | number | undefined>;
 }
 
+/**
+ * Validate input before auto-populating customs documents.
+ * Returns array of error messages. Empty array = valid.
+ */
+export function validateAutoPopulateInput(input: AutoPopulateInput): string[] {
+  const errors: string[] = [];
+
+  // Seller validation
+  if (!input.seller?.name) errors.push('seller.name is required');
+  if (!input.seller?.address) errors.push('seller.address is required');
+  if (!input.seller?.country || input.seller.country.length !== 2) errors.push('seller.country must be ISO 2-letter code');
+
+  // Buyer validation
+  if (!input.buyer?.name) errors.push('buyer.name is required');
+  if (!input.buyer?.address) errors.push('buyer.address is required');
+  if (!input.buyer?.country || input.buyer.country.length !== 2) errors.push('buyer.country must be ISO 2-letter code');
+
+  // Products validation
+  if (!input.products || input.products.length === 0) errors.push('At least one product is required');
+  for (let i = 0; i < (input.products || []).length; i++) {
+    const p = input.products[i];
+    if (!p.name) errors.push(`products[${i}].name is required`);
+    if (!p.hsCode || !/^\d{6,10}$/.test(p.hsCode.replace(/[\s.\-]/g, ''))) {
+      errors.push(`products[${i}].hsCode must be 6-10 digits`);
+    }
+    if (typeof p.unitValue !== 'number' || p.unitValue <= 0) {
+      errors.push(`products[${i}].unitValue must be a positive number`);
+    }
+    if (!p.origin || p.origin.length !== 2) errors.push(`products[${i}].origin must be ISO 2-letter code`);
+  }
+
+  return errors;
+}
+
 export function autoPopulateCommercialInvoice(input: AutoPopulateInput): PopulatedDocument {
   const totalValue = input.products.reduce((s, p) => s + p.unitValue, 0);
   return {
