@@ -1,7 +1,10 @@
 /**
  * POTAL BigCommerce Webhook Handler
- * Handles orders/created webhook to calculate landed costs
+ * Handles orders/created and store/product/updated webhooks.
+ * Includes HMAC-SHA256 signature verification.
  */
+
+import crypto from 'crypto';
 
 interface BigCommerceOrder {
   id: number;
@@ -23,10 +26,58 @@ interface WebhookPayload {
 
 const POTAL_API = 'https://www.potal.app/api/v1';
 
+/**
+ * Verify BigCommerce webhook signature.
+ * BigCommerce sends HMAC-SHA256 in X-Webhook-Signature header.
+ */
+export function verifyBigCommerceSignature(
+  rawBody: string,
+  signature: string,
+  clientSecret: string
+): boolean {
+  try {
+    const computed = crypto
+      .createHmac('sha256', clientSecret)
+      .update(rawBody)
+      .digest('base64');
+
+    return crypto.timingSafeEqual(
+      Buffer.from(signature),
+      Buffer.from(computed)
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Route BigCommerce webhook events.
+ */
+export async function handleBigCommerceWebhook(
+  payload: WebhookPayload,
+  config: { potalApiKey: string; bigcommerceToken: string; storeHash: string; clientSecret: string },
+  rawBody: string,
+  signature: string
+): Promise<{ success: boolean; data?: unknown; error?: string }> {
+  // Verify signature
+  if (!verifyBigCommerceSignature(rawBody, signature, config.clientSecret)) {
+    return { success: false, error: 'Invalid webhook signature' };
+  }
+
+  switch (payload.scope) {
+    case 'store/order/created':
+      return handleOrderCreated(payload, config);
+    case 'store/product/updated':
+      return { success: true, data: { event: 'product_updated', id: payload.data.id } };
+    default:
+      return { success: true, data: { event: payload.scope, note: 'Unhandled event type' } };
+  }
+}
+
 export async function handleOrderCreated(
   payload: WebhookPayload,
   config: { potalApiKey: string; bigcommerceToken: string; storeHash: string }
-) {
+): Promise<{ success: boolean; data?: unknown; error?: string }> {
   const orderId = payload.data.id;
 
   // Fetch order details from BigCommerce
@@ -39,7 +90,7 @@ export async function handleOrderCreated(
       },
     }
   );
-  if (!orderRes.ok) return { error: 'Failed to fetch order' };
+  if (!orderRes.ok) return { success: false, error: 'Failed to fetch order' };
 
   const order: BigCommerceOrder = await orderRes.json();
   const destination = order.billing_address?.country_iso2 || 'US';
@@ -60,12 +111,11 @@ export async function handleOrderCreated(
     }),
   });
 
-  if (!calcRes.ok) return { error: 'POTAL calculation failed' };
+  if (!calcRes.ok) return { success: false, error: 'POTAL calculation failed' };
   const result = await calcRes.json();
 
   return {
-    order_id: orderId,
-    destination,
-    landed_cost: result.data,
+    success: true,
+    data: { order_id: orderId, destination, landed_cost: result.data },
   };
 }

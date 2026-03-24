@@ -88,6 +88,8 @@ interface CreateKeyOptions {
   type: KeyType;
   name?: string;
   rateLimitPerMinute?: number;
+  expiresIn?: '7d' | '30d' | '90d' | '365d' | 'never';
+  scopes?: string[];
 }
 
 interface CreateKeyResult {
@@ -109,8 +111,17 @@ export async function createApiKey(
   supabase: ReturnType<typeof createClient>,
   options: CreateKeyOptions
 ): Promise<CreateKeyResult> {
-  const { sellerId, type, name = 'Default', rateLimitPerMinute = 60 } = options;
+  const { sellerId, type, name = 'Default', rateLimitPerMinute = 60, expiresIn = 'never', scopes = ['*'] } = options;
   const generated = await generateApiKey(type);
+
+  // Calculate expiration date
+  let expiresAt: string | null = null;
+  if (expiresIn !== 'never') {
+    const days = parseInt(expiresIn);
+    if (!isNaN(days)) {
+      expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+    }
+  }
 
   const { data, error } = await (supabase
     .from('api_keys') as any)
@@ -122,6 +133,8 @@ export async function createApiKey(
       name,
       rate_limit_per_minute: rateLimitPerMinute,
       is_active: true,
+      expires_at: expiresAt,
+      scopes,
     })
     .select('id')
     .single();
@@ -153,6 +166,9 @@ export async function lookupApiKey(
   planId: string;
   subscriptionStatus: string;
   currentPeriodEnd: string | null;
+  expiresAt: string | null;
+  scopes: string[];
+  createdAt: string | null;
 } | null> {
   const hash = await hashKey(fullKey);
   const prefix = fullKey.substring(0, 8);
@@ -166,6 +182,9 @@ export async function lookupApiKey(
       rate_limit_per_minute,
       is_active,
       revoked_at,
+      expires_at,
+      scopes,
+      created_at,
       sellers!inner (
         plan_id,
         subscription_status,
@@ -180,11 +199,18 @@ export async function lookupApiKey(
   const row = data as any;
   if (!row.is_active || row.revoked_at) return null;
 
-  // Update last_used_at
-  await (supabase
+  // Check key expiration
+  if (row.expires_at && new Date(row.expires_at) < new Date()) {
+    return null; // Expired key
+  }
+
+  // Update last_used_at (fire-and-forget)
+  (supabase
     .from('api_keys') as any)
     .update({ last_used_at: new Date().toISOString() })
-    .eq('id', row.id);
+    .eq('id', row.id)
+    .then(() => {})
+    .catch(() => {});
 
   const seller = row.sellers as { plan_id: string; subscription_status: string; current_period_end: string | null };
 
@@ -196,6 +222,9 @@ export async function lookupApiKey(
     planId: seller.plan_id,
     subscriptionStatus: seller.subscription_status,
     currentPeriodEnd: seller.current_period_end,
+    expiresAt: row.expires_at || null,
+    scopes: row.scopes || ['*'],
+    createdAt: row.created_at || null,
   };
 }
 

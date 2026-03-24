@@ -23,6 +23,7 @@ import {
   mapPaddleStatus,
 } from '@/app/lib/billing/subscription';
 import { mapPriceToPlan } from '@/app/lib/billing/paddle';
+import { isEventProcessed, logWebhookEvent } from '@/app/lib/monitoring/webhook-event-log';
 
 export const dynamic = 'force-dynamic';
 
@@ -45,6 +46,12 @@ function verifyPaddleSignature(
     const ts = parts['ts'];
     const h1 = parts['h1'];
     if (!ts || !h1) return false;
+
+    // Timestamp freshness check — reject events older than 5 minutes (replay attack prevention)
+    const tsNum = parseInt(ts, 10);
+    if (isNaN(tsNum) || Math.abs(Date.now() / 1000 - tsNum) > 300) {
+      return false;
+    }
 
     const payload = `${ts}:${rawBody}`;
     const hmac = crypto.createHmac('sha256', secret);
@@ -102,6 +109,12 @@ export async function POST(req: NextRequest) {
 
   const eventType = event.event_type;
   const data = event.data || {};
+  const eventId = event.event_id || event.notification_id || `${eventType}_${data.id || Date.now()}`;
+
+  // Idempotency check — skip if already processed
+  if (await isEventProcessed('paddle', eventId)) {
+    return NextResponse.json({ received: true, note: 'already_processed' });
+  }
 
   try {
     switch (eventType) {
@@ -214,8 +227,12 @@ export async function POST(req: NextRequest) {
         break;
     }
 
+    // Log successful event
+    logWebhookEvent({ source: 'paddle', eventId, topic: eventType, status: 'success' }).catch(() => {});
     return NextResponse.json({ received: true });
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    logWebhookEvent({ source: 'paddle', eventId, topic: eventType, status: 'error', errorMessage: msg }).catch(() => {});
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }

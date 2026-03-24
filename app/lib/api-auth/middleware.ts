@@ -69,6 +69,17 @@ function extractApiKey(req: NextRequest): string | null {
   return null;
 }
 
+// ─── Scope Mapping ──────────────────────────────────
+
+function getRequiredScope(path: string): string | null {
+  if (path.includes('/calculate') || path.includes('/cost')) return 'calculate';
+  if (path.includes('/classify')) return 'classify';
+  if (path.includes('/validate')) return 'validate';
+  if (path.includes('/screen') || path.includes('/sanctions')) return 'screen';
+  if (path.includes('/sellers/') || path.includes('/admin/')) return 'admin';
+  return null; // Public or general endpoints — no scope restriction
+}
+
 // ─── Middleware Wrapper ──────────────────────────────
 
 type ApiHandler = (
@@ -96,10 +107,20 @@ export function withApiAuth(handler: ApiHandler) {
       return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid API key format. Use pk_live_, sk_live_, pk_test_, or sk_test_ prefix.');
     }
 
-    // 3. Look up key in database
+    // 3. Look up key in database (includes expiration check)
     const keyInfo = await lookupApiKey(supabase as any, apiKey);
     if (!keyInfo) {
-      return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid or revoked API key.');
+      return apiError(ApiErrorCode.UNAUTHORIZED, 'Invalid, revoked, or expired API key.');
+    }
+
+    // 3b. Scope check — map request path to required scope
+    const scopes = keyInfo.scopes || ['*'];
+    if (!scopes.includes('*')) {
+      const path = req.nextUrl.pathname;
+      const requiredScope = getRequiredScope(path);
+      if (requiredScope && !scopes.includes(requiredScope)) {
+        return apiError(ApiErrorCode.FORBIDDEN, `API key does not have '${requiredScope}' scope. Key scopes: [${scopes.join(', ')}]`);
+      }
     }
 
     // 4. Check subscription status
@@ -178,6 +199,24 @@ export function withApiAuth(handler: ApiHandler) {
     if (planCheck.isOverage) {
       response.headers.set('X-Plan-Overage', String(planCheck.overageCount));
       response.headers.set('X-Plan-Overage-Rate', String(planCheck.overageRate));
+    }
+
+    // Key expiration warning (7 days before expiry)
+    if (keyInfo.expiresAt) {
+      const expiresIn = new Date(keyInfo.expiresAt).getTime() - Date.now();
+      const daysLeft = Math.ceil(expiresIn / (1000 * 60 * 60 * 24));
+      if (daysLeft <= 7 && daysLeft > 0) {
+        response.headers.set('X-API-Key-Expires-In', `${daysLeft}d`);
+      }
+    }
+
+    // Key age warning (90+ days old)
+    if (keyInfo.createdAt) {
+      const ageMs = Date.now() - new Date(keyInfo.createdAt).getTime();
+      const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
+      if (ageDays >= 90) {
+        response.headers.set('X-API-Key-Age-Warning', `Key is ${ageDays} days old, consider rotating`);
+      }
     }
 
     return response;

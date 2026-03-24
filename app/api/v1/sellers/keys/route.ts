@@ -86,6 +86,14 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   const rateLimitPerMinute = typeof body.rateLimitPerMinute === 'number'
     ? Math.max(1, Math.min(10000, body.rateLimitPerMinute))
     : 60;
+  const validExpiry = ['7d', '30d', '90d', '365d', 'never'] as const;
+  const expiresIn = typeof body.expiresIn === 'string' && validExpiry.includes(body.expiresIn as typeof validExpiry[number])
+    ? body.expiresIn as typeof validExpiry[number]
+    : 'never';
+  const validScopes = ['calculate', 'classify', 'validate', 'screen', 'admin', '*'];
+  const scopes = Array.isArray(body.scopes) && body.scopes.every((s: unknown) => typeof s === 'string' && validScopes.includes(s as string))
+    ? body.scopes as string[]
+    : ['*'];
 
   const supabase = getServiceClient();
 
@@ -95,6 +103,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       type,
       name,
       rateLimitPerMinute,
+      expiresIn,
+      scopes,
     });
 
     return apiSuccess({
@@ -106,6 +116,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
         type: result.type,
         name,
         rateLimitPerMinute,
+        expiresIn,
+        scopes,
       },
     });
   } catch (err) {

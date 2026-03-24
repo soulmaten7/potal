@@ -48,8 +48,12 @@ async function checkCountryValidity(hsCode: string, country: string) {
     .like('hs_code', `${hs6}%`)
     .limit(10);
 
+  const SUPPORTED_10DIGIT = new Set(['US', 'EU', 'GB', 'KR', 'JP', 'AU', 'CA']);
   if (!data || data.length === 0) {
-    return { found: false, lines: [], note: `No tariff lines found for HS ${hs6} in ${country} schedule.` };
+    const note = SUPPORTED_10DIGIT.has(country.toUpperCase())
+      ? `No tariff lines found for HS ${hs6} in ${country} schedule.`
+      : `${country} is validated at 6-digit level only. 10-digit validation available for: US, EU, GB, KR, JP, AU, CA.`;
+    return { found: false, lines: [], note };
   }
 
   // Check exact match (10-digit)

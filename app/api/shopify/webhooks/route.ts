@@ -14,6 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyShopifyWebhook, markShopUninstalled, deleteShopData } from '@/app/lib/shopify/shopify-auth';
+import { isEventProcessed, logWebhookEvent } from '@/app/lib/monitoring/webhook-event-log';
 
 export async function POST(req: NextRequest) {
   // ━━━ 1. Raw body 읽기 (HMAC 검증용) ━━━
@@ -29,6 +30,12 @@ export async function POST(req: NextRequest) {
   // ━━━ 3. 웹훅 토픽 확인 ━━━
   const topic = req.headers.get('x-shopify-topic');
   const shopDomain = req.headers.get('x-shopify-shop-domain');
+  const webhookId = req.headers.get('x-shopify-webhook-id') || `shopify_${topic}_${Date.now()}`;
+
+  // Idempotency check
+  if (await isEventProcessed('shopify', webhookId)) {
+    return NextResponse.json({ success: true, note: 'already_processed' });
+  }
 
   // Webhook received: ${topic} from ${shopDomain}
 
@@ -61,7 +68,8 @@ export async function POST(req: NextRequest) {
       // Unknown webhook topic — silently ignore
   }
 
-  // Shopify는 2xx 응답을 기대 (200 OK)
+  // Log event and return success
+  logWebhookEvent({ source: 'shopify', eventId: webhookId, topic: topic || 'unknown', status: 'success' }).catch(() => {});
   return NextResponse.json({ success: true });
 }
 
