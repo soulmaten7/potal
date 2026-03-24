@@ -194,15 +194,15 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     }
 
     // 12. F027 — Dangerous goods check
-    let dangerousGoods: { is_dangerous: boolean; un_number?: string; class?: string; proper_shipping_name?: string; air_restriction?: boolean; sea_restriction?: boolean } = { is_dangerous: false };
+    let dangerousGoods: { is_dangerous: boolean; warning?: string; un_number?: string; class?: string; proper_shipping_name?: string; air_restriction?: boolean; sea_restriction?: boolean } = { is_dangerous: false };
     const hsCode = (resultObj.hsClassification as { hsCode?: string } | undefined)?.hsCode || costInput.hsCode || '';
     if (hsCode.length >= 4) {
       try {
         const sb = getSupabase();
         const hs4 = hsCode.substring(0, 4);
-        const { data: dg } = await sb.from('dangerous_goods')
+        const { data: dg } = await (sb.from('dangerous_goods') as any)
           .select('un_number, class, proper_shipping_name, air_allowed, sea_allowed, hs_codes')
-          .limit(50);
+          .or(`hs_codes.cs.{${hs4}}`);
         if (dg) {
           const match = dg.find((d: { hs_codes: string[] | null }) => d.hs_codes?.some((h: string) => hs4.startsWith(h.substring(0, 4)) || h.startsWith(hs4)));
           if (match) {
@@ -216,7 +216,9 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
             };
           }
         }
-      } catch { /* non-blocking */ }
+      } catch {
+        dangerousGoods = { is_dangerous: false, warning: 'Dangerous goods check temporarily unavailable' };
+      }
     }
 
     // 13. F032 — ICS2 data for EU destinations

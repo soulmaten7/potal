@@ -68,6 +68,22 @@ const PRODUCT_DG_MAP: { keywords: RegExp; dgClass: string; division?: string; un
   { keywords: /motor.*oil|engine oil/i, dgClass: '9' },
   { keywords: /pesticide|insecticide|herbicide/i, dgClass: '6', division: '6.1' },
   { keywords: /power bank|portable charger/i, dgClass: '9', unNumber: 'UN3481' },
+  // Additional DG products (expanded to 30+)
+  { keywords: /compressed gas|gas cylinder|gas cartridge/i, dgClass: '2', division: '2.2', unNumber: 'UN1956' },
+  { keywords: /ethanol|isopropyl alcohol|rubbing alcohol/i, dgClass: '3', unNumber: 'UN1170' },
+  { keywords: /hydrogen peroxide/i, dgClass: '5', division: '5.1', unNumber: 'UN2014' },
+  { keywords: /mercury|thermometer.*mercury/i, dgClass: '8', unNumber: 'UN2809' },
+  { keywords: /adhesive|super glue|epoxy|contact cement/i, dgClass: '3', unNumber: 'UN1133' },
+  { keywords: /lighter fluid|torch fuel|butane refill/i, dgClass: '2', division: '2.1', unNumber: 'UN1057' },
+  { keywords: /pool chemical|chlorine tablet/i, dgClass: '5', division: '5.1', unNumber: 'UN2880' },
+  { keywords: /airbag|inflator|gas generator/i, dgClass: '1', division: '1.4', unNumber: 'UN0503' },
+  { keywords: /hair spray|hairspray/i, dgClass: '2', division: '2.1', unNumber: 'UN1950' },
+  { keywords: /cleaning solvent|degreaser|thinner/i, dgClass: '3', unNumber: 'UN1993' },
+  { keywords: /fire extinguisher/i, dgClass: '2', division: '2.2', unNumber: 'UN1044' },
+  { keywords: /resin|fiberglass resin/i, dgClass: '3', unNumber: 'UN1866' },
+  { keywords: /e-?cigarette|vape.*liquid|e-?liquid/i, dgClass: '9', unNumber: 'UN3481' },
+  { keywords: /flare|signal flare|distress signal/i, dgClass: '1', division: '1.4', unNumber: 'UN0191' },
+  { keywords: /fertilizer.*ammoni|ammonium nitrate/i, dgClass: '5', division: '5.1', unNumber: 'UN1942' },
 ];
 
 // HS chapters commonly associated with DG
@@ -143,22 +159,63 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     ) || DG_CLASSES.find(d => d.class === classToFind);
   }
 
-  // Air transport restrictions
-  if (transportMode === 'air' && dgClassInfo) {
-    if (dgClassInfo.airRestriction === 'forbidden') {
-      issues.push({
-        type: 'restriction',
-        severity: 'blocked',
-        message: `${dgClassInfo.name} (Class ${dgClassInfo.class}${dgClassInfo.division ? '.' + dgClassInfo.division : ''}) is FORBIDDEN on passenger and cargo aircraft.`,
-        regulation: 'IATA DGR',
-      });
-    } else if (dgClassInfo.airRestriction === 'restricted') {
+  // Transport mode specific restrictions
+  if (dgClassInfo) {
+    const className = `${dgClassInfo.name} (Class ${dgClassInfo.class}${dgClassInfo.division ? '.' + dgClassInfo.division : ''})`;
+
+    if (transportMode === 'air') {
+      if (dgClassInfo.airRestriction === 'forbidden') {
+        issues.push({
+          type: 'restriction',
+          severity: 'blocked',
+          message: `${className} is FORBIDDEN on passenger and cargo aircraft.`,
+          regulation: 'IATA DGR',
+        });
+      } else if (dgClassInfo.airRestriction === 'restricted') {
+        issues.push({
+          type: 'restriction',
+          severity: 'action_required',
+          message: `${className} is restricted on aircraft. Requires DG declaration, proper packaging, and may be cargo-only.`,
+          regulation: 'IATA DGR',
+        });
+      }
+    } else if (transportMode === 'sea') {
+      // IMDG Code — most DG classes allowed with proper stowage
+      const forbiddenAtSea = ['1.1', '2.3', '4.2', '4.3'];
+      const div = dgClassInfo.division || dgClassInfo.class;
+      if (forbiddenAtSea.some(f => div.startsWith(f))) {
+        issues.push({
+          type: 'restriction',
+          severity: 'blocked',
+          message: `${className} requires special stowage and may be restricted on container vessels.`,
+          regulation: 'IMDG Code Chapter 7',
+        });
+      } else {
+        issues.push({
+          type: 'restriction',
+          severity: 'action_required',
+          message: `${className} allowed by sea with IMDG-compliant packaging, stowage category assignment, and segregation rules.`,
+          regulation: 'IMDG Code',
+        });
+      }
+    } else if (transportMode === 'road' || transportMode === 'rail') {
+      // ADR (road) / RID (rail) — generally allowed with labeling
+      const reg = transportMode === 'road' ? 'ADR' : 'RID';
       issues.push({
         type: 'restriction',
         severity: 'action_required',
-        message: `${dgClassInfo.name} is restricted on aircraft. Requires DG declaration, proper packaging, and may be cargo-only.`,
-        regulation: 'IATA DGR',
+        message: `${className} allowed by ${transportMode} with ${reg}-compliant packaging, orange plate marking, and hazard placards.`,
+        regulation: reg,
       });
+      // Tunnel restrictions for road
+      if (transportMode === 'road' && ['1', '1.1'].includes(dgClassInfo.class)) {
+        issues.push({
+          type: 'restriction',
+          severity: 'warning',
+          message: 'Tunnel restrictions apply. Category E tunnels prohibit all dangerous goods.',
+          regulation: 'ADR Section 8.6',
+        });
+      }
     }
   }
 
