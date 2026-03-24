@@ -1,6 +1,7 @@
 /**
  * POTAL API v1 — /api/v1/import
  * Batch import: CSV/JSON → bulk calculate landed costs
+ * Concurrent processing (10 parallel) for performance.
  */
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
@@ -8,6 +9,7 @@ import { calculateGlobalLandedCostAsync, type GlobalCostInput } from '@/app/lib/
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
 const MAX_IMPORT = 500;
+const CONCURRENCY = 10;
 
 function parseCSV(text: string): Record<string, string>[] {
   const lines = text.split('\n').filter(l => l.trim());
@@ -21,7 +23,7 @@ function parseCSV(text: string): Record<string, string>[] {
   });
 }
 
-export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) => {
+export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => {
   const contentType = req.headers.get('content-type') || '';
 
   let items: Record<string, string>[];
@@ -39,6 +41,8 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
   if (items.length === 0) return apiError(ApiErrorCode.BAD_REQUEST, 'No items to import.');
   if (items.length > MAX_IMPORT) return apiError(ApiErrorCode.BAD_REQUEST, `Maximum ${MAX_IMPORT} items per import.`);
 
+  // Validate all items first
+  const validItems: { index: number; id: string; input: GlobalCostInput }[] = [];
   const results: { index: number; id: string; success: boolean; result?: unknown; error?: string }[] = [];
 
   for (let i = 0; i < items.length; i++) {
@@ -66,18 +70,40 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
       quantity: parseInt(item.quantity || '1', 10) || undefined,
     };
 
-    try {
-      const result = await calculateGlobalLandedCostAsync(input);
-      results.push({ index: i, id, success: true, result });
-    } catch (err) {
-      results.push({ index: i, id, success: false, error: err instanceof Error ? err.message : 'Calculation failed' });
+    validItems.push({ index: i, id, input });
+  }
+
+  // Process with concurrency
+  for (let start = 0; start < validItems.length; start += CONCURRENCY) {
+    const chunk = validItems.slice(start, start + CONCURRENCY);
+    const chunkResults = await Promise.allSettled(
+      chunk.map(async ({ index, id, input }) => {
+        const result = await calculateGlobalLandedCostAsync(input);
+        return { index, id, success: true as const, result };
+      })
+    );
+
+    for (let j = 0; j < chunkResults.length; j++) {
+      const settled = chunkResults[j];
+      if (settled.status === 'fulfilled') {
+        results.push(settled.value);
+      } else {
+        const vi = chunk[j];
+        results.push({
+          index: vi.index, id: vi.id, success: false,
+          error: settled.reason instanceof Error ? settled.reason.message : 'Calculation failed',
+        });
+      }
     }
   }
+
+  // Sort results by original index
+  results.sort((a, b) => a.index - b.index);
 
   return apiSuccess({
     imported: items.length,
     successful: results.filter(r => r.success).length,
     failed: results.filter(r => !r.success).length,
     results,
-  }, { sellerId: _ctx.sellerId });
+  }, { sellerId: ctx.sellerId });
 });
