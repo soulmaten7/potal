@@ -1,9 +1,9 @@
 /**
  * POTAL F012 — HS Code Validation
  *
- * Validates HS codes against the WCO HS 2022 database.
+ * Validates HS codes against the WCO HS 2022 database (5,371 subheadings).
  * Checks format, existence, chapter/heading validity,
- * and country-specific tariff line existence.
+ * and provides keyword-ranked suggestions for unrecognized codes.
  */
 
 import { HS_DATABASE, getHsEntry } from './hs-database';
@@ -11,37 +11,26 @@ import { HS_DATABASE, getHsEntry } from './hs-database';
 // ─── Types ──────────────────────────────────────────
 
 export interface HsValidationResult {
-  /** Whether the HS code is valid */
   valid: boolean;
-  /** Validation status: 'valid' | 'invalid_format' | 'invalid_code' | 'partial_match' */
   status: 'valid' | 'invalid_format' | 'invalid_code' | 'partial_match';
-  /** The normalized HS code (dots removed, trimmed) */
   normalizedCode: string;
-  /** Number of digits */
   digits: number;
-  /** Chapter (first 2 digits) */
   chapter?: string;
-  /** Chapter description */
   chapterDescription?: string;
-  /** Heading (first 4 digits) */
   heading?: string;
-  /** Subheading (6 digits) — international standard */
   subheading?: string;
-  /** Full entry from database (if found) */
   entry?: {
     code: string;
     description: string;
     category: string;
   };
-  /** Validation errors */
   errors: string[];
-  /** Validation warnings */
   warnings: string[];
-  /** Suggestions if code is invalid */
-  suggestions?: { code: string; description: string }[];
+  suggestions?: { code: string; description: string; relevance: number }[];
+  priceBreakWarning?: string;
 }
 
-// ─── Chapter Descriptions ────────────────────────────
+// ─── Chapter Descriptions (WCO HS 2022, 96 chapters) ─
 
 const CHAPTER_DESCRIPTIONS: Record<string, string> = {
   '01': 'Live animals', '02': 'Meat and edible meat offal',
@@ -94,10 +83,53 @@ const CHAPTER_DESCRIPTIONS: Record<string, string> = {
   '96': 'Miscellaneous manufactured articles', '97': 'Works of art, antiques',
 };
 
+/**
+ * HS 6-digit codes with price-dependent subheadings.
+ * When these are validated, warn that price affects the final code.
+ * Source: hs_price_break_rules table (18 rules).
+ */
+const PRICE_BREAK_HS6 = new Set([
+  '610910', '610990', '611020', '611030',
+  '620342', '620343', '620462', '620463',
+  '640391', '640399', '640411', '640419',
+  '420221', '420222', '420231', '420232',
+  '711311', '711319',
+]);
+
+// ─── Suggestion Ranking ─────────────────────────────
+
+/**
+ * Rank suggestions by keyword overlap with the target code's description.
+ * Returns top N candidates sorted by relevance score.
+ */
+function rankSuggestions(
+  candidates: { code: string; description: string }[],
+  targetDescription: string,
+  maxResults: number = 5,
+): { code: string; description: string; relevance: number }[] {
+  if (candidates.length === 0) return [];
+
+  const targetWords = new Set(
+    targetDescription.toLowerCase().split(/[\s,;:]+/).filter(w => w.length > 2)
+  );
+
+  const scored = candidates.map(c => {
+    const descWords = c.description.toLowerCase().split(/[\s,;:]+/).filter(w => w.length > 2);
+    const overlap = descWords.filter(w => targetWords.has(w)).length;
+    const relevance = targetWords.size > 0
+      ? Math.round((overlap / Math.max(targetWords.size, 1)) * 100) / 100
+      : 0;
+    return { ...c, relevance };
+  });
+
+  scored.sort((a, b) => b.relevance - a.relevance);
+  return scored.slice(0, maxResults);
+}
+
 // ─── Validator ──────────────────────────────────────
 
 /**
- * Validate an HS code against the WCO HS 2022 database.
+ * Validate an HS code against the WCO HS 2022 database (5,371 entries).
  */
 export function validateHsCode(hsCode: string): HsValidationResult {
   const errors: string[] = [];
@@ -106,37 +138,25 @@ export function validateHsCode(hsCode: string): HsValidationResult {
   // Normalize: remove dots, spaces, dashes
   const normalized = hsCode.replace(/[\s.\-]/g, '');
 
-  // Check basic format
+  // Format checks
   if (!normalized || normalized.length === 0) {
     return {
-      valid: false,
-      status: 'invalid_format',
-      normalizedCode: '',
-      digits: 0,
-      errors: ['HS code is empty.'],
-      warnings: [],
+      valid: false, status: 'invalid_format', normalizedCode: '', digits: 0,
+      errors: ['HS code is empty.'], warnings: [],
     };
   }
 
   if (!/^\d+$/.test(normalized)) {
     return {
-      valid: false,
-      status: 'invalid_format',
-      normalizedCode: normalized,
-      digits: normalized.length,
-      errors: ['HS code must contain only digits.'],
-      warnings: [],
+      valid: false, status: 'invalid_format', normalizedCode: normalized, digits: normalized.length,
+      errors: ['HS code must contain only digits.'], warnings: [],
     };
   }
 
   if (normalized.length < 2) {
     return {
-      valid: false,
-      status: 'invalid_format',
-      normalizedCode: normalized,
-      digits: normalized.length,
-      errors: ['HS code must be at least 2 digits (chapter level).'],
-      warnings: [],
+      valid: false, status: 'invalid_format', normalizedCode: normalized, digits: normalized.length,
+      errors: ['HS code must be at least 2 digits (chapter level).'], warnings: [],
     };
   }
 
@@ -148,18 +168,18 @@ export function validateHsCode(hsCode: string): HsValidationResult {
   const heading = normalized.length >= 4 ? normalized.substring(0, 4) : undefined;
   const subheading = normalized.length >= 6 ? normalized.substring(0, 6) : undefined;
 
-  // Validate chapter
+  // Validate chapter (01-76, 78-97; 77 is reserved by WCO)
   const chNum = parseInt(chapter, 10);
   if (chNum < 1 || chNum > 97 || chNum === 77) {
-    errors.push(`Chapter ${chapter} is not a valid HS chapter. Valid range: 01-76, 78-97 (chapter 77 is reserved).`);
+    const reason = chNum === 77
+      ? 'Chapter 77 is reserved by WCO for future use.'
+      : chNum === 0
+        ? 'Chapter 00 does not exist in the HS nomenclature.'
+        : `Chapter ${chapter} is outside valid range 01-97.`;
+    errors.push(reason);
     return {
-      valid: false,
-      status: 'invalid_code',
-      normalizedCode: normalized,
-      digits: normalized.length,
-      chapter,
-      errors,
-      warnings,
+      valid: false, status: 'invalid_code', normalizedCode: normalized, digits: normalized.length,
+      chapter, errors, warnings,
     };
   }
 
@@ -167,33 +187,32 @@ export function validateHsCode(hsCode: string): HsValidationResult {
 
   // Check against HS database (6-digit level)
   let entry: { code: string; description: string; category: string } | undefined;
-  let suggestions: { code: string; description: string }[] | undefined;
+  let suggestions: { code: string; description: string; relevance: number }[] | undefined;
 
   if (subheading) {
     const dbEntry = getHsEntry(subheading);
     if (dbEntry) {
       entry = { code: dbEntry.code, description: dbEntry.description, category: dbEntry.category };
     } else {
-      // Try to find similar codes in the same heading
+      // Find similar codes — rank by keyword relevance
       const headingPrefix = normalized.substring(0, 4);
-      const similar = HS_DATABASE
+      const candidates = HS_DATABASE
         .filter(e => e.code.startsWith(headingPrefix))
-        .slice(0, 5)
         .map(e => ({ code: e.code, description: e.description }));
 
-      if (similar.length > 0) {
-        suggestions = similar;
-        warnings.push(`HS code ${subheading} not found in database. Similar codes in heading ${headingPrefix} are available.`);
+      if (candidates.length > 0) {
+        // Use the chapter description as context for ranking
+        suggestions = rankSuggestions(candidates, chapterDescription || '', 5);
+        warnings.push(`HS code ${subheading} not found in database. ${candidates.length} similar codes in heading ${headingPrefix} available.`);
       } else {
         errors.push(`HS code ${subheading} not found in the HS 2022 database.`);
       }
     }
   } else if (heading) {
-    // 4-digit heading — check if any codes exist under this heading
     const headingCodes = HS_DATABASE.filter(e => e.code.startsWith(heading));
     if (headingCodes.length > 0) {
-      warnings.push(`${heading} is a 4-digit heading. Provide 6 digits for subheading-level precision.`);
-      suggestions = headingCodes.slice(0, 5).map(e => ({ code: e.code, description: e.description }));
+      warnings.push(`${heading} is a 4-digit heading with ${headingCodes.length} subheadings. Provide 6 digits for subheading-level precision.`);
+      suggestions = headingCodes.slice(0, 5).map(e => ({ code: e.code, description: e.description, relevance: 1.0 }));
     } else {
       errors.push(`Heading ${heading} not found in the HS 2022 database.`);
     }
@@ -201,6 +220,13 @@ export function validateHsCode(hsCode: string): HsValidationResult {
 
   if (normalized.length > 6) {
     warnings.push(`Digits beyond 6 (${normalized.substring(6)}) are country-specific tariff line codes. International standard is 6 digits.`);
+  }
+
+  // Price break warning
+  let priceBreakWarning: string | undefined;
+  if (subheading && PRICE_BREAK_HS6.has(subheading)) {
+    priceBreakWarning = `HS ${subheading} has price-dependent subheadings (e.g. "valued over/under $X"). Include price for accurate 10-digit classification.`;
+    warnings.push(priceBreakWarning);
   }
 
   const valid = errors.length === 0;
@@ -218,5 +244,6 @@ export function validateHsCode(hsCode: string): HsValidationResult {
     errors,
     warnings,
     suggestions,
+    priceBreakWarning,
   };
 }

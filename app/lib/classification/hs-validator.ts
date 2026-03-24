@@ -1,6 +1,10 @@
 /**
- * F012: HS Code Validation — S+ Grade
- * Format, nomenclature, country-specific, deprecated code detection.
+ * @deprecated Use app/lib/cost-engine/hs-code/hs-validator.ts instead.
+ * This file is kept for reference only. Do not import from here.
+ * The canonical validator uses the HS_DATABASE (5,371 entries) with
+ * synchronous validation and keyword-ranked suggestions.
+ *
+ * Old: F012: HS Code Validation — S+ Grade
  */
 import { createClient } from '@supabase/supabase-js';
 
