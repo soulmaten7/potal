@@ -23,7 +23,6 @@ export async function POST(req: NextRequest) {
   // ━━━ 2. HMAC 검증 ━━━
   const hmacHeader = req.headers.get('x-shopify-hmac-sha256');
   if (!hmacHeader || !verifyShopifyWebhook(rawBody, hmacHeader)) {
-    console.warn('[POTAL Shopify] Webhook HMAC verification failed');
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
