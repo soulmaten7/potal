@@ -34,4 +34,5 @@ export { MONTHLY_FIXED_COSTS, UPDATE_COST_ESTIMATES, getEstimatedMonthlyCost } f
 export { PRIORITY_SLA, getByPriority, getPrioritySummary } from './priority-manager';
 
 // Item 12: Audit Trail
-export { writeAudit, getRecentAudits } from './audit-trail';
+export { writeAudit, getRecentAudits, queryAudits, getAuditStats, cleanupOldAudits, auditsToCsv } from './audit-trail';
+export type { AuditEntry, AuditQueryFilters, AuditQueryResult, AuditStats } from './audit-trail';
