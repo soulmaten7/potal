@@ -48,6 +48,14 @@ export interface IossCalculation {
   declaredValueEur: number;
   /** IOSS number (if registered) */
   iossNumber?: string;
+  /** Whether IOSS number format is valid */
+  iossNumberValid?: boolean;
+  /** Warning about invalid IOSS number */
+  iossWarning?: string;
+  /** Flat-rate customs duty (EU post-July 2026) */
+  flatRateDuty?: number;
+  /** Regulatory note about rule changes */
+  regulatoryNote?: string;
   /** Filing obligation */
   filingObligation: string;
 }
@@ -63,6 +71,8 @@ export interface OssCalculation {
   vatAmount: number;
   /** Whether the €10K threshold has been exceeded */
   thresholdExceeded?: boolean;
+  /** Warning when threshold data not provided */
+  thresholdWarning?: string;
   /** Filing obligation */
   filingObligation: string;
 }
@@ -153,16 +163,29 @@ export function calculateIoss(
   const vatRate = EU_VAT_RATES[dest] || 0.21;
   const vatAmount = Math.round(declaredValueEur * vatRate * 100) / 100;
 
+  // IOSS number format validation: IM + 2-letter country code + 10 digits
+  const IOSS_REGEX = /^IM[A-Z]{2}\d{10}$/;
+  const iossNumberValid = iossNumber ? IOSS_REGEX.test(iossNumber) : false;
+
+  // EU 2026-07-01 regulatory change: €150 exemption abolished
+  const EU_FLAT_RATE_DATE = new Date('2026-07-01');
+  const isPostJuly2026 = new Date() >= EU_FLAT_RATE_DATE;
+  const flatRateDuty = isPostJuly2026 ? 3.00 : 0;
+
   return {
     iossApplicable: true,
-    sellerRegistered: !!iossNumber,
+    sellerRegistered: iossNumberValid,
+    iossNumberValid,
+    ...(iossNumber && !iossNumberValid ? { iossWarning: 'Invalid IOSS number format. Expected: IM + country code + 10 digits (e.g., IMDE1234567890)' } : {}),
     vatRate,
     vatAmount,
-    dutyWaived: true,
+    dutyWaived: !isPostJuly2026,
+    flatRateDuty,
+    ...(isPostJuly2026 ? { regulatoryNote: 'EU eliminated €150 duty exemption as of July 1, 2026. €3 flat-rate customs duty applies to all low-value consignments.' } : {}),
     thresholdEur: IOSS_THRESHOLD_EUR,
     declaredValueEur,
     iossNumber,
-    filingObligation: iossNumber
+    filingObligation: iossNumberValid
       ? 'Monthly IOSS VAT return via registration member state'
       : 'Register for IOSS to collect VAT at point of sale and avoid border delays',
   };
@@ -218,13 +241,26 @@ export function calculateOss(
     };
   }
 
-  // Check threshold
+  // Check threshold — if not provided, return undefined (not assumed)
   const thresholdExceeded = annualCrossBorderSalesEur !== undefined
     ? annualCrossBorderSalesEur > OSS_THRESHOLD_EUR
-    : true; // Default: assume threshold exceeded (conservative)
+    : undefined;
 
   const vatRate = EU_VAT_RATES[dest] || 0.21;
   const vatAmount = Math.round(saleValueEur * vatRate * 100) / 100;
+
+  // Unknown threshold — warn the seller
+  if (thresholdExceeded === undefined) {
+    return {
+      ossApplicable: true,
+      schemeType: 'union',
+      vatRate,
+      vatAmount,
+      thresholdExceeded: undefined,
+      thresholdWarning: `Annual cross-border sales not provided. OSS applies if >€${OSS_THRESHOLD_EUR.toLocaleString()}/year. Provide annualCrossBorderSalesEur for accurate determination.`,
+      filingObligation: 'OSS recommended (assuming threshold exceeded). Provide annual sales data for precise obligation.',
+    };
+  }
 
   if (!thresholdExceeded) {
     // Below €10K: seller can apply home country VAT rate
@@ -235,7 +271,7 @@ export function calculateOss(
       vatRate: homeVatRate,
       vatAmount: Math.round(saleValueEur * homeVatRate * 100) / 100,
       thresholdExceeded: false,
-      filingObligation: `Annual cross-border sales ≤€${OSS_THRESHOLD_EUR}. Home country VAT (${(homeVatRate * 100).toFixed(0)}%) applies. Opt into OSS for destination rate.`,
+      filingObligation: `Annual cross-border sales ≤€${OSS_THRESHOLD_EUR.toLocaleString()}. Home country VAT (${(homeVatRate * 100).toFixed(0)}%) applies. Opt into OSS for destination rate.`,
     };
   }
 

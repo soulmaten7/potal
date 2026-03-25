@@ -204,7 +204,15 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   // 4. IOSS/OSS Check (for EU destinations)
   const euCountries = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE']);
   if (euCountries.has(destinationCountry)) {
-    const declaredValueEur = price * 0.92; // approximate USD → EUR
+    // Convert to EUR using real exchange rate
+    let declaredValueEur = price;
+    try {
+      const { convertCurrency: convert } = await import('@/app/lib/cost-engine/exchange-rate/exchange-rate-service');
+      const conversion = await convert(price, 'USD', 'EUR');
+      declaredValueEur = conversion.convertedAmount;
+    } catch {
+      declaredValueEur = price * 0.92; // fallback approximation
+    }
     const iossResult = checkIossOss({
       declaredValueEur,
       destinationCountry,
