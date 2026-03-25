@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-23 KST (CW18 Cowork 5차 — 12 TLC 시스템화 46건 수정, EU VAT 27국, India Ch.71 3%, Cron 23개, npm run build ✅)
+# 마지막 업데이트: 2026-03-25 KST (CW18 Cowork 10차 — P0 9/9 + P1 9/9 + P2 9/16 완료, 4터미널 병렬, SEO 6포스트, LinkedIn/Reddit/Instagram 마케팅)
 
 ## 0. 프로젝트 개요
 
@@ -13,14 +13,15 @@
 - **Layer 1**: 셀러 위젯 (Shopify App + 임베드 위젯) — Free $0/**200** | Basic $20/2K | Pro $80/10K | Enterprise $300+/50K+
 - **Layer 2**: AI 에이전트 API — Custom GPT, Claude MCP, Gemini Gem + 직접 API 호출
 - **핵심 전략 (CW12 후반)**: **102/102 MUST 기능 전부 구현 완료** ✅ (기존 58 + 신규 44개). AI 원가 $0.008 이하. "싸면서 압도적 = 가격 파괴자". **심층 검증 84/84 PASS 완료** (코드 변경 0건, DB 테이블 5개 추가)
-- **S+ 업그레이드 (CW14 후반)**: Core 16 + Trade 21 = **37개 기능 S+ 완료** ✅. ~45 API Routes + ~25 Library Files + 111 Tests. API 엔드포인트 103→**~148개**. 나머지 106개 후속 예정
+- **S+ 업그레이드 (CW14 후반)**: Core 16 + Trade 21 = **37개 기능 S+ 완료** ✅. ~45 API Routes + ~25 Library Files + 111 Tests. API 엔드포인트 103→**~155개+**. 나머지 106개 후속 예정
+- **CW18 10차 (2026-03-25)**: 4터미널 병렬 — P0 9/9 + P1 9/9 + P2 9/16 완료. SEO 6포스트 + LinkedIn 첫 포스트 + Reddit 카르마빌딩 + Instagram @potal_official. DB migration 046~049
 - **CW15 Cowork 전체**: 홈페이지 UX 동기화(~60파일), Middleware fail-open, Tariff SSR, Hero 113M+, WDC Phase 4 v2(28배), product_hs_mappings **~1.5M** (1.36M + CBP 142K), B2B 채널 전략 13시트, CBP 벤치마크 100건 준비, CBP CROSS 142,251건 추출, HS 데이터소스 마스터 목록, 포스트 톤 전략 변경(투명 공유), Cron 후보 +5개
 - **CW15 Cowork 2차**: 자격증/벤치마크 DB(57개 자격증 11시트), 142기능 GAP 분석(MVP필수98/보완12/확장32), 3터미널 자동화 파이프라인(수집→벤치마크→DB적재), 13개 데이터 소스 수집 명령어, 벤치마크 6종 실행+분석 명령어, "틀린 문제가 실무 갭을 알려준다" 전략
 - **CW16 Cowork**: GRI Agent Team 설계, HS Code 분류 엔진 역설계("사람을 대체하라"), 7개국 규칙 수집(14파일 2.1MB), DB read-only 복구(WDC v2 36M건 삭제), 벤치마크 v2→v10(25%→38%)
 - **CW16 Cowork 후반 완료**: HS 엔진 전략 대전환. **벤치마크 v3.0: 24%/42%/59%** ⭐ (v1.2 6%→v3.0 24%). Expert Rules 전략 확정(CBP 판례→Chapter별 decision tree). 35만건 HS2022 변환(94.4% 확정). 11 TLC 데이터 18/18 수집완료(27파일 22MB). 비용: 4o-mini $0.001/건(마진 83~93%), 4o $0.019/건(Enterprise 프리미엄). 벡터 검색 Top-1 15%/Top-10 44%(언어갭 발견). WDC 필드: name+desc+category+brand+price+gtin+url. 세상 물건 ~2,000만 종, 필요 매핑 ~5,000만. 인사이트: "검색 vs 추론", "Expert Rules = 공개 판례에서 추출", "95%↑이면 사실상 100%", "경쟁사 리버스"
 - **One-line Pitch**: "POTAL is to cross-border commerce what payment infrastructure is to e-commerce"
 - **제재 스크리닝**: 21,301건 (SDN 63,004 + CSL 6,701), 19개 소스 (OFAC SDN + CSL 18개 리스트) + **fuzzy matching** (Levenshtein+Soundex, CW14 S+)
-- **Vercel Cron**: **22개** (CW15 후반: +7 데이터 유지보수 + morning-brief 매일 00:00 UTC/09:00 KST)
+- **Vercel Cron**: **24개** (CW15 후반: +7 데이터 유지보수 + CW18 6차: +1 data-management + +1 api-key-monitor)
 - **규정 소스 카탈로그**: docs/REGULATION_SOURCE_CATALOG.md (60+소스, 50개국 공고 URL)
 - **Supabase psql 직접 연결**: ✅ IPv4 add-on + `PGPASSWORD='potalqwepoi2@' psql -h db.zyurflkhiregundhisky.supabase.co -p 5432 -U postgres -d postgres`
 - **S+ 신규 라이브러리** (CW14 후반): feedback-loop, explainability, multi-language, confidence-calibration, hs-validator, breakdown, roo-engine, customs-valuation, fuzzy-screening, export-controls, product-restrictions, insurance-calculator, shipping-calculator, price-break-engine, remedy-calculator, origin-predictor, returns-calculator, broker-data-export, incoterms(확장), sez-database, import-licensing, ioss-engine, duty-drawback, temporary-import, doc-auto-populate

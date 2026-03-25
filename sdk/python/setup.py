@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="potal",
-    version="1.0.0",
+    version="1.1.0",
     description="POTAL — Total Landed Cost API SDK",
     author="POTAL",
     author_email="contact@potal.app",

@@ -2,23 +2,21 @@
  * POTAL API v1 — /api/v1/classify/image
  *
  * Dedicated image-based HS classification endpoint.
- * Accepts multipart/form-data with image file.
+ * Accepts multipart/form-data with image file or JSON with image_url/image_base64.
  * Uses Anthropic Claude Vision for product analysis.
  *
  * POST /api/v1/classify/image
- * Content-Type: multipart/form-data
- * Body: image (file), product_hint? (string)
- *
- * Returns: { hs_code, confidence, image_analysis, reasoning_chain }
+ * Content-Type: multipart/form-data | application/json
+ * Body: image (file) | { image_base64, image_url, product_hint? }
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { classifyProductAsync, calculateConfidenceScore, buildReasoningChain, buildMultiDimensionalConfidence, getChapterNote, lookupRulingReference } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5 MB
+const MAX_DIMENSION = 1024; // Resize to this if larger (token savings)
 
 interface ImageAnalysis {
   product_type: string;
@@ -30,8 +28,28 @@ interface ImageAnalysis {
   additional_details: string;
 }
 
-async function analyzeImageWithClaude(imageBase64: string, mediaType: string, productHint?: string): Promise<{ analysis: ImageAnalysis; productDescription: string } | null> {
-  if (!ANTHROPIC_API_KEY) return null;
+// ─── Image Type Detection (magic bytes) ────────────
+
+function detectImageType(buf: Buffer): string {
+  if (buf.length < 4) return 'image/jpeg';
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) return 'image/png';
+  if (buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) return 'image/jpeg';
+  if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46) return 'image/gif';
+  if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46) return 'image/webp';
+  return 'image/jpeg'; // fallback
+}
+
+// ─── Claude Vision Analysis ────────────────────────
+
+async function analyzeImageWithClaude(
+  imageBase64: string,
+  mediaType: string,
+  productHint?: string,
+): Promise<{ analysis: ImageAnalysis; productDescription: string } | { error: string; rawResponsePreview?: string } | null> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    return { error: 'vision_not_configured' };
+  }
 
   const prompt = `Analyze this product image. Extract the following attributes as JSON:
 {
@@ -53,7 +71,7 @@ Return ONLY the JSON object, no other text.`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
@@ -64,11 +82,7 @@ Return ONLY the JSON object, no other text.`;
           content: [
             {
               type: 'image',
-              source: {
-                type: 'base64',
-                media_type: mediaType,
-                data: imageBase64,
-              },
+              source: { type: 'base64', media_type: mediaType, data: imageBase64 },
             },
             { type: 'text', text: prompt },
           ],
@@ -76,30 +90,42 @@ Return ONLY the JSON object, no other text.`;
       }),
     });
 
-    if (!response.ok) return null;
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      return { error: `vision_api_error_${response.status}`, rawResponsePreview: errText.substring(0, 200) };
+    }
 
     const data = await response.json();
     const text = data.content?.[0]?.text || '';
 
-    // Extract JSON from response
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return null;
+    if (!jsonMatch) {
+      console.error('[F002] Claude Vision JSON parse failed. Raw response:', text.substring(0, 500));
+      return { error: 'vision_parse_failed', rawResponsePreview: text.substring(0, 200) };
+    }
 
     const analysis: ImageAnalysis = JSON.parse(jsonMatch[0]);
 
-    // Build a natural product description from the analysis
     const parts = [analysis.product_type];
     if (analysis.material && analysis.material !== 'unknown') parts.push(`made of ${analysis.material}`);
     if (analysis.intended_use && analysis.intended_use !== 'general') parts.push(`for ${analysis.intended_use}`);
     const productDescription = parts.join(', ');
 
     return { analysis, productDescription };
-  } catch {
-    return null;
+  } catch (err) {
+    console.error('[F002] Claude Vision error:', err instanceof Error ? err.message : err);
+    return { error: 'vision_exception', rawResponsePreview: String(err).substring(0, 200) };
   }
 }
 
+// ─── POST Handler ──────────────────────────────────
+
 export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext) => {
+  // C1: Check API key upfront
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Image classification service not configured. Contact support.');
+  }
+
   const contentType = req.headers.get('content-type') || '';
 
   let imageBase64: string;
@@ -107,7 +133,6 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   let productHint: string | undefined;
 
   if (contentType.includes('multipart/form-data')) {
-    // Handle multipart form data
     const formData = await req.formData();
     const imageFile = formData.get('image') as File | null;
     productHint = formData.get('product_hint') as string | undefined || undefined;
@@ -115,62 +140,83 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     if (!imageFile) {
       return apiError(ApiErrorCode.BAD_REQUEST, 'No image file provided. Send as multipart/form-data with field name "image".');
     }
-
     if (imageFile.size > MAX_IMAGE_SIZE) {
       return apiError(ApiErrorCode.BAD_REQUEST, `Image exceeds 5MB limit (${(imageFile.size / (1024 * 1024)).toFixed(1)}MB).`);
     }
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(imageFile.type)) {
-      return apiError(ApiErrorCode.BAD_REQUEST, `Unsupported image format: ${imageFile.type}. Allowed: JPEG, PNG, GIF, WebP.`);
+      return apiError(ApiErrorCode.BAD_REQUEST, `Unsupported format: ${imageFile.type}. Allowed: JPEG, PNG, GIF, WebP.`);
     }
 
     const arrayBuffer = await imageFile.arrayBuffer();
-    imageBase64 = Buffer.from(arrayBuffer).toString('base64');
-    mediaType = imageFile.type;
+    const buffer = Buffer.from(arrayBuffer);
+    imageBase64 = buffer.toString('base64');
+    mediaType = detectImageType(buffer); // C4: magic bytes instead of trusting file.type
+
   } else if (contentType.includes('application/json')) {
-    // Handle JSON with base64 image
     const body = await req.json();
     if (!body.image_base64 && !body.image_url) {
-      return apiError(ApiErrorCode.BAD_REQUEST, 'Provide "image_base64" or use multipart/form-data with "image" field.');
+      return apiError(ApiErrorCode.BAD_REQUEST, 'Provide "image_base64" or "image_url", or use multipart/form-data.');
     }
 
     if (body.image_url) {
-      // Fetch image from URL
       try {
+        // C3: HEAD request first to check size without downloading
+        const headRes = await fetch(body.image_url, { method: 'HEAD', signal: AbortSignal.timeout(5000) }).catch(() => null);
+        if (headRes) {
+          const contentLength = parseInt(headRes.headers.get('content-length') || '0', 10);
+          if (contentLength > MAX_IMAGE_SIZE) {
+            return apiError(ApiErrorCode.BAD_REQUEST, `Image too large (${Math.round(contentLength / 1024 / 1024)}MB). Max 5MB.`);
+          }
+        }
+
         const imgRes = await fetch(body.image_url, { signal: AbortSignal.timeout(10000) });
         if (!imgRes.ok) {
-          return apiError(ApiErrorCode.BAD_REQUEST, 'Failed to fetch image from URL.');
+          return apiError(ApiErrorCode.BAD_REQUEST, `Failed to fetch image (HTTP ${imgRes.status}).`);
         }
-        const buf = await imgRes.arrayBuffer();
+        const buf = Buffer.from(await imgRes.arrayBuffer());
         if (buf.byteLength > MAX_IMAGE_SIZE) {
           return apiError(ApiErrorCode.BAD_REQUEST, 'Image exceeds 5MB limit.');
         }
-        imageBase64 = Buffer.from(buf).toString('base64');
-        mediaType = imgRes.headers.get('content-type') || 'image/jpeg';
+        imageBase64 = buf.toString('base64');
+        mediaType = detectImageType(buf); // C4: detect from bytes, not Content-Type header
       } catch {
         return apiError(ApiErrorCode.BAD_REQUEST, 'Failed to fetch image from URL (timeout or network error).');
       }
     } else {
-      // Strip data URI prefix if present
       const raw = (body.image_base64 as string).replace(/^data:([^;]+);base64,/, '');
       const dataUriMatch = (body.image_base64 as string).match(/^data:([^;]+);base64,/);
       imageBase64 = raw;
-      mediaType = dataUriMatch?.[1] || 'image/jpeg';
+      // Detect from decoded bytes if no data URI prefix
+      if (dataUriMatch) {
+        mediaType = dataUriMatch[1];
+      } else {
+        const decoded = Buffer.from(raw, 'base64');
+        mediaType = detectImageType(decoded);
+      }
     }
     productHint = body.product_hint;
   } else {
-    return apiError(ApiErrorCode.BAD_REQUEST, 'Send image as multipart/form-data or JSON with image_base64.');
+    return apiError(ApiErrorCode.BAD_REQUEST, 'Send image as multipart/form-data or JSON with image_base64/image_url.');
   }
 
-  // Step 1: Analyze image with Claude Vision
+  // Step 1: Analyze with Claude Vision
   const visionResult = await analyzeImageWithClaude(imageBase64, mediaType, productHint);
 
   if (!visionResult) {
-    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Image analysis failed. Ensure ANTHROPIC_API_KEY is configured and image is clear.');
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Image analysis returned no result.');
   }
 
-  // Step 2: Classify extracted product description using text classifier
+  // C2: Handle error responses from vision
+  if ('error' in visionResult) {
+    if (visionResult.error === 'vision_not_configured') {
+      return apiError(ApiErrorCode.INTERNAL_ERROR, 'Image classification service not configured.');
+    }
+    return apiError(ApiErrorCode.INTERNAL_ERROR, `Image analysis failed: ${visionResult.error}. ${visionResult.rawResponsePreview ? 'Preview: ' + visionResult.rawResponsePreview.substring(0, 100) : ''}`);
+  }
+
+  // Step 2: Classify extracted product description
   const textResult = await classifyProductAsync(
     visionResult.productDescription,
     visionResult.analysis.product_type,

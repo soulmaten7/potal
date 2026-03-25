@@ -3,35 +3,37 @@ import Link from 'next/link';
 import { blogPosts } from './posts';
 
 export const metadata: Metadata = {
-  title: 'POTAL Blog - Cross-Border Commerce Guides for Sellers',
-  description: 'Learn about total landed cost, HS Code classification, import duties, and strategies for selling internationally. Expert guides for e-commerce sellers.',
+  title: 'POTAL Developer Blog — Landed Cost API Guides & Trade Compliance',
+  description: 'API integration guides, HS classification tutorials, and trade compliance resources for developers building cross-border commerce infrastructure.',
   keywords: [
-    'total landed cost',
+    'landed cost API',
+    'HS code API',
+    'customs duty API',
+    'trade compliance API',
+    'cross-border commerce API',
     'HS code classification',
-    'import duties guide',
-    'cross-border commerce',
-    'e-commerce seller guide',
-    'international trade',
+    'total landed cost',
+    'international trade API',
   ],
   openGraph: {
     type: 'website',
     url: 'https://potal.app/blog',
-    title: 'POTAL Blog - Cross-Border Commerce Guides for Sellers',
-    description: 'Expert guides on total landed cost, HS Code classification, and international trade strategies for e-commerce sellers.',
+    title: 'POTAL Developer Blog — Landed Cost API Guides & Trade Compliance',
+    description: 'API integration guides, HS classification tutorials, and trade compliance resources for developers building cross-border commerce infrastructure.',
     siteName: 'POTAL',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'POTAL Blog',
+        alt: 'POTAL Developer Blog',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'POTAL Blog - Cross-Border Commerce Guides for Sellers',
-    description: 'Expert guides on total landed cost, HS Code classification, and international trade strategies for e-commerce sellers.',
+    title: 'POTAL Developer Blog — Landed Cost API Guides & Trade Compliance',
+    description: 'API integration guides, HS classification tutorials, and trade compliance resources for developers.',
     images: ['/og-image.png'],
   },
   alternates: {
@@ -55,7 +57,7 @@ export default function BlogPage() {
             name: 'POTAL Blog',
             url: 'https://potal.app/blog',
             description:
-              'Cross-border commerce guides, HS Code classification tips, and total landed cost strategies for e-commerce sellers.',
+              'API integration guides, HS classification tutorials, and trade compliance resources for developers building cross-border commerce infrastructure.',
             publisher: {
               '@type': 'Organization',
               name: 'POTAL',
@@ -105,7 +107,7 @@ export default function BlogPage() {
             lineHeight: '1.2',
           }}
         >
-          Cross-Border Commerce<br />Made Simple
+          Cross-Border Commerce<br />API Guides
         </h1>
         <p
           style={{
@@ -116,7 +118,7 @@ export default function BlogPage() {
             margin: '0 auto',
           }}
         >
-          Expert guides on total landed cost, HS Code classification, import duties, and strategies for selling internationally.
+          API integration guides, HS classification tutorials, and trade compliance resources for developers and businesses.
         </p>
       </div>
 

@@ -130,28 +130,34 @@ function checkNexus(
 }
 
 export const GET = withApiAuth(async (_req: NextRequest, context: ApiAuthContext) => {
-  const supabase = getSupabase();
+  try {
+    const supabase = getSupabase();
 
-  const { data } = await supabase
-    .from('seller_nexus_tracking')
-    .select('*')
-    .eq('seller_id', context.sellerId)
-    .order('jurisdiction');
+    const { data, error } = await supabase
+      .from('seller_nexus_tracking')
+      .select('*')
+      .eq('seller_id', context.sellerId)
+      .order('jurisdiction');
 
-  return apiSuccess(
-    {
-      nexusStatuses: (data || []).map((n: Record<string, unknown>) => ({
-        jurisdiction: n.jurisdiction,
-        hasNexus: n.has_nexus,
-        reason: n.reason,
-        annualRevenue: n.annual_revenue,
-        transactionCount: n.transaction_count,
-        lastChecked: n.updated_at,
-      })),
-      total: (data || []).length,
-    },
-    { sellerId: context.sellerId, plan: context.planId }
-  );
+    if (error) throw error;
+
+    return apiSuccess(
+      {
+        nexusStatuses: (data || []).map((n: Record<string, unknown>) => ({
+          jurisdiction: n.jurisdiction,
+          hasNexus: n.has_nexus,
+          reason: n.reason,
+          annualRevenue: n.annual_revenue,
+          transactionCount: n.transaction_count,
+          lastChecked: n.updated_at,
+        })),
+        total: (data || []).length,
+      },
+      { sellerId: context.sellerId, plan: context.planId }
+    );
+  } catch {
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Failed to fetch nexus data.');
+  }
 });
 
 export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext) => {
@@ -163,8 +169,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   }
 
   const jurisdiction = typeof body.jurisdiction === 'string' ? body.jurisdiction.toUpperCase().trim() : '';
-  const annualRevenue = typeof body.annualRevenue === 'number' ? body.annualRevenue : undefined;
-  const transactionCount = typeof body.transactionCount === 'number' ? body.transactionCount : undefined;
+  const annualRevenue = typeof body.annualRevenue === 'number' && body.annualRevenue >= 0 ? body.annualRevenue : undefined;
+  const transactionCount = typeof body.transactionCount === 'number' && body.transactionCount >= 0 ? body.transactionCount : undefined;
   const hasPhysicalPresence = typeof body.hasPhysicalPresence === 'boolean' ? body.hasPhysicalPresence : false;
   const hasEmployees = typeof body.hasEmployees === 'boolean' ? body.hasEmployees : false;
   const hasInventory = typeof body.hasInventory === 'boolean' ? body.hasInventory : false;
@@ -175,19 +181,25 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   const result = checkNexus(jurisdiction, annualRevenue, transactionCount, physicalPresence);
 
   // Save to DB
-  const supabase = getSupabase();
-  await supabase
-    .from('seller_nexus_tracking')
-    .upsert({
-      seller_id: context.sellerId,
-      jurisdiction,
-      has_nexus: result.hasNexus,
-      reason: result.reason,
-      annual_revenue: annualRevenue,
-      transaction_count: transactionCount,
-      has_physical_presence: physicalPresence,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: 'seller_id,jurisdiction' });
+  try {
+    const supabase = getSupabase();
+    const { error: upsertError } = await supabase
+      .from('seller_nexus_tracking')
+      .upsert({
+        seller_id: context.sellerId,
+        jurisdiction,
+        has_nexus: result.hasNexus,
+        reason: result.reason,
+        annual_revenue: annualRevenue,
+        transaction_count: transactionCount,
+        has_physical_presence: physicalPresence,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'seller_id,jurisdiction' });
+
+    if (upsertError) throw upsertError;
+  } catch {
+    return apiError(ApiErrorCode.INTERNAL_ERROR, 'Failed to save nexus status.');
+  }
 
   return apiSuccess(
     {

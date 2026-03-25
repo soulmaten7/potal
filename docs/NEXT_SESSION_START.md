@@ -1,9 +1,19 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-24 KST (CW18 7차 — Layer 2 완성 확인, 우선순위 정리, v8 실험/Layer 2 완성 TODO 삭제)
+> 마지막 업데이트: 2026-03-25 KST (CW18 10차 — P0 9/9 + P1 9/9 + P2 9/16 완료, SEO/LinkedIn/Reddit/Instagram 마케팅 채널 구축)
 
 ---
 
 ## 현재 상태 요약
+
+### ✅ CW18 10차 — 4터미널 병렬 기능 강화 + 마케팅 (2026-03-25):
+- **P0 9/9**: F025 DDP/DDU, F033 IOSS, F095 High Throughput, F109 CSV, F008 Audit, F092 Sandbox, F009 Batch, F043 Customs Docs, F040 Pre-Shipment
+- **P1 9/9**: F002 Image Classify, F003 URL Classify, F007 ECCN, F012 Validation 100%, F013 Description, F015 Price Break, F026 Origin, F037 Export Controls, F039 RoO
+- **P2 9/16 (진행중)**: F027 US Sales Tax, F028 Telecom, F029 Lodging, F038 Export License, F044 Customs Decl, F051 Tax Filing, F053 Tax Exemption, F055 VAT Reg, F057 E-Invoice
+- **DB migration**: 046~049 (sandbox, verification_logs, export_license_apps, tax_exemption_usage)
+- **SEO**: 6 blog posts (3 B2B rewrite + 3 new), sitemap +5 URLs
+- **LinkedIn**: 첫 포스트 게시 완료
+- **Reddit**: r/ecommerce 댓글 6개, potal.app 멘션 4회
+- **Instagram**: @potal_official 비즈니스 프로필 완성
 
 ### ✅ Sprint 1 보안 6기능 100% 달성 (2026-03-24):
 | 기능 | 시작 → 완료 | 커밋 | 테스트 |
@@ -250,8 +260,17 @@ Layer 3: 9-field 자체가 없는 데이터 → custom 변환 → Layer 1에 전
 - ~~HSCodeComp 632건 AliExpress category → Ch.XX 매핑 테이블~~ → **삭제**. GRI Pipeline 구조에서 불필요.
 - ~~composition → codified_subheadings 5,621개 연결~~ → **삭제**. 위와 동일.
 
-### Sprint 2 기능 업그레이드 — 대상 기능 아직 미선정
-- Sprint 1(보안 6기능)은 완료. Sprint 2에서 어떤 기능을 올릴지 은태님이 선정해야 함.
+### Sprint 2 기능 강화 — CW18 10차 진행중
+- P0 9/9 완료, P1 9/9 완료, P2 9/16 완료 (F082/F083/F104 실행중)
+- P2 남은 7개 + SHOULD 15개 대기
+- 4터미널 병렬 워크플로우 (Cowork 명령어 .md → 터미널 붙여넣기)
+
+### 마케팅 채널 현황
+- **SEO Blog**: 6포스트 완료, 주 1회 추가 포스트 권장
+- **LinkedIn**: 첫 포스트 게시, 주 2~3회 지속 필요
+- **Reddit**: 카르마 빌딩 시작 (하루 3~5댓글, 첫 20개는 POTAL 없이)
+- **Instagram**: @potal_official 프로필 완성, 콘텐츠 포스팅 시작 필요
+- **Product Hunt**: 승인 대기중 (Hero Image + Gallery slides 미생성)
 - 142개 구현 기능 중 아직 100%가 아닌 것들이 후보.
 - 워크플로우는 동일: Cowork GAP분석 → 명령어 파일(.md) → Claude Code 실행.
 

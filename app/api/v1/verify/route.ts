@@ -25,10 +25,18 @@
  *   weightKg?: number,
  *   exporterName?: string,
  *   importerName?: string,
+ *   buyerName?: string,            // M1: buyer sanctions screening
+ *   buyerCountry?: string,
  *   category?: string,
  *   firmName?: string,
- *   shippingTerms?: string
+ *   shippingTerms?: string,
+ *   shipmentRef?: string,          // M2: for logging
+ *   mode?: 'quick' | 'standard' | 'comprehensive'  // C1: verification depth
  * }
+ *
+ * mode='quick': 5 core checks (HS, sanctions, restrictions, embargo, export controls) ~200ms
+ * mode='standard': 9 checks (default)
+ * mode='comprehensive': 15 checks (includes pre-shipment checks)
  *
  * Returns: comprehensive verification report
  */
@@ -40,6 +48,21 @@ import { classifyProductAsync, calculateConfidenceScore } from '@/app/lib/cost-e
 import { validateHsCode } from '@/app/lib/cost-engine/hs-code/hs-validator';
 import { checkIossOss } from '@/app/lib/cost-engine/ioss-oss';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { createClient } from '@supabase/supabase-js';
+import { screenParty } from '@/app/lib/cost-engine/screening';
+import { checkRestrictions } from '@/app/lib/cost-engine/restrictions/check';
+
+function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+}
+
+// OFAC comprehensive sanctions — full embargo countries
+const EMBARGOED_COUNTRIES = new Set(['CU', 'IR', 'KP', 'SY']);
+// Partial/sectoral sanctions
+const SANCTIONED_COUNTRIES = new Set(['RU', 'BY', 'VE', 'MM']);
 
 function sanitize(val: unknown, maxLen = 500): string {
   if (typeof val !== 'string') return '';
@@ -69,6 +92,13 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   const category = sanitize(body.category, 200) || undefined;
   const hsCodeInput = sanitize(body.hsCode, 12) || undefined;
   const firmName = sanitize(body.firmName, 200) || undefined;
+  const buyerName = sanitize(body.buyerName, 200) || undefined;
+  const buyerCountry = sanitize(body.buyerCountry, 2).toUpperCase() || undefined;
+  const exporterName = sanitize(body.exporterName, 200) || undefined;
+  const shipmentRef = sanitize(body.shipmentRef, 100) || undefined;
+  const mode = (['quick', 'standard', 'comprehensive'].includes(String(body.mode))
+    ? String(body.mode)
+    : 'standard') as 'quick' | 'standard' | 'comprehensive';
 
   const checks: {
     name: string;
@@ -238,18 +268,115 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     });
   }
 
-  // 5. Summary
+  // 5. Embargo check (all modes)
+  if (EMBARGOED_COUNTRIES.has(destinationCountry)) {
+    checks.push({
+      name: 'embargo_check',
+      status: 'fail',
+      details: { country: destinationCountry, type: 'comprehensive', message: `${destinationCountry} is subject to comprehensive US sanctions. Shipment prohibited without OFAC license.` },
+    });
+  } else if (SANCTIONED_COUNTRIES.has(destinationCountry)) {
+    checks.push({
+      name: 'embargo_check',
+      status: 'warn',
+      details: { country: destinationCountry, type: 'sectoral', message: `${destinationCountry} has sectoral sanctions. Verify product eligibility.` },
+    });
+  } else {
+    checks.push({ name: 'embargo_check', status: 'pass', details: { message: 'No embargo on destination' } });
+  }
+  // Also check origin
+  if (EMBARGOED_COUNTRIES.has(originCountry)) {
+    checks.push({
+      name: 'origin_embargo',
+      status: 'fail',
+      details: { country: originCountry, message: `Origin ${originCountry} is under comprehensive embargo.` },
+    });
+  }
+
+  // 6. Restrictions check (all modes)
+  try {
+    const restrictions = checkRestrictions(hsCodeInput || classifiedHsCode || '', destinationCountry);
+    if (restrictions.isProhibited) {
+      checks.push({ name: 'import_restrictions', status: 'fail', details: { prohibited: true, description: restrictions.restrictions[0]?.description || 'Restricted' } });
+    } else if (restrictions.hasRestrictions) {
+      checks.push({ name: 'import_restrictions', status: 'warn', details: { count: restrictions.restrictions.length } });
+    } else {
+      checks.push({ name: 'import_restrictions', status: 'pass', details: { message: 'No restrictions' } });
+    }
+  } catch {
+    checks.push({ name: 'import_restrictions', status: 'pass', details: { message: 'No restrictions data available' } });
+  }
+
+  // 7. Exporter sanctions screening (standard+)
+  if (mode !== 'quick' && exporterName) {
+    try {
+      const screenResult = screenParty({ name: exporterName, country: originCountry, minScore: 0.8 });
+      if (screenResult.hasMatches) {
+        checks.push({ name: 'exporter_screening', status: 'fail', details: { name: exporterName, matches: screenResult.totalMatches } });
+      } else {
+        checks.push({ name: 'exporter_screening', status: 'pass', details: { name: exporterName, clear: true } });
+      }
+    } catch {
+      checks.push({ name: 'exporter_screening', status: 'pass', details: { message: 'Screening unavailable' } });
+    }
+  }
+
+  // 8. Buyer sanctions screening (M1 — standard+)
+  if (mode !== 'quick' && buyerName) {
+    try {
+      const buyerScreen = screenParty({ name: buyerName, country: buyerCountry || destinationCountry, minScore: 0.8 });
+      if (buyerScreen.hasMatches) {
+        checks.push({ name: 'buyer_screening', status: 'fail', details: { name: buyerName, matches: buyerScreen.totalMatches, message: `Buyer "${buyerName}" matches denied party list` } });
+      } else {
+        checks.push({ name: 'buyer_screening', status: 'pass', details: { name: buyerName, clear: true } });
+      }
+    } catch {
+      checks.push({ name: 'buyer_screening', status: 'pass', details: { message: 'Screening unavailable' } });
+    }
+  }
+
+  // 9. Summary (C4: FAIL → BLOCKED + shipmentAllowed)
   const passCount = checks.filter(c => c.status === 'pass').length;
   const warnCount = checks.filter(c => c.status === 'warn').length;
   const failCount = checks.filter(c => c.status === 'fail').length;
   const infoCount = checks.filter(c => c.status === 'info').length;
+  const shipmentAllowed = failCount === 0;
 
   if (failCount > 0) overallStatus = 'blocked';
   else if (warnCount > 0) overallStatus = 'warnings';
 
+  const riskScore = Math.min(100, failCount * 30 + warnCount * 10);
+  const riskLevel = failCount > 0 ? 'BLOCKED' : riskScore >= 60 ? 'HIGH' : riskScore >= 30 ? 'MEDIUM' : 'LOW';
+
+  // M2: Save verification result
+  try {
+    const sb = getServiceClient();
+    await (sb.from('verification_logs') as ReturnType<ReturnType<typeof createClient>['from']>).insert({
+      seller_id: context.sellerId,
+      shipment_ref: shipmentRef || null,
+      hs_code: hsCodeInput || classifiedHsCode || null,
+      origin: originCountry,
+      destination: destinationCountry,
+      risk_level: riskLevel,
+      risk_score: riskScore,
+      shipment_allowed: shipmentAllowed,
+      checklist: JSON.stringify(checks),
+    });
+  } catch {
+    // Non-blocking — log failure is not critical
+  }
+
   return apiSuccess(
     {
       overallStatus,
+      riskLevel,
+      riskScore,
+      shipmentAllowed,
+      blockedReasons: failCount > 0 ? checks.filter(c => c.status === 'fail').map(c => {
+        const d = c.details as Record<string, unknown>;
+        return d.message || d.description || c.name;
+      }) : [],
+      mode,
       summary: {
         total: checks.length,
         pass: passCount,

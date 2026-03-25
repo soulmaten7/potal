@@ -23,6 +23,7 @@ import { checkPlanLimits } from './plan-checker';
 import { apiError, ApiErrorCode } from './response';
 import { generateFingerprint, hashRequestBody, checkFraud, recordFraudStrike } from './fraud-prevention';
 import { revokeApiKey } from './keys';
+import { SANDBOX_CONFIG } from './sandbox';
 
 // ─── Supabase Service Client ─────────────────────────
 
@@ -231,9 +232,8 @@ export function withApiAuth(handler: ApiHandler) {
       return apiError(ApiErrorCode.RATE_LIMITED, fraudResult.reason || 'Request blocked by fraud detection.');
     }
 
-    // 8. Rate limiting (sandbox keys get reduced limits)
-    const SANDBOX_RATE_LIMIT = 10; // 10 req/min for test keys
-    const effectiveRateLimit = isSandbox ? Math.min(keyInfo.rateLimitPerMinute, SANDBOX_RATE_LIMIT) : keyInfo.rateLimitPerMinute;
+    // 8. Rate limiting (sandbox keys get generous limits)
+    const effectiveRateLimit = isSandbox ? SANDBOX_CONFIG.maxRequestsPerMinute : keyInfo.rateLimitPerMinute;
     const rateLimitResult = checkRateLimit(keyInfo.keyId, effectiveRateLimit);
     if (!rateLimitResult.allowed) {
       const response = apiError(ApiErrorCode.RATE_LIMITED, `Rate limit exceeded. ${effectiveRateLimit} requests/minute allowed.`);
@@ -244,8 +244,10 @@ export function withApiAuth(handler: ApiHandler) {
       return response;
     }
 
-    // 9. Plan usage limits
-    const planCheck = await checkPlanLimits(supabase as any, keyInfo.sellerId, keyInfo.planId);
+    // 9. Plan usage limits (sandbox requests are exempt)
+    const planCheck = isSandbox
+      ? { allowed: true, used: 0, limit: 999999, isOverage: false, overageCount: 0, overageRate: 0 }
+      : await checkPlanLimits(supabase as any, keyInfo.sellerId, keyInfo.planId);
     if (!planCheck.allowed) {
       return apiError(ApiErrorCode.PLAN_LIMIT_EXCEEDED, `Monthly calculation limit reached (${planCheck.used}/${planCheck.limit}). Upgrade your plan for more.`);
     }
@@ -281,6 +283,7 @@ export function withApiAuth(handler: ApiHandler) {
       method: req.method,
       statusCode,
       responseTimeMs,
+      mode: isSandbox ? 'sandbox' : 'live',
     }).catch(() => {});
 
     // 13. Response headers

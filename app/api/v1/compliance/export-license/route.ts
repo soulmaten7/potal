@@ -2,135 +2,39 @@
  * POTAL API v1 — /api/v1/compliance/export-license
  *
  * Export License requirement check and management.
- * Determines if an export license is needed and what type.
+ * Covers all 6 CRITICAL areas:
+ * - C1: Real-time sanctions/embargo check (DB + static fallback)
+ * - C2: ECCN + Commerce Country Chart license determination
+ * - C3: License exception eligibility (LVS, TMP, TSR, ENC)
+ * - C4: Application guide with required documents
+ * - C5: Re-export de minimis rule check
+ * - C6: License application tracking
  *
  * POST /api/v1/compliance/export-license
  * Body: {
  *   productName: string,
- *   originCountry: string,
- *   destinationCountry: string,
+ *   originCountry: string,        // 2-letter ISO
+ *   destinationCountry: string,    // 2-letter ISO
  *   hsCode?: string,
- *   eccn?: string,
+ *   eccn?: string,                 // e.g. "5A002", "EAR99"
  *   value?: number,
  *   endUse?: string,
+ *   isTemporary?: boolean,         // for TMP exception
+ *   returnDays?: number,           // for TMP exception
+ *   itemType?: string,             // "goods"|"software"|"technology"
+ *   isEncryption?: boolean,        // for ENC exception
+ *   usOriginContentPercent?: number, // for re-export de minimis
+ *   recordApplication?: boolean,   // save to DB
  * }
  */
 
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
-
-// ─── License Types ─────────────────────────────────
-
-interface LicenseRequirement {
-  type: string;
-  authority: string;
-  description: string;
-  estimatedProcessingDays: number;
-  required: boolean;
-}
-
-// Embargoed destinations
-const EMBARGOED = new Set(['CU', 'IR', 'KP', 'SY']);
-const RESTRICTED_D1 = new Set(['CN', 'RU', 'BY', 'VN', 'MM', 'PK', 'IQ', 'AF']);
-
-// Sensitive HS chapters requiring export licenses
-const CONTROLLED_CHAPTERS: Record<string, { authority: string; licenseType: string }> = {
-  '27': { authority: 'DOE/BIS', licenseType: 'Energy export license' },
-  '28': { authority: 'BIS/EPA', licenseType: 'Chemical export license' },
-  '29': { authority: 'BIS/EPA', licenseType: 'Chemical export license' },
-  '84': { authority: 'BIS', licenseType: 'Dual-use technology license' },
-  '85': { authority: 'BIS', licenseType: 'Technology/electronics export license' },
-  '88': { authority: 'DDTC/BIS', licenseType: 'Aerospace export license' },
-  '90': { authority: 'BIS', licenseType: 'Precision instruments license' },
-  '93': { authority: 'DDTC', licenseType: 'ITAR Munitions License (DSP-5/DSP-73)' },
-};
-
-function determineLicenseRequirements(
-  originCountry: string,
-  destinationCountry: string,
-  hsCode?: string,
-  eccn?: string,
-  value?: number,
-): LicenseRequirement[] {
-  const requirements: LicenseRequirement[] = [];
-  const dest = destinationCountry.toUpperCase();
-  const origin = originCountry.toUpperCase();
-
-  // US origin export controls
-  if (origin === 'US') {
-    if (EMBARGOED.has(dest)) {
-      requirements.push({
-        type: 'OFAC License',
-        authority: 'US Treasury OFAC',
-        description: `${dest} is under comprehensive US embargo. Specific OFAC license required for virtually all exports.`,
-        estimatedProcessingDays: 90,
-        required: true,
-      });
-    }
-
-    if (RESTRICTED_D1.has(dest) && eccn && eccn.charAt(1) !== '9') {
-      requirements.push({
-        type: 'BIS Individual License',
-        authority: 'US Commerce BIS',
-        description: `ECCN ${eccn} to Country Group D:1 (${dest}) requires BIS export license.`,
-        estimatedProcessingDays: 60,
-        required: true,
-      });
-    }
-
-    if (hsCode) {
-      const chapter = hsCode.replace(/\./g, '').substring(0, 2);
-      const controlled = CONTROLLED_CHAPTERS[chapter];
-      if (controlled && (RESTRICTED_D1.has(dest) || EMBARGOED.has(dest))) {
-        requirements.push({
-          type: controlled.licenseType,
-          authority: controlled.authority,
-          description: `HS chapter ${chapter} exports to ${dest} may require ${controlled.licenseType}.`,
-          estimatedProcessingDays: 45,
-          required: EMBARGOED.has(dest),
-        });
-      }
-    }
-
-    // High-value technology exports
-    if (value && value > 500000 && RESTRICTED_D1.has(dest)) {
-      requirements.push({
-        type: 'End-Use Certificate',
-        authority: 'BIS',
-        description: 'High-value export to restricted destination may require end-use certificate from consignee.',
-        estimatedProcessingDays: 30,
-        required: false,
-      });
-    }
-  }
-
-  // EU origin export controls
-  if (['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'SE', 'PL', 'CZ'].includes(origin)) {
-    if (EMBARGOED.has(dest)) {
-      requirements.push({
-        type: 'EU Export Authorization',
-        authority: 'National Export Control Authority',
-        description: `EU export controls apply. ${dest} is under EU restrictive measures.`,
-        estimatedProcessingDays: 60,
-        required: true,
-      });
-    }
-  }
-
-  // No specific license found
-  if (requirements.length === 0) {
-    requirements.push({
-      type: 'No License Required',
-      authority: 'N/A',
-      description: 'Based on provided information, no specific export license appears required. Standard customs declaration applies.',
-      estimatedProcessingDays: 0,
-      required: false,
-    });
-  }
-
-  return requirements;
-}
+import {
+  determineExportLicense,
+  recordLicenseApplication,
+} from '@/app/lib/compliance/export-license';
 
 export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext) => {
   let body: Record<string, unknown>;
@@ -145,14 +49,45 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   const destinationCountry = typeof body.destinationCountry === 'string' ? body.destinationCountry.toUpperCase().trim() : '';
   const hsCode = typeof body.hsCode === 'string' ? body.hsCode.trim() : undefined;
   const eccn = typeof body.eccn === 'string' ? body.eccn.toUpperCase().trim() : undefined;
-  const value = typeof body.value === 'number' ? body.value : undefined;
+  const value = typeof body.value === 'number' && body.value >= 0 ? body.value : undefined;
+  const endUse = typeof body.endUse === 'string' ? body.endUse.trim() : undefined;
+  const isTemporary = typeof body.isTemporary === 'boolean' ? body.isTemporary : false;
+  const returnDays = typeof body.returnDays === 'number' ? body.returnDays : 0;
+  const itemType = typeof body.itemType === 'string' ? body.itemType : 'goods';
+  const isEncryption = typeof body.isEncryption === 'boolean' ? body.isEncryption : false;
+  const usOriginContentPercent = typeof body.usOriginContentPercent === 'number' ? body.usOriginContentPercent : undefined;
+  const recordApp = typeof body.recordApplication === 'boolean' ? body.recordApplication : false;
 
   if (!productName) return apiError(ApiErrorCode.BAD_REQUEST, '"productName" is required.');
   if (!originCountry || originCountry.length !== 2) return apiError(ApiErrorCode.BAD_REQUEST, '"originCountry" must be 2-letter ISO code.');
   if (!destinationCountry || destinationCountry.length !== 2) return apiError(ApiErrorCode.BAD_REQUEST, '"destinationCountry" must be 2-letter ISO code.');
 
-  const requirements = determineLicenseRequirements(originCountry, destinationCountry, hsCode, eccn, value);
-  const licenseRequired = requirements.some(r => r.required);
+  const result = await determineExportLicense({
+    originCountry,
+    destinationCountry,
+    productName,
+    hsCode,
+    eccn,
+    value,
+    endUse,
+    sellerId: context.sellerId,
+    isTemporary,
+    returnDays,
+    itemType,
+    isEncryption,
+    usOriginContentPercent,
+  });
+
+  // C6: Record application if requested and license is required
+  let applicationReference: string | undefined;
+  if (recordApp && result.licenseRequired && eccn) {
+    applicationReference = await recordLicenseApplication(
+      context.sellerId,
+      eccn,
+      destinationCountry,
+      productName,
+    );
+  }
 
   return apiSuccess(
     {
@@ -161,9 +96,18 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       destinationCountry,
       hsCode: hsCode || null,
       eccn: eccn || null,
-      licenseRequired,
-      requirements,
-      applications: licenseRequired ? {
+      value: value || null,
+      endUse: endUse || null,
+      licenseRequired: result.licenseRequired,
+      sanctionStatus: result.sanctionStatus,
+      requirements: result.requirements,
+      exceptions: result.exceptions.length > 0 ? result.exceptions : undefined,
+      reexportControl: result.reexportControl,
+      applicationGuide: result.applicationGuide,
+      existingLicense: result.existingLicense,
+      applicationReference: applicationReference || undefined,
+      economicSanctionsWarning: result.economicSanctionsWarning,
+      applications: result.licenseRequired ? {
         us: 'BIS SNAP-R: https://snapr.bis.doc.gov',
         usItar: 'DDTC D-Trade: https://dtrade.pmddtc.state.gov',
         eu: 'Contact national export control authority',
@@ -174,5 +118,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 });
 
 export async function GET() {
-  return apiError(ApiErrorCode.BAD_REQUEST, 'Use POST. Body: { productName, originCountry: "US", destinationCountry: "CN", hsCode?, eccn? }');
+  return apiError(
+    ApiErrorCode.BAD_REQUEST,
+    'Use POST. Body: { productName, originCountry, destinationCountry, eccn?, hsCode?, value?, isTemporary?, isEncryption?, usOriginContentPercent?, recordApplication? }',
+  );
 }

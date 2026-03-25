@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'FAQ',
+  title: 'Knowledge Base — POTAL FAQ',
   description:
-    'Frequently asked questions about POTAL cross-border commerce API, pricing, HS codes, duties, taxes, and features.',
+    'Find answers to 45+ questions about POTAL API, HS codes, tariffs, FTAs, VAT/GST, sanctions screening, and trade compliance.',
   openGraph: {
     title: 'POTAL FAQ',
     description:
@@ -46,7 +46,7 @@ const faqStructuredData = {
       name: 'How does POTAL classify products to HS codes?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'POTAL uses a 3-stage AI classification pipeline: (1) Vector similarity search against 8,389+ pre-classified products, (2) Keyword matching against product descriptions, (3) LLM-based classification for novel products. Results are cached for instant future lookups at zero cost.',
+        text: 'POTAL uses a 9-field classification system following WCO General Rules of Interpretation (GRI). The engine applies 592 codified rules, 1,233 Heading descriptions, and 5,621 Subheading conditions with 0-2 AI calls (most products need zero). Results are cached for instant future lookups at $0 cost.',
       },
     },
     {

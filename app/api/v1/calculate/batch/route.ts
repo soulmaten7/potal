@@ -121,15 +121,21 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     validItems.push({ index: i, id: item.id, costInput });
   }
 
-  // 5. Process with concurrent execution (max 10 parallel)
-  const CONCURRENCY = 10;
+  // 5. Process with concurrent execution (max 5 parallel, 15s timeout per item)
+  const CONCURRENCY = 5;
+  const TIMEOUT_MS = 15000;
   const results: { id: string; result: GlobalLandedCost }[] = [];
 
   for (let start = 0; start < validItems.length; start += CONCURRENCY) {
     const chunk = validItems.slice(start, start + CONCURRENCY);
     const chunkResults = await Promise.allSettled(
       chunk.map(async ({ id, costInput }) => {
-        const result = await calculateGlobalLandedCostAsync(costInput);
+        const result = await Promise.race([
+          calculateGlobalLandedCostAsync(costInput),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('Calculation timeout (15s)')), TIMEOUT_MS)
+          ),
+        ]);
         return { id, result };
       })
     );

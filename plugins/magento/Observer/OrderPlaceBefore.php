@@ -1,71 +1,69 @@
 <?php
 /**
- * POTAL Magento Observer — Calculate landed cost before order placement
+ * POTAL Magento Observer — Record landed cost metadata on order placement
  */
 namespace Potal\LandedCost\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Potal\LandedCost\Helper\Data as PotalHelper;
+use Psr\Log\LoggerInterface;
 
 class OrderPlaceBefore implements ObserverInterface
 {
-    private $apiKey;
-    private $apiUrl = 'https://www.potal.app/api/v1/calculate';
+    private PotalHelper $potalHelper;
+    private LoggerInterface $logger;
 
-    public function __construct()
-    {
-        $this->apiKey = getenv('POTAL_API_KEY') ?: '';
+    public function __construct(
+        PotalHelper $potalHelper,
+        LoggerInterface $logger
+    ) {
+        $this->potalHelper = $potalHelper;
+        $this->logger = $logger;
     }
 
     public function execute(Observer $observer)
     {
-        if (empty($this->apiKey)) return;
+        if (!$this->potalHelper->isEnabled()) {
+            return;
+        }
 
         $order = $observer->getEvent()->getOrder();
         $shippingAddress = $order->getShippingAddress();
-        if (!$shippingAddress) return;
+        if (!$shippingAddress) {
+            return;
+        }
 
         $destination = $shippingAddress->getCountryId();
-        $subtotal = $order->getSubtotal();
-        $shipping = $order->getShippingAmount();
+        $subtotal = (float) $order->getSubtotal();
+        $shipping = (float) $order->getShippingAmount();
 
-        $payload = json_encode([
-            'price' => (float)$subtotal,
-            'shippingPrice' => (float)$shipping,
-            'destinationCountry' => $destination,
-        ]);
+        try {
+            $result = $this->potalHelper->callApi('/calculate', [
+                'price' => $subtotal,
+                'shippingPrice' => $shipping,
+                'destinationCountry' => $destination,
+                'originCountry' => $this->potalHelper->getOriginCountry(),
+            ]);
 
-        $ch = curl_init($this->apiUrl);
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . $this->apiKey,
-                'Content-Type: application/json',
-            ],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 10,
-        ]);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode === 200 && $response) {
-            $data = json_decode($response, true);
-            if (isset($data['data'])) {
-                $result = $data['data'];
-                // Store landed cost data as order comment
+            if ($result && isset($result['importDuty'])) {
                 $order->addCommentToStatusHistory(
                     sprintf(
-                        'POTAL Landed Cost: Duty $%.2f, %s $%.2f, Total $%.2f',
+                        'POTAL Landed Cost: Duty $%.2f, %s $%.2f, Total $%.2f (to %s)',
                         $result['importDuty'] ?? 0,
                         $result['vatLabel'] ?? 'VAT',
                         $result['vat'] ?? 0,
-                        $result['totalLandedCost'] ?? 0
+                        $result['totalLandedCost'] ?? 0,
+                        $destination
                     )
                 );
             }
+        } catch (\Exception $e) {
+            $this->logger->warning('POTAL: Failed to record landed cost on order', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->getIncrementId(),
+                'destination' => $destination,
+            ]);
         }
     }
 }

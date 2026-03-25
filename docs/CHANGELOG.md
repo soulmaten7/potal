@@ -1,5 +1,28 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-24 KST (CW18 Cowork 7차 — Layer 2 완성 확인, 우선순위 정리)
+> 마지막 업데이트: 2026-03-25 KST (CW18 Cowork 10차 — 4터미널 병렬 P0 9/P1 9/P2 9 기능 강화 + SEO/LinkedIn/Reddit/Instagram 마케팅)
+
+## [2026-03-25 KST] CW18 Cowork 10차 — 4터미널 병렬 기능 강화 + 마케팅 채널 구축
+
+### 4터미널 병렬 기능 강화 (터미널 1-3: 코드, 터미널 4: SEO/비코드)
+- **P0 9/9 완료**: F025 DDP/DDU, F033 IOSS, F095 High Throughput, F109 CSV Export, F008 Audit Trail, F092 Sandbox, F009 Batch Classify, F043 Customs Docs, F040 Pre-Shipment Verify
+- **P1 9/9 완료**: F002 Image Classify, F003 URL Classify, F007 ECCN, F012 HS Validation 100%, F013 Description Validator, F015 Price Break, F026 Origin Detection, F037 Export Controls, F039 Rules of Origin
+- **P2 9/16 완료 (진행중)**: F027 US Sales Tax, F028 Telecom Tax, F029 Lodging Tax, F038 Export License, F044 Customs Declaration, F051 Tax Filing, F053 Tax Exemption, F055 VAT Registration, F057 E-Invoice
+- **DB 마이그레이션**: 046(Sandbox mode), 047(verification_logs), 048(export_license_applications), 049(tax_exemption_usage_log)
+
+### 마케팅 채널 구축
+- **SEO Blog**: 기존 3개 B2B 리라이트 + 신규 3개 작성 = 6포스트. sitemap +5 URLs. JSON-LD articleBody 버그 수정
+- **LinkedIn**: 첫 포스트 게시 — 창업 스토리 + POTAL 소개 + potal.app 링크 (Chrome MCP로 직접 작성/게시)
+- **Reddit**: r/ecommerce 카르마 빌딩 댓글 6개 (관세/배송 관련, potal.app 자연 멘션 4회)
+- **Instagram**: @potal_official 비즈니스 프로필 생성 + Bio 작성
+
+### 워크플로우
+- Cowork가 기능별 명령어 .md 파일 생성 → 은태님이 4터미널에 붙여넣기 → 결과 스크린샷 공유 → 다음 3파일 제시
+- Sprint 2 전체를 이 방식으로 진행
+
+### 문서 업데이트
+- 5개 문서 동기화 (CLAUDE.md, session-context.md, .cursorrules, CHANGELOG.md, NEXT_SESSION_START.md)
+
+---
 
 ## [2026-03-24 KST] CW18 Cowork 7차 — Layer 2 완성 확인 + 우선순위 정리
 

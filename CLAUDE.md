@@ -1,5 +1,17 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-24 KST (CW18 7차 — Layer 2=GRI Pipeline 완성 확인, v8 실험/Layer 2 완성 TODO 삭제, 우선순위 재정리)
+# 마지막 업데이트: 2026-03-25 18:40 KST (CW18 12차 — 67개 감사 완료, 17개 미완성 + 56개 정밀검증 준비, 로깅 체계 강화)
+
+## 🚨 필수 지침 (모든 작업보다 우선 — 절대 생략 금지)
+> **이 섹션은 어떤 명령어, 어떤 작업보다 우선한다. 명령어 파일이 아무리 길어도 이 규칙을 반드시 따른다.**
+
+**모든 작업 완료 시 아래 2가지를 반드시 수행한다:**
+1. `POTAL_Claude_Code_Work_Log.xlsx`에 새 시트를 추가하여 작업 내용을 기록한다 (시트명: YYMMDDHHMM)
+   - 명령어를 받고 진행한 **모든 내용**에 대해서 타임라인으로 디테일하게 내용과 결과를 적는다
+   - 어떤 파일을 읽었고, 뭘 수정했고, 빌드 결과가 어땠고, 에러가 뭐였고, 어떻게 고쳤는지 전부 기록
+2. `POTAL_Cowork_Session_Log.xlsx`에 Cowork 엑셀 로그 마지막 타임라인 이후 진행된 **모든 내용**에 대해서 타임라인으로 정리해서 디테일하게 기록한다
+   - Cowork이 어떤 지시를 했고, 어떤 명령어 파일을 만들었고, 터미널 결과가 어땠는지 전부 기록
+
+**이 2가지가 빠진 작업은 완료된 것이 아니다. 빌드가 성공해도, 테스트가 통과해도, 로그 기록이 없으면 미완료다.**
 
 ## 프로젝트 개요
 POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위젯, AI 에이전트에게 API를 제공.
@@ -22,12 +34,13 @@ POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위
 - Python openpyxl 사용
 
 ### Cowork 대화 로깅
-모든 대화를 `docs/sessions/COWORK_CONVERSATION_LOG.md`에 기록한다:
-- **기록 시점**: 명령어 파일 생성 직전, 중요한 결정이 내려졌을 때, 세션 종료 시
-- **기록 범위**: 이전 명령어 파일 생성 이후 ~ 다음 명령어 파일 생성까지 사이에 진행된 **모든** 대화 내용
-- **포맷**: `### [HH:MM KST] 제목` + 내용 (결정사항, 근거, 명령어 파일명, 은태님 지시 등)
-- **필수 기록**: (1)은태님 지시 원문 (2)결정 사항+근거 (3)생성한 명령어 파일명 (4)Claude Code 실행 결과 요약
-- **세션 구분**: 각 세션 시작 시 `## CW[N] Cowork [N]차 — [날짜]` 헤더 추가
+모든 대화를 `POTAL_Cowork_Session_Log.xlsx`에 기록한다 (Claude Code 엑셀 로그와 동일한 구조):
+- **시트 규칙**: 새 세션 시작 시 새 시트 생성. 시트 이름 = `YYMMDDHHMM`
+- **열 구조**: A:순번 | B:시간(KST) | C:구분 | D:상세내용 | E:생성파일 | F:상태
+- **구분**: 지시(은태님) / 명령어(파일생성) / 결과(터미널결과) / 결정 / 에러 / 수정
+- **상태**: ✅성공 / ❌실패 / ⏳진행중 / 🔄수정
+- **실행상태 시트**: 명령어 파일별 실행 상태 추적 (NOT_STARTED/IN_PROGRESS/DONE/FAILED)
+- **기존 마크다운 로그**: `docs/sessions/COWORK_CONVERSATION_LOG.md` (참고용 보존, 신규 기록은 엑셀로)
 - **목적**: 세션이 끊겨도 다음 세션에서 이 파일만 읽으면 이전 대화 맥락 복구 가능
 
 ## 📁 폴더 구조 (2026-03-09 정리)
@@ -141,7 +154,16 @@ portal/
 - **데모 GIF 3개**: marketing/potal_demo_calculate.gif(61KB), potal_demo_compare.gif(26KB), potal_demo_classify.gif(25KB)
 - **Product Hunt 리런치**: ✅ B2C→B2B 피봇 "major update"로 리런치 요청 제출 (2026-03-24). PH팀 승인 대기 중 (1~3일). 런치 추천일: 4/7(화) 또는 4/8(수). 전략 문서: POTAL_PRODUCT_HUNT_LAUNCH_PLAN.md
 - **Cowork 워크플로우 확립**: Cowork(전략참모)가 기능별 GAP 분석 → 명령어 파일(.md) 생성 → 은태님이 Claude Code 터미널에 붙여넣기 → Claude Code가 실행 → 결과 스크린샷 Cowork에 공유 → 다음 기능. Sprint 1 전체를 이 방식으로 완료
-- **대기 작업**: LinkedIn 포스트(미작성), PH Hero Image 1270×760px(미생성), PH Gallery slides 4~5장(미생성)
+- **CW18 10차 기능 강화 (2026-03-25, 4터미널 병렬)**: P0 9/9 + P1 9/9 + P2 9/16 완료 (진행중)
+  - P0 (9개): F025 DDP/DDU, F033 IOSS, F095 High Throughput, F109 CSV, F008 Audit, F092 Sandbox, F009 Batch, F043 Customs Docs, F040 Pre-Shipment
+  - P1 (9개): F002 Image Classify, F003 URL Classify, F007 ECCN, F012 HS Validation, F013 Description Validator, F015 Price Break, F026 Origin Detection, F037 Export Controls, F039 Rules of Origin
+  - P2 (9/16): F027 US Sales Tax, F028 Telecom Tax, F029 Lodging Tax, F038 Export License, F044 Customs Declaration, F051 Tax Filing, F053 Tax Exemption, F055 VAT Registration, F057 E-Invoice
+  - DB 마이그레이션: 046(Sandbox mode), 047(verification_logs), 048(export_license_applications), 049(tax_exemption_usage_log)
+- **SEO Blog B2B 리라이트**: ✅ (CW18 10차) 기존 3개 B2B 전환 + 신규 3개 작성 (6포스트), sitemap +5 URLs, JSON-LD articleBody 버그 수정
+- **LinkedIn 첫 포스트**: ✅ (CW18 10차) 창업 스토리 + POTAL 소개 + potal.app 링크, 게시 완료
+- **Reddit 카르마 빌딩**: ✅ (CW18 10차) r/ecommerce 댓글 6개 (관세/배송 관련, potal.app 자연 멘션 4회)
+- **Instagram 비즈니스 프로필**: ✅ (CW18 10차) @potal_official, Bio 작성 완료
+- **대기 작업**: PH Hero Image 1270×760px(미생성), PH Gallery slides 4~5장(미생성)
 
 ### ⭐ HS Code 100% 정확도 구조 (Cowork 11 설계 — 2026-03-12)
 **전체 파이프라인:**

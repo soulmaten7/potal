@@ -75,8 +75,8 @@ export async function checkPlanLimits(
     .from('usage_logs') as any)
     .select('*', { count: 'exact', head: true })
     .eq('seller_id', sellerId)
-    .gte('billed_at', monthStart)
-    .lte('billed_at', monthEnd);
+    .gte('created_at', monthStart)
+    .lte('created_at', monthEnd);
 
   const used = count || 0;
   const overLimit = used >= limits.maxCalculationsMonthly;

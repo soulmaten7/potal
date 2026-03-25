@@ -530,9 +530,19 @@ async function classifyImageWithAnthropic(
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    // Anthropic requires base64 for images (no URL support in messages API)
-    // If URL provided, skip Anthropic vision (would need to fetch image first)
-    if (isUrl) return null;
+    // Anthropic requires base64 — if URL provided, download and convert
+    let base64Data = imageData;
+    if (isUrl) {
+      try {
+        const imgRes = await fetch(imageData, { signal: AbortSignal.timeout(10000) });
+        if (!imgRes.ok) return null;
+        const buf = Buffer.from(await imgRes.arrayBuffer());
+        if (buf.byteLength > 5 * 1024 * 1024) return null;
+        base64Data = buf.toString('base64');
+      } catch {
+        return null;
+      }
+    }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -551,7 +561,7 @@ async function classifyImageWithAnthropic(
             content: [
               {
                 type: 'image',
-                source: { type: 'base64', media_type: 'image/jpeg', data: imageData },
+                source: { type: 'base64', media_type: 'image/jpeg', data: base64Data },
               },
               { type: 'text', text: textContent },
             ],

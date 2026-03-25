@@ -56,8 +56,9 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
 
   const totalRequests = logs?.length || 0;
 
-  // Aggregate by endpoint
+  // Aggregate by endpoint + daily breakdown
   const byEndpoint: Record<string, { count: number; avgResponseMs: number }> = {};
+  const dailyMap: Record<string, number> = {};
   let totalResponseMs = 0;
   let successCount = 0;
   let errorCount = 0;
@@ -66,6 +67,7 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     const endpoint = log.endpoint as string;
     const responseTime = (log.response_time_ms as number) || 0;
     const statusCode = log.status_code as number;
+    const createdAt = log.created_at as string;
 
     if (!byEndpoint[endpoint]) {
       byEndpoint[endpoint] = { count: 0, avgResponseMs: 0 };
@@ -79,6 +81,10 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     } else {
       errorCount++;
     }
+
+    // Daily breakdown
+    const day = createdAt ? createdAt.slice(0, 10) : 'unknown';
+    dailyMap[day] = (dailyMap[day] || 0) + 1;
   }
 
   // Calculate averages
@@ -88,9 +94,14 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     }
   }
 
+  // Sort daily breakdown
+  const dailyBreakdown = Object.entries(dailyMap)
+    .map(([date, requests]) => ({ date, requests }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
   // Plan limits — 신 요금제 (세션 28 확정, 세션 37 Overage 추가)
   const planConfig: Record<string, { limit: number; overageRate: number }> = {
-    free: { limit: 100, overageRate: 0 },
+    free: { limit: 200, overageRate: 0 },
     basic: { limit: 2000, overageRate: 0.015 },
     pro: { limit: 10000, overageRate: 0.012 },
     enterprise: { limit: 50000, overageRate: 0.01 },
@@ -107,6 +118,7 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     errorCount,
     avgResponseMs: totalRequests > 0 ? Math.round(totalResponseMs / totalRequests) : 0,
     byEndpoint,
+    dailyBreakdown,
     plan: {
       id: context.planId,
       limit,

@@ -94,6 +94,17 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     validItems.push({ index: i, id: item.id, productName, item });
   }
 
+  // Deduplicate by productName (classify once, copy result)
+  const uniqueNames = new Map<string, number>(); // name → first index in validItems
+  const deduped: typeof validItems = [];
+  for (const vi of validItems) {
+    const key = vi.productName.toLowerCase();
+    if (!uniqueNames.has(key)) {
+      uniqueNames.set(key, deduped.length);
+      deduped.push(vi);
+    }
+  }
+
   // Process with concurrency
   interface BatchResult {
     id: string;
@@ -113,14 +124,18 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   }
 
   const results: BatchResult[] = [];
+  const ITEM_TIMEOUT_MS = 10000; // 10s per item
 
-  for (let start = 0; start < validItems.length; start += CONCURRENCY) {
-    const chunk = validItems.slice(start, start + CONCURRENCY);
+  for (let start = 0; start < deduped.length; start += CONCURRENCY) {
+    const chunk = deduped.slice(start, start + CONCURRENCY);
     const chunkResults = await Promise.allSettled(
       chunk.map(async ({ id, productName, item }) => {
         const category = typeof item.category === 'string' ? sanitizeText(item.category, 200) : undefined;
         const startMs = Date.now();
-        const result = await classifyProductAsync(productName, category, context.sellerId);
+        const result = await Promise.race([
+          classifyProductAsync(productName, category, context.sellerId),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Classification timeout')), ITEM_TIMEOUT_MS)),
+        ]);
         const confidence = calculateConfidenceScore(result, productName);
         const processingTimeMs = Date.now() - startMs;
 
@@ -169,14 +184,46 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     }
   }
 
+  // Copy results for deduplicated items
+  const finalResults: BatchResult[] = [];
+  for (const vi of validItems) {
+    const key = vi.productName.toLowerCase();
+    const existing = results.find(r => r.id === vi.id);
+    if (existing) {
+      finalResults.push(existing);
+    } else {
+      // Find result from deduped original
+      const dedupIdx = uniqueNames.get(key);
+      if (dedupIdx !== undefined) {
+        const original = results.find(r => r.id === deduped[dedupIdx].id);
+        if (original) {
+          finalResults.push({ ...original, id: vi.id });
+        }
+      }
+    }
+  }
+
+  // Source breakdown
+  const sourceBreakdown: Record<string, number> = {};
+  for (const r of finalResults) {
+    sourceBreakdown[r.method] = (sourceBreakdown[r.method] || 0) + 1;
+  }
+
+  const avgConfidence = finalResults.length > 0
+    ? Math.round(finalResults.reduce((sum, r) => sum + r.confidence, 0) / finalResults.length * 1000) / 1000
+    : 0;
+
   return apiSuccess(
     {
-      results,
+      results: finalResults,
       errors: errors.length > 0 ? errors : undefined,
       summary: {
         total: items.length,
-        success: results.length,
+        classified: finalResults.length,
         failed: errors.length,
+        avgConfidence,
+        deduplicated: validItems.length - deduped.length,
+        sourceBreakdown,
         batchLimit,
         plan: context.planId,
       },

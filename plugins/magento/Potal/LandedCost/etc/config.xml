@@ -8,6 +8,7 @@
                 <api_key/>
                 <seller_id/>
                 <origin_country>US</origin_country>
+                <api_url>https://www.potal.app/api/v1</api_url>
                 <widget_position>after_price</widget_position>
                 <enable_ddp>0</enable_ddp>
             </general>

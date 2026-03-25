@@ -17,6 +17,7 @@ interface UsageLogEntry {
   originCountry?: string;
   destinationCountry?: string;
   productPriceCents?: number;
+  mode?: 'live' | 'sandbox';
 }
 
 /**
@@ -37,6 +38,7 @@ export async function logUsage(
     origin_country: entry.originCountry || null,
     destination_country: entry.destinationCountry || 'US',
     product_price_cents: entry.productPriceCents || null,
+    mode: entry.mode || 'live',
   });
 
   // Silently ignore log failures — fire-and-forget

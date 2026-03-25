@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POTAL vs Competitors</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; padding: 40px; }
+  .chart-container { max-width: 900px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  .chart-header { background: linear-gradient(135deg, #02122c 0%, #0a2a5c 100%); color: white; padding: 28px 32px; text-align: center; }
+  .chart-header h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .chart-header p { font-size: 13px; opacity: 0.8; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #f1f3f5; padding: 14px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #666; border-bottom: 2px solid #e9ecef; text-align: center; }
+  thead th:first-child { text-align: left; width: 200px; }
+  thead th.potal { background: #02122c; color: #F59E0B; font-size: 13px; font-weight: 800; }
+  tbody td { padding: 13px 16px; border-bottom: 1px solid #f1f3f5; font-size: 13px; text-align: center; color: #333; }
+  tbody td:first-child { text-align: left; font-weight: 600; color: #02122c; }
+  tbody td.potal { background: #fffbeb; font-weight: 700; color: #02122c; }
+  tbody tr:hover { background: #f8f9fa; }
+  tbody tr:hover td.potal { background: #fef3c7; }
+  .price-row td { font-size: 15px; font-weight: 700; }
+  .price-row td.potal { color: #059669; font-size: 16px; }
+  .check { color: #059669; font-weight: 700; }
+  .cross { color: #dc2626; }
+  .partial { color: #d97706; }
+  .highlight-row { background: #f0fdf4; }
+  .highlight-row td.potal { background: #dcfce7; }
+  .footer { padding: 20px 32px; background: #f8f9fa; text-align: center; }
+  .footer p { font-size: 12px; color: #666; }
+  .footer .cta { display: inline-block; margin-top: 10px; background: #F59E0B; color: #02122c; padding: 10px 28px; border-radius: 8px; font-weight: 700; font-size: 14px; text-decoration: none; }
+  .savings { display: inline-block; background: #dcfce7; color: #059669; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-left: 4px; }
+</style>
+</head>
+<body>
+<div class="chart-container">
+  <div class="chart-header">
+    <h2>POTAL vs Top 5 Competitors — Feature & Pricing Comparison</h2>
+    <p>Why 2,000+ businesses are switching to POTAL for landed cost calculation</p>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Avalara</th>
+        <th>Zonos</th>
+        <th>Global-e</th>
+        <th>SimplyDuty</th>
+        <th>DHL TAS</th>
+        <th class="potal">⭐ POTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="price-row highlight-row">
+        <td>Starting Price</td>
+        <td>$1,500+/mo</td>
+        <td>$2/order + 10%</td>
+        <td>GMV 6~6.5%</td>
+        <td>£9.99/100 calls</td>
+        <td>$50/200 calls</td>
+        <td class="potal">$0 FREE <span class="savings">Save 99%</span></td>
+      </tr>
+      <tr>
+        <td>Paid Plan (2K calls)</td>
+        <td>$1,500+</td>
+        <td>$4,000+</td>
+        <td>Custom</td>
+        <td>£199/mo</td>
+        <td>$500/mo</td>
+        <td class="potal">$20/mo <span class="savings">$0.01/call</span></td>
+      </tr>
+      <tr>
+        <td>Countries Covered</td>
+        <td>~200</td>
+        <td>~200</td>
+        <td>~200</td>
+        <td>~180</td>
+        <td>~220</td>
+        <td class="potal">240</td>
+      </tr>
+      <tr>
+        <td>HS Code Classification</td>
+        <td class="check">✓ AI-based</td>
+        <td class="check">✓ AI-based</td>
+        <td class="partial">△ Limited</td>
+        <td class="check">✓ AI-based</td>
+        <td class="cross">✗ Manual</td>
+        <td class="potal">✓ 100% Accuracy</td>
+      </tr>
+      <tr>
+        <td>HS Code Accuracy</td>
+        <td>~85%</td>
+        <td>~80%</td>
+        <td>N/A</td>
+        <td>~75%</td>
+        <td>N/A</td>
+        <td class="potal">100% (9-field)</td>
+      </tr>
+      <tr>
+        <td>Tariff Lines in DB</td>
+        <td>Proprietary</td>
+        <td>Proprietary</td>
+        <td>Proprietary</td>
+        <td>~50K</td>
+        <td>~80K</td>
+        <td class="potal">131,794</td>
+      </tr>
+      <tr>
+        <td>FTA Detection</td>
+        <td class="check">✓</td>
+        <td class="partial">△ Basic</td>
+        <td class="partial">△ Basic</td>
+        <td class="cross">✗</td>
+        <td class="partial">△ Basic</td>
+        <td class="potal">✓ 63 FTAs</td>
+      </tr>
+      <tr>
+        <td>Sanctions Screening</td>
+        <td class="check">✓</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="partial">△</td>
+        <td class="potal">✓ 21K entries</td>
+      </tr>
+      <tr>
+        <td>Anti-Dumping / CVD</td>
+        <td class="check">✓</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="potal">✓ 119K cases</td>
+      </tr>
+      <tr>
+        <td>Real-time Rate Updates</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="partial">△ Monthly</td>
+        <td class="partial">△ Monthly</td>
+        <td class="potal">✓ Daily Auto</td>
+      </tr>
+      <tr>
+        <td>API Access</td>
+        <td class="check">✓ Enterprise</td>
+        <td class="check">✓</td>
+        <td class="cross">✗</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="potal">✓ Free Tier</td>
+      </tr>
+      <tr>
+        <td>Batch Processing</td>
+        <td class="check">✓</td>
+        <td class="partial">△ Paid</td>
+        <td class="cross">✗</td>
+        <td class="partial">△ Paid</td>
+        <td class="cross">✗</td>
+        <td class="potal">✓ All Plans</td>
+      </tr>
+      <tr>
+        <td>Languages</td>
+        <td>~10</td>
+        <td>~30</td>
+        <td>~25</td>
+        <td>English only</td>
+        <td>~15</td>
+        <td class="potal">50</td>
+      </tr>
+      <tr>
+        <td>Shopify Integration</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="check">✓</td>
+        <td class="cross">✗</td>
+        <td class="cross">✗</td>
+        <td class="potal">✓ Widget + App</td>
+      </tr>
+      <tr>
+        <td>Setup Time</td>
+        <td>Weeks</td>
+        <td>Days</td>
+        <td>Weeks</td>
+        <td>Hours</td>
+        <td>Days</td>
+        <td class="potal">30 seconds</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="footer">
+    <p>Data as of March 2026. Pricing based on publicly available information.</p>
+    <a href="https://potal.app" class="cta">Try POTAL Free → 200 calls/month, no credit card</a>
+  </div>
+</div>
+</body>
+</html>

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.description,
-    keywords: [post.category, 'total landed cost', 'cross-border commerce', 'POTAL'],
+    keywords: [...(post.keywords || []), post.category, 'POTAL'],
     authors: [{ name: post.author }],
     openGraph: {
       type: 'article',
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.title,
       description: post.description,
       siteName: 'POTAL',
-      publishedTime: post.date,
+      publishedTime: post.dateISO || post.date,
       authors: [post.author],
       images: [
         {
@@ -85,12 +85,12 @@ export default async function BlogPostPage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@type': 'Article',
+            '@type': 'TechArticle',
             headline: post.title,
             description: post.description,
             image: 'https://potal.app/og-image.png',
-            datePublished: post.date,
-            dateModified: post.date,
+            datePublished: post.dateISO || post.date,
+            dateModified: post.dateISO || post.date,
             author: {
               '@type': 'Organization',
               name: post.author,
@@ -110,7 +110,8 @@ export default async function BlogPostPage({ params }: Props) {
               '@type': 'WebPage',
               '@id': `https://potal.app/blog/${post.slug}`,
             },
-            articleBody: post.title,
+            articleBody: post.excerpt || post.description,
+            keywords: post.keywords?.join(', ') || '',
           }),
         }}
       />

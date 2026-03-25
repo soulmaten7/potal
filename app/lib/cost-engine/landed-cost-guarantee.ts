@@ -196,14 +196,35 @@ export async function submitClaim(params: {
     submittedAt: new Date().toISOString(),
   };
 
-  // Store claim in DB (fire-and-forget if DB unavailable)
+  // Store claim in DB
   if (supabase) {
     try {
-      await (supabase.from('health_check_logs') as any).insert({
-        overall_status: 'yellow',
-        checks: [{ name: 'guarantee_claim', ...claim }],
-        duration_ms: 0,
-      } as Record<string, unknown>);
+      // Try dedicated guarantee_claims table first, fallback to health_check_logs
+      const { error: claimError } = await supabase
+        .from('guarantee_claims')
+        .insert({
+          claim_id: claim.id,
+          seller_id: claim.sellerId,
+          calculation_id: claim.calculationId,
+          calculated_amount: claim.calculatedAmount,
+          actual_amount: claim.actualAmount,
+          difference_amount: claim.differenceAmount,
+          difference_percent: claim.differencePercent,
+          tier: claim.tier,
+          status: claim.status,
+          submitted_at: claim.submittedAt,
+        });
+
+      // If table doesn't exist, store in health_check_logs as fallback
+      if (claimError) {
+        await supabase
+          .from('health_check_logs')
+          .insert({
+            overall_status: 'yellow',
+            checks: [{ name: 'guarantee_claim', ...claim }],
+            duration_ms: 0,
+          });
+      }
     } catch {
       // Claim object still returned — DB persistence is best-effort
     }
@@ -220,20 +241,60 @@ export async function getClaims(sellerId: string): Promise<GuaranteeClaim[]> {
   if (!supabase) return [];
 
   try {
-    const { data } = await (supabase.from('health_check_logs') as any)
+    // Try dedicated guarantee_claims table first
+    const { data: claimRows, error: claimError } = await supabase
+      .from('guarantee_claims')
+      .select('claim_id, seller_id, calculation_id, calculated_amount, actual_amount, difference_amount, difference_percent, tier, status, submitted_at, resolved_at, resolution')
+      .eq('seller_id', sellerId)
+      .order('submitted_at', { ascending: false })
+      .limit(100);
+
+    if (!claimError && claimRows && claimRows.length > 0) {
+      return claimRows.map((row: Record<string, unknown>) => ({
+        id: String(row.claim_id ?? ''),
+        sellerId: String(row.seller_id ?? ''),
+        calculationId: String(row.calculation_id ?? ''),
+        calculatedAmount: Number(row.calculated_amount ?? 0),
+        actualAmount: Number(row.actual_amount ?? 0),
+        differenceAmount: Number(row.difference_amount ?? 0),
+        differencePercent: Number(row.difference_percent ?? 0),
+        tier: String(row.tier ?? 'standard') as GuaranteeTier,
+        status: String(row.status ?? 'submitted') as ClaimStatus,
+        submittedAt: String(row.submitted_at ?? ''),
+        resolvedAt: row.resolved_at ? String(row.resolved_at) : undefined,
+        resolution: row.resolution ? String(row.resolution) : undefined,
+      }));
+    }
+
+    // Fallback: search health_check_logs for legacy claims
+    const { data: logRows } = await supabase
+      .from('health_check_logs')
       .select('checks, checked_at')
       .order('checked_at', { ascending: false })
-      .limit(100) as { data: Array<{ checks: Array<Record<string, unknown>>; checked_at: string }> | null };
+      .limit(100);
 
-    if (!data) return [];
+    if (!logRows) return [];
 
     const claims: GuaranteeClaim[] = [];
-    for (const row of data) {
-      const checks = row.checks as Array<Record<string, unknown>>;
+    for (const row of logRows) {
+      const checks = row.checks as Array<Record<string, unknown>> | null;
       if (!Array.isArray(checks)) continue;
       for (const check of checks) {
         if (check.name === 'guarantee_claim' && check.sellerId === sellerId) {
-          claims.push(check as unknown as GuaranteeClaim);
+          claims.push({
+            id: String(check.id ?? ''),
+            sellerId: String(check.sellerId ?? ''),
+            calculationId: String(check.calculationId ?? ''),
+            calculatedAmount: Number(check.calculatedAmount ?? 0),
+            actualAmount: Number(check.actualAmount ?? 0),
+            differenceAmount: Number(check.differenceAmount ?? 0),
+            differencePercent: Number(check.differencePercent ?? 0),
+            tier: String(check.tier ?? 'standard') as GuaranteeTier,
+            status: String(check.status ?? 'submitted') as ClaimStatus,
+            submittedAt: String(check.submittedAt ?? ''),
+            resolvedAt: check.resolvedAt ? String(check.resolvedAt) : undefined,
+            resolution: check.resolution ? String(check.resolution) : undefined,
+          });
         }
       }
     }

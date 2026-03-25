@@ -88,6 +88,12 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     });
   }
 
+  // F025: Pricing mode support (DDP = default, DDU = duties at delivery)
+  const pricingMode = typeof body.pricingMode === 'string'
+    && ['DDP', 'DDU', 'DAP'].includes(body.pricingMode.toUpperCase())
+    ? body.pricingMode.toUpperCase() as 'DDP' | 'DDU' | 'DAP'
+    : 'DDP';
+
   const input: DdpCheckoutInput = {
     sellerId: context.sellerId,
     originCountry,
@@ -113,7 +119,14 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   try {
     if (action === 'quote') {
       const quote = await getDdpQuote(input);
-      return apiSuccess({ quote }, {
+      return apiSuccess({
+        quote,
+        pricingMode,
+        dutyCollectedAtCheckout: pricingMode === 'DDP',
+        customerFacingNote: pricingMode === 'DDP'
+          ? 'All import duties and taxes included in the price shown.'
+          : 'Import duties and taxes may be collected at delivery.',
+      }, {
         sellerId: context.sellerId,
         plan: context.planId,
         action: 'quote',
@@ -121,7 +134,11 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     }
 
     const session = await createDdpCheckoutSession(input);
-    return apiSuccess(session, {
+    return apiSuccess({
+      ...session,
+      pricingMode,
+      dutyCollectedAtCheckout: pricingMode === 'DDP',
+    }, {
       sellerId: context.sellerId,
       plan: context.planId,
       action: 'checkout',

@@ -1,21 +1,29 @@
 /**
  * POTAL API Rate Limiter
  *
- * In-memory sliding window rate limiting per API key.
- * Free: 30/min, Basic: 60/min, Pro: 120/min, Enterprise: unlimited.
+ * Token bucket algorithm with burst allowance.
+ * In-memory primary + DB sync comment for future enhancement.
+ *
+ * Free: 30/min + 5 burst, Basic: 60/min + 10 burst,
+ * Pro: 120/min + 20 burst, Enterprise: 300/min + 50 burst.
+ *
+ * NOTE: In-memory store resets on Vercel cold start. This is acceptable
+ * because plan-checker.ts enforces monthly quotas via DB. The rate limiter
+ * prevents short-term abuse (API flooding), not long-term quota evasion.
  */
 
-interface RateLimitEntry {
-  timestamps: number[];
-  windowStart: number;
+interface TokenBucket {
+  tokens: number;
+  maxTokens: number;
+  refillRate: number; // tokens per second
+  lastRefill: number;
 }
 
-// In-memory store (resets on server restart — acceptable for MVP)
-const store = new Map<string, RateLimitEntry>();
+// In-memory store
+const store = new Map<string, TokenBucket>();
 
 // Cleanup old entries every 5 minutes
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
-const WINDOW_MS = 60 * 1000; // 1 minute window
 let lastCleanup = Date.now();
 
 function cleanup() {
@@ -23,63 +31,96 @@ function cleanup() {
   if (now - lastCleanup < CLEANUP_INTERVAL) return;
   lastCleanup = now;
 
-  const cutoff = now - WINDOW_MS * 2;
-  for (const [key, entry] of store) {
-    if (entry.windowStart < cutoff) {
+  const cutoff = now - 120000; // Remove entries idle for 2+ minutes
+  for (const [key, bucket] of store) {
+    if (bucket.lastRefill < cutoff) {
       store.delete(key);
     }
   }
+}
+
+// ─── Burst Allowance per Plan ────────────────────────
+
+const BURST_ALLOWANCE: Record<string, number> = {
+  free: 5,
+  basic: 10,
+  pro: 20,
+  enterprise: 50,
+};
+
+export function getBurstForPlan(planId: string): number {
+  return BURST_ALLOWANCE[planId] ?? BURST_ALLOWANCE.free;
 }
 
 export interface RateLimitResult {
   allowed: boolean;
   remaining: number;
   resetAt: number;
+  burst: boolean;
 }
 
 /**
- * Check rate limit for an API key.
- * Returns whether the request is allowed and remaining quota.
+ * Check rate limit using token bucket algorithm.
+ * Allows burst traffic up to plan-specific allowance.
+ *
+ * @param keyId - API key identifier
+ * @param limitPerMinute - Base rate limit (e.g., 30 for Free)
+ * @param planId - Plan for burst calculation
  */
 export function checkRateLimit(
   keyId: string,
-  limitPerMinute: number
+  limitPerMinute: number,
+  planId?: string
 ): RateLimitResult {
   // Unlimited plan
   if (limitPerMinute <= 0) {
-    return { allowed: true, remaining: 999999, resetAt: 0 };
+    return { allowed: true, remaining: 999999, resetAt: 0, burst: false };
   }
 
   cleanup();
 
   const now = Date.now();
-  const windowStart = now - WINDOW_MS;
+  const burstAllowance = getBurstForPlan(planId || 'free');
+  const maxTokens = limitPerMinute + burstAllowance;
+  const refillRate = limitPerMinute / 60; // tokens per second
 
-  let entry = store.get(keyId);
-  if (!entry) {
-    entry = { timestamps: [], windowStart: now };
-    store.set(keyId, entry);
+  let bucket = store.get(keyId);
+  if (!bucket) {
+    bucket = {
+      tokens: maxTokens, // Start full
+      maxTokens,
+      refillRate,
+      lastRefill: now,
+    };
+    store.set(keyId, bucket);
   }
 
-  // Remove timestamps outside the window
-  entry.timestamps = entry.timestamps.filter((t) => t > windowStart);
-  entry.windowStart = now;
+  // Refill tokens based on elapsed time
+  const elapsed = (now - bucket.lastRefill) / 1000; // seconds
+  const refill = elapsed * bucket.refillRate;
+  bucket.tokens = Math.min(bucket.maxTokens, bucket.tokens + refill);
+  bucket.lastRefill = now;
 
-  const currentCount = entry.timestamps.length;
-
-  if (currentCount >= limitPerMinute) {
-    // Find when the oldest request in window expires
-    const oldestInWindow = entry.timestamps[0];
-    const resetAt = oldestInWindow + WINDOW_MS;
-    return { allowed: false, remaining: 0, resetAt };
+  if (bucket.tokens < 1) {
+    // Calculate when next token available
+    const waitMs = ((1 - bucket.tokens) / bucket.refillRate) * 1000;
+    return {
+      allowed: false,
+      remaining: 0,
+      resetAt: now + Math.ceil(waitMs),
+      burst: false,
+    };
   }
 
-  // Allow request
-  entry.timestamps.push(now);
+  // Consume a token
+  bucket.tokens -= 1;
+  const isBurst = bucket.tokens < burstAllowance;
+
   return {
     allowed: true,
-    remaining: limitPerMinute - currentCount - 1,
-    resetAt: now + WINDOW_MS,
+    remaining: Math.floor(bucket.tokens),
+    resetAt: now + 60000,
+    burst: isBurst,
   };
 }
 

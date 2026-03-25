@@ -1,6 +1,7 @@
 /**
  * POTAL API v1 — /api/v1/verify/pre-shipment
- * Comprehensive pre-shipment verification — runs all checks in parallel
+ * @deprecated Use POST /api/v1/verify?mode=comprehensive instead.
+ * This endpoint is maintained for backward compatibility.
  */
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
@@ -39,15 +40,26 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
   const missingDocs: string[] = [];
   const sb = createClient(supabaseUrl, supabaseKey);
 
-  // 1. HS Code Validity
-  if (hsCode.length >= 4) {
-    const { data } = await sb.from('product_hs_mappings').select('id').like('hs_code', `${hsCode.substring(0, 4)}%`).limit(1);
+  // 1. HS Code Validity (6-digit exact match)
+  if (hsCode.length >= 6) {
+    const hs6 = hsCode.substring(0, 6);
+    const { data } = await sb.from('product_hs_mappings').select('id').eq('hs6', hs6).limit(1);
     if (data && data.length > 0) {
-      checklist.push({ item: 'HS Code Valid', status: 'PASS', detail: `HS ${hsCode} format valid` });
+      checklist.push({ item: 'HS Code Valid', status: 'PASS', detail: `HS ${hs6} found in classification DB` });
     } else {
-      checklist.push({ item: 'HS Code Valid', status: 'WARNING', detail: `HS ${hsCode} not found in mapping DB — may still be valid` });
-      riskScore += 10;
+      // Also check gov_tariff_schedules for destination-specific validation
+      const { data: govData } = await sb.from('gov_tariff_schedules').select('id')
+        .eq('country_code', destination).like('hs_code', `${hs6}%`).limit(1);
+      if (govData && govData.length > 0) {
+        checklist.push({ item: 'HS Code Valid', status: 'PASS', detail: `HS ${hs6} found in ${destination} tariff schedule` });
+      } else {
+        checklist.push({ item: 'HS Code Valid', status: 'WARNING', detail: `HS ${hs6} not found in DB — may still be valid` });
+        riskScore += 10;
+      }
     }
+  } else if (hsCode.length >= 4) {
+    checklist.push({ item: 'HS Code Valid', status: 'WARNING', detail: `HS ${hsCode} is only ${hsCode.length} digits — 6+ recommended` });
+    riskScore += 10;
   } else {
     checklist.push({ item: 'HS Code Valid', status: 'FAIL', detail: 'HS code too short (min 4 digits)' });
     riskScore += 20;
@@ -83,33 +95,24 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
     riskScore += 5;
   }
 
-  // 4. Embargo Check
-  try {
-    const { data: embargoes } = await sb.from('embargo_programs').select('program_type, program_name, sectors, description').eq('country_code', destination);
-    if (embargoes && embargoes.length > 0) {
-      const comprehensive = embargoes.find((e: { program_type: string }) => e.program_type === 'comprehensive');
-      if (comprehensive) {
-        checklist.push({ item: 'Embargo Check', status: 'FAIL', detail: `${comprehensive.program_name}: ${comprehensive.description}` });
-        riskScore += 50;
-      } else {
-        checklist.push({ item: 'Embargo Check', status: 'WARNING', detail: `Sectoral sanctions: ${embargoes.map((e: { program_name: string }) => e.program_name).join(', ')}` });
-        riskScore += 15;
-      }
-    } else {
-      checklist.push({ item: 'Embargo Check', status: 'PASS', detail: 'No embargo on destination' });
-    }
+  // 4. Embargo Check (OFAC comprehensive + sectoral)
+  const EMBARGO_COMPREHENSIVE = new Set(['CU', 'IR', 'KP', 'SY']);
+  const EMBARGO_SECTORAL = new Set(['RU', 'BY', 'VE', 'MM']);
 
-    // Also check origin
-    const { data: originEmbargoes } = await sb.from('embargo_programs').select('program_type, program_name').eq('country_code', origin);
-    if (originEmbargoes && originEmbargoes.length > 0) {
-      const comp = originEmbargoes.find((e: { program_type: string }) => e.program_type === 'comprehensive');
-      if (comp) {
-        checklist.push({ item: 'Origin Embargo', status: 'FAIL', detail: `Origin ${origin} under comprehensive embargo` });
-        riskScore += 30;
-      }
-    }
-  } catch {
-    checklist.push({ item: 'Embargo Check', status: 'SKIP', detail: 'Check unavailable' });
+  if (EMBARGO_COMPREHENSIVE.has(destination)) {
+    checklist.push({ item: 'Embargo Check', status: 'FAIL', detail: `${destination} is under comprehensive US sanctions. Shipment prohibited without OFAC license.` });
+    riskScore += 50;
+  } else if (EMBARGO_SECTORAL.has(destination)) {
+    checklist.push({ item: 'Embargo Check', status: 'WARNING', detail: `${destination} has sectoral sanctions. Verify product eligibility before shipping.` });
+    riskScore += 15;
+  } else {
+    checklist.push({ item: 'Embargo Check', status: 'PASS', detail: 'No embargo on destination' });
+  }
+
+  // Also check origin
+  if (EMBARGO_COMPREHENSIVE.has(origin)) {
+    checklist.push({ item: 'Origin Embargo', status: 'FAIL', detail: `Origin ${origin} under comprehensive embargo` });
+    riskScore += 30;
   }
 
   // 5. Export Controls
@@ -184,26 +187,33 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
     }
   }
 
-  // Calculate risk
+  // Calculate risk (C4: FAIL → BLOCKED)
   riskScore = Math.min(riskScore, 100);
-  const riskLevel = riskScore >= 60 ? 'HIGH' : riskScore >= 30 ? 'MEDIUM' : 'LOW';
   const failCount = checklist.filter(c => c.status === 'FAIL').length;
+  const riskLevel = failCount > 0 ? 'BLOCKED' : riskScore >= 60 ? 'HIGH' : riskScore >= 30 ? 'MEDIUM' : 'LOW';
+  const shipmentAllowed = failCount === 0;
 
-  if (failCount > 0) recommendations.push('Resolve all FAIL items before shipping.');
+  if (failCount > 0) recommendations.push('Resolve all FAIL items before shipping. Shipment is blocked.');
   if (riskLevel === 'HIGH') recommendations.push('Consider engaging a licensed customs broker.');
 
   const clearanceTimes: Record<string, string> = {
     LOW: '1-2 business days', MEDIUM: '2-4 business days', HIGH: '5-10 business days (may require additional documentation)',
   };
 
-  return apiSuccess({
+  const response = apiSuccess({
+    _deprecated: 'This endpoint is deprecated. Use POST /api/v1/verify?mode=comprehensive instead.',
     checklist,
     summary: { total: checklist.length, pass: checklist.filter(c => c.status === 'PASS').length, fail: failCount, warning: checklist.filter(c => c.status === 'WARNING').length },
     risk_score: riskScore,
     risk_level: riskLevel,
+    shipment_allowed: shipmentAllowed,
+    blocked_reasons: failCount > 0 ? checklist.filter(c => c.status === 'FAIL').map(c => c.detail) : [],
     missing_documents: missingDocs,
-    estimated_clearance_time: clearanceTimes[riskLevel],
+    estimated_clearance_time: clearanceTimes[riskLevel] || '5-10 business days',
     recommendations,
     shipment: { hs_code: hsCode, origin, destination, declared_value: declaredValue, weight_kg: weightKg },
   }, { sellerId: _ctx.sellerId });
+  response.headers.set('Deprecation', 'true');
+  response.headers.set('Link', '</api/v1/verify?mode=comprehensive>; rel="successor-version"');
+  return response;
 });

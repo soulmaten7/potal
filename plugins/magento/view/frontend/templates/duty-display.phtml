@@ -18,21 +18,20 @@
 
 <script>
 (function() {
-    var apiKey = '<?= $block->escapeJs($block->getApiKey()) ?>';
     var price = <?= (float)$block->getProductPrice() ?>;
-    if (!apiKey || price <= 0) return;
+    if (price <= 0) return;
 
     var container = document.getElementById('potal-duty-display');
     container.style.display = 'block';
 
-    fetch('<?= $block->escapeUrl($block->getApiUrl()) ?>', {
+    fetch('<?= $block->escapeUrl($block->getProxyUrl()) ?>', {
         method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         body: JSON.stringify({ price: price, destinationCountry: 'US' })
     })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-        if (data && data.data) {
+        if (data && data.success && data.data) {
             var d = data.data;
             document.getElementById('potal-duty-amount').textContent = '$' + (d.importDuty || 0).toFixed(2);
             document.getElementById('potal-tax-label').textContent = d.vatLabel || 'VAT/Tax';
@@ -40,6 +39,8 @@
             document.getElementById('potal-total').textContent = '$' + (d.totalLandedCost || 0).toFixed(2);
             document.getElementById('potal-duty-loading').style.display = 'none';
             document.getElementById('potal-duty-result').style.display = 'block';
+        } else {
+            container.style.display = 'none';
         }
     })
     .catch(function() { container.style.display = 'none'; });

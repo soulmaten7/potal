@@ -32,7 +32,7 @@ export async function applyPriceBreakV3(
 ): Promise<Step6PriceBreakResult> {
   const original = hsCode;
 
-  if (!price || price <= 0) {
+  if (!price || price < 0) {
     return { final_hs_code: hsCode, price_break_applied: false, original_code: original };
   }
 
