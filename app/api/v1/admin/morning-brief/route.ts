@@ -18,6 +18,7 @@ import type { CheckStatus } from '@/app/lib/monitoring/health-monitor';
 import { classifyIssue, type ClassifiedIssue } from '@/app/lib/monitoring/issue-classifier';
 import { runAutoRemediation, type RemediationResult } from '@/app/lib/monitoring/auto-remediation';
 import { sendMorningBriefEmail } from '@/app/lib/notifications/morning-brief-email';
+import { sendMorningBriefTelegram } from '@/app/lib/notifications/telegram';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -323,6 +324,26 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    // --- Telegram Notification (Chief Orchestrator 종합 브리핑) ---
+    let telegramResult = { sent: false, reason: 'skipped' };
+    const sendTg = req.nextUrl.searchParams.get('telegram') !== 'false';
+    if (sendTg) {
+      telegramResult = await sendMorningBriefTelegram({
+        overall,
+        summary: {
+          green: greenCount,
+          yellow: yellowDivisions.length,
+          red: redDivisions.length,
+          total: 15,
+        },
+        auto_resolved: autoResolved,
+        needs_attention: needsAttention,
+        all_green: allGreen,
+        d9_enterprise: enterpriseSummary,
+        durationMs: Date.now() - start,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
@@ -344,8 +365,9 @@ export async function GET(req: NextRequest) {
       // D9 Enterprise Sales pipeline
       d9_enterprise: enterpriseSummary,
 
-      // Email notification result
+      // Notifications
       email: emailResult,
+      telegram: telegramResult,
 
       // Legacy fields (backward compatible)
       yellowAlerts: yellowDivisions.map(d => ({
