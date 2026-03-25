@@ -32,14 +32,28 @@ function generateInvoiceNumber(): string {
 
 // ─── Auto-classify HS Codes ─────────────────────────
 
+/** Minimum confidence for auto-classified HS codes in customs documents */
+const MIN_DOC_CONFIDENCE_HIGH = 0.85;
+const MIN_DOC_CONFIDENCE_LOW = 0.50;
+
+interface EnrichResult {
+  items: ShipmentItem[];
+  warnings: string[];
+  itemsRequiringAttention: number[];
+}
+
 async function enrichItemsWithHsCodes(
   items: GenerateDocumentInput['items'],
   sellerId?: string
-): Promise<ShipmentItem[]> {
+): Promise<EnrichResult> {
   const enriched: ShipmentItem[] = [];
+  const warnings: string[] = [];
+  const itemsRequiringAttention: number[] = [];
 
-  for (const item of items) {
+  for (let idx = 0; idx < items.length; idx++) {
+    const item = items[idx];
     let hsCode = item.hsCode;
+    let classificationSource: string | undefined;
 
     // Auto-classify if no HS code provided
     if (!hsCode && item.description) {
@@ -49,12 +63,28 @@ async function enrichItemsWithHsCodes(
           item.category,
           sellerId
         );
-        if (classification.hsCode && classification.confidence >= 0.5) {
+        if (classification.hsCode && classification.confidence >= MIN_DOC_CONFIDENCE_HIGH) {
           hsCode = classification.hsCode;
+          classificationSource = 'auto_high_confidence';
+        } else if (classification.hsCode && classification.confidence >= MIN_DOC_CONFIDENCE_LOW) {
+          hsCode = classification.hsCode;
+          classificationSource = 'auto_low_confidence';
+          warnings.push(
+            `Item ${idx + 1} "${item.description}": HS code ${hsCode} auto-classified with ${Math.round(classification.confidence * 100)}% confidence. Manual verification recommended.`
+          );
         }
       } catch {
-        // Classification failed — leave hsCode undefined
+        // Classification failed
       }
+    }
+
+    // Mark items without HS code
+    if (!hsCode) {
+      hsCode = 'CLASSIFICATION_REQUIRED';
+      itemsRequiringAttention.push(idx);
+      warnings.push(
+        `Item ${idx + 1} "${item.description}": HS code could not be determined. Manual classification required before customs submission.`
+      );
     }
 
     enriched.push({
@@ -66,10 +96,11 @@ async function enrichItemsWithHsCodes(
       countryOfOrigin: item.countryOfOrigin,
       weightKg: item.weightKg,
       category: item.category,
+      classificationSource,
     });
   }
 
-  return enriched;
+  return { items: enriched, warnings, itemsRequiringAttention };
 }
 
 // ─── Commercial Invoice Generator ───────────────────
@@ -388,10 +419,21 @@ export async function generateDocuments(
   }
 
   // Enrich items with HS codes
-  const enrichedItems = await enrichItemsWithHsCodes(input.items, sellerId);
+  const enrichResult = await enrichItemsWithHsCodes(input.items, sellerId);
+  const enrichedItems = enrichResult.items;
   const invoiceNumber = generateInvoiceNumber();
 
-  const result: GenerateDocumentResult = {};
+  const result: GenerateDocumentResult = {
+    warnings: enrichResult.warnings.length > 0 ? enrichResult.warnings : undefined,
+    itemsRequiringAttention: enrichResult.itemsRequiringAttention.length > 0 ? enrichResult.itemsRequiringAttention : undefined,
+    documentMetadata: {
+      documentId: `POTAL-${(input.type || 'DOC').toUpperCase()}-${Date.now()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
+      generatedAt: new Date().toISOString(),
+      generatedBy: 'POTAL API v1',
+      declarantName: input.exporter?.name || '[DECLARANT NAME REQUIRED]',
+      disclaimer: 'This document was generated electronically. The declarant is responsible for verifying all information before submission to customs authorities.',
+    },
+  };
 
   const isAll = input.type === 'all';
 
@@ -408,7 +450,7 @@ export async function generateDocuments(
   }
 
   if (input.type === 'required_documents' || isAll) {
-    const firstHsCode = enrichedItems.find(i => i.hsCode)?.hsCode;
+    const firstHsCode = enrichedItems.find(i => i.hsCode && i.hsCode !== 'CLASSIFICATION_REQUIRED')?.hsCode;
     result.requiredDocuments = getRequiredDocuments(
       input.importer.country,
       input.exporter.country,

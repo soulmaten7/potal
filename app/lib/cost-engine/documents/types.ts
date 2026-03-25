@@ -23,6 +23,8 @@ export interface ShipmentItem {
   weightKg?: number;
   /** Product category */
   category?: string;
+  /** How the HS code was determined */
+  classificationSource?: string;
 }
 
 // ─── Parties ────────────────────────────────────────
@@ -269,10 +271,24 @@ export interface CustomsDeclaration {
   eoriNumber?: string;
 }
 
+export interface DocumentMetadata {
+  documentId: string;
+  generatedAt: string;
+  generatedBy: string;
+  declarantName: string;
+  disclaimer: string;
+}
+
 export interface GenerateDocumentResult {
   commercialInvoice?: CommercialInvoice;
   packingList?: PackingList;
   certificateOfOrigin?: CertificateOfOrigin;
   requiredDocuments?: RequiredDocumentsResult;
   customsDeclaration?: CustomsDeclaration;
+  /** Warnings about auto-classification or missing data */
+  warnings?: string[];
+  /** Item indices that need manual HS classification */
+  itemsRequiringAttention?: number[];
+  /** Document metadata (ID, timestamp, declarant) */
+  documentMetadata?: DocumentMetadata;
 }
