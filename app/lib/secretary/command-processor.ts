@@ -369,33 +369,113 @@ function escapeHtml(str: string): string {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ─── Main Router ────────────────────────────────────
+// ─── AI System Prompt ───────────────────────────────
 
-export async function processSecretaryCommand(command: string): Promise<string> {
+const SECRETARY_SYSTEM_PROMPT = `당신은 POTAL AI Agent Organization의 📬 D16 Secretary (비서실)입니다.
+은태님(CEO)에게 직접 보고하는 비서입니다.
+
+역할:
+- contact@potal.app Gmail 수신함 내용 보고
+- POTAL 앱 채팅 문의(Crisp) 내용 보고
+- 메일 분류: 🔴긴급 🟡중요 🔵참고 ⚪스킵
+- 라우팅 추천 (어느 Division 영역인지)
+
+핵심 원칙:
+- 보고만 함. 자동 답장/삭제/전달 절대 안 함
+- Chief Orchestrator와 별개 라인
+- 메일 내용 과장 금지 — 팩트만
+- 한국어로 보고, 기술 용어는 영어 그대로
+- HTML 태그 사용 (<b>, <i>, <code>) — Telegram HTML parse_mode`;
+
+// ─── AI Context Gathering ───────────────────────────
+
+async function gatherSecretaryContext(): Promise<string> {
+  const supabase = getSupabase();
+  if (!supabase) return '컨텍스트 수집 불가';
+
+  try {
+    const [mails, leads] = await Promise.all([
+      supabase.from('secretary_inbox_cache').select('from_email, subject, category, received_at, is_read, is_replied').order('received_at', { ascending: false }).limit(10),
+      supabase.from('enterprise_leads').select('company_name, status, contact_email').order('created_at', { ascending: false }).limit(5),
+    ]);
+
+    const mailSummary = (mails.data || []).map(m =>
+      `${m.is_read ? '읽음' : '미읽음'} [${m.category}] ${m.subject} — ${m.from_email}`
+    ).join('\n') || '캐시 비어있음';
+
+    const leadSummary = (leads.data || []).map(l =>
+      `${l.company_name || 'N/A'} (${l.status})`
+    ).join(', ') || 'none';
+
+    return `최근 메일:\n${mailSummary}\n\nEnterprise Leads: ${leadSummary}\n현재 시각: ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}`;
+  } catch {
+    return '컨텍스트 수집 실패';
+  }
+}
+
+// ─── AI Processing ──────────────────────────────────
+
+async function processWithClaudeSecretary(userMessage: string): Promise<string> {
+  const start = Date.now();
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+
+  if (!apiKey) {
+    return wrap('AI 모드 불가', 'ANTHROPIC_API_KEY가 설정되지 않았습니다.\n키워드 명령어는 정상 작동합니다. /help 참조.', Date.now() - start);
+  }
+
+  try {
+    const context = await gatherSecretaryContext();
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: SECRETARY_SYSTEM_PROMPT,
+        messages: [
+          { role: 'user', content: `현재 상태:\n${context}\n\n은태님 질문: ${userMessage}` },
+        ],
+      }),
+      signal: AbortSignal.timeout(25000),
+    });
+
+    if (!response.ok) {
+      return wrap('AI 응답 실패', `API 상태: ${response.status}. 키워드 명령어를 사용하세요. /help`, Date.now() - start);
+    }
+
+    const data = await response.json();
+    const aiText = data.content?.[0]?.text || '응답 생성 실패';
+
+    return wrap('비서 AI', aiText, Date.now() - start);
+  } catch {
+    return wrap('AI 타임아웃', '응답 시간 초과. 키워드 명령어를 사용하세요.\n/help 로 확인', Date.now() - start);
+  }
+}
+
+// ─── Keyword Match (fast path) ──────────────────────
+
+async function trySecretaryKeywordMatch(command: string): Promise<string | null> {
   const cmd = command.trim().toLowerCase();
   const start = Date.now();
 
-  // Help
   if (['/start', '/help', '도움', '명령어', 'help'].includes(cmd)) {
     return wrap('명령어 안내', await showHelp(), Date.now() - start);
   }
-
-  // Inbox
   if (['메일', 'inbox', '이메일', '수신함', '메일 확인', '/inbox', 'mail'].includes(cmd)) {
     return wrap('수신함', await checkInbox(), Date.now() - start);
   }
-
-  // Important
   if (['중요', '중요 메일', 'important', '중요메일'].includes(cmd)) {
     return wrap('중요 메일', await checkImportantMail(), Date.now() - start);
   }
-
-  // Unanswered
   if (['미응답', '답장 안 한', 'unanswered', '미답장'].includes(cmd)) {
     return wrap('미응답 메일', await checkUnanswered(), Date.now() - start);
   }
 
-  // Mail detail: "메일 3", "3번", "3번 메일"
   const mailNum = cmd.match(/(?:메일\s*)?(\d+)(?:번)?(?:\s*메일)?/);
   if (mailNum && !cmd.includes('주간') && !cmd.includes('오늘')) {
     const num = parseInt(mailNum[1], 10);
@@ -404,26 +484,29 @@ export async function processSecretaryCommand(command: string): Promise<string> 
     }
   }
 
-  // Today
   if (['오늘', '오늘 메일', 'today', '오늘메일'].includes(cmd)) {
     return wrap('오늘 메일', await checkTodayMail(), Date.now() - start);
   }
-
-  // Weekly
   if (['주간', '주간 메일', '이번주', 'week', '주간메일'].includes(cmd)) {
     return wrap('주간 메일', await checkWeeklyMail(), Date.now() - start);
   }
-
-  // Chat inquiries
   if (['채팅', '문의', 'crisp', '채팅 문의', '채팅문의'].includes(cmd)) {
     return wrap('채팅 문의', await checkChatInquiries(), Date.now() - start);
   }
-
-  // Enterprise leads
   if (['리드', '고객', 'enterprise', 'lead', 'leads', '엔터프라이즈'].includes(cmd)) {
     return wrap('Enterprise 리드', await checkEnterprise(), Date.now() - start);
   }
 
-  // Unknown
-  return wrap('알 수 없는 명령', `"${escapeHtml(command)}" — 이해하지 못했습니다.\n\n/help 로 명령어를 확인하세요.`, Date.now() - start);
+  return null;
+}
+
+// ─── Main Router ────────────────────────────────────
+
+export async function processSecretaryCommand(command: string): Promise<string> {
+  // 1단계: 키워드 매칭 (빠른 응답, 토큰 $0)
+  const keywordResult = await trySecretaryKeywordMatch(command);
+  if (keywordResult) return keywordResult;
+
+  // 2단계: Claude API 자연어 처리 (fallback)
+  return processWithClaudeSecretary(command);
 }

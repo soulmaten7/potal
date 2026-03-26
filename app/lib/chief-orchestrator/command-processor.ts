@@ -322,58 +322,132 @@ async function checkSecurity(): Promise<string> {
   return wrap('보안', lines.join('\n'), Date.now() - start);
 }
 
-// ─── Main Router ────────────────────────────────────
+// ─── AI System Prompt ───────────────────────────────
 
-export async function processChiefCommand(command: string): Promise<string> {
+const CHIEF_SYSTEM_PROMPT = `당신은 POTAL AI Agent Organization의 🧠 Chief Orchestrator (COO)입니다.
+은태님(CEO)의 명령을 받아 16개 Division을 관리합니다.
+
+역할:
+- 은태님의 자연어 명령을 이해하고, 어떤 Division이 처리해야 하는지 판단
+- DB 조회 결과를 바탕으로 현황 보고
+- 실행 계획을 제안 (직접 실행은 Claude Code에서)
+
+16개 Division:
+D1 Tariff & Compliance | D2 Tax Engine | D3 HS Classification
+D4 Data Pipeline | D5 Product & Web | D6 Integrations
+D7 API & AI Platform | D8 QA & Verification | D9 Customer Acquisition
+D10 Revenue & Billing | D11 Infrastructure | D12 Marketing
+D13 Legal | D14 Finance | D15 Intelligence | D16 Secretary (비서실)
+
+응답 규칙:
+- 한국어로 응답, 기술 용어는 영어 그대로
+- 간결하게, 과장 없이, 팩트만
+- HTML 태그 사용 (<b>, <i>, <code>) — Telegram HTML parse_mode
+- session-context.md에 없는 숫자 만들지 말 것
+- 실행이 필요한 건 "Claude Code에서 실행 필요" 라고 명시
+- Secretary(D16)에서 온 보고 내용을 언급하면, 해당 Division 라우팅 추천`;
+
+// ─── AI Context Gathering ───────────────────────────
+
+async function gatherContext(): Promise<string> {
+  const supabase = getSupabase();
+  if (!supabase) return 'DB 연결 불가';
+
+  try {
+    const [healthLogs, leads] = await Promise.all([
+      supabase.from('health_check_logs').select('overall_status, source, checked_at').order('checked_at', { ascending: false }).limit(10),
+      supabase.from('enterprise_leads').select('company_name, status, contact_email, created_at').order('created_at', { ascending: false }).limit(5),
+    ]);
+
+    const healthSummary = (healthLogs.data || []).map(l =>
+      `${l.overall_status === 'green' ? '🟢' : l.overall_status === 'yellow' ? '🟡' : '🔴'} ${l.source || 'unknown'}`
+    ).join(', ');
+
+    const leadsSummary = (leads.data || []).map(l =>
+      `${l.company_name || 'N/A'} (${l.status})`
+    ).join(', ');
+
+    return `최근 Health Checks: ${healthSummary || 'none'}\nEnterprise Leads: ${leadsSummary || 'none'}\n현재 시각: ${new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}`;
+  } catch {
+    return '컨텍스트 수집 실패';
+  }
+}
+
+// ─── AI Processing ──────────────────────────────────
+
+async function processWithClaude(userMessage: string): Promise<string> {
+  const start = Date.now();
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+
+  if (!apiKey) {
+    return wrap('AI 모드 불가', 'ANTHROPIC_API_KEY가 설정되지 않았습니다.\n키워드 명령어는 정상 작동합니다. /help 참조.', Date.now() - start);
+  }
+
+  try {
+    const context = await gatherContext();
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        system: CHIEF_SYSTEM_PROMPT,
+        messages: [
+          { role: 'user', content: `현재 상태:\n${context}\n\n은태님 명령: ${userMessage}` },
+        ],
+      }),
+      signal: AbortSignal.timeout(25000),
+    });
+
+    if (!response.ok) {
+      return wrap('AI 응답 실패', `API 상태: ${response.status}. 키워드 명령어를 사용하세요. /help`, Date.now() - start);
+    }
+
+    const data = await response.json();
+    const aiText = data.content?.[0]?.text || '응답 생성 실패';
+
+    return wrap('Chief AI', aiText, Date.now() - start);
+  } catch {
+    return wrap('AI 타임아웃', '응답 시간 초과. 키워드 명령어를 사용하세요.\n/help 로 확인', Date.now() - start);
+  }
+}
+
+// ─── Keyword Match (fast path) ──────────────────────
+
+async function tryKeywordMatch(command: string): Promise<string | null> {
   const cmd = command.trim().toLowerCase();
   const start = Date.now();
 
-  // Help
   if (['/start', '/help', '도움', '명령어', 'help'].includes(cmd)) {
     return wrap('명령어 안내', await showHelp(), Date.now() - start);
   }
-
-  // All divisions
   if (['전체', '상태', '브리핑', '/status', 'status', '모닝', 'morning'].includes(cmd)) {
     return checkAllDivisions();
   }
-
-  // Single division
   const divMatch = cmd.match(/^d(\d{1,2})$/i);
-  if (divMatch) {
-    return checkSingleDivision(parseInt(divMatch[1], 10));
-  }
+  if (divMatch) return checkSingleDivision(parseInt(divMatch[1], 10));
+  if (['데이터', 'db', '테이블', 'data', 'table'].includes(cmd)) return checkDataStatus();
+  if (['리드', '고객', '이메일', 'lead', 'leads', 'enterprise'].includes(cmd)) return checkD9Leads();
+  if (['api', '헬스', 'health', 'ping'].includes(cmd)) return checkAPIHealth();
+  if (['인프라', '서버', 'vercel', 'cron', 'infra'].includes(cmd)) return checkInfrastructure();
+  if (['매출', '구독', 'paddle', 'mrr', 'revenue'].includes(cmd)) return checkD10Revenue();
+  if (['보안', 'security', '보안점검'].includes(cmd)) return checkSecurity();
 
-  // Data
-  if (['데이터', 'db', '테이블', 'data', 'table'].includes(cmd)) {
-    return checkDataStatus();
-  }
+  return null; // No keyword match → fall through to AI
+}
 
-  // Enterprise leads
-  if (['리드', '고객', '이메일', 'lead', 'leads', 'enterprise'].includes(cmd)) {
-    return checkD9Leads();
-  }
+// ─── Main Router ────────────────────────────────────
 
-  // API health
-  if (['api', '헬스', 'health', 'ping'].includes(cmd)) {
-    return checkAPIHealth();
-  }
+export async function processChiefCommand(command: string): Promise<string> {
+  // 1단계: 키워드 매칭 (빠른 응답, 토큰 $0)
+  const keywordResult = await tryKeywordMatch(command);
+  if (keywordResult) return keywordResult;
 
-  // Infrastructure
-  if (['인프라', '서버', 'vercel', 'cron', 'infra'].includes(cmd)) {
-    return checkInfrastructure();
-  }
-
-  // Revenue
-  if (['매출', '구독', 'paddle', 'mrr', 'revenue'].includes(cmd)) {
-    return checkD10Revenue();
-  }
-
-  // Security
-  if (['보안', 'security', '보안점검'].includes(cmd)) {
-    return checkSecurity();
-  }
-
-  // Unknown
-  return wrap('알 수 없는 명령', `"${command}" — 이해했습니다. 아직 이 명령을 처리하는 로직이 없습니다.\n\n/help 로 사용 가능한 명령어를 확인하세요.`, Date.now() - start);
+  // 2단계: Claude API 자연어 처리 (fallback)
+  return processWithClaude(command);
 }
