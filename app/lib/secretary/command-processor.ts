@@ -444,16 +444,19 @@ async function processWithClaudeSecretary(userMessage: string): Promise<string> 
       signal: AbortSignal.timeout(25000),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      return wrap('AI 응답 실패', `API 상태: ${response.status}. 키워드 명령어를 사용하세요. /help`, Date.now() - start);
+      const errMsg = data?.error?.message || `HTTP ${response.status}`;
+      return wrap('AI 응답 실패', `API 에러: ${errMsg}\n\n키워드 명령어는 정상 작동합니다. /help`, Date.now() - start);
     }
 
-    const data = await response.json();
     const aiText = data.content?.[0]?.text || '응답 생성 실패';
 
     return wrap('비서 AI', aiText, Date.now() - start);
-  } catch {
-    return wrap('AI 타임아웃', '응답 시간 초과. 키워드 명령어를 사용하세요.\n/help 로 확인', Date.now() - start);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Unknown error';
+    return wrap('AI 에러', `${msg}\n\n키워드 명령어를 사용하세요. /help`, Date.now() - start);
   }
 }
 
