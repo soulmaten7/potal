@@ -18,6 +18,7 @@ import type { CheckStatus } from '@/app/lib/monitoring/health-monitor';
 import { classifyIssue, type ClassifiedIssue } from '@/app/lib/monitoring/issue-classifier';
 import { runAutoRemediation, type RemediationResult } from '@/app/lib/monitoring/auto-remediation';
 import { sendTelegramAlertBatch } from '@/app/lib/notifications/telegram-alert';
+import { reportEscalationResult } from '@/app/lib/notifications/escalation';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -357,32 +358,42 @@ export async function GET(req: NextRequest) {
 
     const needsAttention = [...layer3Issues, ...failedRemediation];
 
-    // Step 5: Notify for Layer 3 issues (Telegram → Make.com → Email)
-    const notifications: Record<string, { sent: boolean; reason: string }> = {};
-
-    if (layer3Issues.length > 0) {
-      // Try Telegram first
-      const telegramResult = await sendTelegramAlertBatch(layer3Issues);
-      notifications.telegram = { sent: telegramResult.sent > 0, reason: telegramResult.reason };
-
-      // If Telegram failed, try Make.com
-      if (telegramResult.sent === 0) {
-        const makeResult = await sendMakeWebhook(layer3Issues);
-        notifications.make = makeResult;
-
-        // If Make.com also failed, try email
-        if (!makeResult.sent) {
-          const emailResult = await sendAlertEmail(layer3Issues);
-          notifications.email = emailResult;
-        }
-      }
-    }
-
-    // Step 6: Save to health_check_logs
+    // Step 5: Escalation 보고 — 성공/실패 모두 Chief Bot으로 보고
     const greenCount = divisions.filter(d => d.status === 'green').length;
     const yellowCount = divisions.filter(d => d.status === 'yellow').length;
     const redCount = divisions.filter(d => d.status === 'red').length;
     const overall: CheckStatus = redCount > 0 ? 'red' : yellowCount > 0 ? 'yellow' : 'green';
+
+    const notifications: Record<string, { sent: boolean; reason: string }> = {};
+
+    const escalationReport = await reportEscalationResult({
+      overall,
+      greenCount,
+      yellowCount,
+      redCount,
+      autoResolved: autoResolved.map(r => ({
+        division: r.division,
+        issue: r.checkLabel,
+        action: r.action,
+      })),
+      needsAttention,
+      durationMs: Date.now() - start,
+    });
+
+    notifications.escalation = { sent: escalationReport.sent, reason: escalationReport.type };
+
+    // Telegram 실패 시 Make.com → Email 폴백 (needsAttention 있을 때만)
+    if (!escalationReport.sent && needsAttention.length > 0) {
+      const makeResult = await sendMakeWebhook(needsAttention);
+      notifications.make = makeResult;
+
+      if (!makeResult.sent) {
+        const emailResult = await sendAlertEmail(needsAttention);
+        notifications.email = emailResult;
+      }
+    }
+
+    // Step 6: Save to health_check_logs
 
     try {
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -417,6 +428,7 @@ export async function GET(req: NextRequest) {
       })),
       needs_attention: needsAttention,
       notifications,
+      escalation: escalationReport,
     });
   } catch (err) {
     return NextResponse.json({

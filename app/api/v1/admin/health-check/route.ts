@@ -12,6 +12,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { runHealthChecks, saveHealthReport, getLatestHealthStatus } from '@/app/lib/monitoring/health-monitor';
+import { reportCronAlert } from '@/app/lib/notifications/escalation';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.potal.app';
@@ -50,6 +51,21 @@ export async function GET(req: NextRequest) {
 
   // Save to Supabase
   await saveHealthReport(report);
+
+  // Escalation: Yellow/Red 시 즉시 Chief에게 보고
+  if (report.overall !== 'green') {
+    await reportCronAlert({
+      source: 'health-check',
+      sourceName: 'D11 인프라 헬스체크',
+      overall: report.overall,
+      issues: report.checks.map(c => ({
+        name: c.name,
+        status: c.status,
+        message: c.message,
+      })),
+      durationMs: report.durationMs,
+    });
+  }
 
   // Return summary
   return NextResponse.json({

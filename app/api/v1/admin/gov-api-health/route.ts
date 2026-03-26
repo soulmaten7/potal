@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { reportCronAlert } from '@/app/lib/notifications/escalation';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 
@@ -143,6 +144,21 @@ export async function GET(req: NextRequest) {
     });
   } catch {
     // Silent fail
+  }
+
+  // Escalation: Yellow/Red 시 즉시 Chief에게 보고
+  if (overall !== 'green') {
+    await reportCronAlert({
+      source: 'gov-api-health',
+      sourceName: 'D4 정부 API 헬스체크',
+      overall,
+      issues: results.map(r => ({
+        name: `${r.name} (${r.country})`,
+        status: r.status,
+        message: r.message,
+      })),
+      durationMs,
+    });
   }
 
   return NextResponse.json({
