@@ -144,10 +144,10 @@ function validateMaterial(value: string | null | undefined): FieldValidationResu
 function validateOriginCountry(value: string | null | undefined): FieldValidationResult {
   if (!value || value.trim().length === 0) {
     return {
-      field: 'origin_country', status: 'error', value,
-      message: 'origin_country is required. Use ISO 3166-1 alpha-2 code.',
+      field: 'origin_country', status: 'warning', value,
+      message: 'origin_country recommended for 7-10 digit HS code. Without it, classification returns 6-digit HS only.',
       valid_examples: ['US', 'CN', 'DE', 'JP', 'KR', 'VN', 'IN'],
-      impact: 'Required for 7-10 digit national HS code and duty rate lookup',
+      impact: 'Without origin_country: 6-digit HS only. With it: full 7-10 digit national code + duty rates',
     };
   }
 

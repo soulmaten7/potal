@@ -1084,15 +1084,24 @@ export default function DashboardContent() {
 
               <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 20 }}>
                 <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Single Product Classification</h3>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
                   <input id="classify-input" type="text" placeholder="e.g. Organic cotton t-shirt for men" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                  <input id="classify-material" type="text" placeholder="Material (e.g. cotton, leather)" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <input id="classify-origin" type="text" placeholder="Origin (e.g. CN, US)" style={{ width: 120, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                   <button onClick={async () => {
                     const input = (document.getElementById('classify-input') as HTMLInputElement)?.value;
                     if (!input) return;
+                    const material = (document.getElementById('classify-material') as HTMLInputElement)?.value || undefined;
+                    const origin = (document.getElementById('classify-origin') as HTMLInputElement)?.value || undefined;
                     const el = document.getElementById('classify-result');
                     if (el) el.textContent = 'Classifying...';
                     try {
-                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ product_name: input }) });
+                      const body: Record<string, unknown> = { product_name: input };
+                      if (material) body.material = material;
+                      if (origin) body.origin_country = origin.toUpperCase();
+                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify(body) });
                       const data = await res.json();
                       if (el) el.textContent = JSON.stringify(data, null, 2);
                     } catch (e) { if (el) el.textContent = `Error: ${e}`; }
