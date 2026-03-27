@@ -1,5 +1,127 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-25 KST (CW18 Cowork 10차 — 4터미널 병렬 P0 9/P1 9/P2 9 기능 강화 + SEO/LinkedIn/Reddit/Instagram 마케팅)
+> 마지막 업데이트: 2026-03-27 00:30 KST (Escalation Flow + 콜드이메일 + Product Hunt)
+
+## [2026-03-27 00:30 KST] Escalation Flow 구현 + 영업 활동 + Product Hunt B2B 리런치
+
+### Escalation Flow 구현 (커밋 a63e713)
+- `app/lib/notifications/escalation.ts` 신규 (150줄) — reportCronAlert() + reportEscalationResult()
+- `health-check/route.ts` +12줄 — D11 Yellow/Red 즉시 Chief 보고
+- `gov-api-health/route.ts` +12줄 — D4 Yellow/Red 즉시 Chief 보고
+- `spot-check/route.ts` +12줄 — D8 Yellow/Red 즉시 Chief 보고
+- `division-monitor/route.ts` +20줄 — Step 5 교체: 자체 해결 ✅ + 실패 🔴 모두 텔레그램 보고
+- 전부 Green이면 보고 안 함 (조용히 운영)
+
+### 콜드이메일 1차 결과
+- 발송 완료, 응답 수신:
+  - 🔥 Calcurates — CEO Nikolay Pasholok 직접 답장 (콜 미팅 요청 → 이메일/채팅 전환 답장 발송)
+  - 🟡 Easyship — 서포트팀이 전문팀 전달 중
+  - ⚪ Parcel Perform — Eric PHAM (CSM) 자동응답
+  - ❌ 배달 실패 7건: Michael Kors, Flow.io, Extensiv, Linnworks, Floship, Samarkand, Eshopbox
+
+### Product Hunt B2B 리런치
+- New Launch 작성 + 예약 완료 (Scheduled, ~24시간 후 런칭)
+- Tagline: "Instant duty&tax API — 100% HS Code accuracy, 240 countries"
+- Gallery 4장 + Thumbnail 준비 완료
+- First comment 작성 완료
+- Pricing: Paid (with free plan), Promo: PRODUCTHUNT, Bootstrapped
+
+### Shopify App
+- 심사 중 확인 (16일 경과, 대기 중)
+
+---
+
+## [2026-03-26 21:00 KST] D16 Secretary (비서실) 신설 + Telegram Bot AI 업그레이드
+
+### D16 Secretary Division 신설
+- **D16 Secretary (비서실)** 추가 — 15→16 Division, 57→59 Agents
+- 역할: Gmail(contact@potal.app) + POTAL 앱 채팅 문의(Crisp) 감지 → 은태님 직접 보고
+- 핵심 원칙: 접수 + 분류 + 보고만. 실행/판단 안 함. Chief와 별개 보고 라인
+- Secretary 스킬 생성: `.claude/skills/secretary/SKILL.md`
+- Scheduled Task 생성: `d16-secretary-inbox-check` (매시간 자동 Gmail+Crisp 체크 → 텔레그램 보고)
+
+### Telegram Bot 2채널 분리
+- **POTAL Alert** (@potal_alert_bot) — Chief Orchestrator 전략/실행/Morning Brief
+- **POTAL Secretary** (@potal_secretary_bot) — D16 비서실 메일/채팅 문의 보고 (신규)
+- Secretary Bot Token: `8645124787:AAG819qg1H7pv6KjDL0BPUWyLuLIrO1UrVk`
+
+### Chief Bot Vercel 배포 (양방향)
+- `app/api/v1/admin/chief-bot/route.ts` (96줄) — Telegram Webhook POST + GET status
+- `app/lib/chief-orchestrator/command-processor.ts` (290줄) — 9개 키워드 명령어
+- Webhook 등록 완료, 양방향 대화 작동 확인
+
+### Secretary Bot Vercel 배포 (양방향)
+- `app/api/v1/admin/secretary-bot/route.ts` — Telegram Webhook
+- `app/lib/secretary/command-processor.ts` — Gmail 체크 명령어
+- Webhook 등록 완료
+
+### Chief + Secretary AI 업그레이드
+- 키워드 if/else → Claude API fallback 추가
+- 키워드 매칭 시 즉시 응답 ($0), 자연어 시 Claude API 호출 (~$0.005)
+- `COMMAND_CHIEF_BOT_UPGRADE_AI.md` 생성 + Claude Code 실행 완료
+- ⚠️ ANTHROPIC_API_KEY Vercel 환경변수 추가 필요 (미완료)
+
+### Vercel 프로젝트 정리
+- `.vercel/project.json` 수정: portal(삭제됨) → potal-x1v1(실제 프로덕션)
+- 환경변수 32개 potal-x1v1에 정상 확인
+
+### 파일 변경
+- 신규: `secretary/SKILL.md`, `COMMAND_SECRETARY_BOT_EXECUTE.md`, `COMMAND_CHIEF_BOT_UPGRADE_AI.md`
+- 수정: `docs/DIVISION_STATUS.md` (D16 추가), `docs/CREDENTIALS.md` (봇 2개 분리), `.vercel/project.json`
+- Vercel 배포: `chief-bot/route.ts`, `command-processor.ts` x2, `secretary-bot/route.ts`
+
+---
+
+## [2026-03-26 10:30 KST] CLAUDE.md 다이어트 — 555줄→58줄 (90% 축소)
+
+### 구조 변경
+- **CLAUDE.md**: 555줄 → 58줄. 핵심 규칙만 남기고 나머지 참조 파일로 분리
+- **docs/PROJECT_STATUS.md**: 신규 생성 (164줄) — 수치, 기술스택, 전략, 요금제, 테이블 현황
+- **docs/CREDENTIALS.md**: 신규 생성 (40줄) — 인증정보, Supabase 연결, Vercel/Telegram 토큰
+- **docs/DIVISION_STATUS.md**: 신규 생성 (88줄) — 15개 Division 상세, Layer 1/2/3, 운영 사이클
+
+### 연동 파일 업데이트
+- **NEXT_SESSION_START.md**: "읽어야 할 파일" 목록에 참조 3개 추가
+- **session-context.md**: 인증정보 참조 경로 CLAUDE.md → docs/CREDENTIALS.md로 변경, Phase 0 읽기 목록 업데이트
+- **.cursorrules**: 요금제 참조 경로 CLAUDE.md → docs/PROJECT_STATUS.md로 변경
+- **절대 규칙 9번**: "5개 문서 동기화" → "핵심 5개 + 참조 3개(해당 시)" 확장
+
+### 목적
+- Claude Code 세션 시작 시 58줄만 읽으면 됨 (기존 555줄 대비 토큰 90% 절감)
+- 수치/인증/Division 정보는 필요할 때만 참조 파일에서 읽기
+
+---
+
+## [2026-03-25 22:30 KST] CW18 Cowork 14차 후반 — 4개 핵심 문서 전면 정리
+
+### 문서 정리 (오래된 기록 삭제, 현재 상태에 집중)
+- **session-context.md**: 1,654줄 → 561줄 (-66%). CW16 v1~v7 실험 히스토리, 세션 22~37 상세 로그, B2C 보존 항목, 참조 데이터 중복 삭제
+- **NEXT_SESSION_START.md**: 332줄 → 82줄 (-75%). v1~v7 인사이트, Layer 2 프로세스, 삭제된 TODO 설명 제거
+- **CLAUDE.md**: Phase 2~3 상태 마커 업데이트 (⏳ 대기 → 고객 확보 후 진행)
+- **.cursorrules**: 요금제 설명 간소화 (8줄→3줄), MATERIAL_KEYWORDS 79→21 Section 기준으로 통일
+- 모든 문서에서 과거 기록은 `docs/sessions/COWORK_SESSION_HISTORY.md`로 참조 안내
+
+---
+
+## [2026-03-25 21:30 KST] CW18 Cowork 14차 — AI Agent Org v6 + 엑셀 로그 체계
+
+### AI Agent Organization v6 확정
+- v5(47 Agents) → **v6(57 Agents)**: +10 Sonnet (D1/D3/D4/D7 각 +2, D9/D12 각 +1)
+- **3단계 위임 구조**: Chief Orchestrator(Opus) → Division Team Lead(Sonnet) → Team Members
+- Opus 3 상시 (Chief, D1 FTA/RoO, D13 Legal) + 에스컬레이션 6 + Sonnet 54
+
+### chief-orchestrator-daily v6 업데이트
+- 15개 Division별 개별 Sonnet 에이전트 스폰 (3단계 위임)
+- 7개 엑셀 파일 일일 체크/업데이트 포함
+
+### 엑셀 로그 체계 구축
+- **POTAL_AI_Agent_Org_Log.xlsx**: 버전이력 + Division별구성 + 모델배분 (3시트)
+- **POTAL_Excel_Master_Registry.xlsx**: 44+ 엑셀 파일 카탈로그 (6카테고리, 2시트)
+- **POTAL_AI_Agent_Org_v6.html**: v6 조직도 시각화 (57 Agents, v6 NEW 태그)
+
+### 문서 업데이트
+- 5개 문서 동기화 (CLAUDE.md, session-context.md, .cursorrules, CHANGELOG.md, NEXT_SESSION_START.md)
+
+---
 
 ## [2026-03-25 KST] CW18 Cowork 10차 — 4터미널 병렬 기능 강화 + 마케팅 채널 구축
 

@@ -73,3 +73,14 @@ archive/vercel_env_backup_2026-03-10.txt
 
 # Country codified JSON (21MB, loaded from DB in production)
 app/lib/cost-engine/gri-classifier/country-agents/data/*.json
+
+# Secret-containing files — local only, never push to GitHub
+docs/CREDENTIALS.md
+COMMAND_VERCEL_JWT_FIX.md
+COMMAND_CHIEF_BOT_EXECUTE.md
+COMMAND_CHIEF_TELEGRAM_BOT.md
+COMMAND_SECRETARY_BOT_EXECUTE.md
+
+# All COMMAND_*.md files (contain tokens, API keys, internal instructions)
+COMMAND_*.md
+SPRINT_*_COMMAND*.md

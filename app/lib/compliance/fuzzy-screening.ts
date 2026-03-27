@@ -75,9 +75,10 @@ export async function fuzzyMatch(query: string, threshold = 0.85): Promise<Scree
   const queryNorm = query.trim().toLowerCase();
   if (!queryNorm) return [];
 
-  // Search sanctions_entries (unified table, replaces legacy sanctions_sdn/denied_parties)
+  // Search sanctions_entries + aliases for comprehensive screening
   const tables = [
-    { table: 'sanctions_entries', nameField: 'name', sourceField: 'source', typeField: 'entry_type' },
+    { table: 'sanctions_entries', nameField: 'name', sourceField: 'source', typeField: 'entity_type' },
+    { table: 'sanctions_aliases', nameField: 'alias_name', sourceField: 'alias_type', typeField: 'alias_type' },
   ];
 
   const results: ScreeningResult[] = [];

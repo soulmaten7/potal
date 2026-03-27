@@ -467,7 +467,7 @@ export default function PlaygroundPage() {
                     margin: '16px 0 0 0',
                     fontSize: '12px'
                   }}>
-                    Widget would load here with your actual widget script
+                    Live preview requires embedding the widget script on your domain. Copy the embed code below and paste into your site to see it in action.
                   </p>
                 </div>
               </div>

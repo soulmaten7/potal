@@ -244,7 +244,9 @@ server.tool(
     "Returns HS code, description, chapter, and confidence level.",
   {
     productName: z.string().describe("Product name or description. Example: 'cotton t-shirt', 'laptop computer', 'running shoes'"),
+    material: z.string().optional().describe("Primary material. Example: 'cotton', 'leather', 'steel', 'polyester'. Critical for accurate classification (+45% accuracy)."),
     productCategory: z.string().optional().describe("Product category hint. Example: 'apparel', 'electronics', 'footwear'"),
+    originCountry: z.string().optional().describe("Country of origin (ISO 2-letter code). Example: 'CN', 'DE', 'US'"),
     hsCode: z.string().optional().describe("Known HS code to override classification. Example: '6109.10'"),
   },
   async (params) => {
@@ -256,7 +258,9 @@ server.tool(
 
     const result = await callPotalApi("/classify", "POST", {
       productName: params.productName,
+      material: params.material,
       productCategory: params.productCategory,
+      origin_country: params.originCountry,
       hsCode: params.hsCode,
     });
 
@@ -519,17 +523,28 @@ server.tool(
     }
 
     const d = (result.data as any)?.data || result.data;
+    const ftaInfo = d.fta || d;
+    const hasFta = ftaInfo.applicable || ftaInfo.hasFta || ftaInfo.hasFTA || false;
     const lines: string[] = [
       "## FTA Lookup Result\n",
       `- **Route**: ${params.origin} → ${params.destination}`,
-      `- **FTA Found**: ${d.hasFTA ? '✅ Yes' : '❌ No FTA'}`,
+      `- **FTA Found**: ${hasFta ? '✅ Yes' : '❌ No FTA'}`,
     ];
 
-    if (d.hasFTA && d.agreements) {
-      for (const fta of Array.isArray(d.agreements) ? d.agreements : [d.agreements]) {
-        lines.push(`- **Agreement**: ${fta.name || fta.agreement || 'N/A'}`);
-        if (fta.preferentialRate !== undefined) {
-          lines.push(`- **Preferential Rate**: ${fta.preferentialRate}%`);
+    if (hasFta) {
+      lines.push(`- **Agreement**: ${ftaInfo.name || d.fta?.name || 'N/A'}`);
+      lines.push(`- **Code**: ${ftaInfo.code || d.fta?.code || 'N/A'}`);
+      if (ftaInfo.preferentialMultiplier !== undefined && ftaInfo.preferentialMultiplier !== null) {
+        const pctReduction = ((1 - ftaInfo.preferentialMultiplier) * 100).toFixed(0);
+        lines.push(`- **Preferential Rate**: ${ftaInfo.preferentialMultiplier === 0 ? 'Duty-free (0%)' : `${pctReduction}% reduction`}`);
+      }
+      if (d.rulesOfOrigin) {
+        lines.push(`\n### Rules of Origin`);
+        lines.push(`- **Certificate Type**: ${d.rulesOfOrigin.certificateType || 'N/A'}`);
+        if (d.rulesOfOrigin.rules?.length) {
+          for (const rule of d.rulesOfOrigin.rules) {
+            lines.push(`- ${rule.criterion || rule.type}: ${rule.description || rule.note || ''}`);
+          }
         }
       }
     }
@@ -615,8 +630,8 @@ server.tool(
 
     const result = await callPotalApi("/documents", "POST", {
       type: args.documentType,
-      exporter: args.exporterName,
-      importer: args.importerName,
+      exporter: { name: args.exporterName, country: args.originCountry },
+      importer: { name: args.importerName, country: args.destinationCountry },
       origin: args.originCountry,
       destination: args.destinationCountry,
       items: [{

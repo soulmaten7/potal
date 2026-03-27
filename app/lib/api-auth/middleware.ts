@@ -168,6 +168,45 @@ export function withApiAuth(handler: ApiHandler) {
 
     // 1. Extract API key
     const apiKey = extractApiKey(req);
+
+    // 1b. Dashboard session auth fallback — accept Supabase JWT tokens
+    if (apiKey && apiKey.split('.').length === 3 && !apiKey.startsWith('pk_') && !apiKey.startsWith('sk_')) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser(apiKey);
+        if (user) {
+          const { data: sellers } = await (supabase.from('sellers') as any)
+            .select('id, plan_id, subscription_status')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(5);
+          // Pick the seller with highest-tier plan, or most recent
+          const sellerRows = sellers as Array<Record<string, unknown>> | null;
+          const seller = sellerRows
+            ?.sort((a, b) => {
+              const planOrder: Record<string, number> = { enterprise: 4, pro: 3, basic: 2, free: 1 };
+              return (planOrder[String(b.plan_id)] || 0) - (planOrder[String(a.plan_id)] || 0);
+            })?.[0];
+          if (seller) {
+            const dashCtx: ApiAuthContext = {
+              keyId: 'dashboard-session',
+              sellerId: String(seller.id),
+              keyType: 'publishable',
+              planId: String(seller.plan_id || 'free'),
+              subscriptionStatus: String(seller.subscription_status || 'active'),
+              rateLimitPerMinute: 60,
+              sandbox: false,
+            };
+            const response = await handler(req, dashCtx);
+            const elapsed = Date.now() - startTime;
+            response.headers.set('X-Response-Time', `${elapsed}ms`);
+            return response;
+          }
+        }
+      } catch {
+        // Session validation failed — fall through to API key auth
+      }
+    }
+
     if (!apiKey) {
       return apiError(ApiErrorCode.UNAUTHORIZED, 'API key is required. Pass via X-API-Key header or api_key query parameter.');
     }

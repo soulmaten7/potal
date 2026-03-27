@@ -1092,7 +1092,7 @@ export default function DashboardContent() {
                     const el = document.getElementById('classify-result');
                     if (el) el.textContent = 'Classifying...';
                     try {
-                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' }, body: JSON.stringify({ product_name: input }) });
+                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ product_name: input }) });
                       const data = await res.json();
                       if (el) el.textContent = JSON.stringify(data, null, 2);
                     } catch (e) { if (el) el.textContent = `Error: ${e}`; }
@@ -1163,7 +1163,7 @@ export default function DashboardContent() {
                     const el = document.getElementById('calc-result');
                     if (el) el.textContent = 'Calculating...';
                     try {
-                      const res = await fetch(`/api/v1/calculate?hs_code=${hs}&destination_country=${country}&value=${value}&origin_country=${origin || 'CN'}&weight=${weight || '0.5'}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                      const res = await fetch('/api/v1/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ hsCode: hs, destinationCountry: country, price: parseFloat(value) || 100, origin: origin || 'CN', weight: parseFloat(weight) || 0.5 }) });
                       const data = await res.json();
                       if (el) el.textContent = JSON.stringify(data, null, 2);
                     } catch (e) { if (el) el.textContent = `Error: ${e}`; }
@@ -1217,7 +1217,7 @@ export default function DashboardContent() {
                     const el = document.getElementById('fta-result');
                     if (el) el.textContent = 'Looking up...';
                     try {
-                      const res = await fetch(`/api/v1/fta?origin=${origin}&destination=${dest}&hs_code=${hs}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                      const res = await fetch(`/api/v1/fta?origin=${origin}&destination=${dest}${hs ? `&hsCode=${hs}` : ''}`, { headers: { 'Authorization': `Bearer ${session?.access_token || ''}` } });
                       const data = await res.json();
                       if (el) el.textContent = JSON.stringify(data, null, 2);
                     } catch (e) { if (el) el.textContent = `Error: ${e}`; }
@@ -1265,7 +1265,7 @@ export default function DashboardContent() {
                       const el = document.getElementById('screen-result');
                       if (el) el.textContent = 'Screening...';
                       try {
-                        const res = await fetch(`/api/v1/screen?destination_country=${country}&hs_code=${hs}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                        const res = await fetch('/api/v1/sanctions/screen', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ name: country, country: country }) });
                         const data = await res.json();
                         if (el) el.textContent = JSON.stringify(data, null, 2);
                       } catch (e) { if (el) el.textContent = `Error: ${e}`; }
@@ -1285,7 +1285,7 @@ export default function DashboardContent() {
                       const el = document.getElementById('party-result');
                       if (el) el.textContent = 'Screening...';
                       try {
-                        const res = await fetch(`/api/v1/screen?party_name=${encodeURIComponent(name)}&country=${country}`, { headers: { 'X-Api-Key': keys[0]?.id ? `${keys[0].prefix}...` : '' } });
+                        const res = await fetch('/api/v1/sanctions/screen', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ name: name, country: country }) });
                         const data = await res.json();
                         if (el) el.textContent = JSON.stringify(data, null, 2);
                       } catch (e) { if (el) el.textContent = `Error: ${e}`; }

@@ -125,6 +125,7 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
       used: totalRequests,
       remaining: Math.max(0, limit - totalRequests),
       usagePercent: Math.round((totalRequests / limit) * 100),
+      note: 'Usage counted per API key. Dashboard overview shows total across all keys.',
     },
     overage: {
       count: overageCount,
