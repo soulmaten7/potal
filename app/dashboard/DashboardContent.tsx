@@ -1098,9 +1098,9 @@ export default function DashboardContent() {
                     const el = document.getElementById('classify-result');
                     if (el) el.textContent = 'Classifying...';
                     try {
-                      const body: Record<string, unknown> = { product_name: input };
+                      const body: Record<string, unknown> = { productName: input };
                       if (material) body.material = material;
-                      if (origin) body.origin_country = origin.toUpperCase();
+                      if (origin) body.originCountry = origin.toUpperCase();
                       const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify(body) });
                       const data = await res.json();
                       if (el) el.textContent = JSON.stringify(data, null, 2);
@@ -1124,7 +1124,7 @@ export default function DashboardContent() {
                   <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>API Endpoint</h4>
                   <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/classify</code>
                   <div style={{ fontSize: 12, color: '#666' }}>
-                    <div>Body: <code>{`{ "product_name": "...", "origin_country": "CN" }`}</code></div>
+                    <div>Body: <code>{`{ "productName": "...", "material": "cotton", "originCountry": "CN" }`}</code></div>
                     <div style={{ marginTop: 4 }}>Batch: <code>POST /api/v1/classify/batch</code> (up to 50 items)</div>
                   </div>
                 </div>
@@ -1355,10 +1355,10 @@ export default function DashboardContent() {
                   <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>Classify up to 50 products per request.</p>
                   <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/classify/batch</code>
                   <pre style={{ background: '#f8fafc', borderRadius: 8, padding: 12, fontSize: 11, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#475569', border: '1px solid #e5e7eb' }}>{`{
-  "products": [
-    { "product_name": "Cotton t-shirt" },
-    { "product_name": "Leather wallet" },
-    { "product_name": "Laptop 15 inch" }
+  "items": [
+    { "id": "1", "productName": "Cotton t-shirt" },
+    { "id": "2", "productName": "Leather wallet" },
+    { "id": "3", "productName": "Laptop 15 inch" }
   ]
 }`}</pre>
                 </div>
