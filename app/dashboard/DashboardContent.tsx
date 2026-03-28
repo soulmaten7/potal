@@ -1094,10 +1094,12 @@ export default function DashboardContent() {
                 </div>
                 <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
                   <input id="classify-material" type="text" placeholder="Material (e.g. cotton, leather)" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <input id="classify-category" type="text" placeholder="Category (e.g. clothing, electronics)" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                   <input id="classify-origin" type="text" placeholder="Origin (e.g. CN, US)" style={{ width: 120, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                   <button onClick={async () => {
                     const input = (document.getElementById('classify-input') as HTMLInputElement)?.value;
                     const material = (document.getElementById('classify-material') as HTMLInputElement)?.value || '';
+                    const category = (document.getElementById('classify-category') as HTMLInputElement)?.value || '';
                     const origin = (document.getElementById('classify-origin') as HTMLInputElement)?.value || '';
                     const el = document.getElementById('classify-result');
                     if (!input) { if (el) el.textContent = 'Please enter a product name.'; return; }
@@ -1109,8 +1111,8 @@ export default function DashboardContent() {
                       const reqBody: Record<string, unknown> = {
                         productName: input,
                         material: material,
-                        category: material,
                       };
+                      if (category) reqBody.category = category;
                       if (origin) reqBody.originCountry = origin.toUpperCase();
                       const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(reqBody) });
                       const data = await res.json();
