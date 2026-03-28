@@ -1,5 +1,6 @@
 export const az = {
   // Navigation
+  'nav.features': 'Xususiyyetler',
   'nav.developers': 'Tərtibatçılar',
   'nav.pricing': 'Qiymətlər',
   'nav.dashboard': 'İdarə paneli',

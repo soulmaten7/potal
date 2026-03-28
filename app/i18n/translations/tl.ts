@@ -1,5 +1,6 @@
 export const tl = {
   // Navigation
+  'nav.features': 'Mga Feature',
   'nav.developers': 'Mga Developer',
   'nav.pricing': 'Presyo',
   'nav.dashboard': 'Dashboard',

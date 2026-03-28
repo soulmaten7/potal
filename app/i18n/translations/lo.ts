@@ -1,5 +1,6 @@
 export const lo = {
   // Navigation
+  'nav.features': 'ຄຸນສົມບັດ',
   'nav.developers': 'ນັກພັດທະນາ',
   'nav.pricing': 'ລາຄາ',
   'nav.dashboard': 'ແຜງຄວບຄຸມ',

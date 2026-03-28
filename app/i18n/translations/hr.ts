@@ -1,5 +1,6 @@
 export const hr = {
   // Navigation
+  'nav.features': 'Znacajke',
   'nav.developers': 'Programeri',
   'nav.pricing': 'Cijene',
   'nav.dashboard': 'Nadzorna ploča',

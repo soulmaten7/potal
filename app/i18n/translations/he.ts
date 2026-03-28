@@ -1,5 +1,6 @@
 export const he = {
   // Navigation
+  'nav.features': 'תכונות',
   'nav.developers': 'מפתחים',
   'nav.pricing': 'תמחור',
   'nav.dashboard': 'לוח בקרה',

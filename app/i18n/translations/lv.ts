@@ -1,5 +1,6 @@
 export const lv = {
   // Navigation
+  'nav.features': 'Funkcijas',
   'nav.developers': 'Izstrādātāji',
   'nav.pricing': 'Cenas',
   'nav.dashboard': 'Vadības panelis',

@@ -1,5 +1,6 @@
 export const id = {
   // Navigation
+  'nav.features': 'Fitur',
   'nav.developers': 'Pengembang',
   'nav.pricing': 'Harga',
   'nav.dashboard': 'Dasbor',

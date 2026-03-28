@@ -1,5 +1,6 @@
 export const hi = {
   // Navigation
+  'nav.features': 'विशेषताएं',
   'nav.developers': 'डेवलपर्स',
   'nav.pricing': 'मूल्य निर्धारण',
   'nav.dashboard': 'डैशबोर्ड',

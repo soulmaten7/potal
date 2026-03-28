@@ -1,5 +1,6 @@
 export const sw = {
   // Navigation
+  'nav.features': 'Vipengele',
   'nav.developers': 'Waendelezaji',
   'nav.pricing': 'Bei',
   'nav.dashboard': 'Dashibodi',

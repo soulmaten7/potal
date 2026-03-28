@@ -1,5 +1,6 @@
 export const ar = {
   // Navigation
+  'nav.features': 'الميزات',
   'nav.developers': 'المطورون',
   'nav.pricing': 'الأسعار',
   'nav.dashboard': 'لوحة التحكم',

@@ -1,5 +1,6 @@
 export const cs = {
   // Navigation
+  'nav.features': 'Funkce',
   'nav.developers': 'Vývojáři',
   'nav.pricing': 'Ceník',
   'nav.dashboard': 'Přehled',

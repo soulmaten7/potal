@@ -1,5 +1,5 @@
 # PROJECT_STATUS.md — POTAL 프로젝트 현황/수치
-# 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료)
+# 마지막 업데이트: 2026-03-29 01:00 KST (기능 정밀 감사 완료: 142개 중 119 IMPL + 10 PARTIAL = 129 기능 구현 90.8%)
 # 이 파일은 참조용. Claude Code가 수치 확인 필요 시 읽는 파일.
 
 ## 프로젝트 개요
@@ -35,6 +35,7 @@ portal/
 - HS Code: 5,371 (WCO HS 2022 6자리)
 - **HS Code 매핑**: product_hs_mappings **~1.36M건** (GRI 기반 정확 매핑 재구축 예정)
 - **GRI 분류 참고자료**: ✅ **2.1MB 수집 완료** (14개 파일, 7개국 규칙 전부 완료)
+- **v3 파이프라인**: ✅ **21/21 Section 100%**, codified-rules **595개**, step2-2 switch 21/21, regression 22/22 PASS (CW21)
 - **EU EBTI 수집 완료**: 269,730 rulings → 231,727 고유 product-HS 매핑
 - **DB 상태**: ✅ read-write 복구 완료 (CW17, 53GB→45GB)
 - **HS 분류 벡터**: hs_classification_vectors **3,431건**
@@ -51,7 +52,8 @@ portal/
 - **MCP Server**: v1.3.1, 9개 도구, npm publish + MCP 공식 레지스트리 등록 완료
 - **Pre-computing**: 490 HS6 × 240국 = **117,600 조합** 사전 계산 (캐시 <50ms)
 - **HS10 파이프라인**: ✅ 7개국 10자리 파이프라인 구현 완료
-- **147/147 기능 전부 구현 완료** ✅ (100% 커버리지) — CW20에서 미완성 17개 보완 완료 (2,278줄 추가)
+- **기능 감사 (2026-03-29)**: CW14 142개 기능 코드 기반 정밀 검증 → **119 IMPL + 10 PARTIAL + 8 STUB + 3 NONE + 2 WON'T = 142** (기능 구현율 129/142 = 90.8%) — 엑셀: POTAL_Feature_Audit_2603290000.xlsx
+- ⚠️ 이전 "147/147 = 100%" 기록은 Complete Feature Analysis(10개 경쟁사 합집합 147개)와 CW14(POTAL 142개) 혼동. 정확한 수치는 위 감사 결과 참조
 - **API 엔드포인트**: **~155개+**
 - **심층 검증 84/84 PASS** ✅
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 사전 매핑 전략)

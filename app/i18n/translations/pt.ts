@@ -1,5 +1,6 @@
 export const pt = {
   // Navigation
+  'nav.features': 'Recursos',
   'nav.developers': 'Desenvolvedores',
   'nav.pricing': 'Preços',
   'nav.dashboard': 'Painel',

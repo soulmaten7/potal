@@ -1,5 +1,6 @@
 export const fi = {
   // Navigation
+  'nav.features': 'Ominaisuudet',
   'nav.developers': 'Kehittäjät',
   'nav.pricing': 'Hinnoittelu',
   'nav.dashboard': 'Hallintapaneeli',

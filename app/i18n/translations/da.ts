@@ -1,5 +1,6 @@
 export const da = {
   // Navigation
+  'nav.features': 'Funktioner',
   'nav.developers': 'Udviklere',
   'nav.pricing': 'Priser',
   'nav.dashboard': 'Kontrolpanel',

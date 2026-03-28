@@ -1,5 +1,6 @@
 export const kk = {
   // Navigation
+  'nav.features': 'Мүмкіндіктер',
   'nav.developers': 'Әзірлеушілер',
   'nav.pricing': 'Бағалар',
   'nav.dashboard': 'Басқару тақтасы',

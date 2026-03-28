@@ -1,5 +1,6 @@
 export const am = {
   // Navigation
+  'nav.features': 'ባህሪያት',
   'nav.developers': 'ገንቢዎች',
   'nav.pricing': 'ዋጋ',
   'nav.dashboard': 'ዳሽቦርድ',

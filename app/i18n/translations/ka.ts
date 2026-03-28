@@ -1,5 +1,6 @@
 export const ka = {
   // Navigation
+  'nav.features': 'ფუნქციები',
   'nav.developers': 'დეველოპერები',
   'nav.pricing': 'ფასები',
   'nav.dashboard': 'მართვის პანელი',

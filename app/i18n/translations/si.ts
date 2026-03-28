@@ -1,5 +1,6 @@
 export const si = {
   // Navigation
+  'nav.features': 'විශේෂාංග',
   'nav.developers': 'සංවර්ධකයින්',
   'nav.pricing': 'මිල නියම',
   'nav.dashboard': 'උපකරණ පුවරුව',

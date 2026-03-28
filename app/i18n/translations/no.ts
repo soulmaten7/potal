@@ -1,5 +1,6 @@
 export const no = {
   // Navigation
+  'nav.features': 'Funksjoner',
   'nav.developers': 'Utviklere',
   'nav.pricing': 'Priser',
   'nav.dashboard': 'Kontrollpanel',

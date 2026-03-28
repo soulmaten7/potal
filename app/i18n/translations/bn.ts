@@ -1,5 +1,6 @@
 export const bn = {
   // Navigation
+  'nav.features': 'বৈশিষ্ট্য',
   'nav.developers': 'ডেভেলপারস',
   'nav.pricing': 'মূল্য নির্ধারণ',
   'nav.dashboard': 'ড্যাশবোর্ড',

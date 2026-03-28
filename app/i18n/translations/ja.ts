@@ -1,5 +1,6 @@
 export const ja = {
   // Navigation
+  'nav.features': '機能',
   'nav.developers': '開発者',
   'nav.pricing': '料金',
   'nav.dashboard': 'ダッシュボード',

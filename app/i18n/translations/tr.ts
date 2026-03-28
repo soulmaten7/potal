@@ -1,5 +1,6 @@
 export const tr = {
   // Navigation
+  'nav.features': 'Ozellikler',
   'nav.developers': 'Geliştiriciler',
   'nav.pricing': 'Fiyatlandırma',
   'nav.dashboard': 'Kontrol Paneli',

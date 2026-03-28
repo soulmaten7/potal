@@ -1,5 +1,6 @@
 export const sv = {
   // Navigation
+  'nav.features': 'Funktioner',
   'nav.developers': 'Utvecklare',
   'nav.pricing': 'Priser',
   'nav.dashboard': 'Instrumentpanel',

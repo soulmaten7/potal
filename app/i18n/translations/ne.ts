@@ -1,5 +1,6 @@
 export const ne = {
   // Navigation
+  'nav.features': 'विशेषताहरू',
   'nav.developers': 'विकासकर्ताहरू',
   'nav.pricing': 'मूल्य निर्धारण',
   'nav.dashboard': 'ड्यासबोर्ड',

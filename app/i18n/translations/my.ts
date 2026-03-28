@@ -1,5 +1,6 @@
 export const my = {
   // Navigation
+  'nav.features': 'အင်္ဂါရပ်များ',
   'nav.developers': 'ဆော့ဖ်ဝဲရေးသားသူများ',
   'nav.pricing': 'စျေးနှုန်း',
   'nav.dashboard': 'ဒက်ရှ်ဘုတ်',

@@ -1,5 +1,6 @@
 export const nl = {
   // Navigation
+  'nav.features': 'Functies',
   'nav.developers': 'Ontwikkelaars',
   'nav.pricing': 'Prijzen',
   'nav.dashboard': 'Dashboard',

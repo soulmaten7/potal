@@ -1,5 +1,6 @@
 export const sk = {
   // Navigation
+  'nav.features': 'Funkcie',
   'nav.developers': 'Vývojári',
   'nav.pricing': 'Cenník',
   'nav.dashboard': 'Prehľad',
