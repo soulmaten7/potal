@@ -8,18 +8,49 @@ const levels = [
     description: 'Foundational knowledge of cross-border trade compliance, HS classification basics, and POTAL API usage.',
     topics: ['HS Code fundamentals', 'Landed cost components', 'API integration basics', 'Widget installation'],
     color: 'bg-blue-100 text-blue-700',
+    exam: { questions: 30, passingScore: 70, duration: '45 minutes', fee: 'Free' },
   },
   {
     name: 'POTAL Certified Professional',
     description: 'Advanced compliance, FTA optimization, multi-country tax strategies, and enterprise integration patterns.',
     topics: ['FTA utilization', 'Rules of Origin', 'Trade remedies (AD/CVD)', 'Batch processing & webhooks', 'Multi-country strategies'],
     color: 'bg-purple-100 text-purple-700',
+    exam: { questions: 50, passingScore: 75, duration: '75 minutes', fee: '$49' },
   },
   {
     name: 'POTAL Certified Expert',
     description: 'Expert-level mastery of global trade compliance, data architecture, and AI-driven classification systems.',
     topics: ['AI classification pipeline', 'Regulatory RAG systems', 'Custom integrations', 'Enterprise architecture', 'Compliance auditing'],
     color: 'bg-amber-100 text-amber-700',
+    exam: { questions: 60, passingScore: 80, duration: '90 minutes', fee: '$99' },
+  },
+];
+
+// Sample question bank structure for F137
+const sampleQuestions = [
+  {
+    id: 'q1',
+    level: 'associate',
+    category: 'HS Code',
+    question: 'What is the minimum number of digits in an HS code under the Harmonized System?',
+    options: ['4 digits', '6 digits', '8 digits', '10 digits'],
+    correctIndex: 1,
+  },
+  {
+    id: 'q2',
+    level: 'associate',
+    category: 'Landed Cost',
+    question: 'Which of the following is NOT a component of Total Landed Cost?',
+    options: ['Import Duty', 'VAT/GST', 'Marketing Cost', 'Customs Brokerage Fee'],
+    correctIndex: 2,
+  },
+  {
+    id: 'q3',
+    level: 'professional',
+    category: 'FTA',
+    question: 'Under USMCA, what is the general Rules of Origin requirement for preferential treatment?',
+    options: ['Regional Value Content of 75%', 'Tariff shift + 50% RVC', 'Wholly obtained in member country', 'Change in tariff classification'],
+    correctIndex: 0,
   },
 ];
 
@@ -72,12 +103,30 @@ export default function CertificationPage() {
                 </span>
               </div>
               <p className="text-gray-600 mb-4">{level.description}</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {level.topics.map((t) => (
                   <span key={t} className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">
                     {t}
                   </span>
                 ))}
+              </div>
+              <div className="border-t pt-3 mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{level.exam.questions}</p>
+                  <p className="text-xs text-gray-500">Questions</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{level.exam.passingScore}%</p>
+                  <p className="text-xs text-gray-500">Passing Score</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{level.exam.duration}</p>
+                  <p className="text-xs text-gray-500">Duration</p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">{level.exam.fee}</p>
+                  <p className="text-xs text-gray-500">Fee</p>
+                </div>
               </div>
             </div>
           ))}

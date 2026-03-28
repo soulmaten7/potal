@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-28 13:00 KST (CW20 — 147/147 기능 100% 완료, Gmail 드래프트 251개 생성 완료, 17개 미완성 기능 전부 보완)
+> 마지막 업데이트: 2026-03-29 01:30 KST (CW21 — 미완성 21개 기능 전부 완성, 빌드 성공, regression 0)
 
 ---
 
@@ -207,7 +207,39 @@
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — CW20: 147/147 기능 100% 완료✅, Gmail 드래프트 251개✅, 심층검증 84/84✅
+### 현재 스프린트 — CW21: v3 파이프라인 21/21 Section 100% 완성✅, 외장하드 전체 대조✅, 테스트 22/22 PASS✅
+
+### ✅ CW21 — v3 파이프라인 100% 완성 (2026-03-28 21:00~23:30 KST)
+
+**트리거**: Laptop computer가 Ch.85로 잘못 분류 → 전수조사 → 100% 완성
+
+**타임라인**:
+- 21:00 Laptop 850180 → Ch.85 버그 발견 (route.ts v2 fallback 확인)
+- 21:10 전수조사: 22건 코드화 누락 (HIGH 8, MEDIUM 9, LOW 5), data/→steps/v3/ 반영률 70%
+- 21:25 WCO→data/ 수집 완전성: 94%, 코드화 84% 병목
+- 21:45 커밋 eb00fae: 12 Section switch case + 3 misroute fix + 4 기존 Section 보강
+- 21:55 커밋 2b1e1ea: conflict-patterns 1,563건 + material_condition 89건 연동
+- 22:10 외장하드 데이터 연결: ai4 규칙+12, TRQ 372, EU 계절관세 13, Ch82 knife fix
+- 22:20 커밋 0838827: external drive data sync
+- 22:50 커밋 7fd0142: v3 pipeline 100% — 21/21 Section, S21 art, S7 redirect, word-boundary fix
+- 22:55 git push 완료, 22/22 PASS, build 성공
+
+**핵심 성과**:
+- step2-2 Section coverage: **10/21 → 21/21** (100%)
+- 새로 추가된 Section: S2, S3, S4, S5, S6, S7, S8, S9, S10, S12, S14, S19, S21
+- S11 Textiles: Ch.53-59, 63 추가 (총 14 Chapter 커버)
+- S15 Base metals: Ch.79, 80, 81 추가 (총 12 Chapter 커버)
+- S21 (Ch.97): 9701-9706 heading hints (painting/sculpture/stamp/antique)
+- S7: Section VII Note 2 cross-section redirect (printed plastic → Ch.49)
+- codified-rules: 592 → **595** (+3: Section I Note 1&2, Section VII Note 2)
+- word-boundary fix: "pe" → "paper" false positive 해���
+- headgear score 0.85 → 0.95 (hat/cap → S12 override cotton S11)
+- field-validator PLATFORM_TERMS: +40 키워드 (hat/chocolate/weapon/art/kitchenware 등)
+- 외장하드 /Volumes/soulmaten/POTAL/ 14개 파일 + 97 conflict patterns 전체 대조 완료
+
+**커밋 4개**: eb00fae, 2b1e1ea, 0838827, 7fd0142
+
+### 이전 스프린트 — CW20: 147/147 기능 100% 완료✅, Gmail 드래프트 251개✅, 심층검증 84/84✅
 
 ### ✅ CW18 Cowork 10차 — 4터미널 병렬 기능 강화 + 마케팅 (2026-03-25 KST)
 

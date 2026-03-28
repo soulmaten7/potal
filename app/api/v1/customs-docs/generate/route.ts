@@ -136,6 +136,116 @@ function generateCustomsDeclaration(shipment: Shipment) {
   };
 }
 
+function generateCertificateOfCompliance(shipment: Shipment) {
+  const totalValue = shipment.items.reduce((s, i) => s + i.value * i.quantity, 0);
+
+  // Determine applicable standards based on destination
+  const COUNTRY_STANDARDS: Record<string, string[]> = {
+    US: ['CPSC (Consumer Product Safety)', 'FCC Part 15 (Electronics)', 'FDA (Food/Cosmetics)', 'EPA (Chemical substances)'],
+    GB: ['UKCA Marking', 'UK Product Safety Regulations', 'UK Conformity Assessment'],
+    EU: ['CE Marking', 'REACH Regulation', 'RoHS Directive', 'General Product Safety Directive'],
+    AU: ['Australian Standards (AS/NZS)', 'ACMA (Telecom)', 'TGA (Therapeutics)'],
+    JP: ['PSE Mark (Electrical)', 'PSC Mark (Consumer)', 'JIS Standards'],
+    KR: ['KC Mark', 'KCC (Radio Equipment)', 'KFDA (Food/Drug)'],
+    CN: ['CCC (Compulsory Certification)', 'GB Standards'],
+  };
+
+  const dest = shipment.destination.toUpperCase();
+  const applicableStandards = COUNTRY_STANDARDS[dest] || ['General product safety standards applicable in destination country'];
+
+  return {
+    document_type: 'certificate_of_compliance',
+    certificate_number: `COC-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+    date: new Date().toISOString().split('T')[0],
+    valid_until: new Date(Date.now() + 365 * 86400000).toISOString().split('T')[0],
+    manufacturer: shipment.shipper,
+    importer: shipment.consignee,
+    destination_country: shipment.destination,
+    products: shipment.items.map((item, i) => ({
+      line: i + 1,
+      hs_code: item.hs_code,
+      description: item.description,
+      quantity: item.quantity,
+      origin: item.origin,
+      value: item.value * item.quantity,
+    })),
+    applicable_standards: applicableStandards,
+    compliance_status: 'compliant',
+    testing_info: {
+      lab_name: 'To be provided by manufacturer',
+      test_report_number: 'To be provided',
+      test_date: 'To be provided',
+    },
+    total_value: totalValue,
+    currency: shipment.currency || 'USD',
+    declaration: `The undersigned hereby certifies that the products listed above conform to the applicable safety, health, and environmental standards required for import into ${shipment.destination}. All necessary testing has been performed by an accredited laboratory.`,
+    notes: [
+      'This certificate must accompany the shipment at all times.',
+      'Original test reports should be available upon request by customs authorities.',
+      'Products must bear required markings (CE, UKCA, etc.) as applicable.',
+    ],
+  };
+}
+
+function generatePhytosanitaryCertificate(shipment: Shipment) {
+  // Phytosanitary certificates are for plant products, food, and agricultural goods
+  const TREATMENT_METHODS = [
+    { code: 'HT', name: 'Heat Treatment', description: 'Core temperature 56°C for 30 minutes' },
+    { code: 'MB', name: 'Methyl Bromide Fumigation', description: 'Fumigated with methyl bromide per ISPM 15' },
+    { code: 'VHT', name: 'Vapor Heat Treatment', description: 'Heated to 46.5°C for specified duration' },
+    { code: 'CT', name: 'Cold Treatment', description: 'Held at specified temperature for required duration' },
+    { code: 'IR', name: 'Irradiation', description: 'Treated with ionizing radiation per ISPM 18' },
+  ];
+
+  const origins = [...new Set(shipment.items.map(i => i.origin))];
+
+  return {
+    document_type: 'phytosanitary_certificate',
+    certificate_number: `PC-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+    date: new Date().toISOString().split('T')[0],
+    issuing_authority: 'National Plant Protection Organization (NPPO)',
+    reference_standard: 'ISPM 12 — Phytosanitary certificates',
+    exporter: shipment.shipper,
+    consignee: shipment.consignee,
+    origin_country: origins.join(', '),
+    destination_country: shipment.destination,
+    point_of_entry: 'Designated port of entry',
+    products: shipment.items.map((item, i) => ({
+      line: i + 1,
+      description: item.description,
+      hs_code: item.hs_code,
+      botanical_name: 'To be specified',
+      quantity: item.quantity,
+      weight_kg: item.weight * item.quantity,
+      origin: item.origin,
+      packaging: 'Commercial packaging — ISPM 15 compliant wood',
+    })),
+    treatment: {
+      applied: false,
+      method: null as typeof TREATMENT_METHODS[0] | null,
+      available_methods: TREATMENT_METHODS,
+      note: 'Select treatment method if required by destination country phytosanitary regulations.',
+    },
+    inspection_result: {
+      status: 'pending',
+      date: null,
+      inspector: null,
+      findings: 'Inspection to be conducted before certificate issuance.',
+    },
+    additional_declarations: [
+      'The consignment is considered to be free from quarantine pests.',
+      'The consignment complies with the phytosanitary requirements of the importing country.',
+      'Wood packaging material meets ISPM 15 standards.',
+    ],
+    declaration: `This is to certify that the plants, plant products, or other regulated articles described herein have been inspected and/or tested according to appropriate official procedures and are considered free from quarantine pests and practically free from other injurious pests, and are considered to conform with the current phytosanitary requirements of the importing country.`,
+    notes: [
+      'This certificate does not constitute a release for import. Destination country inspection may apply.',
+      'The certificate is void if altered, erased, or irregularly completed.',
+      'Valid for 14 days from date of issue for perishable items, 60 days for non-perishable.',
+    ],
+  };
+}
+
 function crossValidate(shipment: Shipment): string[] {
   const warnings: string[] = [];
   for (const item of shipment.items) {
@@ -182,7 +292,7 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
 
   const warnings = crossValidate(shipment);
 
-  const validTypes = ['commercial_invoice', 'packing_list', 'certificate_of_origin', 'customs_declaration'];
+  const validTypes = ['commercial_invoice', 'packing_list', 'certificate_of_origin', 'customs_declaration', 'certificate_of_compliance', 'phytosanitary_certificate'];
   if (!validTypes.includes(docType)) {
     return apiError(ApiErrorCode.BAD_REQUEST, `doc_type must be one of: ${validTypes.join(', ')}`);
   }
@@ -193,6 +303,8 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
     case 'packing_list': document = generatePackingList(shipment); break;
     case 'certificate_of_origin': document = generateCertificateOfOrigin(shipment); break;
     case 'customs_declaration': document = generateCustomsDeclaration(shipment); break;
+    case 'certificate_of_compliance': document = generateCertificateOfCompliance(shipment); break;
+    case 'phytosanitary_certificate': document = generatePhytosanitaryCertificate(shipment); break;
     default: return apiError(ApiErrorCode.BAD_REQUEST, 'Invalid doc_type.');
   }
 

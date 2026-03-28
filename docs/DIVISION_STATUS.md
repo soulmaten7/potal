@@ -1,5 +1,5 @@
 # DIVISION_STATUS.md — POTAL AI Agent Organization v6 상세
-# 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료, D8/D9 업데이트)
+# 마지막 업데이트: 2026-03-28 23:30 KST (CW21 — D3 v3 파이프라인 100%, D8 테스트 22/22 PASS)
 # 이 파일은 참조용. Division 상세 필요 시 읽는 파일.
 
 ## 16개 Division (책임 영역) — v6.1 기준 59 Agents
@@ -7,7 +7,7 @@
 |---|----------|----------|---------|----------|
 | D1 | Tariff & Compliance Engine | MFN/MIN/AGR 관세율, 63 FTA, RoO, 무역구제 119K건, 제재 스크리닝, 수출통제(ECCN/EAR) | **5** (+2) | lookup_duty_rate_v2(), tariff-api/ |
 | D2 | Tax Engine | VAT/GST 240개국, de minimis, IOSS, DST, 12개국 특수세금, processing fee | 3 | GlobalCostEngine.ts, CostEngine.ts |
-| D3 | HS Classification & Data Intelligence | 3단계 AI 분류(WDC→벡터→LLM), 캐시 플라이휠, 이미지 분류, 원산지 감지 | **5** (+2) | ai-classifier/ |
+| D3 | HS Classification & Data Intelligence | v3 GRI Pipeline 21/21 Section 100%, codified-rules 595, 캐시 플라이휠, 이미지 분류 | **5** (+2) | gri-classifier/ |
 | D4 | Data Pipeline & Regulations | 7개국 정부 API, MacMap/WITS 임포트, WDC 추출, 환율, 240개국 DB, 규정 수집/RAG | **5** (+2) | exchange-rate/, scripts/ |
 | D5 | Product & Web | potal.app 전체: 랜딩, 가격표, 대시보드, 로그인/가입, i18n 50개국어 UI, CWV | 3 | app/, components/ |
 | D6 | Platform & Integrations | Shopify TEA, WooCommerce, BigCommerce, Magento, JS 위젯, DDP Quote | 3 | extensions/, plugins/ |

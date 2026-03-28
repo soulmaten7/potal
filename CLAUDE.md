@@ -1,5 +1,13 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침 (핵심 규칙만)
-# 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료, Gmail 드래프트 251개 생성 완료)
+# 마지막 업데이트: 2026-03-29 01:30 KST (미완성 21개 기능 전부 완성, 빌드 성공, regression 0)
+
+## 터미널 구조 (고정)
+| 터미널 | 모델 | 용도 | 실행 명령어 |
+|--------|------|------|-----------|
+| 터미널1 | Opus | Cowork 대화 → 명령어 바로 실행. 메인 작업용 | `cd ~/portal && claude --dangerously-skip-permissions` |
+| 터미널2 | Sonnet | 보조 작업, 병렬 실행 | `cd ~/portal && claude --dangerously-skip-permissions --model sonnet` |
+| 터미널3 | Opus | 오래 걸리는 디테일 작업 전용 | `cd ~/portal && claude --dangerously-skip-permissions` |
+| 터미널4 | — | Mac 터미널 (git push, 시스템 명령어) | 일반 터미널 |
 
 ## 🚨 필수 지침 (모든 작업보다 우선)
 1. `POTAL_Claude_Code_Work_Log.xlsx`에 새 시트(YYMMDDHHMM) 추가 — 모든 작업 타임라인 기록

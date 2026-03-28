@@ -145,4 +145,53 @@ export function getPlanFeatures(planId: string) {
   };
 }
 
+/**
+ * F115: Data Retention — enforce plan-based data retention policies.
+ * Deletes records older than the plan's retentionDays.
+ */
+export async function enforceDataRetention(
+  supabase: ReturnType<typeof createClient>,
+  sellerId: string,
+  planId: string
+): Promise<{ tablesProcessed: number; rowsDeleted: number; retentionDays: number }> {
+  const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
+  const retentionDays = limits.retentionDays;
+
+  // Enterprise has unlimited retention
+  if (retentionDays >= 99999) {
+    return { tablesProcessed: 0, rowsDeleted: 0, retentionDays };
+  }
+
+  const cutoffDate = new Date(Date.now() - retentionDays * 86400000).toISOString();
+  let totalDeleted = 0;
+  const tables = ['usage_logs', 'hs_classification_audit', 'calculation_history'];
+
+  for (const table of tables) {
+    try {
+      const { count } = await (supabase
+        .from(table) as any)
+        .delete({ count: 'exact' })
+        .eq('seller_id', sellerId)
+        .lt('created_at', cutoffDate);
+      totalDeleted += count || 0;
+    } catch { /* table may not exist */ }
+  }
+
+  return { tablesProcessed: tables.length, rowsDeleted: totalDeleted, retentionDays };
+}
+
+/**
+ * Get retention policy details for a plan.
+ */
+export function getRetentionPolicy(planId: string) {
+  const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
+  return {
+    retentionDays: limits.retentionDays,
+    retentionDescription: limits.retentionDays >= 99999 ? 'Unlimited' : `${limits.retentionDays} days`,
+    dataTypes: ['API usage logs', 'Classification audit', 'Calculation history'],
+    autoDeleteEnabled: limits.retentionDays < 99999,
+    nextCleanupNote: 'Data retention is enforced daily via scheduled cron job.',
+  };
+}
+
 export { PLAN_LIMITS };

@@ -206,3 +206,106 @@ export function recommendCarrier(
     }
   }
 }
+
+// ─── Landed Cost Integrated Comparison ────────────────
+
+export interface LandedCostCarrierRate extends CarrierRate {
+  estimatedDuty: number;
+  estimatedTax: number;
+  insuranceFee: number;
+  totalLandedCost: number;
+}
+
+/**
+ * Compare carrier rates with landed cost integration.
+ * Adds duty, tax, and insurance estimates to each carrier option
+ * for true total-cost comparison.
+ */
+export function getCarrierRatesWithLandedCost(
+  params: ShipmentParams & { dutyRate?: number; taxRate?: number; includeInsurance?: boolean }
+): CarrierComparison {
+  const rates = getCarrierRates(params);
+  const dutyRate = params.dutyRate ?? 0;
+  const taxRate = params.taxRate ?? 0;
+  const includeInsurance = params.includeInsurance ?? false;
+
+  const enriched: Array<CarrierRate & { landedCostTotal: number; breakdown: { shippingCost: number; duty: number; tax: number; insurance: number } }> = rates.map(rate => {
+    const duty = Math.round(params.declaredValue * dutyRate * 100) / 100;
+    const taxableBase = params.declaredValue + duty + rate.rate;
+    const tax = Math.round(taxableBase * taxRate * 100) / 100;
+    const insurance = includeInsurance ? Math.round(Math.max(2, params.declaredValue * 0.015) * 100) / 100 : 0;
+    const landedCostTotal = Math.round((params.declaredValue + rate.rate + duty + tax + insurance) * 100) / 100;
+
+    return {
+      ...rate,
+      landedCostTotal,
+      breakdown: {
+        shippingCost: rate.rate,
+        duty,
+        tax,
+        insurance,
+      },
+    };
+  });
+
+  enriched.sort((a, b) => a.landedCostTotal - b.landedCostTotal);
+
+  const cheapest = enriched[0] || null;
+  const fastest = enriched.length > 0
+    ? enriched.reduce((f, r) => r.estimatedDays.min < f.estimatedDays.min ? r : f, enriched[0])
+    : null;
+  const bestValue = enriched.length > 0
+    ? enriched.reduce((best, r) => {
+        const score = r.landedCostTotal / Math.max(1, r.estimatedDays.max);
+        const bestScore = best.landedCostTotal / Math.max(1, best.estimatedDays.max);
+        return score < bestScore ? r : best;
+      }, enriched[0])
+    : null;
+
+  return {
+    carriers: enriched,
+    recommendation: {
+      cheapest: cheapest?.carrier || '',
+      fastest: fastest?.carrier || '',
+      bestValue: bestValue?.carrier || '',
+    },
+    shipmentDetails: params,
+  };
+}
+
+/**
+ * Calculate dimensional weight for a package.
+ * Standard DIM factor: 5000 (international), 6000 (domestic US).
+ */
+export function calculateDimWeight(
+  lengthCm: number,
+  widthCm: number,
+  heightCm: number,
+  dimFactor: number = 5000
+): { volumetricWeightKg: number; cubicCm: number; dimFactor: number } {
+  const cubicCm = lengthCm * widthCm * heightCm;
+  const volumetricWeightKg = Math.round((cubicCm / dimFactor) * 100) / 100;
+  return { volumetricWeightKg, cubicCm, dimFactor };
+}
+
+/**
+ * Calculate shipping insurance premium based on CIF value.
+ * Standard rate: 1.5% of declared value, minimum $2.
+ */
+export function calculateInsurancePremium(
+  declaredValue: number,
+  shippingCost: number,
+  coverageType: 'basic' | 'full' | 'premium' = 'basic'
+): { premium: number; coverageAmount: number; coverageType: string; deductible: number } {
+  const rates: Record<string, { rate: number; deductible: number; coverageMultiplier: number }> = {
+    basic: { rate: 0.015, deductible: 50, coverageMultiplier: 1.0 },
+    full: { rate: 0.025, deductible: 25, coverageMultiplier: 1.1 },
+    premium: { rate: 0.035, deductible: 0, coverageMultiplier: 1.2 },
+  };
+  const config = rates[coverageType];
+  const cifValue = declaredValue + shippingCost;
+  const coverageAmount = Math.round(cifValue * config.coverageMultiplier * 100) / 100;
+  const premium = Math.round(Math.max(2, cifValue * config.rate) * 100) / 100;
+
+  return { premium, coverageAmount, coverageType, deductible: config.deductible };
+}

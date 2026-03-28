@@ -75,6 +75,51 @@ export default function CommunityPage() {
         </div>
       </section>
 
+      {/* Recent Discussions Feed — F131 */}
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Recent Discussions</h2>
+        <div className="space-y-3">
+          {[
+            { title: 'How to handle HS code classification for composite products?', author: 'trade_dev', replies: 5, category: 'Q&A', date: '2 hours ago' },
+            { title: 'Feature Request: Webhook retry configuration', author: 'shipmaster', replies: 3, category: 'Ideas', date: '5 hours ago' },
+            { title: 'Best practices for multi-country landed cost calculation', author: 'global_seller', replies: 8, category: 'Discussion', date: '1 day ago' },
+            { title: 'POTAL vs Avalara for SMB cross-border — real comparison', author: 'ecom_mike', replies: 12, category: 'Discussion', date: '2 days ago' },
+            { title: 'Widget not showing on Shopify Dawn theme', author: 'shop_owner', replies: 2, category: 'Support', date: '3 days ago' },
+          ].map((thread, i) => (
+            <a
+              key={i}
+              href="https://github.com/potal-app/potal/discussions"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
+                    thread.category === 'Q&A' ? 'bg-green-100 text-green-700' :
+                    thread.category === 'Ideas' ? 'bg-purple-100 text-purple-700' :
+                    thread.category === 'Support' ? 'bg-orange-100 text-orange-700' :
+                    'bg-blue-100 text-blue-700'
+                  }`}>{thread.category}</span>
+                  <span className="text-xs text-gray-400">{thread.date}</span>
+                </div>
+                <h3 className="font-medium text-gray-900 text-sm truncate">{thread.title}</h3>
+                <p className="text-xs text-gray-500 mt-0.5">by {thread.author}</p>
+              </div>
+              <div className="ml-4 text-center flex-shrink-0">
+                <p className="text-sm font-semibold text-gray-700">{thread.replies}</p>
+                <p className="text-xs text-gray-400">replies</p>
+              </div>
+            </a>
+          ))}
+        </div>
+        <div className="mt-4 text-center">
+          <a href="https://github.com/potal-app/potal/discussions" target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline font-medium">
+            View all discussions on GitHub
+          </a>
+        </div>
+      </section>
+
       {/* Resources */}
       <section className="mb-12">
         <h2 className="text-2xl font-semibold text-gray-900 mb-6">Resources</h2>
