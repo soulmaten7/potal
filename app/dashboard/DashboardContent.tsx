@@ -533,10 +533,15 @@ export default function DashboardContent() {
           if (window.Paddle) {
             const paddleToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
             if (paddleToken) {
-              window.Paddle.Initialize({
-                token: paddleToken,
-                environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox' ? 'sandbox' : undefined,
-              });
+              const paddleConfig: { token: string; environment?: string } = { token: paddleToken };
+              if (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'sandbox') {
+                paddleConfig.environment = 'sandbox';
+              }
+              try {
+                window.Paddle.Initialize(paddleConfig);
+              } catch {
+                // Paddle initialization failed — non-blocking
+              }
             }
           }
         }}
@@ -1092,19 +1097,21 @@ export default function DashboardContent() {
                   <input id="classify-origin" type="text" placeholder="Origin (e.g. CN, US)" style={{ width: 120, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                   <button onClick={async () => {
                     const input = (document.getElementById('classify-input') as HTMLInputElement)?.value;
-                    if (!input) return;
-                    const material = (document.getElementById('classify-material') as HTMLInputElement)?.value || undefined;
-                    const origin = (document.getElementById('classify-origin') as HTMLInputElement)?.value || undefined;
                     const el = document.getElementById('classify-result');
+                    if (!input) { if (el) el.textContent = 'Please enter a product name.'; return; }
                     if (el) el.textContent = 'Classifying...';
                     try {
-                      const body: Record<string, unknown> = { productName: input };
-                      if (material) body.material = material;
-                      if (origin) body.originCountry = origin.toUpperCase();
-                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify(body) });
+                      const token = session?.access_token;
+                      if (!token) { if (el) el.textContent = 'Error: Not authenticated. Please log in again.'; return; }
+                      const material = (document.getElementById('classify-material') as HTMLInputElement)?.value || undefined;
+                      const origin = (document.getElementById('classify-origin') as HTMLInputElement)?.value || undefined;
+                      const reqBody: Record<string, unknown> = { productName: input };
+                      if (material) reqBody.material = material;
+                      if (origin) reqBody.originCountry = origin.toUpperCase();
+                      const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(reqBody) });
                       const data = await res.json();
-                      if (el) el.textContent = JSON.stringify(data, null, 2);
-                    } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `API Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                    } catch (e) { if (el) el.textContent = `Network Error: ${e instanceof Error ? e.message : String(e)}`; }
                   }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Classify</button>
                 </div>
                 <pre id="classify-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 60, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
@@ -1170,12 +1177,15 @@ export default function DashboardContent() {
                     const origin = (document.getElementById('calc-origin') as HTMLInputElement)?.value;
                     const weight = (document.getElementById('calc-weight') as HTMLInputElement)?.value;
                     const el = document.getElementById('calc-result');
+                    if (!hs && !country && !value) { if (el) el.textContent = 'Please fill in HS Code, Destination, and Value.'; return; }
                     if (el) el.textContent = 'Calculating...';
                     try {
-                      const res = await fetch('/api/v1/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ hsCode: hs, destinationCountry: country, price: parseFloat(value) || 100, origin: origin || 'CN', weight: parseFloat(weight) || 0.5 }) });
+                      const token = session?.access_token;
+                      if (!token) { if (el) el.textContent = 'Error: Not authenticated. Please log in again.'; return; }
+                      const res = await fetch('/api/v1/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ hsCode: hs, destinationCountry: country?.toUpperCase(), price: parseFloat(value || '0') || 100, origin: (origin || 'CN').toUpperCase(), weight: parseFloat(weight || '0') || 0.5 }) });
                       const data = await res.json();
-                      if (el) el.textContent = JSON.stringify(data, null, 2);
-                    } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `API Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                    } catch (e) { if (el) el.textContent = `Network Error: ${e instanceof Error ? e.message : String(e)}`; }
                   }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, alignSelf: 'flex-end' }}>Calculate</button>
                 </div>
                 <pre id="calc-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 80, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
