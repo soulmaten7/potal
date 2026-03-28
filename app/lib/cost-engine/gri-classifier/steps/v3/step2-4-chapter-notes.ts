@@ -88,7 +88,6 @@ export function verifyChapterWithNotes(
         const threshold = parseFloat(rule.condition.value);
         const primaryPct = input.composition_parsed[0]?.pct || 0;
         if (!isNaN(threshold) && primaryPct > 0) {
-          // Check if composition meets threshold
           const meetsThreshold = primaryPct >= threshold;
           if (meetsThreshold) {
             rulesApplied.push({
@@ -98,6 +97,19 @@ export function verifyChapterWithNotes(
             });
           }
         }
+      }
+    }
+
+    // Material condition checks (89 rules)
+    const materialRules = rules.filter(r => r.type === 'material_condition');
+    for (const rule of materialRules) {
+      const ruleText = (rule.original_text || '').toLowerCase();
+      if (!ruleText || ruleText.length < 10) continue;
+      const combined = [...input.material_keywords, ...input.composition_parsed.map(c => c.material), input.product_name].join(' ').toLowerCase();
+      const materialTerms = ['textile', 'cotton', 'wool', 'silk', 'polyester', 'leather', 'rubber', 'plastic', 'metal', 'steel', 'iron', 'glass', 'ceramic', 'wood', 'paper'];
+      const matched = materialTerms.filter(m => ruleText.includes(m) && combined.includes(m));
+      if (matched.length > 0) {
+        rulesApplied.push({ source: rule.source, type: 'material_condition', action: `Material: ${matched.join(', ')}` });
       }
     }
   }

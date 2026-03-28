@@ -14,6 +14,7 @@ import { verifyChapterWithNotes } from './step2-4-chapter-notes';
 import { getHeadingsForChapter } from './heading-lookup';
 import { selectHeading } from './step3-heading';
 import { selectSubheading } from './step4-subheading';
+import { findMatchingPattern } from '../../data/conflict-patterns';
 import { routeToCountry } from './step5-country-router';
 import { applyPriceBreakV3 } from './step6-price-break';
 import { finalResolveV3 } from './step7-final';
@@ -111,6 +112,31 @@ export async function classifyV3(input: ClassifyInputV3): Promise<V3PipelineResu
     rules_applied: [step3.matched_by],
     time_ms: Date.now() - t3,
   });
+
+  // ── Step 3b: Conflict Pattern Check (1,563 CBP+EBTI patterns) ──
+  if (step3.confidence < 0.6 && step3.runner_up_heading) {
+    const conflictPattern = findMatchingPattern(
+      step24.confirmed_chapter,
+      [...normalized.material_keywords, ...normalized.category_tokens, ...normalized.description_tokens],
+      [step3.confirmed_heading, step3.runner_up_heading]
+    );
+    if (conflictPattern && conflictPattern.correct_heading) {
+      const corrected = conflictPattern.correct_heading;
+      if (/^\d{4}$/.test(corrected) && corrected !== step3.confirmed_heading) {
+        step3.confirmed_heading = corrected;
+        step3.heading_description = conflictPattern.pattern_name || step3.heading_description;
+        step3.confidence = Math.min(0.8, step3.confidence + 0.2);
+        step3.matched_by = `conflict_pattern:${conflictPattern.correct_heading}`;
+        decisionPath.push({
+          step: 'Step 3b: Conflict Resolution',
+          input_summary: `${step3.runner_up_heading} vs ${corrected}`,
+          output_summary: `Corrected to ${corrected} (pattern match, ${conflictPattern.keywords?.slice(0, 3).join(',')})`,
+          rules_applied: ['conflict_pattern_1563'],
+          time_ms: 0,
+        });
+      }
+    }
+  }
 
   // ── Step 4: Subheading Selection ──
   const t4 = Date.now();

@@ -28,6 +28,7 @@ export interface Step3Output {
   confidence: number;
   matched_by: string;
   subheadings: { code: string; description: string }[];
+  runner_up_heading?: string;
 }
 
 /**
@@ -412,6 +413,7 @@ export function selectHeading(
     confidence: best.matchCount > 0 ? Math.min(0.3 + best.matchCount * 0.1, 0.8) : 0.1,
     matched_by: `fallback_overlap(${best.matchCount})`,
     subheadings: getSubs(best.heading),
+    runner_up_heading: scored[1]?.heading,
   };
 }
 
