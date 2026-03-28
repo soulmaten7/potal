@@ -221,8 +221,8 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
   const classifyStartMs = Date.now();
 
-  // GRI Engine (if enabled via environment variable)
-  const useGriEngine = process.env.CLASSIFICATION_ENGINE === 'gri';
+  // GRI Engine (v3) — default ON. Set CLASSIFICATION_ENGINE=v2 to use legacy pipeline.
+  const useGriEngine = process.env.CLASSIFICATION_ENGINE !== 'v2';
   if (useGriEngine && productName) {
     // ── Layer 2: 9-Field Validation ──
     const validationInput = {
@@ -298,7 +298,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   try {
     result = await classifyProductAsync(productName, category, context.sellerId);
   } catch (err) {
-    console.error('[classify] Text classification error:', err instanceof Error ? err.message : err);
+    void err;
     return apiError(ApiErrorCode.INTERNAL_ERROR, 'Classification service unavailable. Please try again.');
   }
 
