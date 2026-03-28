@@ -18,6 +18,8 @@ import { classifyWithVision } from '@/app/lib/cost-engine/ai-classifier';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
 import { resolveHs10 } from '@/app/lib/cost-engine/hs-code/hs10-resolver';
 import { classifyWithGRI } from '@/app/lib/cost-engine/gri-classifier';
+import { classifyV3 } from '@/app/lib/cost-engine/gri-classifier/steps/v3/pipeline-v3';
+import type { ClassifyInputV3 } from '@/app/lib/cost-engine/gri-classifier/types';
 import { validateFields } from '@/app/lib/cost-engine/gri-classifier/field-validator';
 
 // ─── Input Validation Constants ────────────────────
@@ -250,42 +252,56 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       );
     }
 
-    // has_warnings or valid → classify
+    // has_warnings or valid → v3.3 code-based pipeline
     try {
-      const destCountryGri = body.destination_country || body.destinationCountry;
-      const griResult = await classifyWithGRI({
-        productName,
-        description: typeof body.description === 'string' ? body.description : undefined,
+      const v3Input: ClassifyInputV3 = {
+        product_name: productName,
+        material: typeof body.material === 'string' ? body.material : (category || ''),
+        origin_country: (typeof body.origin_country === 'string' ? body.origin_country :
+                        typeof body.originCountry === 'string' ? body.originCountry : 'XX').toUpperCase(),
+        destination_country: (body.destination_country || body.destinationCountry)
+          ? String(body.destination_country || body.destinationCountry).toUpperCase() : 'US',
         category: category,
-        price: body.price ? Number(body.price) : undefined,
-        material: typeof body.material === 'string' ? body.material : undefined,
-        originCountry: typeof body.origin_country === 'string' ? body.origin_country :
-                       typeof body.originCountry === 'string' ? body.originCountry : undefined,
+        description: typeof body.description === 'string' ? body.description : undefined,
         processing: typeof body.processing === 'string' ? body.processing : undefined,
         composition: typeof body.composition === 'string' ? body.composition : undefined,
-        weightSpec: typeof body.weight_spec === 'string' ? body.weight_spec :
-                    typeof body.weightSpec === 'string' ? body.weightSpec : undefined,
-        destinationCountry: destCountryGri ? String(destCountryGri) : 'US',
-      });
+        weight_spec: typeof body.weight_spec === 'string' ? body.weight_spec :
+                     typeof body.weightSpec === 'string' ? body.weightSpec : undefined,
+        price: body.price ? Number(body.price) : undefined,
+      };
+
+      const v3Result = await classifyV3(v3Input);
+
       return apiSuccess({
-        hsCode: griResult.hsCode,
-        description: griResult.description,
-        confidence: griResult.confidence,
-        hsCodePrecision: griResult.hsCodePrecision,
-        alternatives: griResult.alternatives,
-        decisionPath: griResult.decisionPath,
-        griRulesApplied: griResult.griRulesApplied,
-        aiCallCount: griResult.aiCallCount,
-        classificationMethod: griResult.classificationMethod,
-        processingTimeMs: griResult.processingTimeMs,
-        countrySpecific: griResult.countrySpecific,
+        hsCode: v3Result.final_hs_code || v3Result.confirmed_hs6 || 'UNKNOWN',
+        description: v3Result.country_specific?.national_code
+          ? `${v3Result.confirmed_hs6} → ${v3Result.country_specific.national_code}`
+          : (v3Result.confirmed_hs6 || 'Classification completed'),
+        confidence: v3Result.confidence,
+        hsCodePrecision: v3Result.hs_code_precision || 'HS6',
+        alternatives: [],
+        decisionPath: v3Result.decision_path.map((s, i) => ({
+          step: i + 1,
+          name: s.step,
+          input: s.input_summary,
+          output: s.output_summary,
+          method: 'code' as const,
+          timeMs: s.time_ms,
+        })),
+        griRulesApplied: v3Result.decision_path.flatMap(s =>
+          s.rules_applied.map(r => ({ rule: r, reason: s.step }))
+        ),
+        aiCallCount: v3Result.ai_call_count || 0,
+        classificationMethod: 'v3.3-code-based',
+        processingTimeMs: v3Result.processing_time_ms,
+        countrySpecific: v3Result.country_specific || undefined,
         ...(validation.overall_status === 'has_warnings' ? { validation } : {}),
       }, {
         sellerId: context.sellerId,
         plan: context.planId,
       });
     } catch {
-      // GRI engine failed — fall through to legacy engine
+      // v3 pipeline failed — fall through to legacy engine
     }
   }
 
