@@ -14,7 +14,7 @@ export function matchSubheadingKeyword(
   keywordResult: KeywordResult,
 ): SubheadingResult {
   const { keywords, material } = keywordResult;
-  const heading4 = resolvedHeading.substring(0, 4);
+  const heading4 = /^\d{4}/.test(resolvedHeading) ? resolvedHeading.substring(0, 4) : '0000';
   const subheadings = getSubheadingsForHeading(heading4);
 
   if (subheadings.length === 0) return { hs6: heading4 + '00', description: 'Default', confidence: 0.5 };

@@ -96,7 +96,7 @@ ${input.price ? `Price: $${input.price}` : ''}
 {"thinking":"...","heading_1":"XXXX","heading_1_description":"...","heading_2":"XXXX or null","heading_2_description":"... or null","needs_conflict_resolution":false,"confidence":0.X}`;
 
   const result = await callLLM<Step6LLMResponse>({ userPrompt: prompt, maxTokens: 250 });
-  if (!result.data || !result.data.heading_1) return null;
+  if (!result.data || !result.data.heading_1 || !/^\d{4}$/.test(String(result.data.heading_1))) return null;
 
   const d = result.data;
   const candidates: HeadingCandidate[] = [];

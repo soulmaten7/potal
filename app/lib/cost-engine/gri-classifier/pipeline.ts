@@ -201,10 +201,14 @@ export async function classifyWithGRI(
   let resolvedHeading = step6.headingCandidates[0]?.heading || '0000';
   let resolutionMethod = 'direct';
 
+  // Guard: heading must be 4 digits (prevents "null", undefined, etc.)
+  if (!/^\d{4}$/.test(resolvedHeading)) resolvedHeading = '0000';
+
   if (step6.needsConflictResolution && step6.headingCandidates.length >= 2) {
     stepStart = Date.now();
     const step7 = await resolveConflict(step6.headingCandidates, step1, input);
-    resolvedHeading = step7.resolvedHeading;
+    const candidate = step7.resolvedHeading;
+    resolvedHeading = /^\d{4}$/.test(candidate) ? candidate : resolvedHeading;
     resolutionMethod = step7.method;
     if (step7.aiCalled) aiCallCount++;
     if (step7.griRuleApplied) {

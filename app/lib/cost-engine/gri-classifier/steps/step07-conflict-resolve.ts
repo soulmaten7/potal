@@ -139,7 +139,7 @@ Respond in JSON only:
         const content = data.choices?.[0]?.message?.content;
         if (content) {
           const parsed = JSON.parse(content);
-          if (parsed.heading) {
+          if (parsed.heading && /^\d{4}$/.test(String(parsed.heading))) {
             return {
               resolvedHeading: String(parsed.heading),
               method: 'ai_resolution',
@@ -173,7 +173,7 @@ Respond in JSON only:
         const content = data.choices?.[0]?.message?.content;
         if (content) {
           const parsed = JSON.parse(content);
-          if (parsed.heading) {
+          if (parsed.heading && /^\d{4}$/.test(String(parsed.heading))) {
             return {
               resolvedHeading: String(parsed.heading),
               method: 'ai_resolution',
