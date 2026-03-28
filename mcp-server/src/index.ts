@@ -8,15 +8,15 @@
  * for cross-border purchases across 240 countries and territories.
  *
  * Tools (9):
- *   - calculate_landed_cost: Calculate total cost for international purchases
- *   - classify_product: AI-powered HS code classification
+ *   - calculate_landed_cost: Calculate total cost for international purchases (with 9-field classify support)
+ *   - classify_product: HS code classification via v3.3 GRI pipeline (9-field input)
  *   - check_restrictions: Import restriction & compliance check
- *   - screen_shipment: Comprehensive pre-shipment screening (cost + compliance)
+ *   - screen_shipment: Comprehensive pre-shipment screening (cost + compliance, 9-field classify)
  *   - screen_denied_party: Sanctions/denied-party screening (OFAC SDN + CSL, 21K entries)
  *   - lookup_fta: Free Trade Agreement lookup (63 FTAs)
  *   - list_supported_countries: Get all supported countries with tax info
  *   - generate_document: Generate trade documents (CI/PL/C/O)
- *   - compare_countries: Compare TLC across multiple destination countries
+ *   - compare_countries: Compare TLC across multiple destination countries (with 9-field classify)
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -26,12 +26,12 @@ import { z } from "zod";
 // ─── Configuration ──────────────────────────────────────────
 const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
-const USER_AGENT = "potal-mcp-server/1.3.0";
+const USER_AGENT = "potal-mcp-server/1.4.0";
 
 // ─── Server Instance ────────────────────────────────────────
 const server = new McpServer({
   name: "potal",
-  version: "1.3.0",
+  version: "1.4.0",
 });
 
 // ─── API Helper ─────────────────────────────────────────────
@@ -143,7 +143,8 @@ server.tool(
     "Returns a detailed breakdown of import duties, VAT/GST, customs fees, and " +
     "the final total price the buyer will pay. Supports 240 countries and territories. " +
     "Includes China CBEC tax, Mexico IEPS, Brazil cascading tax, India IGST, " +
-    "and processing fees for 12 countries.",
+    "and processing fees for 12 countries. " +
+    "When providing productName for auto-classification, include material for accurate HS code results.",
   {
     price: z.number().describe("Product price in USD. Example: 49.99"),
     origin: z
@@ -174,12 +175,26 @@ server.tool(
       .describe(
         "Name of the product for automatic HS Code classification. Examples: Cotton T-Shirt, Laptop, Running Shoes"
       ),
+    material: z
+      .string()
+      .optional()
+      .describe(
+        "Primary material — needed for accurate HS classification. Examples: cotton, leather, steel, polyester, rubber"
+      ),
     productCategory: z
       .string()
       .optional()
       .describe(
         "Product category for classification. Examples: electronics, apparel, footwear, accessories, food"
       ),
+    processing: z
+      .string()
+      .optional()
+      .describe("Manufacturing/processing method. Examples: woven, knitted, forged, molded"),
+    composition: z
+      .string()
+      .optional()
+      .describe("Material composition. Example: '100% cotton', '70% polyester 30% cotton'"),
     hsCode: z
       .string()
       .optional()
@@ -199,16 +214,21 @@ server.tool(
       };
     }
 
-    const result = await callPotalApi("/calculate", "POST", {
+    const body: Record<string, unknown> = {
       price: params.price,
       origin: params.origin,
       destinationCountry: params.destinationCountry,
-      shippingPrice: params.shippingPrice,
-      zipcode: params.zipcode,
-      productName: params.productName,
-      productCategory: params.productCategory,
-      hsCode: params.hsCode,
-    });
+    };
+    if (params.shippingPrice !== undefined) body.shippingPrice = params.shippingPrice;
+    if (params.zipcode) body.zipcode = params.zipcode;
+    if (params.productName) body.productName = params.productName;
+    if (params.material) body.material = params.material;
+    if (params.productCategory) body.productCategory = params.productCategory;
+    if (params.processing) body.processing = params.processing;
+    if (params.composition) body.composition = params.composition;
+    if (params.hsCode) body.hsCode = params.hsCode;
+
+    const result = await callPotalApi("/calculate", "POST", body);
 
     if (!result.success) {
       return {
@@ -239,14 +259,20 @@ server.tool(
 
 server.tool(
   "classify_product",
-  "Classify a product into an HS (Harmonized System) code for customs. " +
-    "Uses AI-powered classification with keyword matching fallback. " +
-    "Returns HS code, description, chapter, and confidence level.",
+  "Classify a product into an HS (Harmonized System) code for customs using the v3.3 GRI pipeline. " +
+    "Supports 9-field input for maximum accuracy. material is REQUIRED for the v3.3 pipeline — " +
+    "without it, classification will fail with 400 error. " +
+    "Returns HS code, description, confidence, decision path, and GRI rules applied.",
   {
     productName: z.string().describe("Product name or description. Example: 'cotton t-shirt', 'laptop computer', 'running shoes'"),
-    material: z.string().optional().describe("Primary material. Example: 'cotton', 'leather', 'steel', 'polyester'. Critical for accurate classification (+45% accuracy)."),
-    productCategory: z.string().optional().describe("Product category hint. Example: 'apparel', 'electronics', 'footwear'"),
-    originCountry: z.string().optional().describe("Country of origin (ISO 2-letter code). Example: 'CN', 'DE', 'US'"),
+    material: z.string().describe("Primary material — REQUIRED for v3.3 pipeline. Example: 'cotton', 'leather', 'steel', 'polyester', 'rubber', 'wood', 'glass'"),
+    productCategory: z.string().optional().describe("Product category for classification. Example: 'apparel', 'electronics', 'footwear', 'kitchenware', 'toys'"),
+    originCountry: z.string().optional().describe("Country of origin (ISO 2-letter code). Example: 'CN', 'DE', 'US', 'JP'"),
+    description: z.string().optional().describe("Detailed product description for better accuracy. Example: 'Men's woven dress shirt with long sleeves and button front'"),
+    processing: z.string().optional().describe("Manufacturing/processing method. Example: 'woven', 'knitted', 'forged', 'molded', 'printed', 'assembled'"),
+    composition: z.string().optional().describe("Material composition with percentages. Example: '100% cotton', '70% polyester 30% cotton', '18/8 stainless steel'"),
+    weightSpec: z.string().optional().describe("Product weight specification. Example: '500g', '2kg', '150gsm'"),
+    price: z.number().optional().describe("Unit price in USD. Used for price-break HS rules (e.g. 'valued over $X'). Example: 49.99"),
     hsCode: z.string().optional().describe("Known HS code to override classification. Example: '6109.10'"),
   },
   async (params) => {
@@ -256,13 +282,20 @@ server.tool(
       };
     }
 
-    const result = await callPotalApi("/classify", "POST", {
+    const body: Record<string, unknown> = {
       productName: params.productName,
       material: params.material,
-      productCategory: params.productCategory,
-      origin_country: params.originCountry,
-      hsCode: params.hsCode,
-    });
+    };
+    if (params.productCategory) body.category = params.productCategory;
+    if (params.originCountry) body.origin_country = params.originCountry;
+    if (params.description) body.description = params.description;
+    if (params.processing) body.processing = params.processing;
+    if (params.composition) body.composition = params.composition;
+    if (params.weightSpec) body.weight_spec = params.weightSpec;
+    if (params.price !== undefined) body.price = params.price;
+    if (params.hsCode) body.hsCode = params.hsCode;
+
+    const result = await callPotalApi("/classify", "POST", body);
 
     if (!result.success) {
       return {
@@ -358,12 +391,16 @@ server.tool(
   "screen_shipment",
   "Comprehensive shipment screening: calculates landed cost, checks restrictions, " +
     "and identifies trade remedies — all in one call. Use this for a complete " +
-    "pre-shipment compliance and cost analysis.",
+    "pre-shipment compliance and cost analysis. Include material for accurate HS classification.",
   {
     price: z.number().describe("Product price in USD"),
     origin: z.string().length(2).describe("Origin country ISO2"),
     destinationCountry: z.string().length(2).describe("Destination country ISO2"),
     productName: z.string().describe("Product name for classification"),
+    material: z.string().optional().describe("Primary material — needed for accurate classification. Example: 'cotton', 'steel', 'leather'"),
+    productCategory: z.string().optional().describe("Product category. Example: 'apparel', 'electronics'"),
+    processing: z.string().optional().describe("Processing method. Example: 'woven', 'forged'"),
+    composition: z.string().optional().describe("Material composition. Example: '100% cotton'"),
     shippingPrice: z.number().optional().describe("Shipping cost in USD"),
     hsCode: z.string().optional().describe("Known HS code"),
   },
@@ -374,16 +411,22 @@ server.tool(
       };
     }
 
+    const calcBody: Record<string, unknown> = {
+      price: params.price,
+      origin: params.origin,
+      destinationCountry: params.destinationCountry,
+      productName: params.productName,
+    };
+    if (params.material) calcBody.material = params.material;
+    if (params.productCategory) calcBody.productCategory = params.productCategory;
+    if (params.processing) calcBody.processing = params.processing;
+    if (params.composition) calcBody.composition = params.composition;
+    if (params.shippingPrice !== undefined) calcBody.shippingPrice = params.shippingPrice;
+    if (params.hsCode) calcBody.hsCode = params.hsCode;
+
     // Run calculate and restrictions in parallel
     const [calcResult, restrictResult] = await Promise.all([
-      callPotalApi("/calculate", "POST", {
-        price: params.price,
-        origin: params.origin,
-        destinationCountry: params.destinationCountry,
-        productName: params.productName,
-        shippingPrice: params.shippingPrice,
-        hsCode: params.hsCode,
-      }),
+      callPotalApi("/calculate", "POST", calcBody),
       callPotalApi("/restrictions", "POST", {
         hsCode: params.hsCode || "",
         destinationCountry: params.destinationCountry,
@@ -663,12 +706,14 @@ server.tool(
   "compare_countries",
   "Compare Total Landed Cost across multiple destination countries for the same product. " +
     "Useful for finding the cheapest import route or comparing duty rates between countries. " +
-    "Returns a side-by-side comparison of costs.",
+    "Returns a side-by-side comparison of costs. Include material for accurate classification.",
   {
     productName: z.string().describe("Product name/description"),
     price: z.number().describe("Product price in USD"),
     originCountry: z.string().describe("Origin/export country (ISO 2-letter code, e.g. 'CN')"),
     destinationCountries: z.array(z.string()).describe("List of destination countries to compare (ISO 2-letter codes, e.g. ['US', 'GB', 'DE', 'JP'])"),
+    material: z.string().optional().describe("Primary material for accurate classification. Example: 'cotton', 'steel'"),
+    productCategory: z.string().optional().describe("Product category. Example: 'apparel', 'electronics'"),
     hsCode: z.string().optional().describe("HS code (6+ digits)"),
     shippingPrice: z.number().optional().describe("Shipping cost in USD (default: 0)"),
   },
@@ -682,14 +727,18 @@ server.tool(
     const results: { country: string; data?: Record<string, unknown>; error?: string }[] = [];
 
     for (const country of args.destinationCountries.slice(0, 10)) {
-      const result = await callPotalApi("/calculate", "POST", {
+      const body: Record<string, unknown> = {
         price: args.price,
         shippingPrice: args.shippingPrice || 0,
         origin: args.originCountry,
         destinationCountry: country,
         productName: args.productName,
-        hsCode: args.hsCode || undefined,
-      });
+      };
+      if (args.material) body.material = args.material;
+      if (args.productCategory) body.productCategory = args.productCategory;
+      if (args.hsCode) body.hsCode = args.hsCode;
+
+      const result = await callPotalApi("/calculate", "POST", body);
 
       if (result.success && result.data) {
         results.push({ country, data: result.data });
