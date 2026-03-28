@@ -4619,6 +4619,102 @@ const CODIFIED_RULES: CodifiedRule[] = [
     "code_rule": "if category in ['toy','game','doll','puzzle'] AND function_use contains 'play/amusement/recreation' → Ch.95; if function_use contains 'computing/communication/measurement' → Ch.84/85",
     "field_needed": "category + function_use (놀이 vs 전자)",
     "verified": true
+  },
+  {
+    "source": "Chapter 9, Customs Ruling — Single Spice",
+    "type": "ai_derived_rule",
+    "logic": "단일 향신료(후추, 계피, 강황 등) — 혼합 없이 단일 향신료 자체는 무조건 Ch.09. % 계산 불필요",
+    "code_rule": "if productName/description contains single spice keyword (pepper, cinnamon, turmeric, cloves, ginger, nutmeg, cardamom, cumin, coriander, paprika) AND no 'mix/blend/seasoning/condiment' → Ch.09",
+    "field_needed": "productName + description (단일 향신료 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 9, Customs Ruling — Curry Paste",
+    "type": "ai_derived_rule",
+    "logic": "커리 페이스트/소스(액상) — 향신료 함량에 관계없이 Ch.21.03으로 분류. 형태(paste/sauce/liquid)가 결정 기준",
+    "code_rule": "if description contains 'curry paste' OR 'curry sauce' OR (material contains 'spice' AND processing in ['paste','sauce','liquid']) → Ch.21.03",
+    "field_needed": "description + processing (형태: paste vs powder)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 9, Customs Ruling — Spice Mix with Salt/Sugar",
+    "type": "ai_required",
+    "logic": "소금/설탕 첨가 건조 향신료 믹스 — 향신료의 essential character 유지 여부로 판단. 소금/설탕이 풍미 목적 소량이면 Ch.09, 보존/텍스처 목적 대량이면 Ch.21",
+    "code_rule": "if processing contains 'dried/powder' AND material contains 'spice' AND (material contains 'salt' OR material contains 'sugar') → BORDERLINE: if spice_pct > 70% → Ch.09; else → Ch.21.03",
+    "field_needed": "material composition (향신료 vs 소금/설탕 비율)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 40, Customs Ruling — Footwear Exception",
+    "type": "ai_derived_rule",
+    "logic": "고무 밑창 신발 — 고무 함량과 관계없이 Ch.64로 분류. Ch.40 Note에 명시적 제외 규정",
+    "code_rule": "if category contains 'footwear/shoe/boot/sandal' OR description contains 'sole' AND category in ['shoe','sneaker','boot','sandal','slipper'] → Ch.64 (NOT Ch.40 even if rubber > 50%)",
+    "field_needed": "category (신발 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 40, Customs Ruling — Rubber Textile Waterproofing",
+    "type": "ai_required",
+    "logic": "고무+섬유 복합재, 고무가 방수 기능 — 외면 섬유 노출 여부와 방수 목적으로 판단. 방수가 주 기능이고 고무가 지배적이면 Ch.40",
+    "code_rule": "if material contains 'rubber' AND material contains 'textile' AND function_use contains 'waterproof' → if rubber_surface > textile_surface → Ch.40; if textile outer surface visible → Section XI",
+    "field_needed": "material (고무 vs 섬유 외면) + function_use (방수 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 42, Customs Ruling — Jewelry",
+    "type": "ai_derived_rule",
+    "logic": "순수 귀금속/보석 장신구 — 가죽 구성요소 없이 귀금속/보석이 주재료인 장신구는 Ch.71. Ch.42는 가죽이 본체인 경우만",
+    "code_rule": "if category contains 'jewelry/jewellery/ornament/bracelet/necklace/ring/earring' AND material contains 'precious metal/gold/silver/platinum/diamond/gemstone' AND NOT material contains 'leather' → Ch.71",
+    "field_needed": "category + material (귀금속 장신구 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 42, Customs Ruling — Leather Precious Metal Hybrid",
+    "type": "ai_required",
+    "logic": "가죽 제품에 귀금속 요소 30% 초과(가치 기준) — essential character 판단 필요. 가죽 기능(보관/운반)이 주이면 Ch.42, 귀금속 가치/장식이 주이면 Ch.71",
+    "code_rule": "if material contains 'leather' AND material contains 'precious metal/gold/silver' AND precious_metal_value_pct > 30% → BORDERLINE: assess essential character; if storage/carrying function primary → Ch.42; if display/adornment function primary → Ch.71",
+    "field_needed": "material + function_use + value composition",
+    "verified": true
+  },
+  {
+    "source": "Chapter 95, Customs Ruling — RC Toy Specific",
+    "type": "ai_derived_rule",
+    "logic": "무선조종(RC) 자동차/헬리콥터/보트(완구용) — 놀이 목적으로 설계된 RC 완구는 Ch.95.03. 전문/취미용 고가 RC는 해당 장비 Chapter",
+    "code_rule": "if description contains 'remote control/RC' AND category contains 'toy' AND function_use contains 'play' → Ch.95.03; if description contains 'RC' AND category contains 'hobby/professional' AND price > $200 → relevant equipment chapter",
+    "field_needed": "description + category + function_use (완구 vs 전문장비)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 95, Customs Ruling — Video Game Console",
+    "type": "ai_derived_rule",
+    "logic": "비디오 게임 콘솔(Nintendo, PlayStation, Xbox 등) — 전자 기능이 있어도 게임/오락이 주 기능이면 Ch.95.04",
+    "code_rule": "if productName contains 'Nintendo/PlayStation/Xbox/Switch/GameBoy' OR (category contains 'console' AND function_use contains 'gaming/game') → Ch.95.04",
+    "field_needed": "productName + category (게임 콘솔 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 95, Customs Ruling — Professional Drone",
+    "type": "ai_derived_rule",
+    "logic": "촬영/측량/농업용 드론 — 전문 용도 드론은 Ch.88(항공기) 또는 Ch.85(전자기기). 완구 마케팅 없이 카메라/센서 탑재 전문 드론은 Ch.88",
+    "code_rule": "if category contains 'drone/UAV/UAS' AND (function_use contains 'photography/surveying/agriculture/inspection/mapping' OR description contains 'professional/commercial/agricultural') → Ch.88 if aviation-grade, Ch.85 if primarily electronic device",
+    "field_needed": "category + function_use + description (전문용도 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 95, Customs Ruling — Toy Drone <250g",
+    "type": "ai_derived_rule",
+    "logic": "완구 드론, 250g 미만 — 완구로 마케팅되고 중량 250g 미만이며 전문 카메라 없는 드론은 Ch.95.03",
+    "code_rule": "if category contains 'drone' AND (category contains 'toy' OR description contains 'toy/kids/children/beginner') AND weight < 250g AND NOT description contains 'professional camera/4K/thermal/LiDAR' → Ch.95.03",
+    "field_needed": "category + weight + description (완구 드론 여부)",
+    "verified": true
+  },
+  {
+    "source": "Chapter 95, Customs Ruling — Multi-Purpose Drone >250g",
+    "type": "ai_required",
+    "logic": "다목적 드론(놀이+촬영) 250g 초과 — aviation-grade 스펙이면 Ch.88, toy-grade이면 Ch.95. 가격/스펙/마케팅 종합 판단 필요",
+    "code_rule": "if category contains 'drone' AND weight > 250g AND function_use contains BOTH 'play' AND 'photography' → BORDERLINE: if price > $500 OR description contains 'obstacle avoidance/GPS/4K/professional' → Ch.88; else → Ch.95.03",
+    "field_needed": "category + weight + function_use + price + description",
+    "verified": true
   }
 ];
 

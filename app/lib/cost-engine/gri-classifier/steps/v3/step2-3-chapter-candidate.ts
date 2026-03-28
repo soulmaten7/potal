@@ -29,8 +29,8 @@ const MATERIAL_CHAPTER_MAP: Record<string, Record<string, number[]>> = {
   nylon: { '11': [54, 55] },
   linen: { '11': [53] },
   // Section XV base metals
-  iron: { '15': [72, 73] },
-  steel: { '15': [72, 73] },
+  iron: { '15': [72, 73, 82] },
+  steel: { '15': [72, 73, 82] },
   copper: { '15': [74] },
   aluminum: { '15': [76] },
   zinc: { '15': [79] },
@@ -86,9 +86,12 @@ export function selectChapterCandidates(
   // 2. Material → Chapter within Section
   // For Section XV (base metals), disambiguate raw material chapters vs article chapters
   // e.g. steel → Ch72 (raw) vs Ch73 (articles); aluminum → Ch76 (both raw & articles)
-  const ARTICLE_KEYWORDS = ['bottle', 'bottles', 'container', 'pot', 'pan', 'kettle', 'table', 'kitchen', 'household', 'tool', 'utensil', 'cutlery', 'nail', 'screw', 'bolt', 'nut', 'wire', 'cable', 'chain', 'spring', 'tank', 'drum', 'can', 'door', 'window', 'furniture', 'stand', 'holder', 'rack', 'hook', 'thermos', 'insulated'];
+  const ARTICLE_KEYWORDS = ['bottle', 'bottles', 'container', 'pot', 'pan', 'kettle', 'table', 'kitchen', 'household', 'tool', 'utensil', 'cutlery', 'nail', 'screw', 'bolt', 'nut', 'wire', 'cable', 'chain', 'spring', 'tank', 'drum', 'can', 'door', 'window', 'furniture', 'stand', 'holder', 'rack', 'hook', 'thermos', 'insulated', 'knife', 'knives', 'scissors', 'blade', 'fork', 'spoon', 'cutter', 'chopper', 'cleaver'];
+  // Ch82 cutlery/tool keywords — if present in Section XV, boost Ch82 over Ch73
+  const CH82_KEYWORDS = ['knife', 'knives', 'blade', 'cutlery', 'scissors', 'fork', 'spoon', 'spatula', 'ladle', 'grater', 'peeler', 'opener', 'cutter', 'chopper', 'cleaver', 'shears', 'file', 'rasp', 'hammer', 'pliers', 'wrench', 'saw', 'drill'];
   const inputText = [input.product_name.toLowerCase(), ...input.category_tokens, ...input.description_tokens].join(' ');
   const isArticle = ARTICLE_KEYWORDS.some(kw => inputText.includes(kw));
+  const isCh82Product = CH82_KEYWORDS.some(kw => inputText.includes(kw));
 
   const sectionKey = String(section);
   for (const mat of input.material_keywords) {
@@ -99,8 +102,9 @@ export function selectChapterCandidates(
           let score = 0.85;
           // In Section XV: prefer articles chapter (73,76) over raw material chapter (72)
           if (section === 15 && isArticle) {
-            if (ch === 73 || ch === 76) score = 0.9;  // boost articles chapter
-            if (ch === 72) score = 0.7;  // demote raw material chapter
+            if (ch === 82 && isCh82Product) score = 0.95; // cutlery/tools → Ch82 highest priority
+            else if (ch === 73 || ch === 76) score = isCh82Product ? 0.75 : 0.9;  // demote Ch73 if Ch82 product
+            else if (ch === 72) score = 0.7;  // demote raw material chapter
           }
           const existing = candidates.get(ch);
           if (!existing || existing.score < score) {
