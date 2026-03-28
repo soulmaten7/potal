@@ -160,7 +160,24 @@ function generateChapterHints(
           hints.push({ chapter: 50, reason: 'material=silk → Ch.50' });
         if (input.material_primary === 'wool')
           hints.push({ chapter: 51, reason: 'material=wool → Ch.51' });
+        if (input.material_keywords.some(m => ['linen', 'flax', 'ramie', 'jute', 'hemp', 'sisal'].includes(m)))
+          hints.push({ chapter: 53, reason: 'vegetable textile fibre → Ch.53' });
+        if (input.material_keywords.some(m => ['nylon', 'polyester', 'acrylic'].includes(m)) && !isKnitted)
+          hints.push({ chapter: 54, reason: 'man-made filament → Ch.54' });
+        if (input.material_keywords.some(m => ['nylon', 'polyester', 'acrylic'].includes(m)) && input.processing_states.includes('spun'))
+          hints.push({ chapter: 55, reason: 'man-made staple fibre → Ch.55' });
       }
+      // Other textile articles
+      if (input.category_tokens.some(t => ['felt', 'nonwoven', 'wadding'].includes(t)))
+        hints.push({ chapter: 56, reason: 'felt/nonwoven → Ch.56' });
+      if (input.category_tokens.some(t => ['carpet', 'rug', 'mat', 'tapestry'].includes(t)))
+        hints.push({ chapter: 57, reason: 'carpet/tapestry → Ch.57' });
+      if (input.category_tokens.some(t => ['lace', 'embroidery', 'ribbon', 'braid', 'trimming'].includes(t)))
+        hints.push({ chapter: 58, reason: 'lace/embroidery/ribbon → Ch.58' });
+      if (input.category_tokens.some(t => ['impregnated', 'coated', 'laminated', 'industrial textile'].includes(t)))
+        hints.push({ chapter: 59, reason: 'impregnated/coated textile → Ch.59' });
+      if (input.category_tokens.some(t => ['blanket', 'towel', 'curtain', 'bed linen', 'tablecloth', 'sack', 'tent', 'flag', 'rag'].includes(t)))
+        hints.push({ chapter: 63, reason: 'other made-up textile article → Ch.63' });
       break;
     }
 
@@ -185,6 +202,12 @@ function generateChapterHints(
         hints.push({ chapter: 76, reason: 'material=aluminum → Ch.76' });
       if (input.material_primary === 'lead')
         hints.push({ chapter: 78, reason: 'material=lead → Ch.78' });
+      if (input.material_keywords.some(m => ['zinc'].includes(m)))
+        hints.push({ chapter: 79, reason: 'material=zinc → Ch.79' });
+      if (input.material_keywords.some(m => ['tin'].includes(m)))
+        hints.push({ chapter: 80, reason: 'material=tin → Ch.80' });
+      if (input.material_keywords.some(m => ['tungsten', 'molybdenum', 'tantalum', 'magnesium', 'cobalt', 'bismuth', 'cadmium', 'chromium', 'manganese', 'beryllium', 'germanium', 'vanadium', 'hafnium', 'rhenium', 'gallium', 'indium', 'niobium', 'zirconium'].includes(m)))
+        hints.push({ chapter: 81, reason: 'other base metal → Ch.81' });
       // Ch.82 Tools/cutlery, Ch.83 Misc metal articles
       if (input.category_tokens.some(t => ['knife', 'knives', 'blade', 'scissors', 'razor', 'saw', 'file', 'pliers', 'wrench', 'spanner', 'cutlery', 'fork', 'spoon'].includes(t)))
         hints.push({ chapter: 82, reason: 'tool/cutlery → Ch.82' });
@@ -393,6 +416,80 @@ function generateChapterHints(
       if (!hints.length)
         hints.push({ chapter: 48, reason: 'paper/paperboard default → Ch.48' });
       break;
+
+    case 3: // Animal/vegetable fats and oils (Ch.15 only)
+      hints.push({ chapter: 15, reason: 'Section III → Ch.15 (fats, oils, waxes)' });
+      break;
+
+    case 7: { // Plastics and rubber (Ch.39-40)
+      // Section VII Note 2: printed plastics → Ch.49 (cross-section redirect)
+      const s7Name = input.product_name.toLowerCase();
+      const s7Toks = [...input.category_tokens, ...input.description_tokens];
+      const isPrintedPlastic = (input.processing_states.includes('printed') ||
+        s7Toks.some(t => ['printed', 'printing', 'book', 'poster', 'calendar', 'map', 'card', 'label'].includes(t)) ||
+        /\b(printed|printing|poster|calendar|map|postcard|label)\b/.test(s7Name));
+
+      // Exclude 3918 (floor coverings) and 3919 (self-adhesive plates) from redirect
+      const isFloorOrAdhesive = s7Toks.some(t => ['floor', 'flooring', 'adhesive', 'self-adhesive', 'tape'].includes(t));
+
+      if (isPrintedPlastic && !isFloorOrAdhesive) {
+        // Cross-section redirect: printed plastic → Ch.49 (Section X: printed matter)
+        hints.push({ chapter: 49, reason: 'Section VII Note 2: printed plastic with pictorial character → Ch.49' });
+      }
+
+      if (input.material_keywords.some(m => ['rubber', 'tire'].includes(m)))
+        hints.push({ chapter: 40, reason: 'material=rubber/tire → Ch.40' });
+      if (input.material_keywords.some(m => ['plastic', 'foam', 'resin', 'silicone'].includes(m)) || !hints.length)
+        hints.push({ chapter: 39, reason: 'material=plastic → Ch.39' });
+      break;
+    }
+
+    case 14: // Precious metals, stones, jewelry (Ch.71 only)
+      hints.push({ chapter: 71, reason: 'Section XIV → Ch.71 (pearls, precious stones, precious metals, jewelry)' });
+      break;
+
+    case 19: // Arms and ammunition (Ch.93 only)
+      hints.push({ chapter: 93, reason: 'Section XIX → Ch.93 (arms and ammunition)' });
+      break;
+
+    case 21: { // Works of art, collectors' pieces, antiques (Ch.97)
+      const s21Name = input.product_name.toLowerCase();
+      const s21Toks = [...input.category_tokens, ...input.description_tokens];
+
+      // 9701: Paintings, drawings, pastels, collages, decorative plaques
+      if (s21Toks.some(t => ['painting', 'drawing', 'pastel', 'collage', 'mosaic', 'canvas'].includes(t))
+        || /\b(painting|drawing|pastel|collage|oil paint|watercolor|watercolour|fresco|mural|canvas art)\b/.test(s21Name))
+        hints.push({ chapter: 97, reason: 'painting/drawing → Heading 9701' });
+
+      // 9702: Original engravings, prints, lithographs
+      if (s21Toks.some(t => ['engraving', 'lithograph', 'print', 'etching', 'woodcut', 'silkscreen', 'serigraphy'].includes(t))
+        || /\b(engraving|lithograph|etching|woodcut|silkscreen|print art|original print)\b/.test(s21Name))
+        hints.push({ chapter: 97, reason: 'engraving/lithograph → Heading 9702' });
+
+      // 9703: Original sculptures and statuary
+      if (s21Toks.some(t => ['sculpture', 'statue', 'statuette', 'carving', 'bust', 'figurine'].includes(t))
+        || /\b(sculpture|statue|statuette|carving|bust|bronze figure)\b/.test(s21Name))
+        hints.push({ chapter: 97, reason: 'sculpture/statue → Heading 9703' });
+
+      // 9704: Used postage/revenue stamps, stamp-postmarks, first-day covers; banknotes
+      if (s21Toks.some(t => ['stamp', 'postage', 'banknote', 'coin', 'medal', 'currency', 'numismatic'].includes(t))
+        || /\b(stamp|postage|banknote|coin|medal|currency|numismatic)\b/.test(s21Name))
+        hints.push({ chapter: 97, reason: 'stamp/coin/banknote → Heading 9704' });
+
+      // 9705: Collections and collectors' pieces (zoological, botanical, mineralogical, etc.)
+      if (s21Toks.some(t => ['collection', 'specimen', 'zoological', 'botanical', 'mineralogical', 'archaeological', 'ethnographic', 'historical'].includes(t)))
+        hints.push({ chapter: 97, reason: 'collectors piece/specimen → Heading 9705' });
+
+      // 9706: Antiques of an age exceeding 100 years
+      if (s21Toks.some(t => ['antique', 'antiques', 'antiquity'].includes(t))
+        || /\b(antique|antiquity|over 100 years)\b/.test(s21Name))
+        hints.push({ chapter: 97, reason: 'antique (>100 years) → Heading 9706' });
+
+      // Default: all Section 21 → Ch.97
+      if (!hints.length)
+        hints.push({ chapter: 97, reason: 'artwork/collectors piece default → Ch.97' });
+      break;
+    }
 
     case 12: // Footwear/headgear (Ch.64-67)
       if (input.category_tokens.some(t => ['footwear', 'shoe', 'shoes', 'boot', 'boots', 'sandal', 'sandals', 'sneaker', 'sneakers', 'slipper'].includes(t)))

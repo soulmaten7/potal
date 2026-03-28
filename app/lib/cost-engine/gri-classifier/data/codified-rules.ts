@@ -4506,6 +4506,30 @@ const CODIFIED_RULES: CodifiedRule[] = [
     "verified": true
   },
   {
+    "source": "Section I, Note 1",
+    "type": "definition",
+    "term": "young animals",
+    "definition": "Any reference in this section to a particular genus or species of an animal, except where the context otherwise requires, includes a reference to the young of that genus or species.",
+    "verified": true
+  },
+  {
+    "source": "Section I, Note 2",
+    "type": "definition",
+    "term": "dried products",
+    "definition": "Except where the context otherwise requires, throughout the nomenclature any reference to 'dried' products also covers products which have been dehydrated, evaporated or freeze-dried.",
+    "verified": true
+  },
+  {
+    "source": "Section VII, Note 2",
+    "type": "inclusion",
+    "original_text": "Except for the goods of heading 3918 or 3919, plastics, rubber, and articles thereof, printed with motifs, characters or pictorial representations, which are not merely subsidiary to the primary use of the goods, fall in Chapter 49.",
+    "action": {
+      "type": "redirect",
+      "target_chapters": [49]
+    },
+    "verified": true
+  },
+  {
     "source": "Chapter 97",
     "type": "exclusion",
     "original_text": "does not cover:",

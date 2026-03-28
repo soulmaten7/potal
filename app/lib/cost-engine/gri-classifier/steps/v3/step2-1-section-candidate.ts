@@ -194,6 +194,11 @@ const MATERIAL_TO_SECTION: Record<string, { section: number; score: number }[]> 
   candle_material: [{ section: 6, score: 0.85 }],
   // Section XXI: Art
   art: [{ section: 21, score: 0.9 }],
+  painting: [{ section: 21, score: 0.95 }],
+  sculpture: [{ section: 21, score: 0.95 }],
+  antique: [{ section: 21, score: 0.9 }],
+  engraving: [{ section: 21, score: 0.9 }],
+  lithograph: [{ section: 21, score: 0.9 }],
 };
 
 /** Category keywords → Section override */
@@ -229,7 +234,15 @@ const CATEGORY_TO_SECTION: Record<string, { section: number; score: number }> = 
   sandals: { section: 12, score: 0.9 },
   sneaker: { section: 12, score: 0.9 },
   sneakers: { section: 12, score: 0.9 },
-  hat: { section: 12, score: 0.85 },
+  hat: { section: 12, score: 0.95 },
+  cap: { section: 12, score: 0.95 },
+  hats: { section: 12, score: 0.95 },
+  caps: { section: 12, score: 0.95 },
+  headgear: { section: 12, score: 0.95 },
+  headwear: { section: 12, score: 0.95 },
+  beret: { section: 12, score: 0.9 },
+  helmet: { section: 12, score: 0.9 },
+  bonnet: { section: 12, score: 0.9 },
   umbrella: { section: 12, score: 0.85 },
   // Section VI via category
   chemicals: { section: 6, score: 0.9 },
@@ -272,9 +285,16 @@ const CATEGORY_TO_SECTION: Record<string, { section: number; score: number }> = 
   drone: { section: 20, score: 0.6 },  // ambiguous: toy vs aircraft
   jewelry: { section: 14, score: 0.95 },
   jewellery: { section: 14, score: 0.95 },
-  painting: { section: 21, score: 0.9 },
-  antique: { section: 21, score: 0.9 },
-  sculpture: { section: 21, score: 0.9 },
+  painting: { section: 21, score: 0.95 },
+  antique: { section: 21, score: 0.95 },
+  antiques: { section: 21, score: 0.95 },
+  sculpture: { section: 21, score: 0.95 },
+  artwork: { section: 21, score: 0.95 },
+  engraving: { section: 21, score: 0.9 },
+  lithograph: { section: 21, score: 0.9 },
+  'oil painting': { section: 21, score: 0.95 },
+  stamp: { section: 21, score: 0.7 },
+  coin: { section: 21, score: 0.7 },
   // Section I via category (animals/meat/seafood)
   meat: { section: 1, score: 0.9 },
   seafood: { section: 1, score: 0.9 },

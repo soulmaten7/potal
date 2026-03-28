@@ -115,7 +115,9 @@ export const MATERIAL_KEYWORDS: Record<string, string[]> = {
   brush: ['brush', 'broom', 'mop', 'comb', 'toothbrush', 'paintbrush'],
   candle: ['candle', 'taper', 'votive', 'pillar candle', 'tea light', 'scented candle'],
   // ── Section XXI: Art ──
-  art: ['painting', 'sculpture', 'engraving', 'lithograph', 'antique', 'collectors piece', 'artwork', 'fine art'],
+  art: ['painting', 'sculpture', 'engraving', 'lithograph', 'antique', 'collectors piece', 'artwork', 'fine art',
+        'oil painting', 'watercolor', 'watercolour', 'acrylic painting', 'original art', 'statue', 'statuette',
+        'stamp collection', 'coin collection', 'numismatic', 'antiquity'],
 };
 
 export const PROCESSING_KEYWORDS = [
@@ -188,10 +190,21 @@ export function validateAndNormalize(input: ClassifyInputV3): NormalizedInputV3 
   };
 }
 
+/** Match material variant against text, using word boundary for short terms to avoid false positives */
+function materialVariantMatches(text: string, variant: string): boolean {
+  if (variant.length <= 3) {
+    // Short variants (pe, pp, ps, abs, pet, mdf) need word boundary to avoid
+    // "paper" matching "pe", "caps" matching "ps", etc.
+    const regex = new RegExp(`\\b${variant}\\b`, 'i');
+    return regex.test(text);
+  }
+  return text.includes(variant);
+}
+
 function extractPrimaryMaterial(text: string): string {
   for (const [primary, variants] of Object.entries(MATERIAL_KEYWORDS)) {
     for (const v of variants) {
-      if (text.includes(v)) return primary;
+      if (materialVariantMatches(text, v)) return primary;
     }
   }
   // Fallback: return first word as material
@@ -203,7 +216,7 @@ function extractMaterialKeywords(text: string): string[] {
   const found: string[] = [];
   for (const [primary, variants] of Object.entries(MATERIAL_KEYWORDS)) {
     for (const v of variants) {
-      if (text.includes(v) && !found.includes(primary)) {
+      if (materialVariantMatches(text, v) && !found.includes(primary)) {
         found.push(primary);
       }
     }

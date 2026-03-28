@@ -206,6 +206,21 @@ function buildCategoryKeywords(): Set<string> {
     'glass','glassware','paper','stationery','plastic','rubber','wood','wooden',
     'textile','fabric','carpet','rug','soap','detergent','perfume','fragrance',
     'tobacco','cigarettes','alcohol','wine','beer','spirits',
+    // Section XII: Headgear
+    'hat','hats','cap','caps','headgear','headwear','beret','helmet','bonnet','visor',
+    // Section IV: Prepared foodstuffs
+    'chocolate','cocoa','candy','confectionery','snack','snacks','bakery','cereal',
+    'beverage','sauce','condiment','seasoning',
+    // Section XXI: Art
+    'painting','sculpture','antique','antiques','artwork','art','engraving','lithograph',
+    // Section XIX: Arms
+    'weapon','weapons','firearm','firearms','ammunition','gun','guns','rifle',
+    // Kitchen/household
+    'kitchenware','cookware','tableware','cutlery','knife','knives','pot','pots','pan','pans',
+    // Section III: Fats/oils
+    'oil','oils','fat','fats','margarine','butter',
+    // Section XIV: Precious metals/stones
+    'gold','silver','platinum','diamond','gemstone','pearl',
   ];
   for (const t of PLATFORM_TERMS) keywords.add(t);
 
