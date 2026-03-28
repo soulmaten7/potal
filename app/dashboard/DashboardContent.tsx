@@ -1107,7 +1107,8 @@ export default function DashboardContent() {
                       const token = session?.access_token;
                       if (!token) { if (el) el.textContent = 'Error: Not authenticated. Please log in again.'; return; }
                       const reqBody: Record<string, unknown> = {
-                        productName: `${input} (${material})`,
+                        productName: input,
+                        material: material,
                         category: material,
                       };
                       if (origin) reqBody.originCountry = origin.toUpperCase();
