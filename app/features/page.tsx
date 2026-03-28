@@ -143,7 +143,7 @@ export default function FeaturesPage() {
               </thead>
               <tbody>
                 {[
-                  { label: 'Active Features', potal: '119', avalara: '44', zonos: '38', simply: '22' },
+                  { label: 'Active Features', potal: '140', avalara: '44', zonos: '38', simply: '22' },
                   { label: 'Countries', potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
                   { label: 'HS Code Accuracy', potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
                   { label: 'Starting Price', potal: '$0/mo', avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },
