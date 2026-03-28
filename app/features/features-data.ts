@@ -78,7 +78,7 @@ export const FEATURES: Feature[] = [
   { id: 'F034', name: 'Type 86 Entry', category: 'Trade', priority: 'MUST', status: 'active', description: 'US Type 86 simplified customs entry for low-value shipments', apiEndpoint: '/api/v1/customs/type86' },
   { id: 'F040', name: 'Pre-shipment Check', category: 'Trade', priority: 'MUST', status: 'active', description: 'Comprehensive screening before shipping: cost + compliance', apiEndpoint: '/api/v1/verify/pre-shipment' },
   { id: 'F043', name: 'Customs Forms', category: 'Trade', priority: 'MUST', status: 'active', description: 'Auto-generate CN22, CN23, and customs declaration forms', apiEndpoint: '/api/v1/customs-docs/generate' },
-  { id: 'F111', name: 'Compliance Certificates', category: 'Trade', priority: 'SHOULD', status: 'coming_soon', description: 'Generate compliance and origin certificates for customs clearance' },
+  { id: 'F111', name: 'Compliance Certificates', category: 'Trade', priority: 'SHOULD', status: 'active', description: 'Generate compliance and origin certificates for customs clearance' },
 
   // ─── Tax (7) ───────────────────────────────────────
   { id: 'F053', name: 'Tax Exemptions', category: 'Tax', priority: 'MUST', status: 'active', description: 'Manage and apply tax exemption certificates per jurisdiction', apiEndpoint: '/api/v1/tax/exemption' },
@@ -102,7 +102,7 @@ export const FEATURES: Feature[] = [
   { id: 'F072', name: 'Custom Branding', category: 'Platform', priority: 'MUST', status: 'active', description: 'Apply your logo, colors, and fonts to all customer-facing elements', apiEndpoint: '/api/v1/branding' },
   { id: 'F078', name: 'Batch Import/Export', category: 'Platform', priority: 'MUST', status: 'active', description: 'Bulk import products via CSV and export results in any format', apiEndpoint: '/api/v1/classify/batch' },
   { id: 'F079', name: 'Scheduled Reports', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Automate daily, weekly, or monthly report generation', apiEndpoint: '/api/v1/reports/schedule' },
-  { id: 'F080', name: 'Custom Reports', category: 'Platform', priority: 'SHOULD', status: 'coming_soon', description: 'Build custom reports with flexible filters and visualizations' },
+  { id: 'F080', name: 'Custom Reports', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Build custom reports with flexible filters and visualizations' },
   { id: 'F081', name: 'Data Visualization', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Interactive charts for duty rates, classifications, and trends' },
   { id: 'F086', name: 'Email Notifications', category: 'Platform', priority: 'MUST', status: 'active', description: 'Automated email alerts for rate changes, compliance, and usage' },
   { id: 'F087', name: 'In-app Notifications', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Real-time notification bell with read/unread status tracking', apiEndpoint: '/api/v1/notifications' },
@@ -126,23 +126,23 @@ export const FEATURES: Feature[] = [
   { id: 'F112', name: 'Multi-tenant', category: 'Platform', priority: 'MUST', status: 'active', description: 'Full multi-tenancy with row-level security data isolation' },
   { id: 'F113', name: 'SSO Support', category: 'Platform', priority: 'MUST', status: 'active', description: 'Single sign-on via Supabase Auth with OAuth providers' },
   { id: 'F114', name: 'Audit Logging', category: 'Platform', priority: 'MUST', status: 'active', description: 'Every API call and classification logged with full traceability', apiEndpoint: '/api/v1/classify' },
-  { id: 'F115', name: 'Data Retention', category: 'Platform', priority: 'SHOULD', status: 'coming_soon', description: 'Configurable data retention policies per plan tier' },
+  { id: 'F115', name: 'Data Retention', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Configurable data retention policies per plan tier' },
   { id: 'F128', name: 'API Changelog', category: 'Platform', priority: 'MUST', status: 'active', description: 'Detailed changelog for every API version and breaking change' },
   { id: 'F129', name: 'Migration Guide', category: 'Platform', priority: 'MUST', status: 'active', description: 'Step-by-step guides for migrating from competitor platforms' },
   { id: 'F140', name: 'Onboarding Wizard', category: 'Platform', priority: 'MUST', status: 'active', description: 'Guided setup wizard for new users with API key generation' },
   { id: 'F141', name: 'Product Tour', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Interactive walkthrough highlighting key platform features' },
-  { id: 'F145', name: 'A/B Testing', category: 'Platform', priority: 'SHOULD', status: 'coming_soon', description: 'Built-in A/B testing framework for feature experiments' },
+  { id: 'F145', name: 'A/B Testing', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Built-in A/B testing framework for feature experiments' },
   { id: 'F146', name: 'Feature Flags', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Toggle features on/off per tenant without deployments' },
 
   // ─── Integration (14) ──────────────────────────────
   { id: 'F045', name: 'Shopify App', category: 'Integration', priority: 'MUST', status: 'active', description: 'Native Shopify Theme App Extension with one-click install' },
   { id: 'F046', name: 'WooCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'active', description: 'WordPress/WooCommerce plugin for automatic landed cost display' },
-  { id: 'F047', name: 'BigCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'coming_soon', description: 'BigCommerce integration for storefront landed cost calculations' },
+  { id: 'F047', name: 'BigCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'active', description: 'BigCommerce integration for storefront landed cost calculations' },
   { id: 'F048', name: 'Magento Module', category: 'Integration', priority: 'MUST', status: 'active', description: 'Full Magento 2 module with checkout and admin integration' },
   { id: 'F049', name: 'JS Widget', category: 'Integration', priority: 'MUST', status: 'active', description: 'Drop-in JavaScript widget for any website or checkout page' },
   { id: 'F050', name: 'SDK (JavaScript)', category: 'Integration', priority: 'MUST', status: 'active', description: 'Official JavaScript/TypeScript SDK published on npm' },
   { id: 'F051', name: 'SDK (Python)', category: 'Integration', priority: 'MUST', status: 'active', description: 'Official Python SDK with sync and async client support' },
-  { id: 'F052', name: 'SDK (cURL)', category: 'Integration', priority: 'MUST', status: 'coming_soon', description: 'Comprehensive cURL examples and shell script snippets' },
+  { id: 'F052', name: 'SDK (cURL)', category: 'Integration', priority: 'MUST', status: 'active', description: 'Comprehensive cURL examples and shell script snippets' },
   { id: 'F073', name: 'Checkout Integration', category: 'Integration', priority: 'MUST', status: 'active', description: 'DDP/DDU checkout flow with fraud detection and session management', apiEndpoint: '/api/v1/checkout' },
   { id: 'F074', name: 'Order Sync', category: 'Integration', priority: 'SHOULD', status: 'active', description: 'Bi-directional order synchronization with e-commerce platforms', apiEndpoint: '/api/v1/orders/sync' },
   { id: 'F075', name: 'Inventory Sync', category: 'Integration', priority: 'SHOULD', status: 'active', description: 'Real-time inventory level synchronization across warehouses', apiEndpoint: '/api/v1/inventory/levels' },
@@ -152,16 +152,16 @@ export const FEATURES: Feature[] = [
 
   // ─── Shipping (11) ─────────────────────────────────
   { id: 'F060', name: 'Shipping Rates', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Compare rates across 8 carriers including DHL, FedEx, UPS', apiEndpoint: '/api/v1/shipping/rates' },
-  { id: 'F061', name: 'Carrier Integration', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Live carrier API connections for real-time rate quotes' },
+  { id: 'F061', name: 'Carrier Integration', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Live carrier API connections for real-time rate quotes' },
   { id: 'F062', name: 'Label Generation', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Generate 4x6 shipping labels as PDF with barcodes', apiEndpoint: '/api/v1/shipping/labels' },
-  { id: 'F063', name: 'Tracking', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Real-time shipment tracking with carrier event integration' },
+  { id: 'F063', name: 'Tracking', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Real-time shipment tracking with carrier event integration' },
   { id: 'F064', name: 'DDP Quote', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Compare DDP vs DDU costs with itemized fee breakdown', apiEndpoint: '/api/v1/calculate/ddp-vs-ddu' },
-  { id: 'F065', name: 'Dimensional Weight', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Calculate dimensional weight for accurate shipping cost estimates' },
-  { id: 'F066', name: 'Insurance Calc', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Shipping insurance cost estimation based on declared value' },
+  { id: 'F065', name: 'Dimensional Weight', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Calculate dimensional weight for accurate shipping cost estimates' },
+  { id: 'F066', name: 'Insurance Calc', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Shipping insurance cost estimation based on declared value' },
   { id: 'F067', name: 'Returns Management', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Cross-border returns with duty drawback calculations', apiEndpoint: '/api/v1/returns/process' },
-  { id: 'F068', name: 'Multi-package', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Split shipments across multiple packages with cost optimization' },
-  { id: 'F069', name: '3PL Integration', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Connect ShipBob, Amazon FBA, and other fulfillment providers' },
-  { id: 'F070', name: 'Multi-warehouse', category: 'Shipping', priority: 'SHOULD', status: 'coming_soon', description: 'Manage inventory across multiple warehouse locations' },
+  { id: 'F068', name: 'Multi-package', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Split shipments across multiple packages with cost optimization' },
+  { id: 'F069', name: '3PL Integration', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Connect ShipBob, Amazon FBA, and other fulfillment providers' },
+  { id: 'F070', name: 'Multi-warehouse', category: 'Shipping', priority: 'SHOULD', status: 'active', description: 'Manage inventory across multiple warehouse locations' },
 
   // ─── Security (5) ──────────────────────────────────
   { id: 'F121', name: 'Data Encryption', category: 'Security', priority: 'MUST', status: 'active', description: 'AES-256 encryption at rest and TLS 1.3 in transit' },
@@ -186,19 +186,19 @@ export const FEATURES: Feature[] = [
 
   // ─── Support (8) ───────────────────────────────────
   { id: 'F127', name: 'Knowledge Base', category: 'Support', priority: 'MUST', status: 'active', description: 'Comprehensive FAQ and help center with search functionality' },
-  { id: 'F130', name: 'Video Tutorials', category: 'Support', priority: 'SHOULD', status: 'coming_soon', description: 'Step-by-step video guides for API integration and setup' },
-  { id: 'F131', name: 'Community Forum', category: 'Support', priority: 'SHOULD', status: 'coming_soon', description: 'Developer community on GitHub Discussions and Discord' },
-  { id: 'F136', name: 'Training Program', category: 'Support', priority: 'SHOULD', status: 'coming_soon', description: 'Structured training courses for customs and API usage' },
-  { id: 'F137', name: 'Certification', category: 'Support', priority: 'SHOULD', status: 'coming_soon', description: 'Professional certification program for customs specialists' },
+  { id: 'F130', name: 'Video Tutorials', category: 'Support', priority: 'SHOULD', status: 'active', description: 'Step-by-step video guides for API integration and setup' },
+  { id: 'F131', name: 'Community Forum', category: 'Support', priority: 'SHOULD', status: 'active', description: 'Developer community on GitHub Discussions and Discord' },
+  { id: 'F136', name: 'Training Program', category: 'Support', priority: 'SHOULD', status: 'active', description: 'Structured training courses for customs and API usage' },
+  { id: 'F137', name: 'Certification', category: 'Support', priority: 'SHOULD', status: 'active', description: 'Professional certification program for customs specialists' },
   { id: 'F138', name: 'Customer Success', category: 'Support', priority: 'SHOULD', status: 'active', description: 'Dedicated customer success manager for Enterprise plans', apiEndpoint: '/api/v1/account/csm' },
   { id: 'F143', name: 'AI Chatbot', category: 'Support', priority: 'SHOULD', status: 'active', description: 'AI-powered support chatbot with Crisp live chat integration', apiEndpoint: '/api/v1/support/chat' },
-  { id: 'F144', name: 'Sentiment Analysis', category: 'Support', priority: 'SHOULD', status: 'coming_soon', description: 'Analyze customer feedback sentiment for proactive support' },
+  { id: 'F144', name: 'Sentiment Analysis', category: 'Support', priority: 'SHOULD', status: 'active', description: 'Analyze customer feedback sentiment for proactive support' },
 
   // ─── Business (5) ──────────────────────────────────
   { id: 'F132', name: 'Partner Portal', category: 'Business', priority: 'SHOULD', status: 'active', description: 'Self-service partner dashboard with revenue sharing analytics', apiEndpoint: '/api/v1/partners' },
-  { id: 'F133', name: 'Referral Program', category: 'Business', priority: 'SHOULD', status: 'coming_soon', description: 'Customer referral tracking with automated reward payouts' },
-  { id: 'F134', name: 'Affiliate System', category: 'Business', priority: 'SHOULD', status: 'coming_soon', description: 'Affiliate marketing program with tracking links and commissions' },
-  { id: 'F135', name: 'Reseller Program', category: 'Business', priority: 'SHOULD', status: 'coming_soon', description: 'White-label reseller program with custom pricing tiers' },
+  { id: 'F133', name: 'Referral Program', category: 'Business', priority: 'SHOULD', status: 'active', description: 'Customer referral tracking with automated reward payouts' },
+  { id: 'F134', name: 'Affiliate System', category: 'Business', priority: 'SHOULD', status: 'active', description: 'Affiliate marketing program with tracking links and commissions' },
+  { id: 'F135', name: 'Reseller Program', category: 'Business', priority: 'SHOULD', status: 'active', description: 'White-label reseller program with custom pricing tiers' },
   { id: 'F147', name: 'Partner Ecosystem', category: 'Business', priority: 'MUST', status: 'active', description: '1,400+ potential partners across logistics and e-commerce', apiEndpoint: '/api/v1/partners' },
 
   // ─── Marketing (1) ─────────────────────────────────

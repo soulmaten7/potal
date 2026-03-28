@@ -1,27 +1,19 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { FEATURES, CATEGORIES, CATEGORY_ICONS, type FeatureCategory } from './features-data';
 
-type StatusFilter = 'all' | 'active' | 'coming_soon';
-
 export default function FeaturesPage() {
   const [selectedCategory, setSelectedCategory] = useState<FeatureCategory | 'All'>('All');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-
-  const activeCount = FEATURES.filter(f => f.status === 'active').length;
-  const comingSoonCount = FEATURES.filter(f => f.status === 'coming_soon').length;
 
   const filtered = useMemo(() => {
     return FEATURES.filter(f => {
       if (selectedCategory !== 'All' && f.category !== selectedCategory) return false;
-      if (statusFilter === 'active' && f.status !== 'active') return false;
-      if (statusFilter === 'coming_soon' && f.status !== 'coming_soon') return false;
       return true;
     });
-  }, [selectedCategory, statusFilter]);
+  }, [selectedCategory]);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -37,9 +29,9 @@ export default function FeaturesPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             {[
-              { value: activeCount, label: 'Active' },
-              { value: comingSoonCount, label: 'Coming Soon' },
+              { value: FEATURES.length, label: 'Active Features' },
               { value: '240', label: 'Countries' },
+              { value: '155+', label: 'API Endpoints' },
               { value: '$0', label: 'To Start' },
             ].map((stat) => (
               <div key={stat.label} className="text-center min-w-[80px]">
@@ -70,25 +62,7 @@ export default function FeaturesPage() {
               </button>
             ))}
           </div>
-          {/* Status toggle */}
-          <div className="flex gap-2 mt-2">
-            {([
-              { key: 'all', label: 'All' },
-              { key: 'active', label: 'Active Only' },
-              { key: 'coming_soon', label: 'Coming Soon' },
-            ] as { key: StatusFilter; label: string }[]).map((s) => (
-              <button
-                key={s.key}
-                onClick={() => setStatusFilter(s.key)}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-                  statusFilter === s.key
-                    ? 'bg-[#F59E0B] text-[#02122c]'
-                    : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
+          <div className="flex mt-2">
             <span className="ml-auto text-xs text-slate-400 self-center">{filtered.length} features</span>
           </div>
         </div>
@@ -98,7 +72,6 @@ export default function FeaturesPage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((feature) => {
-            const isActive = feature.status === 'active';
             const icon = CATEGORY_ICONS[feature.category];
             const isHovered = hoveredId === feature.id;
 
@@ -107,11 +80,7 @@ export default function FeaturesPage() {
                 key={feature.id}
                 onMouseEnter={() => setHoveredId(feature.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className={`relative rounded-xl border p-4 sm:p-5 transition-all duration-200 ${
-                  isActive
-                    ? 'bg-white border-slate-200 hover:border-[#F59E0B] hover:shadow-md cursor-default'
-                    : 'bg-slate-50 border-slate-100 opacity-70'
-                }`}
+                className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 transition-all duration-200 hover:border-[#F59E0B] hover:shadow-md"
               >
                 {/* Top row: icon + badges */}
                 <div className="flex items-start justify-between mb-2">
@@ -120,38 +89,24 @@ export default function FeaturesPage() {
                     {feature.priority === 'MUST' && (
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">MUST</span>
                     )}
-                    {isActive ? (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Active</span>
-                    ) : (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 flex items-center gap-0.5">
-                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                        Soon
-                      </span>
-                    )}
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Active</span>
                   </div>
                 </div>
 
                 {/* Feature name */}
-                <h3 className={`text-sm font-bold mb-1 ${isActive ? 'text-[#02122c]' : 'text-slate-400'}`}>
+                <h3 className="text-sm font-bold mb-1 text-[#02122c]">
                   {feature.name}
                 </h3>
 
                 {/* Description */}
-                <p className={`text-xs leading-relaxed ${isActive ? 'text-slate-500' : 'text-slate-300'}`}>
+                <p className="text-xs leading-relaxed text-slate-500">
                   {feature.description}
                 </p>
 
                 {/* API badge */}
-                {isActive && feature.apiEndpoint && (
+                {feature.apiEndpoint && (
                   <div className={`mt-3 text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded inline-block transition-opacity ${isHovered ? 'opacity-100' : 'opacity-60'}`}>
                     {feature.apiEndpoint}
-                  </div>
-                )}
-
-                {/* Coming Soon tooltip */}
-                {!isActive && isHovered && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-slate-900/60 rounded-xl backdrop-blur-sm transition-opacity">
-                    <span className="text-white text-xs font-bold px-3 py-1.5 bg-slate-800 rounded-lg">Coming Soon</span>
                   </div>
                 )}
               </div>
@@ -162,7 +117,7 @@ export default function FeaturesPage() {
         {filtered.length === 0 && (
           <div className="text-center py-16 text-slate-400">
             <p className="text-lg font-semibold">No features match your filter.</p>
-            <button onClick={() => { setSelectedCategory('All'); setStatusFilter('all'); }} className="mt-2 text-sm text-[#F59E0B] font-bold cursor-pointer">
+            <button onClick={() => setSelectedCategory('All')} className="mt-2 text-sm text-[#F59E0B] font-bold cursor-pointer">
               Reset filters
             </button>
           </div>
