@@ -1,0 +1,391 @@
+company_name,website,country,tier,industry,verified_email
+CJ Dropshipping,https://cjdropshipping.com,CN,1,dropshipping_platform,support@cjdropshipping.com
+DSers,https://dsers.com,CN,1,dropshipping_platform,support@dserspro.com
+Oberlo (now DSers),https://dsers.com/oberlo,CN,1,dropshipping_platform,support@dserspro.com
+Spocket,https://spocket.co,CN,1,dropshipping_platform,support@spocket.co
+SaleHoo,https://salehoo.com,CN,1,dropshipping_platform,support@salehoo.com
+Zendrop,https://zendrop.com,CN,1,dropshipping_platform,support@zendrop.com
+Modalyst,https://modalyst.co,CN,1,dropshipping_platform,team@modalyst.co
+Eprolo,https://eprolo.com,CN,1,dropshipping_platform,hi@eprolo.com
+Doba,https://doba.com,CN,1,dropshipping_platform,help@doba.com
+HyperSKU,https://hypersku.com,CN,1,dropshipping_platform,support@etailerhub.com
+Wiio,https://wiio.io,CN,1,dropshipping_platform,hello@wiio.io
+Yakkyofy,https://yakkyofy.com,CN,1,dropshipping_platform,info@yakkyofy.com
+Dropified,https://dropified.com,CN,1,dropshipping_platform,support@dropified.com
+AliExpress (Alibaba),https://aliexpress.com,CN,1,crossborder_marketplace,affiliates@service.alibaba.com
+DHgate,https://dhgate.com,CN,1,crossborder_marketplace,service@dhgate.com
+Made-in-China,https://made-in-china.com,CN,1,crossborder_marketplace,contactus@made-in-china.com
+GlobalSources,https://globalsources.com,CN,1,crossborder_marketplace,service@globalsources.com
+1688.com (Alibaba),https://1688.com,CN,1,crossborder_marketplace,NOT_FOUND
+LightInTheBox,https://lightinthebox.com,CN,1,crossborder_marketplace,ir@lightinthebox.com
+Banggood,https://banggood.com,CN,1,crossborder_marketplace,wholesale@banggood.com
+Gearbest (now Oukitel),https://oukitel.com,CN,1,crossborder_marketplace,NOT_FOUND
+Temu,https://temu.com,CN,1,crossborder_marketplace,media@temu.com
+SHEIN,https://shein.com,CN,1,crossborder_marketplace,partnerships@shein.com
+4PX Express,https://4px.com,CN,1,crossborder_logistics,overseasales@4px.com
+YunExpress,https://yunexpress.com,CN,1,crossborder_logistics,sales@yunexpressusa.com
+CNE Express,https://cne.com,CN,1,crossborder_logistics,NOT_FOUND
+Yanwen Logistics,https://yw56.com.cn,CN,1,crossborder_logistics,marketing@yw56.com.cn
+SunYou Post,https://sypost.net,CN,1,crossborder_logistics,mto@sypost.com
+Anjun Logistics,https://anjunlogistics.com,CN,1,crossborder_logistics,info@szanjun.com
+WishPost,https://wishpost.cn,CN,1,crossborder_logistics,wish_post_tech_support@wish.com
+Cainiao (Alibaba),https://cainiao.com,CN,1,crossborder_logistics,cainiaoglobalcs@service.cainiao.com
+JD Logistics,https://jdl.com,CN,1,crossborder_logistics,worldwide@jd.com
+SF Express International,https://sf-express.com,CN,1,crossborder_logistics,overseaswh@sf-express.com
+ZTO Express International,https://zto.com,CN,1,crossborder_logistics,ir@zto.com
+STO Express International,https://sto.cn,CN,1,crossborder_logistics,gjkefu@sto.cn
+Best Express International,https://best-inc.com,CN,1,crossborder_logistics,NOT_FOUND
+Flyt Express,https://flytexpress.com,CN,1,crossborder_logistics,marketing@flytexpress.com
+iForce Global,https://iforceglobal.com,CN,1,crossborder_logistics,NOT_FOUND
+UBI Smart Parcel,https://ubismartparcel.com,CN,1,crossborder_logistics,ubics-dlc@gotoubi.com
+Equick China,https://equick.cn,CN,1,crossborder_logistics,cs@equick.cn
+PingPong,https://pingpongx.com,CN,1,crossborder_payment,press@international.pingpongx.com
+XTransfer,https://xtransfer.cn,CN,1,crossborder_payment,helpdesk@xtransfer.com
+LianLian Pay,https://lianlianpay.com,CN,1,crossborder_payment,IntBD@lianlianpay.com
+Skyee,https://iskyee.com,CN,1,crossborder_payment,business@skyee360.com
+iPayLinks,https://ipaylinks.com,CN,1,crossborder_payment,biz@ipaylinks.com
+Airwallex CN,https://airwallex.com,CN,1,crossborder_payment,partnerships@airwallex.com
+WorldFirst CN,https://worldfirst.com,CN,1,crossborder_payment,enquiries@worldfirst.com
+Payoneer CN,https://payoneer.com,CN,1,crossborder_payment,NOT_FOUND
+Allvalue,https://allvalue.com,CN,1,crossborder_payment,info@allvalue.com
+Asiabill,https://asiabill.com,CN,1,crossborder_payment,marketing@asiabill.com
+Shopline,https://shoplineapp.com,CN,1,crossborder_saas,support@shopline.com
+Shoplazza,https://shoplazza.com,CN,1,crossborder_saas,partners@shoplazza.com
+LTD.com,https://ltd.com,CN,1,crossborder_saas,hezuo@ltd.com
+Chuanglan (253),https://253.com,CN,1,crossborder_saas,global-chuanglan@253.com
+Dianxiaomi,https://dianxiaomi.com,CN,1,crossborder_saas,bd@dianxiaomi.com
+Mabang ERP,https://mabangerp.com,CN,1,crossborder_saas,marketing@mabangerp.com
+Lingxing ERP,https://lingxing.com,CN,1,crossborder_saas,customersupport@lingxing.com
+Dianxiaobao,https://kkb2b.com,CN,1,crossborder_saas,NOT_FOUND
+SellerMotor,https://sellermotor.com,CN,1,crossborder_saas,service@sellermotor.com
+Junglescout CN,https://junglescout.cn,CN,1,crossborder_saas,partnerships@junglescout.com
+Helium10 CN,https://helium10.com,CN,1,crossborder_saas,press@helium10.com
+Sorftime,https://sorftime.com,CN,1,crossborder_saas,service@sorftime.com
+AmzTracker,https://amztracker.com,CN,1,crossborder_saas,NOT_FOUND
+DataEye,https://dataeye.com,CN,1,crossborder_saas,customer@dataeye.com
+Oceanpayment,https://oceanpayment.com,CN,1,crossborder_payment,info@oceanpayment.com.cn
+UseePay,https://useepay.com,CN,1,crossborder_payment,support@useepay.com
+Pacypay,https://pacypay.com,CN,1,crossborder_payment,merchant@pacypay.com
+DHL China eCommerce,https://dhl.com.cn,CN,1,crossborder_logistics,NOT_FOUND
+FedEx China,https://fedex.com/zh-cn,CN,1,crossborder_logistics,fcbt-sales@fedex.com
+UPS China,https://ups.com/cn,CN,1,crossborder_logistics,NOT_FOUND
+Flexport China,https://flexport.com,CN,1,crossborder_logistics,NOT_FOUND
+Zongteng Group,https://ztgroup.net,CN,1,crossborder_logistics,NOT_FOUND
+Orangeconnex,https://orangeconnex.com,CN,1,crossborder_logistics,CS@orangeconnex.com
+Winit,https://winit.com.cn,CN,1,crossborder_logistics,inquiry@winit.com.cn
+17Track,https://17track.net,CN,1,tracking,bis@17track.net
+AfterShip CN,https://aftership.com,CN,1,tracking,support@aftership.com
+TrackingMore,https://trackingmore.com,CN,1,tracking,business@trackingmore.org
+Paypal China,https://paypal.com/cn,CN,1,crossborder_payment,NOT_FOUND
+Stripe CN,https://stripe.com,CN,1,crossborder_payment,partner-support@stripe.com
+Anker Innovations,https://anker.com,CN,1,crossborder_brand,PR@anker.com
+AUKEY,https://aukey.com,CN,1,crossborder_brand,pr@aukey.com
+Shenzhen Globalegrow,https://globalegrow.com,CN,1,crossborder_brand,NOT_FOUND
+PatPat,https://patpat.com,CN,1,crossborder_brand,influencer@patpat.com
+Club Factory,https://clubfactory.com,CN,1,crossborder_brand,info@clubfactory.com
+Zaful,https://zaful.com,CN,1,crossborder_brand,service@zaful.com
+Tomtop,https://tomtop.com,CN,1,crossborder_marketplace,wholesale@tomtop.com
+Geekbuying,https://geekbuying.com,CN,1,crossborder_marketplace,marketing@geekbuying.com
+Superbuy,https://superbuy.com,CN,1,crossborder_agent,business@superbuy.com
+WeGoBuy,https://wegobuy.com,CN,1,crossborder_agent,NOT_FOUND
+Pandabuy,https://pandabuy.com,CN,1,crossborder_agent,biz@pandabuy.com
+CSSBuy,https://cssbuy.com,CN,1,crossborder_agent,service@cssbuy.com
+Basetao,https://basetao.com,CN,1,crossborder_agent,info@basetao.com
+Bhiner,https://bhiner.com,CN,1,crossborder_agent,cs@bhiner.com
+Fulfillman,https://fulfillman.com,CN,1,fulfilment,collab@fulfillman.com
+Nihao Dropshipping,https://nihaodropshipping.com,CN,1,dropshipping_platform,NOT_FOUND
+SourcingBro,https://sourcingbro.com,CN,1,dropshipping_platform,info@sourcingbro.com
+DropshipChina Pro,https://dropshipchinapro.com,CN,1,dropshipping_platform,info@dropshipchinapro.com
+NicheDropshipping,https://nichedropshipping.com,CN,1,dropshipping_platform,info@nichedropshipping.com
+Sup Dropshipping,https://supdropshipping.com,CN,1,dropshipping_platform,info@supdropshipping.com
+AutoDS CN,https://autods.com,CN,1,dropshipping_saas,support@autods.com
+Global-e,https://global-e.com,UK,1,crossborder_platform,info@global-e.com
+Avalara UK,https://avalara.com,UK,1,tax_compliance,NOT_FOUND
+Taxamo,https://taxamo.com,UK,1,tax_compliance,hello@taxamo.com
+Vertex UK,https://vertexinc.com,UK,1,tax_compliance,partners@vertexinc.com
+Landmark Global,https://landmarkglobal.com,UK,1,logistics,contact@landmarkglobal.com
+Asendia UK,https://asendia.com,UK,1,logistics,info.uk@asendia.com
+DPD Local,https://dpdlocal.co.uk,UK,1,logistics,credit@dpdlocal.co.uk
+Whistl,https://whistl.co.uk,UK,1,logistics,packagescustomerservices@whistl.co.uk
+Parcelforce,https://parcelforce.com,UK,1,logistics,parcelforce@parcelforce.co.uk
+Evri International,https://evri.com,UK,1,logistics,businessenquiries@evri.com
+Spring GDS,https://spring-gds.com,UK,1,logistics,info@spring-gds.com
+Huboo,https://huboo.com,UK,1,fulfilment,NOT_FOUND
+Byrd,https://getbyrd.com,UK,1,fulfilment,sales.uk@getbyrd.com
+Scurri,https://scurri.com,UK,1,delivery_management,sales@scurri.com
+Sorted,https://sorted.com,UK,1,delivery_management,info@sorted.com
+Linnworks,https://linnworks.com,UK,1,ecommerce_ops,partnerships@linnworks.com
+Veeqo,https://veeqo.com,UK,1,ecommerce_ops,helpme@support.veeqo.com
+Brightpearl,https://brightpearl.com,UK,1,ecommerce_ops,NOT_FOUND
+Peoplevox,https://peoplevox.com,UK,1,warehouse,sales@peoplevox.com
+Mintsoft,https://mintsoft.co.uk,UK,1,ecommerce_ops,support@mintsoft.co.uk
+Khaos Control,https://khaoscontrol.com,UK,1,ecommerce_erp,sales@khaoscontrol.com
+Torchbear,https://torchbear.com,UK,1,compliance,NOT_FOUND
+Aaronsworth,https://aaronsworth.com,UK,1,customs,NOT_FOUND
+Customs4trade,https://customs4trade.com,UK,1,customs,info@customs4trade.com
+SimplyDuty,https://simplyduty.com,UK,1,customs,hello@simplyduty.com
+Hurricane Commerce,https://hurricanecommerce.com,UK,1,customs,info@hurricanecommerce.com
+Customs Bridge,https://customsbridge.com,UK,1,customs,contact@customsbridge.fr
+Meridian Customs,https://meridiancustoms.co.uk,UK,1,customs,NOT_FOUND
+Brooks Customs,https://brookscustoms.com,UK,1,customs,NOT_FOUND
+James Cargo,https://jamescargo.com,UK,1,customs,enq@jamescargo.com
+Duty Calculator,https://dutycalculator.com,UK,1,customs,NOT_FOUND
+Payoneer UK,https://payoneer.com,UK,1,payment,NOT_FOUND
+WorldFirst UK,https://worldfirst.com,UK,1,payment,NOT_FOUND
+Checkout.com,https://checkout.com,UK,1,payment,sales@checkout.com
+Rapyd UK,https://rapyd.net,UK,1,payment,Privacy@Rapyd.net
+Modulr,https://modulrfinance.com,UK,1,payment,NOT_FOUND
+Currencycloud,https://currencycloud.com,UK,1,payment,support@currencycloud.com
+Wise Business,https://wise.com,UK,1,payment,NOT_FOUND
+ESW (eShopWorld),https://esw.com,UK,1,crossborder_platform,NOT_FOUND
+Flexport UK,https://flexport.com,UK,1,freight,NOT_FOUND
+Zencargo,https://zencargo.com,UK,1,freight,sales@zencargo.com
+Freightos UK,https://freightos.com,UK,1,freight,NOT_FOUND
+Descartes UK,https://descartes.com,UK,1,logistics_compliance,sales@descartes.com
+Marosa VAT,https://marosavat.com,UK,1,vat_compliance,NOT_FOUND
+VATGlobal,https://vatglobal.com,UK,1,vat_compliance,info@vatglobal.com
+SimplyVAT,https://simplyvat.com,UK,1,vat_compliance,heretohelp@simplyvat.com
+Fonoa UK,https://fonoa.com,UK,1,tax_automation,NOT_FOUND
+Patchworks,https://patchworks.co.uk,UK,1,integration,NOT_FOUND
+Prodigi,https://prodigi.com,UK,1,crossborder_saas,sales@prodigi.com
+Feedonomics UK,https://feedonomics.com,UK,1,data_feed,hello@feedonomics.com
+Visualsoft,https://visualsoft.co.uk,UK,1,ecommerce_platform,sales@visualsoft.co.uk
+Radial UK,https://radial.com,UK,1,fulfilment,NOT_FOUND
+Ingram Micro Commerce UK,https://ingrammicrocommerce.com,UK,1,fulfilment,NOT_FOUND
+Wincanton,https://wincanton.co.uk,UK,1,supply_chain,NOT_FOUND
+XPO Logistics UK,https://xpo.com,UK,1,supply_chain,NOT_FOUND
+CEVA Logistics UK,https://cevalogistics.com,UK,1,logistics,NOT_FOUND
+Maersk UK,https://maersk.com,UK,1,shipping,NOT_FOUND
+LateShipment UK,https://lateshipment.com,UK,1,logistics_tech,NOT_FOUND
+Shipwire UK,https://shipwire.com,UK,1,fulfilment,customercare@shipwire.com
+Dotdigital,https://dotdigital.com,UK,1,ecommerce_marketing,NOT_FOUND
+LoyaltyLion,https://loyaltylion.com,UK,1,ecommerce_marketing,hello@loyaltylion.com
+Gorgias UK,https://gorgias.com,UK,1,ecommerce_marketing,NOT_FOUND
+Recharge UK,https://rechargepayments.com,UK,1,subscription,NOT_FOUND
+Omnisend UK,https://omnisend.com,UK,1,ecommerce_marketing,NOT_FOUND
+Ometria,https://ometria.com,UK,1,ecommerce_marketing,NOT_FOUND
+Nosto UK,https://nosto.com,UK,1,ecommerce_marketing,NOT_FOUND
+Yotpo UK,https://yotpo.com,UK,1,ecommerce_marketing,NOT_FOUND
+Klaviyo UK,https://klaviyo.com,UK,1,ecommerce_marketing,partners@klaviyo.com
+Luzern eCommerce,https://luzerne.com,UK,1,crossborder_saas,NOT_FOUND
+Chargebee UK,https://chargebee.com,UK,1,subscription_billing,press@chargebee.com
+ClearBank,https://clear.bank,UK,1,payment,enquiries@clear.bank
+Equals Money,https://equalsmoney.com,UK,1,payment,business@equalsmoney.com
+Caxton,https://caxton.io,UK,1,payment,NOT_FOUND
+Ecommpay,https://ecommpay.com,UK,1,payment,NOT_FOUND
+PFS Commerce,https://pfscommerce.com,UK,1,crossborder_platform,NOT_FOUND
+Kerry Logistics UK,https://kerrylogistics.com,UK,1,logistics,NOT_FOUND
+Cargo Logic,https://cargologic.com,UK,1,logistics,cargologic@cargologic.com
+Orderwave,https://orderwave.com,UK,1,ecommerce_ops,NOT_FOUND
+Multiorders UK,https://multiorders.com,UK,1,shipping,hi@multiorders.com
+Shypple UK,https://shypple.com,UK,1,freight,info@shypple.com
+Beacon,https://beacon.io,UK,1,freight,NOT_FOUND
+Freightify UK,https://freightify.com,UK,1,freight,NOT_FOUND
+ContainerGo,https://containergo.com,UK,1,freight,NOT_FOUND
+Paymentsense,https://paymentsense.com,UK,1,payment,support@paymentsense.com
+Railsr,https://railsr.com,UK,1,payment,NOT_FOUND
+Taxback International,https://taxbackinternational.com,UK,1,tax_compliance,NOT_FOUND
+TaxJar UK,https://taxjar.com,UK,1,tax_compliance,support@taxjar.com
+VAT IT,https://vatit.com,UK,1,vat_compliance,NOT_FOUND
+Meridian Global Services,https://meridianglobalservices.com,UK,1,compliance,info@meridianglobalservices.com
+Shopee,https://shopee.com,SG,2,crossborder_marketplace,partnership@sea.com
+Lazada,https://lazada.com,SG,2,crossborder_marketplace,NOT_FOUND
+Janio,https://janio.asia,SG,2,crossborder_logistics,help@janio.asia
+Anchanto,https://anchanto.com,SG,2,ecommerce_saas,NOT_FOUND
+Easyship,https://easyship.com,SG,2,shipping,partners@easyship.com
+Nium,https://nium.com,SG,2,crossborder_payment,press@nium.com
+Airwallex SG,https://airwallex.com,SG,2,crossborder_payment,NOT_FOUND
+Ninja Van,https://ninjavan.co,SG,2,logistics,support_sg@ninjavan.co
+DHL eCommerce SG,https://dhl.com,SG,2,logistics,NOT_FOUND
+SingPost,https://singpost.com,SG,2,logistics,grpcomms@singpost.com
+Cainiao SG,https://cainiao.com,SG,2,logistics,NOT_FOUND
+Stripe SG,https://stripe.com,SG,2,payment,NOT_FOUND
+Xendit,https://xendit.co,SG,2,payment,NOT_FOUND
+Thunes,https://thunes.com,SG,2,payment,press@thunes.com
+Locad,https://golocad.com,SG,2,fulfilment,marketing@golocad.com
+XTransfer SG,https://xtransfer.cn,SG,2,payment,helpdeskSG@xtransfer.com
+Parcel Perform,https://parcelperform.com,SG,2,delivery_analytics,contact@parcelperform.com
+Portcast,https://portcast.io,SG,2,logistics_visibility,NOT_FOUND
+Borderless360,https://borderless360.com,SG,2,crossborder_ecommerce,accounts@borderless360.com
+TradeWindow SG,https://tradewindow.io,SG,2,trade_compliance,NOT_FOUND
+ShipBob SG,https://shipbob.com,SG,2,fulfilment,support@shipbob.com
+PayPal SG,https://paypal.com,SG,2,payment,NOT_FOUND
+Shiprocket,https://shiprocket.in,SG,2,shipping,support@shiprocket.in
+Shopify SG,https://shopify.com,SG,2,ecommerce_platform,NOT_FOUND
+Qoo10,https://qoo10.sg,SG,2,crossborder_marketplace,partnerships@qoo10.sg
+Lalamove,https://lalamove.com,HK,2,logistics,info.hk@lalamove.com
+Kerry Express HK,https://kerryexpress.com,HK,2,logistics,contact.hongkong.express@kln.com
+SF Express HK,https://sf-express.com,HK,2,logistics,NOT_FOUND
+Cainiao HK,https://cainiao.com,HK,2,logistics,cainiaoglobalcs@service.cainiao.com
+DHL HK,https://dhl.com.hk,HK,2,logistics,NOT_FOUND
+FedEx HK,https://fedex.com,HK,2,logistics,NOT_FOUND
+Airwallex HK,https://airwallex.com,HK,2,payment,sales@airwallex.com
+Payoneer HK,https://payoneer.com,HK,2,payment,NOT_FOUND
+XTransfer HK,https://xtransfer.cn,HK,2,payment,helpdesk@xtransfer.com
+Statrys,https://statrys.com,HK,2,payment,support@statrys.com
+Neat,https://neat.hk,HK,2,payment,NOT_FOUND
+Currenxie,https://currenxie.com,HK,2,payment,support@currenxie.com
+Asiabill,https://asiabill.com,HK,2,payment,marketing@asiabill.com
+PingPong HK,https://pingpongx.com,HK,2,payment,NOT_FOUND
+DHgate HK,https://dhgate.com,HK,2,crossborder_marketplace,service@dhgate.com
+Easyship HK,https://easyship.com,HK,2,shipping,NOT_FOUND
+Floship,https://floship.com,HK,2,fulfilment,info@floship.com
+Boxme,https://boxme.asia,HK,2,fulfilment,NOT_FOUND
+Lingble,https://lingble.com,HK,2,crossborder_ecommerce,partnerships@lingble.com
+Return Helper,https://returnhelper.com,HK,2,returns,NOT_FOUND
+Spaceship HK,https://spaceship.hk,HK,2,shipping,NOT_FOUND
+Buyandship,https://buyandship.com,HK,2,crossborder_shopping,bd@buyandship.today
+Ship24,https://ship24.com,HK,2,tracking,NOT_FOUND
+AfterShip,https://aftership.com,HK,2,tracking,support@aftership.com
+Pickupp,https://pickupp.io,HK,2,logistics,hk@pickupp.io
+PostNL,https://postnl.nl,NL,2,logistics,NOT_FOUND
+DHL Netherlands,https://dhl.nl,NL,2,logistics,freight.nl@dhl.com
+Sendcloud,https://sendcloud.com,NL,2,shipping,contact@sendcloud.com
+ChannelEngine,https://channelengine.com,NL,2,marketplace_saas,NOT_FOUND
+Paazl,https://paazl.com,NL,2,shipping,NOT_FOUND
+MyParcel,https://myparcel.nl,NL,2,shipping,info@myparcel.nl
+Transsmart,https://transsmart.nl,NL,2,logistics_tech,NOT_FOUND
+Cycleon,https://cycleon.nl,NL,2,returns,info@cycleon.com
+B2C Europe,https://b2ceurope.eu,NL,2,crossborder_logistics,sales@b2ceurope.eu
+Wuunder,https://wuunder.com,NL,2,shipping,info@wearewuunder.com
+Picqer,https://picqer.com,NL,2,warehouse,info@picqer.com
+Mollie,https://mollie.com,NL,2,payment,NOT_FOUND
+Adyen,https://adyen.com,NL,2,payment,partnermanager@adyen.com
+Buckaroo,https://buckaroo.nl,NL,2,payment,sales@buckaroo.nl
+MultiSafepay,https://multisafepay.com,NL,2,payment,NOT_FOUND
+Riverty,https://riverty.com,NL,2,payment,info@riverty.com
+Returnless,https://returnless.com,NL,2,returns,info@returnless.com
+Montapacking,https://montapacking.nl,NL,2,fulfilment,info@montapacking.nl
+Active Ants,https://activeants.nl,NL,2,fulfilment,NOT_FOUND
+Hive,https://hive.app,NL,2,fulfilment,hi@hive.app
+Descartes NL,https://descartes.com,NL,2,logistics_compliance,sales@descartes.com
+Nshift,https://nshift.com,NL,2,shipping,NOT_FOUND
+Bol.com,https://bol.com,NL,2,marketplace,zakelijkverkopen@bol.com
+Effectconnect,https://effectconnect.com,NL,2,marketplace_saas,sales@effectconnect.com
+Channable,https://channable.com,NL,2,data_feed,support@channable.com
+Global-e Israel,https://global-e.com,IL,2,crossborder_platform,info@global-e.com
+Riskified,https://riskified.com,IL,2,fraud_prevention,sales@riskified.com
+Forter,https://forter.com,IL,2,fraud_prevention,partnerships@forter.com
+BlueSnap,https://bluesnap.com,IL,2,payment,NOT_FOUND
+Payoneer IL,https://payoneer.com,IL,2,payment,NOT_FOUND
+Tipalti,https://tipalti.com,IL,2,payment,contact@tipalti.com
+ZigZag Global,https://zigzag.global,IL,2,returns,NOT_FOUND
+Bringg,https://bringg.com,IL,2,delivery_tech,NOT_FOUND
+Syte,https://syte.ai,IL,2,ecommerce_ai,info@syte.ai
+Yotpo IL,https://yotpo.com,IL,2,ecommerce_marketing,info@yotpo.com
+Feedvisor,https://feedvisor.com,IL,2,marketplace_optimization,info@feedvisor.com
+Algopix,https://algopix.com,IL,2,product_research,info@algopix.com
+Freightos IL,https://freightos.com,IL,2,freight_marketplace,NOT_FOUND
+Ship4wd,https://ship4wd.com,IL,2,freight,NOT_FOUND
+Rapyd IL,https://rapyd.net,IL,2,payment,info@rapyd.net
+Melio,https://meliopayments.com,IL,2,payment,support@melio.com
+Wix eCommerce,https://wix.com,IL,2,ecommerce_platform,bizdev@wix.com
+Route4Me,https://route4me.com,IL,2,logistics_tech,NOT_FOUND
+Locus,https://locus.sh,IL,2,logistics_tech,contact@locus.sh
+Stampli,https://stampli.com,IL,2,payment,info@stampli.com
+Optimalship,https://optimalship.com,IL,2,shipping,sales@optimalship.com
+StoreYa,https://storeya.com,IL,2,ecommerce_marketing,partners@storeya.com
+Credorax,https://credorax.com,IL,2,payment,NOT_FOUND
+Flytrex,https://flytrex.com,IL,2,delivery_tech,NOT_FOUND
+NoFraud,https://nofraud.com,IL,2,fraud_prevention,NOT_FOUND
+DHL Germany,https://dhl.de,DE,3,logistics,impressum.paket@dhl.com
+Hermes Germany,https://hermesworld.com,DE,3,logistics,zentrale@hermesworld.com
+Otto Group,https://ottogroup.com,DE,3,ecommerce,NOT_FOUND
+Tradebyte,https://tradebyte.com,DE,3,marketplace_saas,info@tradebyte.com
+Plentymarkets,https://plentymarkets.com,DE,3,ecommerce_ops,sales@plentyone.com
+Billbee,https://billbee.io,DE,3,ecommerce_ops,marketing@billbee.io
+JTL Software,https://jtl-software.de,DE,3,ecommerce_erp,info@jtl-software.com
+Afterbuy,https://afterbuy.de,DE,3,ecommerce_ops,info@afterbuy.de
+Taxdoo,https://taxdoo.com,DE,3,tax_compliance,info@taxdoo.com
+Hellotax,https://hellotax.com,DE,3,vat_compliance,sales@hellotax.com
+Shipcloud,https://shipcloud.io,DE,3,shipping,info@shipcloud.io
+Parcellab,https://parcellab.com,DE,3,delivery_experience,info@parcellab.com
+Seven Senders,https://sevensenders.com,DE,3,crossborder_logistics,mail@sevensenders.com
+Forto,https://forto.com,DE,3,freight,info@forto.com
+Sennder,https://sennder.com,DE,3,freight_tech,shippers@sennder.com
+Ratepay,https://ratepay.com,DE,3,payment,info@ratepay.com
+Unzer,https://unzer.com,DE,3,payment,support@unzer.com
+Asendia DE,https://asendia.com,DE,3,crossborder_logistics,info.de@asendia.com
+DPD Germany,https://dpd.com,DE,3,logistics,info@dpd.de
+GLS Germany,https://gls-group.eu,DE,3,logistics,NOT_FOUND
+DB Schenker,https://dbschenker.com,DE,3,logistics,NOT_FOUND
+Rhenus Logistics,https://rhenus.group,DE,3,logistics,info@rhenus.com
+Fiege Logistik,https://fiege.com,DE,3,fulfilment,sales@fiege.com
+Arvato Supply Chain,https://arvato-supply-chain.com,DE,3,fulfilment,NOT_FOUND
+Aboutyou Tech,https://aboutyou.com,DE,3,ecommerce,NOT_FOUND
+Zalando Logistics,https://zalando.com,DE,3,ecommerce_logistics,impressum@zalando.de
+Sendcloud DE,https://sendcloud.com,DE,3,shipping,info@sendcloud.de
+Mollie DE,https://mollie.com,DE,3,payment,info@mollie.com
+Stripe DE,https://stripe.com,DE,3,payment,NOT_FOUND
+Klarna DE,https://klarna.com,DE,3,payment,NOT_FOUND
+Adyen DE,https://adyen.com,DE,3,payment,germany@adyen.com
+Payone,https://payone.com,DE,3,payment,info@payone.com
+Spryker,https://spryker.com,DE,3,ecommerce_platform,info@spryker.com
+Commercetools,https://commercetools.com,DE,3,ecommerce_platform,info@commercetools.com
+Australia Post,https://auspost.com.au,AU,3,logistics,NOT_FOUND
+Toll Group,https://tollgroup.com,AU,3,logistics,NOT_FOUND
+Sendle,https://sendle.com,AU,3,shipping,business@sendle.com
+Shippit,https://shippit.com,AU,3,shipping,hello@shippit.com
+Temando,https://temando.com,AU,3,shipping,NOT_FOUND
+Neto (Maropost),https://maropost.com,AU,3,ecommerce_ops,sales@maropost.com
+DHL AU,https://dhl.com.au,AU,3,logistics,cs-ecom.au@dhl.com
+FedEx AU,https://fedex.com,AU,3,logistics,NOT_FOUND
+Aramex AU,https://aramex.com.au,AU,3,logistics,NOT_FOUND
+Airwallex AU,https://airwallex.com,AU,3,payment,partnerships@airwallex.com
+Afterpay,https://afterpay.com,AU,3,payment,NOT_FOUND
+Zip Co,https://zip.co,AU,3,payment,merchantsupport@zip.co
+Assembly Payments,https://assemblypayments.com,AU,3,payment,NOT_FOUND
+eWAY,https://eway.com.au,AU,3,payment,NOT_FOUND
+TradeWindow AU,https://tradewindow.io,AU,3,trade_compliance,NOT_FOUND
+Freight People,https://freightpeople.com.au,AU,3,freight,sales@freightpeople.com.au
+Flexport AU,https://flexport.com,AU,3,freight,hello@flexport.com
+ShipStation AU,https://shipstation.com,AU,3,shipping,NOT_FOUND
+BigCommerce AU,https://bigcommerce.com.au,AU,3,ecommerce_platform,NOT_FOUND
+Starshipit,https://starshipit.com,AU,3,shipping,NOT_FOUND
+Hubbed,https://hubbed.com.au,AU,3,logistics,NOT_FOUND
+Omniparcel,https://omniparcel.com,AU,3,shipping,NOT_FOUND
+CouriersPlease,https://couriersplease.com.au,AU,3,logistics,contact@couriersplease.com.au
+TNT AU,https://tnt.com.au,AU,3,logistics,NOT_FOUND
+Transdirect,https://transdirect.com.au,AU,3,freight,NOT_FOUND
+Fastway AU,https://aramex.com.au,AU,3,logistics,NOT_FOUND
+ParcelPoint,https://parcelpoint.com.au,AU,3,logistics,NOT_FOUND
+eBay AU Commerce,https://ebay.com.au,AU,3,marketplace,NOT_FOUND
+Amazon AU,https://amazon.com.au,AU,3,marketplace,NOT_FOUND
+Catch.com.au,https://catch.com.au,AU,3,marketplace,commercial@catch.com.au
+MyDeal,https://mydeal.com.au,AU,3,marketplace,support@mydeal.com.au
+Kogan,https://kogan.com.au,AU,3,marketplace,commercial@kogan.com.au
+ICN Gateway,https://icn.org.au,AU,3,trade_compliance,helpdesk@icn.org.au
+Aramex UAE,https://aramex.com,UAE,3,logistics,media@aramex.com
+Fetchr,https://fetchr.us,UAE,3,logistics,NOT_FOUND
+Emirates Post,https://emiratespost.ae,UAE,3,logistics,custservice@emiratespost.ae
+DHL UAE,https://dhl.ae,UAE,3,logistics,NOT_FOUND
+FedEx UAE,https://fedex.com,UAE,3,logistics,NOT_FOUND
+Noon,https://noon.com,UAE,3,ecommerce,seller@noon.com
+Tabby,https://tabby.ai,UAE,3,payment,business@tabby.ai
+Telr,https://telr.com,UAE,3,payment,sales@telr.com
+PayTabs,https://paytabs.com,UAE,3,payment,support@paytabs.com
+Network International,https://networkinternational.ae,UAE,3,payment,salesteam.middleeast@network.global
+Trukker,https://trukker.com,UAE,3,freight,contact@trukker.ae
+Zid,https://zid.sa,UAE,3,ecommerce_platform,NOT_FOUND
+Salla,https://salla.com,UAE,3,ecommerce_platform,NOT_FOUND
+iMile,https://imile.com,UAE,3,logistics,sales@imile.me
+Shipa Delivery,https://shipadelivery.com,UAE,3,logistics,NOT_FOUND
+Tradeling,https://tradeling.com,UAE,3,b2b_marketplace,NOT_FOUND
+Agility Logistics,https://agility.com,UAE,3,logistics,NOT_FOUND
+DP World,https://dpworld.com,UAE,3,port_logistics,info@dpworld.com
+Quiqup,https://quiqup.com,UAE,3,logistics,support.dubai@quiqup.com
+Floward,https://floward.com,UAE,3,ecommerce,b2b@floward.com
+Wing,https://wing.ae,UAE,3,logistics,NOT_FOUND
+Amazon UAE,https://amazon.ae,UAE,3,marketplace,NOT_FOUND
+Namshi,https://namshi.com,UAE,3,ecommerce,care@namshi.com
+Careem Box,https://careem.com,UAE,3,logistics,partnerssupport.uae@careem.com
+Jeebly,https://jeebly.com,UAE,3,logistics,NOT_FOUND
+Shyft,https://shyft.to,UAE,3,logistics,support@shyft.ae
+Barq,https://barqfleet.com,UAE,3,logistics,sales@barqfleet.com
+Washmen Logistics,https://washmen.com,UAE,3,logistics,support@washmen.com
+Jahez,https://jahez.net,UAE,3,logistics,info@jahez.net
+Swyft,https://swyftlogistics.com,UAE,3,logistics,info@swyftlogistics.com
+Naqel Express,https://naqelexpress.com,UAE,3,logistics,care@naqel.com.sa
+SMSA Express,https://smsaexpress.com,UAE,3,logistics,info@smsaexpress.com
+Freightify UAE,https://freightify.com,UAE,3,freight,NOT_FOUND
+GAC Group,https://gfrgroup.com,UAE,3,logistics,middleeast@gac.com

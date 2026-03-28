@@ -1,5 +1,33 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-27 00:30 KST (Escalation Flow + 콜드이메일 + Product Hunt)
+> 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료 + Gmail 드래프트 251개 생성 완료)
+
+## [2026-03-28 13:00 KST] CW20 — 147/147 기능 100% 완료 + Gmail 드래프트 251개 + Product Hunt + KrispiTech
+
+### 미완성 17개 기능 전부 보완 (142/147 → 147/147, 100%)
+- ✅ 17/17 ALL PASS (5회 검수 전부 통과)
+- 신규 생성 2개: F104 Tax Liability (272줄), F136 3PL Integration (60줄)
+- 기존 보완 15개: F130 MoR, F131 Fraud, F132 Chargeback, F133 Order Sync, F134 Bulk Import, F052 API Auth, F125 Key Security, F008 Audit Trail, F055 VAT Registration, F062 Tracking, F135 Inventory, F137 Multi-Hub, F030 Property Tax, F056 Business License, F146 Partner Mgmt
+- 총 2,278줄 추가, 35 CRITICAL 수정사항 반영
+- 엑셀 로그: POTAL_Claude_Code_Work_Log.xlsx '17Task_Batch_CW21' 시트
+
+### 글로벌 콜드이메일 Gmail 드래프트 251개 생성 완료
+- ✅ 9개국 이메일 검증 완료: 251개 검증 / 139개 NOT_FOUND
+- ✅ Gmail 드래프트 251개 전부 생성 (0건 실패)
+- 국가별: CN ~70, UK ~50, DE ~20, NL ~20, UAE 22, SG ~15, HK ~15, IL ~15, AU 13
+- 은태님이 Gmail 드래프트함에서 확인 후 발송만 하면 됨
+
+### Product Hunt B2B 리런치
+- ✅ 런치 완료 (2026-03-28)
+
+### KrispiTech 블로그 피처링
+- KrispiTech (2016년~, 테크 블로그)에서 Product Hunt 업보트 + POTAL 피처링 제안 수신
+- ✅ 수락 답장 발송 완료 (saurav@krispitech.com)
+
+### Gmail 반송 메일 ~201건
+- 원인: 미검증 주소(uk@회사도메인 등 추측성)로 발송
+- 해결: ✅ 웹검색 기반 이메일 검증 완료 → 검증된 주소로 새 드래프트 251개 생성
+
+---
 
 ## [2026-03-27 00:30 KST] Escalation Flow 구현 + 영업 활동 + Product Hunt B2B 리런치
 

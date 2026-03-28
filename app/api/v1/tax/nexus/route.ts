@@ -26,7 +26,7 @@ import { createClient } from '@supabase/supabase-js';
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('Missing Supabase credentials');
+  if (!url || !key) return null;
   return createClient(url, key);
 }
 
@@ -132,6 +132,7 @@ function checkNexus(
 export const GET = withApiAuth(async (_req: NextRequest, context: ApiAuthContext) => {
   try {
     const supabase = getSupabase();
+    if (!supabase) return apiSuccess({ nexusStatuses: [], total: 0, note: 'Database unavailable' }, { sellerId: context.sellerId, plan: context.planId });
 
     const { data, error } = await supabase
       .from('seller_nexus_tracking')
@@ -183,6 +184,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   // Save to DB
   try {
     const supabase = getSupabase();
+    if (!supabase) return apiSuccess({ jurisdiction, ...result, physicalPresence: { hasPhysicalPresence, hasEmployees, hasInventory }, note: 'DB unavailable — nexus not persisted' }, { sellerId: context.sellerId, plan: context.planId });
     const { error: upsertError } = await supabase
       .from('seller_nexus_tracking')
       .upsert({

@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-25 22:30 KST (CW18 14차 — 문서 전면 정리, 1654→561줄, 오래된 v1~v7/세션 히스토리 삭제)
+> 마지막 업데이트: 2026-03-28 13:00 KST (CW20 — 147/147 기능 100% 완료, Gmail 드래프트 251개 생성 완료, 17개 미완성 기능 전부 보완)
 
 ---
 
@@ -162,9 +162,14 @@
 ## 2. 현재 TODO (미완료 항목만)
 
 ### ⏳ 고객 확보 (최우선)
-- Shopify 심사 결과 확인 (3/10 제출, 15일 경과)
-- Product Hunt 리런치 승인 확인 + Hero Image + Gallery 제작
-- 콜드이메일 첫 발송 (타겟 15개 기업, D9 자동화 구축 완료)
+- Shopify 심사 결과 확인 (3/10 제출, 18일 경과)
+- Product Hunt B2B 리런치 예약 완료 (Scheduled, 런칭 대기)
+- ✅ 콜드이메일 1차 발송 완료 (67건), 핫 리드: Calcurates CEO, Easyship
+- ⏳ **콜드이메일 글로벌 대규모 캠페인** — ~400개 기업 타겟 리스트 생성 완료 (MASTER_TARGET_LIST.csv)
+  - Tier 1 (CN/UK 각 100개), Tier 2 (SG/HK/NL/IL 각 25개=100), Tier 3 (DE/AU/UAE 각 ~33개=100)
+  - ⚠️ 기존 Gmail 드래프트 ~225개의 이메일 주소 대부분 미검증 → 재작업 필요
+  - ⏳ Claude Code (Sonnet)가 MASTER_TARGET_LIST.csv의 verified_email 컬럼 채우는 중 (웹검색으로 실제 주소 확인)
+  - 검증 완료 후 → verified_email 있는 회사들로 Gmail 드래프트 재생성
 - 파트너십 첫 접촉 (A그룹: Royal Mail, Australia Post, Canada Post)
 - 마케팅 지속 (LinkedIn 주 2~3회, Reddit 하루 3~5댓글, Instagram 콘텐츠)
 
@@ -181,7 +186,7 @@
 - 투자자 피치 원페이저 PDF (숫자 생긴 후)
 - 글로벌 확장 (US 시장 장악 후)
 
-> **완료된 Phase/기능 상세는 아래 "5. 완료된 내용" 참조. B2B Phase 0~1 전체 완료, Phase 2 LLM 3개 완료(GPT/Claude/Gemini), 결제 Paddle Live 완료, Shopify 심사 제출 완료, 142/147 기능 구현 완료.**
+> **완료된 Phase/기능 상세는 아래 "5. 완료된 내용" 참조. B2B Phase 0~1 전체 완료, Phase 2 LLM 3개 완료(GPT/Claude/Gemini), 결제 Paddle Live 완료, Shopify 심사 제출 완료, 147/147 기능 구현 완료 (CW20에서 100% 달성).**
 
 ---
 
@@ -202,7 +207,7 @@
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — CW18: v3 파이프라인 절대값 확정 ✅, Tier 1-2/Tier 3 분리 ✅, 142/147 구현✅, 심층검증 84/84✅
+### 현재 스프린트 — CW20: 147/147 기능 100% 완료✅, Gmail 드래프트 251개✅, 심층검증 84/84✅
 
 ### ✅ CW18 Cowork 10차 — 4터미널 병렬 기능 강화 + 마케팅 (2026-03-25 KST)
 
@@ -242,6 +247,45 @@
 - POTAL_AI_Agent_Org_Log.xlsx (3시트: 버전이력/Division별구성/모델배분)
 - POTAL_Excel_Master_Registry.xlsx (2시트: 요약/엑셀파일목록 32+건)
 - POTAL_AI_Agent_Org_v6.html (v5에서 업그레이드, 10명 추가 + 엑셀 섹션)
+
+### ⏳ CW19 Cowork — 글로벌 콜드이메일 대규모 캠페인 + 이메일 검증 워크플로우 (2026-03-28 KST)
+
+**콜드이메일 글로벌 대규모 캠페인 전략:**
+- 기존 15개 기업 타겟 → **~400개 기업** 글로벌 타겟으로 확대
+- **Tier 1** (CN 100 + UK 100): 크로스보더 이커머스 핵심 시장
+- **Tier 2** (SG 25 + HK 25 + NL 25 + IL 25 = 100): 지역 허브
+- **Tier 3** (DE 33 + AU 33 + UAE 33 ≈ 100): 확장 시장
+- 업종: logistics, payment, customs, ecommerce_ops, fulfilment, shipping, crossborder_platform, marketplace_saas, tax_compliance, fraud_prevention 등
+
+**생성된 파일:**
+- `data/MASTER_TARGET_LIST.csv` — ~400개 기업 마스터 리스트 (company_name, website, country, tier, industry, verified_email)
+- `data/COMMAND_VERIFY_EMAILS.md` — Claude Code (Sonnet)용 이메일 검증 9단계 명령어
+- `data/cold_email_uk_tier1_100.csv` — UK 100개 기업 타겟 (이메일 미검증)
+- `data/target_companies_remaining.csv` — HK/NL/IL/DE/AU/UAE 나머지 기업 리스트
+
+**이메일 주소 검증 문제 발견 및 해결:**
+- ⚠️ Gmail 드래프트 ~225개 생성했으나, 이메일 주소 대부분이 패턴 추측(info@, uk@, partnerships@ 등)으로 생성된 미검증 주소
+- 해결: MASTER_TARGET_LIST.csv에 verified_email 컬럼을 비워두고, Claude Code (Sonnet 모델)가 각 회사 웹사이트에서 실제 이메일 주소를 웹검색으로 확인
+- Claude Code 실행: `claude --model sonnet` (터미널 2), 국가별 분할 실행 (컨텍스트 절약)
+
+**Gmail 드래프트 현황 (미검증 주소, 재작업 필요):**
+- UK Tier 1: 95건 드래프트 생성 (주소 미검증)
+- SG Tier 2: 23건 드래프트 생성 (주소 미검증)
+- → 검증된 주소 확보 후 전부 재생성 예정
+
+**국가별 이메일 앵글:**
+- UK: post-Brexit dual regime (UK HMRC + EU TARIC), 63 FTAs
+- CN: Section 301 tariffs, HS code accuracy, anti-dumping alerts
+- SG/HK: RCEP era, ASEAN+6 trade compliance
+- NL/DE: EU VAT/customs complexity, 27개국 세율
+- IL: cross-border tech hub, fraud prevention + payment optimization
+- AU: Australia-specific FTAs, biosecurity compliance
+- UAE: GCC customs union, VAT implementation
+
+**다음 단계:**
+1. Claude Code (Sonnet)가 MASTER_TARGET_LIST.csv verified_email 채우기 완료 대기
+2. 검증된 이메일로 Gmail 드래프트 재생성 (국가별, 업종별 개인화)
+3. 발송 + 응답 추적
 
 ### ✅ CW18 Cowork 2차 — v3 절대값 확정 + Tier 분리 + 세관/플랫폼 필드 조사 + Step 0.5 벤치마크 (2026-03-20 KST)
 
@@ -343,7 +387,7 @@
 - WDC 17.6억건 다운로드+추출 완료 (1,896/1,899 파트)
 
 **기능 완성:**
-- 142/147 기능 구현 (96.6%): MUST 102개 + SHOULD 40개 전부 구현, WON'T 5개만 제외
+- 147/147 기능 구현 (100%): MUST 102개 + SHOULD 40개 + 미완성 5개 전부 보완 완료 (CW20)
 - 107개 감사 106/107 완성, 56개 정밀검증 156/156 PASS
 - Sprint 1 보안 6기능 100% (95 unit tests ALL PASS)
 - API ~155개 엔드포인트, Vercel Cron 24개

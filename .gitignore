@@ -84,3 +84,4 @@ COMMAND_SECRETARY_BOT_EXECUTE.md
 # All COMMAND_*.md files (contain tokens, API keys, internal instructions)
 COMMAND_*.md
 SPRINT_*_COMMAND*.md
+.~lock.*

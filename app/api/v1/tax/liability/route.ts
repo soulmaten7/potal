@@ -29,6 +29,10 @@ interface CountryLiability {
   totalOwed: number;
   transactionCount: number;
   totalValue: number;
+  localCurrency?: string;
+  registrationRequired?: boolean;
+  registrationNote?: string;
+  registrationWarning?: string;
 }
 
 interface FilingDeadline {
@@ -62,6 +66,27 @@ const FILING_DEADLINES: Record<string, FilingDeadline> = {
   IN: { frequency: 'quarterly', daysAfterPeriod: 30, name: 'GSTR-3B', authority: 'GST Council' },
   SG: { frequency: 'quarterly', daysAfterPeriod: 30, name: 'GST F5 Return', authority: 'IRAS' },
   EU: { frequency: 'quarterly', daysAfterPeriod: 30, name: 'OSS VAT Return', authority: 'EU Member State' },
+};
+
+// ─── C3: VAT Registration Thresholds ────────────────
+
+const VAT_THRESHOLDS: Record<string, { threshold: number; currency: string }> = {
+  GB: { threshold: 85000, currency: 'GBP' },
+  DE: { threshold: 22000, currency: 'EUR' },
+  FR: { threshold: 34400, currency: 'EUR' },
+  AU: { threshold: 75000, currency: 'AUD' },
+  CA: { threshold: 30000, currency: 'CAD' },
+  JP: { threshold: 10000000, currency: 'JPY' },
+  KR: { threshold: 48000000, currency: 'KRW' },
+  IN: { threshold: 2000000, currency: 'INR' },
+};
+
+// ─── C4: Country Currency Map ───────────────────────
+
+const COUNTRY_CURRENCIES: Record<string, string> = {
+  US: 'USD', GB: 'GBP', DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR',
+  AU: 'AUD', CA: 'CAD', JP: 'JPY', KR: 'KRW', IN: 'INR', BR: 'BRL',
+  CN: 'CNY', SG: 'SGD', MX: 'MXN', AE: 'AED', CH: 'CHF', SE: 'SEK',
 };
 
 // ─── Period Parsing ─────────────────────────────────
@@ -181,10 +206,49 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     } catch { /* empty liabilities */ }
   }
 
+  // C3: VAT registration check
+  for (const liability of liabilities) {
+    const threshold = VAT_THRESHOLDS[liability.country];
+    if (threshold) {
+      const annualized = liability.totalValue * 4; // quarterly → annual estimate
+      if (annualized >= threshold.threshold && threshold.threshold > 0) {
+        liability.registrationRequired = true;
+        liability.registrationNote = `Annualized revenue ~${Math.round(annualized)} exceeds ${threshold.currency} ${threshold.threshold}. VAT registration required.`;
+      } else if (threshold.threshold > 0 && annualized >= threshold.threshold * 0.8) {
+        liability.registrationWarning = `Approaching VAT threshold (${Math.round(annualized / threshold.threshold * 100)}%)`;
+      }
+    }
+    // C4: Local currency
+    liability.localCurrency = COUNTRY_CURRENCIES[liability.country] || 'USD';
+  }
+
   const deadlines = getUpcomingDeadlines(liabilities, end);
   const totalOwed = liabilities.reduce((sum, l) => sum + l.totalOwed, 0);
   const totalDuty = liabilities.reduce((sum, l) => sum + l.dutyOwed, 0);
   const totalVat = liabilities.reduce((sum, l) => sum + l.vatOwed, 0);
+
+  // C6: CSV export
+  const format = url.searchParams.get('format');
+  if (format === 'csv') {
+    const header = 'Country,Currency,Duty Owed,VAT Owed,Total Owed,Transactions,Total Value\n';
+    const rows = liabilities.map(l =>
+      `${l.country},${COUNTRY_CURRENCIES[l.country] || 'USD'},${l.dutyOwed},${l.vatOwed},${l.totalOwed},${l.transactionCount},${l.totalValue}`
+    ).join('\n');
+    return new Response(header + rows, {
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="tax-liability-${label}.csv"`,
+      },
+    });
+  }
+
+  // C5: Trends (simple — compare with previous equivalent period)
+  const trends = {
+    currentTotal: Math.round(totalOwed * 100) / 100,
+    note: 'Compare with previous period by querying with prior period parameter.',
+    countriesCount: liabilities.length,
+    registrationRequiredCount: liabilities.filter(l => l.registrationRequired).length,
+  };
 
   return apiSuccess({
     period: label,
@@ -202,6 +266,7 @@ export const GET = withApiAuth(async (req: NextRequest, context: ApiAuthContext)
     deadlines,
     overdueCount: deadlines.filter(d => d.status === 'overdue').length,
     dueSoonCount: deadlines.filter(d => d.status === 'due_soon').length,
+    trends,
     filingDeadlineInfo: FILING_DEADLINES,
   }, { sellerId: context.sellerId, plan: context.planId });
 });

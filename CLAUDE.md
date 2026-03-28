@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침 (핵심 규칙만)
-# 마지막 업데이트: 2026-03-26 10:30 KST (다이어트 — 555줄→규칙만)
+# 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료, Gmail 드래프트 251개 생성 완료)
 
 ## 🚨 필수 지침 (모든 작업보다 우선)
 1. `POTAL_Claude_Code_Work_Log.xlsx`에 새 시트(YYMMDDHHMM) 추가 — 모든 작업 타임라인 기록
@@ -16,6 +16,13 @@
 | `docs/CREDENTIALS.md` | 인증정보, Supabase 연결 방법 |
 | `docs/DIVISION_STATUS.md` | 15개 Division 상세, Layer 1/2/3, 운영 사이클 |
 | `docs/sessions/COWORK_SESSION_HISTORY.md` | CW13~CW18 세션별 성과 |
+
+## 콜드이메일 규칙
+- **콜드이메일 작성/발송 시 반드시 `POTAL_Cold_Email_Master.xlsx`를 먼저 읽을 것**
+- 시트 구성: 이메일템플릿_EN(본문) / 경쟁사비교표(가격+기능 비교) / 국가별앵글 / 발송규칙 / 검증결과
+- 경쟁사 비교(Avalara $1,500+ / Zonos $4,000+ / POTAL $0~$20)를 본문에 반드시 포함
+- `data/MASTER_TARGET_LIST.csv`의 verified_email 있는 회사만 발송
+- 기존 파일(`marketing/cold-email-final.md`, `cold-email-comparison-chart.html`)은 `archive/cold-email-old/`로 이동됨 — 사용 금지
 
 ## 절대 규칙
 1. **B2C 코드 수정 금지** — lib/search/, lib/agent/, components/search/ 보존만

@@ -1,0 +1,101 @@
+company_name,website,email,industry,country,description
+Zalando,https://zalando.com,partner@zalando.de,ecom_platform,DE,"Europe's largest online fashion platform, ships to 25+ EU countries"
+Allegro,https://allegro.pl,partners@allegro.pl,ecom_platform,PL,"Poland's #1 marketplace, expanding cross-border to EU"
+Bol.com,https://bol.com,partners@bol.com,ecom_platform,NL,"Benelux largest online retailer, cross-border shipping"
+Cdiscount,https://cdiscount.com,marketplace@cdiscount.com,ecom_platform,FR,"France's #2 ecommerce platform, international sellers"
+Fruugo,https://fruugo.com,partners@fruugo.com,ecom_platform,UK,"Global marketplace operating in 42 countries, 31 languages"
+OnBuy,https://onbuy.com,partnerships@onbuy.com,ecom_platform,UK,UK marketplace expanding internationally
+Kaufland,https://kaufland.de,marketplace@kaufland.de,ecom_platform,DE,"German marketplace by Schwarz Group, cross-border EU"
+Miravia,https://miravia.com,business@miravia.com,ecom_platform,ES,Alibaba's European marketplace in Spain
+Vinted,https://vinted.com,business@vinted.com,ecom_platform,LT,"European secondhand marketplace, cross-border shipping"
+Manor,https://manor.ch,ecommerce@manor.ch,ecom_platform,CH,Swiss department store with international ecommerce
+Coolblue,https://coolblue.nl,business@coolblue.nl,ecom_platform,NL,"Dutch electronics retailer shipping to Belgium, Germany"
+Galaxus,https://galaxus.ch,business@galaxus.ch,ecom_platform,CH,Switzerland's largest online retailer
+Mercado Libre,https://mercadolibre.com,partners@mercadolibre.com,ecom_platform,AR,"LATAM's largest marketplace, cross-border across 18 countries"
+Falabella,https://falabella.com,marketplace@falabella.com,ecom_platform,CL,Chilean retail giant with cross-border LATAM operations
+Jumia,https://jumia.com,partnerships@jumia.com,ecom_platform,NG,"Africa's largest ecommerce platform, 11 countries"
+Daraz,https://daraz.com,partnerships@daraz.com,ecom_platform,PK,"South Asia marketplace (Alibaba-backed), 5 countries"
+Tokopedia,https://tokopedia.com,partnerships@tokopedia.com,ecom_platform,ID,"Indonesia's largest marketplace, cross-border imports"
+Tiki,https://tiki.vn,partnerships@tiki.vn,ecom_platform,VN,Vietnam's leading ecommerce platform
+Flipkart,https://flipkart.com,partnerships@flipkart.com,ecom_platform,IN,"India's largest ecommerce, Walmart-owned, cross-border"
+Coupang,https://coupang.com,partnerships@coupang.com,ecom_platform,KR,"Korea's largest ecommerce, Rocket Import cross-border"
+Bringg,https://bringg.com,info@bringg.com,logistics,IL,Last-mile delivery orchestration for enterprise
+Parcelly,https://parcelly.com,hello@parcelly.com,logistics,UK,UK parcel pickup network for ecommerce
+Sendcloud,https://sendcloud.com,info@sendcloud.com,logistics,NL,European shipping automation for ecommerce
+Webshipper,https://webshipper.com,info@webshipper.com,logistics,DK,Nordic shipping management platform
+Paack,https://paack.co,info@paack.co,logistics,ES,European scheduled delivery platform
+Outvio,https://outvio.com,info@outvio.com,logistics,ES,Post-purchase experience platform for ecommerce
+Shiprocket,https://shiprocket.in,partnerships@shiprocket.in,logistics,IN,India's largest ecommerce shipping aggregator
+iThink Logistics,https://ithinklogistics.com,info@ithinklogistics.com,logistics,IN,Indian ecommerce logistics aggregator
+J&T Express,https://jtexpress.com,business@jtexpress.com,logistics,ID,"Southeast Asia express delivery, 13 countries"
+Ninja Van,https://ninjavan.co,partnerships@ninjavan.co,logistics,SG,"Southeast Asia logistics, 6 countries"
+Aramex,https://aramex.com,partnerships@aramex.com,logistics,AE,"Middle East logistics leader, 65+ countries"
+Fetchr,https://fetchr.us,info@fetchr.us,logistics,AE,Middle East last-mile delivery
+Starlinks,https://starlinks.com,info@starlinks.com,logistics,SA,Saudi Arabia ecommerce logistics
+Qxpress,https://qxpress.net,sales@qxpress.net,logistics,SG,Asia-Pacific cross-border logistics
+Anchanto,https://anchanto.com,info@anchanto.com,logistics,SG,APAC ecommerce logistics technology
+Janio Asia,https://janio.asia,hello@janio.asia,logistics,SG,Southeast Asia cross-border logistics
+Locad,https://golocad.com,hello@golocad.com,logistics,PH,APAC cloud fulfillment network
+Shipa Delivery,https://shipa.com,info@shipa.com,logistics,KW,Middle East ecommerce delivery
+Nimbuspost,https://nimbuspost.com,info@nimbuspost.com,logistics,IN,Indian cross-border shipping aggregator
+Parcelx,https://parcelx.com,info@parcelx.com,logistics,HK,Asia cross-border ecommerce logistics
+Adyen,https://adyen.com,partnerships@adyen.com,payment,NL,"Global payment platform, cross-border transactions"
+Klarna,https://klarna.com,partnerships@klarna.com,payment,SE,"BNPL leader, international shopping"
+dLocal,https://dlocal.com,info@dlocal.com,payment,UY,"Emerging market payments, 40 countries"
+Rapyd,https://rapyd.net,partnerships@rapyd.net,payment,UK,Global fintech-as-a-service platform
+Payoneer,https://payoneer.com,partnerships@payoneer.com,payment,US,Cross-border payments for marketplaces and SMBs
+Airwallex,https://airwallex.com,partnerships@airwallex.com,payment,AU,Global payments and financial infrastructure
+WorldFirst,https://worldfirst.com,partnerships@worldfirst.com,payment,UK,International payment solutions for businesses
+Checkout.com,https://checkout.com,partnerships@checkout.com,payment,UK,Global payment processing platform
+Nuvei,https://nuvei.com,info@nuvei.com,payment,CA,"Global payment technology, 200+ markets"
+2Checkout (Verifone),https://2checkout.com,partnerships@2checkout.com,payment,US,Global online payment platform
+Thunes,https://thunes.com,info@thunes.com,payment,SG,"Cross-border payment network, 130+ countries"
+Paymentwall,https://paymentwall.com,bizdev@paymentwall.com,payment,US,"Global payment platform, 200+ countries"
+Xendit,https://xendit.co,partnerships@xendit.co,payment,ID,Southeast Asia payment infrastructure
+Paymob,https://paymob.com,partnerships@paymob.com,payment,EG,MENA region payment gateway
+Tabby,https://tabby.ai,partnerships@tabby.ai,payment,AE,Middle East BNPL for cross-border shopping
+KGH Customs,https://kghcustoms.com,info@kghcustoms.com,customs,SE,European customs and trade compliance services
+Customs City,https://customscity.com,info@customscity.com,customs,US,Digital customs brokerage platform
+Tradewin,https://tradewin.net,info@tradewin.net,customs,US,Global trade consulting and compliance
+Aaronsworth,https://aaronsworth.com,info@aaronsworth.com,customs,UK,UK customs consultancy for ecommerce
+CustomsTrack,https://customstrack.com,info@customstrack.com,customs,NL,EU customs compliance technology
+Digicust,https://digicust.com,info@digicust.com,customs,DE,AI-powered customs automation Germany
+Customs Bridge,https://customsbridge.com,info@customsbridge.com,customs,BE,EU customs brokerage technology
+Trade Compliance,https://tradecompliance.asia,info@tradecompliance.asia,customs,SG,Asia Pacific trade compliance solutions
+Customs Connect,https://customsconnect.nl,info@customsconnect.nl,customs,NL,Netherlands customs clearance platform
+BorderBuddy,https://borderbuddy.com,hello@borderbuddy.com,customs,CA,Canadian customs brokerage for ecommerce
+Orderlytics,https://orderlytics.com,hello@orderlytics.com,shopify_app,US,Shopify analytics and reporting app
+ShipScout,https://shipscout.io,hello@shipscout.io,shopify_app,US,Shopify shipping rate comparison
+Sufio,https://sufio.com,hello@sufio.com,shopify_app,SK,"Shopify invoicing app, international invoices"
+Vatify,https://vatify.eu,info@vatify.eu,shopify_app,DE,EU VAT compliance for Shopify stores
+Metorik,https://metorik.com,hello@metorik.com,shopify_app,AU,WooCommerce/Shopify analytics and reporting
+Privy,https://privy.com,partnerships@privy.com,shopify_app,US,Shopify email marketing and conversion
+ShipperHQ,https://shipperhq.com,info@shipperhq.com,shopify_app,US,Advanced shipping rate management
+EcoCart,https://ecocart.io,hello@ecocart.io,shopify_app,US,Carbon-neutral shipping for ecommerce
+Gorgias,https://gorgias.com,partnerships@gorgias.com,shopify_app,US,Ecommerce helpdesk for Shopify
+Loop Returns,https://loopreturns.com,partnerships@loopreturns.com,shopify_app,US,Returns management for Shopify
+AfterShip,https://aftership.com,partnerships@aftership.com,shopify_app,HK,"Shipment tracking for ecommerce, 1000+ carriers"
+Easyship HK,https://easyship.com,partnerships@easyship.com,shopify_app,HK,All-in-one shipping platform for ecommerce
+Matrixify,https://matrixify.app,hello@matrixify.app,shopify_app,LV,Shopify data import/export
+Transcy,https://transcy.io,hello@transcy.io,shopify_app,VN,Shopify translation and currency converter
+LangShop,https://langshop.app,info@langshop.app,shopify_app,UA,Shopify multilingual and multicurrency
+Gymshark,https://gymshark.com,partnerships@gymshark.com,dtc_brand,UK,"Global fitness apparel brand, ships to 200+ countries"
+Allbirds,https://allbirds.com,partnerships@allbirds.com,dtc_brand,US,"Sustainable footwear, ships internationally"
+Anker,https://anker.com,partnerships@anker.com,dtc_brand,CN,"Consumer electronics, global DTC operations"
+Nothing,https://nothing.tech,partnerships@nothing.tech,dtc_brand,UK,"Consumer tech brand, global shipping"
+Momofuku,https://momofuku.com,wholesale@momofuku.com,dtc_brand,US,Food brand with international DTC shipping
+Casetify,https://casetify.com,partnerships@casetify.com,dtc_brand,HK,"Phone cases, global DTC from Hong Kong"
+PatPat,https://patpat.com,business@patpat.com,dtc_brand,CN,"Kids clothing, ships from China to 100+ countries"
+Shein,https://shein.com,business@shein.com,dtc_brand,CN,"Global fast fashion, massive cross-border operation"
+Temu,https://temu.com,business@temu.com,dtc_brand,CN,"PDD's global marketplace, cross-border from China"
+iHerb,https://iherb.com,partnerships@iherb.com,dtc_brand,US,"Health products, ships to 185+ countries"
+Cin7,https://cin7.com,partnerships@cin7.com,erp,NZ,Inventory management for multichannel ecommerce
+Odoo,https://odoo.com,partnerships@odoo.com,erp,BE,Open-source ERP with ecommerce module
+TradeGecko (QuickBooks),https://quickbooks.intuit.com,partnerships@intuit.com,erp,US,Inventory and order management
+Linnworks,https://linnworks.com,info@linnworks.com,erp,UK,Multichannel commerce automation
+Veeqo,https://veeqo.com,hello@veeqo.com,erp,UK,Amazon-owned shipping and inventory management
+Orderwise,https://orderwise.co.uk,info@orderwise.co.uk,erp,UK,UK order management and fulfillment
+ShipHero,https://shiphero.com,sales@shiphero.com,erp,US,Warehouse management for ecommerce
+Inflow Inventory,https://inflowinventory.com,info@inflowinventory.com,erp,CA,Inventory management software
+Katana MRP,https://katanamrp.com,hello@katanamrp.com,erp,EE,Manufacturing ERP for ecommerce
+Unleashed,https://unleashedsoftware.com,info@unleashedsoftware.com,erp,NZ,Inventory management for product businesses
