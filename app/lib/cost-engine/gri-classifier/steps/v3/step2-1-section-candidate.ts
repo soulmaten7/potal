@@ -129,6 +129,8 @@ const MATERIAL_TO_SECTION: Record<string, { section: number; score: number }[]> 
   copper: [{ section: 15, score: 0.9 }],
   zinc: [{ section: 15, score: 0.8 }],
   tin: [{ section: 15, score: 0.8 }],
+  nickel: [{ section: 15, score: 0.85 }],
+  lead: [{ section: 15, score: 0.8 }],
   titanium: [{ section: 15, score: 0.8 }],
   brass: [{ section: 15, score: 0.85 }],
   bronze: [{ section: 15, score: 0.85 }],
@@ -140,12 +142,12 @@ const MATERIAL_TO_SECTION: Record<string, { section: number; score: number }[]> 
   hide: [{ section: 8, score: 0.9 }],
   // Section II additions
   fruit: [{ section: 2, score: 0.85 }],
-  tobacco: [{ section: 2, score: 0.85 }],
+  tobacco: [{ section: 4, score: 0.95 }],
   // Section III: Fats, oils, waxes
   oil: [{ section: 3, score: 0.85 }, { section: 5, score: 0.5 }],
   fat: [{ section: 3, score: 0.9 }],
   wax: [{ section: 3, score: 0.85 }],
-  candle: [{ section: 3, score: 0.8 }],
+  candle: [{ section: 6, score: 0.85 }],
   // Section IV: Prepared foodstuffs
   sugar: [{ section: 4, score: 0.85 }],
   chocolate: [{ section: 4, score: 0.9 }],
@@ -189,7 +191,7 @@ const MATERIAL_TO_SECTION: Record<string, { section: number; score: number }[]> 
   furniture: [{ section: 20, score: 0.9 }],
   toy: [{ section: 20, score: 0.9 }],
   sports: [{ section: 20, score: 0.8 }],
-  candle_material: [{ section: 3, score: 0.8 }],
+  candle_material: [{ section: 6, score: 0.85 }],
   // Section XXI: Art
   art: [{ section: 21, score: 0.9 }],
 };
@@ -214,7 +216,7 @@ const CATEGORY_TO_SECTION: Record<string, { section: number; score: number }> = 
   computer: { section: 16, score: 0.95 },
   phone: { section: 16, score: 0.95 },
   laptop: { section: 16, score: 0.95 },
-  camera: { section: 16, score: 0.9 },
+  camera: { section: 18, score: 0.9 },
   printer: { section: 16, score: 0.9 },
   weapon: { section: 19, score: 0.95 },
   ammunition: { section: 19, score: 0.95 },
@@ -286,7 +288,7 @@ const CATEGORY_TO_SECTION: Record<string, { section: number; score: number }> = 
   herbs: { section: 2, score: 0.85 },
   // Section III via category (oils/fats)
   cooking: { section: 3, score: 0.7 },
-  candles: { section: 3, score: 0.8 },
+  candles: { section: 6, score: 0.85 },
   aromatherapy: { section: 3, score: 0.7 },
   // Section V via category (mineral/construction)
   construction: { section: 5, score: 0.8 },

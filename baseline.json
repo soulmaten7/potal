@@ -1,0 +1,212 @@
+[
+  {
+    "name": "Fresh salmon fillet",
+    "section": 1,
+    "expected_ch": "03",
+    "actual_hs": "03021100",
+    "actual_ch": "03",
+    "match": true,
+    "confidence": 0.4,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Green tea leaves",
+    "section": 2,
+    "expected_ch": "09",
+    "actual_hs": "090210",
+    "actual_ch": "09",
+    "match": true,
+    "confidence": 0.2222222222222222,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Extra virgin olive oil",
+    "section": 3,
+    "expected_ch": "15",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Dark chocolate bar",
+    "section": 4,
+    "expected_ch": "18",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Crude petroleum",
+    "section": 5,
+    "expected_ch": "27",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Vitamin C tablets",
+    "section": 6,
+    "expected_ch": "30",
+    "actual_hs": "300450",
+    "actual_ch": "30",
+    "match": true,
+    "confidence": 0.4,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Silicone phone case",
+    "section": 7,
+    "expected_ch": "39",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Leather crossbody bag",
+    "section": 8,
+    "expected_ch": "42",
+    "actual_hs": "42021100",
+    "actual_ch": "42",
+    "match": true,
+    "confidence": 0.6000000000000001,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Bamboo cutting board",
+    "section": 9,
+    "expected_ch": "44",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Hardcover novel",
+    "section": 10,
+    "expected_ch": "49",
+    "actual_hs": "3915900010",
+    "actual_ch": "39",
+    "match": false,
+    "confidence": 0.4,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Cotton t-shirt",
+    "section": 11,
+    "expected_ch": "61",
+    "actual_hs": "61091000",
+    "actual_ch": "61",
+    "match": true,
+    "confidence": 0.65,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Leather oxford shoes",
+    "section": 12,
+    "expected_ch": "64",
+    "actual_hs": "6403991000",
+    "actual_ch": "64",
+    "match": true,
+    "confidence": 0.7,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Ceramic coffee mug",
+    "section": 13,
+    "expected_ch": "69",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Gold necklace 18K",
+    "section": 14,
+    "expected_ch": "71",
+    "actual_hs": "7113111000",
+    "actual_ch": "71",
+    "match": true,
+    "confidence": 0.36363636363636365,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Steel cooking pot",
+    "section": 15,
+    "expected_ch": "73",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Laptop computer",
+    "section": 16,
+    "expected_ch": "84",
+    "actual_hs": "850180",
+    "actual_ch": "85",
+    "match": false,
+    "confidence": 0.2,
+    "method": "v3.3-code-based"
+  },
+  {
+    "name": "Bicycle frame",
+    "section": 17,
+    "expected_ch": "87",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Digital wristwatch",
+    "section": 18,
+    "expected_ch": "91",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Hunting rifle",
+    "section": 19,
+    "expected_ch": "93",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Chess set",
+    "section": 20,
+    "expected_ch": "95",
+    "actual_hs": "HTTP Error 400: Bad Request",
+    "actual_ch": "??",
+    "match": false,
+    "confidence": 0,
+    "method": "?"
+  },
+  {
+    "name": "Oil painting",
+    "section": 21,
+    "expected_ch": "97",
+    "actual_hs": "520100",
+    "actual_ch": "52",
+    "match": false,
+    "confidence": 0.65,
+    "method": "v3.3-code-based"
+  }
+]
