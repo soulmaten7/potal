@@ -26,24 +26,6 @@ const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   other:    ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'],
 };
 
-// Category → 허용 Material 매핑 (역방향)
-const CATEGORY_TO_MATERIALS: Record<string, string[]> = {
-  apparel:       ['cotton','polyester','wool','silk','linen','denim','nylon','leather','other'],
-  electronics:   ['plastic','aluminum','steel','glass','other'],
-  footwear:      ['leather','rubber','cotton','nylon','polyester','other'],
-  accessories:   ['cotton','polyester','leather','gold','silver','wool','silk','nylon','other'],
-  cosmetics:     ['other'],
-  food:          ['other'],
-  furniture:     ['wood','aluminum','steel','leather','linen','other'],
-  toys:          ['plastic','rubber','wood','other'],
-  books:         ['paper','other'],
-  automotive:    ['steel','aluminum','rubber','leather','plastic','other'],
-  jewelry:       ['gold','silver','other'],
-  sporting_goods:['aluminum','steel','rubber','nylon','plastic','polyester','other'],
-  industrial:    ['steel','aluminum','plastic','rubber','glass','ceramic','other'],
-  other:         ['cotton','polyester','wool','silk','linen','denim','nylon','leather','plastic','rubber','aluminum','steel','wood','glass','ceramic','paper','gold','silver','other'],
-};
-
 const ALL_MATERIALS = ['cotton','polyester','wool','silk','linen','denim','nylon','leather','plastic','rubber','aluminum','steel','wood','glass','ceramic','paper','gold','silver','other'];
 const ALL_CATEGORIES = ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'];
 
@@ -103,8 +85,8 @@ const labelStyle: React.CSSProperties = {
 
 export default function HeroCalculator() {
   const [productName, setProductName] = useState('');
-  const [material, setMaterial] = useState('cotton');
-  const [category, setCategory] = useState('apparel');
+  const [material, setMaterial] = useState('');
+  const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [origin, setOrigin] = useState('CN');
   const [destination, setDestination] = useState('US');
@@ -210,15 +192,16 @@ export default function HeroCalculator() {
               const newMat = e.target.value;
               setMaterial(newMat);
               const allowed = MATERIAL_TO_CATEGORIES[newMat] || ALL_CATEGORIES;
-              if (!allowed.includes(category)) {
-                setCategory(allowed[0]);
-              }
+              setCategory(allowed[0]);
             }}
             style={{ ...inputStyle, cursor: 'pointer' }}
             onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
             onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
           >
-            {(CATEGORY_TO_MATERIALS[category] || ALL_MATERIALS).map(m => (
+            <option value="" disabled style={{ background: '#0a1e3d', color: 'rgba(255,255,255,0.4)' }}>
+              Select material...
+            </option>
+            {ALL_MATERIALS.map(m => (
               <option key={m} value={m} style={{ background: '#0a1e3d', color: 'white' }}>
                 {m.charAt(0).toUpperCase() + m.slice(1)}
               </option>
@@ -231,23 +214,27 @@ export default function HeroCalculator() {
           <label style={labelStyle}>Category</label>
           <select
             value={category}
-            onChange={e => {
-              const newCat = e.target.value;
-              setCategory(newCat);
-              const allowed = CATEGORY_TO_MATERIALS[newCat] || ALL_MATERIALS;
-              if (!allowed.includes(material)) {
-                setMaterial(allowed[0]);
-              }
+            disabled={!material}
+            onChange={e => setCategory(e.target.value)}
+            style={{
+              ...inputStyle,
+              cursor: material ? 'pointer' : 'not-allowed',
+              opacity: material ? 1 : 0.35,
             }}
-            style={{ ...inputStyle, cursor: 'pointer' }}
             onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
             onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
           >
-            {(MATERIAL_TO_CATEGORIES[material] || ALL_CATEGORIES).map(c => (
-              <option key={c} value={c} style={{ background: '#0a1e3d', color: 'white' }}>
-                {c.replace('_', ' ')}
+            {!material ? (
+              <option value="" style={{ background: '#0a1e3d', color: 'rgba(255,255,255,0.4)' }}>
+                Select material first...
               </option>
-            ))}
+            ) : (
+              (MATERIAL_TO_CATEGORIES[material] || ALL_CATEGORIES).map(c => (
+                <option key={c} value={c} style={{ background: '#0a1e3d', color: 'white' }}>
+                  {c.replace('_', ' ')}
+                </option>
+              ))
+            )}
           </select>
         </div>
 
@@ -307,25 +294,25 @@ export default function HeroCalculator() {
       {/* Calculate button */}
       <button
         onClick={handleCalculate}
-        disabled={loading}
+        disabled={loading || !material || !price}
         style={{
           width: '100%',
           padding: '13px 0',
-          background: loading ? 'rgba(232,100,10,0.5)' : '#E8640A',
+          background: (loading || !material || !price) ? 'rgba(232,100,10,0.5)' : '#E8640A',
           color: 'white',
           border: 'none',
           borderRadius: 12,
           fontWeight: 700,
           fontSize: 15,
-          cursor: loading ? 'default' : 'pointer',
+          cursor: (loading || !material || !price) ? 'default' : 'pointer',
           transition: 'background 0.15s',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: 8,
         }}
-        onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#f97316'; }}
-        onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#E8640A'; }}
+        onMouseEnter={e => { if (!loading && material && price) e.currentTarget.style.background = '#f97316'; }}
+        onMouseLeave={e => { if (!loading && material && price) e.currentTarget.style.background = '#E8640A'; }}
       >
         {loading ? (
           <>
