@@ -96,7 +96,9 @@ export async function GET(request: Request) {
     }
 
     // Google OAuth without profile info → redirect to complete-profile
-    return NextResponse.redirect(`${origin}/auth/complete-profile`);
+    // Reuse existing response to preserve session cookies
+    response.headers.set('Location', `${origin}/auth/complete-profile`);
+    return response;
   } catch {
     return NextResponse.redirect(`${origin}${AUTH_CODE_ERROR_PATH}`);
   }
