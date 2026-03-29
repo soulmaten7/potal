@@ -1,5 +1,5 @@
 # DIVISION_STATUS.md — POTAL AI Agent Organization v6 상세
-# 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — D5 Features 페이지, D7 MCP v1.4.0, D8 기능감사 140, D15 경쟁사 비교)
+# 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — D5 가입 플로우 수정, D9 OAuth 프로필 수집, D12 FreeBanner 제거)
 # 이 파일은 참조용. Division 상세 필요 시 읽는 파일.
 
 ## 16개 Division (책임 영역) — v6.1 기준 59 Agents

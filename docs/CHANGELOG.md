@@ -1,5 +1,27 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — 기능감사 140 Active, Features 페이지, MCP v1.4.0)
+> 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — Exit 전략 피벗, Forever Free, 가입 플로우 수정)
+
+## [2026-03-29 22:00 KST] CW22 — Exit 전략 피벗 + Forever Free + 가입 플로우 수정
+
+### Exit 전략 + Forever Free (CW22-A)
+- Exit(인수) 전략 확정 — CEO 결정: 트래픽/데이터 극대화 → 인수 가치
+- 요금제: 4단계 → Forever Free ($0, 100K/월 소프트 캡) + Enterprise Contact Us
+- plan-checker/middleware/pricing/Dashboard/i18n 전부 Forever Free 반영
+- 홈 화면 리디자인: "140 Features. All Free. Forever." 히어로 + 경쟁사 바 차트 10개사
+
+### 140개 가이드 + 커뮤니티 (CW22-A)
+- /features/[slug] 동적 라우트 140페이지 SSG, SEO 메타, sitemap
+- 20개 Core 기능 "Required Fields for 100% Accuracy" 상세 (requiredFields/accuracyTips/commonMistakes)
+- /community 게시판 + 글쓰기 + 댓글 + 추천, 기능별 필터
+
+### 가입 플로우 수정 (CW22-B, 커밋 a62f385 → d883f0a → 9f0e5b6)
+- **이메일 가입**: register API 대신 supabase.auth.signUp() 직접 호출 → Supabase 인증 이메일 발송 → 링크 클릭 → callback에서 sellers+API키 자동 생성
+- **Google OAuth**: callback에서 sellers 미존재 시 /auth/complete-profile 리다이렉트 → 회사명/국가/업종 필수 입력 → sellers+API키 생성
+- **버그 수정**: (1) 세션 쿠키 유실 — response.headers.set('Location') 패턴, (2) sellers 컬럼명 email→contact_email
+- FreeBanner 제거 (히어로와 중복)
+- 신규 파일: app/auth/complete-profile/page.tsx, app/api/v1/sellers/complete-oauth-profile/route.ts
+
+---
 
 ## [2026-03-29 03:30 KST] CW21 Cowork — 기능감사 + Features 페이지 + MCP v1.4.0
 

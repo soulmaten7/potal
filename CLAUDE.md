@@ -1,6 +1,6 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침 (핵심 규칙만)
-# 마지막 업데이트: 2026-03-29 18:30 KST (CW22 피벗: Exit 전략, Forever Free, 경쟁사 비교 홈화면, 140개 가이드, 커뮤니티)
-# CW22 핵심: Exit 전략 확정, Forever Free(140기능 무료), 홈 리디자인, /features/[slug] 140페이지, /community
+# 마지막 업데이트: 2026-03-29 22:00 KST (CW22 피벗: Exit 전략, Forever Free, 홈 리디자인, 140개 가이드, 커뮤니티, 가입 플로우 수정)
+# CW22 핵심: Exit 전략 확정, Forever Free(140기능 무료), 홈 리디자인, /features/[slug] 140페이지, /community, 가입 플로우 수정(Google OAuth complete-profile, 이메일 인증)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

@@ -1,3 +1,23 @@
+### ⭐ CW22 Cowork 세션 성과 (2026-03-29 14:00~22:00 KST)
+
+**Exit 전략 피벗 (CW22-A, 14:00~18:30):**
+- Exit(인수) 전략 확정 — CEO 결정: 트래픽/데이터 극대화
+- Forever Free 전환: 4단계 요금제 → $0 + Enterprise Contact Us
+- 홈 화면 리디자인: "140 Features. All Free. Forever." + 경쟁사 10개사 비교
+- 140개 가이드 페이지: /features/[slug] SSG, SEO, sitemap
+- 20개 Core 기능 필수 입력값 상세 (requiredFields/accuracyTips/commonMistakes)
+- 커뮤니티 페이지: /community 게시판+댓글+추천
+- 문서 동기화: session-context.md, CLAUDE.md, .cursorrules, CHANGELOG.md, PROJECT_STATUS.md
+
+**가입 플로우 수정 (CW22-B, 21:00~22:10):**
+- 이메일 가입: supabase.auth.signUp() → 인증 이메일 → callback → sellers+API키 자동 생성
+- Google OAuth: callback → complete-profile (회사명/국가/업종 필수) → sellers+API키
+- 버그 수정 3건: 세션 쿠키 유실(response reuse), fullscreen overlay, contact_email 컬럼명
+- FreeBanner 제거 (히어로와 중복)
+- 커밋 3개: a62f385, d883f0a, 9f0e5b6
+
+---
+
 ### ⭐ CW21 Cowork 세션 성과 (2026-03-29 01:00~03:00 KST)
 
 **MCP v1.4.0 9-field 프로덕션 업데이트:**

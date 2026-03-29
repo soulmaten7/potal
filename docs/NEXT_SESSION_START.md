@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — 기능감사 140 Active, Features 페이지, MCP v1.4.0)
+> 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — Exit 전략, Forever Free, 140개 가이드, 커뮤니티, 가입 플로우 수정)
 
 ---
 
@@ -27,8 +27,16 @@
 - **Sprint 1 보안 6기능**: ✅ 100% (95 unit tests ALL PASS)
 - **데이터**: MIN ~105M행, AGR ~129M행, gov_tariff_schedules 131,794행, 제재 21,301건 — **전부 완료**
 
+### ✅ CW22 추가 완료 사항 (2026-03-29)
+- **Exit 전략 확정** — CEO 결정: 인수 전략, Forever Free 전환 ✅
+- **요금제 구조 변경** — Forever Free + Enterprise Contact Us ✅
+- **홈 화면 리디자인** — "140 Features. All Free. Forever." + 경쟁사 비교 ✅
+- **140개 가이드 페이지** — /features/[slug], 20개 Core 기능 필수 입력값 상세 ✅
+- **커뮤니티 페이지** — /community 게시판+댓글+추천 ✅
+- **가입 플로우 수정** — Google OAuth complete-profile, 이메일 인증 링크, FreeBanner 제거 ✅ (커밋 a62f385, d883f0a, 9f0e5b6)
+
 ### ⏳ 진행 중
-- **수익화 전략 결정 보류**: Free + 크로스보더 광고 모델 (CEO 결정 대기)
+- **수익화 전략**: Exit 전략 확정 (MRR $0 의도적), 트래픽/데이터 극대화 중
 - **인프라 비용**: 고정 ~$114/mo, 100만건 처리 ~$140/mo
 - **마케팅**: LinkedIn 1포스트, Reddit 댓글 6개, Instagram 프로필만 — **지속 필요**
 
@@ -124,5 +132,10 @@ Layer 3: Enterprise Custom (미시작) → 고객별 맞춤 변환
 
 ---
 ## [Auto-saved] Compaction at 2026-03-29 16:45 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+
+---
+## [Auto-saved] Compaction at 2026-03-29 17:33 KST
 컨텍스트 압축 발생. 이전 대화가 요약됨.
 압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
