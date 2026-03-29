@@ -1,0 +1,348 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+
+const CATEGORIES = [
+  'apparel', 'electronics', 'footwear', 'accessories', 'cosmetics',
+  'food', 'furniture', 'toys', 'books', 'automotive',
+  'jewelry', 'sporting_goods', 'industrial', 'other',
+];
+
+const COUNTRIES = [
+  { code: 'CN', name: 'China' },
+  { code: 'US', name: 'United States' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'KR', name: 'South Korea' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'FR', name: 'France' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'IN', name: 'India' },
+  { code: 'MX', name: 'Mexico' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'HK', name: 'Hong Kong' },
+  { code: 'TH', name: 'Thailand' },
+  { code: 'VN', name: 'Vietnam' },
+  { code: 'ID', name: 'Indonesia' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'ES', name: 'Spain' },
+];
+
+interface CalcResult {
+  importDuty: number;
+  vat: number;
+  processingFee: number;
+  totalLandedCost: number;
+}
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '10px 12px',
+  background: 'rgba(0,0,0,0.35)',
+  border: '1px solid rgba(255,255,255,0.2)',
+  borderRadius: 10,
+  color: 'white',
+  fontSize: 14,
+  outline: 'none',
+  boxSizing: 'border-box',
+  appearance: 'none',
+  WebkitAppearance: 'none',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  fontWeight: 600,
+  color: 'rgba(255,255,255,0.55)',
+  marginBottom: 6,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+};
+
+export default function HeroCalculator() {
+  const [category, setCategory] = useState('apparel');
+  const [price, setPrice] = useState('');
+  const [origin, setOrigin] = useState('CN');
+  const [destination, setDestination] = useState('US');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<CalcResult | null>(null);
+  const [error, setError] = useState('');
+
+  const handleCalculate = async () => {
+    const priceNum = parseFloat(price);
+    if (!price || isNaN(priceNum) || priceNum <= 0) {
+      setError('Please enter a valid price.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const res = await fetch('/api/v1/calculate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Demo-Request': 'true',
+        },
+        body: JSON.stringify({
+          productCategory: category,
+          price: priceNum,
+          origin,
+          destinationCountry: destination,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError('Unable to calculate. Try with more details.');
+        return;
+      }
+      const data = json.data as Record<string, unknown>;
+      const duty = typeof data.importDuty === 'number' ? data.importDuty : 0;
+      const vat = typeof data.vat === 'number' ? data.vat
+        : typeof data.salesTax === 'number' ? data.salesTax : 0;
+      const tlc = typeof data.totalLandedCost === 'number' ? data.totalLandedCost : priceNum + duty + vat;
+      const fee = Math.max(0, Math.round((tlc - priceNum - duty - vat) * 100) / 100);
+      setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc });
+    } catch {
+      setError('Unable to calculate. Try with more details.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,0.08)',
+      border: '1px solid rgba(255,255,255,0.15)',
+      borderRadius: 20,
+      padding: 32,
+      color: 'white',
+    }}>
+      {/* Title */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{
+          display: 'inline-block',
+          background: 'rgba(232,100,10,0.2)',
+          color: '#E8640A',
+          padding: '4px 12px',
+          borderRadius: 12,
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.06em',
+          marginBottom: 10,
+        }}>
+          LIVE DEMO
+        </div>
+        <h3 style={{ fontSize: 20, fontWeight: 800, margin: 0, lineHeight: 1.3 }}>
+          Try it now — no signup required
+        </h3>
+      </div>
+
+      {/* Inputs grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+        {/* Category */}
+        <div>
+          <label style={labelStyle}>Category</label>
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            style={{ ...inputStyle, cursor: 'pointer' }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          >
+            {CATEGORIES.map(c => (
+              <option key={c} value={c} style={{ background: '#0a1e3d', color: 'white' }}>
+                {c.replace('_', ' ')}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Price */}
+        <div>
+          <label style={labelStyle}>Price (USD)</label>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="e.g. 49.99"
+            value={price}
+            onChange={e => setPrice(e.target.value)}
+            style={{ ...inputStyle }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
+        {/* Origin */}
+        <div>
+          <label style={labelStyle}>Origin Country</label>
+          <select
+            value={origin}
+            onChange={e => setOrigin(e.target.value)}
+            style={{ ...inputStyle, cursor: 'pointer' }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          >
+            {COUNTRIES.map(c => (
+              <option key={c.code} value={c.code} style={{ background: '#0a1e3d', color: 'white' }}>
+                {c.code} — {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Destination */}
+        <div>
+          <label style={labelStyle}>Destination</label>
+          <select
+            value={destination}
+            onChange={e => setDestination(e.target.value)}
+            style={{ ...inputStyle, cursor: 'pointer' }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          >
+            {COUNTRIES.map(c => (
+              <option key={c.code} value={c.code} style={{ background: '#0a1e3d', color: 'white' }}>
+                {c.code} — {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Calculate button */}
+      <button
+        onClick={handleCalculate}
+        disabled={loading}
+        style={{
+          width: '100%',
+          padding: '13px 0',
+          background: loading ? 'rgba(232,100,10,0.5)' : '#E8640A',
+          color: 'white',
+          border: 'none',
+          borderRadius: 12,
+          fontWeight: 700,
+          fontSize: 15,
+          cursor: loading ? 'default' : 'pointer',
+          transition: 'background 0.15s',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+        }}
+        onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#f97316'; }}
+        onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#E8640A'; }}
+      >
+        {loading ? (
+          <>
+            <span style={{
+              display: 'inline-block',
+              width: 16,
+              height: 16,
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderTopColor: 'white',
+              borderRadius: '50%',
+              animation: 'spin 0.7s linear infinite',
+            }} />
+            Calculating...
+          </>
+        ) : 'Calculate'}
+      </button>
+
+      {/* Error */}
+      {error && (
+        <div style={{
+          marginTop: 14,
+          padding: '10px 14px',
+          background: 'rgba(239,68,68,0.15)',
+          border: '1px solid rgba(239,68,68,0.3)',
+          borderRadius: 10,
+          fontSize: 13,
+          color: '#fca5a5',
+        }}>
+          {error}
+        </div>
+      )}
+
+      {/* Result breakdown */}
+      {result && (
+        <div style={{ marginTop: 18 }}>
+          <div style={{
+            background: 'rgba(0,0,0,0.25)',
+            borderRadius: 14,
+            overflow: 'hidden',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}>
+            {[
+              { label: 'Import Duty', value: result.importDuty },
+              { label: 'VAT / GST', value: result.vat },
+              ...(result.processingFee > 0 ? [{ label: 'Processing Fee', value: result.processingFee }] : []),
+            ].map((item, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '11px 16px',
+                borderBottom: '1px solid rgba(255,255,255,0.07)',
+                fontSize: 14,
+              }}>
+                <span style={{ color: 'rgba(255,255,255,0.65)' }}>{item.label}</span>
+                <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>
+                  ${item.value.toFixed(2)}
+                </span>
+              </div>
+            ))}
+            {/* Total */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '13px 16px',
+              fontSize: 15,
+              background: 'rgba(232,100,10,0.1)',
+            }}>
+              <span style={{ fontWeight: 700, color: 'white' }}>Total Landed Cost</span>
+              <span style={{ fontWeight: 800, fontSize: 18, color: '#E8640A' }}>
+                ${result.totalLandedCost.toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          {/* Disclaimer + CTA */}
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: '10px 0 14px', lineHeight: 1.5 }}>
+            * Preview estimate. Sign up free for exact calculation with HS Code.
+          </p>
+          <Link
+            href="/dashboard"
+            style={{
+              display: 'block',
+              textAlign: 'center',
+              padding: '11px 0',
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 10,
+              color: 'white',
+              fontWeight: 700,
+              fontSize: 14,
+              textDecoration: 'none',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.14)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
+          >
+            Get exact calculation →
+          </Link>
+        </div>
+      )}
+
+      {/* Spinner keyframe */}
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}

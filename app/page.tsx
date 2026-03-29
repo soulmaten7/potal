@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import HeroCalculator from '@/components/home/HeroCalculator';
 
 // ─── Animated Counter ─────────────────────────────
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -541,11 +542,26 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right: Code Preview */}
+            {/* Right: Live Calculator */}
             <div className="hero-code">
-              <CodeBlock />
+              {/* <CodeBlock /> */}
+              <HeroCalculator />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════ FEATURES CTA BANNER ══════════════════════ */}
+      <section style={{ background: '#0A0A1A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '32px 0' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <span style={{ color: '#E8640A', fontWeight: 700, fontSize: 14 }}>140 FEATURES</span>
+            <h3 style={{ color: 'white', fontSize: 22, fontWeight: 700, margin: '4px 0' }}>각 기능을 직접 데모로 사용해보세요</h3>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>회원가입 없이 모든 기능 무료 체험 가능</p>
+          </div>
+          <Link href="/features" style={{ background: '#E8640A', color: 'white', padding: '14px 28px', borderRadius: 10, fontWeight: 700, textDecoration: 'none', fontSize: 15, whiteSpace: 'nowrap' }}>
+            140개 기능 둘러보기 →
+          </Link>
         </div>
       </section>
 
