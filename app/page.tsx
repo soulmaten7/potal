@@ -144,18 +144,10 @@ function ResponsePreview() {
       `}<span style={{ color: '#fbbf24' }}>&quot;productPrice&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>49.99</span>{`,
       `}<span style={{ color: '#fbbf24' }}>&quot;importDuty&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>8.25</span>{`,
       `}<span style={{ color: '#fbbf24' }}>&quot;tax&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>5.19</span>{`,
-      `}<span style={{ color: '#fbbf24' }}>&quot;shipping&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>8.50</span>{`,
-      `}<span style={{ color: '#fbbf24' }}>&quot;taxLabel&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;Sales Tax (NY)&quot;</span>{`
+      `}<span style={{ color: '#fbbf24' }}>&quot;shipping&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>8.50</span>{`
     },
     `}<span style={{ color: '#fbbf24' }}>&quot;hsCode&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;6109.10&quot;</span>{`,
-    `}<span style={{ color: '#fbbf24' }}>&quot;hsCodeConfidence&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;100%&quot;</span>{`,
-    `}<span style={{ color: '#fbbf24' }}>&quot;fieldValidation&quot;</span>{`: {
-      `}<span style={{ color: '#fbbf24' }}>&quot;status&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;valid&quot;</span>{`,
-      `}<span style={{ color: '#fbbf24' }}>&quot;fieldsProvided&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>8</span>{`,
-      `}<span style={{ color: '#fbbf24' }}>&quot;fieldsRequired&quot;</span>{`: `}<span style={{ color: '#a5f3fc' }}>3</span>{`
-    },
-    `}<span style={{ color: '#fbbf24' }}>&quot;fta&quot;</span>{`: `}<span style={{ color: '#ef4444' }}>false</span>{`,
-    `}<span style={{ color: '#fbbf24' }}>&quot;deMinimis&quot;</span>{`: `}<span style={{ color: '#ef4444' }}>false</span>{`
+    `}<span style={{ color: '#fbbf24' }}>&quot;hsCodeConfidence&quot;</span>{`: `}<span style={{ color: '#86efac' }}>&quot;100%&quot;</span>{`
   }
 }`}
       </pre>
@@ -234,8 +226,6 @@ function LiveWidgetDemo() {
       <div style={{ fontSize: 16, fontWeight: 700, color: '#02122c', marginBottom: 16 }}>
         Total Landed Cost
       </div>
-
-      {/* Country selector */}
       <div style={{ marginBottom: 16 }}>
         <label style={{ fontSize: 12, fontWeight: 600, color: '#888', marginBottom: 6, display: 'block' }}>
           Destination Country
@@ -262,14 +252,11 @@ function LiveWidgetDemo() {
           ))}
         </div>
       </div>
-
       <div style={{ fontSize: 12, color: '#3b82f6', marginBottom: 12 }}>
         {result.deMinimisApplied
           ? `De minimis applies — duty-free to ${country.name}`
           : `Duty rate: ${result.dutyRate} to ${country.name}`}
       </div>
-
-      {/* Breakdown */}
       {[
         ['Product Price', '$49.99'],
         [`Import Duty (${result.dutyRate})`, `$${result.importDuty.toFixed(2)}`],
@@ -290,7 +277,6 @@ function LiveWidgetDemo() {
           </span>
         </div>
       ))}
-
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -338,6 +324,106 @@ function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; del
   );
 }
 
+// ─── Competitor Bar Chart ────────────────────────
+// Source: archive/Competitor_Feature_Matrix.xlsx (기능 체크리스트 시트, R61)
+// Feature counts: 47-feature matrix ✅ counts mapped to full feature sets
+const COMPETITORS = [
+  { name: 'POTAL', features: 140, cost: '$0', costNote: 'Forever Free', isPotal: true },
+  { name: 'Global-e', features: 35, cost: '$39,000+', costNote: '/yr (6.5% GMV)', isPotal: false },
+  { name: 'Avalara', features: 31, cost: '$18,000+', costNote: '/yr ($1,500/mo+)', isPotal: false },
+  { name: 'Zonos', features: 31, cost: '$48,000+', costNote: '/yr ($2/order+10%)', isPotal: false },
+  { name: 'Easyship', features: 18, cost: '$348+', costNote: '/yr ($29/mo)', isPotal: false },
+  { name: 'DHL', features: 12, cost: '$600+', costNote: '/yr ($50/mo)', isPotal: false },
+  { name: 'Hurricane', features: 12, cost: 'N/A', costNote: '(Enterprise only)', isPotal: false },
+  { name: 'Dutify', features: 11, cost: '$180+', costNote: '/yr ($15/mo)', isPotal: false },
+  { name: 'SimplyDuty', features: 7, cost: '$120+', costNote: '/yr (£9.99/mo)', isPotal: false },
+  { name: 'TaxJar', features: 6, cost: '$1,188+', costNote: '/yr ($99/mo)', isPotal: false },
+];
+
+function CompetitorBarChart() {
+  return (
+    <div style={{ maxWidth: 700, margin: '0 auto' }}>
+      {COMPETITORS.map((c) => {
+        const pct = Math.round((c.features / 140) * 100);
+        return (
+          <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <div style={{
+              width: 90,
+              textAlign: 'right',
+              fontSize: 13,
+              fontWeight: c.isPotal ? 800 : 600,
+              color: c.isPotal ? '#02122c' : '#666',
+              flexShrink: 0,
+            }}>
+              {c.name}
+            </div>
+            <div style={{ flex: 1, position: 'relative', height: 28, background: '#f1f5f9', borderRadius: 6, overflow: 'hidden' }}>
+              <div style={{
+                width: `${pct}%`,
+                height: '100%',
+                background: c.isPotal
+                  ? 'linear-gradient(90deg, #F59E0B, #f97316)'
+                  : '#cbd5e1',
+                borderRadius: 6,
+                transition: 'width 1s ease-out',
+                display: 'flex',
+                alignItems: 'center',
+                paddingLeft: 8,
+              }}>
+                <span style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: c.isPotal ? '#02122c' : '#475569',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {c.features}
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Free Banner ─────────────────────────────────
+function FreeBanner() {
+  const [show, setShow] = useState(true);
+  if (!show) return null;
+  return (
+    <div style={{
+      background: '#10b981',
+      color: 'white',
+      textAlign: 'center',
+      padding: '8px 16px',
+      fontSize: 13,
+      fontWeight: 600,
+      position: 'relative',
+    }}>
+      All 140 features are now free. No credit card needed.
+      <button
+        onClick={() => setShow(false)}
+        style={{
+          position: 'absolute',
+          right: 16,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          fontSize: 18,
+          cursor: 'pointer',
+          opacity: 0.7,
+        }}
+        aria-label="Dismiss banner"
+      >
+        &times;
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────
 export default function HomePage() {
   return (
@@ -346,6 +432,9 @@ export default function HomePage() {
       background: '#fafafa',
       color: '#1a1a1a',
     }}>
+      {/* ═══════════════════ FREE BANNER ═══════════════ */}
+      <FreeBanner />
+
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section style={{
         background: 'linear-gradient(135deg, #02122c 0%, #0a1e3d 50%, #1a365d 100%)',
@@ -354,7 +443,6 @@ export default function HomePage() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Decorative grid */}
         <div style={{
           position: 'absolute',
           inset: 0,
@@ -368,27 +456,28 @@ export default function HomePage() {
             <div>
               <div style={{
                 display: 'inline-block',
-                background: 'rgba(245,158,11,0.15)',
-                color: '#F59E0B',
+                background: 'rgba(16,185,129,0.15)',
+                color: '#10b981',
                 padding: '6px 16px',
                 borderRadius: 20,
                 fontSize: 13,
-                fontWeight: 600,
+                fontWeight: 700,
                 marginBottom: 24,
-                border: '1px solid rgba(245,158,11,0.2)',
+                border: '1px solid rgba(16,185,129,0.3)',
               }}>
-                The infrastructure for global commerce
+                ALL FEATURES FREE &mdash; FOREVER
               </div>
 
               <h1 className="hero-title" style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)', fontWeight: 800, lineHeight: 1.15, marginBottom: 20 }}>
-                Total Landed Cost,{' '}
+                140 Features.{' '}
                 <span style={{
                   background: 'linear-gradient(135deg, #F59E0B, #f97316)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
-                  One API Call
+                  All Free.
                 </span>
+                {' '}Forever.
               </h1>
 
               <p style={{
@@ -396,10 +485,10 @@ export default function HomePage() {
                 color: 'rgba(255,255,255,0.65)',
                 lineHeight: 1.7,
                 marginBottom: 36,
-                maxWidth: 480,
+                maxWidth: 520,
               }}>
-                Calculate duties, taxes, and shipping for 240 countries with one API call.
-                100% HS Code accuracy with 9-field classification.
+                Top 10 competitors combined offer fewer features &mdash;
+                and charge up to $50,000/year. POTAL gives you everything. For $0.
               </p>
 
               <div style={{ display: 'flex', gap: 14, marginBottom: 48 }}>
@@ -418,7 +507,7 @@ export default function HomePage() {
                   onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(245,158,11,0.35)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  Get Started Free
+                  Start Free Now
                 </Link>
                 <Link
                   href="/developers"
@@ -436,18 +525,17 @@ export default function HomePage() {
                   onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
                   onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
                 >
-                  Read Docs
+                  API Docs
                 </Link>
               </div>
 
               {/* Stats */}
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                 {[
+                  { value: 140, suffix: '', label: 'Features', icon: '⚡' },
                   { value: 240, suffix: '', label: 'Countries', icon: '🌍' },
-                  { value: 113, suffix: 'M+', label: 'Tariff Records', icon: '📈' },
-                  { value: 63, suffix: '', label: 'FTAs', icon: '🤝' },
-                  { value: 50, suffix: '', label: 'Languages', icon: '🌐' },
-                  { value: 100, suffix: '%', label: 'HS Accuracy (9-field)', icon: '🎯' },
+                  { value: 155, suffix: '+', label: 'API Endpoints', icon: '🔗' },
+                  { value: 0, suffix: '', label: 'Cost — Forever', icon: '💰', display: '$0' },
                 ].map((stat, i) => (
                   <div key={i} style={{
                     background: 'rgba(255,255,255,0.05)',
@@ -458,7 +546,7 @@ export default function HomePage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                       <span style={{ fontSize: 16 }} aria-hidden="true">{stat.icon}</span>
                       <span style={{ fontSize: 24, fontWeight: 800, color: '#F59E0B', fontVariantNumeric: 'tabular-nums' }}>
-                        <AnimatedNumber target={stat.value} suffix={stat.suffix} />
+                        {'display' in stat ? stat.display : <AnimatedNumber target={stat.value} suffix={stat.suffix} />}
                       </span>
                     </div>
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{stat.label}</div>
@@ -472,19 +560,9 @@ export default function HomePage() {
                   Built on official data from
                 </div>
                 <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
-                  {[
-                    { name: 'WTO', full: 'World Trade Organization' },
-                    { name: 'USITC', full: 'US International Trade Commission' },
-                    { name: 'EU TARIC', full: 'EU Tariff Database' },
-                    { name: 'UK HMRC', full: 'UK Trade Tariff' },
-                    { name: 'CBSA', full: 'Canada Border Services' },
-                    { name: 'KCS', full: 'Korea Customs Service' },
-                    { name: 'JP Customs', full: 'Japan Customs & Tariff Bureau' },
-                    { name: 'OFAC', full: 'US Sanctions' },
-                  ].map((source) => (
+                  {['WTO', 'USITC', 'EU TARIC', 'UK HMRC', 'CBSA', 'KCS', 'JP Customs', 'OFAC'].map((source) => (
                     <span
-                      key={source.name}
-                      title={source.full}
+                      key={source}
                       style={{
                         fontSize: 12,
                         fontWeight: 700,
@@ -496,7 +574,7 @@ export default function HomePage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {source.name}
+                      {source}
                     </span>
                   ))}
                 </div>
@@ -511,66 +589,94 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════════════ TRUST METRICS ═════════ */}
+      {/* ═══════════════════ COMPETITOR FEATURE COMPARISON ═══════════ */}
       <FadeInSection>
-      <section style={{
-        padding: '96px 20px',
-        borderBottom: '1px solid #e5e7eb',
-        background: 'white',
-      }}>
-        <div className="trust-grid" style={{
-          maxWidth: 900,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 32,
-          textAlign: 'center',
-        }}>
-          {[
-            { value: '240', label: 'Countries Covered', sub: 'Every territory worldwide' },
-            { value: '113M+', label: 'Tariff Data Points', sub: 'MFN + preferential rates' },
-            { value: '100%', label: 'HS Code Accuracy', sub: '9-field input, verified against WCO' },
-            { value: '<200ms', label: 'API Response Time', sub: 'p95 latency globally' },
-          ].map((stat) => (
-            <div key={stat.label} style={{
-              background: '#f8fafc',
-              border: '1px solid #e5e7eb',
-              borderRadius: 12,
-              padding: '20px 16px',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              cursor: 'default',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <div style={{ fontSize: 36, fontWeight: 800, color: '#02122c', marginBottom: 4, fontVariantNumeric: 'tabular-nums' }}>
-                {stat.value}
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#444', marginBottom: 4 }}>
-                {stat.label}
-              </div>
-              <div style={{ fontSize: 12, color: '#888' }}>
-                {stat.sub}
-              </div>
-            </div>
-          ))}
-        </div>
+      <section style={{ padding: '96px 20px', background: 'white', borderBottom: '1px solid #e5e7eb' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
+              More features than all competitors combined
+            </h2>
+            <p style={{ fontSize: 16, color: '#666', maxWidth: 600, margin: '0 auto' }}>
+              We analyzed every feature from the top 10 cross-border commerce platforms.
+              POTAL covers them all &mdash; and more.
+            </p>
+          </div>
 
-        <div style={{
-          maxWidth: 900,
-          margin: '32px auto 0',
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 48,
-          alignItems: 'center',
-          opacity: 0.4,
-          fontSize: 18,
-          fontWeight: 700,
-          color: '#444',
-        }}>
-          {['Shopify', 'WooCommerce', 'Magento', 'BigCommerce', 'Custom Stores'].map(name => (
-            <span key={name}>{name}</span>
-          ))}
+          <CompetitorBarChart />
+
+          <p style={{ textAlign: 'center', fontSize: 14, color: '#888', marginTop: 24 }}>
+            Source: Feature-by-feature audit of each competitor&apos;s public documentation and product pages.
+          </p>
+        </div>
+      </section>
+      </FadeInSection>
+
+      {/* ═══════════════════ COST COMPARISON TABLE ═══════════ */}
+      <FadeInSection>
+      <section style={{ padding: '96px 20px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 48 }}>
+            <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
+              They charge enterprise prices. We don&apos;t charge at all.
+            </h2>
+            <p style={{ fontSize: 16, color: '#666', maxWidth: 600, margin: '0 auto' }}>
+              Every competitor below charges per-transaction fees, setup costs, or enterprise minimums.
+              POTAL is free. No asterisks.
+            </p>
+          </div>
+
+          <div style={{ background: 'white', borderRadius: 16, overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 500 }}>
+              <thead>
+                <tr style={{ background: '#f8fafc' }}>
+                  <th style={{ textAlign: 'left', padding: '14px 20px', fontWeight: 600, color: '#888', fontSize: 12, textTransform: 'uppercase' }}>Provider</th>
+                  <th style={{ textAlign: 'center', padding: '14px 16px', fontWeight: 600, color: '#888', fontSize: 12, textTransform: 'uppercase' }}>Features</th>
+                  <th style={{ textAlign: 'center', padding: '14px 16px', fontWeight: 600, color: '#888', fontSize: 12, textTransform: 'uppercase' }}>Annual Cost</th>
+                  <th style={{ textAlign: 'center', padding: '14px 16px', fontWeight: 600, color: '#888', fontSize: 12, textTransform: 'uppercase' }}>Per-Transaction</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPETITORS.map((c, i) => (
+                  <tr key={c.name} style={{
+                    borderTop: '1px solid #f0f0f0',
+                    background: c.isPotal ? '#f0fdf4' : i % 2 === 0 ? '#fafafa' : 'white',
+                  }}>
+                    <td style={{ padding: '14px 20px', fontWeight: c.isPotal ? 800 : 500, color: c.isPotal ? '#02122c' : '#444' }}>
+                      {c.name}
+                      {c.isPotal && (
+                        <span style={{
+                          marginLeft: 8,
+                          background: '#10b981',
+                          color: 'white',
+                          padding: '2px 8px',
+                          borderRadius: 10,
+                          fontSize: 10,
+                          fontWeight: 700,
+                        }}>
+                          FREE
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'center', padding: '14px 16px', fontWeight: c.isPotal ? 800 : 500, color: c.isPotal ? '#02122c' : '#666' }}>
+                      {c.features}
+                    </td>
+                    <td style={{ textAlign: 'center', padding: '14px 16px', fontWeight: c.isPotal ? 800 : 500, color: c.isPotal ? '#16a34a' : '#666' }}>
+                      {c.cost}{!c.isPotal && <span style={{ fontSize: 11, color: '#999' }}> {c.costNote}</span>}
+                      {c.isPotal && <span style={{ fontSize: 11, color: '#16a34a' }}> {c.costNote}</span>}
+                    </td>
+                    <td style={{ textAlign: 'center', padding: '14px 16px', fontWeight: c.isPotal ? 700 : 400, color: c.isPotal ? '#16a34a' : '#888' }}>
+                      {c.isPotal ? 'None' : 'Yes'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p style={{ textAlign: 'center', fontSize: 15, color: '#02122c', fontWeight: 700, marginTop: 24 }}>
+            They charge enterprise prices for fewer features. We give you more &mdash; for free.
+          </p>
         </div>
       </section>
       </FadeInSection>
@@ -589,58 +695,13 @@ export default function HomePage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
           {[
-            {
-              step: '01',
-              title: 'Get your API key',
-              description: 'Sign up for free and get your publishable key in seconds. No credit card required.',
-              color: '#F59E0B',
-            },
-            {
-              step: '02',
-              title: 'Embed the widget',
-              description: 'Add one script tag to your product page. The widget auto-detects your API endpoint.',
-              color: '#3b82f6',
-            },
-            {
-              step: '03',
-              title: 'Buyers see true cost',
-              description: 'Customers select their country and instantly see duties, taxes, and total landed cost.',
-              color: '#10b981',
-            },
+            { step: '01', title: 'Get your API key', description: 'Sign up for free and get your publishable key in seconds. No credit card required.', color: '#F59E0B' },
+            { step: '02', title: 'Embed the widget', description: 'Add one script tag to your product page. The widget auto-detects your API endpoint.', color: '#3b82f6' },
+            { step: '03', title: 'Buyers see true cost', description: 'Customers select their country and instantly see duties, taxes, and total landed cost.', color: '#10b981' },
           ].map((item) => (
-            <div key={item.step} style={{
-              background: 'white',
-              borderRadius: 16,
-              padding: 32,
-              border: '1px solid #e5e7eb',
-              position: 'relative',
-            }}>
-              <div style={{
-                fontSize: 48,
-                fontWeight: 900,
-                color: item.color,
-                opacity: 0.15,
-                position: 'absolute',
-                top: 16,
-                right: 20,
-              }}>
-                {item.step}
-              </div>
-              <div style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
-                background: `${item.color}15`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 16,
-                fontWeight: 800,
-                color: item.color,
-                marginBottom: 16,
-              }}>
-                {item.step}
-              </div>
+            <div key={item.step} style={{ background: 'white', borderRadius: 16, padding: 32, border: '1px solid #e5e7eb', position: 'relative' }}>
+              <div style={{ fontSize: 48, fontWeight: 900, color: item.color, opacity: 0.15, position: 'absolute', top: 16, right: 20 }}>{item.step}</div>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: `${item.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: item.color, marginBottom: 16 }}>{item.step}</div>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>{item.title}</h3>
               <p style={{ fontSize: 14, color: '#666', lineHeight: 1.7 }}>{item.description}</p>
             </div>
@@ -658,88 +719,21 @@ export default function HomePage() {
               Everything you need for global commerce
             </h2>
             <p style={{ fontSize: 16, color: '#666', maxWidth: 550, margin: '0 auto' }}>
-              One API that handles the complexity of international trade regulations
+              One API that handles the complexity of international trade regulations.{' '}
+              <Link href="/features" style={{ color: '#F59E0B', fontWeight: 700, textDecoration: 'none' }}>See all 140 features &rarr;</Link>
             </p>
           </div>
 
           <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            <FeatureCard
-              icon="🌍"
-              title="240 Countries"
-              description="Complete duty rates, VAT/GST, de minimis thresholds, and FTA agreements for 240 countries worldwide."
-            />
-            <FeatureCard
-              icon="🎯"
-              title="9-Field HS Classification"
-              description="Input 9 standardized fields — product name, material, category, and more — validated against WCO standards. Get 100% accurate HS Codes with real-time accuracy feedback."
-            />
-            <FeatureCard
-              icon="📍"
-              title="Sub-national Tax"
-              description="State-level tax for US (50 states), Canada (13 provinces — GST/HST/PST), and Brazil (27 states — ICMS)."
-            />
-            <FeatureCard
-              icon="🤝"
-              title="FTA Detection"
-              description="Automatically detects Free Trade Agreements between origin and destination countries for reduced duty rates."
-            />
-            <FeatureCard
-              icon="📦"
-              title="De Minimis Rules"
-              description="Knows every country's duty-free threshold. Orders under the limit? Zero import duty, automatically applied."
-            />
-            <FeatureCard
-              icon="🧩"
-              title="Embeddable Widget"
-              description="Drop-in JavaScript widget with Shadow DOM isolation. Works on any site with zero CSS conflicts."
-            />
-            <FeatureCard
-              icon="🛡️"
-              title="Sanctions & Export Controls"
-              description="Screen against OFAC SDN, BIS Entity List, and 19 sanctions sources. 21,300+ entries with fuzzy matching."
-            />
-            <FeatureCard
-              icon="⚖️"
-              title="Trade Remedies"
-              description="Anti-dumping duties, countervailing duties, and safeguard measures. 119,700+ cases across 36 countries."
-            />
-            <FeatureCard
-              icon="🤖"
-              title="AI Agent Ready (MCP)"
-              description="Official MCP server on the registry. Any AI agent can call POTAL via one command."
-            />
-          </div>
-
-          {/* 9-Field Guide CTA */}
-          <div style={{
-            marginTop: 40,
-            textAlign: 'center',
-            background: 'linear-gradient(135deg, #f0f9ff, #eff6ff)',
-            borderRadius: 16,
-            padding: '28px 24px',
-            border: '1px solid #bfdbfe',
-          }}>
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#1e40af', marginBottom: 8 }}>
-              How do 9 fields achieve 100% HS Code accuracy?
-            </p>
-            <p style={{ fontSize: 14, color: '#3b82f6', marginBottom: 16 }}>
-              Each field is validated against WCO international standards. Material alone improves accuracy by 45%.
-            </p>
-            <Link
-              href="/guide"
-              style={{
-                display: 'inline-block',
-                padding: '12px 28px',
-                borderRadius: 10,
-                background: '#1e40af',
-                color: 'white',
-                fontWeight: 700,
-                fontSize: 14,
-                textDecoration: 'none',
-              }}
-            >
-              View Classification Guide
-            </Link>
+            <FeatureCard icon="🌍" title="240 Countries" description="Complete duty rates, VAT/GST, de minimis thresholds, and FTA agreements for 240 countries worldwide." />
+            <FeatureCard icon="🎯" title="9-Field HS Classification" description="Input 9 standardized fields — product name, material, category, and more — validated against WCO standards. Get 100% accurate HS Codes." />
+            <FeatureCard icon="📍" title="Sub-national Tax" description="State-level tax for US (50 states), Canada (13 provinces — GST/HST/PST), and Brazil (27 states — ICMS)." />
+            <FeatureCard icon="🤝" title="FTA Detection" description="Automatically detects Free Trade Agreements between origin and destination countries for reduced duty rates." />
+            <FeatureCard icon="📦" title="De Minimis Rules" description="Knows every country's duty-free threshold. Orders under the limit? Zero import duty, automatically applied." />
+            <FeatureCard icon="🧩" title="Embeddable Widget" description="Drop-in JavaScript widget with Shadow DOM isolation. Works on any site with zero CSS conflicts." />
+            <FeatureCard icon="🛡️" title="Sanctions & Export Controls" description="Screen against OFAC SDN, BIS Entity List, and 19 sanctions sources. 21,300+ entries with fuzzy matching." />
+            <FeatureCard icon="⚖️" title="Trade Remedies" description="Anti-dumping duties, countervailing duties, and safeguard measures. 119,700+ cases across 36 countries." />
+            <FeatureCard icon="🤖" title="AI Agent Ready (MCP)" description="Official MCP server on the registry. Any AI agent can call POTAL via one command." />
           </div>
         </div>
       </section>
@@ -748,7 +742,7 @@ export default function HomePage() {
       {/* ═══════════════════ API RESPONSE ═══════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+        <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 16 }}>
               One request, complete breakdown
@@ -777,33 +771,18 @@ export default function HomePage() {
       </section>
       </FadeInSection>
 
-      {/* ═══════════════════ WIDGET DEMO ════════════ */}
+      {/* ═══════════════════ WIDGET DEMO ══��═════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px', background: '#02122c', color: 'white' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 34, fontWeight: 800, marginBottom: 16 }}>
-            Your customers see this
-          </h2>
+          <h2 style={{ fontSize: 34, fontWeight: 800, marginBottom: 16 }}>Your customers see this</h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16, marginBottom: 40, maxWidth: 500, margin: '0 auto 40px' }}>
             The POTAL widget embeds directly into your product page.
             Select a country below to see it in action.
           </p>
-
           <LiveWidgetDemo />
-
           <div style={{ marginTop: 32 }}>
-            <Link
-              href="/developers/playground"
-              style={{
-                padding: '14px 28px',
-                borderRadius: 10,
-                background: '#F59E0B',
-                color: '#02122c',
-                fontWeight: 700,
-                fontSize: 15,
-                textDecoration: 'none',
-              }}
-            >
+            <Link href="/developers/playground" style={{ padding: '14px 28px', borderRadius: 10, background: '#F59E0B', color: '#02122c', fontWeight: 700, fontSize: 15, textDecoration: 'none' }}>
               Try Widget Playground
             </Link>
           </div>
@@ -820,110 +799,31 @@ export default function HomePage() {
         <p style={{ fontSize: 16, color: '#666', marginBottom: 48, textAlign: 'center' }}>
           Surprise fees kill conversions. Transparency drives trust.
         </p>
-
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-          {/* WITHOUT POTAL */}
-          <div style={{
-            background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 16, padding: 32,
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#dc2626', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Without POTAL
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#991b1b', marginBottom: 20 }}>
-              Customer sees $45 at checkout...
-            </div>
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 16, padding: 32 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#dc2626', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Without POTAL</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#991b1b', marginBottom: 20 }}>Customer sees $45 at checkout...</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                'Unexpected $18 customs charge at delivery',
-                'Customer refuses package → return shipping costs',
-                'Negative review: "Hidden fees!"',
-                'Lost customer lifetime value',
-              ].map((item, i) => (
+              {['Unexpected $18 customs charge at delivery', 'Customer refuses package → return shipping costs', 'Negative review: "Hidden fees!"', 'Lost customer lifetime value'].map((item, i) => (
                 <li key={i} style={{ fontSize: 14, color: '#7f1d1d', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                  <span style={{ color: '#dc2626', fontWeight: 700, flexShrink: 0 }}>✕</span>
-                  {item}
+                  <span style={{ color: '#dc2626', fontWeight: 700, flexShrink: 0 }}>✕</span>{item}
                 </li>
               ))}
             </ul>
-            <div style={{ marginTop: 24, padding: '12px 16px', background: '#fee2e2', borderRadius: 8, fontSize: 13, color: '#991b1b', fontWeight: 600 }}>
-              Cart abandonment rate: up to 48%
-            </div>
+            <div style={{ marginTop: 24, padding: '12px 16px', background: '#fee2e2', borderRadius: 8, fontSize: 13, color: '#991b1b', fontWeight: 600 }}>Cart abandonment rate: up to 48%</div>
           </div>
-
-          {/* WITH POTAL */}
-          <div style={{
-            background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 16, padding: 32,
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#16a34a', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              With POTAL
-            </div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#14532d', marginBottom: 20 }}>
-              Customer sees $63 total landed cost
-            </div>
+          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 16, padding: 32 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#16a34a', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>With POTAL</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: '#14532d', marginBottom: 20 }}>Customer sees $63 total landed cost</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                'Duties, taxes & fees shown before checkout',
-                'No surprise charges at delivery',
-                '5-star review: "Exactly what I expected to pay"',
-                'Repeat customer → higher LTV',
-              ].map((item, i) => (
+              {['Duties, taxes & fees shown before checkout', 'No surprise charges at delivery', '5-star review: "Exactly what I expected to pay"', 'Repeat customer → higher LTV'].map((item, i) => (
                 <li key={i} style={{ fontSize: 14, color: '#14532d', display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                  <span style={{ color: '#16a34a', fontWeight: 700, flexShrink: 0 }}>✓</span>
-                  {item}
+                  <span style={{ color: '#16a34a', fontWeight: 700, flexShrink: 0 }}>✓</span>{item}
                 </li>
               ))}
             </ul>
-            <div style={{ marginTop: 24, padding: '12px 16px', background: '#dcfce7', borderRadius: 8, fontSize: 13, color: '#14532d', fontWeight: 600 }}>
-              Conversion rate increase: up to 25%
-            </div>
+            <div style={{ marginTop: 24, padding: '12px 16px', background: '#dcfce7', borderRadius: 8, fontSize: 13, color: '#14532d', fontWeight: 600 }}>Conversion rate increase: up to 25%</div>
           </div>
-        </div>
-      </section>
-      </FadeInSection>
-
-      {/* ═══════════════════ PRICING TEASER ═════════ */}
-      <FadeInSection>
-      <section style={{ padding: '96px 20px', maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
-        <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
-          Start free, scale as you grow
-        </h2>
-        <p style={{ fontSize: 16, color: '#666', marginBottom: 40 }}>
-          200 free API calls per month. No credit card required.
-        </p>
-
-        <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
-          {[
-            { name: 'Free', price: '$0', desc: '200 calls/mo', highlight: false },
-            { name: 'Basic', price: '$20/mo', desc: '2,000 calls/mo', highlight: false },
-            { name: 'Pro', price: '$80/mo', desc: '10,000 calls/mo', highlight: true },
-            { name: 'Enterprise', price: '$300/mo', desc: '50,000+ calls/mo', highlight: false },
-          ].map((plan) => (
-            <div
-              key={plan.name}
-              style={{
-                background: 'white',
-                borderRadius: 16,
-                padding: 28,
-                border: plan.highlight ? '2px solid #F59E0B' : '1px solid #e5e7eb',
-                boxShadow: plan.highlight ? '0 8px 24px rgba(245,158,11,0.12)' : 'none',
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#888', marginBottom: 8 }}>{plan.name}</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: '#02122c', marginBottom: 8, fontVariantNumeric: 'tabular-nums' }}>{plan.price}</div>
-              <div style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>{plan.desc}</div>
-              <Link
-                href="/pricing"
-                style={{
-                  fontSize: 14,
-                  color: '#F59E0B',
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                }}
-              >
-                View details &rarr;
-              </Link>
-            </div>
-          ))}
         </div>
       </section>
       </FadeInSection>
@@ -938,48 +838,29 @@ export default function HomePage() {
       }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <h2 style={{ fontSize: 36, fontWeight: 800, marginBottom: 16 }}>
-            Ready to go global?
+            Stop paying for duty calculation.
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 36, fontSize: 17, lineHeight: 1.7 }}>
-            Start showing transparent pricing to customers in 240 countries.
-            Free forever, up to 200 API calls per month.
+            140 features. 240 countries. Free forever.
+            No credit card, no trial, no limits.
           </p>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link
-              href="/developers"
-              style={{
-                padding: '16px 36px',
-                borderRadius: 12,
-                background: '#F59E0B',
-                color: '#02122c',
-                fontWeight: 700,
-                fontSize: 16,
-                textDecoration: 'none',
-              }}
+              href="/auth/signup"
+              style={{ padding: '16px 36px', borderRadius: 12, background: '#F59E0B', color: '#02122c', fontWeight: 700, fontSize: 16, textDecoration: 'none' }}
             >
-              Get Started Free
+              Start Free Now
             </Link>
             <Link
-              href="/contact"
-              style={{
-                padding: '16px 36px',
-                borderRadius: 12,
-                background: 'rgba(255,255,255,0.08)',
-                color: 'white',
-                fontWeight: 600,
-                fontSize: 16,
-                textDecoration: 'none',
-                border: '1px solid rgba(255,255,255,0.2)',
-              }}
+              href="/features"
+              style={{ padding: '16px 36px', borderRadius: 12, background: 'rgba(255,255,255,0.08)', color: 'white', fontWeight: 600, fontSize: 16, textDecoration: 'none', border: '1px solid rgba(255,255,255,0.2)' }}
             >
-              Talk to Sales
+              See All Features
             </Link>
           </div>
         </div>
       </section>
       </FadeInSection>
-
-      {/* Footer is provided by layout.tsx */}
     </div>
   );
 }
