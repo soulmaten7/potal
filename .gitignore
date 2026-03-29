@@ -85,3 +85,5 @@ COMMAND_SECRETARY_BOT_EXECUTE.md
 COMMAND_*.md
 SPRINT_*_COMMAND*.md
 .~lock.*
+scripts/verify-v3-pipeline.sh
+scripts/fix-v3.3-pipeline-switch.md
