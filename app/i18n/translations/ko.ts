@@ -1,6 +1,7 @@
 export const ko = {
   // Navigation
   'nav.features': '기능',
+  'nav.community': '커뮤니티',
   'nav.developers': '개발자',
   'nav.pricing': '요금',
   'nav.dashboard': '대시보드',

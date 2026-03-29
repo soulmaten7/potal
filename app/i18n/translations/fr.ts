@@ -1,6 +1,7 @@
 export const fr = {
   // Navigation
   'nav.features': 'Fonctionnalites',
+  'nav.community': 'Communauté',
   'nav.developers': 'Développeurs',
   'nav.pricing': 'Tarifs',
   'nav.dashboard': 'Tableau de bord',

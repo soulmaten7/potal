@@ -1,6 +1,7 @@
 export const ms = {
   // Navigation
   'nav.features': 'Ciri',
+  'nav.community': 'Komuniti',
   'nav.developers': 'Pembangun',
   'nav.pricing': 'Harga',
   'nav.dashboard': 'Papan pemuka',

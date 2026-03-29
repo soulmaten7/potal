@@ -1,6 +1,7 @@
 export const lo = {
   // Navigation
   'nav.features': 'ຄຸນສົມບັດ',
+  'nav.community': 'Community',
   'nav.developers': 'ນັກພັດທະນາ',
   'nav.pricing': 'ລາຄາ',
   'nav.dashboard': 'ແຜງຄວບຄຸມ',

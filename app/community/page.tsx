@@ -1,155 +1,273 @@
-import { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Community | POTAL',
-  description: 'Join the POTAL community: GitHub Discussions, Stack Overflow, Discord, and more.',
-};
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSupabase } from '@/app/context/SupabaseProvider';
+import { FEATURES, CATEGORIES, type FeatureCategory, CATEGORY_ICONS } from '@/app/features/features-data';
 
-const channels = [
-  {
-    name: 'GitHub Discussions',
-    description: 'Ask questions, share ideas, and get help from the POTAL team and community.',
-    href: 'https://github.com/potal-app/potal/discussions',
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-    ),
-  },
-  {
-    name: 'Stack Overflow',
-    description: 'Browse and answer questions tagged with [potal] on Stack Overflow.',
-    href: 'https://stackoverflow.com/questions/tagged/potal',
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M15.725 0l-1.72 1.277 6.39 8.588 1.72-1.277L15.725 0zm-3.94 3.418l-1.369 1.644 8.225 6.85 1.369-1.644-8.225-6.85zm-3.15 4.65l-.905 1.94 9.702 4.517.905-1.94-9.702-4.518zm-1.85 4.86l-.44 2.093 10.473 2.201.44-2.092-10.473-2.203zM1.89 15.47V24h19.19v-8.53h-2.133v6.397H4.021v-6.396H1.89zm4.265 2.133v2.13h10.66v-2.13H6.154z"/></svg>
-    ),
-  },
-  {
-    name: 'Discord',
-    description: 'Real-time chat with other developers building cross-border commerce.',
-    href: '#',
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
-    ),
-  },
-  {
-    name: 'Slack',
-    description: 'Join our Slack workspace for enterprise discussions and partner integrations.',
-    href: '#',
-    icon: (
-      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/></svg>
-    ),
-  },
-];
+const TYPE_CONFIG = {
+  bug: { label: 'Bug', color: '#dc2626', bg: '#fef2f2' },
+  question: { label: 'Question', color: '#2563eb', bg: '#eff6ff' },
+  suggestion: { label: 'Suggestion', color: '#7c3aed', bg: '#f5f3ff' },
+} as const;
 
-const resources = [
-  { title: 'API Changelog', description: 'Latest updates and breaking changes.', href: '/developers/docs' },
-  { title: 'Contributing Guide', description: 'How to contribute to POTAL open-source projects.', href: 'https://github.com/potal-app/potal' },
-  { title: 'Feature Requests', description: 'Vote on and suggest new features.', href: 'https://github.com/potal-app/potal/discussions/categories/ideas' },
-  { title: 'Bug Reports', description: 'Report issues and track fixes.', href: 'https://github.com/potal-app/potal/issues' },
-];
+const STATUS_CONFIG = {
+  open: { label: 'Open', color: '#16a34a', bg: '#f0fdf4' },
+  resolved: { label: 'Resolved', color: '#6b7280', bg: '#f9fafb' },
+  closed: { label: 'Closed', color: '#9ca3af', bg: '#f9fafb' },
+} as const;
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  post_type: keyof typeof TYPE_CONFIG;
+  feature_slug: string | null;
+  feature_category: string | null;
+  status: keyof typeof STATUS_CONFIG;
+  upvote_count: number;
+  comment_count: number;
+  created_at: string;
+  user_id: string;
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString();
+}
 
 export default function CommunityPage() {
+  const router = useRouter();
+  const { session } = useSupabase();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+
+  // Filters
+  const [category, setCategory] = useState('');
+  const [postType, setPostType] = useState('');
+  const [status, setStatus] = useState('');
+  const [sort, setSort] = useState<'latest' | 'popular'>('latest');
+  const [search, setSearch] = useState('');
+
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (postType) params.set('type', postType);
+    if (status) params.set('status', status);
+    if (search) params.set('q', search);
+    params.set('sort', sort);
+    params.set('page', String(page));
+    params.set('limit', '20');
+
+    try {
+      const res = await fetch(`/api/v1/community/posts?${params}`);
+      const json = await res.json();
+      if (json.success) {
+        setPosts(json.data.posts);
+        setTotal(json.data.pagination.total);
+      }
+    } catch { /* silent */ }
+    setLoading(false);
+  }, [category, postType, status, sort, search, page]);
+
+  useEffect(() => { fetchPosts(); }, [fetchPosts]);
+
+  const totalPages = Math.ceil(total / 20);
+  const featureMap = Object.fromEntries(FEATURES.map(f => [f.id, f.name]));
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Community</h1>
-      <p className="text-gray-600 mb-10">Connect with developers, get help, and shape the future of POTAL.</p>
-
-      {/* Channels */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Join the Conversation</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {channels.map((ch) => (
-            <a
-              key={ch.name}
-              href={ch.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border rounded-lg p-6 bg-white hover:shadow-md transition-shadow flex items-start gap-4"
-            >
-              <div className="text-gray-700 mt-1 flex-shrink-0">{ch.icon}</div>
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">{ch.name}</h3>
-                <p className="text-sm text-gray-500">{ch.description}</p>
-              </div>
-            </a>
-          ))}
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Community</h1>
+          <p className="text-gray-500 mt-1">Share feedback, report bugs, ask questions about POTAL features.</p>
         </div>
-      </section>
+        {session && (
+          <Link
+            href="/community/new"
+            className="bg-[#F59E0B] text-[#02122c] px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-amber-400 transition-colors flex-shrink-0"
+          >
+            New Post
+          </Link>
+        )}
+      </div>
 
-      {/* Recent Discussions Feed — F131 */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Recent Discussions</h2>
+      {/* Filters */}
+      <div className="bg-white border rounded-xl p-4 mb-6 space-y-3">
+        {/* Search */}
+        <input
+          type="text"
+          placeholder="Search posts..."
+          value={search}
+          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          className="w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:border-[#F59E0B]"
+        />
+
+        <div className="flex flex-wrap gap-3">
+          {/* Category tabs */}
+          <select
+            value={category}
+            onChange={(e) => { setCategory(e.target.value); setPage(1); }}
+            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
+          >
+            <option value="">All Categories</option>
+            {CATEGORIES.filter(c => c.key !== 'All').map(c => (
+              <option key={c.key} value={c.key}>{CATEGORY_ICONS[c.key as FeatureCategory] || ''} {c.key} ({c.count})</option>
+            ))}
+          </select>
+
+          {/* Type filter */}
+          <select
+            value={postType}
+            onChange={(e) => { setPostType(e.target.value); setPage(1); }}
+            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
+          >
+            <option value="">All Types</option>
+            {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
+              <option key={key} value={key}>{cfg.label}</option>
+            ))}
+          </select>
+
+          {/* Status filter */}
+          <select
+            value={status}
+            onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
+          >
+            <option value="">All Status</option>
+            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+              <option key={key} value={key}>{cfg.label}</option>
+            ))}
+          </select>
+
+          {/* Sort */}
+          <select
+            value={sort}
+            onChange={(e) => { setSort(e.target.value as 'latest' | 'popular'); setPage(1); }}
+            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
+          >
+            <option value="latest">Latest</option>
+            <option value="popular">Most Popular</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Posts list */}
+      {loading ? (
+        <div className="text-center py-16 text-gray-400">Loading...</div>
+      ) : posts.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-gray-400 text-lg mb-4">No posts yet</p>
+          {session ? (
+            <Link href="/community/new" className="text-[#F59E0B] font-bold hover:underline">
+              Be the first to post
+            </Link>
+          ) : (
+            <Link href="/auth/signup" className="text-[#F59E0B] font-bold hover:underline">
+              Sign up to post
+            </Link>
+          )}
+        </div>
+      ) : (
         <div className="space-y-3">
-          {[
-            { title: 'How to handle HS code classification for composite products?', author: 'trade_dev', replies: 5, category: 'Q&A', date: '2 hours ago' },
-            { title: 'Feature Request: Webhook retry configuration', author: 'shipmaster', replies: 3, category: 'Ideas', date: '5 hours ago' },
-            { title: 'Best practices for multi-country landed cost calculation', author: 'global_seller', replies: 8, category: 'Discussion', date: '1 day ago' },
-            { title: 'POTAL vs Avalara for SMB cross-border — real comparison', author: 'ecom_mike', replies: 12, category: 'Discussion', date: '2 days ago' },
-            { title: 'Widget not showing on Shopify Dawn theme', author: 'shop_owner', replies: 2, category: 'Support', date: '3 days ago' },
-          ].map((thread, i) => (
-            <a
-              key={i}
-              href="https://github.com/potal-app/potal/discussions"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-4 border rounded-lg bg-white hover:shadow-sm transition-shadow"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-                    thread.category === 'Q&A' ? 'bg-green-100 text-green-700' :
-                    thread.category === 'Ideas' ? 'bg-purple-100 text-purple-700' :
-                    thread.category === 'Support' ? 'bg-orange-100 text-orange-700' :
-                    'bg-blue-100 text-blue-700'
-                  }`}>{thread.category}</span>
-                  <span className="text-xs text-gray-400">{thread.date}</span>
+          {posts.map(post => {
+            const typeConfig = TYPE_CONFIG[post.post_type] || TYPE_CONFIG.question;
+            const statusConfig = STATUS_CONFIG[post.status] || STATUS_CONFIG.open;
+            const featureName = post.feature_slug ? (featureMap[post.feature_slug] || post.feature_slug) : null;
+
+            return (
+              <Link
+                key={post.id}
+                href={`/community/${post.id}`}
+                className="block border rounded-xl p-5 bg-white hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    {/* Badges */}
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ color: typeConfig.color, background: typeConfig.bg }}>
+                        {typeConfig.label}
+                      </span>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ color: statusConfig.color, background: statusConfig.bg }}>
+                        {statusConfig.label}
+                      </span>
+                      {featureName && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+                          {featureName}
+                        </span>
+                      )}
+                      {post.feature_category && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
+                          {post.feature_category}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-semibold text-gray-900 text-[15px] mb-1 line-clamp-2">{post.title}</h3>
+                    <p className="text-xs text-gray-400">{timeAgo(post.created_at)}</p>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 text-gray-400 text-xs flex-shrink-0">
+                    <div className="text-center">
+                      <div className="font-bold text-gray-600 text-sm">{post.upvote_count}</div>
+                      <div>votes</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="font-bold text-gray-600 text-sm">{post.comment_count}</div>
+                      <div>replies</div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="font-medium text-gray-900 text-sm truncate">{thread.title}</h3>
-                <p className="text-xs text-gray-500 mt-0.5">by {thread.author}</p>
-              </div>
-              <div className="ml-4 text-center flex-shrink-0">
-                <p className="text-sm font-semibold text-gray-700">{thread.replies}</p>
-                <p className="text-xs text-gray-400">replies</p>
-              </div>
-            </a>
-          ))}
+              </Link>
+            );
+          })}
         </div>
-        <div className="mt-4 text-center">
-          <a href="https://github.com/potal-app/potal/discussions" target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline font-medium">
-            View all discussions on GitHub
-          </a>
-        </div>
-      </section>
+      )}
 
-      {/* Resources */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Resources</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {resources.map((r) => (
-            <a key={r.title} href={r.href} className="border rounded-lg p-5 bg-white hover:shadow-md transition-shadow block">
-              <h3 className="font-semibold text-gray-900 mb-1">{r.title}</h3>
-              <p className="text-sm text-gray-500">{r.description}</p>
-            </a>
-          ))}
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-8">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-3 py-1.5 border rounded-lg text-sm disabled:opacity-30"
+          >
+            Previous
+          </button>
+          <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-3 py-1.5 border rounded-lg text-sm disabled:opacity-30"
+          >
+            Next
+          </button>
         </div>
-      </section>
+      )}
 
-      {/* Stats */}
-      <section className="bg-gray-50 rounded-xl p-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">POTAL by the Numbers</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { label: 'Countries', value: '240' },
-            { label: 'Tariff Records', value: '113M+' },
-            { label: 'Languages', value: '50' },
-            { label: 'API Uptime', value: '99.9%' },
-          ].map((s) => (
-            <div key={s.label}>
-              <p className="text-3xl font-bold text-blue-600">{s.value}</p>
-              <p className="text-sm text-gray-500 mt-1">{s.label}</p>
-            </div>
-          ))}
+      {/* Not logged in CTA */}
+      {!session && (
+        <div className="mt-8 p-6 bg-gray-50 rounded-xl text-center">
+          <p className="text-gray-600 mb-3">Sign in to post, comment, and vote.</p>
+          <Link href="/auth/signup" className="bg-[#F59E0B] text-[#02122c] px-6 py-2.5 rounded-lg font-bold text-sm inline-block hover:bg-amber-400">
+            Sign Up Free
+          </Link>
         </div>
-      </section>
+      )}
     </div>
   );
 }

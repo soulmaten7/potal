@@ -1,6 +1,7 @@
 export const lt = {
   // Navigation
   'nav.features': 'Funkcijos',
+  'nav.community': 'Bendruomenė',
   'nav.developers': 'Kūrėjai',
   'nav.pricing': 'Kainos',
   'nav.dashboard': 'Valdymo skydas',

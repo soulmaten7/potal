@@ -1,6 +1,7 @@
 export const el = {
   // Navigation
   'nav.features': 'Χαρακτηριστικά',
+  'nav.community': 'Κοινότητα',
   'nav.developers': 'Προγραμματιστές',
   'nav.pricing': 'Τιμολόγηση',
   'nav.dashboard': 'Πίνακας ελέγχου',

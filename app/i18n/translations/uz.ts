@@ -1,6 +1,7 @@
 export const uz = {
   // Navigation
   'nav.features': 'Xususiyatlar',
+  'nav.community': 'Community',
   'nav.developers': 'Dasturchilar',
   'nav.pricing': 'Narxlar',
   'nav.dashboard': 'Boshqaruv paneli',

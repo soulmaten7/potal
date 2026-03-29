@@ -1,6 +1,7 @@
 export const kk = {
   // Navigation
   'nav.features': 'Мүмкіндіктер',
+  'nav.community': 'Community',
   'nav.developers': 'Әзірлеушілер',
   'nav.pricing': 'Бағалар',
   'nav.dashboard': 'Басқару тақтасы',

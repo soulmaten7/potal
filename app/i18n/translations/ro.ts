@@ -1,6 +1,7 @@
 export const ro = {
   // Navigation
   'nav.features': 'Functii',
+  'nav.community': 'Comunitate',
   'nav.developers': 'Dezvoltatori',
   'nav.pricing': 'Prețuri',
   'nav.dashboard': 'Panou de control',

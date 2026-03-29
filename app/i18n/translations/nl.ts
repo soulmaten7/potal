@@ -1,6 +1,7 @@
 export const nl = {
   // Navigation
   'nav.features': 'Functies',
+  'nav.community': 'Community',
   'nav.developers': 'Ontwikkelaars',
   'nav.pricing': 'Prijzen',
   'nav.dashboard': 'Dashboard',

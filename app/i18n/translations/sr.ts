@@ -1,6 +1,7 @@
 export const sr = {
   // Navigation
   'nav.features': 'Funkcije',
+  'nav.community': 'Zajednica',
   'nav.developers': 'Програмери',
   'nav.pricing': 'Цене',
   'nav.dashboard': 'Контролна табла',

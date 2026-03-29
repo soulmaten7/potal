@@ -1,6 +1,7 @@
 export const bg = {
   // Navigation
   'nav.features': 'Функции',
+  'nav.community': 'Общност',
   'nav.developers': 'Разработчици',
   'nav.pricing': 'Цени',
   'nav.dashboard': 'Табло за управление',

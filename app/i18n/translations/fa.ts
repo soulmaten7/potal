@@ -1,6 +1,7 @@
 export const fa = {
   // Navigation
   'nav.features': 'ویژگی‌ها',
+  'nav.community': 'جامعه',
   'nav.developers': 'توسعه‌دهندگان',
   'nav.pricing': 'قیمت‌گذاری',
   'nav.dashboard': 'داشبورد',

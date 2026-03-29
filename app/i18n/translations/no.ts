@@ -1,6 +1,7 @@
 export const no = {
   // Navigation
   'nav.features': 'Funksjoner',
+  'nav.community': 'Fellesskap',
   'nav.developers': 'Utviklere',
   'nav.pricing': 'Priser',
   'nav.dashboard': 'Kontrollpanel',

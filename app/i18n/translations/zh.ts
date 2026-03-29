@@ -1,6 +1,7 @@
 export const zh = {
   // Navigation
   'nav.features': '功能',
+  'nav.community': '社区',
   'nav.developers': '开发者',
   'nav.pricing': '定价',
   'nav.dashboard': '控制台',

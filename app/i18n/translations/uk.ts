@@ -1,6 +1,7 @@
 export const uk = {
   // Navigation
   'nav.features': 'Функцiї',
+  'nav.community': 'Спільнота',
   'nav.developers': 'Розробники',
   'nav.pricing': 'Ціни',
   'nav.dashboard': 'Панель керування',

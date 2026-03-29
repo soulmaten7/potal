@@ -1,6 +1,7 @@
 export const he = {
   // Navigation
   'nav.features': 'תכונות',
+  'nav.community': 'קהילה',
   'nav.developers': 'מפתחים',
   'nav.pricing': 'תמחור',
   'nav.dashboard': 'לוח בקרה',

@@ -1,6 +1,7 @@
 export const ru = {
   // Navigation
   'nav.features': 'Функции',
+  'nav.community': 'Сообщество',
   'nav.developers': 'Разработчикам',
   'nav.pricing': 'Цены',
   'nav.dashboard': 'Панель управления',

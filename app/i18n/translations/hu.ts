@@ -1,6 +1,7 @@
 export const hu = {
   // Navigation
   'nav.features': 'Funkciok',
+  'nav.community': 'Közösség',
   'nav.developers': 'Fejlesztők',
   'nav.pricing': 'Árazás',
   'nav.dashboard': 'Vezérlőpult',

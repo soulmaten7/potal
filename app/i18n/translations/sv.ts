@@ -1,6 +1,7 @@
 export const sv = {
   // Navigation
   'nav.features': 'Funktioner',
+  'nav.community': 'Community',
   'nav.developers': 'Utvecklare',
   'nav.pricing': 'Priser',
   'nav.dashboard': 'Instrumentpanel',

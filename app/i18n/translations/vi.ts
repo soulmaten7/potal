@@ -1,6 +1,7 @@
 export const vi = {
   // Navigation
   'nav.features': 'Tinh nang',
+  'nav.community': 'Cộng đồng',
   'nav.developers': 'Nhà phát triển',
   'nav.pricing': 'Bảng giá',
   'nav.dashboard': 'Bảng điều khiển',

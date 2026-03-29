@@ -1,6 +1,7 @@
 export const pt = {
   // Navigation
   'nav.features': 'Recursos',
+  'nav.community': 'Comunidade',
   'nav.developers': 'Desenvolvedores',
   'nav.pricing': 'Preços',
   'nav.dashboard': 'Painel',

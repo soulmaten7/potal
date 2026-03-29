@@ -1,6 +1,7 @@
 export const da = {
   // Navigation
   'nav.features': 'Funktioner',
+  'nav.community': 'Fællesskab',
   'nav.developers': 'Udviklere',
   'nav.pricing': 'Priser',
   'nav.dashboard': 'Kontrolpanel',

@@ -1,6 +1,7 @@
 export const ur = {
   // Navigation
   'nav.features': 'خصوصیات',
+  'nav.community': 'کمیونٹی',
   'nav.developers': 'ڈویلپرز',
   'nav.pricing': 'قیمتیں',
   'nav.dashboard': 'ڈیش بورڈ',

@@ -1,6 +1,7 @@
 export const th = {
   // Navigation
   'nav.features': 'คุณสมบัติ',
+  'nav.community': 'ชุมชน',
   'nav.developers': 'นักพัฒนา',
   'nav.pricing': 'ราคา',
   'nav.dashboard': 'แดชบอร์ด',

@@ -1,6 +1,7 @@
 export const km = {
   // Navigation
   'nav.features': 'មុខងារ',
+  'nav.community': 'សហគមន៍',
   'nav.developers': 'អ្នកអភិវឌ្ឍន៍',
   'nav.pricing': 'តម្លៃ',
   'nav.dashboard': 'ផ្ទាំងគ្រប់គ្រង',
