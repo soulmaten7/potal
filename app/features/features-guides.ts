@@ -10,6 +10,15 @@ export interface GuideStep {
   description: string;
 }
 
+export interface FieldSpec {
+  name: string;
+  type: string;
+  required: boolean;
+  description: string;
+  example: string;
+  tip?: string;
+}
+
 export interface FeatureGuide {
   slug: string;
   detailedDescription: string;
@@ -20,6 +29,12 @@ export interface FeatureGuide {
   responseExample?: string;
   curlExample?: string;
   relatedFeatures: string[];
+  /** Input fields for API-based features */
+  requiredFields?: FieldSpec[];
+  /** Tips for achieving best accuracy */
+  accuracyTips?: string[];
+  /** Common mistakes users make */
+  commonMistakes?: string[];
 }
 
 // ─── Core Engine Guides (15) ─────────────────────────
@@ -53,6 +68,31 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"productName": "Men\\'s cotton t-shirt", "category": "Apparel"}'`,
     relatedFeatures: ['duty-rate-calculation', 'confidence-score', 'batch-classification', 'hs-code-validation', 'image-classification'],
+    requiredFields: [
+      { name: 'productName', type: 'string', required: true, description: 'Product name in English, as specific as possible', example: "Men's cotton t-shirt, knitted", tip: 'Include material + form. Exclude brand names.' },
+      { name: 'category', type: 'string', required: false, description: 'Product category (e.g., apparel, electronics, food)', example: 'apparel', tip: 'Use broad category, not material. "apparel" not "cotton".' },
+      { name: 'material', type: 'string', required: false, description: 'Primary material (WCO material group)', example: 'cotton', tip: 'Use WCO material terms: cotton, polyester, stainless steel, wood, etc.' },
+      { name: 'processing', type: 'string', required: false, description: 'How the product is manufactured', example: 'knitted', tip: 'knitted, woven, molded, cast, forged, printed, etc.' },
+      { name: 'composition', type: 'string', required: false, description: 'Material composition breakdown', example: '95% cotton, 5% elastane', tip: 'Include percentages when mixed materials.' },
+      { name: 'weight_spec', type: 'string', required: false, description: 'Weight specification', example: '200 g/m2', tip: 'Per-unit weight helps distinguish tariff subheadings.' },
+      { name: 'price', type: 'number', required: false, description: 'Unit price in USD', example: '14.99', tip: 'Price-break rules apply to some HS headings (e.g., "valued over $14/kg").' },
+      { name: 'origin_country', type: 'string', required: false, description: 'Country of origin (ISO 2-letter code)', example: 'CN', tip: 'Use ISO codes: CN, US, DE, JP — not full country names.' },
+      { name: 'destination_country', type: 'string', required: false, description: 'Destination country (ISO 2-letter code, default: US)', example: 'US', tip: 'Affects HS10 subheading selection for 7 countries with 10-digit codes.' },
+    ],
+    accuracyTips: [
+      'All 9 fields provided = highest confidence classification',
+      'productName alone works but may return lower confidence',
+      'Adding material + processing dramatically improves accuracy for textiles and metals',
+      'price field is critical for HS headings with "valued over/under $X" rules',
+      'destination_country affects 10-digit HS code selection (US, EU, GB, CA, AU, JP, KR)',
+    ],
+    commonMistakes: [
+      'Putting material in the category field — "cotton" is a material, "apparel" is the category',
+      'Using full country names instead of ISO codes — use "CN" not "China"',
+      'Too-generic product names — "shirt" is vague, "men\'s cotton knitted t-shirt" is precise',
+      'Including brand names — "Nike Air Max" should be "running shoes, leather upper, rubber sole"',
+      'Mixing up processing and composition — processing = how it\'s made, composition = what it\'s made of',
+    ],
   },
   {
     slug: 'duty-rate-calculation',
@@ -91,6 +131,35 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"productName":"Ceramic coffee mug","price":5,"origin":"CN","destinationCountry":"US"}'`,
     relatedFeatures: ['total-landed-cost', 'fta-detection', 'anti-dumping-duties', 'de-minimis-check', 'currency-conversion'],
+    requiredFields: [
+      { name: 'price', type: 'number', required: true, description: 'Product price (numeric value)', example: '25.00', tip: 'Must be a valid non-negative number. Currency strings also accepted.' },
+      { name: 'origin', type: 'string', required: false, description: 'Origin country (ISO 2-letter code)', example: 'CN', tip: 'Use ISO codes. Platform names like "AliExpress" also work.' },
+      { name: 'destinationCountry', type: 'string', required: false, description: 'Destination country (ISO 2-letter code, default: US)', example: 'US' },
+      { name: 'hsCode', type: 'string', required: false, description: 'HS code (2-10 digits). Auto-classified from productName if not provided.', example: '6109.10' },
+      { name: 'productName', type: 'string', required: false, description: 'Product name for auto-classification when hsCode is not provided', example: 'Cotton t-shirt' },
+      { name: 'shippingPrice', type: 'number', required: false, description: 'Shipping cost (default: 0)', example: '12.50' },
+      { name: 'shippingTerms', type: 'string', required: false, description: 'Incoterms: DDP, DDU, CIF, FOB, EXW (default: DDP)', example: 'DDP' },
+      { name: 'weight_kg', type: 'number', required: false, description: 'Weight in kilograms for shipping estimate', example: '0.5' },
+      { name: 'quantity', type: 'number', required: false, description: 'Item quantity', example: '10' },
+      { name: 'firmName', type: 'string', required: false, description: 'Exporter firm name for anti-dumping/CVD rate matching', example: 'Shenzhen Electronics Co' },
+      { name: 'zipcode', type: 'string', required: false, description: 'US ZIP code for state/local sales tax', example: '90210' },
+      { name: 'buyer_vat_number', type: 'string', required: false, description: 'Buyer VAT number for EU B2B reverse-charge', example: 'DE123456789' },
+    ],
+    accuracyTips: [
+      'price is the only required field — everything else improves accuracy',
+      'Providing origin + destinationCountry enables FTA preferential rate lookup',
+      'Adding hsCode skips auto-classification and gives exact duty rates',
+      'firmName enables company-specific anti-dumping rates instead of "all others" rate',
+      'zipcode is essential for US destinations — state/local tax varies dramatically',
+    ],
+    commonMistakes: [
+      'Omitting origin country — without it, FTA savings cannot be calculated',
+      'Using full country names instead of ISO codes — use "CN" not "China"',
+      'Forgetting shippingTerms — DDP includes duties at checkout, DDU does not',
+      'Not including weight_kg — shipping cost estimate requires weight',
+      'Setting price as string with currency symbol — use numeric value only (25.00 not "$25.00")',
+    ],
+
   },
   {
     slug: 'tax-calculation-vat-gst',
@@ -125,6 +194,23 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"productName":"Wireless headphones","price":79.99,"origin":"CN","destinationCountry":"DE"}'`,
     relatedFeatures: ['total-landed-cost', 'us-state-sales-tax', 'ioss-support', 'tax-exemptions', 'digital-services-tax'],
+    requiredFields: [
+      { name: 'price', type: 'number', required: true, description: 'Product price', example: '79.99' },
+      { name: 'destinationCountry', type: 'string', required: false, description: 'Destination country (ISO 2-letter code, default: US)', example: 'DE' },
+      { name: 'origin', type: 'string', required: false, description: 'Origin country (ISO 2-letter code)', example: 'CN' },
+      { name: 'productName', type: 'string', required: false, description: 'Product name for category-based tax rate', example: 'Wireless headphones' },
+      { name: 'zipcode', type: 'string', required: false, description: 'US ZIP code for precise local tax rate', example: '10001', tip: 'Essential for US — tax varies by ZIP code.' },
+    ],
+    accuracyTips: [
+      'For US destinations, always include zipcode — state + county + city + special rates all vary',
+      'For EU destinations, product category affects VAT rate (reduced rates for food, books, etc.)',
+      'Including origin enables de minimis and IOSS threshold checks',
+    ],
+    commonMistakes: [
+      'Not providing zipcode for US — state-level rate alone can be off by 2-4%',
+      'Confusing VAT-inclusive vs exclusive pricing — POTAL calculates tax on the declared price',
+    ],
+
   },
   {
     slug: 'total-landed-cost',
@@ -167,6 +253,29 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"productName":"Laptop computer","price":999,"shippingPrice":25,"origin":"CN","destinationCountry":"US","shippingTerms":"DDP"}'`,
     relatedFeatures: ['duty-rate-calculation', 'tax-calculation-vat-gst', 'currency-conversion', 'ddp-quote', 'shipping-rates'],
+    requiredFields: [
+      { name: 'price', type: 'number', required: true, description: 'Product price', example: '999.00' },
+      { name: 'origin', type: 'string', required: false, description: 'Origin country (ISO 2-letter code)', example: 'CN', tip: 'Critical for duty rate + FTA lookup.' },
+      { name: 'destinationCountry', type: 'string', required: false, description: 'Destination country (ISO 2-letter code, default: US)', example: 'US' },
+      { name: 'shippingPrice', type: 'number', required: false, description: 'Shipping cost (default: 0)', example: '25.00' },
+      { name: 'shippingTerms', type: 'string', required: false, description: 'DDP (default), DDU, CIF, FOB, EXW', example: 'DDP', tip: 'DDP = buyer pays nothing extra at door. DDU = buyer pays duties on delivery.' },
+      { name: 'productName', type: 'string', required: false, description: 'Product name (auto-classifies if no hsCode)', example: 'Laptop computer' },
+      { name: 'hsCode', type: 'string', required: false, description: 'HS code (skips auto-classification)', example: '8471.30' },
+      { name: 'weight_kg', type: 'number', required: false, description: 'Weight for shipping cost estimate', example: '2.5' },
+      { name: 'quantity', type: 'number', required: false, description: 'Number of items', example: '1' },
+    ],
+    accuracyTips: [
+      'price + origin + destinationCountry = core trio for accurate landed cost',
+      'Adding shippingPrice gives true total; without it, shipping is estimated from weight',
+      'shippingTerms determines who pays duties — DDP at checkout vs DDU at delivery',
+      'hsCode speeds up response and avoids classification ambiguity',
+    ],
+    commonMistakes: [
+      'Omitting origin — without it, duty rate defaults to MFN and FTA savings are missed',
+      'Confusing DDP vs DDU — DDP means buyer pays total at checkout, DDU means surprise fees at delivery',
+      'Not including shippingPrice — landed cost without shipping is incomplete',
+    ],
+
   },
   {
     slug: 'confidence-score',
@@ -197,6 +306,22 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"productName":"Stainless steel water bottle","category":"Drinkware"}'`,
     relatedFeatures: ['hs-code-classification', 'audit-trail', 'hs-code-validation', 'batch-classification', 'origin-detection'],
+    requiredFields: [
+      { name: 'productName', type: 'string', required: true, description: 'Product name — more detail yields higher confidence', example: "Stainless steel insulated water bottle", tip: 'Include material + form + function for best scores.' },
+      { name: 'category', type: 'string', required: false, description: 'Product category', example: 'Drinkware', tip: 'Boosts score by narrowing Section scope.' },
+      { name: 'material', type: 'string', required: false, description: 'Primary material (WCO group)', example: 'stainless steel', tip: 'Directly maps to HS Sections XI–XV. Critical for scores above 0.9.' },
+      { name: 'processing', type: 'string', required: false, description: 'Manufacturing method', example: 'pressed', tip: 'Differentiates subheadings — e.g., cast vs forged steel.' },
+    ],
+    accuracyTips: [
+      'More input fields = higher confidence score',
+      'productName alone typically yields 0.6–0.8 confidence',
+      'Adding material + processing pushes most items above 0.9',
+      'Scores below 0.7 usually mean the product name is too generic',
+    ],
+    commonMistakes: [
+      'Expecting 1.0 confidence with only productName — provide at least 3 fields',
+      'Ignoring the alternatives array — the second-best option may be more accurate for your specific product variant',
+    ],
   },
   {
     slug: 'multi-country-support',
@@ -223,6 +348,19 @@ const CORE_GUIDES: FeatureGuide[] = [
     curlExample: `curl https://potal.app/api/v1/countries?region=Asia&lang=en \\
   -H "X-API-Key: pk_live_your_key"`,
     relatedFeatures: ['total-landed-cost', 'de-minimis-check', 'fta-detection', 'country-prohibitions', 'tax-calculation-vat-gst'],
+    requiredFields: [
+      { name: 'region', type: 'string', required: false, description: 'Filter by region', example: 'Asia', tip: 'Options: Europe, Asia, Americas, Africa, Oceania, Middle East' },
+      { name: 'lang', type: 'string', required: false, description: 'Language code for country names (default: en)', example: 'ko', tip: '50 languages supported: en, ko, ja, zh, es, fr, de, pt, ru, ar, etc.' },
+    ],
+    accuracyTips: [
+      'No authentication required — this is a public endpoint',
+      'Response is cached for 24 hours — data refreshes daily',
+      'Use country codes from this endpoint in all other API calls',
+    ],
+    commonMistakes: [
+      'Using country names from this endpoint directly — always use the code field (2-letter ISO) in other API calls',
+    ],
+
   },
   {
     slug: 'audit-trail',
@@ -270,6 +408,29 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"items":[{"id":"SKU-001","productName":"Cotton t-shirt"},{"id":"SKU-002","productName":"Ceramic mug"}]}'`,
     relatedFeatures: ['hs-code-classification', 'batch-import-export', 'csv-export', 'confidence-score', 'high-throughput'],
+    requiredFields: [
+      { name: 'items[].id', type: 'string', required: true, description: 'Unique ID for result mapping', example: 'SKU-001', tip: 'Use your internal SKU or product ID for easy mapping.' },
+      { name: 'items[].productName', type: 'string', required: true, description: 'Product name', example: 'Cotton t-shirt' },
+      { name: 'items[].material', type: 'string', required: false, description: 'Material (WCO group)', example: 'cotton' },
+      { name: 'items[].category', type: 'string', required: false, description: 'Product category', example: 'apparel' },
+      { name: 'items[].processing', type: 'string', required: false, description: 'Processing method', example: 'knitted' },
+      { name: 'items[].composition', type: 'string', required: false, description: 'Material composition', example: '100% cotton' },
+      { name: 'items[].weight_spec', type: 'string', required: false, description: 'Weight specification', example: '180 g/m2' },
+      { name: 'items[].price', type: 'number', required: false, description: 'Unit price', example: '14.99' },
+      { name: 'items[].origin_country', type: 'string', required: false, description: 'Origin country (ISO code)', example: 'CN' },
+    ],
+    accuracyTips: [
+      'Each item requires id + productName at minimum',
+      'More fields per item = higher confidence scores',
+      'Duplicate productNames are auto-deduplicated — classified once, result copied to all matching IDs',
+      'Max items per request: 500 (Forever Free plan)',
+    ],
+    commonMistakes: [
+      'Missing id field — results cannot be mapped back without unique IDs',
+      'Exceeding batch limit — check your plan limit (500 for Forever Free)',
+      'Inconsistent field naming — use snake_case for batch items (origin_country not originCountry)',
+    ],
+
   },
   {
     slug: 'image-classification',
@@ -300,6 +461,24 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"imageUrl":"https://example.com/product-photo.jpg","productHint":"kitchen appliance"}'`,
     relatedFeatures: ['hs-code-classification', 'confidence-score', 'batch-classification', 'origin-detection', 'hs-code-validation'],
+    requiredFields: [
+      { name: 'imageUrl', type: 'string', required: false, description: 'URL of the product image (JPEG, PNG, GIF, WebP)', example: 'https://example.com/product.jpg', tip: 'Use a clear, well-lit photo with the product centered. Provide either imageUrl or imageBase64.' },
+      { name: 'imageBase64', type: 'string', required: false, description: 'Base64-encoded image data', example: '/9j/4AAQSkZ...', tip: 'Max 5MB after decoding. Use for direct uploads without a hosted URL.' },
+      { name: 'productHint', type: 'string', required: false, description: 'Optional hint to guide AI classification', example: 'kitchen appliance', tip: 'Improves accuracy for ambiguous images — e.g., "handbag" vs "luggage".' },
+      { name: 'destination_country', type: 'string', required: false, description: 'Destination country for HS10 selection', example: 'US' },
+    ],
+    accuracyTips: [
+      'Either imageUrl or imageBase64 must be provided (one is required)',
+      'Clear, single-product photos yield the best results',
+      'productHint significantly improves accuracy for visually ambiguous products',
+      'Image classification uses AI vision — slightly slower than text-based classification',
+    ],
+    commonMistakes: [
+      'Providing both imageUrl and imageBase64 — use one or the other',
+      'Low-quality or cluttered images — crop to show only the product',
+      'Images with text overlays or watermarks — these confuse the vision model',
+      'Expecting the same confidence as text-based — image mode typically scores 0.7–0.9',
+    ],
   },
   {
     slug: 'currency-conversion',
@@ -323,6 +502,19 @@ const CORE_GUIDES: FeatureGuide[] = [
     curlExample: `curl "https://potal.app/api/v1/exchange-rate?from=USD&to=EUR" \\
   -H "X-API-Key: pk_live_your_key"`,
     relatedFeatures: ['total-landed-cost', 'multi-currency', 'duty-rate-calculation', 'shipping-rates', 'ddp-quote'],
+    requiredFields: [
+      { name: 'from', type: 'string', required: true, description: 'Source currency code (ISO 4217)', example: 'USD', tip: 'Use 3-letter ISO currency codes: USD, EUR, GBP, JPY, KRW, CNY.' },
+      { name: 'to', type: 'string', required: true, description: 'Target currency code (ISO 4217)', example: 'EUR', tip: '160+ currencies supported. Check /api/v1/countries for valid codes.' },
+    ],
+    accuracyTips: [
+      'Rates are updated daily from central bank sources',
+      'For landed cost calculations, currency conversion is automatic — no separate call needed',
+      'Rate lock is available for guaranteed pricing over 24–72 hours',
+    ],
+    commonMistakes: [
+      'Using country codes instead of currency codes — "US" is not valid, use "USD"',
+      'Assuming rates are real-time — they are daily snapshots from central banks',
+    ],
   },
   {
     slug: 'hs-code-validation',
@@ -349,6 +541,22 @@ const CORE_GUIDES: FeatureGuide[] = [
     apiEndpoint: '/api/v1/calculate',
     apiMethod: 'POST',
     relatedFeatures: ['total-landed-cost', 'duty-rate-calculation', 'multi-country-support', 'ioss-support', 'type-86-entry'],
+    requiredFields: [
+      { name: 'price', type: 'number', required: true, description: 'Declared shipment value in USD', example: '45.00', tip: 'This is compared against the destination country de minimis threshold.' },
+      { name: 'destinationCountry', type: 'string', required: true, description: 'Destination country (ISO 2-letter code)', example: 'US', tip: 'Thresholds vary hugely: US $800, EU €150, Brazil $0, Australia AUD 1,000.' },
+      { name: 'origin', type: 'string', required: false, description: 'Origin country for additional context', example: 'CN', tip: 'Some countries apply different thresholds based on origin.' },
+    ],
+    accuracyTips: [
+      'De minimis check is automatic in /calculate — no separate API call needed',
+      'GET /api/v1/countries returns deMinimisUsd for all 240 countries',
+      'Some countries have separate duty and tax de minimis thresholds — POTAL checks both',
+      'US de minimis changed to $0 for some origins (China/HK) as of Aug 2025',
+    ],
+    commonMistakes: [
+      'Assuming $800 de minimis applies everywhere — it is US-specific',
+      'Forgetting that de minimis applies to shipment value, not item value',
+      'Not accounting for shipping costs — some countries include shipping in the threshold value',
+    ],
   },
   {
     slug: 'restricted-items',
@@ -380,6 +588,21 @@ const CORE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"hsCode":"9304.00","destinationCountry":"AU","productName":"Air rifle"}'`,
     relatedFeatures: ['country-prohibitions', 'dangerous-goods-flag', 'sanctions-screening', 'export-controls', 'pre-shipment-check'],
+    requiredFields: [
+      { name: 'destinationCountry', type: 'string', required: true, description: 'Destination country (ISO 2-letter code)', example: 'AU' },
+      { name: 'hsCode', type: 'string', required: false, description: 'HS code (2-10 digits)', example: '9304.00', tip: 'Provide hsCode for exact restriction lookup. Without it, productName is auto-classified.' },
+      { name: 'productName', type: 'string', required: false, description: 'Product name (used if hsCode not provided)', example: 'Air rifle', tip: 'Required if hsCode is not provided.' },
+    ],
+    accuracyTips: [
+      'destinationCountry is the only required field',
+      'Providing hsCode directly gives faster, more precise results than auto-classification',
+      'If neither hsCode nor productName is provided, the request will fail',
+    ],
+    commonMistakes: [
+      'Omitting both hsCode and productName — at least one must be provided',
+      'Using 3-letter country codes — use ISO 2-letter codes (AU not AUS)',
+    ],
+
   },
   {
     slug: 'price-break-rules',
@@ -406,6 +629,20 @@ const CORE_GUIDES: FeatureGuide[] = [
     apiEndpoint: '/api/v1/classify',
     apiMethod: 'POST',
     relatedFeatures: ['hs-code-classification', 'fta-detection', 'rules-of-origin', 'duty-rate-calculation', 'sanctions-screening'],
+    requiredFields: [
+      { name: 'productName', type: 'string', required: true, description: 'Product name — include brand or manufacturer if known', example: 'Samsung Galaxy S24 Ultra', tip: 'Brand names help detect origin: Samsung → KR, Bosch → DE, Canon → JP.' },
+      { name: 'category', type: 'string', required: false, description: 'Product category', example: 'Electronics', tip: 'Helps narrow origin detection heuristics by product type.' },
+      { name: 'origin_country', type: 'string', required: false, description: 'Override detected origin with a known value', example: 'VN', tip: 'If you know the actual origin, set this to skip detection and use the exact value.' },
+    ],
+    accuracyTips: [
+      'Brand names are the strongest signal for origin detection',
+      'If the actual origin is known, always set origin_country explicitly',
+      'Detection is heuristic-based — for high-stakes shipments, verify with the supplier',
+    ],
+    commonMistakes: [
+      'Assuming brand country = manufacturing country — "Apple" is US brand but products are made in CN/VN/IN',
+      'Not providing origin when known — detection is a best-guess fallback, not a substitute for actual origin',
+    ],
   },
 ];
 
@@ -444,6 +681,22 @@ const TRADE_GUIDES: FeatureGuide[] = [
     curlExample: `curl "https://potal.app/api/v1/fta?origin=KR&destination=US&hsCode=8471" \\
   -H "X-API-Key: pk_live_your_key"`,
     relatedFeatures: ['rules-of-origin', 'preferential-rates', 'duty-rate-calculation', 'total-landed-cost', 'multi-country-support'],
+    requiredFields: [
+      { name: 'origin', type: 'string', required: true, description: 'Origin country (ISO 2-letter code)', example: 'KR' },
+      { name: 'destination', type: 'string', required: true, description: 'Destination country (ISO 2-letter code)', example: 'US' },
+      { name: 'hsCode', type: 'string', required: false, description: 'HS code (2-10 digits) for product-specific FTA eligibility', example: '8471', tip: 'Some products are excluded from FTAs even if the agreement exists.' },
+    ],
+    accuracyTips: [
+      'Both origin and destination are required for FTA pair lookup',
+      'Adding hsCode checks if the specific product is FTA-eligible (some products are excluded)',
+      'Use ?country=KR to list ALL FTAs for a single country',
+    ],
+    commonMistakes: [
+      'Providing only one country — both origin AND destination are required',
+      'Assuming FTA applies to all products — some HS codes are explicitly excluded',
+      'Using country names instead of ISO codes — use "KR" not "Korea"',
+    ],
+
   },
   {
     slug: 'rules-of-origin',
@@ -538,6 +791,25 @@ const TRADE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"name":"Acme Trading Co","country":"IR","minScore":0.8}'`,
     relatedFeatures: ['denied-party-screening', 'trade-embargo-check', 'export-controls', 'pre-shipment-check', 'restricted-items'],
+    requiredFields: [
+      { name: 'name', type: 'string', required: true, description: 'Party name to screen', example: 'Acme Trading Co', tip: 'Full legal name gives best match accuracy.' },
+      { name: 'country', type: 'string', required: false, description: 'Country (ISO 2-letter code)', example: 'IR', tip: 'Dramatically reduces false positives.' },
+      { name: 'address', type: 'string', required: false, description: 'Party address', example: '123 Trade St, Tehran' },
+      { name: 'lists', type: 'string[]', required: false, description: 'Specific lists to check (default: all)', example: '["OFAC_SDN", "BIS_ENTITY"]', tip: 'Valid: OFAC_SDN, OFAC_CONS, BIS_ENTITY, BIS_DENIED, BIS_UNVERIFIED, EU_SANCTIONS, UN_SANCTIONS, UK_SANCTIONS' },
+      { name: 'minScore', type: 'number', required: false, description: 'Match threshold 0.5-1.0 (default: 0.8)', example: '0.8', tip: 'Lower = more matches but more false positives. 0.8 is recommended.' },
+    ],
+    accuracyTips: [
+      'Always provide country — it enables embargo checks and reduces false positives',
+      'Use full legal entity name, not abbreviations',
+      'For batch screening, up to 50 parties in one request via the parties array',
+      'minScore 0.8 balances accuracy and coverage — lower only for high-risk transactions',
+    ],
+    commonMistakes: [
+      'Screening only the company name without country — misses embargo checks entirely',
+      'Setting minScore too low (< 0.7) — floods results with false positives',
+      'Not screening all parties in a transaction — check buyer, consignee, and end-user',
+    ],
+
   },
   {
     slug: 'denied-party-screening',
@@ -587,6 +859,24 @@ const TRADE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"product_name":"Industrial CNC machine","destination":"CN"}'`,
     relatedFeatures: ['eccn-classification', 'dual-use-goods', 'sanctions-screening', 'denied-party-screening', 'country-prohibitions'],
+    requiredFields: [
+      { name: 'hs_code', type: 'string', required: false, description: 'HS code for ECCN mapping', example: '8459.21', tip: 'At least hs_code OR product_name is required.' },
+      { name: 'product_name', type: 'string', required: false, description: 'Product name (if hs_code not provided)', example: 'Industrial CNC machine' },
+      { name: 'destination', type: 'string', required: false, description: 'Destination country (ISO 2-letter code)', example: 'CN', tip: 'Required for license determination. Without it, only ECCN classification is returned.' },
+      { name: 'technical_specs', type: 'string', required: false, description: 'Technical specifications', example: '5-axis, positioning accuracy 0.001mm', tip: 'Key for determining if product exceeds controlled thresholds.' },
+      { name: 'end_use', type: 'string', required: false, description: 'End-use category', example: 'manufacturing' },
+    ],
+    accuracyTips: [
+      'At least hs_code OR product_name is required',
+      'destination is needed for license determination — without it, only ECCN is returned',
+      'technical_specs helps determine if product exceeds controlled performance thresholds',
+    ],
+    commonMistakes: [
+      'Providing neither hs_code nor product_name — at least one is required',
+      'Omitting destination — license requirement cannot be determined without it',
+      'Ignoring technical_specs for precision equipment — thresholds matter for dual-use controls',
+    ],
+
   },
   {
     slug: 'eccn-classification',
@@ -685,6 +975,31 @@ const TRADE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"shipper":{"name":"Acme Corp","country":"CN"},"consignee":{"name":"US Buyer","country":"US"},"items":[{"hs_code":"6109.10","description":"Cotton t-shirts","value":500,"quantity":100,"weight":25,"origin":"CN"}],"destination":"US"}'`,
     relatedFeatures: ['customs-forms', 'pdf-reports', 'compliance-certificates', 'pre-shipment-check', 'ics2-pre-arrival'],
+    requiredFields: [
+      { name: 'doc_type', type: 'string', required: true, description: 'Document type', example: 'commercial_invoice', tip: 'Options: commercial_invoice, packing_list, certificate_of_origin, customs_declaration, certificate_of_compliance, phytosanitary_certificate' },
+      { name: 'shipment.shipper.name', type: 'string', required: true, description: 'Shipper company name', example: 'Acme Corp' },
+      { name: 'shipment.consignee.name', type: 'string', required: true, description: 'Consignee/buyer name', example: 'US Buyer LLC' },
+      { name: 'shipment.items[].hs_code', type: 'string', required: true, description: 'HS code for each item', example: '6109.10' },
+      { name: 'shipment.items[].description', type: 'string', required: true, description: 'Item description', example: 'Cotton t-shirts' },
+      { name: 'shipment.items[].value', type: 'number', required: true, description: 'Item value', example: '500' },
+      { name: 'shipment.items[].quantity', type: 'number', required: true, description: 'Quantity', example: '100' },
+      { name: 'shipment.items[].weight', type: 'number', required: true, description: 'Weight in kg', example: '25' },
+      { name: 'shipment.items[].origin', type: 'string', required: true, description: 'Country of origin (ISO code)', example: 'CN' },
+      { name: 'shipment.destination', type: 'string', required: true, description: 'Destination country', example: 'US' },
+      { name: 'shipment.incoterms', type: 'string', required: false, description: 'Incoterms (default: DDP)', example: 'DDP' },
+      { name: 'shipment.currency', type: 'string', required: false, description: 'Currency code (default: USD)', example: 'USD' },
+    ],
+    accuracyTips: [
+      'All item fields (hs_code, description, value, quantity, weight, origin) are required',
+      'HS codes should be at least 4 digits — warnings are generated for shorter codes',
+      'Values above $100,000 trigger validation warnings',
+    ],
+    commonMistakes: [
+      'Missing item-level origin field — each item needs its own origin country',
+      'Providing hs_code with fewer than 4 digits — use at least 4 digits for accuracy',
+      'Forgetting doc_type — it determines which document template is generated',
+    ],
+
   },
   {
     slug: 'ics2-pre-arrival',
@@ -761,6 +1076,26 @@ const TRADE_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"hs_code":"8471.30","origin":"CN","destination":"US","declared_value":500,"shipper_name":"Shenzhen Tech Co"}'`,
     relatedFeatures: ['sanctions-screening', 'restricted-items', 'customs-documentation', 'total-landed-cost', 'dangerous-goods-flag'],
+    requiredFields: [
+      { name: 'hs_code', type: 'string', required: true, description: 'HS code (digits only)', example: '8471.30' },
+      { name: 'destination', type: 'string', required: true, description: 'Destination country (ISO 2-letter code)', example: 'US' },
+      { name: 'origin', type: 'string', required: false, description: 'Origin country (ISO 2-letter code)', example: 'CN' },
+      { name: 'declared_value', type: 'number', required: false, description: 'Declared shipment value', example: '500' },
+      { name: 'weight_kg', type: 'number', required: false, description: 'Weight in kg', example: '2.5' },
+      { name: 'shipper_name', type: 'string', required: false, description: 'Shipper name for sanctions screening', example: 'Shenzhen Tech Co', tip: 'Include for sanctions screening — otherwise only embargo check runs.' },
+      { name: 'documents_provided', type: 'string[]', required: false, description: 'List of documents already prepared', example: '["commercial_invoice", "packing_list"]', tip: 'Helps identify missing required documents before shipping.' },
+    ],
+    accuracyTips: [
+      'hs_code + destination are the minimum required fields',
+      'Adding shipper_name enables sanctions screening of the exporter',
+      'documents_provided helps identify missing customs paperwork before shipping',
+      'US imports over $2,500 require a customs bond — declared_value triggers this check',
+    ],
+    commonMistakes: [
+      'Using HS codes with non-numeric characters — only digits are accepted',
+      'Not providing shipper_name — sanctions screening is skipped without it',
+    ],
+
   },
   {
     slug: 'customs-forms',
@@ -872,6 +1207,25 @@ const TAX_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"state":"CA","zipcode":"90210","productValue":100}'`,
     relatedFeatures: ['sub-national-tax', 'tax-calculation-vat-gst', 'tax-exemptions', 'total-landed-cost', 'de-minimis-check'],
+    requiredFields: [
+      { name: 'state', type: 'string', required: false, description: 'US state code (2-letter)', example: 'CA', tip: 'Either state OR zipcode is required. Both gives best accuracy.' },
+      { name: 'zipcode', type: 'string', required: false, description: 'US ZIP code (5-digit or ZIP+4)', example: '90210', tip: 'ZIP code gives most precise rate including city and special district taxes.' },
+      { name: 'productValue', type: 'number', required: false, description: 'Product value for tax amount calculation', example: '100' },
+      { name: 'productCategory', type: 'string', required: false, description: 'Category for exemption check', example: 'clothing', tip: 'Options: groceries, clothing, prescription_medicine, medical_equipment' },
+      { name: 'sellerState', type: 'string', required: false, description: 'Seller state for nexus determination', example: 'NY' },
+      { name: 'marketplace', type: 'string', required: false, description: 'Marketplace name for facilitator rules', example: 'Amazon' },
+    ],
+    accuracyTips: [
+      'zipcode gives the most accurate rate — state-level rate can differ by 2-4% from actual',
+      'productCategory enables automatic exemption checking (e.g., clothing exempt in PA)',
+      'sellerState determines if economic nexus applies',
+    ],
+    commonMistakes: [
+      'Using only state without zipcode — misses county, city, and special district rates',
+      'Wrong ZIP format — use XXXXX or XXXXX-XXXX only',
+      'Not providing productCategory — some states exempt groceries, clothing, or medicine',
+    ],
+
   },
   {
     slug: 'specialized-tax',
@@ -952,6 +1306,26 @@ const SHIPPING_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"originCountry":"CN","destinationCountry":"US","weightKg":2.5,"declaredValue":100}'`,
     relatedFeatures: ['carrier-integration', 'ddp-quote', 'dimensional-weight', 'total-landed-cost', 'label-generation'],
+    requiredFields: [
+      { name: 'originCountry', type: 'string', required: true, description: 'Origin country (ISO 2-letter code)', example: 'CN' },
+      { name: 'destinationCountry', type: 'string', required: true, description: 'Destination country (ISO 2-letter code)', example: 'US' },
+      { name: 'weightKg', type: 'number', required: true, description: 'Package weight in kg (must be > 0)', example: '2.5' },
+      { name: 'declaredValue', type: 'number', required: false, description: 'Declared shipment value for insurance', example: '100' },
+      { name: 'lengthCm', type: 'number', required: false, description: 'Package length in cm', example: '30', tip: 'All 3 dimensions needed for dimensional weight calculation.' },
+      { name: 'widthCm', type: 'number', required: false, description: 'Package width in cm', example: '20' },
+      { name: 'heightCm', type: 'number', required: false, description: 'Package height in cm', example: '15' },
+    ],
+    accuracyTips: [
+      'originCountry + destinationCountry + weightKg are all required',
+      'Providing all 3 dimensions enables dimensional weight — carriers bill the higher of actual vs dimensional',
+      'declaredValue affects insurance cost estimation',
+    ],
+    commonMistakes: [
+      'Providing only 1 or 2 dimensions — all 3 (length, width, height) are needed for dimensional weight',
+      'Setting weightKg to 0 — must be greater than 0',
+      'Using snake_case and camelCase inconsistently — both are accepted but pick one style',
+    ],
+
   },
   makeGuide('carrier-integration', ['shipping-rates', 'label-generation', 'tracking', 'ddp-quote', 'multi-package']),
   makeGuide('label-generation', ['shipping-rates', 'carrier-integration', 'customs-forms', 'tracking', 'multi-package'], { endpoint: '/api/v1/shipping/labels', method: 'POST' }),
@@ -1111,6 +1485,25 @@ const INTEGRATION_GUIDES: FeatureGuide[] = [
   -H "Content-Type: application/json" \\
   -d '{"originCountry":"CN","destinationCountry":"US","pricingMode":"DDP","items":[{"productName":"Wireless Mouse","price":29.99,"quantity":1}]}'`,
     relatedFeatures: ['total-landed-cost', 'ddp-quote', 'shopify-app', 'js-widget', 'multi-currency'],
+    requiredFields: [
+      { name: 'originCountry', type: 'string', required: true, description: 'Origin country (ISO 2-letter code)', example: 'CN' },
+      { name: 'destinationCountry', type: 'string', required: true, description: 'Destination country (ISO 2-letter code)', example: 'US' },
+      { name: 'items[].productName', type: 'string', required: true, description: 'Product name for each item', example: 'Wireless Mouse' },
+      { name: 'items[].price', type: 'number', required: true, description: 'Item price (must be > 0)', example: '29.99' },
+      { name: 'items[].quantity', type: 'number', required: true, description: 'Quantity (must be > 0)', example: '1' },
+      { name: 'items[].hsCode', type: 'string', required: false, description: 'HS code (speeds up calculation)', example: '8471.60' },
+      { name: 'pricingMode', type: 'string', required: false, description: 'DDP (default), DDU, or DAP', example: 'DDP' },
+    ],
+    accuracyTips: [
+      'Max 50 items per checkout session',
+      'Providing hsCode per item skips auto-classification and speeds up response',
+      'Use action=quote for price-only breakdown without creating a session',
+    ],
+    commonMistakes: [
+      'Items with price = 0 — price must be greater than 0',
+      'More than 50 items — split into multiple checkout sessions',
+    ],
+
   },
   makeGuide('order-sync', ['checkout-integration', 'shopify-app', 'woocommerce-plugin', 'inventory-sync', 'webhooks'], { endpoint: '/api/v1/orders/sync', method: 'POST' }),
   makeGuide('inventory-sync', ['order-sync', 'multi-warehouse', '3pl-integration', 'shopify-app', 'webhooks'], { endpoint: '/api/v1/inventory/levels', method: 'GET' }),
