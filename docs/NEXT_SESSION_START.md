@@ -1,14 +1,15 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료, Gmail 드래프트 251개 생성 완료)
+> 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — 기능감사 140 Active, Features 페이지, MCP v1.4.0)
 
 ---
 
 ## 현재 상태 요약
 
-### 핵심 수치 (2026-03-25 기준)
+### 핵심 수치 (2026-03-29 기준)
 - **외부 사용자**: 0명, **MRR**: $0 — **고객 확보가 최우선**
-- **147/147 기능 구현** (100%), **107개 감사 106/107 완성**, **56개 정밀검증 156/156 PASS**
-- **API 엔드포인트**: ~155개+, **Vercel Cron**: 24개
+- **142개 기능 감사**: 140 Active + 2 WON'T (Power BI, Mobile App) = **140/140 = 100%**
+- **API 엔드포인트**: ~155개+, **Vercel Cron**: 24개, **MCP**: v1.4.0 (9-field)
+- **Features 페이지**: ✅ /features 배포 완료 (140 Active, 12 카테고리, 경쟁사 비교표)
 - **Shopify App**: ⏳ 심사 중 (2026-03-10 제출, 16일 경과 — 기다리는 수밖에 없음)
 - **Product Hunt**: ✅ B2B 리런치 완료 (런치 완료, 2026-03-28)
 - **AI Agent Org v6.1**: 59 Agents (16 Leaders + 43 Members), Opus 3 + Sonnet 56
@@ -20,14 +21,15 @@
 
 ### ✅ 기술 완성 상태
 - **Layer 1** (절대값 ✅): 9-field → HS 10자리 + 세율, AI 0회, $0. 7개국 벤치마크 1,183건 100%
-- **Layer 2** (GRI Pipeline ✅): gri-classifier/ 25개 파일, 프로덕션 배포 완료, 592 codified rules
+- **Layer 2** (GRI Pipeline ✅): gri-classifier/ 25개 파일, 프로덕션 배포 완료, 595 codified rules, 21/21 Section 100%
 - **Layer 3**: 미시작 (Enterprise Custom, 고객 확보 후 진행)
 - **12 TLC 시스템화**: ✅ 완성, Duty Rate 55/55 PASS
 - **Sprint 1 보안 6기능**: ✅ 100% (95 unit tests ALL PASS)
 - **데이터**: MIN ~105M행, AGR ~129M행, gov_tariff_schedules 131,794행, 제재 21,301건 — **전부 완료**
 
 ### ⏳ 진행 중
-- **P2 기능 강화**: ✅ 17개 미완성 기능 전부 보완 완료 (147/147 = 100%)
+- **수익화 전략 결정 보류**: Free + 크로스보더 광고 모델 (CEO 결정 대기)
+- **인프라 비용**: 고정 ~$114/mo, 100만건 처리 ~$140/mo
 - **마케팅**: LinkedIn 1포스트, Reddit 댓글 6개, Instagram 프로필만 — **지속 필요**
 
 ---
@@ -112,5 +114,10 @@ Layer 3: Enterprise Custom (미시작) → 고객별 맞춤 변환
 
 ---
 ## [Auto-saved] Compaction at 2026-03-29 00:15 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+
+---
+## [Auto-saved] Compaction at 2026-03-29 02:27 KST
 컨텍스트 압축 발생. 이전 대화가 요약됨.
 압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.

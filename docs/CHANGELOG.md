@@ -1,5 +1,30 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-28 13:00 KST (147/147 기능 100% 완료 + Gmail 드래프트 251개 생성 완료)
+> 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — 기능감사 140 Active, Features 페이지, MCP v1.4.0)
+
+## [2026-03-29 03:30 KST] CW21 Cowork — 기능감사 + Features 페이지 + MCP v1.4.0
+
+### 기능 감사 142→140 Active
+- 142개 기능 코드 기반 정밀 검증 (CW14 이후 48개 B/C/D→A 업그레이드 확인)
+- 21개 미완성 기능 전부 완성 (T3 작업) → **140 Active + 2 WON'T** (Power BI, Mobile App)
+- 엑셀: POTAL_Feature_Audit_2603290000.xlsx (3시트)
+
+### Features 페이지 /features 배포
+- 140개 기능 12 카테고리 카드 그리드 + 경쟁사 비교표 (POTAL vs Avalara vs Zonos vs SimplyDuty)
+- Header 네비 추가 (데스크톱 + 모바일) + i18n 51개 언어 지원
+
+### MCP v1.4.0 9-field 업데이트
+- classify_product 5→10 params (material REQUIRED)
+- calculate_landed_cost/screen_shipment/compare_countries 파라미터 확장
+
+### Dashboard 버그 수정 + 인프라 분석
+- DashboardContent.tsx category 필드 오류 수정
+- 인프라 비용: 고정 ~$114/mo, 100만건 ~$140/mo, AI 비용 $0
+
+### v3 파이프라인 100% (CW21 전반)
+- 21/21 Section, codified-rules 595, 테스트 22/22 PASS
+- 커밋 9개: eb00fae, 2b1e1ea, 0838827, 7fd0142, 68050de, 4bfd23c, e21b22f, a2e6103, 78f4d2c
+
+---
 
 ## [2026-03-28 13:00 KST] CW20 — 147/147 기능 100% 완료 + Gmail 드래프트 251개 + Product Hunt + KrispiTech
 

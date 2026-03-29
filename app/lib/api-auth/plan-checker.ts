@@ -1,9 +1,11 @@
 /**
  * POTAL Plan Limit Checker
  *
- * Checks seller's monthly calculation quota.
- * Free plan: hard block at limit.
- * Paid plans (basic/pro/enterprise): allow overage, charge at month end.
+ * PIVOT (CW22): All plans are now "Forever Free" — 140 features, unlimited access.
+ * Only rate limit for DDoS prevention (100K calls/month soft cap).
+ * Enterprise: custom via contact form.
+ *
+ * Previous paid tiers (Basic $20, Pro $80, Enterprise $300) are deprecated.
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -11,35 +13,36 @@ import { createClient } from '@supabase/supabase-js';
 interface PlanLimitConfig {
   maxCalculationsMonthly: number;
   allowOverage: boolean;
-  overageRate: number; // $/call for overage
+  overageRate: number;
   batchApi: boolean;
   batchMaxItems: number;
   webhookNotifications: boolean;
   analyticsDashboard: 'basic' | 'advanced' | 'full';
   widgetBranding: 'potal' | 'custom' | 'white-label';
-  retentionDays: number; // F115: data retention period
+  retentionDays: number;
 }
 
-// Plan limits — 신 요금제 (CW13 업데이트: Free 200건, 전 플랜 기능 동일화)
-// 차별화: API 호출량 + 위젯 브랜딩만. Batch/Webhook/Analytics는 전 플랜 개방
+// Forever Free: all users get the same generous limits
+// Enterprise contacts get custom config via DB override
 const PLAN_LIMITS: Record<string, PlanLimitConfig> = {
   free: {
-    maxCalculationsMonthly: 200, allowOverage: false, overageRate: 0,
-    batchApi: true, batchMaxItems: 50, webhookNotifications: true,
-    analyticsDashboard: 'basic', widgetBranding: 'potal', retentionDays: 30,
+    maxCalculationsMonthly: 100000, allowOverage: true, overageRate: 0,
+    batchApi: true, batchMaxItems: 500, webhookNotifications: true,
+    analyticsDashboard: 'advanced', widgetBranding: 'potal', retentionDays: 365,
   },
+  // Legacy plans — map to free limits (existing users won't break)
   basic: {
-    maxCalculationsMonthly: 2000, allowOverage: true, overageRate: 0.015,
-    batchApi: true, batchMaxItems: 100, webhookNotifications: true,
-    analyticsDashboard: 'advanced', widgetBranding: 'potal', retentionDays: 90,
+    maxCalculationsMonthly: 100000, allowOverage: true, overageRate: 0,
+    batchApi: true, batchMaxItems: 500, webhookNotifications: true,
+    analyticsDashboard: 'advanced', widgetBranding: 'potal', retentionDays: 365,
   },
   pro: {
-    maxCalculationsMonthly: 10000, allowOverage: true, overageRate: 0.012,
+    maxCalculationsMonthly: 100000, allowOverage: true, overageRate: 0,
     batchApi: true, batchMaxItems: 500, webhookNotifications: true,
     analyticsDashboard: 'advanced', widgetBranding: 'custom', retentionDays: 365,
   },
   enterprise: {
-    maxCalculationsMonthly: 50000, allowOverage: true, overageRate: 0.01,
+    maxCalculationsMonthly: 999999, allowOverage: true, overageRate: 0,
     batchApi: true, batchMaxItems: 5000, webhookNotifications: true,
     analyticsDashboard: 'full', widgetBranding: 'white-label', retentionDays: 99999,
   },
@@ -55,9 +58,7 @@ export interface PlanCheckResult {
 }
 
 /**
- * Check if seller is within their plan's monthly calculation limit.
- * Paid plans are always allowed (overage is billed at month end).
- * Free plan is hard-blocked at limit.
+ * Check monthly usage. Forever Free: always allowed (soft cap at 100K for DDoS prevention).
  */
 export async function checkPlanLimits(
   supabase: ReturnType<typeof createClient>,
@@ -66,7 +67,6 @@ export async function checkPlanLimits(
 ): Promise<PlanCheckResult> {
   const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
 
-  // Get current month's usage count
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
   const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
@@ -79,15 +79,10 @@ export async function checkPlanLimits(
     .lte('created_at', monthEnd);
 
   const used = count || 0;
-  const overLimit = used >= limits.maxCalculationsMonthly;
-  const overageCount = overLimit ? used - limits.maxCalculationsMonthly : 0;
 
-  // Paid plans: allow overage (billed at month end)
-  // Free plan: hard block
-  const allowed = limits.allowOverage ? true : !overLimit;
-
-  // F086: Usage alert triggers (non-blocking)
-  const percentUsed = Math.round((used / limits.maxCalculationsMonthly) * 100);
+  // Forever Free: always allowed. Usage alerts at 80K and 100K for awareness only.
+  const percentUsed = limits.maxCalculationsMonthly > 0
+    ? Math.round((used / limits.maxCalculationsMonthly) * 100) : 0;
   if (percentUsed >= 80 && percentUsed < 100) {
     void triggerUsageAlert(sellerId, 'usage-alert-80', used, limits.maxCalculationsMonthly, percentUsed, planId);
   } else if (percentUsed >= 100) {
@@ -95,18 +90,15 @@ export async function checkPlanLimits(
   }
 
   return {
-    allowed,
+    allowed: true, // Forever Free: always allowed
     used,
     limit: limits.maxCalculationsMonthly,
-    isOverage: overLimit && limits.allowOverage,
-    overageCount,
-    overageRate: limits.overageRate,
+    isOverage: false,
+    overageCount: 0,
+    overageRate: 0,
   };
 }
 
-/**
- * Trigger usage alert email (non-blocking, deduplicated)
- */
 async function triggerUsageAlert(sellerId: string, alertType: 'usage-alert-80' | 'usage-alert-100', used: number, limit: number, percentUsed: number, planId: string) {
   try {
     const { sendEmail } = await import('@/app/lib/email/send');
@@ -124,16 +116,13 @@ async function triggerUsageAlert(sellerId: string, alertType: 'usage-alert-80' |
       await sendEmail(alertType, sellerData.email, {
         used,
         limit,
-        planName: planId.charAt(0).toUpperCase() + planId.slice(1),
+        planName: 'Forever Free',
         percentUsed,
       }, { sellerId });
     }
   } catch { /* non-blocking */ }
 }
 
-/**
- * Get plan feature flags for a given plan.
- */
 export function getPlanFeatures(planId: string) {
   const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
   return {
@@ -145,10 +134,6 @@ export function getPlanFeatures(planId: string) {
   };
 }
 
-/**
- * F115: Data Retention — enforce plan-based data retention policies.
- * Deletes records older than the plan's retentionDays.
- */
 export async function enforceDataRetention(
   supabase: ReturnType<typeof createClient>,
   sellerId: string,
@@ -157,7 +142,6 @@ export async function enforceDataRetention(
   const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
   const retentionDays = limits.retentionDays;
 
-  // Enterprise has unlimited retention
   if (retentionDays >= 99999) {
     return { tablesProcessed: 0, rowsDeleted: 0, retentionDays };
   }
@@ -180,9 +164,6 @@ export async function enforceDataRetention(
   return { tablesProcessed: tables.length, rowsDeleted: totalDeleted, retentionDays };
 }
 
-/**
- * Get retention policy details for a plan.
- */
 export function getRetentionPolicy(planId: string) {
   const limits = PLAN_LIMITS[planId] || PLAN_LIMITS.free;
   return {

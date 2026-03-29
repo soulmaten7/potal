@@ -1,3 +1,41 @@
+### ⭐ CW21 Cowork 세션 성과 (2026-03-29 01:00~03:00 KST)
+
+**MCP v1.4.0 9-field 프로덕션 업데이트:**
+- classify_product: 5→10 파라미터 (material REQUIRED 추가, description/processing/composition/weightSpec/price)
+- calculate_landed_cost: 8→11 파라미터 (+material/processing/composition)
+- screen_shipment: 6→10 파라미터 (+material/productCategory/processing/composition)
+- compare_countries: 6→8 파라미터 (+material/productCategory)
+- 모든 도구 API field 매핑: productCategory→category, originCountry→origin_country, weightSpec→weight_spec
+
+**Dashboard category 버그 수정:**
+- DashboardContent.tsx:1112 `category: material` → 실제 category 입력 필드에서 값 읽도록 수정
+
+**142개 기능 코드 기반 정밀 감사:**
+- CW14 이후 48개 기능 B/C/D→A 업그레이드 확인
+- 119 IMPL 초기 → T3에서 21개 완성 → **140 Active + 2 WON'T** (Power BI, Mobile App)
+- 엑셀: POTAL_Feature_Audit_2603290000.xlsx (3시트)
+
+**Features 페이지 /features 구현:**
+- Hero: "140+ Features. One API." + 4개 카운터 (Active/Countries/Endpoints/$0)
+- 12 카테고리 필터 (sticky bar) + 반응형 카드 그리드 (1/2/3열)
+- 경쟁사 비교표: POTAL vs Avalara vs Zonos vs SimplyDuty (8개 지표)
+- CTA: Get Started / Pricing / API Docs
+- Header 네비게이션 추가 (데스크톱 + 모바일) + i18n 51개 언어 `nav.features` 키
+- Coming Soon 21→Active 전환 후 UI 정리
+
+**인프라 비용 분석:**
+- 고정: ~$114/mo (Vercel $20, Supabase $25, 도메인 $69/yr)
+- 100만건 처리: ~$140/mo (건당 $0.00014)
+- AI 비용: v3 파이프라인 99%+ 코드 처리 → 실질 $0
+
+**수익화 전략 논의:**
+- Free 티어 + 크로스보더 광고 모델 검토 — CEO 결정 보류
+- AI fallback 모델 변경도 보류 (v3가 거의 모든 것 처리)
+
+**커밋 5개**: 68050de, 4bfd23c, e21b22f, a2e6103, 78f4d2c (전부 main push 완료)
+
+---
+
 ### ⭐ CW15 Cowork 세션 성과 (2026-03-16 03:00~09:30 KST)
 
 **홈페이지 UX 전체 동기화 (~60개 파일 수정):**

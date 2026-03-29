@@ -2,168 +2,49 @@
 
 import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
+import { FEATURES, CATEGORIES, CATEGORY_ICONS, type FeatureCategory } from '../features/features-data';
 
-const PLANS = [
-  {
-    name: 'Free',
-    price: '$0',
-    priceAnnualMonthly: '$0',
-    priceAnnualTotal: '$0',
-    annualSavings: '',
-    priceNote: 'forever',
-    description: 'Full features, limited volume',
-    highlight: false,
-    overageNote: 'Hard stop at 200 calls',
-    features: [
-      '200 API calls / month',
-      'Widget embed (light theme)',
-      '240 countries supported',
-      '10-digit HS Code precision',
-      '9-Field HS Classification (100% accuracy)',
-      'Real-time field validation & guidance',
-      'Real-time exchange rates',
-      'FTA & preferential rate detection',
-      'Anti-dumping / CVD duty alerts',
-      'Sub-national tax (12 countries)',
-      'Batch API (50 items)',
-      'Webhook notifications',
-      'Basic analytics dashboard',
-      '50 language support',
-      'Community support',
-    ],
-    limitations: [
-      'POTAL branding on widget',
-      'Standard rate limits (30/min)',
-    ],
-    cta: 'Get Started Free',
-    ctaLink: '/developers',
-  },
-  {
-    name: 'Basic',
-    price: '$20',
-    priceAnnualMonthly: '$16',
-    priceAnnualTotal: '$192',
-    annualSavings: 'Save $48/yr',
-    priceNote: '/ month',
-    description: 'For growing stores with real traffic',
-    highlight: false,
-    overageNote: 'Overage: $0.015 / call',
-    features: [
-      '2,000 API calls / month',
-      'Widget embed (all themes)',
-      '9-Field HS Classification (100% accuracy)',
-      'Real-time field validation & guidance',
-      'Real-time exchange rates',
-      'FTA & preferential rate detection',
-      'Anti-dumping / CVD duty alerts',
-      'Sub-national tax (12 countries)',
-      'Batch API (100 items)',
-      'Webhook notifications',
-      'Advanced analytics dashboard',
-      '50 language support',
-      'Email support',
-    ],
-    limitations: [],
-    cta: 'Start Free Trial',
-    ctaLink: '/developers',
-  },
-  {
-    name: 'Pro',
-    price: '$80',
-    priceAnnualMonthly: '$64',
-    priceAnnualTotal: '$768',
-    annualSavings: 'Save $192/yr',
-    priceNote: '/ month',
-    description: 'For serious e-commerce operations',
-    highlight: true,
-    overageNote: 'Overage: $0.012 / call',
-    features: [
-      '10,000 API calls / month',
-      'Custom widget branding (no POTAL logo)',
-      'Batch API (500 items)',
-      'Webhook notifications',
-      'Advanced analytics dashboard',
-      'Priority email support',
-      'All Basic features included',
-    ],
-    limitations: [],
-    cta: 'Start Free Trial',
-    ctaLink: '/developers',
-  },
-  {
-    name: 'Enterprise',
-    price: '$300',
-    priceAnnualMonthly: '$240',
-    priceAnnualTotal: '$2,880',
-    annualSavings: 'Save $720/yr',
-    priceNote: '/ month',
-    description: 'For large-scale operations',
-    highlight: false,
-    overageNote: 'Overage: $0.01 / call (100K+ commit: $0.008)',
-    features: [
-      '50,000+ API calls / month',
-      'White-label widget',
-      'Dedicated infrastructure',
-      'SSO & team management',
-      'SLA guarantee (99.99%)',
-      'Custom integrations',
-      'Bulk calculation API',
-      'Dedicated account manager',
-      'Audit logs & compliance',
-      'All Pro features included',
-    ],
-    limitations: [],
-    cta: 'Get Custom Pricing',
-    ctaLink: '#enterprise-form',
-  },
+const COMPETITOR_DATA = [
+  { label: 'Active Features', potal: '140', avalara: '44', zonos: '38', simply: '22' },
+  { label: 'Countries', potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
+  { label: 'HS Code Accuracy', potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
+  { label: 'Starting Price', potal: 'Free forever', avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },
+  { label: 'Per-Transaction Fee', potal: 'None', avalara: 'Yes', zonos: 'Yes', simply: 'Yes' },
+  { label: 'API Response Time', potal: '<50ms', avalara: '200-500ms', zonos: '300-800ms', simply: '500ms+' },
+  { label: 'API Endpoints', potal: '155+', avalara: '~30', zonos: '~20', simply: '~10' },
+  { label: 'MCP Server', potal: 'Yes', avalara: 'No', zonos: 'No', simply: 'No' },
 ];
 
 const FAQS = [
   {
-    q: 'What counts as an API call?',
-    a: 'Each request to /api/v1/calculate counts as one API call. Widget renders that trigger a calculation also count. Country list and metadata endpoints are free and unlimited.',
+    q: 'Why is everything free?',
+    a: 'POTAL\'s mission is to make cross-border commerce accessible to every business, regardless of size. We believe duty & tax calculation should be infrastructure — like GPS — not a premium service. Our architecture runs on code, not AI calls, so our marginal cost per request is near zero.',
   },
   {
-    q: 'Can I switch plans at any time?',
-    a: 'Yes! You can upgrade or downgrade at any time. When upgrading, you get immediate access to the new plan. When downgrading, changes take effect at the next billing cycle.',
+    q: 'Will it stay free forever?',
+    a: 'Yes. "Forever Free" is a commitment, not a trial. All 140 features, all 240 countries, all API endpoints — permanently free. We will never retroactively gate features behind a paywall.',
   },
   {
-    q: 'What happens if I exceed my monthly limit?',
-    a: 'For paid plans (Basic, Pro, Enterprise), overage calls are automatically billed at a per-call rate: Basic $0.015, Pro $0.012, Enterprise $0.01 per call. Enterprise customers with 100K+ volume commitments get $0.008 per call. For the Free plan, API calls stop at the 200-call limit.',
+    q: 'What about Enterprise?',
+    a: 'Enterprise is for organizations that need custom integrations, dedicated infrastructure, SLA guarantees, or white-label solutions. Contact us and we\'ll build a tailored package. For everyone else, the free plan has everything.',
+  },
+  {
+    q: 'Is there a catch? Rate limits?',
+    a: 'We apply a generous rate limit (100,000 calls/month) to prevent abuse. For 99.9% of businesses, this is more than enough. If you need higher volume, reach out via the Enterprise form.',
+  },
+  {
+    q: 'How is this different from Avalara or Zonos?',
+    a: 'Avalara charges $1,500+/month. Zonos charges $4,000+/month. Both charge per-transaction fees on top. POTAL offers more features (140 vs their 22-44), better accuracy (100% with complete input), and faster response times (<50ms) — all for free.',
   },
   {
     q: 'Do you support all countries?',
-    a: 'Yes — POTAL supports 240 countries with accurate duty rates, VAT/GST, de minimis thresholds, and FTA detection. 12 countries have sub-national tax calculations including US, Canada, Brazil, India, Australia, and more.',
-  },
-  {
-    q: 'Is there a free trial?',
-    a: 'Yes! All paid plans come with a 14-day free trial with full access to all features. A payment method is required at signup, but you won\'t be charged until the trial ends. Cancel anytime before — no charge.',
-  },
-  {
-    q: 'What makes POTAL different from competitors?',
-    a: 'POTAL covers 240 countries with 9-field HS classification (100% accuracy with complete input), real-time FTA detection, anti-dumping duty alerts, sanctions screening, and 50 language support — all at a fraction of competitors\' pricing. Our Basic plan at $20/month includes features that competitors charge $500+/month for.',
+    a: 'Yes — 240 countries with duty rates, VAT/GST, de minimis thresholds, FTA detection, anti-dumping duties, and sanctions screening. 12 countries have sub-national tax calculations.',
   },
 ];
-
-const inputStyle = {
-  padding: '12px 16px',
-  borderRadius: 10,
-  border: '1px solid #e5e7eb',
-  fontSize: 14,
-  outline: 'none' as const,
-  width: '100%',
-  boxSizing: 'border-box' as const,
-};
-
-function formatNumberWithCommas(value: string) {
-  const digits = value.replace(/[^\d]/g, '');
-  return digits ? Number(digits).toLocaleString() : '';
-}
 
 function EnterpriseInquiryForm() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
-  const [volumeDisplay, setVolumeDisplay] = useState('');
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -175,7 +56,7 @@ function EnterpriseInquiryForm() {
       company_name: (form.elements.namedItem('company_name') as HTMLInputElement).value,
       contact_name: (form.elements.namedItem('contact_name') as HTMLInputElement).value,
       contact_email: (form.elements.namedItem('contact_email') as HTMLInputElement).value,
-      estimated_volume: volumeDisplay.replace(/,/g, ''),
+      estimated_volume: (form.elements.namedItem('requirements') as HTMLTextAreaElement).value,
     };
 
     try {
@@ -199,521 +80,304 @@ function EnterpriseInquiryForm() {
 
   if (status === 'success') {
     return (
-      <div style={{ textAlign: 'center', padding: '20px 0' }}>
-        <p style={{ fontSize: 18, fontWeight: 700, color: '#059669', marginBottom: 8 }}>
-          Thank you for your interest!
-        </p>
-        <p style={{ fontSize: 14, color: '#666' }}>
-          We&apos;ve sent our capability overview and requirements questionnaire to your email.
-          Please check your inbox.
-        </p>
+      <div className="text-center py-6">
+        <p className="text-lg font-bold text-emerald-600 mb-2">Thank you!</p>
+        <p className="text-sm text-slate-500">We&apos;ll get back to you within 24 hours.</p>
       </div>
     );
   }
 
   return (
-    <>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <input type="text" name="company_name" placeholder="Company name" required style={inputStyle} />
-        <input type="text" name="contact_name" placeholder="Your name" required style={inputStyle} />
-        <input type="email" name="contact_email" placeholder="Work email" required style={inputStyle} />
-        <input
-          type="text"
-          name="estimated_volume"
-          placeholder="Estimated monthly API calls (e.g. 100,000)"
-          required
-          style={inputStyle}
-          value={volumeDisplay}
-          onChange={(e) => setVolumeDisplay(formatNumberWithCommas(e.target.value))}
-        />
-        <button
-          type="submit"
-          disabled={status === 'submitting'}
-          style={{
-            padding: '14px 24px',
-            borderRadius: 12,
-            border: 'none',
-            background: status === 'submitting' ? '#6b7280' : '#02122c',
-            color: 'white',
-            fontSize: 15,
-            fontWeight: 700,
-            cursor: status === 'submitting' ? 'not-allowed' : 'pointer',
-            marginTop: 4,
-          }}
-        >
-          {status === 'submitting' ? 'Submitting...' : 'Get Custom Pricing'}
-        </button>
-      </form>
-      {status === 'error' && (
-        <p style={{ fontSize: 13, color: '#dc2626', marginTop: 8 }}>{errorMsg}</p>
-      )}
-      <p style={{ fontSize: 12, color: '#999', marginTop: 12 }}>
-        We respond within 24 hours on business days.
-      </p>
-    </>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <input type="text" name="company_name" placeholder="Company name" required
+        className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors" />
+      <input type="text" name="contact_name" placeholder="Your name" required
+        className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors" />
+      <input type="email" name="contact_email" placeholder="Work email" required
+        className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors" />
+      <textarea name="requirements" placeholder="Tell us about your needs (volume, integrations, timeline...)" rows={3}
+        className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors resize-none" />
+      <button type="submit" disabled={status === 'submitting'}
+        className="px-6 py-3 rounded-xl bg-[#02122c] text-white font-bold text-sm hover:bg-[#0a2540] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1">
+        {status === 'submitting' ? 'Sending...' : 'Contact Sales'}
+      </button>
+      {status === 'error' && <p className="text-xs text-red-500">{errorMsg}</p>}
+    </form>
   );
 }
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [showAllFeatures, setShowAllFeatures] = useState(false);
 
-  const getPrice = (plan: typeof PLANS[0]) => {
-    if (plan.price === '$0') return plan.price;
-    if (billingCycle === 'annual') return plan.priceAnnualMonthly;
-    return plan.price;
-  };
+  // Group features by category for the feature list
+  const featuresByCategory = CATEGORIES.filter(c => c.key !== 'All').map(cat => ({
+    ...cat,
+    icon: CATEGORY_ICONS[cat.key as FeatureCategory],
+    features: FEATURES.filter(f => f.category === cat.key),
+  }));
 
   return (
-    <div style={{
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      background: '#fafafa',
-      minHeight: '100vh',
-      color: '#1a1a1a',
-    }}>
+    <div className="min-h-screen bg-slate-50">
       {/* Hero */}
-      <div style={{
-        background: 'linear-gradient(135deg, #02122c 0%, #0a2540 50%, #1a365d 100%)',
-        color: 'white',
-        padding: '80px 20px 60px',
-        textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: 800, margin: '0 auto' }}>
-          <div style={{
-            display: 'inline-block',
-            background: 'rgba(245,158,11,0.15)',
-            color: '#F59E0B',
-            padding: '6px 16px',
-            borderRadius: 20,
-            fontSize: 13,
-            fontWeight: 600,
-            marginBottom: 20,
-          }}>
-            Simple, transparent pricing
+      <section className="bg-[#02122c] text-white py-16 sm:py-24">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <div className="inline-block bg-emerald-500/15 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold mb-6 uppercase tracking-wider">
+            No credit card required
           </div>
-          <h1 style={{ fontSize: 42, fontWeight: 800, marginBottom: 16, lineHeight: 1.2 }}>
-            Pay only for what you use
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5">
+            Everything Free.{' '}
+            <span className="text-[#F59E0B]">Forever.</span>
           </h1>
-          <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.7)', maxWidth: 600, margin: '0 auto 32px' }}>
-            Start free, scale as you grow. All plans include 240-country coverage
-            with real-time duty, tax, and shipping calculations.
+          <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10">
+            140 features. 240 countries. 155+ API endpoints. Zero cost.
+            What competitors charge $1,500–$4,000/month for, POTAL gives you for free.
           </p>
 
-          {/* Billing Toggle */}
-          <div role="radiogroup" aria-label="Billing cycle" style={{
-            display: 'inline-flex',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: 12,
-            padding: 4,
-          }}>
-            <button
-              role="radio"
-              aria-checked={billingCycle === 'monthly'}
-              onClick={() => setBillingCycle('monthly')}
-              style={{
-                padding: '10px 24px',
-                borderRadius: 10,
-                border: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                background: billingCycle === 'monthly' ? 'white' : 'transparent',
-                color: billingCycle === 'monthly' ? '#02122c' : 'rgba(255,255,255,0.7)',
-                transition: 'all 0.2s',
-              }}
-            >
-              Monthly
-            </button>
-            <button
-              role="radio"
-              aria-checked={billingCycle === 'annual'}
-              onClick={() => setBillingCycle('annual')}
-              style={{
-                padding: '10px 24px',
-                borderRadius: 10,
-                border: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-                cursor: 'pointer',
-                background: billingCycle === 'annual' ? 'white' : 'transparent',
-                color: billingCycle === 'annual' ? '#02122c' : 'rgba(255,255,255,0.7)',
-                transition: 'all 0.2s',
-              }}
-            >
-              Annual
-              <span style={{
-                marginLeft: 8,
-                background: '#10b981',
-                color: 'white',
-                padding: '2px 8px',
-                borderRadius: 10,
-                fontSize: 11,
-                fontWeight: 700,
-              }}>
-                -20%
-              </span>
-            </button>
+          {/* Stats */}
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-10">
+            {[
+              { value: '140', label: 'Features' },
+              { value: '240', label: 'Countries' },
+              { value: '155+', label: 'API Endpoints' },
+              { value: '$0', label: 'Forever' },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center min-w-[70px]">
+                <div className="text-2xl sm:text-4xl font-extrabold text-[#F59E0B]">{stat.value}</div>
+                <div className="text-xs sm:text-sm text-slate-400 mt-1">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link href="/auth/signup"
+              className="px-8 py-3.5 bg-[#F59E0B] text-[#02122c] font-bold rounded-full hover:bg-[#e8930a] transition-colors text-sm">
+              Get Started Free
+            </Link>
+            <Link href="/developers"
+              className="px-8 py-3.5 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm">
+              API Docs
+            </Link>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Pricing Cards */}
-      <div style={{
-        maxWidth: 1100,
-        margin: '-40px auto 0',
-        padding: '0 20px',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: 24,
-      }}>
-        {PLANS.map((plan) => (
-          <div
-            key={plan.name}
-            style={{
-              background: 'white',
-              borderRadius: 16,
-              padding: 32,
-              border: plan.highlight ? '2px solid #6366f1' : '1px solid #e5e7eb',
-              boxShadow: plan.highlight
-                ? '0 0 0 2px #6366f1, 0 20px 40px rgba(99,102,241,0.15)'
-                : '0 1px 3px rgba(0,0,0,0.08)',
-              position: 'relative',
-              transform: plan.highlight ? 'scale(1.03)' : 'none',
-            }}
-          >
-            {plan.highlight && (
-              <div style={{
-                position: 'absolute',
-                top: -12,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                color: 'white',
-                padding: '4px 16px',
-                borderRadius: 20,
-                fontSize: 12,
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-              }}>
-                MOST POPULAR
+      {/* Single Plan Card */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8 relative z-10">
+        <div className="bg-white rounded-2xl border-2 border-emerald-500 shadow-xl p-8 sm:p-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#02122c]">Forever Free</h2>
+                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 uppercase tracking-wider">
+                  All Features Included
+                </span>
               </div>
-            )}
-
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>{plan.name}</h3>
-            <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>{plan.description}</p>
-
-            <div style={{ marginBottom: 24, fontVariantNumeric: 'tabular-nums' }}>
-              <span style={{ fontSize: 20, fontWeight: 600, color: '#888', verticalAlign: 'top', lineHeight: '1.6' }}>$</span>
-              <span style={{ fontSize: 48, fontWeight: 800, letterSpacing: '-0.02em' }}>{getPrice(plan).replace('$', '')}</span>
-              <span style={{ fontSize: 14, color: '#888', marginLeft: 4 }}>
-                {plan.price === '$0'
-                  ? plan.priceNote
-                  : billingCycle === 'annual' ? '/mo (billed annually)' : plan.priceNote}
-              </span>
-              {plan.price !== '$0' && plan.annualSavings && billingCycle === 'monthly' && (
-                <div style={{ marginTop: 4 }}>
-                  <span style={{
-                    background: 'rgba(16,185,129,0.12)',
-                    color: '#059669',
-                    padding: '3px 10px',
-                    borderRadius: 10,
-                    fontSize: 11,
-                    fontWeight: 700,
-                  }}>
-                    {plan.annualSavings} with annual billing
-                  </span>
-                </div>
-              )}
-              {billingCycle === 'annual' && plan.price !== '$0' && (
-                <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600, marginTop: 4 }}>
-                  {plan.priceAnnualTotal} / year
-                  {plan.annualSavings && (
-                    <span style={{
-                      marginLeft: 8,
-                      background: 'rgba(16,185,129,0.12)',
-                      color: '#059669',
-                      padding: '2px 8px',
-                      borderRadius: 10,
-                      fontSize: 11,
-                      fontWeight: 700,
-                    }}>
-                      {plan.annualSavings}
-                    </span>
-                  )}
-                </div>
-              )}
-              {plan.overageNote && plan.price !== '$0' && (
-                <div style={{ fontSize: 11, color: '#999', marginTop: 6 }}>
-                  {plan.overageNote}
-                </div>
-              )}
+              <p className="text-slate-500 text-sm">Every feature, every country, every API endpoint — no limits, no catches.</p>
             </div>
+            <div className="text-right">
+              <div className="text-4xl sm:text-5xl font-extrabold text-[#02122c]">$0</div>
+              <div className="text-sm text-slate-400">forever</div>
+            </div>
+          </div>
 
-            <Link
-              href={plan.ctaLink}
-              style={{
-                display: 'block',
-                textAlign: 'center',
-                padding: '14px 24px',
-                borderRadius: 12,
-                fontSize: 15,
-                fontWeight: 700,
-                textDecoration: 'none',
-                background: plan.highlight
-                  ? 'linear-gradient(135deg, #F59E0B 0%, #d97706 100%)'
-                  : plan.name === 'Enterprise'
-                    ? 'linear-gradient(135deg, #4f46e5 0%, #9333ea 100%)'
-                    : '#02122c',
-                color: 'white',
-                marginBottom: 28,
-                transition: 'transform 0.15s, box-shadow 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
-            >
-              {plan.cta}
-            </Link>
-
-            <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 20 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#888', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
-                What&apos;s included
+          {/* Key highlights grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            {[
+              { icon: '⚡', label: '140 Features', sub: 'All active' },
+              { icon: '🌍', label: '240 Countries', sub: 'Full coverage' },
+              { icon: '🔗', label: '155+ Endpoints', sub: 'Full API access' },
+              { icon: '🎯', label: '100% Accuracy', sub: '9-field HS Code' },
+            ].map((item) => (
+              <div key={item.label} className="bg-slate-50 rounded-xl p-3 text-center">
+                <div className="text-xl mb-1">{item.icon}</div>
+                <div className="text-sm font-bold text-[#02122c]">{item.label}</div>
+                <div className="text-[10px] text-slate-400">{item.sub}</div>
               </div>
-              {plan.features.map((f, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-                  <span style={{ color: '#10b981', fontSize: 16, lineHeight: '20px', flexShrink: 0 }}>&#10003;</span>
-                  <span style={{ fontSize: 14, color: '#444', lineHeight: '20px' }}>{f}</span>
-                </div>
-              ))}
-              {plan.limitations.length > 0 && (
-                <>
-                  <div style={{ height: 12 }} />
-                  {plan.limitations.map((l, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-                      <span style={{ color: '#ccc', fontSize: 16, lineHeight: '20px', flexShrink: 0 }}>&#8212;</span>
-                      <span style={{ fontSize: 14, color: '#999', lineHeight: '20px' }}>{l}</span>
+            ))}
+          </div>
+
+          <Link href="/auth/signup"
+            className="block text-center w-full py-3.5 bg-[#02122c] text-white font-bold rounded-xl hover:bg-[#0a2540] transition-colors text-sm">
+            Create Free Account
+          </Link>
+        </div>
+      </section>
+
+      {/* Feature List by Category */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
+          All {FEATURES.length} Features Included
+        </h2>
+        <p className="text-center text-slate-500 mb-10 text-sm">
+          Every feature below is free. No tiers, no gates, no upgrade prompts.
+        </p>
+
+        <div className="space-y-6">
+          {featuresByCategory.slice(0, showAllFeatures ? undefined : 4).map((cat) => (
+            <div key={cat.key} className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+              <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+                <span className="text-lg">{cat.icon}</span>
+                <h3 className="font-bold text-sm text-[#02122c]">{cat.label}</h3>
+                <span className="text-[10px] font-bold text-slate-400 ml-auto">{cat.count} features</span>
+              </div>
+              <div className="px-5 py-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
+                  {cat.features.map((f) => (
+                    <div key={f.id} className="flex items-start gap-2 py-1">
+                      <span className="text-emerald-500 text-xs mt-0.5 flex-shrink-0">✓</span>
+                      <span className="text-sm text-slate-600">{f.name}</span>
                     </div>
                   ))}
-                </>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Comparison Table */}
-      <div style={{ maxWidth: 1100, margin: '60px auto', padding: '0 20px' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
-          Compare Plans
-        </h2>
-        <p style={{ textAlign: 'center', color: '#666', marginBottom: 40, fontSize: 15 }}>
-          Detailed feature comparison across all plans
-        </p>
-
-        <div className="compare-table-wrapper" style={{
-          background: 'white',
-          borderRadius: 16,
-          overflow: 'hidden',
-          border: '1px solid #e5e7eb',
-        }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14, minWidth: 600 }}>
-            <thead>
-              <tr style={{ background: '#f8fafc' }}>
-                <th style={{ textAlign: 'left', padding: '16px 20px', fontWeight: 600, color: '#666', width: '28%' }}>Feature</th>
-                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Free</th>
-                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Basic</th>
-                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%', color: '#F59E0B' }}>Pro</th>
-                <th style={{ textAlign: 'center', padding: '16px 12px', fontWeight: 700, width: '18%' }}>Enterprise</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ['API Calls / Month', '200', '2,000', '10,000', '50,000+'],
-                ['Countries Supported', '240', '240', '240', '240 + Custom'],
-                ['HS Code Precision', '10-digit', '10-digit', '10-digit', '10-digit'],
-                ['9-Field HS Classification', '100%', '100%', '100%', '100%'],
-                ['Field Validation & Guidance', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
-                ['Real-time FX Rates', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
-                ['FTA Detection', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
-                ['Anti-dumping / CVD Alerts', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
-                ['Sub-national Tax', '12 countries', '12 countries', '12 countries', '12 + Custom'],
-                ['Widget Branding', 'POTAL logo', 'POTAL logo', 'Custom brand', 'White-label'],
-                ['Languages', '50', '50', '50', '50 + Custom'],
-                ['Batch API', '50 items', '100 items', '500 items', '5,000 items'],
-                ['Webhook Notifications', '&#10003;', '&#10003;', '&#10003;', '&#10003;'],
-                ['Analytics Dashboard', 'Basic', 'Advanced', 'Advanced', 'Full + Export'],
-                ['Support', 'Community', 'Email', 'Priority', 'Dedicated'],
-                ['SLA', '&#8212;', '&#8212;', '99.9%', '99.99%'],
-                ['Rate Limit', '30/min', '60/min', '120/min', 'Unlimited'],
-              ].map(([feature, free, basic, pro, enterprise], i) => (
-                <tr key={i} style={{ borderTop: '1px solid #f0f0f0', background: i % 2 === 1 ? '#fafafa' : 'transparent' }} className="hover:!bg-slate-50 transition-colors">
-                  <td style={{ padding: '14px 20px', color: '#333', fontWeight: 500 }}>{feature}</td>
-                  {[free, basic, pro, enterprise].map((val, j) => {
-                    const isCheck = val === '&#10003;';
-                    const isDash = val === '&#8212;';
-                    return (
-                      <td key={j} style={{ textAlign: 'center', padding: '14px 12px', color: j === 2 ? '#444' : j === 0 ? '#888' : '#666', fontWeight: j === 2 ? 500 : 400 }}>
-                        {isCheck ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 22, height: 22, borderRadius: '50%', background: '#dcfce7', color: '#16a34a', fontSize: 13, fontWeight: 700 }}>&#10003;</span>
-                        ) : isDash ? (
-                          <span style={{ color: '#d1d5db' }}>&mdash;</span>
-                        ) : (
-                          <span>{val}</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* FAQ Section */}
-      <div style={{ maxWidth: 700, margin: '60px auto 80px', padding: '0 20px' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
-          Frequently Asked Questions
-        </h2>
-        <p style={{ textAlign: 'center', color: '#666', marginBottom: 40, fontSize: 15 }}>
-          Everything you need to know about POTAL pricing
-        </p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {FAQS.map((faq, i) => (
-            <div
-              key={i}
-              style={{
-                background: 'white',
-                borderRadius: 12,
-                border: '1px solid #e5e7eb',
-                overflow: 'hidden',
-              }}
-            >
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                aria-expanded={openFaq === i}
-                aria-controls={`pricing-faq-${i}`}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '18px 20px',
-                  border: 'none',
-                  background: 'none',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: '#1a1a1a',
-                }}
-              >
-                {faq.q}
-                <span aria-hidden="true" style={{
-                  fontSize: 20,
-                  color: '#999',
-                  transform: openFaq === i ? 'rotate(45deg)' : 'none',
-                  transition: 'transform 0.2s',
-                }}>
-                  +
-                </span>
-              </button>
-              {openFaq === i && (
-                <div
-                  id={`pricing-faq-${i}`}
-                  role="region"
-                  style={{
-                    padding: '0 20px 18px',
-                    fontSize: 14,
-                    color: '#555',
-                    lineHeight: 1.7,
-                  }}
-                >
-                  {faq.a}
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Enterprise Contact Form */}
-      <div id="enterprise-form" style={{
-        maxWidth: 600,
-        margin: '60px auto',
-        padding: '0 20px',
-      }}>
-        <div style={{
-          background: 'white',
-          borderRadius: 16,
-          padding: 40,
-          border: '2px solid #e5e7eb',
-          textAlign: 'center',
-        }}>
-          <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>
-            Enterprise Inquiry
+        {!showAllFeatures && featuresByCategory.length > 4 && (
+          <div className="text-center mt-6">
+            <button onClick={() => setShowAllFeatures(true)}
+              className="text-sm font-bold text-[#F59E0B] hover:text-[#d97706] cursor-pointer transition-colors">
+              Show all {featuresByCategory.length} categories →
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* Competitor Comparison */}
+      <section className="bg-white border-t border-b border-slate-200 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
+            Why Pay $1,500+/month?
           </h2>
-          <p style={{ fontSize: 14, color: '#666', marginBottom: 24 }}>
-            Need 50,000+ API calls? Get custom pricing with a dedicated account manager.
+          <p className="text-center text-slate-500 mb-10 text-sm">
+            POTAL delivers more features, better accuracy, and faster performance — for free.
           </p>
-          <EnterpriseInquiryForm />
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-200">
+                  <th className="text-left py-3 px-4 font-bold text-slate-400 text-xs uppercase">&nbsp;</th>
+                  <th className="text-center py-3 px-4 font-extrabold text-[#02122c]">
+                    POTAL
+                    <div className="text-[10px] font-bold text-emerald-500 mt-0.5">FREE</div>
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-500">Avalara</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-500">Zonos</th>
+                  <th className="text-center py-3 px-4 font-semibold text-slate-500">SimplyDuty</th>
+                </tr>
+              </thead>
+              <tbody>
+                {COMPETITOR_DATA.map((row) => (
+                  <tr key={row.label} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-4 font-semibold text-slate-600">{row.label}</td>
+                    <td className="py-3 px-4 text-center font-bold text-[#02122c]">{row.potal}</td>
+                    <td className="py-3 px-4 text-center text-slate-500">{row.avalara}</td>
+                    <td className="py-3 px-4 text-center text-slate-500">{row.zonos}</td>
+                    <td className="py-3 px-4 text-center text-slate-500">{row.simply}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* Enterprise Section */}
+      <section id="enterprise" className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#02122c] mb-4">
+              Need Custom Integration?
+            </h2>
+            <p className="text-slate-500 mb-6 text-sm leading-relaxed">
+              For organizations that need dedicated infrastructure, custom SLAs,
+              white-label solutions, or tailored integrations — let&apos;s talk.
+            </p>
+            <div className="space-y-3">
+              {[
+                'Dedicated infrastructure & SLA guarantee',
+                'White-label widget (no POTAL branding)',
+                'SSO & team management',
+                'Custom integrations & bulk APIs',
+                'Dedicated account manager',
+                'Priority support (24/7)',
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2">
+                  <span className="text-[#F59E0B] text-sm flex-shrink-0">★</span>
+                  <span className="text-sm text-slate-600">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+            <h3 className="text-lg font-bold text-[#02122c] mb-1">Contact Sales</h3>
+            <p className="text-xs text-slate-400 mb-5">We respond within 24 hours on business days.</p>
+            <EnterpriseInquiryForm />
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-white border-t border-slate-200 py-16">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-center text-slate-500 mb-10 text-sm">
+            Everything you need to know about POTAL pricing
+          </p>
+
+          <div className="space-y-2">
+            {FAQS.map((faq, i) => (
+              <div key={i} className="bg-slate-50 rounded-xl border border-slate-200 overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  aria-expanded={openFaq === i}
+                  className="w-full text-left px-5 py-4 flex items-center justify-between cursor-pointer"
+                >
+                  <span className="text-sm font-bold text-[#02122c]">{faq.q}</span>
+                  <span className="text-slate-400 text-lg ml-4 flex-shrink-0 transition-transform duration-200"
+                    style={{ transform: openFaq === i ? 'rotate(45deg)' : 'none' }}>+</span>
+                </button>
+                {openFaq === i && (
+                  <div className="px-5 pb-4 text-sm text-slate-500 leading-relaxed">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* CTA */}
-      <div style={{
-        background: '#02122c',
-        color: 'white',
-        padding: '60px 20px',
-        textAlign: 'center',
-      }}>
-        <div style={{ maxWidth: 600, margin: '0 auto' }}>
-          <h2 style={{ fontSize: 30, fontWeight: 800, marginBottom: 16 }}>
-            Ready to go global?
+      <section className="bg-[#02122c] py-16">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+            Stop paying for duty calculation.
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 32, fontSize: 16 }}>
-            Start calculating total landed costs for your customers in minutes.
-            No credit card required.
+          <p className="text-slate-400 mb-8">
+            140 features. 240 countries. Free forever. Get started in 30 seconds.
           </p>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-            <Link
-              href="/developers"
-              style={{
-                padding: '14px 32px',
-                borderRadius: 12,
-                background: '#F59E0B',
-                color: '#02122c',
-                fontWeight: 700,
-                fontSize: 15,
-                textDecoration: 'none',
-              }}
-            >
-              Calculate Duties Free
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link href="/auth/signup"
+              className="px-8 py-3 bg-[#F59E0B] text-[#02122c] font-bold rounded-full hover:bg-[#e8930a] transition-colors text-sm">
+              Create Free Account
             </Link>
-            <Link
-              href="/developers/playground"
-              style={{
-                padding: '14px 32px',
-                borderRadius: 12,
-                background: 'rgba(255,255,255,0.1)',
-                color: 'white',
-                fontWeight: 700,
-                fontSize: 15,
-                textDecoration: 'none',
-                border: '1px solid rgba(255,255,255,0.2)',
-              }}
-            >
-              Try Playground
+            <Link href="/features"
+              className="px-8 py-3 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm">
+              See All Features
+            </Link>
+            <Link href="/developers"
+              className="px-8 py-3 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm">
+              API Docs
             </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

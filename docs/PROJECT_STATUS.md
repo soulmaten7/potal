@@ -49,13 +49,21 @@ portal/
 - 정부 API: 7개국 (USITC, UK, EU TARIC, Canada, Australia, Japan, Korea)
 - **7개국 HS 벌크 다운로드**: gov_tariff_schedules **131,794행** ✅
 - **관세율 자동업데이트**: Vercel Cron **24개**
-- **MCP Server**: v1.3.1, 9개 도구, npm publish + MCP 공식 레지스트리 등록 완료
+- **MCP Server**: v1.4.0, 9개 도구, 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
 - **Pre-computing**: 490 HS6 × 240국 = **117,600 조합** 사전 계산 (캐시 <50ms)
 - **HS10 파이프라인**: ✅ 7개국 10자리 파이프라인 구현 완료
 - **기능 감사 (2026-03-29)**: CW14 142개 기능 코드 기반 정밀 검증 → **140 Active + 2 WON'T = 142** (구현율 140/140 = 100%, WON'T: Power BI, Mobile App) — 엑셀: POTAL_Feature_Audit_2603290000.xlsx
 - **API 엔드포인트**: **~155개+**
 - **심층 검증 84/84 PASS** ✅
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 사전 매핑 전략)
+- **MCP Server**: v1.4.0, 9개 도구, 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
+- **Features 페이지**: /features — 140 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어
+
+## ⭐ 인프라 비용 분석 (CW21 Cowork, 2026-03-29)
+- **고정 비용**: ~$114/mo (Vercel Pro $20 + Supabase Pro $25 + 도메인 $69/yr ≈ $5.75/mo + 기타)
+- **변동 비용 (1M API calls/mo 기준)**: ~$26/mo 추가 (Supabase bandwidth + Vercel function invocations)
+- **총 100만건 처리 시**: ~$140/mo → 건당 $0.00014
+- **AI 비용**: v3 파이프라인이 99%+ 코드 처리, AI fallback 거의 미사용 → 실질 $0
 
 ## ⭐ HS Code 100% 정확도 구조 (Cowork 11 설계)
 **전체 파이프라인:**
@@ -154,12 +162,12 @@ portal/
 - 결제: Paddle (MoR, Live 전환 완료)
 - Overage 빌링: ✅ 구현 완료
 
-## 최근 성과 (CW18)
-- Layer 2 GRI Pipeline 프로덕션 배포 ✅
-- Sprint 1 보안 6기능 100% (95 unit tests ALL PASS) ✅
-- 홈페이지 UI 업데이트 (6페이지 20건 수정) ✅
-- SEO Blog B2B 리라이트 (6포스트) ✅
-- 콜드 이메일 1차 67건 발송 완료 ✅ + 글로벌 ~400기업 캠페인 리스트 생성 ⏳ (이메일 검증 진행중)
-- Product Hunt B2B 리런치 예약 완료 (Scheduled) ✅
-- LinkedIn/Reddit/Instagram 소셜 미디어 ✅
-- Morning Brief v2 + Telegram 연동 ✅
+## 최근 성과 (CW21)
+- v3 파이프라인 21/21 Section 100%, codified-rules 595, 테스트 22/22 PASS ✅
+- 142개 기능 코드 기반 정밀 감사 → 140 Active + 2 WON'T ✅
+- Features 페이지 /features 구현 + 배포 (140 Active, 12 카테고리, 경쟁사 비교표) ✅
+- MCP v1.4.0 9-field v3.3 파이프라인 지원 ✅
+- Dashboard category 버그 수정 ✅
+- 인프라 비용 분석: 고정 ~$114/mo, 100만건 ~$140/mo ✅
+- 콜드 이메일 글로벌 251개 Gmail 드래프트 생성 완료 ✅
+- Product Hunt B2B 리런치 완료 ✅

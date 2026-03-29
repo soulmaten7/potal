@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-29 01:30 KST (CW21 — 미완성 21개 기능 전부 완성, 빌드 성공, regression 0)
+> 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — 기능감사 140 Active, Features 페이지 배포, MCP v1.4.0, 수익화 전략 논의)
 
 ---
 
@@ -207,7 +207,29 @@
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — CW21: v3 파이프라인 21/21 Section 100% 완성✅, 외장하드 전체 대조✅, 테스트 22/22 PASS✅
+### 현재 스프린트 — CW21: v3 파이프라인 100%✅ + 기능감사 140 Active✅ + Features 페이지✅ + MCP v1.4.0✅
+
+### ✅ CW21 Cowork — 기능감사 + Features 페이지 + MCP v1.4.0 + 수익화 전략 (2026-03-29 01:00~03:00 KST)
+
+**9개 주요 성과**:
+
+1. **MCP v1.4.0 9-field 프로덕션 검증** — classify_product 5→10 파라미터, material REQUIRED, calculate_landed_cost/screen_shipment/compare_countries도 확장. 10/10 함수 정상
+2. **Dashboard category 버그 수정** — `category: material` → 실제 category 입력 필드에서 읽도록 수정 (DashboardContent.tsx:1112)
+3. **142개 기능 코드 기반 정밀 감사** — CW14 이후 48개 기능 B/C/D→A 업그레이드 확인. 119 IMPL → T3 완성 후 140 Active
+4. **미완성 21개 기능 전부 완성** (T3 작업) — 빌드 성공, regression 0
+5. **Features 페이지 구현 + 배포** — /features 신규 페이지: 140 Active, 12 카테고리, 경쟁사 비교표, Hero/필터/그리드/CTA
+6. **홈페이지 7페이지 전체 점검** — 정상 확인
+7. **인프라 비용 분석** — 고정 ~$114/mo (Vercel $20 + Supabase $25 + 도메인 $69/yr), 100만건 처리 시 ~$140/mo
+8. **수익화 전략 논의** — Free + 크로스보더 광고 모델 (CEO 결정 보류)
+9. **AI fallback 모델 변경** — 보류 (v3가 거의 모든 것 처리)
+
+**커밋 5개**: 68050de (Dashboard fix + MCP v1.4.0), 4bfd23c (feature audit Excel), e21b22f (features page + i18n 51개 언어), a2e6103 (Coming Soon→Active unlock), 78f4d2c (비교표 수치 수정)
+
+**생성된 파일**:
+- POTAL_Feature_Audit_2603290000.xlsx (3시트: Feature Audit/Category Summary/Frontend Ready)
+- app/features/features-data.ts (140개 기능 TypeScript 데이터)
+- app/features/page.tsx (Features 페이지 UI)
+- i18n 51개 언어 파일에 `nav.features` 키 추가
 
 ### ✅ CW21 — v3 파이프라인 100% 완성 (2026-03-28 21:00~23:30 KST)
 
