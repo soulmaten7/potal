@@ -3,18 +3,49 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-const CATEGORIES = [
-  'apparel', 'electronics', 'footwear', 'accessories', 'cosmetics',
-  'food', 'furniture', 'toys', 'books', 'automotive',
-  'jewelry', 'sporting_goods', 'industrial', 'other',
-];
+// HS Code 21 Section 기반 Material → 허용 Category 매핑
+const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
+  cotton:   ['apparel', 'footwear', 'accessories', 'other'],
+  polyester:['apparel', 'footwear', 'accessories', 'sporting_goods', 'other'],
+  wool:     ['apparel', 'accessories', 'other'],
+  silk:     ['apparel', 'accessories', 'other'],
+  linen:    ['apparel', 'furniture', 'accessories', 'other'],
+  denim:    ['apparel', 'accessories', 'other'],
+  nylon:    ['apparel', 'footwear', 'accessories', 'sporting_goods', 'other'],
+  leather:  ['apparel', 'footwear', 'accessories', 'automotive', 'other'],
+  plastic:  ['toys', 'electronics', 'automotive', 'industrial', 'other'],
+  rubber:   ['footwear', 'toys', 'automotive', 'sporting_goods', 'industrial', 'other'],
+  aluminum: ['electronics', 'automotive', 'industrial', 'sporting_goods', 'furniture', 'other'],
+  steel:    ['automotive', 'industrial', 'electronics', 'sporting_goods', 'other'],
+  wood:     ['furniture', 'toys', 'other'],
+  glass:    ['industrial', 'electronics', 'other'],
+  ceramic:  ['industrial', 'other'],
+  paper:    ['books', 'other'],
+  gold:     ['jewelry', 'accessories', 'other'],
+  silver:   ['jewelry', 'accessories', 'other'],
+  other:    ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'],
+};
 
-// 21 Section 기준 주요 소재
-const MATERIALS = [
-  'cotton', 'polyester', 'leather', 'wool', 'silk', 'nylon',
-  'linen', 'denim', 'plastic', 'rubber', 'aluminum', 'steel',
-  'wood', 'glass', 'ceramic', 'paper', 'gold', 'silver', 'other',
-];
+// Category → 허용 Material 매핑 (역방향)
+const CATEGORY_TO_MATERIALS: Record<string, string[]> = {
+  apparel:       ['cotton','polyester','wool','silk','linen','denim','nylon','leather','other'],
+  electronics:   ['plastic','aluminum','steel','glass','other'],
+  footwear:      ['leather','rubber','cotton','nylon','polyester','other'],
+  accessories:   ['cotton','polyester','leather','gold','silver','wool','silk','nylon','other'],
+  cosmetics:     ['other'],
+  food:          ['other'],
+  furniture:     ['wood','aluminum','steel','leather','linen','other'],
+  toys:          ['plastic','rubber','wood','other'],
+  books:         ['paper','other'],
+  automotive:    ['steel','aluminum','rubber','leather','plastic','other'],
+  jewelry:       ['gold','silver','other'],
+  sporting_goods:['aluminum','steel','rubber','nylon','plastic','polyester','other'],
+  industrial:    ['steel','aluminum','plastic','rubber','glass','ceramic','other'],
+  other:         ['cotton','polyester','wool','silk','linen','denim','nylon','leather','plastic','rubber','aluminum','steel','wood','glass','ceramic','paper','gold','silver','other'],
+};
+
+const ALL_MATERIALS = ['cotton','polyester','wool','silk','linen','denim','nylon','leather','plastic','rubber','aluminum','steel','wood','glass','ceramic','paper','gold','silver','other'];
+const ALL_CATEGORIES = ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'];
 
 const COUNTRIES = [
   { code: 'CN', name: 'China' },
@@ -175,12 +206,19 @@ export default function HeroCalculator() {
           <label style={labelStyle}>Material</label>
           <select
             value={material}
-            onChange={e => setMaterial(e.target.value)}
+            onChange={e => {
+              const newMat = e.target.value;
+              setMaterial(newMat);
+              const allowed = MATERIAL_TO_CATEGORIES[newMat] || ALL_CATEGORIES;
+              if (!allowed.includes(category)) {
+                setCategory(allowed[0]);
+              }
+            }}
             style={{ ...inputStyle, cursor: 'pointer' }}
             onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
             onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
           >
-            {MATERIALS.map(m => (
+            {(CATEGORY_TO_MATERIALS[category] || ALL_MATERIALS).map(m => (
               <option key={m} value={m} style={{ background: '#0a1e3d', color: 'white' }}>
                 {m.charAt(0).toUpperCase() + m.slice(1)}
               </option>
@@ -193,12 +231,19 @@ export default function HeroCalculator() {
           <label style={labelStyle}>Category</label>
           <select
             value={category}
-            onChange={e => setCategory(e.target.value)}
+            onChange={e => {
+              const newCat = e.target.value;
+              setCategory(newCat);
+              const allowed = CATEGORY_TO_MATERIALS[newCat] || ALL_MATERIALS;
+              if (!allowed.includes(material)) {
+                setMaterial(allowed[0]);
+              }
+            }}
             style={{ ...inputStyle, cursor: 'pointer' }}
             onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
             onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
           >
-            {CATEGORIES.map(c => (
+            {(MATERIAL_TO_CATEGORIES[material] || ALL_CATEGORIES).map(c => (
               <option key={c} value={c} style={{ background: '#0a1e3d', color: 'white' }}>
                 {c.replace('_', ' ')}
               </option>
