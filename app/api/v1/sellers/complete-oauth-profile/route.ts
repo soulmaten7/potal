@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
 
     if (sellerError) {
       return NextResponse.json(
-        { success: false, error: { message: "Failed to create seller profile." } },
+        { success: false, error: { message: "Failed to create seller profile.", detail: sellerError?.message || sellerError?.code || JSON.stringify(sellerError) } },
         { status: 500 }
       );
     }

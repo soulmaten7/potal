@@ -104,12 +104,15 @@ export default function CompleteProfilePage() {
   return (
     <div style={{
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      minHeight: 'calc(100vh - 80px)',
+      position: 'fixed',
+      inset: 0,
+      zIndex: 9999,
       background: '#f8fafc',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: 20,
+      overflow: 'auto',
     }}>
       <div style={{
         background: 'white',
