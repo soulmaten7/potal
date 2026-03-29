@@ -63,7 +63,7 @@ export async function GET(request: Request) {
         .from("sellers") as any)
         .insert({
           id: userId,
-          email,
+          contact_email: email,
           company_name: companyName,
           country: typeof country === "string" ? country.toUpperCase() : country,
           industry,
