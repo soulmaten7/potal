@@ -1,8 +1,16 @@
 import type { MetadataRoute } from "next";
+import { getAllFeatureSlugs } from "./features/features-data";
 
 const baseUrl = "https://potal.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const featurePages: MetadataRoute.Sitemap = getAllFeatureSlugs().map((slug) => ({
+    url: `${baseUrl}/features/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   return [
     // 메인 페이지
     {
@@ -142,5 +150,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.3,
     },
+    // Feature guide pages (140 pages for SEO)
+    ...featurePages,
   ];
 }

@@ -76,11 +76,12 @@ export default function FeaturesPage() {
             const isHovered = hoveredId === feature.id;
 
             return (
-              <div
+              <Link
                 key={feature.id}
+                href={`/features/${feature.slug}`}
                 onMouseEnter={() => setHoveredId(feature.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 transition-all duration-200 hover:border-[#F59E0B] hover:shadow-md"
+                className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 transition-all duration-200 hover:border-[#F59E0B] hover:shadow-md block"
               >
                 {/* Top row: icon + badges */}
                 <div className="flex items-start justify-between mb-2">
@@ -103,13 +104,18 @@ export default function FeaturesPage() {
                   {feature.description}
                 </p>
 
-                {/* API badge */}
-                {feature.apiEndpoint && (
-                  <div className={`mt-3 text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded inline-block transition-opacity ${isHovered ? 'opacity-100' : 'opacity-60'}`}>
-                    {feature.apiEndpoint}
-                  </div>
-                )}
-              </div>
+                {/* API badge + View Guide */}
+                <div className="flex items-center justify-between mt-3">
+                  {feature.apiEndpoint ? (
+                    <div className={`text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded inline-block transition-opacity ${isHovered ? 'opacity-100' : 'opacity-60'}`}>
+                      {feature.apiEndpoint}
+                    </div>
+                  ) : <div />}
+                  <span className={`text-[11px] font-bold text-[#F59E0B] transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                    View Guide &rarr;
+                  </span>
+                </div>
+              </Link>
             );
           })}
         </div>
