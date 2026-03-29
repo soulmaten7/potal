@@ -1,5 +1,36 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-29 02:20 KST (CW21 — 140개 기능 전부 Active, Features 페이지 배포)
+> 마지막 업데이트: 2026-03-29 16:30 KST (CW22 — Exit 전략 피벗 + Forever Free + 홈 리디자인 + Features 가이드 + 커뮤니티)
+
+## [2026-03-29 16:30 KST] CW22 — 전략 피벗: Exit 전략 + Forever Free
+
+### 전략 변경
+- **Exit(인수) 전략 확정**: 트래픽/데이터 극대화 → 인수 (CEO 결정 완료)
+- 요금제 4단계(Free/Basic/Pro/Enterprise) **전면 폐기**
+- 새 구조: **Forever Free** (140개 전부 무료) + Enterprise Contact Us
+- Custom 세팅비 없음 — 140개 상세 가이드로 셀프서비스
+- 가입 구조: 필수 5개(1달 무료) → 프로필 완성(Forever Free)
+- 데이터 수집이 Exit 핵심: 크로스보더 셀러 프로필 (국가/업종/규모/플랫폼/매출)
+
+### 코드 변경 (A+B+C+D+G 완료)
+- **A: 요금제 변경**: Pricing 페이지 "Everything Free. Forever." 재설계, plan-checker 전체 무제한
+- **B: 가입 통합**: /auth/join→/auth/signup 리다이렉트, 필수 5개 필드, 프로필 완성도 시스템(50%→100%), Forever Free 자동 업그레이드, trial 만료 시 API 403
+- **C: 홈 화면 리디자인**: 히어로 "140 Features. All Free." + 경쟁사 기능 수/비용 비교 차트 2개 + Free 배너
+- **D: Features 가이드**: 140개 상세 가이드 페이지 (/features/[slug]) 동적 라우트 + SEO sitemap
+- **G: 커뮤니티 게시판**: /community — 버그/질문/제안, 140개 기능별 분류, 댓글, 추천, Header 링크, 50개 i18n
+
+### DB 마이그레이션
+- **055_forever_free_profile.sql**: sellers 컬럼 10개 (country, industry, company_size, monthly_shipments, primary_platform, main_trade_countries, annual_revenue_range, profile_completed_at, trial_type, trial_expires_at)
+- **056_community_forum.sql**: community_posts + community_comments + community_upvotes + RLS + 인덱스
+
+### Git 커밋 (CW22)
+- `788c10f` feat: CW22 D-1~D-5 — 140 feature guide pages with dynamic routes + SEO
+- `ffdf675` feat: CW22 home redesign — viral landing page + competitor charts + Free badge
+- `e989f0e` feat: Community forum — posts, comments, upvotes, i18n (G-1~G-7)
+- `33149fb` fix: remove scripts with secrets from tracking (push protection)
+- `0ad950c` feat: CW22 pivot — Forever Free pricing, plan logic, signup flow, docs
+- `cb7660c` feat: Forever Free pivot — unified signup, profile completion, trial system (B-1~B-6)
+
+---
 
 ## [2026-03-29 02:20 KST] CW21-B — 140개 기능 완성 + Features 페이지 + 수익화 전략
 
