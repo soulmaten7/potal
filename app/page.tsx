@@ -556,11 +556,11 @@ export default function HomePage() {
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <span style={{ color: '#E8640A', fontWeight: 700, fontSize: 14 }}>140 FEATURES</span>
-            <h3 style={{ color: 'white', fontSize: 22, fontWeight: 700, margin: '4px 0' }}>각 기능을 직접 데모로 사용해보세요</h3>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>회원가입 없이 모든 기능 무료 체험 가능</p>
+            <h3 style={{ color: 'white', fontSize: 22, fontWeight: 700, margin: '4px 0' }}>Try every feature with a live demo</h3>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, margin: 0 }}>No sign-up required. All 140 features free to try.</p>
           </div>
           <Link href="/features" style={{ background: '#E8640A', color: 'white', padding: '14px 28px', borderRadius: 10, fontWeight: 700, textDecoration: 'none', fontSize: 15, whiteSpace: 'nowrap' }}>
-            140개 기능 둘러보기 →
+            Explore 140 Features →
           </Link>
         </div>
       </section>
