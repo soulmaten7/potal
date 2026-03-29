@@ -120,9 +120,6 @@ export function Header() {
             <span className="text-[#F59E0B]">O</span>
             <span className="text-[#02122c]">TAL</span>
           </span>
-          <span className="ml-2 px-2 py-0.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 rounded-full border border-emerald-200">
-            Free
-          </span>
         </Link>
 
         {/* Mobile Hamburger Button */}

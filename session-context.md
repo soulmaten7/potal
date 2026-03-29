@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-29 03:30 KST (CW21 Cowork — 기능감사 140 Active, Features 페이지 배포, MCP v1.4.0, 수익화 전략 논의)
+> 마지막 업데이트: 2026-03-29 18:30 KST (CW22 피벗 — Exit 전략 확정, Forever Free, 홈 리디자인, 커뮤니티, 140개 가이드 페이지)
 
 ---
 
@@ -67,37 +67,43 @@
 - Git push: HTTPS 인증 실패 → Mac 터미널에서 직접 push
 - **⚠️ 빌드 규칙**: `npm run build` 확인 후 push 필수
 
+### ⚠️⚠️⚠️ 출구 전략 (Exit Strategy) — CW22 확정 (2026-03-29)
+
+**CEO 결정: Exit(인수) 전략 중심으로 전환.**
+- 트래픽/데이터 극대화 → 인수 가치 극대화
+- 수익: Custom 세팅비 없음. 트래픽 데이터 = 인수 가치
+- 상세 피벗 계획: `docs/PIVOT_PLAN_CW22.md`
+
 ### 비즈니스 모델
 
-**⚠️⚠️⚠️ 요금제 전략 변경 완료 (2026-03-06, 세션 28 확정) — 새 세션에서 반드시 숙지할 것 ⚠️⚠️⚠️**
+**⚠️⚠️⚠️ 요금제 CW22에서 전면 폐기 (2026-03-29) — Forever Free 전환 완료 ⚠️⚠️⚠��**
 
-> **구 요금제 (폐기됨, 더 이상 유효하지 않음)**:
-> Free 500건 / Starter $9 5K건 / Growth $29 25K건 / Enterprise custom
-> → 이 숫자들은 세션 17~18에서 설정한 것으로, **세션 28에서 전면 폐기**되었음
->
-> **✅ 코드 내 요금제 숫자 업데이트 완료 (세션 37 후반)**:
-> lemonsqueezy.ts 삭제, paddle.ts 신 요금제 반영, pricing/page.tsx Annual 토글, DashboardContent Annual 토글,
-> i18n 6개 언어 키 교체 (starter→free, growth→basic+pro, scale→enterprise). Vercel B2C 환경변수 15개 삭제.
+> **구 요금제 (전부 폐기됨, 더 이상 유효하지 않음)**:
+> - 1차 폐기 (세션 28): Free 500건 / Starter $9 / Growth $29 / Enterprise custom
+> - 2차 폐기 (CW22): Free $0/200건 / Basic $20/2K / Pro $80/10K / Enterprise $300/50K
+> → **CW22에서 유료 플랜 전부 폐기. Forever Free로 전환.**
 
-**신 요금제 (세션 28 확정, 현재 유효):**
+**✅ 현재 유효한 요금제 (CW22 확정):**
 
-**Layer 1: 셀러 위젯 SaaS** — Free $0/**200** calls, Basic $20/2K, Pro $80/10K, Enterprise $300+/50K+
-**Layer 2: AI 에이전트 API** — 각 LLM 커스텀 앱 + 직접 API 호출 과금
+| 플랜 | 가격 | 할당량 | 비고 |
+|------|------|--------|------|
+| Forever Free | $0 | 100K건/월 (소프트 캡) | 140개 기능 전부 무료 |
+| Enterprise | Contact Us | 커스텀 | 가격 미표시, 문의 시 협의 |
 
-| 플랜 | Monthly | Annual (20% off) | 할당량 | 초과 요금 | 타겟 |
-|------|---------|-----------------|--------|----------|------|
-| Free | $0 | $0 | **200건/월** | - | 체험/Hobby |
-| Basic | $20 | $16/mo ($192/yr) | 2,000건/월 | $0.015/건 | Small~Medium |
-| Pro | $80 | $64/mo ($768/yr) | 10,000건/월 | $0.012/건 | Large |
-| Enterprise | $300 | $240/mo ($2,880/yr) | 50,000건/월 | $0.01/건 | Mid-Market |
+- **MRR: $0 (의도적 — Exit 전략)**
+- Paddle 결제: 비활성화 (Enterprise 문의 시에만 사용)
+- 초과 요금: 없음. 100K 소프트 캡은 DDoS 방지 목적
 
-**Volume Commit**: 100K+/월 → $0.008/건 (Enterprise 협상)
-**결제**: Paddle (MoR 모델, 5%+$0.50/transaction). 마진: Basic 82.5%, Pro 81.9%, Enterprise 78.2%
+### 가입 구조 (CW22 확정)
+- **필수 5개** (이메일, 비밀번호, 회사명, 국가, 업종) → **1달 무료**
+- **프로필 완성 5개** (회사 규모, 월 배송 건수, 플랫폼, 수출입 국가, 연 매출) → **Forever Free**
+- 1달 후 프로필 미완성 시 접근 제한 (trial_expires_at 체크)
 
-### 요금제 전략 요약 (세션 28 확정)
-- **전략**: "모두에게 싸게 + 압도적 기능" = 가격 파괴자. AI 원가 구조로 건당 $0.008 이하, 마진 97%
-- **포지셔닝**: POTAL $20/2,000건 (건당 $0.01) vs Avalara $1,500+/월, Zonos $4,000+/월
-- **상세 분석**: POTAL_Cost_Analysis_45Features.xlsx, POTAL_Pricing_Strategy_Analysis.xlsx
+### 요금제 전략 요약 (CW22 확정)
+- **전략**: Exit(인수) — 140개 기능 전부 무료 → 트래픽/데이터 극대화
+- **포지셔닝**: POTAL $0 (140기능) vs Avalara $1,500+/월 (31기능) vs Zonos $4,000+/월 (31기능)
+- **바이럴**: 경쟁사 비교 차트 + "All Free" → Product Hunt/HN/Reddit/LinkedIn 동시 런칭
+- **상세 분석**: POTAL_Cost_Analysis_45Features.xlsx, docs/PIVOT_PLAN_CW22.md
 
 ### Data Flywheel
 - 상품명 → DB 조회(AI $0) → 없으면 LLM 1회 → DB 저장 → 이후 $0 (self-reinforcing cache)
@@ -118,7 +124,7 @@
 - **Tier 1**: Avalara ($1,500+/월), Global-e (GMV 6-6.5%)
 - **Tier 2**: Zonos ($2/주문+10%), DHL ($50/200건)
 - **Tier 3**: Easyship ($29/2K), SimplyDuty (£9.99/100건), Dutify ($15/200건)
-- **POTAL**: $20/2K + 142기능 + AI 에이전트 유일 = "AI 가격 파괴자"
+- **POTAL**: $0 Forever Free + 140기능 + AI 에이전트 유일 = Exit 전략 (인수 가치 극대화)
 - 상세: Competitor_Feature_Matrix.xlsx, POTAL_vs_Competitors_v2.xlsx
 
 ### AI 에이전트 플랫폼 (Phase 2)
@@ -130,6 +136,18 @@
 | Copilot | ⏸ | Business 계정 필요 |
 | Meta AI | ⏸ | 지역 제한 (미국 전용) |
 | Grok | ⏸ | 커스텀 앱 스토어 없음 |
+
+### CW22 Cowork — 전략 피벗 (2026-03-29)
+**CEO 결정: Exit(인수) 전략 확정. Forever Free 전환.**
+
+**완료 항목:**
+- ✅ **A: 요금제 구조 변경** — 4단계(Free/Basic/Pro/Enterprise) → Forever Free + Enterprise Contact Us. plan-checker, middleware, pricing 페이지, Dashboard 빌링탭, i18n 51개 언어 전부 업데이트
+- ✅ **B: 가입/데이터 수집 구조** — B2B/B2C 통합 가입, 필수 5개→1달 무료, 프로필 완성→Forever Free, trial_expires_at 체크, DB 마이그레이션 2개 (055_unified_signup, 056_community_forum)
+- ✅ **C: 홈 화면 리디자인** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사 실데이터), 비용 비교 테이블, FreeBanner, Header Free 뱃지(후에 제거)
+- ✅ **D: Features 140개 가이드** — features-data.ts slug 추가, features-guides.ts 생성(54개 상세+86개 템플릿), [slug] 동적 라우트, SEO 메타+sitemap 140개 URL
+- ✅ **G: 커뮤니티 페이지** — /community 게시판, /community/new 글쓰기, /community/[id] 상세, 댓글/추천, DB 마이그레이션
+- ⏳ **E: 바이럴 마케팅** — 사이트 완성 후 동시 런칭 (다음 세션)
+- ⏳ **F: 문서 동기화** — 진행 중 (이 업데이트)
 
 ---
 

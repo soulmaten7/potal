@@ -1,5 +1,5 @@
 # PROJECT_STATUS.md — POTAL 프로젝트 현황/수치
-# 마지막 업데이트: 2026-03-29 03:00 KST (140/140 기능 전부 Active — WON'T 2개 제외 100%)
+# 마지막 업데이트: 2026-03-29 18:30 KST (CW22 피벗: Exit 전략, Forever Free, 홈 리디자인, 140개 가이드, 커뮤니티)
 # 이 파일은 참조용. Claude Code가 수치 확인 필요 시 읽는 파일.
 
 ## 프로젝트 개요
@@ -8,7 +8,7 @@ POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위
 
 ## 기술 스택
 - Next.js 14+ App Router + TypeScript
-- Supabase (Auth + PostgreSQL DB), Paddle (결제, MoR) ← LemonSqueezy에서 전환
+- Supabase (Auth + PostgreSQL DB), Paddle (결제 비활성화, Enterprise 문의 시에만 사용)
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 
 ## 📁 폴더 구조 (2026-03-09 정리)
@@ -58,6 +58,8 @@ portal/
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 사전 매핑 전략)
 - **MCP Server**: v1.4.0, 9개 도구, 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
 - **Features 페이지**: /features — 140 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어
+- **Feature 가이드**: /features/[slug] — 140개 정적 페이지 (SEO, sitemap 포함)
+- **커뮤니티**: /community — 게시판, 글쓰기, 댓글, 추천, 기능별 필터
 
 ## ⭐ 인프라 비용 분석 (CW21 Cowork, 2026-03-29)
 - **고정 비용**: ~$114/mo (Vercel Pro $20 + Supabase Pro $25 + 도메인 $69/yr ≈ $5.75/mo + 기타)
@@ -150,17 +152,27 @@ portal/
 - AGR: ~129M행, 53개국 (KOR 재임포트 완료)
 - WDC: 1,896/1,899 파트, 17.6억 건, 카테고리 매핑 3단계 완료
 
-## 요금제 ('Grow With You' 전략)
-| 플랜 | Monthly | Annual (20% off) | 할당량 | 초과 요금 |
-|------|---------|-----------------|--------|----------|
-| Free | $0 | $0 | 200건/월 | - |
-| Basic | $20 | $16/mo | 2,000건/월 | $0.015/건 |
-| Pro | $80 | $64/mo | 10,000건/월 | $0.012/건 |
-| Enterprise | $300 | $240/mo | 50,000건/월 | $0.01/건 |
+## ⚠️ 출구 전략 (Exit Strategy) — CW22 확정 (2026-03-29)
+- **CEO 결정**: Exit(인수) 전략 중심. 트래픽/데이터 극대화 → 인수 가치
+- **MRR: $0 (의도적)**
+- 상세 피벗 계획: `docs/PIVOT_PLAN_CW22.md`
 
-- 핵심: 기능이 아닌 볼륨으로만 차별화
-- 결제: Paddle (MoR, Live 전환 완료)
-- Overage 빌링: ✅ 구현 완료
+## 요금제 (Forever Free — CW22 확정)
+| 플랜 | 가격 | 할당량 | 비고 |
+|------|------|--------|------|
+| Forever Free | $0 | 100K건/월 (소프트 캡) | 140개 기능 전부 무료 |
+| Enterprise | Contact Us | 커스텀 | 가격 미표시, 문의 시 협의 |
+
+> **⚠️ 구 요금제 전부 폐기됨** (Free $0/200건, Basic $20, Pro $80, Enterprise $300)
+> CW22에서 Forever Free로 전환. 유료 플랜 재도입 금지.
+
+- 결제: Paddle (비활성화, Enterprise 문의 시에만)
+- 초과 요금: 없음 (100K 소프트 캡은 DDoS 방지 목적)
+
+## 가입 구조 (CW22 확정)
+- 필수 5개 (이메일, 비밀번호, 회사명, 국가, 업종) → 1달 무료
+- 프로필 완성 5개 (회사 규모, 월 배송, 플랫폼, 수출입 국가, 연 매출) → Forever Free
+- 미완성 1달 후 접근 제한 (trial_expires_at 체크)
 
 ## 최근 성과 (CW21)
 - v3 파이프라인 21/21 Section 100%, codified-rules 595, 테스트 22/22 PASS ✅
@@ -171,3 +183,11 @@ portal/
 - 인프라 비용 분석: 고정 ~$114/mo, 100만건 ~$140/mo ✅
 - 콜드 이메일 글로벌 251개 Gmail 드래프트 생성 완료 ✅
 - Product Hunt B2B 리런치 완료 ✅
+
+## 최근 성과 (CW22 — 전략 피벗)
+- **Exit 전략 확정** — CEO 결정: 인수 전략, Forever Free 전환 ✅
+- **요금제 구조 변경 (A)** — 4단계→Forever Free + Enterprise Contact Us, plan-checker/middleware/pricing/Dashboard/i18n 전부 업데이트 ✅
+- **가입 구조 변경 (B)** — 통합 가입, 필수5→1달 무료, 프로필 완성→Forever Free, DB 마이그레이션 2개 ✅
+- **홈 화면 리디자인 (C)** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사), 비용 비교 테이블 ✅
+- **140개 가이드 페이지 (D)** — /features/[slug] 동적 라우트, SEO 메타, sitemap 140개 URL, Copy 버튼 ✅
+- **커뮤니티 페이지 (G)** — /community 게시판+글쓰기+댓글+추천, 기능별 필터 ✅

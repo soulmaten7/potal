@@ -1,6 +1,6 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침 (핵심 규칙만)
-# 마지막 업데이트: 2026-03-29 02:20 KST (140개 기능 전부 Active, Features 페이지 배포, 수익화 전략 논의)
-# CW21 핵심: 기능감사 142개→140 IMPL(WON'T 2), Features 페이지 140 Active, 경쟁사 비교, 인프라 $140/100만건
+# 마지막 업데이트: 2026-03-29 18:30 KST (CW22 피벗: Exit 전략, Forever Free, 경쟁사 비교 홈화면, 140개 가이드, 커뮤니티)
+# CW22 핵심: Exit 전략 확정, Forever Free(140기능 무료), 홈 리디자인, /features/[slug] 140페이지, /community
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -24,7 +24,10 @@
 | `docs/PROJECT_STATUS.md` | 핵심 수치, 기술 스택, 폴더 구조, 전략, 요금제, 테이블 현황 |
 | `docs/CREDENTIALS.md` | 인증정보, Supabase 연결 방법 |
 | `docs/DIVISION_STATUS.md` | 15개 Division 상세, Layer 1/2/3, 운영 사이클 |
-| `docs/sessions/COWORK_SESSION_HISTORY.md` | CW13~CW18 세션별 성과 |
+| `docs/sessions/COWORK_SESSION_HISTORY.md` | CW13~CW22 세션별 성과 |
+| `docs/PIVOT_PLAN_CW22.md` | Exit 전략 피벗 계획 (32개 항목) |
+| `app/features/features-guides.ts` | 140개 기능 가이드 데이터 |
+| `app/community/` | 커뮤니티 포럼 (게시판/글쓰기/댓글) |
 
 ## 콜드이메일 규칙
 - **콜드이메일 작성/발송 시 반드시 `POTAL_Cold_Email_Master.xlsx`를 먼저 읽을 것**
@@ -46,6 +49,7 @@
    - **핵심 5개**: CLAUDE.md, session-context.md, .cursorrules, CHANGELOG.md, NEXT_SESSION_START.md
    - **참조 3개**: `docs/PROJECT_STATUS.md`(수치 변경 시), `docs/CREDENTIALS.md`(인증정보 변경 시), `docs/DIVISION_STATUS.md`(Division/Layer 변경 시)
 10. **HS Code 벤치마크 오류 시 `POTAL_Ablation_V2.xlsx` 대조 필수**
+11. **유료 플랜 재도입 금지** — Forever Free 구조 유지 (CW22 CEO 확정). Enterprise Contact Us만 허용
 
 ## 로깅 규칙 (Claude Code 엑셀)
 - 시트명: `YYMMDDHHMM` | 열: A순번 B시간 C구분 D상세 E파일경로 F상태
