@@ -31,6 +31,7 @@ interface Post {
   comment_count: number;
   created_at: string;
   user_id: string;
+  author_email?: string;
 }
 
 function timeAgo(dateStr: string): string {
@@ -279,7 +280,10 @@ export default function CommunityPage() {
                           )}
                         </div>
                         <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-1">{post.title}</h3>
-                        <p className="text-xs text-gray-400">{timeAgo(post.created_at)}</p>
+                        <p className="text-xs text-gray-400">
+                          {post.author_email ? <span className="font-medium text-gray-500 mr-1">{post.author_email.split('@')[0]}</span> : null}
+                          {timeAgo(post.created_at)}
+                        </p>
                       </div>
                       <div className="flex items-center gap-3 text-gray-400 text-xs flex-shrink-0">
                         <div className="text-center">

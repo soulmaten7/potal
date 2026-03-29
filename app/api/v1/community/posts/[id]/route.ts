@@ -47,9 +47,31 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
     .eq('post_id', id)
     .order('created_at', { ascending: true });
 
+  // Fetch author emails using service role (best-effort)
+  let postAuthorEmail = '';
+  const commentAuthors: Record<string, string> = {};
+  try {
+    const { data: postUser } = await supabase.auth.admin.getUserById(post.user_id);
+    postAuthorEmail = postUser?.user?.email || '';
+
+    const commentUserIds = [...new Set((comments || []).map((c: { user_id: string }) => c.user_id))];
+    await Promise.all(commentUserIds.map(async (uid) => {
+      const { data: u } = await supabase.auth.admin.getUserById(uid);
+      if (u?.user?.email) commentAuthors[uid] = u.user.email;
+    }));
+  } catch { /* best-effort, requires service role */ }
+
+  const commentsWithAuthor = (comments || []).map((c: Record<string, unknown>) => ({
+    ...c,
+    author_email: commentAuthors[c.user_id as string] || '',
+  }));
+
   return NextResponse.json({
     success: true,
-    data: { post, comments: comments || [] },
+    data: {
+      post: { ...post, author_email: postAuthorEmail },
+      comments: commentsWithAuthor,
+    },
   });
 }
 

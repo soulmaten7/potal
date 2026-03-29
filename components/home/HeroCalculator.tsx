@@ -9,6 +9,13 @@ const CATEGORIES = [
   'jewelry', 'sporting_goods', 'industrial', 'other',
 ];
 
+// 21 Section 기준 주요 소재
+const MATERIALS = [
+  'cotton', 'polyester', 'leather', 'wool', 'silk', 'nylon',
+  'linen', 'denim', 'plastic', 'rubber', 'aluminum', 'steel',
+  'wood', 'glass', 'ceramic', 'paper', 'gold', 'silver', 'other',
+];
+
 const COUNTRIES = [
   { code: 'CN', name: 'China' },
   { code: 'US', name: 'United States' },
@@ -64,6 +71,8 @@ const labelStyle: React.CSSProperties = {
 };
 
 export default function HeroCalculator() {
+  const [productName, setProductName] = useState('');
+  const [material, setMaterial] = useState('cotton');
   const [category, setCategory] = useState('apparel');
   const [price, setPrice] = useState('');
   const [origin, setOrigin] = useState('CN');
@@ -90,6 +99,8 @@ export default function HeroCalculator() {
           'X-Demo-Request': 'true',
         },
         body: JSON.stringify({
+          ...(productName.trim() ? { productName: productName.trim() } : {}),
+          material,
           productCategory: category,
           price: priceNum,
           origin,
@@ -145,6 +156,38 @@ export default function HeroCalculator() {
 
       {/* Inputs grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+        {/* Product Name - full width */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Product Name</label>
+          <input
+            type="text"
+            placeholder="e.g. Cotton T-Shirt, Running Shoes..."
+            value={productName}
+            onChange={e => setProductName(e.target.value)}
+            style={{ ...inputStyle }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
+        {/* Material */}
+        <div>
+          <label style={labelStyle}>Material</label>
+          <select
+            value={material}
+            onChange={e => setMaterial(e.target.value)}
+            style={{ ...inputStyle, cursor: 'pointer' }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          >
+            {MATERIALS.map(m => (
+              <option key={m} value={m} style={{ background: '#0a1e3d', color: 'white' }}>
+                {m.charAt(0).toUpperCase() + m.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Category */}
         <div>
           <label style={labelStyle}>Category</label>
