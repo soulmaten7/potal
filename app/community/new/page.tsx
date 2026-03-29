@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { FEATURES, CATEGORIES, type FeatureCategory, CATEGORY_ICONS } from '@/app/features/features-data';
+import { USER_CATEGORIES } from '../community-categories';
 
 const POST_TYPES = [
   { value: 'bug', label: 'Bug Report', icon: '\ud83d\udc1b', desc: 'Something is broken or not working as expected' },
@@ -27,6 +28,7 @@ function NewPostForm() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [communityCategory, setCommunityCategory] = useState(searchParams.get('category') || 'general');
   const [postType, setPostType] = useState(searchParams.get('type') || '');
   const [featureSlug, setFeatureSlug] = useState(searchParams.get('feature') || '');
   const [featureCategory, setFeatureCategory] = useState('');
@@ -72,6 +74,7 @@ function NewPostForm() {
           title: title.trim(),
           content: content.trim(),
           post_type: postType,
+          community_category: communityCategory,
           feature_slug: featureSlug || null,
           feature_category: featureCategory || null,
         }),
@@ -100,6 +103,20 @@ function NewPostForm() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">New Post</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Community Category */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Category *</label>
+          <select
+            value={communityCategory}
+            onChange={(e) => setCommunityCategory(e.target.value)}
+            className="w-full px-4 py-3 border-2 rounded-xl text-sm bg-white focus:outline-none focus:border-[#F59E0B]"
+          >
+            {USER_CATEGORIES.map(cat => (
+              <option key={cat.slug} value={cat.slug}>{cat.icon} {cat.label}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Post Type */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-3">Type *</label>

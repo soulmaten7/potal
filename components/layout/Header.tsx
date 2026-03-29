@@ -138,10 +138,10 @@ export function Header() {
         <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-[#02122c]">
           {[
             { href: '/features', label: t('nav.features') },
-            { href: '/community', label: t('nav.community') },
             { href: '/developers', label: t('nav.developers') },
             { href: '/pricing', label: t('nav.pricing') },
             { href: '/dashboard', label: t('nav.dashboard') },
+            { href: '/community', label: t('nav.community') },
             { href: '/help', label: t('nav.help') },
           ].map((link) => (
             <Link
@@ -281,6 +281,7 @@ export function Header() {
           { href: '/developers', label: t('nav.developers') },
           { href: '/pricing', label: t('nav.pricing') },
           { href: '/dashboard', label: t('nav.dashboard') },
+          { href: '/community', label: t('nav.community') },
           { href: '/help', label: t('nav.help') },
         ].map((link) => (
           <Link

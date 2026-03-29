@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { FEATURES, CATEGORIES, type FeatureCategory, CATEGORY_ICONS } from '@/app/features/features-data';
+import { COMMUNITY_CATEGORIES, CATEGORY_MAP, type CommunityCategory } from './community-categories';
 
 const TYPE_CONFIG = {
   bug: { label: 'Bug', color: '#dc2626', bg: '#fef2f2' },
@@ -25,6 +25,7 @@ interface Post {
   post_type: keyof typeof TYPE_CONFIG;
   feature_slug: string | null;
   feature_category: string | null;
+  community_category: string | null;
   status: keyof typeof STATUS_CONFIG;
   upvote_count: number;
   comment_count: number;
@@ -45,7 +46,6 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function CommunityPage() {
-  const router = useRouter();
   const { session } = useSupabase();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,16 +53,20 @@ export default function CommunityPage() {
   const [page, setPage] = useState(1);
 
   // Filters
-  const [category, setCategory] = useState('');
+  const [communityCategory, setCommunityCategory] = useState('');
+  const [featureCategory, setFeatureCategory] = useState('');
   const [postType, setPostType] = useState('');
   const [status, setStatus] = useState('');
   const [sort, setSort] = useState<'latest' | 'popular'>('latest');
   const [search, setSearch] = useState('');
+  const [showFeatureGuides, setShowFeatureGuides] = useState(false);
+  const [mobileSidebar, setMobileSidebar] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
-    if (category) params.set('category', category);
+    if (communityCategory) params.set('community_category', communityCategory);
+    if (featureCategory) params.set('category', featureCategory);
     if (postType) params.set('type', postType);
     if (status) params.set('status', status);
     if (search) params.set('q', search);
@@ -79,195 +83,239 @@ export default function CommunityPage() {
       }
     } catch { /* silent */ }
     setLoading(false);
-  }, [category, postType, status, sort, search, page]);
+  }, [communityCategory, featureCategory, postType, status, sort, search, page]);
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
   const totalPages = Math.ceil(total / 20);
   const featureMap = Object.fromEntries(FEATURES.map(f => [f.id, f.name]));
+  const activeCat = communityCategory ? CATEGORY_MAP[communityCategory] : null;
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Community</h1>
-          <p className="text-gray-500 mt-1">Share feedback, report bugs, ask questions about POTAL features.</p>
-        </div>
-        {session && (
-          <Link
-            href="/community/new"
-            className="bg-[#F59E0B] text-[#02122c] px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-amber-400 transition-colors flex-shrink-0"
+  // Sidebar component (shared between desktop and mobile)
+  const SidebarContent = () => (
+    <>
+      {/* 8 Community Categories */}
+      <div className="mb-6">
+        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-2">Categories</h3>
+        <button
+          onClick={() => { setCommunityCategory(''); setFeatureCategory(''); setPage(1); setMobileSidebar(false); }}
+          className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors mb-1 ${
+            !communityCategory ? 'bg-amber-50 text-amber-700' : 'text-gray-600 hover:bg-gray-50'
+          }`}
+        >
+          All Posts
+        </button>
+        {COMMUNITY_CATEGORIES.map(cat => (
+          <button
+            key={cat.slug}
+            onClick={() => { setCommunityCategory(cat.slug); setFeatureCategory(''); setPage(1); setMobileSidebar(false); }}
+            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors mb-0.5 flex items-center gap-2 ${
+              communityCategory === cat.slug ? 'bg-amber-50 text-amber-700 font-semibold' : 'text-gray-600 hover:bg-gray-50'
+            }`}
           >
-            New Post
-          </Link>
+            <span>{cat.icon}</span>
+            <span className="truncate">{cat.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Feature Guides (collapsible) */}
+      <div className="border-t pt-4">
+        <button
+          onClick={() => setShowFeatureGuides(!showFeatureGuides)}
+          className="w-full text-left px-2 flex items-center justify-between text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"
+        >
+          <span>Feature Guides</span>
+          <span className="text-gray-300">{showFeatureGuides ? '\u25b2' : '\u25bc'}</span>
+        </button>
+        {showFeatureGuides && (
+          <div className="space-y-0.5 max-h-60 overflow-y-auto">
+            {CATEGORIES.filter(c => c.key !== 'All').map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => { setFeatureCategory(cat.key); setCommunityCategory(''); setPage(1); setMobileSidebar(false); }}
+                className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
+                  featureCategory === cat.key ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                <span>{CATEGORY_ICONS[cat.key as FeatureCategory] || ''}</span>
+                <span className="truncate">{cat.label}</span>
+                <span className="text-gray-300 ml-auto">{cat.count}</span>
+              </button>
+            ))}
+          </div>
         )}
       </div>
+    </>
+  );
 
-      {/* Filters */}
-      <div className="bg-white border rounded-xl p-4 mb-6 space-y-3">
-        {/* Search */}
-        <input
-          type="text"
-          placeholder="Search posts..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-          className="w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:border-[#F59E0B]"
-        />
-
-        <div className="flex flex-wrap gap-3">
-          {/* Category tabs */}
-          <select
-            value={category}
-            onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
-          >
-            <option value="">All Categories</option>
-            {CATEGORIES.filter(c => c.key !== 'All').map(c => (
-              <option key={c.key} value={c.key}>{CATEGORY_ICONS[c.key as FeatureCategory] || ''} {c.key} ({c.count})</option>
-            ))}
-          </select>
-
-          {/* Type filter */}
-          <select
-            value={postType}
-            onChange={(e) => { setPostType(e.target.value); setPage(1); }}
-            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
-          >
-            <option value="">All Types</option>
-            {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
-            ))}
-          </select>
-
-          {/* Status filter */}
-          <select
-            value={status}
-            onChange={(e) => { setStatus(e.target.value); setPage(1); }}
-            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
-          >
-            <option value="">All Status</option>
-            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
-            ))}
-          </select>
-
-          {/* Sort */}
-          <select
-            value={sort}
-            onChange={(e) => { setSort(e.target.value as 'latest' | 'popular'); setPage(1); }}
-            className="px-3 py-1.5 border rounded-lg text-sm bg-white"
-          >
-            <option value="latest">Latest</option>
-            <option value="popular">Most Popular</option>
-          </select>
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Community</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {activeCat ? `${activeCat.icon} ${activeCat.label} — ${activeCat.description}` : 'Share feedback, report bugs, ask questions about POTAL features.'}
+          </p>
         </div>
-      </div>
-
-      {/* Posts list */}
-      {loading ? (
-        <div className="text-center py-16 text-gray-400">Loading...</div>
-      ) : posts.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-gray-400 text-lg mb-4">No posts yet</p>
-          {session ? (
-            <Link href="/community/new" className="text-[#F59E0B] font-bold hover:underline">
-              Be the first to post
-            </Link>
-          ) : (
-            <Link href="/auth/signup" className="text-[#F59E0B] font-bold hover:underline">
-              Sign up to post
+        <div className="flex items-center gap-2">
+          {/* Mobile sidebar toggle */}
+          <button
+            onClick={() => setMobileSidebar(!mobileSidebar)}
+            className="md:hidden px-3 py-2 border rounded-lg text-sm"
+          >
+            Categories
+          </button>
+          {session && (
+            <Link
+              href={`/community/new${communityCategory ? `?category=${communityCategory}` : ''}`}
+              className="bg-[#F59E0B] text-[#02122c] px-4 py-2 rounded-lg font-bold text-sm hover:bg-amber-400 transition-colors flex-shrink-0"
+            >
+              New Post
             </Link>
           )}
         </div>
-      ) : (
-        <div className="space-y-3">
-          {posts.map(post => {
-            const typeConfig = TYPE_CONFIG[post.post_type] || TYPE_CONFIG.question;
-            const statusConfig = STATUS_CONFIG[post.status] || STATUS_CONFIG.open;
-            const featureName = post.feature_slug ? (featureMap[post.feature_slug] || post.feature_slug) : null;
+      </div>
 
-            return (
-              <Link
-                key={post.id}
-                href={`/community/${post.id}`}
-                className="block border rounded-xl p-5 bg-white hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    {/* Badges */}
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ color: typeConfig.color, background: typeConfig.bg }}>
-                        {typeConfig.label}
-                      </span>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded" style={{ color: statusConfig.color, background: statusConfig.bg }}>
-                        {statusConfig.label}
-                      </span>
-                      {featureName && (
-                        <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
-                          {featureName}
-                        </span>
-                      )}
-                      {post.feature_category && (
-                        <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
-                          {post.feature_category}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-semibold text-gray-900 text-[15px] mb-1 line-clamp-2">{post.title}</h3>
-                    <p className="text-xs text-gray-400">{timeAgo(post.created_at)}</p>
-                  </div>
-
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 text-gray-400 text-xs flex-shrink-0">
-                    <div className="text-center">
-                      <div className="font-bold text-gray-600 text-sm">{post.upvote_count}</div>
-                      <div>votes</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="font-bold text-gray-600 text-sm">{post.comment_count}</div>
-                      <div>replies</div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+      {/* Mobile sidebar dropdown */}
+      {mobileSidebar && (
+        <div className="md:hidden bg-white border rounded-xl p-4 mb-4">
+          <SidebarContent />
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="px-3 py-1.5 border rounded-lg text-sm disabled:opacity-30"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page >= totalPages}
-            className="px-3 py-1.5 border rounded-lg text-sm disabled:opacity-30"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <div className="flex gap-6">
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:block w-56 flex-shrink-0">
+          <div className="sticky top-20">
+            <SidebarContent />
+          </div>
+        </aside>
 
-      {/* Not logged in CTA */}
-      {!session && (
-        <div className="mt-8 p-6 bg-gray-50 rounded-xl text-center">
-          <p className="text-gray-600 mb-3">Sign in to post, comment, and vote.</p>
-          <Link href="/auth/signup" className="bg-[#F59E0B] text-[#02122c] px-6 py-2.5 rounded-lg font-bold text-sm inline-block hover:bg-amber-400">
-            Sign Up Free
-          </Link>
-        </div>
-      )}
+        {/* Main Content */}
+        <main className="flex-1 min-w-0">
+          {/* Filters row */}
+          <div className="bg-white border rounded-xl p-3 mb-4 flex flex-wrap items-center gap-3">
+            <input
+              type="text"
+              placeholder="Search posts..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              className="flex-1 min-w-[200px] px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-[#F59E0B]"
+            />
+            <select
+              value={postType}
+              onChange={(e) => { setPostType(e.target.value); setPage(1); }}
+              className="px-3 py-2 border rounded-lg text-sm bg-white"
+            >
+              <option value="">All Types</option>
+              {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
+                <option key={key} value={key}>{cfg.label}</option>
+              ))}
+            </select>
+            <select
+              value={status}
+              onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+              className="px-3 py-2 border rounded-lg text-sm bg-white"
+            >
+              <option value="">All Status</option>
+              {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                <option key={key} value={key}>{cfg.label}</option>
+              ))}
+            </select>
+            <select
+              value={sort}
+              onChange={(e) => { setSort(e.target.value as 'latest' | 'popular'); setPage(1); }}
+              className="px-3 py-2 border rounded-lg text-sm bg-white"
+            >
+              <option value="latest">Latest</option>
+              <option value="popular">Most Popular</option>
+            </select>
+          </div>
+
+          {/* Posts */}
+          {loading ? (
+            <div className="text-center py-16 text-gray-400">Loading...</div>
+          ) : posts.length === 0 ? (
+            <div className="text-center py-16 bg-white border rounded-xl">
+              <p className="text-gray-400 text-lg mb-3">No posts yet</p>
+              {session ? (
+                <Link href="/community/new" className="text-[#F59E0B] font-bold hover:underline">Be the first to post</Link>
+              ) : (
+                <Link href="/auth/signup" className="text-[#F59E0B] font-bold hover:underline">Sign up to post</Link>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {posts.map(post => {
+                const typeConfig = TYPE_CONFIG[post.post_type] || TYPE_CONFIG.question;
+                const statusConfig = STATUS_CONFIG[post.status] || STATUS_CONFIG.open;
+                const featureName = post.feature_slug ? (featureMap[post.feature_slug] || post.feature_slug) : null;
+                const postCat = post.community_category ? CATEGORY_MAP[post.community_category] : null;
+
+                return (
+                  <Link
+                    key={post.id}
+                    href={`/community/${post.id}`}
+                    className="block border rounded-xl p-4 bg-white hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                          {postCat && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">
+                              {postCat.icon} {postCat.label}
+                            </span>
+                          )}
+                          <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ color: typeConfig.color, background: typeConfig.bg }}>
+                            {typeConfig.label}
+                          </span>
+                          <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ color: statusConfig.color, background: statusConfig.bg }}>
+                            {statusConfig.label}
+                          </span>
+                          {featureName && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{featureName}</span>
+                          )}
+                        </div>
+                        <h3 className="font-semibold text-gray-900 text-sm mb-1 line-clamp-1">{post.title}</h3>
+                        <p className="text-xs text-gray-400">{timeAgo(post.created_at)}</p>
+                      </div>
+                      <div className="flex items-center gap-3 text-gray-400 text-xs flex-shrink-0">
+                        <div className="text-center">
+                          <div className="font-bold text-gray-600">{post.upvote_count}</div>
+                          <div>votes</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="font-bold text-gray-600">{post.comment_count}</div>
+                          <div>replies</div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1} className="px-3 py-1.5 border rounded-lg text-sm disabled:opacity-30">Previous</button>
+              <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages} className="px-3 py-1.5 border rounded-lg text-sm disabled:opacity-30">Next</button>
+            </div>
+          )}
+
+          {/* Not logged in */}
+          {!session && (
+            <div className="mt-6 p-5 bg-gray-50 rounded-xl text-center">
+              <p className="text-gray-600 text-sm mb-2">Sign in to post, comment, and vote.</p>
+              <Link href="/auth/signup" className="bg-[#F59E0B] text-[#02122c] px-5 py-2 rounded-lg font-bold text-sm inline-block hover:bg-amber-400">Sign Up Free</Link>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }

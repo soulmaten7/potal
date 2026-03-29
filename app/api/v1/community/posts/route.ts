@@ -23,6 +23,9 @@ function getUserId(req: NextRequest): string | null {
 const VALID_TYPES = ['bug', 'question', 'suggestion'];
 const VALID_STATUS = ['open', 'resolved', 'closed'];
 const VALID_SORT = ['latest', 'popular'];
+const VALID_COMMUNITY_CATS = ['announcements', 'getting-started', 'bug-reports', 'feature-requests', 'tips-howto', 'api-integrations', 'general', 'release-notes'];
+const ADMIN_ONLY_CATS = ['announcements', 'release-notes'];
+const ADMIN_EMAILS = ['soulmaten7@gmail.com', 'contact@potal.app'];
 
 export async function GET(req: NextRequest) {
   const supabase = getSupabase();
@@ -31,6 +34,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const featureSlug = url.searchParams.get('feature_slug') || '';
   const featureCategory = url.searchParams.get('category') || '';
+  const communityCategory = url.searchParams.get('community_category') || '';
   const postType = url.searchParams.get('type') || '';
   const status = url.searchParams.get('status') || '';
   const sort = url.searchParams.get('sort') || 'latest';
@@ -45,6 +49,7 @@ export async function GET(req: NextRequest) {
 
   if (featureSlug) query = query.eq('feature_slug', featureSlug);
   if (featureCategory) query = query.eq('feature_category', featureCategory);
+  if (communityCategory && VALID_COMMUNITY_CATS.includes(communityCategory)) query = query.eq('community_category', communityCategory);
   if (postType && VALID_TYPES.includes(postType)) query = query.eq('post_type', postType);
   if (status && VALID_STATUS.includes(status)) query = query.eq('status', status);
   if (search) query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
@@ -96,6 +101,7 @@ export async function POST(req: NextRequest) {
   const title = typeof body.title === 'string' ? body.title.trim() : '';
   const content = typeof body.content === 'string' ? body.content.trim() : '';
   const postType = typeof body.post_type === 'string' ? body.post_type : '';
+  const communityCat = typeof body.community_category === 'string' && VALID_COMMUNITY_CATS.includes(body.community_category) ? body.community_category : 'general';
   const featureSlug = typeof body.feature_slug === 'string' ? body.feature_slug : null;
   const featureCategory = typeof body.feature_category === 'string' ? body.feature_category : null;
   const attachments = Array.isArray(body.attachments) ? body.attachments : [];
@@ -104,6 +110,11 @@ export async function POST(req: NextRequest) {
   if (!content || content.length < 20) return NextResponse.json({ success: false, error: 'Content must be at least 20 characters.' }, { status: 400 });
   if (!VALID_TYPES.includes(postType)) return NextResponse.json({ success: false, error: `post_type must be: ${VALID_TYPES.join(', ')}` }, { status: 400 });
 
+  // Admin-only categories
+  if (ADMIN_ONLY_CATS.includes(communityCat) && !ADMIN_EMAILS.includes(user.email || '')) {
+    return NextResponse.json({ success: false, error: 'Only admins can post in this category.' }, { status: 403 });
+  }
+
   const { data, error } = await supabase
     .from('community_posts')
     .insert({
@@ -111,6 +122,7 @@ export async function POST(req: NextRequest) {
       title,
       content,
       post_type: postType,
+      community_category: communityCat,
       feature_slug: featureSlug,
       feature_category: featureCategory,
       attachments: JSON.stringify(attachments.slice(0, 5)),
