@@ -288,7 +288,28 @@ export function withApiAuth(handler: ApiHandler) {
       ? { allowed: true, used: 0, limit: 999999, isOverage: false, overageCount: 0, overageRate: 0 }
       : await checkPlanLimits(supabase as any, keyInfo.sellerId, keyInfo.planId);
     if (!planCheck.allowed) {
-      return apiError(ApiErrorCode.PLAN_LIMIT_EXCEEDED, `Monthly calculation limit reached (${planCheck.used}/${planCheck.limit}). Upgrade your plan for more.`);
+      return apiError(ApiErrorCode.PLAN_LIMIT_EXCEEDED, `Monthly usage limit reached (${planCheck.used}/${planCheck.limit}). Contact us for Enterprise access.`);
+    }
+
+    // 9b. Trial expiration check (B-5: profile incomplete + trial expired = blocked)
+    if (!isSandbox) {
+      try {
+        const { data: sellerRow } = await (supabase.from('sellers') as any)
+          .select('trial_type, trial_expires_at, profile_completed_at')
+          .eq('id', keyInfo.sellerId)
+          .single();
+        if (sellerRow
+          && sellerRow.trial_type === 'monthly'
+          && !sellerRow.profile_completed_at
+          && sellerRow.trial_expires_at
+          && new Date(sellerRow.trial_expires_at) < new Date()
+        ) {
+          return apiError(
+            ApiErrorCode.FORBIDDEN,
+            'Your 30-day trial has expired. Complete your profile at potal.app/dashboard to continue using POTAL for free.'
+          );
+        }
+      } catch { /* fail-open: if DB query fails, allow request through */ }
     }
 
     // 10. Build context

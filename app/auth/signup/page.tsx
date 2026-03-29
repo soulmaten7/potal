@@ -1,9 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
+import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
+
+const INDUSTRIES = [
+  { value: 'ecommerce_seller', label: 'E-commerce Seller' },
+  { value: 'logistics_freight', label: 'Logistics & Freight' },
+  { value: 'customs_broker', label: 'Customs Broker' },
+  { value: 'marketplace_operator', label: 'Marketplace Operator' },
+  { value: 'developer', label: 'Developer' },
+  { value: 'other', label: 'Other' },
+];
 
 export default function SignupPage() {
   const router = useRouter();
@@ -11,12 +21,17 @@ export default function SignupPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [website, setWebsite] = useState('');
-  const [platform, setPlatform] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [country, setCountry] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [isIndividual, setIsIndividual] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // OAuth completion modal state
+  const [showOAuthModal, setShowOAuthModal] = useState(false);
+  const [oauthEmail, setOauthEmail] = useState('');
 
   // Keys shown after registration
   const [createdKeys, setCreatedKeys] = useState<{
@@ -24,20 +39,66 @@ export default function SignupPage() {
     secret: { fullKey: string; prefix: string };
   } | null>(null);
 
+  // Country list sorted by name
+  const countries = useMemo(() =>
+    Object.values(COUNTRY_DATA)
+      .map(c => ({ code: c.code, name: c.name }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+    []
+  );
+
+  const inputStyle = {
+    width: '100%',
+    padding: '12px 14px',
+    borderRadius: 10,
+    border: '2px solid #e5e7eb',
+    fontSize: 14,
+    outline: 'none',
+    boxSizing: 'border-box' as const,
+    transition: 'border-color 0.2s',
+  };
+
+  const labelStyle = {
+    fontSize: 13,
+    fontWeight: 600 as const,
+    color: '#374151',
+    display: 'block' as const,
+    marginBottom: 6,
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Validate password
+    // Validation
+    if (!email.trim() || !email.includes('@')) {
+      setError('Please enter a valid email address.');
+      setLoading(false);
+      return;
+    }
     if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
       setError('Password must be at least 8 characters with letters and numbers.');
       setLoading(false);
       return;
     }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
+      setLoading(false);
+      return;
+    }
+    if (!isIndividual && !companyName.trim()) {
+      setError('Company name is required. Select "Individual" if not applicable.');
+      setLoading(false);
+      return;
+    }
+    if (!country) {
+      setError('Please select your country.');
+      setLoading(false);
+      return;
+    }
+    if (!industry) {
+      setError('Please select your industry.');
       setLoading(false);
       return;
     }
@@ -46,18 +107,22 @@ export default function SignupPage() {
       const res = await fetch('/api/v1/sellers/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password, companyName, website: website.trim() || undefined, platform: platform || undefined }),
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+          companyName: isIndividual ? 'Individual' : companyName.trim(),
+          country,
+          industry,
+        }),
       });
 
       const data = await res.json();
-
       if (!data.success) {
         setError(data.error?.message || 'Registration failed.');
         setLoading(false);
         return;
       }
 
-      // Show generated keys
       if (data.data.keys) {
         setCreatedKeys({
           publishable: data.data.keys.publishable,
@@ -65,7 +130,6 @@ export default function SignupPage() {
         });
       }
 
-      // Auto-login after registration
       await supabase.auth.signInWithPassword({ email, password });
     } catch {
       setError('Something went wrong. Please try again.');
@@ -76,7 +140,7 @@ export default function SignupPage() {
 
   const handleGoogleSignUp = async () => {
     const redirectTo = typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/callback`
+      ? `${window.location.origin}/auth/callback?complete_profile=true`
       : '';
     await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -113,6 +177,18 @@ export default function SignupPage() {
             <p style={{ fontSize: 14, color: '#64748b' }}>
               Your account is ready. Save these API keys — they won&apos;t be shown again.
             </p>
+            <div style={{
+              display: 'inline-block',
+              background: '#f0fdf4',
+              color: '#166534',
+              fontSize: 12,
+              fontWeight: 600,
+              padding: '4px 12px',
+              borderRadius: 8,
+              marginTop: 8,
+            }}>
+              30-day free trial started — complete your profile for Forever Free
+            </div>
           </div>
 
           {/* Publishable Key */}
@@ -138,15 +214,8 @@ export default function SignupPage() {
               <button
                 onClick={() => navigator.clipboard.writeText(createdKeys.publishable.fullKey)}
                 style={{
-                  background: '#16a34a',
-                  color: 'white',
-                  border: 'none',
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  flexShrink: 0,
+                  background: '#16a34a', color: 'white', border: 'none',
+                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
                 }}
               >
                 Copy
@@ -177,15 +246,8 @@ export default function SignupPage() {
               <button
                 onClick={() => navigator.clipboard.writeText(createdKeys.secret.fullKey)}
                 style={{
-                  background: '#d97706',
-                  color: 'white',
-                  border: 'none',
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  flexShrink: 0,
+                  background: '#d97706', color: 'white', border: 'none',
+                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
                 }}
               >
                 Copy
@@ -206,34 +268,10 @@ export default function SignupPage() {
           </div>
 
           <button
-            onClick={() => router.push('/developers/quickstart')}
-            style={{
-              width: '100%',
-              padding: '14px',
-              borderRadius: 12,
-              border: 'none',
-              background: '#F59E0B',
-              color: '#02122c',
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: 'pointer',
-              marginBottom: 10,
-            }}
-          >
-            Start Setup Guide
-          </button>
-          <button
             onClick={() => router.push('/dashboard')}
             style={{
-              width: '100%',
-              padding: '14px',
-              borderRadius: 12,
-              border: '2px solid #e5e7eb',
-              background: 'white',
-              color: '#374151',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
+              width: '100%', padding: '14px', borderRadius: 12, border: 'none',
+              background: '#F59E0B', color: '#02122c', fontSize: 15, fontWeight: 700, cursor: 'pointer',
             }}
           >
             Go to Dashboard
@@ -257,14 +295,14 @@ export default function SignupPage() {
       <div style={{
         background: 'white',
         borderRadius: 20,
-        padding: '48px 40px',
+        padding: '40px 36px',
         width: '100%',
-        maxWidth: 420,
+        maxWidth: 460,
         boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
         border: '1px solid #e2e8f0',
       }}>
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <Link href="/" style={{ textDecoration: 'none' }}>
             <span style={{ fontSize: 32, fontWeight: 800 }}>
               <span style={{ color: '#02122c' }}>P</span>
@@ -272,11 +310,11 @@ export default function SignupPage() {
               <span style={{ color: '#02122c' }}>TAL</span>
             </span>
           </Link>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: '#02122c', marginTop: 16, marginBottom: 4 }}>
-            Create your account
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#02122c', marginTop: 14, marginBottom: 4 }}>
+            Start Free — All 140 Features Included
           </h1>
-          <p style={{ fontSize: 14, color: '#64748b', margin: 0 }}>
-            Start calculating total landed costs for free
+          <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
+            No credit card required. Complete your profile for Forever Free access.
           </p>
         </div>
 
@@ -285,23 +323,11 @@ export default function SignupPage() {
           type="button"
           onClick={handleGoogleSignUp}
           style={{
-            width: '100%',
-            padding: '12px',
-            borderRadius: 12,
-            border: '2px solid #e5e7eb',
-            background: 'white',
-            color: '#374151',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            transition: 'border-color 0.2s',
+            width: '100%', padding: '12px', borderRadius: 12,
+            border: '2px solid #e5e7eb', background: 'white', color: '#374151',
+            fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           }}
-          onMouseOver={(e) => (e.currentTarget.style.borderColor = '#d1d5db')}
-          onMouseOut={(e) => (e.currentTarget.style.borderColor = '#e5e7eb')}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
@@ -313,234 +339,109 @@ export default function SignupPage() {
         </button>
 
         {/* Divider */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          margin: '24px 0',
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
           <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>or</span>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
         </div>
 
         <form onSubmit={handleSignup}>
-          {/* Company Name */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Company Name <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
-            </label>
-            <input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Your company"
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: '2px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-            />
-          </div>
-
-          {/* Website */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Website <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
-            </label>
-            <input
-              type="url"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder="https://your-store.com"
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: '2px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-            />
-          </div>
-
-          {/* Platform */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Platform <span style={{ color: '#94a3b8', fontWeight: 400 }}>(optional)</span>
-            </label>
-            <select
-              value={platform}
-              onChange={(e) => setPlatform(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: '2px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
-                background: 'white',
-                color: platform ? '#374151' : '#94a3b8',
-                cursor: 'pointer',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
-              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-            >
-              <option value="" disabled>Select your platform</option>
-              <option value="shopify">Shopify</option>
-              <option value="woocommerce">WooCommerce</option>
-              <option value="magento">Magento</option>
-              <option value="bigcommerce">BigCommerce</option>
-              <option value="custom">Custom / Headless</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
           {/* Email */}
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Email
-            </label>
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Email *</label>
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-              required
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: '2px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
-              }}
+              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@company.com" required style={inputStyle}
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
           </div>
 
           {/* Password */}
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Password
-            </label>
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Password *</label>
             <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
-              required
-              minLength={8}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: '2px solid #e5e7eb',
-                fontSize: 14,
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
-              }}
+              type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+              placeholder="8+ chars, letters & numbers" required minLength={8} style={inputStyle}
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
-            {/* Password requirements */}
-            {password.length > 0 && (
-              <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {[
-                  { label: '8 characters minimum', met: password.length >= 8 },
-                  { label: 'Contains a letter', met: /[a-zA-Z]/.test(password) },
-                  { label: 'Contains a number', met: /[0-9]/.test(password) },
-                ].map((rule) => (
-                  <div key={rule.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <div style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 9,
-                      fontWeight: 700,
-                      background: rule.met ? '#dcfce7' : '#f1f5f9',
-                      color: rule.met ? '#16a34a' : '#94a3b8',
-                    }}>
-                      {rule.met ? '✓' : '·'}
-                    </div>
-                    <span style={{
-                      fontSize: 12,
-                      color: rule.met ? '#16a34a' : '#94a3b8',
-                      fontWeight: 500,
-                    }}>
-                      {rule.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Confirm Password */}
-          <div style={{ marginBottom: 20 }}>
-            <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Confirm Password
-            </label>
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Confirm Password *</label>
             <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter your password"
-              required
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                borderRadius: 10,
-                border: `2px solid ${confirmPassword.length > 0 && password !== confirmPassword ? '#fca5a5' : '#e5e7eb'}`,
-                fontSize: 14,
-                outline: 'none',
-                boxSizing: 'border-box',
-                transition: 'border-color 0.2s',
-              }}
+              type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Re-enter password" required
+              style={{ ...inputStyle, borderColor: confirmPassword.length > 0 && password !== confirmPassword ? '#fca5a5' : '#e5e7eb' }}
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = confirmPassword.length > 0 && password !== confirmPassword ? '#fca5a5' : '#e5e7eb'}
             />
             {confirmPassword.length > 0 && password !== confirmPassword && (
-              <span style={{ fontSize: 12, color: '#dc2626', marginTop: 4, display: 'block' }}>
-                Passwords do not match
-              </span>
+              <span style={{ fontSize: 12, color: '#dc2626', marginTop: 4, display: 'block' }}>Passwords do not match</span>
             )}
-            {confirmPassword.length > 0 && password === confirmPassword && (
-              <span style={{ fontSize: 12, color: '#16a34a', marginTop: 4, display: 'block' }}>
-                Passwords match
-              </span>
+          </div>
+
+          {/* Company Name */}
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>
+              Company Name *
+              <label style={{ marginLeft: 12, fontWeight: 400, fontSize: 12, color: '#64748b', cursor: 'pointer' }}>
+                <input
+                  type="checkbox" checked={isIndividual} onChange={(e) => { setIsIndividual(e.target.checked); if (e.target.checked) setCompanyName(''); }}
+                  style={{ marginRight: 4, accentColor: '#F59E0B' }}
+                />
+                Individual (no company)
+              </label>
+            </label>
+            {!isIndividual && (
+              <input
+                type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Your company name" style={inputStyle}
+                onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
+                onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+              />
             )}
+          </div>
+
+          {/* Country */}
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>Country *</label>
+            <select
+              value={country} onChange={(e) => setCountry(e.target.value)} required
+              style={{ ...inputStyle, background: 'white', color: country ? '#374151' : '#94a3b8', cursor: 'pointer' }}
+              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            >
+              <option value="" disabled>Select your country</option>
+              {countries.map(c => (
+                <option key={c.code} value={c.code}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Industry */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={labelStyle}>Industry *</label>
+            <select
+              value={industry} onChange={(e) => setIndustry(e.target.value)} required
+              style={{ ...inputStyle, background: 'white', color: industry ? '#374151' : '#94a3b8', cursor: 'pointer' }}
+              onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            >
+              <option value="" disabled>Select your industry</option>
+              {INDUSTRIES.map(i => (
+                <option key={i.value} value={i.value}>{i.label}</option>
+              ))}
+            </select>
           </div>
 
           {/* Error */}
           {error && (
             <div style={{
-              background: '#fef2f2',
-              color: '#dc2626',
-              padding: '10px 14px',
-              borderRadius: 8,
-              fontSize: 13,
-              marginBottom: 16,
+              background: '#fef2f2', color: '#dc2626', padding: '10px 14px',
+              borderRadius: 8, fontSize: 13, marginBottom: 16,
             }}>
               {error}
             </div>
@@ -548,27 +449,19 @@ export default function SignupPage() {
 
           {/* Submit */}
           <button
-            type="submit"
-            disabled={loading}
+            type="submit" disabled={loading}
             style={{
-              width: '100%',
-              padding: '14px',
-              borderRadius: 12,
-              border: 'none',
-              background: loading ? '#94a3b8' : '#F59E0B',
-              color: '#02122c',
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s',
+              width: '100%', padding: '14px', borderRadius: 12, border: 'none',
+              background: loading ? '#94a3b8' : '#F59E0B', color: '#02122c',
+              fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer',
             }}
           >
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? 'Creating account...' : 'Start Free — All 140 Features Included'}
           </button>
         </form>
 
         {/* Terms */}
-        <p style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>
+        <p style={{ textAlign: 'center', marginTop: 14, fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>
           By signing up, you agree to our{' '}
           <Link href="/terms" style={{ color: '#64748b', textDecoration: 'underline' }}>Terms</Link>
           {' '}and{' '}
@@ -576,10 +469,8 @@ export default function SignupPage() {
         </p>
 
         {/* Footer */}
-        <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <span style={{ fontSize: 14, color: '#64748b' }}>
-            Already have an account?{' '}
-          </span>
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <span style={{ fontSize: 14, color: '#64748b' }}>Already have an account? </span>
           <Link href="/auth/login" style={{ color: '#F59E0B', textDecoration: 'none', fontWeight: 700, fontSize: 14 }}>
             Sign In
           </Link>

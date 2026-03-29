@@ -10,6 +10,7 @@ import { fetchWithTimeout } from '@/app/lib/fetch-with-timeout';
 import dynamic from 'next/dynamic';
 
 const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), { ssr: false });
+const ProfileCompletionBanner = dynamic(() => import('./ProfileCompletionBanner'), { ssr: false });
 
 // Paddle.js global type
 declare global {
@@ -107,59 +108,8 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'team', label: 'Team', icon: '👥' },
 ];
 
-// Plan display config (mirrors paddle.ts PLAN_CONFIG — 세션 28 신 요금제)
-const PLANS = [
-  {
-    id: 'basic' as const,
-    name: 'Basic',
-    priceMonthly: '$20',
-    priceAnnualMonthly: '$16',
-    priceNote: '/ month',
-    calls: '2,000',
-    features: [
-      '2,000 API calls / month',
-      'Widget embed (all themes)',
-      '10-digit HS Code precision',
-      'FTA & preferential rate detection',
-      'Anti-dumping / CVD duty alerts',
-      '50 language support',
-      'Email support',
-    ],
-  },
-  {
-    id: 'pro' as const,
-    name: 'Pro',
-    priceMonthly: '$80',
-    priceAnnualMonthly: '$64',
-    priceNote: '/ month',
-    calls: '10,000',
-    popular: true,
-    features: [
-      '10,000 API calls / month',
-      'Custom widget branding',
-      'Batch API (100 items)',
-      'Webhook notifications',
-      'Advanced analytics dashboard',
-      'Priority email support',
-    ],
-  },
-  {
-    id: 'enterprise' as const,
-    name: 'Enterprise',
-    priceMonthly: '$300',
-    priceAnnualMonthly: '$240',
-    priceNote: '/ month',
-    calls: '50,000+',
-    features: [
-      '50,000+ API calls / month',
-      'White-label widget',
-      'Dedicated infrastructure',
-      'SSO & team management',
-      'SLA guarantee (99.99%)',
-      'Custom integrations',
-    ],
-  },
-];
+// Plan display — Forever Free (CW22 pivot)
+const PLANS_DEPRECATED = true; // Legacy plan cards removed — all users are Forever Free
 
 export default function DashboardContent() {
   const router = useRouter();
@@ -213,7 +163,8 @@ export default function DashboardContent() {
 
   // Billing
   const [billingLoading, setBillingLoading] = useState(false);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  // billingCycle removed — Forever Free pivot (CW22). Paddle checkout disabled.
+  const billingCycle = 'monthly' as const; // kept for type compat if referenced
 
   // New key creation
   const [newKeyName, setNewKeyName] = useState('');
@@ -395,8 +346,8 @@ export default function DashboardContent() {
     }
   };
 
-  // ─── Billing: Upgrade (Paddle.js Overlay Checkout) ────
-  const handleUpgrade = async (planId: string) => {
+  // ─── Billing: Upgrade (Paddle.js — disabled, Forever Free pivot CW22) ────
+  const _handleUpgrade = async (planId: string) => {
     if (!session) return;
     setBillingLoading(true);
     setError(null);
@@ -441,7 +392,7 @@ export default function DashboardContent() {
   };
 
   // ─── Billing: Manage (Customer Portal) ──────────
-  const handleManageBilling = async () => {
+  const _handleManageBilling = async () => {
     if (!session) return;
     setBillingLoading(true);
     setError(null);
@@ -660,6 +611,9 @@ export default function DashboardContent() {
           {/* ── Overview ── */}
           {activeTab === 'overview' && (
             <div>
+              {/* B-4: Profile Completion Banner */}
+              <ProfileCompletionBanner />
+
               <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Overview</h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
                 {[
@@ -1539,71 +1493,53 @@ export default function DashboardContent() {
           {/* ── Billing ── */}
           {activeTab === 'billing' && (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <h2 style={{ fontSize: 22, fontWeight: 700 }}>Billing & Plans</h2>
-                  <div style={{
-                    display: 'inline-flex',
-                    background: '#f1f5f9',
-                    borderRadius: 8,
-                    padding: 3,
-                  }}>
-                    <button
-                      onClick={() => setBillingCycle('monthly')}
-                      style={{
-                        padding: '6px 14px',
-                        borderRadius: 6,
-                        border: 'none',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        background: billingCycle === 'monthly' ? 'white' : 'transparent',
-                        color: billingCycle === 'monthly' ? '#02122c' : '#888',
-                        boxShadow: billingCycle === 'monthly' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-                      }}
-                    >
-                      Monthly
-                    </button>
-                    <button
-                      onClick={() => setBillingCycle('annual')}
-                      style={{
-                        padding: '6px 14px',
-                        borderRadius: 6,
-                        border: 'none',
-                        fontSize: 12,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        background: billingCycle === 'annual' ? 'white' : 'transparent',
-                        color: billingCycle === 'annual' ? '#02122c' : '#888',
-                        boxShadow: billingCycle === 'annual' ? '0 1px 2px rgba(0,0,0,0.1)' : 'none',
-                      }}
-                    >
-                      Annual <span style={{ color: '#10b981', fontWeight: 700 }}>-20%</span>
-                    </button>
-                  </div>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Plan</h2>
+
+              {/* Forever Free Banner */}
+              <div style={{
+                background: 'white',
+                borderRadius: 16,
+                padding: 32,
+                border: '2px solid #10b981',
+                marginBottom: 24,
+                textAlign: 'center',
+              }}>
+                <div style={{
+                  display: 'inline-block',
+                  background: '#dcfce7',
+                  color: '#16a34a',
+                  padding: '4px 16px',
+                  borderRadius: 20,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: 0.5,
+                  marginBottom: 12,
+                }}>
+                  FOREVER FREE
                 </div>
-                {seller?.billingCustomerId && (
-                  <button
-                    onClick={handleManageBilling}
-                    disabled={billingLoading}
-                    style={{
-                      padding: '10px 20px',
-                      borderRadius: 10,
-                      border: '1px solid #e5e7eb',
-                      background: 'white',
-                      color: '#333',
-                      fontSize: 14,
+                <div style={{ fontSize: 28, fontWeight: 800, color: '#02122c', marginBottom: 8 }}>
+                  All 140 Features Included
+                </div>
+                <div style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>
+                  240 countries &middot; 155+ API endpoints &middot; No limits &middot; No credit card
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  {['HS Classification', 'Duty Calculation', 'FTA Detection', 'Sanctions Screening', 'Batch API', 'Webhooks'].map((f) => (
+                    <span key={f} style={{
+                      background: '#f0fdf4',
+                      color: '#16a34a',
+                      padding: '4px 12px',
+                      borderRadius: 8,
+                      fontSize: 12,
                       fontWeight: 600,
-                      cursor: billingLoading ? 'not-allowed' : 'pointer',
-                      opacity: billingLoading ? 0.6 : 1,
-                    }}
-                  >
-                    {billingLoading ? 'Loading...' : 'Manage Subscription'}
-                  </button>
-                )}
+                    }}>
+                      {f}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              {/* Current Plan Banner */}
+              {/* Usage */}
               <div style={{
                 background: 'white',
                 borderRadius: 12,
@@ -1615,216 +1551,38 @@ export default function DashboardContent() {
                 alignItems: 'center',
               }}>
                 <div>
-                  <div style={{ fontSize: 13, color: '#888', fontWeight: 600, marginBottom: 4 }}>CURRENT PLAN</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: '#02122c' }}>
-                    {(seller?.plan || 'free').charAt(0).toUpperCase() + (seller?.plan || 'free').slice(1)}
+                  <div style={{ fontSize: 13, color: '#888', fontWeight: 600, marginBottom: 4 }}>THIS MONTH</div>
+                  <div style={{ fontSize: 20, fontWeight: 700 }}>
+                    {usage ? `${usage.used.toLocaleString()} API calls` : '—'}
                   </div>
-                  <div style={{ fontSize: 13, color: '#666', marginTop: 4 }}>
-                    Status:{' '}
-                    <span style={{
-                      padding: '2px 8px',
-                      borderRadius: 4,
-                      fontSize: 12,
-                      fontWeight: 600,
-                      background:
-                        seller?.subscriptionStatus === 'active' ? '#dcfce7' :
-                        seller?.subscriptionStatus === 'trialing' ? '#dbeafe' :
-                        seller?.subscriptionStatus === 'past_due' ? '#fef3c7' :
-                        seller?.subscriptionStatus === 'canceled' ? '#fee2e2' :
-                        '#f3f4f6',
-                      color:
-                        seller?.subscriptionStatus === 'active' ? '#16a34a' :
-                        seller?.subscriptionStatus === 'trialing' ? '#2563eb' :
-                        seller?.subscriptionStatus === 'past_due' ? '#d97706' :
-                        seller?.subscriptionStatus === 'canceled' ? '#dc2626' :
-                        '#666',
-                    }}>
-                      {seller?.subscriptionStatus || 'active'}
-                    </span>
-                  </div>
-                  {seller?.currentPeriodEnd && (
-                    <div style={{ fontSize: 12, color: '#999', marginTop: 6 }}>
-                      {seller.subscriptionStatus === 'trialing' ? 'Trial ends' : seller.subscriptionStatus === 'canceled' ? 'Access until' : 'Renews'}: {new Date(seller.currentPeriodEnd).toLocaleDateString()}
-                    </div>
-                  )}
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>API Calls</div>
-                  <div style={{ fontSize: 20, fontWeight: 700 }}>
-                    {usage ? `${usage.used.toLocaleString()} / ${typeof usage.limit === 'number' ? usage.limit.toLocaleString() : usage.limit}` : '—'}
-                  </div>
+                  <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>Status</div>
+                  <span style={{
+                    padding: '4px 12px',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    background: '#dcfce7',
+                    color: '#16a34a',
+                  }}>
+                    Active
+                  </span>
                 </div>
               </div>
 
-              {/* Plan Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-                {PLANS.map((plan) => {
-                  const isCurrent = (seller?.plan || 'free') === plan.id;
-                  const isUpgrade = plan.id === 'pro' && (seller?.plan || 'free') === 'basic';
-                  const isEnterprise = plan.id === 'enterprise';
-
-                  return (
-                    <div
-                      key={plan.id}
-                      style={{
-                        background: 'white',
-                        borderRadius: 16,
-                        padding: 28,
-                        border: isCurrent ? '2px solid #F59E0B' : plan.popular ? '2px solid #02122c' : '1px solid #e5e7eb',
-                        position: 'relative',
-                      }}
-                    >
-                      {plan.popular && !isCurrent && (
-                        <div style={{
-                          position: 'absolute',
-                          top: -12,
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: '#02122c',
-                          color: 'white',
-                          padding: '4px 14px',
-                          borderRadius: 20,
-                          fontSize: 11,
-                          fontWeight: 700,
-                          letterSpacing: 0.5,
-                        }}>
-                          MOST POPULAR
-                        </div>
-                      )}
-                      {isCurrent && (
-                        <div style={{
-                          position: 'absolute',
-                          top: -12,
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: '#F59E0B',
-                          color: '#02122c',
-                          padding: '4px 14px',
-                          borderRadius: 20,
-                          fontSize: 11,
-                          fontWeight: 700,
-                          letterSpacing: 0.5,
-                        }}>
-                          CURRENT PLAN
-                        </div>
-                      )}
-
-                      <div style={{ marginBottom: 20, marginTop: 4 }}>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: '#02122c', marginBottom: 8 }}>
-                          {plan.name}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                          <span style={{ fontSize: 36, fontWeight: 800, color: '#02122c' }}>
-                            {billingCycle === 'annual' ? plan.priceAnnualMonthly : plan.priceMonthly}
-                          </span>
-                          <span style={{ fontSize: 14, color: '#888' }}>
-                            {billingCycle === 'annual' ? '/ mo (billed annually)' : plan.priceNote}
-                          </span>
-                        </div>
-                        {billingCycle === 'annual' && (
-                          <div style={{ fontSize: 12, color: '#10b981', fontWeight: 600, marginTop: 2 }}>
-                            Save 20% vs monthly
-                          </div>
-                        )}
-                        <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>
-                          {plan.calls} API calls / month
-                        </div>
-                      </div>
-
-                      <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: 16, marginBottom: 20 }}>
-                        {plan.features.map((feature, i) => (
-                          <div key={i} style={{
-                            fontSize: 13,
-                            color: '#555',
-                            padding: '6px 0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 8,
-                          }}>
-                            <span style={{ color: '#10b981', fontWeight: 700 }}>&#10003;</span>
-                            {feature}
-                          </div>
-                        ))}
-                      </div>
-
-                      {isCurrent ? (
-                        <button
-                          disabled
-                          style={{
-                            width: '100%',
-                            padding: '12px 0',
-                            borderRadius: 10,
-                            border: '1px solid #e5e7eb',
-                            background: '#f8fafc',
-                            color: '#999',
-                            fontSize: 14,
-                            fontWeight: 600,
-                            cursor: 'default',
-                          }}
-                        >
-                          Current Plan
-                        </button>
-                      ) : isEnterprise ? (
-                        <a
-                          href="mailto:hello@potal.io?subject=Enterprise%20Plan%20Inquiry"
-                          style={{
-                            display: 'block',
-                            width: '100%',
-                            padding: '12px 0',
-                            borderRadius: 10,
-                            border: '2px solid #02122c',
-                            background: 'white',
-                            color: '#02122c',
-                            fontSize: 14,
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            textAlign: 'center',
-                            textDecoration: 'none',
-                            boxSizing: 'border-box',
-                          }}
-                        >
-                          Contact Sales
-                        </a>
-                      ) : (
-                        <button
-                          onClick={() => handleUpgrade(plan.id)}
-                          disabled={billingLoading}
-                          style={{
-                            width: '100%',
-                            padding: '12px 0',
-                            borderRadius: 10,
-                            border: 'none',
-                            background: isUpgrade ? '#F59E0B' : '#02122c',
-                            color: isUpgrade ? '#02122c' : 'white',
-                            fontSize: 14,
-                            fontWeight: 700,
-                            cursor: billingLoading ? 'not-allowed' : 'pointer',
-                            opacity: billingLoading ? 0.6 : 1,
-                          }}
-                        >
-                          {billingLoading ? 'Processing...' : isUpgrade ? 'Start 14-Day Free Trial' : `Upgrade to ${plan.name}`}
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Billing Info */}
+              {/* Enterprise CTA */}
               <div style={{
                 background: '#f8fafc',
                 borderRadius: 12,
                 padding: 20,
-                marginTop: 24,
                 border: '1px solid #e5e7eb',
                 fontSize: 13,
                 color: '#666',
               }}>
-                <strong style={{ color: '#333' }}>Billing FAQ:</strong>
+                <strong style={{ color: '#333' }}>Need Enterprise features?</strong>
                 <div style={{ marginTop: 8, lineHeight: 1.8 }}>
-                  All paid plans include a <strong>14-day free trial</strong>. Your payment method will be saved at signup, but you won&apos;t be charged until the trial ends.
-                  Cancel anytime before the trial ends — no charge. After the trial, billing starts automatically (monthly or annual depending on your selection).
-                  Manage your subscription, update payment method, or cancel through the <span style={{ color: '#F59E0B', fontWeight: 600, cursor: 'pointer' }} onClick={handleManageBilling}>Manage Subscription</span> portal.
+                  For dedicated infrastructure, white-label widgets, custom SLAs, or SSO — <a href="/pricing#enterprise" style={{ color: '#F59E0B', fontWeight: 600 }}>contact our sales team</a>.
                 </div>
               </div>
             </div>

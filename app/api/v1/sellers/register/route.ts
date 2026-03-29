@@ -1,11 +1,13 @@
 /**
  * POTAL API v1 — /api/v1/sellers/register
  *
- * Register a new seller account.
+ * Register a new seller account (Forever Free model).
  * Creates Supabase auth user + sellers row + auto-generates API keys.
+ * Sets trial_expires_at = NOW() + 30 days (monthly trial).
+ * Profile completion upgrades to Forever Free.
  *
  * POST /api/v1/sellers/register
- * Body: { email, password, companyName?, website?, platform? }
+ * Body: { email, password, companyName, country, industry }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,11 +20,17 @@ function getServiceClient() {
   return createClient(url, serviceKey);
 }
 
+const VALID_INDUSTRIES = [
+  'ecommerce_seller', 'logistics_freight', 'customs_broker',
+  'marketplace_operator', 'developer', 'other',
+];
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { email, password, companyName, website, platform } = body;
+    const { email, password, companyName, country, industry } = body;
 
+    // Validation
     if (!email || !password) {
       return NextResponse.json(
         { success: false, error: { message: 'Email and password are required.' } },
@@ -37,23 +45,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!companyName || !companyName.trim()) {
+      return NextResponse.json(
+        { success: false, error: { message: 'Company name is required.' } },
+        { status: 400 }
+      );
+    }
+
+    if (!country || typeof country !== 'string' || country.length !== 2) {
+      return NextResponse.json(
+        { success: false, error: { message: 'Country (ISO 2-letter code) is required.' } },
+        { status: 400 }
+      );
+    }
+
+    if (!industry || !VALID_INDUSTRIES.includes(industry)) {
+      return NextResponse.json(
+        { success: false, error: { message: `Industry is required. Options: ${VALID_INDUSTRIES.join(', ')}` } },
+        { status: 400 }
+      );
+    }
+
     const supabase = getServiceClient();
 
     // 1. Create Supabase auth user
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
       password,
-      email_confirm: true, // Auto-confirm for now
+      email_confirm: true,
       user_metadata: {
         role: 'seller',
-        company_name: companyName || '',
-        website: website || '',
-        platform: platform || '',
+        company_name: companyName.trim(),
+        country: country.toUpperCase(),
+        industry,
       },
     });
 
     if (authError) {
-      // Check for duplicate email
       if (authError.message?.includes('already') || authError.message?.includes('exists')) {
         return NextResponse.json(
           { success: false, error: { message: 'An account with this email already exists.' } },
@@ -67,24 +95,26 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = authData.user.id;
+    const trialExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-    // 2. Create seller record
+    // 2. Create seller record with trial
     const { data: sellerData, error: sellerError } = await (supabase
       .from('sellers') as any)
       .insert({
         id: userId,
         email,
-        company_name: companyName || null,
-        website: website || null,
-        platform: platform || null,
+        company_name: companyName.trim(),
+        country: country.toUpperCase(),
+        industry,
         plan_id: 'free',
         subscription_status: 'active',
+        trial_type: 'monthly',
+        trial_expires_at: trialExpiresAt,
       })
       .select('id')
       .single();
 
     if (sellerError) {
-      // Cleanup: delete the auth user if seller creation fails
       await supabase.auth.admin.deleteUser(userId);
       return NextResponse.json(
         { success: false, error: { message: 'Failed to create seller profile.' } },
@@ -94,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     const sellerId = (sellerData as any).id;
 
-    // 3. Auto-generate API keys (publishable + secret)
+    // 3. Auto-generate API keys
     let publishableKey, secretKey;
     try {
       const pkResult = await createApiKey(supabase as any, {
@@ -113,25 +143,31 @@ export async function POST(req: NextRequest) {
       });
       secretKey = skResult;
     } catch {
-      // Keys failed but account created — user can generate keys later
       return NextResponse.json({
         success: true,
         data: {
           message: 'Account created but API key generation failed. Generate keys from the dashboard.',
           sellerId,
           keys: null,
+          trial: { type: 'monthly', expiresAt: trialExpiresAt },
         },
       });
     }
 
-    // 4. Return success with keys
+    // 4. Return success
     return NextResponse.json({
       success: true,
       data: {
-        message: 'Seller account created successfully.',
+        message: 'Account created! Complete your profile for Forever Free access.',
         sellerId,
         email,
         plan: 'free',
+        trial: {
+          type: 'monthly',
+          expiresAt: trialExpiresAt,
+          daysRemaining: 30,
+          upgradeToForeverFree: 'Complete your profile in the dashboard.',
+        },
         keys: {
           publishable: {
             fullKey: publishableKey.fullKey,
@@ -141,7 +177,7 @@ export async function POST(req: NextRequest) {
           secret: {
             fullKey: secretKey.fullKey,
             prefix: secretKey.prefix,
-            note: 'Keep this secret! Use for server-side API calls and key management',
+            note: 'Keep this secret! Use for server-side API calls',
           },
           warning: 'Save these keys now — they will NOT be shown again.',
         },
