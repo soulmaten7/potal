@@ -387,43 +387,6 @@ function CompetitorBarChart() {
   );
 }
 
-// ─── Free Banner ─────────────────────────────────
-function FreeBanner() {
-  const [show, setShow] = useState(true);
-  if (!show) return null;
-  return (
-    <div style={{
-      background: '#10b981',
-      color: 'white',
-      textAlign: 'center',
-      padding: '8px 16px',
-      fontSize: 13,
-      fontWeight: 600,
-      position: 'relative',
-    }}>
-      All 140 features are now free. No credit card needed.
-      <button
-        onClick={() => setShow(false)}
-        style={{
-          position: 'absolute',
-          right: 16,
-          top: '50%',
-          transform: 'translateY(-50%)',
-          background: 'none',
-          border: 'none',
-          color: 'white',
-          fontSize: 18,
-          cursor: 'pointer',
-          opacity: 0.7,
-        }}
-        aria-label="Dismiss banner"
-      >
-        &times;
-      </button>
-    </div>
-  );
-}
-
 // ─── Main Page ────────────────────────────────────
 export default function HomePage() {
   return (
@@ -432,9 +395,6 @@ export default function HomePage() {
       background: '#fafafa',
       color: '#1a1a1a',
     }}>
-      {/* ═══════════════════ FREE BANNER ═══════════════ */}
-      <FreeBanner />
-
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section style={{
         background: 'linear-gradient(135deg, #02122c 0%, #0a1e3d 50%, #1a365d 100%)',

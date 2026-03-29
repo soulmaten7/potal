@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
@@ -16,7 +15,6 @@ const INDUSTRIES = [
 ];
 
 export default function SignupPage() {
-  const router = useRouter();
   const { supabase } = useSupabase();
 
   const [email, setEmail] = useState('');
@@ -29,15 +27,8 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // OAuth completion modal state
-  const [showOAuthModal, setShowOAuthModal] = useState(false);
-  const [oauthEmail, setOauthEmail] = useState('');
-
-  // Keys shown after registration
-  const [createdKeys, setCreatedKeys] = useState<{
-    publishable: { fullKey: string; prefix: string };
-    secret: { fullKey: string; prefix: string };
-  } | null>(null);
+  // Email verification sent state
+  const [emailSent, setEmailSent] = useState(false);
 
   // Country list sorted by name
   const countries = useMemo(() =>
@@ -104,33 +95,35 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch('/api/v1/sellers/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          password,
-          companyName: isIndividual ? 'Individual' : companyName.trim(),
-          country,
-          industry,
-        }),
+      const redirectUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/auth/callback`
+        : '';
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            role: 'seller',
+            company_name: isIndividual ? 'Individual' : companyName.trim(),
+            country: country.toUpperCase(),
+            industry,
+          },
+        },
       });
 
-      const data = await res.json();
-      if (!data.success) {
-        setError(data.error?.message || 'Registration failed.');
+      if (signUpError) {
+        if (signUpError.message?.includes('already') || signUpError.message?.includes('exists')) {
+          setError('An account with this email already exists.');
+        } else {
+          setError(signUpError.message || 'Registration failed.');
+        }
         setLoading(false);
         return;
       }
 
-      if (data.data.keys) {
-        setCreatedKeys({
-          publishable: data.data.keys.publishable,
-          secret: data.data.keys.secret,
-        });
-      }
-
-      await supabase.auth.signInWithPassword({ email, password });
+      setEmailSent(true);
     } catch {
       setError('Something went wrong. Please try again.');
     } finally {
@@ -148,8 +141,8 @@ export default function SignupPage() {
     });
   };
 
-  // ─── Keys Display (after successful registration) ──
-  if (createdKeys) {
+  // ─── Email Verification Sent ──
+  if (emailSent) {
     return (
       <div style={{
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -165,117 +158,53 @@ export default function SignupPage() {
           borderRadius: 20,
           padding: '48px 40px',
           width: '100%',
-          maxWidth: 520,
+          maxWidth: 480,
           boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
           border: '1px solid #e2e8f0',
+          textAlign: 'center',
         }}>
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>&#127881;</div>
-            <h1 style={{ fontSize: 24, fontWeight: 800, color: '#02122c', marginBottom: 8 }}>
-              Welcome to POTAL!
-            </h1>
-            <p style={{ fontSize: 14, color: '#64748b' }}>
-              Your account is ready. Save these API keys — they won&apos;t be shown again.
-            </p>
-            <div style={{
-              display: 'inline-block',
-              background: '#f0fdf4',
-              color: '#166534',
-              fontSize: 12,
-              fontWeight: 600,
-              padding: '4px 12px',
-              borderRadius: 8,
-              marginTop: 8,
-            }}>
-              30-day free trial started — complete your profile for Forever Free
-            </div>
-          </div>
-
-          {/* Publishable Key */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
-              Publishable Key (for widgets)
-            </div>
-            <div style={{
-              background: '#f0fdf4',
-              border: '1px solid #86efac',
-              borderRadius: 10,
-              padding: '12px 14px',
-              fontFamily: 'monospace',
-              fontSize: 12,
-              wordBreak: 'break-all',
-              color: '#166534',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 8,
-            }}>
-              <span>{createdKeys.publishable.fullKey}</span>
-              <button
-                onClick={() => navigator.clipboard.writeText(createdKeys.publishable.fullKey)}
-                style={{
-                  background: '#16a34a', color: 'white', border: 'none',
-                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
-                }}
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
-          {/* Secret Key */}
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
-              Secret Key (for server-side)
-            </div>
-            <div style={{
-              background: '#fef3c7',
-              border: '1px solid #fbbf24',
-              borderRadius: 10,
-              padding: '12px 14px',
-              fontFamily: 'monospace',
-              fontSize: 12,
-              wordBreak: 'break-all',
-              color: '#92400e',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: 8,
-            }}>
-              <span>{createdKeys.secret.fullKey}</span>
-              <button
-                onClick={() => navigator.clipboard.writeText(createdKeys.secret.fullKey)}
-                style={{
-                  background: '#d97706', color: 'white', border: 'none',
-                  padding: '6px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
-                }}
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-
+          <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
+          <h1 style={{ fontSize: 22, fontWeight: 800, color: '#02122c', marginBottom: 8 }}>
+            Check your email
+          </h1>
+          <p style={{ fontSize: 14, color: '#64748b', marginBottom: 4, lineHeight: 1.6 }}>
+            We sent a confirmation link to
+          </p>
+          <p style={{ fontSize: 15, fontWeight: 700, color: '#02122c', marginBottom: 20 }}>
+            {email}
+          </p>
           <div style={{
-            background: '#fef2f2',
-            border: '1px solid #fca5a5',
-            borderRadius: 8,
-            padding: '10px 14px',
+            background: '#f0fdf4',
+            border: '1px solid #86efac',
+            borderRadius: 10,
+            padding: '14px 16px',
             fontSize: 13,
-            color: '#dc2626',
+            color: '#166534',
+            lineHeight: 1.6,
             marginBottom: 24,
           }}>
-            <strong>Important:</strong> Save both keys somewhere safe now. You won&apos;t be able to see the full keys again.
+            Click the link in the email to verify your account and get started.
+            <br />
+            Your API keys will be generated automatically.
           </div>
-
-          <button
-            onClick={() => router.push('/dashboard')}
+          <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 16 }}>
+            Didn&apos;t receive the email? Check your spam folder or try signing up again.
+          </p>
+          <Link
+            href="/auth/login"
             style={{
-              width: '100%', padding: '14px', borderRadius: 12, border: 'none',
-              background: '#F59E0B', color: '#02122c', fontSize: 15, fontWeight: 700, cursor: 'pointer',
+              display: 'inline-block',
+              padding: '12px 32px',
+              borderRadius: 12,
+              background: '#02122c',
+              color: 'white',
+              fontSize: 14,
+              fontWeight: 700,
+              textDecoration: 'none',
             }}
           >
-            Go to Dashboard
-          </button>
+            Go to Sign In
+          </Link>
         </div>
       </div>
     );

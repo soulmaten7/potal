@@ -1,54 +1,103 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "../../../utils/supabase/server";
+import { createApiKey } from "@/app/lib/api-auth/keys";
 
 const AUTH_CODE_ERROR_PATH = "/auth/auth-code-error";
+
+function getServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  return createClient(url, serviceKey);
+}
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next");
   const origin = requestUrl.origin;
-
-  // After successful auth, redirect to dashboard
-  const homeUrl = `${origin}/dashboard`;
-
-  // Security: only allow internal relative paths to prevent open redirect attacks
-  // Block absolute URLs, protocol-relative URLs, and encoded bypasses
-  const isValidPath = (path: string): boolean => {
-    if (!path.startsWith('/') || path.startsWith('//')) return false;
-    // Block URL-encoded bypass attempts (e.g., /%2F, /\, etc.)
-    try {
-      const decoded = decodeURIComponent(path);
-      if (decoded.startsWith('//') || decoded.includes('\\')) return false;
-    } catch { return false; }
-    return true;
-  };
-  const safeNext =
-    next && isValidPath(next)
-      ? `${origin}${next}`
-      : homeUrl;
-  const successRedirect = safeNext;
 
   const cookieStore = await cookies();
 
   if (!code) {
-    return NextResponse.redirect(successRedirect);
+    return NextResponse.redirect(`${origin}/dashboard`);
   }
 
-  const response = NextResponse.redirect(homeUrl);
+  const response = NextResponse.redirect(`${origin}/dashboard`);
 
   try {
     const supabase = createServerSupabaseClient(cookieStore, response);
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) {
-      console.error("auth/callback exchangeCodeForSession error:", error);
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error || !sessionData?.user) {
       return NextResponse.redirect(`${origin}${AUTH_CODE_ERROR_PATH}`);
     }
-  } catch (err) {
-    console.error("auth/callback error:", err);
+
+    const user = sessionData.user;
+    const userId = user.id;
+    const email = user.email || "";
+    const meta = user.user_metadata || {};
+
+    // Check if seller record already exists
+    const service = getServiceClient();
+    const { data: existingSeller } = await (service
+      .from("sellers") as any)
+      .select("id")
+      .eq("id", userId)
+      .single();
+
+    if (existingSeller) {
+      // Seller exists → go to dashboard
+      return response;
+    }
+
+    // No seller record — check if user_metadata has profile info (email signup)
+    const companyName = meta.company_name;
+    const country = meta.country;
+    const industry = meta.industry;
+
+    if (companyName && country && industry) {
+      // Email signup with metadata → create seller + API keys automatically
+      const trialExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      const { error: sellerError } = await (service
+        .from("sellers") as any)
+        .insert({
+          id: userId,
+          email,
+          company_name: companyName,
+          country: typeof country === "string" ? country.toUpperCase() : country,
+          industry,
+          plan_id: "free",
+          subscription_status: "active",
+          trial_type: "monthly",
+          trial_expires_at: trialExpiresAt,
+        });
+
+      if (!sellerError) {
+        try {
+          await createApiKey(service as any, {
+            sellerId: userId,
+            type: "publishable",
+            name: "Default Publishable Key",
+            rateLimitPerMinute: 60,
+          });
+          await createApiKey(service as any, {
+            sellerId: userId,
+            type: "secret",
+            name: "Default Secret Key",
+            rateLimitPerMinute: 60,
+          });
+        } catch {
+          // Keys failed but seller was created — user can generate from dashboard
+        }
+      }
+
+      return response; // → /dashboard
+    }
+
+    // Google OAuth without profile info → redirect to complete-profile
+    return NextResponse.redirect(`${origin}/auth/complete-profile`);
+  } catch {
     return NextResponse.redirect(`${origin}${AUTH_CODE_ERROR_PATH}`);
   }
-
-  return response;
 }
