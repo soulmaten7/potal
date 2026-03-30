@@ -199,11 +199,11 @@ export default function PostDetailPage() {
     } catch { /* silent */ }
   }
 
-  if (loading) return <div className="max-w-7xl mx-auto px-4 py-16 text-center text-gray-400">Loading...</div>;
+  if (loading) return <div className="max-w-[1340px] mx-auto px-4 py-16 text-center text-gray-400">Loading...</div>;
   if (!post) return (
-    <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+    <div className="max-w-[1340px] mx-auto px-4 py-16 text-center">
       <h1 className="text-2xl font-bold text-gray-900 mb-4">Post not found</h1>
-      <Link href="/community" className="text-[#F59E0B] font-bold hover:underline">← Back to Community</Link>
+      <Link href="/community" className="text-amber-600 font-bold hover:underline">← Back to Community</Link>
     </div>
   );
 
@@ -216,10 +216,10 @@ export default function PostDetailPage() {
   const SidebarContent = () => (
     <>
       <div className="mb-6">
-        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-2">Categories</h3>
+        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">Categories</h3>
         <Link
           href="/community"
-          className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors mb-1 block text-gray-600 hover:bg-gray-50"
+          className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mb-1 block text-gray-600 hover:bg-gray-100"
         >
           ← All Posts
         </Link>
@@ -227,8 +227,8 @@ export default function PostDetailPage() {
           <Link
             key={cat.slug}
             href={`/community?category=${cat.slug}`}
-            className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors mb-0.5 flex items-center gap-2 ${
-              post.community_category === cat.slug ? 'bg-amber-50 text-amber-700 font-semibold' : 'text-gray-600 hover:bg-gray-50'
+            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 flex items-center gap-2 ${
+              post.community_category === cat.slug ? 'bg-amber-100 text-amber-800 font-bold border-l-[3px] border-amber-500' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <span>{cat.icon}</span>
@@ -236,10 +236,10 @@ export default function PostDetailPage() {
           </Link>
         ))}
       </div>
-      <div className="border-t pt-4">
+      <div className="border-t-2 border-gray-100 mt-4 pt-4">
         <button
           onClick={() => setShowFeatureGuides(!showFeatureGuides)}
-          className="w-full text-left px-2 flex items-center justify-between text-xs font-bold text-gray-400 uppercase tracking-wider mb-2"
+          className="w-full text-left px-2 flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-widest mb-3"
         >
           <span>Feature Guides</span>
           <span className="text-gray-300">{showFeatureGuides ? '▲' : '▼'}</span>
@@ -266,11 +266,11 @@ export default function PostDetailPage() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-[1340px] mx-auto px-4 py-8">
       <div className="flex gap-6">
         {/* Sidebar */}
-        <aside className="hidden md:block w-56 flex-shrink-0">
-          <div className="sticky top-20">
+        <aside className="hidden md:block w-60 flex-shrink-0">
+          <div className="sticky top-20 bg-gray-50 rounded-xl p-4 border border-gray-100">
             <SidebarContent />
           </div>
         </aside>
@@ -291,50 +291,21 @@ export default function PostDetailPage() {
           </div>
 
           {/* Post Card */}
-          <div className="bg-white border rounded-xl mb-4 overflow-hidden">
+          <div className="bg-white border border-gray-200 rounded-xl mb-4 overflow-hidden shadow-sm">
             {/* Post Header */}
             <div className="p-6 pb-4">
-              <div className="flex items-start justify-between gap-3 mb-4">
-                <div className="flex items-center gap-3">
-                  <Avatar email={post.author_email || ''} className="w-9 h-9" />
-                  <div>
-                    <div className="text-sm font-semibold text-gray-800">{displayName(post.author_email || '')}</div>
-                    <div className="text-xs text-gray-400">
-                      {timeAgo(post.created_at)}
-                      {post.updated_at && post.updated_at !== post.created_at ? ' · edited' : ''}
-                    </div>
-                  </div>
-                </div>
-                {isPostOwner && !editingPost && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => { setEditingPost(true); setEditTitle(post.title); setEditContent(post.content); setEditStatus(post.status); }}
-                      className="text-xs px-3 py-1.5 border rounded-lg text-gray-500 hover:bg-gray-50 transition-colors"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={handleDeletePost}
-                      className="text-xs px-3 py-1.5 border border-red-200 rounded-lg text-red-400 hover:bg-red-50 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
-              </div>
-
               {/* Badges */}
-              <div className="flex flex-wrap items-center gap-2 mb-3">
+              <div className="flex flex-wrap items-center gap-2 mb-4">
                 {postCat && (
-                  <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-500">{postCat.icon} {postCat.label}</span>
+                  <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-200 text-gray-700">{postCat.icon} {postCat.label}</span>
                 )}
-                <span className="text-xs font-bold px-2.5 py-1 rounded" style={{ color: typeConfig.color, background: typeConfig.bg }}>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: typeConfig.color }}>
                   {typeConfig.label}
                 </span>
-                <span className="text-xs font-bold px-2.5 py-1 rounded" style={{ color: statusConfig.color, background: statusConfig.bg }}>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ color: statusConfig.color, background: statusConfig.bg, border: `1px solid ${statusConfig.color}30` }}>
                   {statusConfig.label}
                 </span>
-                {featureName && <span className="text-xs px-2.5 py-1 rounded bg-blue-50 text-blue-600">{featureName}</span>}
+                {featureName && <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">{featureName}</span>}
               </div>
 
               {/* Title + Content (edit mode or view mode) */}
@@ -343,20 +314,20 @@ export default function PostDetailPage() {
                   <input
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg text-sm font-semibold focus:outline-none focus:border-[#F59E0B]"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400"
                     placeholder="Title"
                   />
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                     rows={6}
-                    className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-[#F59E0B] resize-y"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 resize-y"
                     placeholder="Content"
                   />
                   <select
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
-                    className="px-3 py-2 border rounded-lg text-sm bg-white"
+                    className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50"
                   >
                     <option value="open">Open</option>
                     <option value="resolved">Resolved</option>
@@ -366,13 +337,13 @@ export default function PostDetailPage() {
                     <button
                       onClick={handleSavePost}
                       disabled={savingPost || editTitle.trim().length < 3 || editContent.trim().length < 20}
-                      className="bg-[#F59E0B] text-[#02122c] px-4 py-2 rounded-lg font-bold text-sm hover:bg-amber-400 disabled:opacity-50"
+                      className="bg-amber-500 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-amber-600 disabled:opacity-50 transition-colors"
                     >
                       {savingPost ? 'Saving...' : 'Save Changes'}
                     </button>
                     <button
                       onClick={() => setEditingPost(false)}
-                      className="px-4 py-2 border rounded-lg text-sm text-gray-500 hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50"
                     >
                       Cancel
                     </button>
@@ -380,19 +351,50 @@ export default function PostDetailPage() {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-xl font-bold text-gray-900 mb-4">{post.title}</h1>
-                  <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{post.content}</div>
+                  <h1 className="text-2xl font-extrabold text-gray-900 mb-4 tracking-tight">{post.title}</h1>
+                  <div className="text-gray-700 leading-relaxed text-base whitespace-pre-wrap">{post.content}</div>
                 </>
               )}
             </div>
 
-            {/* Post Footer */}
-            <div className="px-6 py-3 border-t bg-gray-50 flex items-center gap-4">
+            {/* Post Footer — author info + actions */}
+            <div className="bg-gray-50 border-t border-gray-100 px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar email={post.author_email || ''} className="w-7 h-7" />
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-semibold text-gray-700">{displayName(post.author_email || '')}</span>
+                  <span className="text-gray-300">·</span>
+                  <span className="text-gray-400 text-xs">
+                    {timeAgo(post.created_at)}
+                    {post.updated_at && post.updated_at !== post.created_at ? ' · edited' : ''}
+                  </span>
+                </div>
+              </div>
+              {isPostOwner && !editingPost && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => { setEditingPost(true); setEditTitle(post.title); setEditContent(post.content); setEditStatus(post.status); }}
+                    className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg text-gray-500 hover:bg-white transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDeletePost}
+                    className="text-xs px-3 py-1.5 border border-red-200 rounded-lg text-red-400 hover:bg-red-50 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Vote + comment count bar */}
+            <div className="px-6 py-3 border-t border-gray-100 flex items-center gap-4">
               <button
                 onClick={handleUpvote}
                 disabled={!session}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-semibold transition-all ${
-                  upvoted ? 'border-[#F59E0B] bg-amber-50 text-[#d97706]' : 'border-gray-200 text-gray-500 hover:border-gray-300 bg-white'
+                  upvoted ? 'border-amber-400 bg-amber-50 text-amber-700' : 'border-gray-200 text-gray-500 hover:border-gray-300 bg-white'
                 } ${!session ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
               >
                 <span>{upvoted ? '▲' : '△'}</span>
@@ -400,7 +402,7 @@ export default function PostDetailPage() {
               </button>
               <span className="text-sm text-gray-400">💬 {comments.length} {comments.length === 1 ? 'reply' : 'replies'}</span>
               {!session && (
-                <Link href="/auth/signup" className="ml-auto text-xs text-[#F59E0B] font-bold hover:underline">
+                <Link href="/auth/signup" className="ml-auto text-xs text-amber-600 font-bold hover:underline">
                   Sign up to vote &amp; comment →
                 </Link>
               )}
@@ -409,24 +411,26 @@ export default function PostDetailPage() {
 
           {/* Comments Section */}
           <div className="mb-4">
-            <h2 className="text-base font-bold text-gray-900 mb-3">
+            <h2 className="text-lg font-bold text-gray-900 mb-4">
               {comments.length} {comments.length === 1 ? 'Reply' : 'Replies'}
             </h2>
 
             {comments.length === 0 ? (
-              <div className="bg-white border rounded-xl p-8 text-center">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 text-center shadow-sm">
                 <p className="text-gray-400 text-sm">No replies yet. Be the first to respond.</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {comments.map(comment => {
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                {comments.map((comment, idx) => {
                   const isCommentOwner = session?.user?.id === comment.user_id;
                   const isEditing = editingCommentId === comment.id;
 
                   return (
                     <div
                       key={comment.id}
-                      className={`border rounded-xl p-4 ${comment.is_official ? 'border-green-200 bg-green-50' : 'bg-white'}`}
+                      className={`px-6 py-4 ${idx > 0 ? 'border-t border-gray-100' : ''} ${
+                        comment.is_official ? 'bg-amber-50 border-l-4 border-l-amber-400' : ''
+                      }`}
                     >
                       <div className="flex items-start gap-3">
                         <Avatar email={comment.author_email || ''} className="w-7 h-7" />
@@ -435,7 +439,7 @@ export default function PostDetailPage() {
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-semibold text-gray-800">{displayName(comment.author_email || '')}</span>
                               {comment.is_official && (
-                                <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-700">Official</span>
+                                <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-200 text-amber-800">Official</span>
                               )}
                               <span className="text-xs text-gray-400">{timeAgo(comment.created_at)}</span>
                             </div>
@@ -455,26 +459,26 @@ export default function PostDetailPage() {
                                 value={editCommentText}
                                 onChange={(e) => setEditCommentText(e.target.value)}
                                 rows={3}
-                                className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-[#F59E0B] resize-y"
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 resize-y"
                               />
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleSaveComment(comment.id)}
                                   disabled={savingComment || editCommentText.trim().length < 2}
-                                  className="bg-[#F59E0B] text-[#02122c] px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-amber-400 disabled:opacity-50"
+                                  className="bg-amber-500 text-white px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-amber-600 disabled:opacity-50 transition-colors"
                                 >
                                   {savingComment ? 'Saving...' : 'Save'}
                                 </button>
                                 <button
                                   onClick={() => setEditingCommentId(null)}
-                                  className="px-3 py-1.5 border rounded-lg text-xs text-gray-500 hover:bg-gray-50"
+                                  className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs text-gray-500 hover:bg-gray-50"
                                 >
                                   Cancel
                                 </button>
                               </div>
                             </div>
                           ) : (
-                            <p className="text-sm text-gray-700 whitespace-pre-wrap mt-1">{comment.content}</p>
+                            <p className="text-gray-700 text-sm leading-relaxed mt-2 whitespace-pre-wrap">{comment.content}</p>
                           )}
                         </div>
                       </div>
@@ -487,7 +491,7 @@ export default function PostDetailPage() {
 
           {/* Comment Form */}
           {session ? (
-            <div className="bg-white border rounded-xl p-4">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
               <div className="flex items-center gap-3 mb-3">
                 <Avatar email={session.user.email || ''} className="w-7 h-7" />
                 <span className="text-sm font-semibold text-gray-700">{displayName(session.user.email || '')}</span>
@@ -498,21 +502,21 @@ export default function PostDetailPage() {
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write a reply..."
                   rows={3}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:border-[#F59E0B] resize-y mb-3"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-400 resize-y mb-3"
                 />
                 <button
                   type="submit"
                   disabled={submitting || commentText.trim().length < 2}
-                  className="bg-[#F59E0B] text-[#02122c] px-5 py-2 rounded-lg font-bold text-sm hover:bg-amber-400 disabled:opacity-50"
+                  className="bg-amber-500 text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-amber-600 disabled:opacity-50 transition-colors shadow-sm"
                 >
                   {submitting ? 'Posting...' : 'Post Reply'}
                 </button>
               </form>
             </div>
           ) : (
-            <div className="border rounded-xl p-5 bg-gray-50 text-center">
+            <div className="border border-gray-200 rounded-xl p-6 bg-gray-50 text-center">
               <p className="text-gray-500 text-sm mb-3">Join the conversation</p>
-              <Link href="/auth/signup" className="bg-[#F59E0B] text-[#02122c] px-5 py-2 rounded-lg font-bold text-sm hover:bg-amber-400 inline-block">
+              <Link href="/auth/signup" className="bg-amber-500 text-white px-5 py-2.5 rounded-lg font-bold text-sm hover:bg-amber-600 inline-block transition-colors shadow-sm">
                 Sign Up Free
               </Link>
             </div>

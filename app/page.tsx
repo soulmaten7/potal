@@ -343,7 +343,7 @@ const COMPETITORS = [
 
 function CompetitorBarChart() {
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto' }}>
+    <div style={{ maxWidth: 900, margin: '0 auto' }}>
       {COMPETITORS.map((c) => {
         const pct = Math.round((c.features / 140) * 100);
         return (
@@ -411,7 +411,7 @@ export default function HomePage() {
           backgroundSize: '24px 24px',
         }} />
 
-        <div style={{ maxWidth: 1152, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 1340, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
             {/* Left: Text */}
             <div>
@@ -553,7 +553,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ FEATURES CTA BANNER ══════════════════════ */}
       <section style={{ background: '#0A0A1A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '32px 0' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+        <div style={{ maxWidth: 1340, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <span style={{ color: '#E8640A', fontWeight: 700, fontSize: 14 }}>140 FEATURES</span>
             <h3 style={{ color: 'white', fontSize: 22, fontWeight: 700, margin: '4px 0' }}>Try every feature with a live demo</h3>
@@ -568,7 +568,7 @@ export default function HomePage() {
       {/* ═══════════════════ COMPETITOR FEATURE COMPARISON ═══════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px', background: 'white', borderBottom: '1px solid #e5e7eb' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
               More features than all competitors combined
@@ -591,7 +591,7 @@ export default function HomePage() {
       {/* ═══════════════════ COST COMPARISON TABLE ═══════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
               They charge enterprise prices. We don&apos;t charge at all.
@@ -659,7 +659,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ HOW IT WORKS ═══════════ */}
       <FadeInSection>
-      <section style={{ padding: '96px 20px', maxWidth: 1024, margin: '0 auto' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
             How it works
@@ -689,7 +689,7 @@ export default function HomePage() {
       {/* ═══════════════════ FEATURES ═══════════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px', background: 'white' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ maxWidth: 1340, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
               Everything you need for global commerce
@@ -717,7 +717,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ API RESPONSE ═══════════ */}
       <FadeInSection>
-      <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 1340, margin: '0 auto' }}>
         <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 16 }}>
@@ -750,7 +750,7 @@ export default function HomePage() {
       {/* ═══════════════════ WIDGET DEMO ══��═════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px', background: '#02122c', color: 'white' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: 34, fontWeight: 800, marginBottom: 16 }}>Your customers see this</h2>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 16, marginBottom: 40, maxWidth: 500, margin: '0 auto 40px' }}>
             The POTAL widget embeds directly into your product page.
@@ -768,7 +768,7 @@ export default function HomePage() {
 
       {/* ═══════════════════ BEFORE vs AFTER ═════════ */}
       <FadeInSection>
-      <section style={{ padding: '96px 20px', maxWidth: 960, margin: '0 auto' }}>
+      <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
         <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12, textAlign: 'center' }}>
           The checkout experience your customers deserve
         </h2>
