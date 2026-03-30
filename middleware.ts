@@ -1,6 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+function applySecurityHeaders(res: NextResponse) {
+  res.headers.set("X-Frame-Options", "DENY");
+  res.headers.set("X-Content-Type-Options", "nosniff");
+  res.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.headers.set("X-XSS-Protection", "1; mode=block");
+  res.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  res.headers.set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://*.vercel-scripts.com https://*.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co https://*.vercel-insights.com wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+  return res;
+}
+
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
@@ -8,7 +19,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith("/api/v1/")) {
     // Handle preflight OPTIONS request
     if (request.method === "OPTIONS") {
-      return new NextResponse(null, {
+      return applySecurityHeaders(new NextResponse(null, {
         status: 204,
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -16,7 +27,7 @@ export async function middleware(request: NextRequest) {
           "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
           "Access-Control-Max-Age": "86400",
         },
-      });
+      }));
     }
 
     // For actual requests, add CORS headers
@@ -36,13 +47,13 @@ export async function middleware(request: NextRequest) {
       apiResponse.headers.set("X-Required-Role", "analyst");
     }
 
-    return apiResponse;
+    return applySecurityHeaders(apiResponse);
   }
 
   if (pathname === "/auth/callback") {
-    return NextResponse.next({
+    return applySecurityHeaders(NextResponse.next({
       request: { headers: request.headers },
-    });
+    }));
   }
 
   const response = NextResponse.next({
@@ -52,22 +63,7 @@ export async function middleware(request: NextRequest) {
   });
 
   // ─── Security Headers ────
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set("X-XSS-Protection", "1; mode=block");
-  response.headers.set(
-    "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=()"
-  );
-  response.headers.set(
-    "Strict-Transport-Security",
-    "max-age=63072000; includeSubDomains; preload"
-  );
-  response.headers.set(
-    "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://*.vercel-scripts.com https://*.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co https://*.vercel-insights.com wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
-  );
+  applySecurityHeaders(response);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey =
