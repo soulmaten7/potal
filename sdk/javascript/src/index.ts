@@ -166,7 +166,7 @@ export class PotalClient {
         // Parse JSON safely
         let data: Record<string, unknown>;
         try {
-          data = await res.json();
+          data = await res.json() as Record<string, unknown>;
         } catch {
           const text = await res.text();
           throw new PotalError(res.status, 'INVALID_JSON', `Invalid JSON response: ${text.slice(0, 200)}`);
