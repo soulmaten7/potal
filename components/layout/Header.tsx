@@ -175,7 +175,7 @@ export function Header() {
             </button>
 
             {showLangDropdown && (
-              <div className="absolute right-0 top-full mt-3 w-44 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 z-[100]">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 z-[6000]">
                 <div className="px-4 py-2 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   {t('nav.language')}
                 </div>
@@ -214,7 +214,7 @@ export function Header() {
               </button>
 
               {showUserMenu && (
-                <div role="menu" className="absolute right-0 top-full mt-3 w-52 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 z-[100]">
+                <div role="menu" className="absolute right-0 top-full mt-1 w-52 bg-white rounded-lg shadow-xl border border-slate-100 overflow-hidden py-1 z-[6000]">
                   <div className="px-4 py-2.5 border-b border-slate-100">
                     <div className="text-xs font-bold text-slate-400">{userEmail}</div>
                   </div>

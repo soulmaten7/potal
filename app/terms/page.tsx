@@ -44,61 +44,45 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            3. Subscription Plans and Billing
+            3. Plans and Access
           </h2>
           <p>
-            Access to the POTAL API is governed by your subscription plan.
-            Each plan includes a monthly API call allocation. Usage beyond
-            your plan&apos;s limits may result in rate limiting or additional
-            charges depending on your plan tier. You are responsible for
-            securing your API keys and must not share them publicly.
+            POTAL provides all features free of charge — forever. There are
+            no paid tiers, no usage limits, and no hidden fees. You are
+            responsible for securing your API keys and must not share them
+            publicly. Enterprise organizations may contact us for dedicated
+            support and custom SLAs.
           </p>
           <ul className="list-disc pl-6 mt-2 space-y-1">
             <li>
-              <strong>Free Plan:</strong> 100 API calls per month.
+              <strong>Forever Free Plan:</strong> All 140 features, all 240 countries, all 155+ API endpoints — free forever with no usage limits.
             </li>
             <li>
-              <strong>Basic Plan:</strong> 2,000 API calls per month ($20/mo). Overage: $0.015/call.
-            </li>
-            <li>
-              <strong>Pro Plan:</strong> 10,000 API calls per month ($80/mo). Overage: $0.012/call.
-            </li>
-            <li>
-              <strong>Enterprise Plan:</strong> 50,000 API calls per month ($300/mo). Overage: $0.01/call.
+              <strong>Enterprise:</strong> For organizations requiring dedicated support, custom SLAs, or on-premise deployment —{" "}
+              <a href="/contact" className="text-amber-600 hover:underline">Contact Us</a>.
             </li>
           </ul>
           <p className="mt-3">
-            All paid subscriptions are billed through Paddle.com, our Merchant of
-            Record. By subscribing, you also agree to{" "}
-            <a
-              href="https://www.paddle.com/legal/terms"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-amber-600 hover:underline"
-            >
-              Paddle&apos;s Terms of Service
-            </a>
-            . Paddle handles all payment processing, invoicing, sales tax, and
-            VAT on our behalf. You may cancel your subscription at any time
-            through your POTAL dashboard; cancellation takes effect at the end
-            of the current billing cycle. See our{" "}
+            As POTAL is free to use, no payment processing is required for
+            standard access. Enterprise agreements, if any, will be handled
+            directly. See our{" "}
             <a href="/refund" className="text-amber-600 hover:underline">
               Refund Policy
             </a>{" "}
-            for details on refunds.
+            for details.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold text-slate-800 mt-8 mb-3">
-            4. Free Trial
+            4. Service Availability
           </h2>
           <p>
-            Certain paid plans may include a free trial period. You will not be
-            charged during the trial. If you do not cancel before the trial
-            ends, your subscription will automatically convert to a paid plan
-            at the listed price. You may cancel at any time during the trial
-            without charge.
+            POTAL is provided free of charge. We strive to maintain high
+            availability but do not guarantee uninterrupted service. We may
+            perform maintenance or updates that temporarily affect availability.
+            Enterprise users with custom SLAs will be notified in advance of
+            planned maintenance.
           </p>
         </section>
 

@@ -36,7 +36,7 @@ export const GET = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => 
       convertedAmount: converted,
       rate: directRate,
       source: rates.source || 'ECB + Fed',
-      updatedAt: rates.date || new Date().toISOString().split('T')[0],
+      updatedAt: rates.lastUpdated || new Date().toISOString().split('T')[0],
       supportedCurrencies: Object.keys(rates.rates).length,
     }, { sellerId: ctx.sellerId, plan: ctx.planId });
   } catch (err) {
