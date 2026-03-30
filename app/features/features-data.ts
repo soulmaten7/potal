@@ -146,10 +146,10 @@ export const FEATURES: Feature[] = [
   { id: 'F146', slug: 'feature-flags', name: 'Feature Flags', category: 'Platform', priority: 'SHOULD', status: 'active', description: 'Toggle features on/off per tenant without deployments' },
 
   // ─── Integration (14) ──────────────────────────────
-  { id: 'F045', slug: 'shopify-app', name: 'Shopify App', category: 'Integration', priority: 'MUST', status: 'active', description: 'Native Shopify Theme App Extension with one-click install' },
-  { id: 'F046', slug: 'woocommerce-plugin', name: 'WooCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'active', description: 'WordPress/WooCommerce plugin for automatic landed cost display' },
-  { id: 'F047', slug: 'bigcommerce-plugin', name: 'BigCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'active', description: 'BigCommerce integration for storefront landed cost calculations' },
-  { id: 'F048', slug: 'magento-module', name: 'Magento Module', category: 'Integration', priority: 'MUST', status: 'active', description: 'Full Magento 2 module with checkout and admin integration' },
+  { id: 'F045', slug: 'shopify-app', name: 'Shopify App', category: 'Integration', priority: 'MUST', status: 'coming_soon', description: 'Native Shopify Theme App Extension with one-click install' },
+  { id: 'F046', slug: 'woocommerce-plugin', name: 'WooCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'coming_soon', description: 'WordPress/WooCommerce plugin for automatic landed cost display' },
+  { id: 'F047', slug: 'bigcommerce-plugin', name: 'BigCommerce Plugin', category: 'Integration', priority: 'MUST', status: 'coming_soon', description: 'BigCommerce integration for storefront landed cost calculations' },
+  { id: 'F048', slug: 'magento-module', name: 'Magento Module', category: 'Integration', priority: 'MUST', status: 'coming_soon', description: 'Full Magento 2 module with checkout and admin integration' },
   { id: 'F049', slug: 'js-widget', name: 'JS Widget', category: 'Integration', priority: 'MUST', status: 'active', description: 'Drop-in JavaScript widget for any website or checkout page' },
   { id: 'F050', slug: 'sdk-javascript', name: 'SDK (JavaScript)', category: 'Integration', priority: 'MUST', status: 'active', description: 'Official JavaScript/TypeScript SDK published on npm' },
   { id: 'F051', slug: 'sdk-python', name: 'SDK (Python)', category: 'Integration', priority: 'MUST', status: 'active', description: 'Official Python SDK with sync and async client support' },

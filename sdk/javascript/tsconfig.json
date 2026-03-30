@@ -4,11 +4,15 @@
     "module": "commonjs",
     "lib": ["ES2018"],
     "declaration": true,
-    "strict": true,
-    "esModuleInterop": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "skipLibCheck": true
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
