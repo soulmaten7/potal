@@ -1,5 +1,70 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-29 16:30 KST (CW22 — Exit 전략 피벗 + Forever Free + 홈 리디자인 + Features 가이드 + 커뮤니티)
+> 마지막 업데이트: 2026-03-30 07:30 KST (CW22 — HeroCalculator 6필드 + 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
+
+## [2026-03-30 07:30 KST] CW22-C — HeroCalculator, Community, LinkedIn, CLAUDE.md 구조화
+
+### 주요 변경
+- **HeroCalculator 6필드 완성**: Product Name + Material + Category + Price + Origin + Destination. Material 기반 단방향 cascading (HS Code 21 Section 구조)
+- **CTA 영문화**: 홈페이지 CTA 섹션 한국어 → 영어 ("Try every feature with a live demo")
+- **Community 5건 수정**: 사이드바 유지, 게시글 수정, 작성자 이메일 표시, 댓글 수정/삭제, Reddit 스타일 UI
+- **LinkedIn 프로필 최적화**: Headline/About/Banner 업데이트 (257M+ rows, 140 features, Forever Free)
+- **CLAUDE.md 구조화**: 문서 업데이트 규칙 상세화, 3개 파일 분리 (COLD_EMAIL_RULES.md, LOGGING_RULES.md, ORCHESTRATOR_RULES.md)
+
+### 신규 파일
+- `docs/COLD_EMAIL_RULES.md` — 콜드이메일 규칙 (CLAUDE.md에서 분리)
+- `docs/LOGGING_RULES.md` — 로깅 규칙 (CLAUDE.md에서 분리)
+- `docs/ORCHESTRATOR_RULES.md` — Chief Orchestrator 규칙 (CLAUDE.md에서 분리)
+- `app/api/v1/community/comments/[id]/route.ts` — 댓글 수정/삭제 API
+
+### 수정 파일
+- `components/home/HeroCalculator.tsx` — 6필드, MATERIAL_TO_CATEGORIES 단방향 cascading
+- `app/page.tsx` — CTA 영문화
+- `app/community/page.tsx` — 작성자 표시, UI 개선
+- `app/community/[id]/page.tsx` — 사이드바, 게시글/댓글 수정, Reddit 스타일
+- `app/api/v1/community/posts/[id]/route.ts` — author_email 조회 추가
+- `CLAUDE.md` — 문서 업데이트 규칙 상세화 + 구조 개선
+
+### Git 커밋
+- `3d955aa` feat: Hero 섹션 HeroCalculator + demo bypass API + CTA 배너
+- `f5dc9d4` fix: CTA section Korean text → English
+- `fa824d3` feat: HeroCalculator ProductName+Material 필드 추가, CTA 영문화
+- `863ad12` feat: HeroCalculator Material↔Category cascading dropdown
+- `f4748ca` fix: HeroCalculator cascading → unidirectional (Material → Category only)
+
+---
+
+## [2026-03-29 21:00 KST] CW22-B — 가입 플로우 수정: Google OAuth + 이메일 인증
+
+### 주요 변경
+- **Google OAuth 가입 후 프로필 필수 입력**: /auth/complete-profile 신규 페이지 — 회사명/국가/업종 입력 완료 전 대시보드 접근 불가
+- **이메일 가입 시 인증 링크 발송**: supabase.auth.signUp() + emailRedirectTo → Supabase 자동 인증 이메일 → 링크 클릭 후 /auth/callback에서 sellers 자동 생성
+- **FreeBanner 제거**: 홈페이지 히어로("140 Features. All Free. Forever.")와 중복 → app/page.tsx에서 FreeBanner 컴포넌트 삭제
+- **sellers 테이블 contact_email 수정**: email→contact_email로 3개 파일 수정 (DB 스키마 불일치 해결)
+- **/auth/callback 세션 쿠키 보존**: Google OAuth 시 새 NextResponse 생성 대신 기존 response의 Location header 수정으로 쿠키 유실 방지
+- **complete-profile 헤더 가림**: position:fixed fullscreen overlay로 부모 layout header 가림 (Next.js 중첩 layout 한계 우회)
+- **Supabase "Confirm email" 설정 확인**: ON (이미 활성화 상태)
+
+### 신규 파일
+- `app/auth/complete-profile/page.tsx` — Google OAuth 사용자 프로필 입력 (fullscreen overlay)
+- `app/api/v1/sellers/complete-oauth-profile/route.ts` — OAuth 프로필 완성 API (sellers 생성 + API 키 자동 발급)
+
+### 수정 파일
+- `app/page.tsx` — FreeBanner 컴포넌트 및 사용 코드 제거
+- `app/auth/signup/page.tsx` — supabase.auth.signUp() 직접 호출 + 이메일 인증 화면 추가
+- `app/auth/callback/route.ts` — 이메일/OAuth 이중 경로 처리, sellers 자동 생성, 쿠키 보존 수정
+- `app/api/v1/sellers/register/route.ts` — email→contact_email 수정
+
+### Git 커밋
+- `a62f385` feat: Google OAuth complete-profile + email verification + FreeBanner removal
+- `d883f0a` fix: callback session cookie preservation + complete-profile fullscreen overlay + error detail
+- `9f0e5b6` fix: sellers table contact_email column name in 3 files
+
+### 디버깅 과정 (Chrome MCP 활용)
+1. Google OAuth → "Not authenticated" 에러 → 원인: 새 NextResponse 생성 시 쿠키 유실 → 수정: Location header 기법
+2. 프로필 제출 → "Failed to create seller profile" → Chrome MCP JS 실행으로 상세 에러 확인 → 원인: sellers.email 컬럼 미존재 → 수정: contact_email로 변경
+3. 헤더에 로그인 상태 노출 → Next.js layout 한계 → 수정: fullscreen overlay
+
+---
 
 ## [2026-03-29 16:30 KST] CW22 — 전략 피벗: Exit 전략 + Forever Free
 

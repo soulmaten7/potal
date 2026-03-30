@@ -1,5 +1,5 @@
 # POTAL AI Behavioral Guidelines & Absolute Rules (.cursorrules)
-# 마지막 업데이트: 2026-03-28 23:30 KST (CW21 — v3 파이프라인 21/21 Section 100%, codified-rules 595, 테스트 22/22 PASS)
+# 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — 가입 플로우 수정, Google OAuth complete-profile, 이메일 인증)
 
 ## 0. 프로젝트 개요
 
@@ -212,6 +212,8 @@
 | `app/api/v1/sellers/keys/route.ts` | API 키 관리 (CRUD) |
 | `app/api/v1/sellers/usage/route.ts` | 사용량 조회 API |
 | `app/api/v1/sellers/analytics/route.ts` | 분석 API (countries/platforms/logs) |
+| `app/api/v1/sellers/register/route.ts` | 셀러 가입 API (이메일+비밀번호) |
+| `app/api/v1/sellers/complete-oauth-profile/route.ts` | Google OAuth 프로필 완성 API (sellers 생성 + API 키) |
 | `app/api/v1/countries/route.ts` | 지원국가 목록 API |
 | `app/api/v1/docs/route.ts` | OpenAPI 3.0 스펙 서빙 |
 | `app/api/v1/calculate/csv/route.ts` | CSV 업로드 배치 계산 (최대 500행) |
@@ -259,6 +261,13 @@
 | `app/blog/posts.tsx` | 블로그 3개 (TLC/HS Code/De Minimis) |
 | `app/partners/page.tsx` | 파트너 (Shopify/WooCommerce/Supabase/Vercel) |
 | `app/legal/[slug]/page.tsx` | 법적 문서 (terms/privacy/cookie/privacy-settings) |
+| `app/auth/signup/page.tsx` | 이메일 가입 (supabase.auth.signUp + 이메일 인증 링크) |
+| `app/auth/login/page.tsx` | 로그인 (이메일/Google OAuth) |
+| `app/auth/callback/route.ts` | Supabase Auth 콜백 (이메일 인증 + Google OAuth 이중 경로) |
+| `app/auth/complete-profile/page.tsx` | Google OAuth 프로필 입력 (fullscreen overlay, 회사명/국가/업종) |
+| `app/features/page.tsx` | Features 목록 (140개, 12 카테고리, 경쟁사 비교) |
+| `app/features/[slug]/page.tsx` | Features 상세 가이드 (140개 정적 페이지) |
+| `app/community/page.tsx` | 커뮤니티 게시판 (버그/질문/제안) |
 
 ### B2C 보존 — 수정 금지!
 | 파일 | 비고 |

@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-29 18:30 KST (CW22 피벗 — Exit 전략 확정, Forever Free, 홈 리디자인, 커뮤니티, 140개 가이드 페이지)
+> 마지막 업데이트: 2026-03-30 07:30 KST (CW22 — HeroCalculator 6필드 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
 
 ---
 
@@ -94,10 +94,13 @@
 - Paddle 결제: 비활성화 (Enterprise 문의 시에만 사용)
 - 초과 요금: 없음. 100K 소프트 캡은 DDoS 방지 목적
 
-### 가입 구조 (CW22 확정)
-- **필수 5개** (이메일, 비밀번호, 회사명, 국가, 업종) → **1달 무료**
+### 가입 구조 (CW22 확정, 2026-03-29 21:00 KST 가입 플로우 수정)
+- **이메일 가입**: 이메일+비밀번호+회사명+국가+업종 → Supabase 이메일 인증 링크 발송 → 링크 클릭 → /auth/callback → sellers 자동 생성 + API 키 자동 발급 → /dashboard
+- **Google OAuth 가입**: Google 로그인 → /auth/callback → sellers 미존재 시 /auth/complete-profile로 리다이렉트 → 회사명+국가+업종 입력 → /api/v1/sellers/complete-oauth-profile → sellers 생성 + API 키 → /dashboard
 - **프로필 완성 5개** (회사 규모, 월 배송 건수, 플랫폼, 수출입 국가, 연 매출) → **Forever Free**
 - 1달 후 프로필 미완성 시 접근 제한 (trial_expires_at 체크)
+- **Supabase "Confirm email" 설정**: ON (이메일 가입 시 인증 필수)
+- **DB 컬럼 주의**: sellers 테이블은 `contact_email` (NOT `email`)
 
 ### 요금제 전략 요약 (CW22 확정)
 - **전략**: Exit(인수) — 140개 기능 전부 무료 → 트래픽/데이터 극대화
@@ -143,11 +146,21 @@
 **완료 항목:**
 - ✅ **A: 요금제 구조 변경** — 4단계(Free/Basic/Pro/Enterprise) → Forever Free + Enterprise Contact Us. plan-checker, middleware, pricing 페이지, Dashboard 빌링탭, i18n 51개 언어 전부 업데이트
 - ✅ **B: 가입/데이터 수집 구조** — B2B/B2C 통합 가입, 필수 5개→1달 무료, 프로필 완성→Forever Free, trial_expires_at 체크, DB 마이그레이션 2개 (055_unified_signup, 056_community_forum)
-- ✅ **C: 홈 화면 리디자인** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사 실데이터), 비용 비교 테이블, FreeBanner, Header Free 뱃지(후에 제거)
+- ✅ **B-ext: 가입 플로우 수정 (2026-03-29 21:00)** — (1) Google OAuth 후 회사정보 필수 입력 (/auth/complete-profile 신규), (2) 이메일 가입 시 Supabase 인증 링크 발송, (3) FreeBanner 제거 (히어로와 중복), (4) sellers 테이블 contact_email 컬럼 수정, (5) /auth/callback 세션 쿠키 보존 수정 (Location header 기법)
+- ✅ **C: 홈 화면 리디자인** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사 실데이터), 비용 비교 테이블 (FreeBanner 제거됨)
 - ✅ **D: Features 140개 가이드** — features-data.ts slug 추가, features-guides.ts 생성(54개 상세+86개 템플릿), [slug] 동적 라우트, SEO 메타+sitemap 140개 URL
 - ✅ **G: 커뮤니티 페이지** — /community 게시판, /community/new 글쓰기, /community/[id] 상세, 댓글/추천, DB 마이그레이션
 - ⏳ **E: 바이럴 마케팅** — 사이트 완성 후 동시 런칭 (다음 세션)
-- ⏳ **F: 문서 동기화** — 진행 중 (이 업데이트)
+- ✅ **F: 문서 동기화** — CW22 전체 문서 업데이트 완료 (2026-03-29 22:00 KST)
+
+### CW22-C Cowork — HeroCalculator, Community, LinkedIn, CLAUDE.md 구조화 (2026-03-30)
+
+**완료 항목:**
+- ✅ **HeroCalculator 6필드** — Product Name, Material, Category, Price, Origin, Destination. 단방향 cascading (Material → Category, HS Code 21 Section 기반). Demo bypass API (`X-Demo-Request: true`)
+- ✅ **CTA 영문화** — 홈 CTA 한국어 → 영어
+- ✅ **Community 5건 수정** — 사이드바 유지, 게시글 수정, 작성자 이메일 표시, 댓글 수정/삭제, Reddit 스타일 UI
+- ✅ **LinkedIn 프로필 최적화** — Headline/About/Banner 업데이트 (257M rows, 140 features, Forever Free)
+- ✅ **CLAUDE.md 구조화** — 문서 업데이트 규칙 4개 테이블 상세화, 3개 별도 파일 분리 (docs/COLD_EMAIL_RULES.md, docs/LOGGING_RULES.md, docs/ORCHESTRATOR_RULES.md)
 
 ---
 

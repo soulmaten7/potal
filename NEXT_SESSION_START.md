@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-29 16:30 KST (CW22 — Exit 전략 피벗 완료, Forever Free, 홈 리디자인, 140개 가이드, 커뮤니티)
+> 마지막 업데이트: 2026-03-30 07:30 KST (CW22-C — HeroCalculator 6필드 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
 
 ---
 
@@ -15,7 +15,7 @@
 - **인프라 비용**: 고정 ~$114/월, AI 호출 0
 - **Shopify App**: ⏳ 심사 중
 
-### ✅ CW22 완료 사항 (2026-03-29)
+### ✅ CW22 완료 사항 (2026-03-29~30)
 
 **CEO 결정 완료:**
 - Exit(인수) 전략 확정
@@ -23,16 +23,29 @@
 - Custom 세팅비 없음 — 셀프서비스 가이드로 대체
 - Enterprise는 Contact Us 문의 폼만
 
-**코드 변경 (A+B+C+D+G 전부 완료):**
+**코드 변경 (A+B+B-ext+C+D+G 전부 완료):**
 - **A-1~A-4**: 요금제 4단계 폐기 → Forever Free + Enterprise Contact Us
 - **B-1~B-6**: 가입 통합(/auth/join→signup), 필수 5개, 프로필 완성도 위젯, trial 만료 403
-- **C-1~C-7**: 홈 화면 리디자인 — "140 Features. All Free." 히어로 + 경쟁사 비교 차트 2개
+- **B-ext (2026-03-29 21:00)**: 가입 플로우 수정 — Google OAuth complete-profile, 이메일 인증 링크, FreeBanner 제거, contact_email 수정, 세션 쿠키 보존
+- **C-1~C-7**: 홈 화면 리디자인 — "140 Features. All Free." 히어로 + 경쟁사 비교 차트 2개 (FreeBanner 제거)
 - **D-1~D-5**: 140개 Features 상세 가이드 — /features/[slug] 동적 라우트 + SEO sitemap
 - **G-1~G-7**: 커뮤니티 게시판 — 버그/질문/제안, 140 기능 분류, 댓글, 추천, Header, 50 i18n
 
-**DB 마이그레이션 (파일 생성, 적용 대기):**
-- 055_forever_free_profile.sql: sellers 컬럼 10개
-- 056_community_forum.sql: 3 테이블 + RLS + 인덱스
+**CW22-C (2026-03-30):**
+- **HeroCalculator 6필드**: Product Name + Material + Category + Price + Origin + Destination, 단방향 cascading (Material → Category)
+- **CTA 영문화**: 홈 CTA 한국어 → 영어
+- **Community 5건 수정**: 사이드바, 게시글 수정, 작성자 표시, 댓글 수정/삭제, Reddit 스타일 UI
+- **LinkedIn 최적화**: Headline/About/Banner 업데이트
+- **CLAUDE.md 구조화**: 문서 업데이트 규칙 상세화 + 3개 파일 분리
+
+**DB 마이그레이션:**
+- 055_forever_free_profile.sql: sellers 컬럼 10개 (파일 생성, 적용 대기)
+- 056_community_forum.sql: 3 테이블 + RLS + 인덱스 (파일 생성, 적용 대기)
+- 057_community_categories.sql: ✅ 이미 적용됨
+
+**가입 플로우 신규 파일:**
+- `app/auth/complete-profile/page.tsx` — Google OAuth 프로필 입력 (fullscreen overlay)
+- `app/api/v1/sellers/complete-oauth-profile/route.ts` — OAuth 프로필 완성 API
 
 ---
 
@@ -76,6 +89,11 @@
 | AI 호출 | 0회 | ✅ |
 | 인프라 비용 | ~$114/월 | ✅ |
 | build | 성공 | ✅ |
+| 가입 플로우 | 이메일 인증 + Google OAuth complete-profile | ✅ |
+| Supabase Confirm email | ON | ✅ |
+| HeroCalculator | 6필드 + 단방향 cascading | ✅ |
+| Community UI | 사이드바+수정+댓글 | ✅ |
+| LinkedIn | 프로필 + 배너 최적화 | ✅ |
 
 ---
 

@@ -1,141 +1,108 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — Exit 전략, Forever Free, 140개 가이드, 커뮤니티, 가입 플로우 수정)
+> 마지막 업데이트: 2026-03-30 07:30 KST (CW22-C — HeroCalculator 6필드 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
 
 ---
 
 ## 현재 상태 요약
 
 ### 핵심 수치 (2026-03-29 기준)
-- **외부 사용자**: 0명, **MRR**: $0 — **고객 확보가 최우선**
-- **142개 기능 감사**: 140 Active + 2 WON'T (Power BI, Mobile App) = **140/140 = 100%**
-- **API 엔드포인트**: ~155개+, **Vercel Cron**: 24개, **MCP**: v1.4.0 (9-field)
-- **Features 페이지**: ✅ /features 배포 완료 (140 Active, 12 카테고리, 경쟁사 비교표)
-- **Shopify App**: ⏳ 심사 중 (2026-03-10 제출, 16일 경과 — 기다리는 수밖에 없음)
-- **Product Hunt**: ✅ B2B 리런치 완료 (런치 완료, 2026-03-28)
-- **AI Agent Org v6.1**: 59 Agents (16 Leaders + 43 Members), Opus 3 + Sonnet 56
-- **Telegram Bots**: POTAL Alert (Chief 양방향) + POTAL Secretary (D16 양방향) — AI 업그레이드 완료 (크레딧 충전 보류)
-- **Escalation Flow**: ✅ 구현 + 배포 완료 (커밋 a63e713). escalation.ts + 4개 Cron 수정. Cron→Chief 자체 해결→텔레그램 보고
-- **콜드이메일 1차 발송**: 완료 (67건). 핫 리드: Calcurates CEO, Easyship. 배달 실패 7건
-- **콜드이메일 글로벌 캠페인**: ✅ 9개국 251개 검증 완료, Gmail 드래프트 251개 전부 생성 완료. 은태님이 Gmail에서 확인 후 발송만 하면 됨
-- **KrispiTech 블로그 피처링**: ✅ 답장 발송 완료 (2026-03-28). 테크 블로그에서 POTAL 피처링 제안 → 수락 답장
+- **외부 사용자**: 0명, **MRR**: $0 — **바이럴 런칭이 최우선**
+- **140/142 기능 구현** (100%, WON'T 2개 제외)
+- **전략**: Exit(인수) 확정 — Forever Free + 데이터 수집 → 인수
+- **요금제**: Forever Free (140개 전부 무료) + Enterprise Contact Us
+- **v3 파이프라인**: ✅ 21/21 Section 100%, codified-rules 595개
+- **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
+- **인프라 비용**: 고정 ~$114/월, AI 호출 0
+- **Shopify App**: ⏳ 심사 중
 
-### ✅ 기술 완성 상태
-- **Layer 1** (절대값 ✅): 9-field → HS 10자리 + 세율, AI 0회, $0. 7개국 벤치마크 1,183건 100%
-- **Layer 2** (GRI Pipeline ✅): gri-classifier/ 25개 파일, 프로덕션 배포 완료, 595 codified rules, 21/21 Section 100%
-- **Layer 3**: 미시작 (Enterprise Custom, 고객 확보 후 진행)
-- **12 TLC 시스템화**: ✅ 완성, Duty Rate 55/55 PASS
-- **Sprint 1 보안 6기능**: ✅ 100% (95 unit tests ALL PASS)
-- **데이터**: MIN ~105M행, AGR ~129M행, gov_tariff_schedules 131,794행, 제재 21,301건 — **전부 완료**
+### ✅ CW22 완료 사항 (2026-03-29~30)
 
-### ✅ CW22 추가 완료 사항 (2026-03-29)
-- **Exit 전략 확정** — CEO 결정: 인수 전략, Forever Free 전환 ✅
-- **요금제 구조 변경** — Forever Free + Enterprise Contact Us ✅
-- **홈 화면 리디자인** — "140 Features. All Free. Forever." + 경쟁사 비교 ✅
-- **140개 가이드 페이지** — /features/[slug], 20개 Core 기능 필수 입력값 상세 ✅
-- **커뮤니티 페이지** — /community 게시판+댓글+추천 ✅
-- **가입 플로우 수정** — Google OAuth complete-profile, 이메일 인증 링크, FreeBanner 제거 ✅ (커밋 a62f385, d883f0a, 9f0e5b6)
+**CEO 결정 완료:**
+- Exit(인수) 전략 확정
+- 140개 기능 전부 Forever Free
+- Custom 세팅비 없음 — 셀프서비스 가이드로 대체
+- Enterprise는 Contact Us 문의 폼만
 
-### ⏳ 진행 중
-- **수익화 전략**: Exit 전략 확정 (MRR $0 의도적), 트래픽/데이터 극대화 중
-- **인프라 비용**: 고정 ~$114/mo, 100만건 처리 ~$140/mo
-- **마케팅**: LinkedIn 1포스트, Reddit 댓글 6개, Instagram 프로필만 — **지속 필요**
+**코드 변경 (A+B+B-ext+C+D+G 전부 완료):**
+- **A-1~A-4**: 요금제 4단계 폐기 → Forever Free + Enterprise Contact Us
+- **B-1~B-6**: 가입 통합(/auth/join→signup), 필수 5개, 프로필 완성도 위젯, trial 만료 403
+- **B-ext (2026-03-29 21:00)**: 가입 플로우 수정 — Google OAuth complete-profile, 이메일 인증 링크, FreeBanner 제거, contact_email 수정, 세션 쿠키 보존
+- **C-1~C-7**: 홈 화면 리디자인 — "140 Features. All Free." 히어로 + 경쟁사 비교 차트 2개 (FreeBanner 제거)
+- **D-1~D-5**: 140개 Features 상세 가이드 — /features/[slug] 동적 라우트 + SEO sitemap
+- **G-1~G-7**: 커뮤니티 게시판 — 버그/질문/제안, 140 기능 분류, 댓글, 추천, Header, 50 i18n
+
+**CW22-C (2026-03-30):**
+- **HeroCalculator 6필드**: Product Name + Material + Category + Price + Origin + Destination, 단방향 cascading (Material → Category)
+- **CTA 영문화**: 홈 CTA 한국어 → 영어
+- **Community 5건 수정**: 사이드바, 게시글 수정, 작성자 표시, 댓글 수정/삭제, Reddit 스타일 UI
+- **LinkedIn 최적화**: Headline/About/Banner 업데이트
+- **CLAUDE.md 구조화**: 문서 업데이트 규칙 상세화 + 3개 파일 분리
+
+**DB 마이그레이션:**
+- 055_forever_free_profile.sql: sellers 컬럼 10개 (파일 생성, 적용 대기)
+- 056_community_forum.sql: 3 테이블 + RLS + 인덱스 (파일 생성, 적용 대기)
+- 057_community_categories.sql: ✅ 이미 적용됨
+
+**가입 플로우 신규 파일:**
+- `app/auth/complete-profile/page.tsx` — Google OAuth 프로필 입력 (fullscreen overlay)
+- `app/api/v1/sellers/complete-oauth-profile/route.ts` — OAuth 프로필 완성 API
 
 ---
 
 ## 다음 할 일 (우선순위)
 
-### P-1: 즉시 해결 (세션 시작 시)
-0. ~~**Escalation Flow 구현**~~ — ✅ 완료 (2026-03-26, 커밋 a63e713)
-1. **ANTHROPIC_API_KEY 크레딧 충전** — 보류 중. 은태님 결정으로 당장 불필요
+### P0: 바이럴 런칭 (CEO 날짜 결정 후 즉시)
+1. **Product Hunt 런칭 페이지** — "140 Features, All Free. Zero Catch."
+2. **Hacker News 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
+3. **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
+4. **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트
+5. **경쟁사 비교 차트 이미지** — SNS 공유용
 
-### P0: 고객 확보 (지금 당장)
-1. **✅ 글로벌 콜드이메일 Gmail 드래프트 251개 생성 완료** — 은태님이 Gmail 드래프트함에서 확인 후 발송만 하면 됨 (10~20개씩 나눠서 발송 권장)
-2. **Calcurates CEO 후속 대응** — Nikolay 답장 대기 중
-3. **Easyship 전문팀 후속** — 2~3일 뒤 답변 없으면 follow-up 발송
-4. ~~**Product Hunt 런칭 당일 대응**~~ — ✅ 런치 완료. 댓글 응답, SNS 공유 지속
-5. **KrispiTech 피처링 후속** — ✅ 답장 발송 완료. 추가 자료 요청 시 대응
-6. **파트너십 첫 접촉** — A그룹 (Royal Mail, Australia Post, Canada Post)
+### P1: 콘텐츠 보강 (이번 주)
+6. **140개 가이드 콘텐츠 보강** — 54개 완성, 86개 기본 구조만 있음
+7. **"Why POTAL is Free" 페이지** — 스토리텔링 마케팅
+8. **콜드이메일 재개** — 새 앵글 "All 140 Features, Free Forever"
 
-### P1: 마케팅 지속 (이번 주)
-5. **LinkedIn 주 2~3회 포스팅** — 첫 포스트 완료, 지속 필요
-6. **Reddit 카르마 빌딩** — 하루 3~5댓글 (POTAL_User_Acquisition_Strategy.xlsx 주간 체크리스트)
-7. **Facebook Groups 게시** — Facebook_Group_Posts.md 내용 활용
-8. **YouTube 데모 영상** — "30초 관세 계산" 화면 녹화
+### P2: CEO 피드백 반영
+9. **홈 화면 디자인 리뷰** — 은태님 최종 확인
+10. **Features 페이지 리뷰** — 카테고리/레이아웃 피드백
+11. **비로그인 체험 UI** — 가입 없이 바로 계산 체험
 
-### P2: 기능 보완 (이번 달)
-9. ~~**P2 남은 7개 + FIX 17개 기능**~~ — ✅ 전부 완료 (147/147 = 100%)
-10. **비로그인 체험 UI** — 가입 없이 바로 계산 체험 (전환율 핵심)
+### P3: DB 마이그레이션 적용
+12. **055 + 056 Supabase에 적용** — 은태님 확인 후 수동 실행
+13. **커뮤니티 실제 테스트** — DB 적용 후 게시글 CRUD 확인
 
 ---
 
-## HS Code 분류 구조 (확정)
+## 파이프라인 건강도 지표 (CW22 기준)
 
-```
-Layer 1: 9-field 완벽 입력 → HS Code 100% (코드+DB, AI 0회, $0)
-         → 절대 수정 금지. 추가만 가능.
-Layer 2: GRI Pipeline (gri-classifier/) → 불완전 입력을 GRI 1~6 순차 적용으로 분류
-         → step0-input → step1-cache → step2-section → step2-chapter → step3-heading → step4-subheading
-         → 592 codified rules, AI 0회, 프로덕션 배포 완료
-Layer 3: Enterprise Custom (미시작) → 고객별 맞춤 변환
-```
-
-> v1~v7 LLM 실험 히스토리는 `docs/sessions/COWORK_SESSION_HISTORY.md`에 보존. GRI Pipeline이 전면 대체.
+| 지표 | 값 | 상태 |
+|------|-----|------|
+| Section coverage | 21/21 | ✅ 100% |
+| codified-rules | 595 | ✅ |
+| 기능 구현율 | 140/142 | ✅ 100% (WON'T 2 제외) |
+| 요금제 | Forever Free | ✅ 피벗 완료 |
+| Features 가이드 | 140 페이지 | ✅ |
+| 커뮤니티 | 게시판 구현 | ✅ (DB 적용 대기) |
+| 홈 화면 | 리디자인 완료 | ✅ |
+| regression test | 22/22 PASS | ✅ |
+| AI 호출 | 0회 | ✅ |
+| 인프라 비용 | ~$114/월 | ✅ |
+| build | 성공 | ✅ |
+| 가입 플로우 | 이메일 인증 + Google OAuth complete-profile | ✅ |
+| Supabase Confirm email | ON | ✅ |
+| HeroCalculator | 6필드 + 단방향 cascading | ✅ |
+| Community UI | 사이드바+수정+댓글 | ✅ |
+| LinkedIn | 프로필 + 배너 최적화 | ✅ |
 
 ---
 
 ## 읽어야 할 파일
-1. `CLAUDE.md` — 핵심 규칙만 (58줄, 다이어트 완료)
+1. `CLAUDE.md` — 핵심 규칙
 2. `session-context.md` — 세션 히스토리
-3. `.cursorrules` — 코딩 표준 + Layer 구조
-4. **참조 파일 (필요 시)**:
-   - `docs/PROJECT_STATUS.md` — 핵심 수치, 기술스택, 전략, 요금제, 테이블 현황
-   - `docs/CREDENTIALS.md` — 인증정보, Supabase 연결 방법
-   - `docs/DIVISION_STATUS.md` — 16개 Division 상세 (D16 Secretary 추가), Layer 1/2/3, 운영 사이클
-5. `POTAL_Claude_Code_Work_Log.xlsx` — 작업 로그
-6. `POTAL_Sprint_Priority_List.xlsx` — 스프린트 기능 우선순위
-7. `POTAL_User_Acquisition_Strategy.xlsx` — 고객 확보 실행 계획 + KPI
-8. `POTAL_AI_Agent_Org_Log.xlsx` — AI Agent Org 버전 변경 이력
-9. `POTAL_Excel_Master_Registry.xlsx` — 프로젝트 전체 엑셀 파일 카탈로그
-
-## 벤치마크 오류 시
-- 반드시 `POTAL_Ablation_V2.xlsx` 대조 (CLAUDE.md 절대 규칙 12번)
-- Section 떨어지면 → material 문제
-- Chapter 떨어지면 → material 세부/processing 문제
-- Heading 떨어지면 → KEYWORD_TO_HEADINGS 사전 부족
-- material은 21 Section 기준 79그룹 안의 값만 유효
-
----
-## [Auto-saved] Compaction at 2026-03-28 15:00 KST
-컨텍스트 압축 2회 발생. CW19 글로벌 콜드이메일 캠페인 세션.
-주요 작업: ~400개 기업 타겟 리스트(MASTER_TARGET_LIST.csv) 생성, 이메일 검증 명령어(COMMAND_VERIFY_EMAILS.md) 생성, Gmail 드래프트 ~225개 생성(미검증 주소→재작업 필요).
-다음: Claude Code Sonnet이 이메일 검증 완료 후 드래프트 재생성.
-
----
-## [Auto-saved] Compaction at 2026-03-28 12:30 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
-
----
-## [Auto-saved] Compaction at 2026-03-28 12:44 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
-
----
-## [Auto-saved] Compaction at 2026-03-29 00:15 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
-
----
-## [Auto-saved] Compaction at 2026-03-29 02:27 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
-
----
-## [Auto-saved] Compaction at 2026-03-29 16:45 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
-
----
-## [Auto-saved] Compaction at 2026-03-29 17:33 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+3. `docs/PIVOT_PLAN_CW22.md` — 피벗 계획서 (32개 항목)
+4. `.cursorrules` — 코딩 표준 + Layer 구조
+5. **참조 파일 (필요 시)**:
+   - `docs/PROJECT_STATUS.md` — 핵심 수치, 기술스택, 전략
+   - `docs/CREDENTIALS.md` — 인증정보
+   - `docs/DIVISION_STATUS.md` — Division 상세

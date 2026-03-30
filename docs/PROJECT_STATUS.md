@@ -1,5 +1,5 @@
 # PROJECT_STATUS.md — POTAL 프로젝트 현황/수치
-# 마지막 업데이트: 2026-03-29 18:30 KST (CW22 피벗: Exit 전략, Forever Free, 홈 리디자인, 140개 가이드, 커뮤니티)
+# 마지막 업데이트: 2026-03-29 22:00 KST (CW22 피벗: Exit 전략, Forever Free, 홈 리디자인, 140개 가이드, 커뮤니티, 가입 플로우 수정)
 # 이 파일은 참조용. Claude Code가 수치 확인 필요 시 읽는 파일.
 
 ## 프로젝트 개요
@@ -169,10 +169,13 @@ portal/
 - 결제: Paddle (비활성화, Enterprise 문의 시에만)
 - 초과 요금: 없음 (100K 소프트 캡은 DDoS 방지 목적)
 
-## 가입 구조 (CW22 확정)
-- 필수 5개 (이메일, 비밀번호, 회사명, 국가, 업종) → 1달 무료
+## 가입 구조 (CW22 확정, 2026-03-29 21:00 가입 플로우 수정)
+- **이메일 가입**: 이메일+비밀번호+회사명+국가+업종 입력 → supabase.auth.signUp() → Supabase 인증 이메일 발송 → 링크 클릭 → /auth/callback → sellers 자동 생성 + API 키 → /dashboard
+- **Google OAuth**: Google 로그인 → /auth/callback → sellers 미존재 시 /auth/complete-profile → 회사명+국가+업종 입력 → sellers 생성 + API 키 → /dashboard
 - 프로필 완성 5개 (회사 규모, 월 배송, 플랫폼, 수출입 국가, 연 매출) → Forever Free
 - 미완성 1달 후 접근 제한 (trial_expires_at 체크)
+- **⚠️ sellers 테이블**: `contact_email` 컬럼 사용 (NOT `email`)
+- **Supabase "Confirm email"**: ON
 
 ## 최근 성과 (CW21)
 - v3 파이프라인 21/21 Section 100%, codified-rules 595, 테스트 22/22 PASS ✅
@@ -191,3 +194,5 @@ portal/
 - **홈 화면 리디자인 (C)** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사), 비용 비교 테이블 ✅
 - **140개 가이드 페이지 (D)** — /features/[slug] 동적 라우트, SEO 메타, sitemap 140개 URL, Copy 버튼 ✅
 - **커뮤니티 페이지 (G)** — /community 게시판+글쓰기+댓글+추천, 기능별 필터 ✅
+- **가입 플로우 수정 (B-ext, 2026-03-29 21:00)** — Google OAuth complete-profile, 이메일 인증 링크, FreeBanner 제거, contact_email 수정, 세션 쿠키 보존 ✅
+- **문서 동기화 (F)** — session-context.md, CHANGELOG.md, NEXT_SESSION_START.md, .cursorrules, PROJECT_STATUS.md 전부 업데이트 ✅
