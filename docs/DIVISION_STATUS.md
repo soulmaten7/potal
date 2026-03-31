@@ -1,5 +1,5 @@
 # DIVISION_STATUS.md — POTAL AI Agent Organization v6 상세
-# 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — D5 가입 플로우 수정, D9 OAuth 프로필 수집, D12 FreeBanner 제거)
+# 마지막 업데이트: 2026-03-31 15:30 KST (CW22-F/G/J — Features 검색박스, Forever Free cleanup, Notion 마이그레이션)
 # 이 파일은 참조용. Division 상세 필요 시 읽는 파일.
 
 ## 16개 Division (책임 영역) — v6.1 기준 59 Agents
@@ -9,14 +9,14 @@
 | D2 | Tax Engine | VAT/GST 240개국, de minimis, IOSS, DST, 12개국 특수세금, processing fee | 3 | GlobalCostEngine.ts, CostEngine.ts |
 | D3 | HS Classification & Data Intelligence | v3 GRI Pipeline 21/21 Section 100%, codified-rules 595, 캐시 플라이휠, 이미지 분류 | **5** (+2) | gri-classifier/ |
 | D4 | Data Pipeline & Regulations | 7개국 정부 API, MacMap/WITS 임포트, WDC 추출, 환율, 240개국 DB, 규정 수집/RAG | **5** (+2) | exchange-rate/, scripts/ |
-| D5 | Product & Web | potal.app 전체: 랜딩, 가격표, 대시보드, Features 페이지, 로그인/가입, i18n 51개국어 UI, CWV | 3 | app/, components/ |
+| D5 | Product & Web | potal.app 전체: 랜딩, 가격표, 대시보드, Features 페이지(검색박스 추가 CW22-F), 로그인/가입, i18n 51개국어 UI, CWV. Forever Free 전면 적용(Developers/Dashboard/FAQ/Blog CW22-G) | 3 | app/, components/ |
 | D6 | Platform & Integrations | Shopify TEA, WooCommerce, BigCommerce, Magento, JS 위젯, DDP Quote | 3 | extensions/, plugins/ |
 | D7 | API & AI Platform | ~155개 엔드포인트, OpenAPI, SDK 3종, rate limiting, MCP v1.4.0 9-field, AI 플랫폼(GPT/MCP/Gem) | **5** (+2) | tariff-api/, mcp-server/ |
 | D8 | QA & Verification | 142기능 코드 감사(140 Active), API 응답 검증, 회귀 테스트 22/22, Spot Check, 심층 검증 84/84 | 3 | __tests__/ |
 | D9 | Customer Acquisition & Success | 고객 지원, 온보딩, FAQ, 지식베이스, A/B/C그룹 타겟 전략, Enterprise Sales 자동화 | **4** (+1) | |
 | D10 | Revenue & Billing | Paddle 6 Price, 구독 관리, overage 빌링, MRR/ARR/Churn | 3 | paddle.ts, plan-checker.ts |
 | D11 | Infrastructure & Security | Vercel 배포, Supabase PostgreSQL, RLS, 모니터링, 보안, Auth | 3 | middleware.ts, supabase/ |
-| D12 | Marketing & Partnerships | Content/SEO, 소셜 미디어, 이메일 캠페인, 파트너십(1400+), Product Hunt | **4** (+1) | marketing/ |
+| D12 | Marketing & Partnerships | Content/SEO, 소셜 미디어, 이메일 캠페인, 파트너십(1400+), Product Hunt. content/ 폴더 + Demo Scripts 엑셀 18개 메뉴(CW22-H). Notion Content Pipeline 관리로 전환(CW22-J) | **4** (+1) | content/, marketing/ |
 | D13 | Legal & Compliance | ToS, Privacy Policy, GDPR/CCPA, Enterprise 계약, 오픈소스 라이선스 | 3 | legal/ |
 | D14 | Finance & Strategy | 비용 추적(Vercel $20/Supabase $25), 예산, 세무, 투자자 관계 | 3 | analysis/ |
 | D15 | Intelligence & Market | 경쟁사 10사 모니터링, 무역법 변경, 시장 분석, 142기능 비교(140 Active), Features 페이지 경쟁사 비교표 | 3 | Competitor_Feature_Matrix.xlsx |

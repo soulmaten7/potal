@@ -1,5 +1,5 @@
 # PROJECT_STATUS.md — POTAL 프로젝트 현황/수치
-# 마지막 업데이트: 2026-03-29 22:00 KST (CW22 피벗: Exit 전략, Forever Free, 홈 리디자인, 140개 가이드, 커뮤니티, 가입 플로우 수정)
+# 마지막 업데이트: 2026-03-31 15:30 KST (CW22-J: Notion 마이그레이션, 폴더 정리, Features 검색박스, Forever Free cleanup)
 # 이 파일은 참조용. Claude Code가 수치 확인 필요 시 읽는 파일.
 
 ## 프로젝트 개요
@@ -11,24 +11,34 @@ POTAL = B2B Total Landed Cost 인프라 플랫폼. 이커머스 셀러에게 위
 - Supabase (Auth + PostgreSQL DB), Paddle (결제 비활성화, Enterprise 문의 시에만 사용)
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 
-## 📁 폴더 구조 (2026-03-09 정리)
+## 📁 폴더 구조 (2026-03-31 CW22-J 정리)
 ```
 portal/
-├── [루트 코어] CLAUDE.md, session-context.md, .cursorrules, README.md, 설정파일
-├── docs/                    # 문서 (sessions/, architecture/, CHANGELOG.md, NEXT_SESSION_START.md)
+├── app/                     # Next.js 소스코드 (코드)
+├── docs/                    # Claude Code용 문서
+├── content/                 # 콘텐츠 제작 참고 파일 (CW22-H 신설)
+│   ├── demo-scripts/        # 데모 영상 대본 엑셀
+│   ├── social-media/        # 플랫폼별 글/해시태그
+│   ├── thumbnails/          # 썸네일/이미지
+│   └── recordings/          # 녹화 완성본
+├── archive/                 # 과거 기록 (CW22-J 정리 — 건드리지 않아도 됨)
+│   ├── commands/            # 과거 Claude Code 명령어
+│   ├── benchmarks/          # 과거 벤치마크 결과
+│   ├── audits/              # 과거 감사 결과
+│   └── cold-email/          # 과거 콜드이메일 캠페인
 ├── analysis/                # 경쟁사/비용/전략 분석
-├── marketing/               # 마케팅/런칭 자료 (product-hunt-assets/, Pitch Deck)
-├── checklists/              # 체크리스트/TODO
-├── ai-agents/               # AI 에이전트 설정 (custom-gpt/, gemini-gem/)
-├── archive/                 # 보관 (B2C 잔재)
 ├── data/                    # 관세 데이터 (itc_macmap/, tariff-research/, wits_tariffline/)
 ├── scripts/                 # 실행 스크립트
 ├── supabase/migrations/     # DB 마이그레이션 SQL
-├── app/                     # Next.js 소스코드
-├── components/              # React 컴포넌트
 ├── plugins/                 # 이커머스 플러그인 (WooCommerce, Magento, BigCommerce)
-└── mcp-server/              # MCP 서버
+├── mcp-server/              # MCP 서버
+├── CLAUDE.md                # Claude Code 설정
+├── session-context.md       # 프로젝트 맥락
+└── README.md
 ```
+
+> ⚠️ 프로젝트 관리: Notion "POTAL Command Center" (Task Board, Session Log, Content Pipeline, Marketplace Tracker, Finance Tracker)
+> ⚠️ 엑셀 로깅 폐지 (2026-03-31) — Work_Log.xlsx, Cowork_Session_Log.xlsx, Division 엑셀 더 이상 사용 안 함
 
 ## 핵심 수치 (CW18 기준)
 - 240개국/영토, **50개국어**, 63개 FTA, 12개국 특수세금
@@ -57,6 +67,11 @@ portal/
 - **심층 검증 84/84 PASS** ✅
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 사전 매핑 전략)
 - **MCP Server**: v1.4.0, 9개 도구, 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
+- **npm SDK**: `potal-sdk@1.1.0` 공개 배포 ✅ (https://www.npmjs.com/package/potal-sdk)
+- **PyPI SDK**: `potal@1.1.0` 공개 배포 ✅ (https://pypi.org/project/potal/1.1.0/)
+- **WooCommerce Plugin**: WordPress.org 제출 완료 ✅ slug: potal-total-landed-cost-calculator, Awaiting Review
+- **BigCommerce**: 파트너팀 이메일 발송 ⏳ (partners@bigcommerce.com, 답장 대기)
+- **Magento**: Adobe Commerce Marketplace 제출 대기 ⏳
 - **Features 페이지**: /features — 140 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어
 - **Feature 가이드**: /features/[slug] — 140개 정적 페이지 (SEO, sitemap 포함)
 - **커뮤니티**: /community — 게시판, 글쓰기, 댓글, 추천, 기능별 필터
