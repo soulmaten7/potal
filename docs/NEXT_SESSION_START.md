@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-31 10:00 KST (CW22-F — Features 검색박스 추가)
+> 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H — content 폴더 + Demo Scripts, Forever Free cleanup)
 
 ---
 
@@ -14,6 +14,15 @@
 - **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
 - **인프라 비용**: 고정 ~$114/월, AI 호출 0
 - **Shopify App**: ⏳ 심사 중
+
+### ✅ CW22-H 완료 사항 (2026-03-31)
+
+- **content/ 폴더 구조**: demo-scripts, social-media, thumbnails, recordings + README.md
+- **Dashboard Demo Scripts 엑셀**: 18개 대시보드 메뉴별 데모 스크립트 (Korean+English subtitles)
+
+### ✅ CW22-G 완료 사항 (2026-03-31)
+
+- **Forever Free cleanup**: Developers 429 에러 + Dashboard checkout/usage 3곳 paid plan 참조 제거
 
 ### ✅ CW22-F 완료 사항 (2026-03-31)
 
@@ -74,7 +83,7 @@
 1. **BigCommerce 파트너팀 답장 확인** — partners@bigcommerce.com 답장 오면 DevTools 앱 등록
 2. **WooCommerce 심사 결과 확인** — WordPress.org에서 이메일 알림 수신 대기 (soulmaten7@gmail.com)
 3. **Adobe Commerce W-8BEN 검토 확인** — 승인 후 `potal-magento-1.0.0.zip` Extension 버전 업로드 (https://commercedeveloper.adobe.com/extensions/versions/potal-temporary-69ca230c5baa44-47764374)
-4. **F045~F048 Coming Soon 처리** — features-data.ts에서 status `active` → `coming_soon` 변경
+4. ~~**F045~F048 Coming Soon 처리**~~ — ✅ 완료 (CW22-F)
 
 ### P1: 바이럴 런칭 (CEO 날짜 결정 후 즉시)
 1. **Product Hunt**: ✅ B2B 리런치 완료 — 후속 홍보/댓글 관리
@@ -134,3 +143,8 @@
    - `docs/PROJECT_STATUS.md` — 핵심 수치, 기술스택, 전략
    - `docs/CREDENTIALS.md` — 인증정보
    - `docs/DIVISION_STATUS.md` — Division 상세
+
+---
+## [Auto-saved] Compaction at 2026-03-31 12:06 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.

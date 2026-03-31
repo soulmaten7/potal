@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-30 07:30 KST (CW22 — HeroCalculator 6필드 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
+> 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H — content/ 폴더 + Demo Scripts 엑셀, Forever Free cleanup)
 
 ---
 
@@ -162,6 +162,43 @@
 - ✅ **LinkedIn 프로필 최적화** — Headline/About/Banner 업데이트 (257M rows, 140 features, Forever Free)
 - ✅ **CLAUDE.md 구조화** — 문서 업데이트 규칙 4개 테이블 상세화, 3개 별도 파일 분리 (docs/COLD_EMAIL_RULES.md, docs/LOGGING_RULES.md, docs/ORCHESTRATOR_RULES.md)
 
+### CW22-D Cowork — SDK 배포 + 마켓플레이스 등록 (2026-03-30)
+
+**완료 항목:**
+- ✅ **npm SDK 배포** — `potal-sdk@1.1.0` npm 공개 배포 완료 (https://www.npmjs.com/package/potal-sdk)
+- ✅ **PyPI SDK 배포** — `potal@1.1.0` PyPI 공개 배포 완료 (https://pypi.org/project/potal/1.1.0/)
+- ✅ **WooCommerce 플러그인 WordPress.org 제출** — slug: `potal-total-landed-cost-calculator`, Awaiting Review (826개 대기 중, 1~10일 소요 예상). 자동 스캔 Pass ✅
+  - 수정: Plugin URI 분리, Tested up to 6.9, Stable tag 1.0.0, Text Domain 수정
+- ✅ **BigCommerce 파트너팀 이메일 발송** — `partners@bigcommerce.com` 직접 연락 (자동 가입 불가 — business email 차단 이슈). 1~3 영업일 내 답장 예상
+- ✅ **Marketplace_Registration_Guide.md 생성** — WooCommerce/BigCommerce/Magento/Shopify 가입 가이드 상세 문서화
+- ✅ **Features Coming Soon 처리 완료** — F045(Shopify)/F046(WooCommerce)/F047(BigCommerce)/F048(Magento) status → `coming_soon`
+
+### CW22-F Cowork — Features 검색박스 (2026-03-31)
+
+**완료 항목:**
+- ✅ **Features 검색박스** — `/features` 페이지에 실시간 검색 input 추가 (name, description, category, slug 검색)
+- ✅ **검색 초기화** — X 버튼 + Reset filters에서 검색어 함께 초기화
+
+### CW22-G Cowork — Forever Free Cleanup (2026-03-31)
+
+**완료 항목:**
+- ✅ **Developers 페이지** — 429 에러 메시지 "upgrade" → "Contact us" 변경
+- ✅ **Dashboard** — Checkout 성공/취소/usage warning 3곳에서 paid plan 참조 제거
+
+### CW22-H Cowork — Content 폴더 + Demo Scripts (2026-03-31)
+
+**완료 항목:**
+- ✅ **content/ 폴더 구조 생성** — demo-scripts, social-media, thumbnails, recordings + README.md
+- ✅ **Dashboard Demo Scripts 엑셀** — `content/demo-scripts/POTAL_Dashboard_Demo_Scripts.xlsx` Summary + 18개 메뉴별 스크립트 (Korean + English subtitles)
+
+### CW22-E Cowork — Adobe Commerce Marketplace 설정 (2026-03-30)
+
+**완료 항목:**
+- ✅ **Adobe Commerce Marketplace Profile 저장** — Vendor Name: potal, Logo 업로드, Privacy Policy URL 등록
+- ✅ **Tax Forms 선택 완료** — 비미국 거주자 + 한국-미국 조세조약 + W-8BEN 제출 선택
+- ✅ **W-8BEN 양식 다운로드 + 이메일 발송** — IRS 공식 양식 다운로드, Adobe Commerce에 이메일 제출 완료
+- ⏳ **Extension 버전 업로드 대기** — Tax Forms Adobe 검토 완료 후 `potal-magento-1.0.0.zip` 업로드 가능 (2~5 영업일)
+
 ---
 
 
@@ -194,7 +231,7 @@
 
 ### ⏳ 고객 확보 (최우선)
 - Shopify 심사 결과 확인 (3/10 제출, 18일 경과)
-- Product Hunt B2B 리런치 예약 완료 (Scheduled, 런칭 대기)
+- ✅ Product Hunt B2B 리런치 완료
 - ✅ 콜드이메일 1차 발송 완료 (67건), 핫 리드: Calcurates CEO, Easyship
 - ⏳ **콜드이메일 글로벌 대규모 캠페인** — ~400개 기업 타겟 리스트 생성 완료 (MASTER_TARGET_LIST.csv)
   - Tier 1 (CN/UK 각 100개), Tier 2 (SG/HK/NL/IL 각 25개=100), Tier 3 (DE/AU/UAE 각 ~33개=100)
@@ -208,6 +245,12 @@
 - Microsoft Copilot: 파일 준비됨, 365 Business 계정 필요
 - Meta AI: 지역 제한 (풀리면 즉시 등록)
 - xAI Grok: 앱 스토어 없음 (출시 시 진입)
+
+### ⏳ SDK / 마켓플레이스
+- WooCommerce: WordPress.org 심사 대기 (slug: potal-total-landed-cost-calculator, 제출 2026-03-30)
+- BigCommerce: partners@bigcommerce.com 이메일 답장 대기 (1~3 영업일)
+- Adobe Commerce: W-8BEN 검토 대기 (2~5 영업일) → 완료 후 `potal-magento-1.0.0.zip` 버전 업로드
+- ✅ Features Coming Soon 처리 완료: F045~F048 status → `coming_soon`
 
 ### ⏳ 기능 보완
 - P2 남은 7개 + FIX 17개 (Sprint Priority List 참조)

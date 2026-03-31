@@ -1,5 +1,17 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-31 10:00 KST (CW22-F — Features 검색박스 추가)
+> 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H — content 폴더 + Demo Scripts 엑셀)
+
+## [2026-03-31 12:50 KST] CW22-H — Content 폴더 구조 + Dashboard Demo Scripts
+
+### 추가
+- **content/ 폴더 구조**: demo-scripts, social-media, thumbnails, recordings 4개 하위 디렉토리 + README.md
+- **Dashboard Demo Scripts 엑셀**: `content/demo-scripts/POTAL_Dashboard_Demo_Scripts.xlsx` — Summary + 18개 대시보드 메뉴별 데모 스크립트 (Korean + English subtitles, 시간 추정)
+
+## [2026-03-31 12:15 KST] CW22-G — Forever Free Cleanup
+
+### 수정
+- **Developers 페이지**: 429 에러 메시지 "upgrade for higher limits" → "Contact us if you need higher limits"
+- **Dashboard**: Checkout 성공/취소/usage warning 3곳에서 paid plan 참조 제거
 
 ## [2026-03-31 10:00 KST] CW22-F — Features 페이지 검색 기능
 
