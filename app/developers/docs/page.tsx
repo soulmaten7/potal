@@ -1183,10 +1183,8 @@ print(data)`;
             </thead>
             <tbody>
               {[
-                { plan: 'Free', price: '$0', calls: '100', rate: '30 req/min' },
-                { plan: 'Basic', price: '$20/mo', calls: '2,000', rate: '60 req/min' },
-                { plan: 'Pro', price: '$80/mo', calls: '10,000', rate: '120 req/min' },
-                { plan: 'Enterprise', price: '$300/mo', calls: '50,000+', rate: 'Unlimited' },
+                { plan: 'Forever Free', price: '$0', calls: '2,000', rate: '30 req/min' },
+                { plan: 'Enterprise', price: 'Contact Us', calls: 'Custom', rate: 'Custom' },
               ].map(plan => (
                 <tr key={plan.plan} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '10px 0', fontWeight: '600', color: '#0f172a' }}>{plan.plan}</td>

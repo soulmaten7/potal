@@ -617,7 +617,7 @@ export default function DashboardContent() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
                 {[
                   { label: 'API Calls', value: usage?.used ?? '—', sub: 'This month' },
-                  { label: 'Plan', value: seller?.plan || '—', sub: seller?.subscriptionStatus || '' },
+                  { label: 'Plan', value: 'Forever Free', sub: 'active' },
                   { label: 'Active Keys', value: keys.filter(k => k.isActive).length, sub: `of ${keys.length} total` },
                   { label: 'Remaining', value: typeof usage?.remaining === 'number' ? usage.remaining.toLocaleString() : usage?.remaining ?? '—', sub: 'This month' },
                 ].map((stat, i) => (

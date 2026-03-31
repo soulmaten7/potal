@@ -143,8 +143,8 @@ print(result.total_landed_cost)  # 32.45`}</Code>
 
     <h2>Pricing</h2>
     <p>
-      The Free plan includes 200 API calls/month with access to all features. Paid plans start at
-      $20/month for 2,000 calls. All plans include the same features &mdash; only volume differs.
+      POTAL is Forever Free &mdash; 2,000 API calls/month with access to all 140+ features.
+      No credit card required. Enterprise customers can contact us for custom volume.
     </p>
   </div>
 );
@@ -249,8 +249,8 @@ const HsCodeGuideContent = () => (
 
     <h2>Batch Classification</h2>
     <p>
-      Classify entire catalogs using <code>POST /api/v1/classify/batch</code>. Limits per plan:
-      Free 50 items, Basic 100, Pro 500, Enterprise 5,000 per request.
+      Classify entire catalogs using <code>POST /api/v1/classify/batch</code>. Up to 50 items
+      per request on the Forever Free plan. Enterprise customers can request higher batch limits.
     </p>
 
     <h2>Data Behind the Engine</h2>
@@ -510,9 +510,9 @@ print(result.breakdown)`}</Code>
     <p>Common error codes and how to handle them:</p>
     <ul>
       <li><strong>401 Unauthorized</strong> &mdash; Invalid or missing API key. Check your <code>Authorization</code> header</li>
-      <li><strong>429 Too Many Requests</strong> &mdash; Rate limit exceeded. Check <code>X-RateLimit-Remaining</code> header. Free: 30 req/min, Basic: 60, Pro: 300, Enterprise: 1,000</li>
+      <li><strong>429 Too Many Requests</strong> &mdash; Rate limit exceeded. Check <code>X-RateLimit-Remaining</code> header. Forever Free: 30 req/min. Contact us for higher limits</li>
       <li><strong>400 Bad Request</strong> &mdash; Missing required fields. The response body includes which fields are missing</li>
-      <li><strong>402 Payment Required</strong> &mdash; Monthly quota exceeded on Free plan. Upgrade or wait for reset</li>
+      <li><strong>402 Payment Required</strong> &mdash; Monthly quota exceeded. Wait for reset or contact us for Enterprise limits</li>
     </ul>
 
     <h2>Production Checklist</h2>
@@ -612,7 +612,7 @@ const ComparisonContent = () => (
           </tr>
           <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
             <td style={{ padding: '10px' }}>Starting price</td>
-            <td style={{ padding: '10px', textAlign: 'center' }}>$0 (Free) / $20/mo</td>
+            <td style={{ padding: '10px', textAlign: 'center' }}>$0 (Forever Free)</td>
             <td style={{ padding: '10px', textAlign: 'center' }}>Custom quote</td>
             <td style={{ padding: '10px', textAlign: 'center' }}>Per transaction</td>
           </tr>
