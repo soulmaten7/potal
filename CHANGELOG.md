@@ -1,5 +1,12 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H — content 폴더 + Demo Scripts 엑셀)
+> 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I — TODO 정리)
+
+## [2026-03-31 13:10 KST] CW22-I — session-context TODO 정리
+
+### 변경
+- **TODO 섹션 전면 정리** — 완료 항목 제거/✅ 처리, 콜드이메일 캠페인 취소 (Forever Free 전환), F045~F048 marketplace 승인 시 변경으로 재분류
+- **바이럴 런칭 TODO 추가** — HN/Reddit/LinkedIn 포스트, Demo 영상 촬영, 유튜브 채널, 86개 가이드 보강
+- **진행 중 섹션** — 현재 스프린트 CW22로 업데이트, E(바이럴 마케팅) 상태 업데이트
 
 ## [2026-03-31 12:50 KST] CW22-H — Content 폴더 구조 + Dashboard Demo Scripts
 

@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H — content/ 폴더 + Demo Scripts 엑셀, Forever Free cleanup)
+> 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I — TODO 섹션 정리, 완료항목 정리, 바이럴 런칭 TODO 추가)
 
 ---
 
@@ -150,7 +150,7 @@
 - ✅ **C: 홈 화면 리디자인** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사 실데이터), 비용 비교 테이블 (FreeBanner 제거됨)
 - ✅ **D: Features 140개 가이드** — features-data.ts slug 추가, features-guides.ts 생성(54개 상세+86개 템플릿), [slug] 동적 라우트, SEO 메타+sitemap 140개 URL
 - ✅ **G: 커뮤니티 페이지** — /community 게시판, /community/new 글쓰기, /community/[id] 상세, 댓글/추천, DB 마이그레이션
-- ⏳ **E: 바이럴 마케팅** — 사이트 완성 후 동시 런칭 (다음 세션)
+- ⏳ **E: 바이럴 마케팅** — 사이트 완성 ✅, Demo Scripts 준비 ✅. HN/Reddit/LinkedIn 동시 런칭 + 유튜브 영상 제작 진행 예정 (CEO 날짜 확정 시)
 - ✅ **F: 문서 동기화** — CW22 전체 문서 업데이트 완료 (2026-03-29 22:00 KST)
 
 ### CW22-C Cowork — HeroCalculator, Community, LinkedIn, CLAUDE.md 구조화 (2026-03-30)
@@ -229,28 +229,29 @@
 
 ## 2. 현재 TODO (미완료 항목만)
 
-### ⏳ 고객 확보 (최우선)
-- Shopify 심사 결과 확인 (3/10 제출, 18일 경과)
-- ✅ Product Hunt B2B 리런치 완료
-- ✅ 콜드이메일 1차 발송 완료 (67건), 핫 리드: Calcurates CEO, Easyship
-- ⏳ **콜드이메일 글로벌 대규모 캠페인** — ~400개 기업 타겟 리스트 생성 완료 (MASTER_TARGET_LIST.csv)
-  - Tier 1 (CN/UK 각 100개), Tier 2 (SG/HK/NL/IL 각 25개=100), Tier 3 (DE/AU/UAE 각 ~33개=100)
-  - ⚠️ 기존 Gmail 드래프트 ~225개의 이메일 주소 대부분 미검증 → 재작업 필요
-  - ⏳ Claude Code (Sonnet)가 MASTER_TARGET_LIST.csv의 verified_email 컬럼 채우는 중 (웹검색으로 실제 주소 확인)
-  - 검증 완료 후 → verified_email 있는 회사들로 Gmail 드래프트 재생성
-- 파트너십 첫 접촉 (A그룹: Royal Mail, Australia Post, Canada Post)
-- 마케팅 지속 (LinkedIn 주 2~3회, Reddit 하루 3~5댓글, Instagram 콘텐츠)
+### ⏳ 바이럴 런칭 & 마케팅 (최우선 — CEO 날짜 확정 시 즉시)
+- ⏳ **Hacker News "Show HN" 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
+- ⏳ **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
+- ⏳ **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 ✅ 완료)
+- ⏳ **Demo Scripts 기반 영상 촬영** — 18개 Dashboard 메뉴 (content/demo-scripts/ 엑셀 준비 완료)
+- ⏳ **유튜브 공식 채널 생성 + 영상 업로드** — 우선: Overview, HS Classification, Tariff Calculator
+- ⏳ **86개 Feature Guide 콘텐츠 보강** — 현재 템플릿 상태, 54개만 완성
+
+### ⏳ 고객 확보
+- ⏳ Shopify 심사 결과 확인 (3/10 제출, 21일 경과)
+- ⏳ 파트너십 첫 접촉 (A그룹: Royal Mail, Australia Post, Canada Post)
+- ~~콜드이메일 글로벌 대규모 캠페인~~ — CEO 판단: Forever Free 전환 후 접근법 변경. 새 앵글 "All 140 Features, Free Forever"로 재개 시 재설계
+
+### ⏳ 마켓플레이스 (외부 대기)
+- ⏳ WooCommerce: WordPress.org 심사 대기 (제출 2026-03-30, 1~10일)
+- ⏳ BigCommerce: partners@bigcommerce.com 답장 대기 (1~3 영업일)
+- ⏳ Adobe Commerce: W-8BEN 검토 대기 (2~5 영업일) → 완료 후 Extension 업로드
+- ⏳ F045~F048 Coming Soon → marketplace 승인 시 `active`로 변경 예정
 
 ### ⏳ LLM 플랫폼 (대기)
 - Microsoft Copilot: 파일 준비됨, 365 Business 계정 필요
 - Meta AI: 지역 제한 (풀리면 즉시 등록)
 - xAI Grok: 앱 스토어 없음 (출시 시 진입)
-
-### ⏳ SDK / 마켓플레이스
-- WooCommerce: WordPress.org 심사 대기 (slug: potal-total-landed-cost-calculator, 제출 2026-03-30)
-- BigCommerce: partners@bigcommerce.com 이메일 답장 대기 (1~3 영업일)
-- Adobe Commerce: W-8BEN 검토 대기 (2~5 영업일) → 완료 후 `potal-magento-1.0.0.zip` 버전 업로드
-- ✅ Features Coming Soon 처리 완료: F045~F048 status → `coming_soon`
 
 ### ⏳ 기능 보완
 - P2 남은 7개 + FIX 17개 (Sprint Priority List 참조)
@@ -260,7 +261,7 @@
 - 투자자 피치 원페이저 PDF (숫자 생긴 후)
 - 글로벌 확장 (US 시장 장악 후)
 
-> **완료된 Phase/기능 상세는 아래 "5. 완료된 내용" 참조. B2B Phase 0~1 전체 완료, Phase 2 LLM 3개 완료(GPT/Claude/Gemini), 결제 Paddle Live 완료, Shopify 심사 제출 완료, 147/147 기능 구현 완료 (CW20에서 100% 달성).**
+> **완료된 Phase/기능 상세는 아래 "5. 완료된 내용" 참조. B2B Phase 0~1 전체 완료, Phase 2 LLM 3개 완료(GPT/Claude/Gemini), 결제 Paddle Live 완료, Shopify 심사 제출 완료, 140/142 기능 구현 완료.**
 
 ---
 
@@ -281,7 +282,7 @@
 
 ## 4. 🔄 진행 중인 내용 (IN PROGRESS)
 
-### 현재 스프린트 — CW21: v3 파이프라인 100%✅ + 기능감사 140 Active✅ + Features 페이지✅ + MCP v1.4.0✅
+### 현재 스프린트 — CW22: Exit 전략 피벗✅ + Forever Free✅ + 홈/Features/Community 리디자인✅ + SDK 배포✅ + 바이럴 런칭 준비 중
 
 ### ✅ CW21 Cowork — 기능감사 + Features 페이지 + MCP v1.4.0 + 수익화 전략 (2026-03-29 01:00~03:00 KST)
 

@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H: content/ 폴더 + Demo Scripts 엑셀, Forever Free cleanup)
+# 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I: session-context TODO 정리 + 바이럴 런칭 TODO 추가)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

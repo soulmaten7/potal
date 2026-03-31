@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-31 12:50 KST (CW22-H — content 폴더 + Demo Scripts, Forever Free cleanup)
+> 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I — TODO 정리 + 바이럴 런칭 TODO 추가)
 
 ---
 
@@ -14,6 +14,11 @@
 - **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
 - **인프라 비용**: 고정 ~$114/월, AI 호출 0
 - **Shopify App**: ⏳ 심사 중
+
+### ✅ CW22-I 완료 사항 (2026-03-31)
+
+- **session-context TODO 전면 정리**: 완료항목 제거, 콜드이메일 캠페인 취소, F045~F048 marketplace 승인 시 변경
+- **바이럴 런칭 TODO 추가**: HN/Reddit/LinkedIn 포스트, Demo 영상, 유튜브, 86개 가이드 보강
 
 ### ✅ CW22-H 완료 사항 (2026-03-31)
 
