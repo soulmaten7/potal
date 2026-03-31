@@ -580,11 +580,10 @@ export default function DashboardContent() {
               <span style={{ fontSize: 24 }}>&#127881;</span>
               <div>
                 <div style={{ fontWeight: 700, color: '#047857', fontSize: 15 }}>
-                  Welcome to {checkoutPlan ? checkoutPlan.charAt(0).toUpperCase() + checkoutPlan.slice(1) : ''} Plan!
+                  Welcome to POTAL — Forever Free!
                 </div>
                 <div style={{ fontSize: 13, color: '#065f46', marginTop: 2 }}>
-                  Your 14-day free trial has started. No charges until the trial ends.
-                  You can cancel anytime from <span style={{ fontWeight: 600 }}>Billing &gt; Manage Subscription</span>.
+                  All 140 features are available. No charges, no limits, no trial period.
                 </div>
               </div>
             </div>
@@ -592,7 +591,7 @@ export default function DashboardContent() {
 
           {checkoutStatus === 'canceled' && (
             <div style={{ background: '#fef3c7', border: '1px solid #fde68a', padding: '14px 20px', borderRadius: 12, marginBottom: 16, fontSize: 13, color: '#92400e' }}>
-              Checkout was canceled. No charges were made. You can upgrade anytime from the Billing tab.
+              Checkout was canceled. No charges were made.
             </div>
           )}
 
@@ -864,7 +863,7 @@ export default function DashboardContent() {
                   </div>
                   {usage.usagePercent > 80 && (
                     <div style={{ marginTop: 16, padding: '12px 16px', background: '#fef3c7', borderRadius: 8, fontSize: 13, color: '#92400e' }}>
-                      Approaching limit. <Link href="/pricing" style={{ color: '#d97706', fontWeight: 700 }}>Upgrade</Link>
+                      Approaching limit. <Link href="/pricing#enterprise" style={{ color: '#d97706', fontWeight: 700 }}>Contact us</Link> for higher limits.
                     </div>
                   )}
                 </div>

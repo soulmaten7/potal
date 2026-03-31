@@ -779,7 +779,7 @@ export default function DevelopersPage() {
                 <tr>
                   <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#F59E0B' }}>429</td>
                   <td style={{ padding: '8px 12px' }}>Rate limit exceeded</td>
-                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Wait and retry, or upgrade for higher limits</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Wait and retry. Contact us if you need higher limits</td>
                 </tr>
               </tbody>
             </table>
