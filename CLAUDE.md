@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-30 07:30 KST (CW22-C: HeroCalculator 6필드 cascading, Community 5건, LinkedIn, CLAUDE.md 구조화)
+# 마지막 업데이트: 2026-03-31 10:00 KST (CW22-F: Features 페이지 검색박스 추가)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

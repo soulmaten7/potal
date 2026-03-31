@@ -1,5 +1,49 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-30 07:30 KST (CW22 — HeroCalculator 6필드 + 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
+> 마지막 업데이트: 2026-03-31 10:00 KST (CW22-F — Features 검색박스 추가)
+
+## [2026-03-31 10:00 KST] CW22-F — Features 페이지 검색 기능
+
+### 추가
+- **Features 검색박스**: `/features` 페이지에 실시간 검색 input 추가 — name, description, category, slug 검색 지원
+- **검색 초기화 버튼**: X 아이콘으로 검색어 즉시 클리어
+- **No results 리셋**: 결과 없을 때 Reset filters 클릭 시 검색어도 함께 초기화
+
+## [2026-03-30 17:00 KST] CW22-E — Adobe Commerce Marketplace 설정
+
+### 완료
+- **Adobe Commerce Marketplace Profile**: Vendor Name(potal), Logo, Privacy Policy URL 저장 완료
+- **Tax Forms 선택**: 비미국 거주자 + 한국-미국 조세조약 + W-8BEN 제출 선택 완료
+- **W-8BEN 양식**: IRS 공식 양식 다운로드 (`W-8BEN_Form.pdf`), Adobe Commerce 이메일 제출 완료
+
+### 대기 중
+- Adobe Commerce: W-8BEN 검토 후 `potal-magento-1.0.0.zip` Extension 버전 업로드 (2~5 영업일)
+- WooCommerce WordPress.org: 심사 대기 중 (1~10일)
+- BigCommerce: partners@bigcommerce.com 답장 대기 (1~3 영업일)
+
+---
+
+## [2026-03-30 16:00 KST] CW22-D — SDK 배포 + 마켓플레이스 등록
+
+### 완료
+- **npm SDK 배포**: `potal-sdk@1.1.0` 공개 (https://www.npmjs.com/package/potal-sdk)
+- **PyPI SDK 배포**: `potal@1.1.0` 공개 (https://pypi.org/project/potal/1.1.0/)
+- **WooCommerce WordPress.org 제출**: slug `potal-total-landed-cost-calculator`, Automated Scan Pass ✅, Awaiting Review
+- **WooCommerce 플러그인 수정**: Plugin URI 분리, Tested up to 6.9, Stable tag 1.0.0, Text Domain → potal-total-landed-cost-calculator
+- **BigCommerce**: 파트너팀 직접 이메일 발송 (partners@bigcommerce.com) — 자동 가입 불가 이슈 대응
+- **Marketplace_Registration_Guide.md**: WooCommerce/BigCommerce/Magento/Shopify 가이드 문서 생성
+
+### 파일 변경
+- `plugins/woocommerce/potal-landed-cost/potal-landed-cost.php` — 헤더 수정 (Plugin URI, Tested up to, Text Domain)
+- `plugins/woocommerce/potal-landed-cost/readme.txt` — Tested up to 6.9, Stable tag 1.0.0
+- `Marketplace_Registration_Guide.md` — 신규 생성
+- `potal-landed-cost-v3.zip` — 수정된 플러그인 ZIP
+
+### 미완료 (다음 세션)
+- F045~F048 `coming_soon` 처리 (Features 페이지에서 마켓플레이스 앱 상태 변경)
+- BigCommerce DevTools 앱 등록 (파트너팀 답장 후)
+- Magento Adobe Commerce Marketplace 제출
+
+---
 
 ## [2026-03-30 07:30 KST] CW22-C — HeroCalculator, Community, LinkedIn, CLAUDE.md 구조화
 

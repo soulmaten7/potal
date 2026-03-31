@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-30 07:30 KST (CW22-C — HeroCalculator 6필드 단방향 cascading, Community 5건 수정, LinkedIn 최적화, CLAUDE.md 구조화)
+> 마지막 업데이트: 2026-03-31 10:00 KST (CW22-F — Features 검색박스 추가)
 
 ---
 
@@ -14,6 +14,25 @@
 - **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
 - **인프라 비용**: 고정 ~$114/월, AI 호출 0
 - **Shopify App**: ⏳ 심사 중
+
+### ✅ CW22-F 완료 사항 (2026-03-31)
+
+- **Features 검색박스**: `/features` 페이지에 실시간 검색 input 추가 (name, description, category, slug 검색)
+- **검색 초기화**: X 버튼 + Reset filters에서 검색어 함께 초기화
+
+### ✅ CW22-E 완료 사항 (2026-03-30)
+
+- **Adobe Commerce Marketplace Profile**: Vendor Name(potal), Logo, Privacy Policy URL 저장 완료
+- **Tax Forms 설정**: 비미국 거주자 + 한국-미국 조세조약 + W-8BEN 제출 선택 완료
+- **W-8BEN 발송**: IRS 공식 양식 이메일 제출 완료 (`W-8BEN_Form.pdf` portal 폴더 저장)
+
+### ✅ CW22-D 완료 사항 (2026-03-30)
+
+- **npm SDK**: `potal-sdk@1.1.0` 배포 완료 (npmjs.com/package/potal-sdk)
+- **PyPI SDK**: `potal@1.1.0` 배포 완료 (pypi.org/project/potal)
+- **WooCommerce WordPress.org 제출**: Automated Scan Pass ✅, slug: `potal-total-landed-cost-calculator`, Awaiting Review (1~10일)
+- **BigCommerce 파트너팀 이메일**: partners@bigcommerce.com 발송 완료, 답장 대기 중
+- **Marketplace_Registration_Guide.md**: 4개 플랫폼 가입 가이드 문서 생성
 
 ### ✅ CW22 완료 사항 (2026-03-29~30)
 
@@ -51,26 +70,30 @@
 
 ## 다음 할 일 (우선순위)
 
-### P0: 바이럴 런칭 (CEO 날짜 결정 후 즉시)
-1. **Product Hunt 런칭 페이지** — "140 Features, All Free. Zero Catch."
+### P0: 마켓플레이스 대기 항목
+1. **BigCommerce 파트너팀 답장 확인** — partners@bigcommerce.com 답장 오면 DevTools 앱 등록
+2. **WooCommerce 심사 결과 확인** — WordPress.org에서 이메일 알림 수신 대기 (soulmaten7@gmail.com)
+3. **Adobe Commerce W-8BEN 검토 확인** — 승인 후 `potal-magento-1.0.0.zip` Extension 버전 업로드 (https://commercedeveloper.adobe.com/extensions/versions/potal-temporary-69ca230c5baa44-47764374)
+4. **F045~F048 Coming Soon 처리** — features-data.ts에서 status `active` → `coming_soon` 변경
+
+### P1: 바이럴 런칭 (CEO 날짜 결정 후 즉시)
+1. **Product Hunt**: ✅ B2B 리런치 완료 — 후속 홍보/댓글 관리
 2. **Hacker News 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
 3. **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
 4. **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트
-5. **경쟁사 비교 차트 이미지** — SNS 공유용
 
-### P1: 콘텐츠 보강 (이번 주)
+### P2: 콘텐츠 보강 (이번 주)
 6. **140개 가이드 콘텐츠 보강** — 54개 완성, 86개 기본 구조만 있음
 7. **"Why POTAL is Free" 페이지** — 스토리텔링 마케팅
 8. **콜드이메일 재개** — 새 앵글 "All 140 Features, Free Forever"
 
-### P2: CEO 피드백 반영
+### P3: CEO 피드백 반영
 9. **홈 화면 디자인 리뷰** — 은태님 최종 확인
 10. **Features 페이지 리뷰** — 카테고리/레이아웃 피드백
 11. **비로그인 체험 UI** — 가입 없이 바로 계산 체험
 
-### P3: DB 마이그레이션 적용
-12. **055 + 056 Supabase에 적용** — 은태님 확인 후 수동 실행
-13. **커뮤니티 실제 테스트** — DB 적용 후 게시글 CRUD 확인
+### P4: DB 마이그레이션
+12. ✅ **055 + 056 Supabase 적용 완료** — community_posts, community_comments, sellers.contact_email 실제 DB 확인됨
 
 ---
 
@@ -85,6 +108,11 @@
 | Features 가이드 | 140 페이지 | ✅ |
 | 커뮤니티 | 게시판 구현 | ✅ (DB 적용 대기) |
 | 홈 화면 | 리디자인 완료 | ✅ |
+| npm SDK (potal-sdk) | v1.1.0 배포 완료 | ✅ |
+| PyPI SDK (potal) | v1.1.0 배포 완료 | ✅ |
+| WooCommerce WordPress.org | Awaiting Review (제출 2026-03-30) | ⏳ |
+| BigCommerce 파트너 | 이메일 발송, 답장 대기 | ⏳ |
+| Magento Marketplace | 미제출 | ⏳ |
 | regression test | 22/22 PASS | ✅ |
 | AI 호출 | 0회 | ✅ |
 | 인프라 비용 | ~$114/월 | ✅ |
