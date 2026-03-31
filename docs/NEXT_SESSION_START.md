@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I — TODO 정리 + 바이럴 런칭 TODO 추가)
+> 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J — Notion 마이그레이션 완료, 엑셀 로깅 폐지, 폴더 정리)
 
 ---
 
@@ -14,6 +14,14 @@
 - **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
 - **인프라 비용**: 고정 ~$114/월, AI 호출 0
 - **Shopify App**: ⏳ 심사 중
+
+### ✅ CW22-J 완료 사항 (2026-03-31)
+
+- **Notion "POTAL Command Center" 생성**: 5개 DB (Task Board, Session Log, Content Pipeline, Marketplace Tracker, Finance Tracker)
+- **엑셀 로깅 전면 폐지**: Work_Log.xlsx, Cowork_Session_Log.xlsx, D9~D15 Division 엑셀 → Notion으로 이전
+- **CLAUDE.md 전면 개정**: Notion 기반 워크플로우, 폴더 구조 문서화
+- **폴더 정리**: portal 루트 170+ 파일 → archive/ 하위 폴더 정리
+- **Notion 사용 설명서 생성**: Command Center 내 가이드 페이지
 
 ### ✅ CW22-I 완료 사항 (2026-03-31)
 
@@ -136,6 +144,8 @@
 | HeroCalculator | 6필드 + 단방향 cascading | ✅ |
 | Community UI | 사이드바+수정+댓글 | ✅ |
 | LinkedIn | 프로필 + 배너 최적화 | ✅ |
+| 프로젝트 관리 | Notion Command Center (5 DB) | ✅ |
+| 엑셀 로깅 | 폐지 → Notion 이전 완료 | ✅ |
 
 ---
 

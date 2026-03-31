@@ -1,5 +1,17 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I — TODO 정리)
+> 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J — Notion 마이그레이션 + 폴더 정리)
+
+## [2026-03-31 15:00 KST] CW22-J — Notion 마이그레이션 + 엑셀 로깅 폐지 + 폴더 정리
+
+### 변경
+- **프로젝트 관리 Notion 이전** — 엑셀 7-8개 파일 → Notion "POTAL Command Center" 5개 DB (Task Board, Session Log, Content Pipeline, Marketplace Tracker, Finance Tracker)
+- **엑셀 로깅 전면 폐지** — Work_Log.xlsx, Cowork_Session_Log.xlsx, D9~D15 Division 엑셀 더 이상 사용 안 함
+- **CLAUDE.md 전면 개정** — Notion 기반 워크플로우로 재작성, 엑셀 참조 모두 제거
+- **LOGGING_RULES.md 재작성** — 엑셀 규칙 → Notion 워크플로우 규칙으로 전환
+- **session-context.md 업데이트** — CW22-J 완료 항목 추가, Notion 관련 맥락 반영
+- **NEXT_SESSION_START.md 업데이트** — CW22-J 완료, 폴더 구조 최신화
+- **폴더 정리** — portal 루트 170+ 파일 → archive/ 하위 폴더로 이동 (commands, benchmarks, audits, cold-email)
+- **Notion 사용 설명서 생성** — Command Center 내 가이드 페이지
 
 ## [2026-03-31 13:10 KST] CW22-I — session-context TODO 정리
 

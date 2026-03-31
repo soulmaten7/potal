@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-31 13:10 KST (CW22-I — TODO 섹션 정리, 완료항목 정리, 바이럴 런칭 TODO 추가)
+> 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J — Notion 마이그레이션 완료, 엑셀 로깅 폐지, 폴더 정리)
 
 ---
 
@@ -190,6 +190,17 @@
 **완료 항목:**
 - ✅ **content/ 폴더 구조 생성** — demo-scripts, social-media, thumbnails, recordings + README.md
 - ✅ **Dashboard Demo Scripts 엑셀** — `content/demo-scripts/POTAL_Dashboard_Demo_Scripts.xlsx` Summary + 18개 메뉴별 스크립트 (Korean + English subtitles)
+
+### CW22-J Cowork — Notion 마이그레이션 + 엑셀 로깅 폐지 (2026-03-31)
+
+**완료 항목:**
+- ✅ **Notion "POTAL Command Center" 생성** — 5개 DB: Task Board (칸반), Session Log, Content Pipeline, Marketplace Tracker, Finance Tracker
+- ✅ **Notion 사용 설명서 생성** — Command Center 내 가이드 페이지 (DB별 용도, 뷰 설명, 운영 방법)
+- ✅ **엑셀 로깅 전면 폐지** — Work_Log.xlsx, Cowork_Session_Log.xlsx, D9~D15 Division 엑셀 더 이상 사용 안 함
+- ✅ **CLAUDE.md 전면 개정** — Notion 기반 워크플로우, 엑셀 참조 모두 제거, 폴더 구조 문서화
+- ✅ **LOGGING_RULES.md 재작성** — 엑셀 → Notion 워크플로우 규칙으로 전환
+- ✅ **폴더 정리** — portal 루트 170+ 파일 → archive/ 하위 폴더 (commands, benchmarks, audits, cold-email)
+- ✅ **모든 문서 동기화** — CHANGELOG.md, session-context.md, NEXT_SESSION_START.md 업데이트
 
 ### CW22-E Cowork — Adobe Commerce Marketplace 설정 (2026-03-30)
 
