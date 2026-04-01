@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Pricing — Forever Free | POTAL',
   description:
-    'POTAL is Forever Free. 2,000 API calls/month included. All 140+ features at no cost. Enterprise? Contact us.',
+    'POTAL is Forever Free. All 140+ features at no cost. 100K API calls/month soft cap. Enterprise? Contact us.',
   keywords: [
     'total landed cost pricing',
     'duty calculator API pricing',

@@ -114,7 +114,7 @@ const FAQ_DATABASE: FaqEntry[] = [
     id: 'rate-limits',
     keywords: ['rate limit', 'throttle', 'limit', 'quota', 'overage', 'exceed'],
     question: 'What are the rate limits?',
-    answer: 'Monthly quotas: Free 200, Basic 2,000, Pro 10,000, Enterprise 50,000. API rate: 30 req/min (Free), 100 req/min (paid). Overage auto-billed at $0.015-$0.008/calc.',
+    answer: 'Forever Free: 100,000 API calls/month (soft cap for DDoS protection), 60 req/min. Enterprise customers can contact us for custom limits.',
     category: 'pricing',
   },
   {
@@ -345,7 +345,7 @@ export async function POST(req: NextRequest) {
     // Plan-based context enrichment
     const plan = context.plan;
     if (plan === 'free' && entry.id === 'pricing') {
-      responseAnswer += '\n\n💡 You\'re on the Free plan (200 requests/month). Upgrade to Basic ($20/mo) for 2,000 requests and batch API access.';
+      responseAnswer += '\n\n💡 You\'re on the Forever Free plan — 100,000 API calls/month with all features included.';
     } else if (plan === 'enterprise') {
       responseAnswer += '\n\nAs an Enterprise customer, you have a dedicated CSM. Contact your account manager for personalized assistance.';
     }

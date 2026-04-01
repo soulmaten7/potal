@@ -45,13 +45,13 @@ const FAQ_ITEMS = [
     id: '5',
     category: 'pricing',
     question: 'What happens if I exceed my plan\'s API call limit?',
-    answer: 'On the Free plan, API calls stop at the 200-call limit. On paid plans (Basic, Pro, Enterprise), overage calls are automatically billed: Basic $0.015/call, Pro $0.012/call, Enterprise $0.01/call. Enterprise customers with 100K+ volume commitments get $0.008/call. You can upgrade your plan anytime from the Dashboard.'
+    answer: 'POTAL is Forever Free with a 100,000 API calls/month soft cap (for DDoS protection). If you consistently need higher volume, contact us for Enterprise pricing.'
   },
   {
     id: '6',
     category: 'pricing',
     question: 'Is there a free plan?',
-    answer: 'Yes! Our Free plan includes 200 API calls per month — no credit card required. Paid plans (Basic, Pro, Enterprise) come with a 14-day free trial. A payment method is collected at signup, but you won\'t be charged until the trial ends.'
+    answer: 'Yes! POTAL is Forever Free — all 140+ features, 100,000 API calls/month (soft cap), no credit card required. For enterprise-scale needs, contact us.'
   },
   {
     id: '7',
@@ -81,7 +81,7 @@ const FAQ_ITEMS = [
     id: '11',
     category: 'pricing',
     question: 'Do you offer annual billing discounts?',
-    answer: 'Yes — all paid plans offer 20% off with annual billing. Basic: $16/mo ($192/yr), Pro: $64/mo ($768/yr), Enterprise: $240/mo ($2,880/yr). Enterprise customers with 100K+ monthly volume can negotiate further discounts.'
+    answer: 'POTAL is Forever Free — no paid plans, no billing. All 140+ features included at $0. For enterprise-scale needs, contact us.'
   },
   {
     id: '12',

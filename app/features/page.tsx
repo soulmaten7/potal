@@ -208,9 +208,9 @@ export default function FeaturesPage() {
       <section className="bg-[#02122c] py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
-            Start Free — 2,000 API calls/month included
+            Start Free — All 140 Features Included
           </h2>
-          <p className="text-slate-400 mb-8">No credit card required. Upgrade anytime.</p>
+          <p className="text-slate-400 mb-8">No credit card required. Forever Free.</p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/auth/signup"

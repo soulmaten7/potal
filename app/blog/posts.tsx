@@ -143,7 +143,7 @@ print(result.total_landed_cost)  # 32.45`}</Code>
 
     <h2>Pricing</h2>
     <p>
-      POTAL is Forever Free &mdash; 2,000 API calls/month with access to all 140+ features.
+      POTAL is Forever Free &mdash; 100,000 API calls/month (soft cap) with access to all 140+ features.
       No credit card required. Enterprise customers can contact us for custom volume.
     </p>
   </div>
@@ -398,7 +398,7 @@ const ApiQuickstartContent = () => (
         </ul>
       </li>
     </ol>
-    <p>The Free plan includes 200 API calls/month with access to all features.</p>
+    <p>The Forever Free plan includes 100,000 API calls/month (soft cap) with access to all features.</p>
 
     <h2>Step 2: Your First API Call</h2>
     <h3>cURL</h3>
@@ -653,8 +653,7 @@ const ComparisonContent = () => (
 
     <h2>Try POTAL Free</h2>
     <p>
-      Start with 200 free API calls/month. No credit card required. All features included
-      on every plan.
+      Forever Free &mdash; 100,000 API calls/month (soft cap). No credit card required. All 140+ features included.
     </p>
   </div>
 );

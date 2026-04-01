@@ -16,44 +16,28 @@
 export type PlanId = 'free' | 'basic' | 'pro' | 'enterprise';
 
 /**
- * POTAL Plans — 신 요금제 (세션 28 확정)
+ * POTAL Plans — Forever Free (CW22 확정)
  *
- * Alex Hormozi 전략: "중간은 죽음"
- * AI 원가 건당 $0.001 (캐시 $0.0003) → 33개 기능 전부 포함해도 건당 $0.008 이하
- * Basic $20/2K에서 마진 97%
+ * 모든 기능 무료. 100K calls/month soft cap (DDoS 방지).
+ * Enterprise = Contact Us only.
+ * basic/pro는 하위 호환성 유지용 (실제 동일 = Forever Free).
  */
 export const PLAN_CONFIG = {
   free: {
-    name: 'Free',
+    name: 'Forever Free',
     priceMonthly: 0,
     priceAnnual: 0,
-    apiCallsPerMonth: 200,
+    apiCallsPerMonth: 100000,
     overageRate: 0,
     paddlePriceIdMonthly: null,
     paddlePriceIdAnnual: null,
-    ratePerMinute: 30,
-    features: [
-      '200 API calls / month',
-      'Widget embed (light theme)',
-      '240 countries supported',
-      'AI-powered HS Code classification',
-      'Basic duty & tax calculation',
-      'Community support',
-    ],
-  },
-  basic: {
-    name: 'Basic',
-    priceMonthly: 20,
-    priceAnnual: 192,
-    apiCallsPerMonth: 2000,
-    overageRate: 0.015,
-    paddlePriceIdMonthly: process.env.PADDLE_PRICE_BASIC_MONTHLY || null,
-    paddlePriceIdAnnual: process.env.PADDLE_PRICE_BASIC_ANNUAL || null,
     ratePerMinute: 60,
     features: [
-      '2,000 API calls / month',
+      '100,000 API calls / month (soft cap)',
+      'All 140+ features included',
       'Widget embed (all themes)',
       '10-digit HS Code precision',
+      '240 countries supported',
       'Real-time exchange rates',
       'FTA & preferential rate detection',
       'Anti-dumping / countervailing duty alerts',
@@ -62,44 +46,52 @@ export const PLAN_CONFIG = {
       'Email support',
     ],
   },
-  pro: {
-    name: 'Pro',
-    priceMonthly: 80,
-    priceAnnual: 768,
-    apiCallsPerMonth: 10000,
-    overageRate: 0.012,
-    paddlePriceIdMonthly: process.env.PADDLE_PRICE_PRO_MONTHLY || null,
-    paddlePriceIdAnnual: process.env.PADDLE_PRICE_PRO_ANNUAL || null,
-    ratePerMinute: 120,
+  basic: {
+    name: 'Forever Free',
+    priceMonthly: 0,
+    priceAnnual: 0,
+    apiCallsPerMonth: 100000,
+    overageRate: 0,
+    paddlePriceIdMonthly: null,
+    paddlePriceIdAnnual: null,
+    ratePerMinute: 60,
     features: [
-      '10,000 API calls / month',
-      'Custom widget branding',
-      'Batch API (100 items)',
-      'Webhook notifications',
-      'Advanced analytics dashboard',
-      'Priority email support',
-      'All Basic features included',
+      '100,000 API calls / month (soft cap)',
+      'All 140+ features included',
+    ],
+  },
+  pro: {
+    name: 'Forever Free',
+    priceMonthly: 0,
+    priceAnnual: 0,
+    apiCallsPerMonth: 100000,
+    overageRate: 0,
+    paddlePriceIdMonthly: null,
+    paddlePriceIdAnnual: null,
+    ratePerMinute: 60,
+    features: [
+      '100,000 API calls / month (soft cap)',
+      'All 140+ features included',
     ],
   },
   enterprise: {
     name: 'Enterprise',
-    priceMonthly: 300,
-    priceAnnual: 2880,
-    apiCallsPerMonth: 50000,
-    overageRate: 0.01,
-    paddlePriceIdMonthly: process.env.PADDLE_PRICE_ENTERPRISE_MONTHLY || null,
-    paddlePriceIdAnnual: process.env.PADDLE_PRICE_ENTERPRISE_ANNUAL || null,
+    priceMonthly: 0,
+    priceAnnual: 0,
+    apiCallsPerMonth: -1,
+    overageRate: 0,
+    paddlePriceIdMonthly: null,
+    paddlePriceIdAnnual: null,
     ratePerMinute: -1,
     features: [
-      '50,000+ API calls / month',
+      'Custom API volume',
       'White-label widget',
       'Dedicated infrastructure',
       'SSO & team management',
       'SLA guarantee (99.99%)',
       'Custom integrations',
-      'Bulk calculation API',
       'Dedicated account manager',
-      'All Pro features included',
+      'Contact us',
     ],
   },
 } as const;
