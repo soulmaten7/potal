@@ -45,7 +45,7 @@ What import duties will I pay on shoes from Italy to the UK?
 1. **Create new action** 클릭
 2. **Authentication** 섹션:
    - Type: **API Key**
-   - API Key: `pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR`
+   - API Key: `YOUR_POTAL_API_KEY`
    - Auth Type: **Custom**
    - Custom Header Name: `X-API-Key`
 3. **Schema** 섹션:

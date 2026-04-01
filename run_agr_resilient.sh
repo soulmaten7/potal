@@ -1,6 +1,6 @@
 #!/bin/bash
 # AGR 임포트 — 죽어도 자동 재시작, 53개국 완료까지 반복
-# 사용법: cd ~/portal && nohup bash run_agr_resilient.sh > agr_import.log 2>&1 &
+# 사용법: cd ~/potal && nohup bash run_agr_resilient.sh > agr_import.log 2>&1 &
 
 PROGRESS_FILE="$HOME/portal/agr_import_progress.json"
 LOG_FILE="$HOME/portal/agr_import.log"
@@ -36,7 +36,7 @@ reset_incomplete_countries() {
     python3 -c "
 import json, subprocess, os
 
-progress_file = os.path.expanduser('~/portal/agr_import_progress.json')
+progress_file = os.path.expanduser('~/potal/agr_import_progress.json')
 if not os.path.exists(progress_file):
     print('progress 파일 없음')
     exit(0)
@@ -100,7 +100,7 @@ while [ $retry -lt $MAX_RETRIES ]; do
 
     # import 실행
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] import_agr_all.py 실행..."
-    cd ~/portal
+    cd ~/potal
     python3 import_agr_all.py 2>&1
     exit_code=$?
 

@@ -11,10 +11,10 @@ import sys
 import os
 from collections import defaultdict
 
-LOG_FILE = "/Users/maegbug/portal/precompute.log"
+LOG_FILE = "/Users/maegbug/potal/precompute.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
 SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
-SCRIPTS_DIR = "/Users/maegbug/portal/scripts"
+SCRIPTS_DIR = "/Users/maegbug/potal/scripts"
 
 def log(msg):
     ts = time.strftime("%Y-%m-%d %H:%M:%S")

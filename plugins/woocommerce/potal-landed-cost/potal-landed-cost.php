@@ -1,17 +1,17 @@
 <?php
 /**
  * Plugin Name: POTAL — Total Landed Cost Calculator
- * Plugin URI: https://www.potal.app
+ * Plugin URI: https://www.potal.app/integrations/woocommerce
  * Description: Show real-time Total Landed Cost (import duties, taxes, customs fees) on WooCommerce product pages. Supports 240 countries, 5,371 HS codes, and DDP checkout.
  * Version: 1.0.0
  * Author: POTAL
  * Author URI: https://www.potal.app
  * License: GPL v2 or later
- * Text Domain: potal-landed-cost
+ * Text Domain: potal-total-landed-cost-calculator
  * Requires at least: 5.8
- * Tested up to: 6.5
+ * Tested up to: 6.9
  * WC requires at least: 7.0
- * WC tested up to: 8.8
+ * WC tested up to: 9.6
  */
 
 if (!defined('ABSPATH')) exit;

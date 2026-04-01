@@ -3,7 +3,7 @@
 WDC products_detailed.jsonl에서 고유 카테고리별 대표 상품명 추출.
 680M줄 전체를 읽지 않고 처음 50M줄만 샘플링하여 카테고리→상품명 매핑 생성.
 
-출력: ~/portal/data/wdc_category_samples.jsonl
+출력: ~/potal/data/wdc_category_samples.jsonl
 """
 import json
 import sys

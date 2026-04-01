@@ -1,5 +1,5 @@
 # DIVISION_STATUS.md — POTAL AI Agent Organization v6 상세
-# 마지막 업데이트: 2026-03-31 15:30 KST (CW22-F/G/J — Features 검색박스, Forever Free cleanup, Notion 마이그레이션)
+# 마지막 업데이트: 2026-03-31 18:00 KST (CW22-K — 통합 모닝브리핑 아키텍처, Scheduled Task 정리)
 # 이 파일은 참조용. Division 상세 필요 시 읽는 파일.
 
 ## 16개 Division (책임 영역) — v6.1 기준 59 Agents
@@ -65,11 +65,39 @@ Layer 1 자동실행 → Layer 2 팀장 체크 → Layer 3 Agent Teams → Chief
   불필요 시 → "확인" 끝
 ```
 
+## 통합 모닝브리핑 — Scheduled Task 아키텍처 (CW22-K)
+
+### 활성 Scheduled Tasks
+| Task ID | 주기 | 역할 |
+|---------|------|------|
+| `potal-daily-health-check` | 매일 9AM KST | Chief Orchestrator 16개 Division 통합 점검 → 텔레그램 보고 |
+| `d16-secretary-inbox-check` | 매시간 | D16 비서실 Gmail+Crisp 체크 → 텔레그램 보고 |
+
+### 비활성화된 Scheduled Tasks (통합됨)
+- `morning-brief` → `potal-daily-health-check`로 통합
+- `chief-orchestrator-daily` → `potal-daily-health-check`로 통합
+- `morning-brief-v2` → `potal-daily-health-check`로 통합
+- `division-log-check` → 이전에 비활성화
+
+### 도구별 Division 매핑 (potal-daily-health-check)
+| 도구 | Division | 점검 방법 |
+|------|----------|----------|
+| POTAL MCP | D1, D2, D3, D4, D7 | API 실제 호출 (classify, landed_cost, restrictions, DPL, FTA) |
+| Chrome MCP | D5, D11 | 라이브 사이트 접속 (potal.app 페이지 로드, Features, Pricing) |
+| Gmail MCP | D9, D16 | 고객 문의, 미읽은 중요 이메일, 마켓플레이스 심사 결과 |
+| Notion MCP | D12 | Content Pipeline DB 조회 (진행중 항목) |
+| 정적 체크 | D6, D8, D10, D13, D14, D15 | 에러 이메일 없으면 Green |
+| Telegram Bot | 보고 | 점검 결과 종합 → CEO 텔레그램 전송 |
+
+### 수동 실행
+Cowork에서 "모닝브리핑" → `morning-briefing` 스킬 (Scheduled Task와 동일 로직)
+
 ## 일일 운영 사이클
 | Phase | 시점 | 내용 | 실행 주체 |
 |-------|------|------|----------|
 | Phase 0 | 새벽 (자동) | Layer 1: 환율, 관세 업데이트, webhook, health check | Vercel Cron |
-| Phase 1 | 아침 5분 | Morning Brief — Yellow/Red만 보고 | Chief → 은태님 |
+| Phase 1 | 아침 9AM | 통합 모닝브리핑 — 16개 Division 실제 점검 → 텔레그램 보고 | Scheduled Task (자동) |
+| Phase 1.5 | 매시간 | D16 비서실 Gmail+Crisp 체크 | Scheduled Task (자동) |
 | Phase 2 | 오전 | Agent Teams 세션 A — Division 선택 후 실행 | 은태님 지시 → Chief |
 | Phase 3 | 오후 | 로테이션 or 심화 | 은태님 판단 |
 | Phase 4 | 마감 10분 | git push, session-context 업데이트 | 은태님 + Chief |
@@ -99,7 +127,9 @@ Layer 1 자동실행 → Layer 2 팀장 체크 → Layer 3 Agent Teams → Chief
 | D16 | ✅ | Cowork Scheduled Task 매시간 Gmail+Crisp 체크 → 텔레그램 보고 |
 
 ## Layer 2 Monitor
-- **Morning Brief API**: `/api/v1/admin/morning-brief`
+- **통합 모닝브리핑**: Scheduled Task `potal-daily-health-check` (매일 9AM KST)
+- **수동 모닝브리핑**: Cowork `morning-briefing` 스킬 (동일 로직)
+- **Morning Brief API** (레거시): `/api/v1/admin/morning-brief`
 - **Division Checklists**: `app/lib/monitoring/division-checklists.ts`
 - **Division Status Dashboard**: `/admin/division-status`
 
@@ -112,6 +142,7 @@ Layer 1 자동실행 → Layer 2 팀장 체크 → Layer 3 Agent Teams → Chief
 Division 신설 → Sonnet 팀장 → Layer 1 (자동화) → Layer 2 (체크) → Layer 3 (역할 카드)
 
 ## 참조 문서
-- 조직도: `POTAL_AI_Agent_Org_v6.html`
-- 변경 로그: `POTAL_AI_Agent_Org_Log.xlsx`
-- 엑셀 마스터: `POTAL_Excel_Master_Registry.xlsx`
+- 조직도: `POTAL_AI_Agent_Org_v6.html` (최신)
+- 변경 로그: Notion "POTAL Command Center" Session Log (엑셀 로깅 폐지 CW22-J)
+- ~~POTAL_AI_Agent_Org_Log.xlsx~~ → Notion으로 이전
+- ~~POTAL_Excel_Master_Registry.xlsx~~ → Notion으로 이전

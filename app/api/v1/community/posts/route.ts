@@ -52,7 +52,12 @@ export async function GET(req: NextRequest) {
   if (communityCategory && VALID_COMMUNITY_CATS.includes(communityCategory)) query = query.eq('community_category', communityCategory);
   if (postType && VALID_TYPES.includes(postType)) query = query.eq('post_type', postType);
   if (status && VALID_STATUS.includes(status)) query = query.eq('status', status);
-  if (search) query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+  if (search) {
+    const sanitized = search.replace(/[%_.*(),\\]/g, '');
+    if (sanitized.length > 0) {
+      query = query.or(`title.ilike.%${sanitized}%,content.ilike.%${sanitized}%`);
+    }
+  }
 
   if (sort === 'popular') {
     query = query.order('upvote_count', { ascending: false });

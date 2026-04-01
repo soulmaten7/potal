@@ -36,8 +36,8 @@ from datetime import datetime, timedelta
 
 # ─── Configuration ─────────────────────────────────────────────
 JSONL_PATH = "/Volumes/soulmaten/POTAL/wdc-products/extracted/products_detailed.jsonl"
-PROGRESS_FILE = "/Users/maegbug/portal/wdc_phase4_progress.json"
-LOG_FILE = "/Users/maegbug/portal/wdc_phase4.log"
+PROGRESS_FILE = "/Users/maegbug/potal/wdc_phase4_progress.json"
+LOG_FILE = "/Users/maegbug/potal/wdc_phase4.log"
 
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
 SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")

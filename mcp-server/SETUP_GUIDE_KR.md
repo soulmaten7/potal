@@ -14,7 +14,7 @@ MCP (Model Context Protocol)는 Claude가 외부 도구/API를 직접 호출할 
 
 ### 1단계: POTAL API 키 준비
 
-API 키: `pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR`
+API 키: `YOUR_POTAL_API_KEY`
 
 ### 2단계: Claude Desktop 설정 파일 열기
 
@@ -40,7 +40,7 @@ open ~/Library/Application\ Support/Claude/claude_desktop_config.json
       "command": "npx",
       "args": ["-y", "@potal/mcp-server"],
       "env": {
-        "POTAL_API_KEY": "pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR"
+        "POTAL_API_KEY": "YOUR_POTAL_API_KEY"
       }
     }
   }
@@ -56,7 +56,7 @@ open ~/Library/Application\ Support/Claude/claude_desktop_config.json
       "command": "node",
       "args": ["/Users/사용자이름/potal/mcp-server/build/index.js"],
       "env": {
-        "POTAL_API_KEY": "pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR"
+        "POTAL_API_KEY": "YOUR_POTAL_API_KEY"
       }
     }
   }

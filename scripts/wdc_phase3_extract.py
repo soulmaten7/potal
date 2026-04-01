@@ -12,8 +12,8 @@ import time
 from collections import defaultdict, Counter
 
 JSONL_PATH = "/Volumes/soulmaten/POTAL/wdc-products/extracted/products_detailed.jsonl"
-OUTPUT_DIR = "/Users/maegbug/portal/scripts/wdc_phase3_output"
-LOG_FILE = "/Users/maegbug/portal/wdc_phase3.log"
+OUTPUT_DIR = "/Users/maegbug/potal/scripts/wdc_phase3_output"
+LOG_FILE = "/Users/maegbug/potal/wdc_phase3.log"
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 

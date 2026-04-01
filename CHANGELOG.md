@@ -1,5 +1,69 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J — Notion 마이그레이션 + 폴더 정리)
+> 마지막 업데이트: 2026-04-01 23:59 KST (CW22-N — 보안 감사 Phase 1~3 긴급 대응)
+
+## [2026-04-01 23:59 KST] CW22-N — 보안 감사 긴급 대응 Phase 1~3 + PMF Playbook + 폴더명 정규화
+
+**트리거:** LinkedIn Rahul Singireddy (CEO, Hydra / Stanford / ex-Delivery Hero) 보안 제보 + Supabase 보안 경고 이메일 (3/30)
+
+### 🔒 보안 감사 Phase 1: Supabase RLS
+- **90개 테이블 전부 RLS 활성화** — 수정 전: 67개 OFF, 23개 ON → 수정 후: 90개 전부 ON
+- 16개 테이블: `FOR ALL USING(true)` 위험 정책 → 셀러별 격리 정책으로 교체
+- 40개+ 테이블: RLS 자체 활성화 + 적절한 정책 추가
+- 35개 참조 테이블: 읽기 전용 정책 추가
+- SQL: `docs/SECURITY_FIX_RLS.sql`, 보고서: `docs/SECURITY_AUDIT_2026-04-01.md`
+
+### 🔒 보안 감사 Phase 2: 소스코드 취약점 5개
+- C-1: `scripts/*.ts` SERVICE_ROLE_KEY 하드코딩 (10개 파일) → `process.env` 교체
+- C-2: `vector-search.ts` raw SQL injection → RPC만 사용
+- H-1: `middleware.ts` CORS `*` → `potal.app`만 허용
+- H-2: admin 엔드포인트 query param secret → header 인증 (24개 파일)
+- H-3: community PostgREST filter injection → sanitization 추가
+- 보고서: `docs/SECURITY_AUDIT_PHASE2_2026-04-01.md`
+
+### 🔒 보안 감사 Phase 3: 페이지/API 점검 + HIGH 3개
+- H-4: B2C API 4개 (intent, ai-suggestions, generate-filters, search/analyze) → `~/Empire Business/b2c-api-backup/` 이동
+- H-5: 가입 응답 API key `fullKey` → 마스킹 (앞 8자 + `***`)
+- H-6: `/api/v1/sellers/register` rate limiting 추가 (IP당 분당 5회)
+- MEDIUM 5개, LOW 4개, PASS 6개 확인
+- 보고서: `docs/SECURITY_AUDIT_PHASE3_2026-04-01.md`
+
+### 변경
+- 🔒 **pk_live_ghTRbs... 하드코딩 키 제거** — 6개 파일에서 만료된 키 삭제 → 환경변수/플레이스홀더 교체
+- 📄 **PMF Outreach Playbook 작성** — `content/social-media/POTAL_PMF_Outreach_Playbook.md` (2주 실행 가이드: LinkedIn+Reddit+Shopify Community, DM/이메일 템플릿, 반응 추적)
+- 📁 **프로젝트 폴더명 portal → potal 정규화** — CLAUDE.md, session-context.md, .cursorrules, settings.local.json, scripts/*.py 등
+- 📊 **Posting Guide Excel 41개 플랫폼** — 글로벌 32개 추가
+- 💬 **LinkedIn Rahul Singireddy 대응** — 보안 수정 완료 + 채팅 대화 진행 중
+
+## [2026-04-01 15:12 KST] CW22-M — 140개 Features 가이드 완성 + MCP v1.4.2 + Hook 수정
+
+### 변경
+- **Features 가이드 140개 완성** — 93개 makeGuide() 템플릿을 전부 상세 가이드로 변환 (overview, howToUse, useCases, tips, relatedFeatures). 빌드 통과
+- **potal-mcp-server v1.4.2 배포** — bin 필드 경고 수정, repository.url 정규화, npm pkg fix 적용
+- **Claude Code Hook 에러 수정** — 4개 hook 상대경로 → 절대경로 변환, "No such file" 에러 해결
+- **Python SDK v1.1.0** — sdk/python/ README 추가
+- **B2C 플랫폼 전략 문서** — docs/B2C_PLATFORM_STRATEGY.md 작성 (별도 프로젝트 구상)
+
+## [2026-03-31 22:00 KST] CW22-L — SNS 바이럴 런칭 포스팅 + MCP API Key 재발급
+
+### 추가
+- **바이럴 포스팅 5개 플랫폼 완료** — LinkedIn(EN), X/Twitter(EN), 디스콰이어트(KR), Instagram(KR), DEV.to(EN). 140+ Features 스크린샷 11장 첨부
+- **포스팅 가이드 엑셀** — `content/social-media/POTAL_Posting_Guide.xlsx` (9개 플랫폼 본문/이미지/해시태그/상태 관리 시트 3개)
+- **바이럴 런칭 포스트 초안** — `content/social-media/VIRAL_LAUNCH_POST_DRAFT_v1.md` (한국어+영문)
+
+### 수정
+- **POTAL MCP API Key 재발급** — 기존 pk_live_ 만료 → sk_live_ 신규 발급, claude_desktop_config.json 복구
+- **"2,000 API calls" 메시징 제거** — features/page.tsx, pricing/layout.tsx, faq/page.tsx, blog/posts.tsx, paddle.ts, support/route.ts, help/page.tsx → Forever Free 메시징으로 교체
+
+## [2026-03-31 18:00 KST] CW22-K — 통합 모닝브리핑 아키텍처 + Scheduled Task 정리
+
+### 변경
+- **Scheduled Task 통합** — 4개 중복 Task(`morning-brief`, `chief-orchestrator-daily`, `morning-brief-v2`, `division-log-check`) → `potal-daily-health-check` 1개로 통합. 나머지 비활성화
+- **6-Phase 점검 구조** — POTAL MCP(D1-D4,D7) → Chrome MCP(D5,D11) → Gmail MCP(D9,D16) → Notion MCP(D12) → 정적(D6,D8,D10,D13-D15) → 텔레그램 보고
+- **morning-briefing 스킬 v2** — 기존 3-Step → 6-Phase 통합 점검으로 전면 재작성. Scheduled Task와 동일 로직
+- **ORCHESTRATOR_RULES.md 재작성** — 도구별 Division 매핑, 활성/비활성 Task 목록, 통합 아키텍처 반영
+- **DIVISION_STATUS.md 업데이트** — 통합 모닝브리핑 섹션 추가, 일일 운영 사이클 수정, Notion 참조 전환
+- **구버전 파일 archive 이동** — POTAL_AI_Agent_Org.html(v1), v4.html, v5.html, MORNING_BRIEF_20260329.md
+- **Google Drive 연동** — 19개 파일 POTAL_Google_Drive/ 통합, Notion Content Pipeline 10개 항목에 링크 연결
 
 ## [2026-03-31 15:00 KST] CW22-J — Notion 마이그레이션 + 엑셀 로깅 폐지 + 폴더 정리
 

@@ -35,7 +35,7 @@ Claude Code 터미널용 명령어 파일을 만들 때, 로그 기록을 자동
 
 ### 2-1. 명령어 파일 생성
 - 파일명: `CLAUDE_CODE_[내용].md`
-- 위치: 프로젝트 루트 (`/Users/maegbug/portal/` 또는 현재 워크스페이스)
+- 위치: 프로젝트 루트 (`/Users/maegbug/potal/` 또는 현재 워크스페이스)
 
 ### 2-2. COWORK_CONVERSATION_LOG.md 업데이트
 명령어 파일을 만든 직후, 아래 포맷으로 로그를 추가한다:

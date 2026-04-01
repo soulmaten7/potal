@@ -9,7 +9,7 @@ import subprocess
 import time
 import os
 
-LOG_FILE = "/Users/maegbug/portal/wdc_phase3.log"
+LOG_FILE = "/Users/maegbug/potal/wdc_phase3.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
 SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 

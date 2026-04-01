@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-const TEST_KEY = 'pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR';
+const TEST_KEY = process.env.NEXT_PUBLIC_POTAL_DEMO_KEY || '';
 const COUNTRIES = [
   { code: 'US', name: 'United States' },
   { code: 'GB', name: 'United Kingdom' },
@@ -139,7 +139,7 @@ export default function PlaygroundPage() {
                   color: '#9ca3af',
                   margin: '6px 0 0 0'
                 }}>
-                  Test: pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR
+                  Get your API key from Dashboard → API Keys
                 </p>
               </div>
 

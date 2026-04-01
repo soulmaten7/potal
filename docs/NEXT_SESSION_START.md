@@ -163,3 +163,13 @@
 ## [Auto-saved] Compaction at 2026-03-31 12:06 KST
 컨텍스트 압축 발생. 이전 대화가 요약됨.
 압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+
+---
+## [Auto-saved] Compaction at 2026-04-01 14:42 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+
+---
+## [Auto-saved] Compaction at 2026-04-01 23:07 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.

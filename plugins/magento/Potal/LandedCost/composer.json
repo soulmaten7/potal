@@ -3,7 +3,7 @@
     "description": "POTAL Total Landed Cost Calculator for Magento 2 — Show import duties, taxes, and customs fees on product pages. 240+ countries, AI HS classification, 4-stage duty fallback, trade remedies, DDP/DDU support.",
     "type": "magento2-module",
     "version": "1.1.0",
-    "license": "MIT",
+    "license": "OSL-3.0",
     "keywords": [
         "magento2",
         "landed-cost",

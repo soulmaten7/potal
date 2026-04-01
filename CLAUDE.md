@@ -1,12 +1,12 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J: Notion 마이그레이션 완료, 엑셀 로깅 폐지, 폴더 정리)
+# 마지막 업데이트: 2026-04-01 23:59 KST (CW22-N: 보안 감사 Phase 1~3 긴급 대응, RLS 90개, 취약점 10개 수정, PMF Playbook, 폴더명 정규화)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
 |--------|------|------|-----------|
-| 터미널1 | Opus | Cowork 대화 → 명령어 바로 실행. 메인 작업용 | `cd ~/portal && claude --dangerously-skip-permissions` |
-| 터미널2 | Sonnet | 보조 작업, 병렬 실행 | `cd ~/portal && claude --dangerously-skip-permissions --model sonnet` |
-| 터미널3 | Opus | 오래 걸리는 디테일 작업 전용 | `cd ~/portal && claude --dangerously-skip-permissions` |
+| 터미널1 | Opus | Cowork 대화 → 명령어 바로 실행. 메인 작업용 | `cd ~/potal && claude --dangerously-skip-permissions` |
+| 터미널2 | Sonnet | 보조 작업, 병렬 실행 | `cd ~/potal && claude --dangerously-skip-permissions --model sonnet` |
+| 터미널3 | Opus | 오래 걸리는 디테일 작업 전용 | `cd ~/potal && claude --dangerously-skip-permissions` |
 | 터미널4 | — | Mac 터미널 (git push, 시스템 명령어) | 일반 터미널 |
 
 ---
@@ -66,7 +66,7 @@
 
 ## 폴더 구조
 ```
-portal/
+potal/
 ├── app/                    ← 코드
 ├── docs/                   ← Claude Code용 문서
 ├── content/                ← 콘텐츠 제작 참고 파일

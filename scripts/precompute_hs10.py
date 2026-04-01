@@ -8,7 +8,7 @@ import subprocess
 import time
 import os
 
-LOG_FILE = "/Users/maegbug/portal/precompute.log"
+LOG_FILE = "/Users/maegbug/potal/precompute.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
 SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 HS10_COUNTRIES = ['US', 'EU', 'GB', 'KR', 'CA', 'AU', 'JP']
@@ -45,7 +45,7 @@ def main():
     log("PRECOMPUTING HS10 CANDIDATES (490 HS6 × 7 countries)")
     log("=" * 70)
 
-    with open("/Users/maegbug/portal/scripts/precompute_hs6_list.json") as f:
+    with open("/Users/maegbug/potal/scripts/precompute_hs6_list.json") as f:
         hs6_list = json.load(f)
     log(f"HS6 codes: {len(hs6_list)}, Countries: {len(HS10_COUNTRIES)}")
     log(f"Total combinations: {len(hs6_list) * len(HS10_COUNTRIES)}")

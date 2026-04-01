@@ -17,7 +17,7 @@ import {
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const cronSecret = request.headers.get('x-cron-secret') || request.nextUrl.searchParams.get('secret');
+  const cronSecret = request.headers.get('x-cron-secret') || request.headers.get('authorization')?.replace('Bearer ', '');
   const expectedSecret = process.env.CRON_SECRET;
 
   if (expectedSecret && cronSecret !== expectedSecret) {

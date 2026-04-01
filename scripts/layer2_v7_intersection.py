@@ -165,7 +165,7 @@ print(f'  Products with ≥1 material candidate: {has_mat}/{len(products)} ({has
 # ═══ Phase 4: LLM Selection ═══
 print('\n═══ Phase 4: LLM Selection (GPT-4o-mini) ═══')
 
-OPENAI_KEY = open('/Users/maegbug/portal/.env.local').read().split('OPENAI_API_KEY=')[1].split('\n')[0].strip()
+OPENAI_KEY = open('/Users/maegbug/potal/.env.local').read().split('OPENAI_API_KEY=')[1].split('\n')[0].strip()
 
 def call_gpt(prompt, max_tokens=200):
     body = json.dumps({

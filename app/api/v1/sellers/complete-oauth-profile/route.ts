@@ -124,8 +124,9 @@ export async function POST(req: NextRequest) {
         rateLimitPerMinute: 60,
       });
       keys = {
-        publishable: { fullKey: pk.fullKey, prefix: pk.prefix },
-        secret: { fullKey: sk.fullKey, prefix: sk.prefix },
+        publishable: { key: pk.fullKey.slice(0, 8) + '***', prefix: pk.prefix },
+        secret: { key: sk.fullKey.slice(0, 8) + '***', prefix: sk.prefix },
+        note: 'Full keys available in Dashboard → API Keys',
       };
     } catch {
       // Keys failed but seller was created — user can generate from dashboard

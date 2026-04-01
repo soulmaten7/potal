@@ -9,7 +9,7 @@ import time
 import sys
 import os
 
-LOG_FILE = "/Users/maegbug/portal/wdc_phase3.log"
+LOG_FILE = "/Users/maegbug/potal/wdc_phase3.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
 SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
@@ -46,7 +46,7 @@ def run_sql(query, retries=3):
     return None, "retries exceeded"
 
 # Load the full mapping from the other script
-sys.path.insert(0, '/Users/maegbug/portal/scripts')
+sys.path.insert(0, '/Users/maegbug/potal/scripts')
 from wdc_phase3_map_and_import import PRODUCT_HS6_MAP
 
 def main():

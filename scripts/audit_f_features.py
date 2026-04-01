@@ -8,7 +8,7 @@ import os, re, subprocess
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
-ROOT = "/Users/maegbug/portal"
+ROOT = "/Users/maegbug/potal"
 
 # 67 command files in order
 CMD_FILES = [

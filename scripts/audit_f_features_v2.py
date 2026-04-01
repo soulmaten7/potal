@@ -7,7 +7,7 @@ import os, re
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 
-ROOT = "/Users/maegbug/portal"
+ROOT = "/Users/maegbug/potal"
 
 # Manual mapping: command file → (F numbers, primary target files, critical check keywords)
 # Each entry: (cmd_file, f_nums, [(path, [keywords])], group)

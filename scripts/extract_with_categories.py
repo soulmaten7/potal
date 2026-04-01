@@ -3,7 +3,7 @@
 WDC 상품 데이터에서 카테고리 포함 상세 추출 (extract_products_detailed.py 래퍼)
 
 사용법 (Mac):
-    cd ~/portal
+    cd ~/potal
     nohup python3 scripts/extract_with_categories.py /Volumes/soulmaten/POTAL/wdc-products > wdc_extract.log 2>&1 &
 
     # 진행 확인

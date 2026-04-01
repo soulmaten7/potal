@@ -118,49 +118,6 @@ export async function searchByVector(
       source: row.source,
     }));
   } catch {
-    // Fallback: direct SQL via REST if RPC not available
-    return searchByVectorDirect(embedding, cfg);
-  }
-}
-
-/**
- * Direct vector search without RPC (fallback).
- * Uses Supabase REST API with raw filter.
- */
-async function searchByVectorDirect(
-  embedding: number[],
-  cfg: VectorSearchConfig,
-): Promise<VectorSearchResult[]> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseKey) return [];
-
-  try {
-    const embeddingStr = `[${embedding.join(',')}]`;
-    const query = `SELECT product_name, hs_code, category, source, 1 - (embedding <=> '${embeddingStr}'::vector) as similarity FROM hs_classification_vectors WHERE 1 - (embedding <=> '${embeddingStr}'::vector) >= ${cfg.minSimilarity} ORDER BY embedding <=> '${embeddingStr}'::vector LIMIT ${cfg.topK}`;
-
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/exec_sql`, {
-      method: 'POST',
-      headers: {
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ query }),
-    });
-
-    if (!response.ok) return [];
-    const data = await response.json();
-    if (!Array.isArray(data)) return [];
-
-    return data.map((row: any) => ({
-      productName: row.product_name,
-      hsCode: row.hs_code,
-      category: row.category,
-      similarity: parseFloat(row.similarity),
-      source: row.source,
-    }));
-  } catch {
     return [];
   }
 }

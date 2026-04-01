@@ -26,12 +26,12 @@ import { z } from "zod";
 // ─── Configuration ──────────────────────────────────────────
 const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
-const USER_AGENT = "potal-mcp-server/1.4.0";
+const USER_AGENT = "potal-mcp-server/1.4.1";
 
 // ─── Server Instance ────────────────────────────────────────
 const server = new McpServer({
   name: "potal",
-  version: "1.4.0",
+  version: "1.4.1",
 });
 
 // ─── API Helper ─────────────────────────────────────────────

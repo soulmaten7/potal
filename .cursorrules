@@ -32,7 +32,7 @@
 - Supabase (Auth + DB), Vercel (배포), Paddle (결제, MoR 모델) ← LemonSqueezy에서 전환
 - Shopify Theme App Extension (OAuth + GDPR 웹훅)
 - 프로덕션 URL: https://www.potal.app
-- 프로젝트 경로 (Mac): ~/portal/
+- 프로젝트 경로 (Mac): ~/potal/
 
 ## 1. Business Philosophy (The "Why")
 - **B2B-only, 인프라 전문**: POTAL = 크로스보더 관세 계산 인프라. B2C 기능은 데모/쇼룸 용도만

@@ -17,24 +17,36 @@ export async function middleware(request: NextRequest) {
 
   // ─── CORS for /api/v1/* (B2B API — external access) ────
   if (pathname.startsWith("/api/v1/")) {
+    // Session-based endpoints: restrict CORS to potal.app only
+    const isSessionEndpoint = pathname.startsWith("/api/v1/community/") ||
+      pathname.startsWith("/api/v1/sellers/") ||
+      pathname.startsWith("/api/v1/admin/");
+    const origin = request.headers.get("Origin") || "";
+    const allowedOrigins = ["https://potal.app", "https://www.potal.app"];
+    const corsOrigin = isSessionEndpoint
+      ? (allowedOrigins.includes(origin) ? origin : allowedOrigins[0])
+      : "*";
+
     // Handle preflight OPTIONS request
     if (request.method === "OPTIONS") {
       return applySecurityHeaders(new NextResponse(null, {
         status: 204,
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": corsOrigin,
           "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization, X-API-Key",
           "Access-Control-Max-Age": "86400",
+          ...(isSessionEndpoint ? { "Vary": "Origin" } : {}),
         },
       }));
     }
 
     // For actual requests, add CORS headers
     const apiResponse = NextResponse.next({ request: { headers: request.headers } });
-    apiResponse.headers.set("Access-Control-Allow-Origin", "*");
+    apiResponse.headers.set("Access-Control-Allow-Origin", corsOrigin);
     apiResponse.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     apiResponse.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-API-Key");
+    if (isSessionEndpoint) apiResponse.headers.set("Vary", "Origin");
 
     // ─── RBAC: Route-level role hints via header ────
     // Actual enforcement is in each API route, but we set a hint header

@@ -20,6 +20,34 @@ function getServiceClient() {
   return createClient(url, serviceKey);
 }
 
+function maskKey(fullKey: string): string {
+  return fullKey.slice(0, 8) + '***';
+}
+
+// ─── IP Rate Limiting (5 req/min per IP) ─────
+const ipRequests = new Map<string, number[]>();
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60_000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = (ipRequests.get(ip) || []).filter(t => now - t < RATE_WINDOW_MS);
+  if (timestamps.length >= RATE_LIMIT) return false;
+  timestamps.push(now);
+  ipRequests.set(ip, timestamps);
+  return true;
+}
+
+// Cleanup stale entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, timestamps] of ipRequests.entries()) {
+    const active = timestamps.filter(t => now - t < RATE_WINDOW_MS);
+    if (active.length === 0) ipRequests.delete(ip);
+    else ipRequests.set(ip, active);
+  }
+}, 300_000).unref();
+
 const VALID_INDUSTRIES = [
   'ecommerce_seller', 'logistics_freight', 'customs_broker',
   'marketplace_operator', 'developer', 'other',
@@ -27,6 +55,15 @@ const VALID_INDUSTRIES = [
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit check
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { success: false, error: { message: 'Too many registration attempts. Please try again later.' } },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { email, password, companyName, country, industry } = body;
 
@@ -170,16 +207,16 @@ export async function POST(req: NextRequest) {
         },
         keys: {
           publishable: {
-            fullKey: publishableKey.fullKey,
+            key: maskKey(publishableKey.fullKey),
             prefix: publishableKey.prefix,
-            note: 'Use this in your widget (client-side safe)',
+            note: 'Full key available in Dashboard → API Keys',
           },
           secret: {
-            fullKey: secretKey.fullKey,
+            key: maskKey(secretKey.fullKey),
             prefix: secretKey.prefix,
-            note: 'Keep this secret! Use for server-side API calls',
+            note: 'Full key available in Dashboard → API Keys',
           },
-          warning: 'Save these keys now — they will NOT be shown again.',
+          warning: 'Go to Dashboard → API Keys to view your full keys.',
         },
       },
     });

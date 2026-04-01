@@ -2124,7 +2124,7 @@
 ### 📱 Xcode 설치 및 프로젝트 설정
 - Xcode 전체 앱 설치 (기존 Command Line Tools만 있었음)
 - iOS 26.2 Simulator + Predictive Code Completion Model 다운로드
-- `open ~/portal/ios/App/App.xcodeproj`로 Xcode에서 프로젝트 열기 성공
+- `open ~/potal/ios/App/App.xcodeproj`로 Xcode에서 프로젝트 열기 성공
 - Signing & Capabilities: Team(EUNTAE JANG), Bundle ID(com.potal.app), Auto Signing 설정 완료
 - iPhone 17 Pro 시뮬레이터로 빌드 시작 → "Installing App" 단계까지 확인
 

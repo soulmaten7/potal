@@ -19,7 +19,7 @@ const EMAIL_FROM = process.env.MORNING_BRIEF_EMAIL_FROM || 'POTAL <onboarding@re
 function verifyCronAuth(req: NextRequest): boolean {
   const authHeader = req.headers.get('Authorization');
   if (authHeader?.startsWith('Bearer ') && authHeader.slice(7) === CRON_SECRET) return true;
-  return req.nextUrl.searchParams.get('secret') === CRON_SECRET;
+  return false;
 }
 
 function getSupabase() {

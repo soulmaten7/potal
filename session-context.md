@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J — Notion 마이그레이션 완료, 엑셀 로깅 폐지, 폴더 정리)
+> 마지막 업데이트: 2026-04-01 23:59 KST (CW22-N — 보안 감사 Phase 1~3 긴급 대응, Rahul 제보, RLS 90개, 취약점 10개, B2C API 분리, 폴더명 정규화, PMF Playbook)
 
 ---
 
@@ -62,7 +62,7 @@
 ### Founder & 환경
 - **장은태 (Euntae Jang)** — Founder & CEO, 코딩 경험 없음 → Claude AI + 바이브코딩으로 1달 만에 구축
 - 이메일: soulmaten7@gmail.com / contact@potal.app
-- 프로젝트 경로 (Mac): `~/portal/`
+- 프로젝트 경로 (Mac): `~/potal/`
 - DB: Supabase / 배포: Vercel (https://potal.app)
 - Git push: HTTPS 인증 실패 → Mac 터미널에서 직접 push
 - **⚠️ 빌드 규칙**: `npm run build` 확인 후 push 필수
@@ -150,7 +150,7 @@
 - ✅ **C: 홈 화면 리디자인** — "140 Features. All Free. Forever." 히어로, 경쟁사 바 차트(10개사 실데이터), 비용 비교 테이블 (FreeBanner 제거됨)
 - ✅ **D: Features 140개 가이드** — features-data.ts slug 추가, features-guides.ts 생성(54개 상세+86개 템플릿), [slug] 동적 라우트, SEO 메타+sitemap 140개 URL
 - ✅ **G: 커뮤니티 페이지** — /community 게시판, /community/new 글쓰기, /community/[id] 상세, 댓글/추천, DB 마이그레이션
-- ⏳ **E: 바이럴 마케팅** — 사이트 완성 ✅, Demo Scripts 준비 ✅. HN/Reddit/LinkedIn 동시 런칭 + 유튜브 영상 제작 진행 예정 (CEO 날짜 확정 시)
+- ✅ **E: 바이럴 마케팅** — 5개 플랫폼 포스팅 완료 (LinkedIn, X, 디스콰이어트, Instagram, DEV.to). HN/Reddit은 계정 제한으로 보류. 유튜브 영상 제작 별도 진행 예정
 - ✅ **F: 문서 동기화** — CW22 전체 문서 업데이트 완료 (2026-03-29 22:00 KST)
 
 ### CW22-C Cowork — HeroCalculator, Community, LinkedIn, CLAUDE.md 구조화 (2026-03-30)
@@ -201,6 +201,81 @@
 - ✅ **LOGGING_RULES.md 재작성** — 엑셀 → Notion 워크플로우 규칙으로 전환
 - ✅ **폴더 정리** — portal 루트 170+ 파일 → archive/ 하위 폴더 (commands, benchmarks, audits, cold-email)
 - ✅ **모든 문서 동기화** — CHANGELOG.md, session-context.md, NEXT_SESSION_START.md 업데이트
+
+### CW22-N Cowork — 보안 감사 긴급 대응 + PMF Playbook + 폴더명 정규화 (2026-04-01)
+
+**트리거:** LinkedIn에서 Rahul Singireddy (CEO, Hydra / Stanford / ex-Delivery Hero) 보안 제보 수신 + Supabase 보안 경고 이메일 (3/30 발송)
+
+**보안 감사 Phase 1: Supabase RLS (docs/SECURITY_AUDIT_2026-04-01.md)**
+- ✅ **90개 테이블 전부 RLS 활성화** — 수정 전: 67개 OFF, 23개 ON → 수정 후: 90개 전부 ON
+- ✅ 16개 테이블: `FOR ALL USING(true)` 위험 정책 → 셀러별 격리 정책으로 교체
+- ✅ 40개+ 테이블: RLS 자체 활성화 + 적절한 정책 추가
+- ✅ 35개 참조 테이블: 읽기 전용 정책 추가
+- ✅ SQL 파일: `docs/SECURITY_FIX_RLS.sql`
+
+**보안 감사 Phase 2: 소스코드 취약점 5개 (docs/SECURITY_AUDIT_PHASE2_2026-04-01.md)**
+- ✅ C-1: `scripts/*.ts`에 SERVICE_ROLE_KEY 하드코딩 (10개 파일) → `process.env`로 교체
+- ✅ C-2: `vector-search.ts` raw SQL injection → RPC만 사용
+- ✅ H-1: `middleware.ts` CORS `*` → `potal.app`만 허용
+- ✅ H-2: admin 엔드포인트 query param secret → header 인증 (24개 파일)
+- ✅ H-3: community PostgREST filter injection → sanitization 추가
+
+**보안 감사 Phase 3: 페이지/API 점검 + HIGH 3개 (docs/SECURITY_AUDIT_PHASE3_2026-04-01.md)**
+- ✅ H-4: B2C API 4개 (intent, ai-suggestions, generate-filters, search/analyze) → `~/Empire Business/b2c-api-backup/` 이동
+- ✅ H-5: 가입 응답 API key `fullKey` → 마스킹 (앞 8자 + `***`)
+- ✅ H-6: `/api/v1/sellers/register` rate limiting 추가 (IP당 분당 5회)
+- MEDIUM 5개, LOW 4개, PASS 6개 확인
+
+**기타 완료 항목:**
+- ✅ **pk_live_ghTRbs... 하드코딩 키 제거** — 6개 파일에서 만료된 키 삭제 → 환경변수/플레이스홀더 교체
+- ✅ **PMF Outreach Playbook 작성** — `content/social-media/POTAL_PMF_Outreach_Playbook.md` (2주 실행 가이드: LinkedIn+Reddit+Shopify Community, 타겟 정의, DM/이메일 템플릿, 일일 스케줄, 반응 추적 시트)
+- ✅ **프로젝트 폴더명 portal → potal 변경** — CLAUDE.md, session-context.md, .cursorrules, .claude/settings.local.json, scripts/*.py 등 내부 경로 참조 전부 수정
+- ✅ **LinkedIn Rahul Singireddy 대응 완료** — 보안 수정 완료 + 채팅 대화 진행 중
+- ✅ **Posting Guide Excel 41개 플랫폼** — 이전 세션 글로벌 32개 추가분 포함
+
+### CW22-M Cowork — 140개 Features 가이드 완성 + MCP v1.4.2 (2026-04-01)
+
+**완료 항목:**
+- ✅ **Features 가이드 140개 전부 완성** — 93개 템플릿 → 상세 가이드 변환. Platform(18), Integrations(13), Security(5), Legal(6), Web(4), Support(8), Business(5), Marketing(1), Shipping(3) 등
+- ✅ **potal-mcp-server v1.4.2** — bin 경고 수정, npm publish 경고 0개
+- ✅ **Claude Code Hook 수정** — 4개 hook 절대경로 변환, stop-reminder.sh 에러 해결
+- ✅ **D3 classify_product 정상화** — material 파라미터 v1.4.1에서 이미 포함 확인, 1.4.2 재배포
+- ✅ **B2C 플랫폼 전략 수립** — docs/B2C_PLATFORM_STRATEGY.md, 별도 프로젝트로 진행 예정
+- ✅ **GitHub PAT 갱신** — vercel-deploy 토큰 갱신 (2026-04-01)
+- ✅ **npm Granular Token 갱신** — potal 토큰 재발급 (만료 2026-06-30)
+
+### CW22-L Cowork — SNS 바이럴 런칭 + MCP API Key 재발급 (2026-03-31)
+
+**완료 항목:**
+- ✅ **바이럴 포스팅 5개 플랫폼** — LinkedIn(EN), X/Twitter(EN), 디스콰이어트(KR), Instagram(KR), DEV.to(EN) 포스팅 완료. 140+ Features 스크린샷 11장 첨부
+- ✅ **포스팅 가이드 엑셀 생성** — `content/social-media/POTAL_Posting_Guide.xlsx` (플랫폼별 본문/이미지/해시태그/상태 관리)
+- ✅ **바이럴 런칭 포스트 초안** — `content/social-media/VIRAL_LAUNCH_POST_DRAFT_v1.md` (한국어+영문 버전, Top 20 기능 목록)
+- ✅ **POTAL MCP API Key 재발급** — 기존 `pk_live_` 키 만료 → 신규 `sk_live_***REDACTED***` 발급, claude_desktop_config.json 복구
+- ✅ **"2,000 API calls" 메시징 수정** — features/page.tsx, pricing/layout.tsx, faq/page.tsx, blog/posts.tsx, paddle.ts, support/route.ts, help/page.tsx에서 Forever Free 메시징으로 교체
+- ✅ **통합 모닝브리핑 문서 업데이트** — ORCHESTRATOR_RULES.md, DIVISION_STATUS.md, morning-briefing 스킬 v2
+
+**미완료/보류:**
+- ⏸ **Hacker News** — 계정이 신규라 submit 불가 (카르마 필요)
+- ⏸ **Reddit** — 카르마 없어 업로드 불가
+- ⏸ **네이버카페/클리앙/뽐뿌** — 수동 포스팅 예정
+
+### CW22-K Cowork — 통합 모닝브리핑 아키텍처 (2026-03-31)
+
+**완료 항목:**
+- ✅ **Scheduled Task 통합** — 4개 중복 Task를 `potal-daily-health-check` 1개로 통합. `morning-brief`, `chief-orchestrator-daily`, `morning-brief-v2` 비활성화
+- ✅ **6-Phase 점검 구조 설계** — Phase 1: POTAL MCP(D1,D2,D3,D4,D7), Phase 2: Chrome MCP(D5,D11), Phase 3: Gmail MCP(D9,D16), Phase 4: Notion MCP(D12), Phase 5: 정적(D6,D8,D10,D13,D14,D15), Phase 6: 텔레그램 보고
+- ✅ **morning-briefing 스킬 업그레이드** — 기존 3-Step(이메일+상태+보고) → 6-Phase 통합 점검으로 전면 재작성
+- ✅ **ORCHESTRATOR_RULES.md 재작성** — 도구별 Division 매핑 테이블, 활성/비활성 Task 목록, 보고 규칙 업데이트
+- ✅ **DIVISION_STATUS.md 업데이트** — 통합 모닝브리핑 아키텍처 섹션 추가, 일일 운영 사이클 수정, 참조 문서 Notion 전환 반영
+- ✅ **구버전 파일 archive 이동** — POTAL_AI_Agent_Org.html(v1), v4.html, v5.html, MORNING_BRIEF_20260329.md → archive/
+- ✅ **Google Drive 19개 파일 폴더 정리** — POTAL_Google_Drive/ 폴더에 분석/콘텐츠/전략 파일 통합
+- ✅ **Notion Content Pipeline 링크 연결** — 10개 항목에 Google Drive 공유 링크 매핑 완료
+
+**현재 활성 Scheduled Tasks:**
+| Task ID | 주기 | 역할 |
+|---------|------|------|
+| `potal-daily-health-check` | 매일 9AM KST | Chief Orchestrator 16개 Division 통합 점검 |
+| `d16-secretary-inbox-check` | 매시간 | D16 비서실 Gmail+Crisp 체크 |
 
 ### CW22-E Cowork — Adobe Commerce Marketplace 설정 (2026-03-30)
 
@@ -561,6 +636,9 @@
 
 | 시점 | 성과 |
 |------|------|
+| CW22-N (4/1) | 보안 감사 Phase 1~3 긴급 대응 (RLS 90개, 취약점 10개), B2C API 분리, PMF Playbook, 폴더명 정규화 |
+| CW22-M (4/1) | 140개 Features 가이드 완성, MCP v1.4.2, Hook 수정 |
+| CW22-L (3/31) | SNS 바이럴 런칭 5개 플랫폼, MCP API Key 재발급 |
 | CW18 (3/25) | AI Agent Org v6 확정, GRI Pipeline 프로덕션 배포, Sprint 1 보안 100%, P2 기능 강화 9/16, PH 리런치 제출 |
 | CW17 (3/19) | 9-field API 설계, 592 codified rules, DB 복구 53→45GB |
 | CW15 (3/15) | Core 37기능 S+ 업그레이드, ~155 API 엔드포인트 |
@@ -684,6 +762,7 @@ create_master_tracker_v5.py, add_traffic_sheet_v3.py, create_proposal_pdf_v3.py,
 
 | 날짜 | 세션 | 핵심 내용 |
 |------|------|----------|
+| 04-01 | CW22-N | **보안 감사 긴급 대응 Phase 1~3 + PMF Playbook + 폴더명 정규화**: LinkedIn Rahul Singireddy(CEO, Hydra/Stanford/ex-Delivery Hero) 보안 제보 + Supabase 보안 경고(3/30). **Phase 1**: RLS 90개 테이블 전부 활성화(67개 OFF→0개, 16개 위험정책 교체, 40개+ 정책 추가, 35개 읽기전용). **Phase 2**: 소스코드 취약점 5개 수정(C-1 SERVICE_ROLE_KEY 하드코딩 10파일→env, C-2 SQL injection→RPC, H-1 CORS *→potal.app, H-2 query param→header 인증 24파일, H-3 PostgREST filter injection→sanitization). **Phase 3**: HIGH 3개 수정(H-4 B2C API 4개→Empire Business 이동, H-5 API key 마스킹, H-6 rate limiting IP당 5/분)+MEDIUM 5+LOW 4+PASS 6. pk_live_ 하드코딩 키 6파일 제거. PMF Outreach Playbook(2주 가이드, LinkedIn+Reddit+Shopify Community). 폴더명 portal→potal 정규화. Posting Guide 41개 플랫폼. 감사 보고서 3개: docs/SECURITY_AUDIT*.md, SQL: docs/SECURITY_FIX_RLS.sql |
 | 03-16 | CW15 2차 | **자격증/벤치마크 DB + 142기능 GAP 분석 + 3터미널 자동화**: POTAL_Certification_Benchmark_Database.xlsx(11시트, 57항목: 12개국 관세사+8 Trade+7 Tax+9 Logistics+9 HS벤치마크+6 Customer+8 Industry Rating+12종 전문가 비용비교). POTAL_142_Benchmark_Gap_Analysis.xlsx(5시트: MVP필수98/보완12/확장32, 16개 미수집 데이터 소스+URL+방법). 3터미널 자동화 파이프라인: T1(P0 8개+P1 5개 수집, DONE 파일 신호), T2(DONE 감시→BIS/UN DG DB적재→벤치마크 6종 실행→원인분류→142기능 약점매핑→즉시수정→마케팅요약), T3(part_01~10 끝난 후→CBP CROSS 142K+EBTI/ECICS/ATaR 적재→중복제거→인덱스복원). 벤치마크 전략: 점수≠목적, 틀린문제→실무 갭→데이터수집→기능보완. 과부하 방지: 같은 테이블 동시 \copy 금지(EBTI/ECICS/ATaR은 T3 후), 별도 테이블은 즉시(BIS ~2K/UN DG ~3K). 터미널3 상태: part_01 chunk_003/099 진행중, chunk당 ~15분, ~24시간 ETA |
 | 03-16 | CW15 전체 | **B2B 채널 전략 13시트 + CBP 벤치마크 100건 + CBP CROSS 142K + HS 데이터소스 + 포스트 톤 변경 + 파일 정리**: POTAL_B2B_Channel_Strategy.xlsx(13시트 CW15 수치 반영, Update Log 추가, LinkedIn POST 4 UCP, X Twitter 3 트윗). benchmark_test_data.json(100건 CBP rulings, 95 HS챕터). cbp_cross_combined_mappings.csv(142,251건 추출). HS_CLASSIFICATION_DATA_SOURCES.md(382줄, 5카테고리, 18+소스). REGULATION_SOURCE_CATALOG.md(600줄, 60+소스, 50개국 공고URL). Cron 14→21개(+7 데이터유지보수). 포스트 톤 전략: "The most accurate"→"CBP benchmark XX%" 투명공개. Middleware fail-open(504해결). Tariff SSG→SSR(빌드타임아웃해결). Hero 113M+. UI/UX 10Phase(843줄). WDC v2 14,329 lines/sec(v1대비 28배). Supabase psql 직접연결($4/월 IPv4). Git: 0d70c0c, aa02b92, 0c0a221, 1864653, 5f430be, 0504f05 |
 | 03-15 | CW14 | **Full Project Audit + 보안 수정 + UX 53/53 + WDC Phase 4**: Full Project Audit 실행 → docs/FULL_PROJECT_AUDIT.md 생성 (59 DB 테이블, 103 API 엔드포인트, product_hs_mappings 8,389, vectors 3,431). **3개 미교정 이슈 수정** (커밋 701572b): 하드코딩 토큰 19파일→환경변수, SERVICE_ROLE_KEY 설정, 임시파일 정리. **UX Audit 53/53 완료**: Batch 1(15) + Batch 2(16) + Batch 3(12) + 이미구현5 + 미구현사유5 — npm run build 통과. **WDC Phase 4**: wdc_phase4_bulk_mapping.py 스크립트 작성 + 백그라운드 실행중 (5억+ 상품명 사전 매핑). WDC 추출 1,896/1,899 (99.8%) 확인. **운영 도구**: POTAL_SESSION_BOOT_SEQUENCE.md (3단 부트 시퀀스), FULL_PROJECT_AUDIT_COMMAND.md (7단계 감사 명령어). **규정 수집 Phase 2**: WTO reporters 288 + indicators 56 + tariff profiles 36국/39MB + WCO HS2022 sections 21 + chapters 96. WITS ❌(API 405), OECD ❌(API 폐지) |

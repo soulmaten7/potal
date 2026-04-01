@@ -10,7 +10,7 @@ import time
 import sys
 import os
 
-LOG_FILE = "/Users/maegbug/portal/precompute.log"
+LOG_FILE = "/Users/maegbug/potal/precompute.log"
 SUPABASE_PROJECT = "zyurflkhiregundhisky"
 SUPABASE_TOKEN = os.environ.get("SUPABASE_MGMT_TOKEN", "")
 
@@ -66,7 +66,7 @@ def main():
     start = time.time()
 
     # Load HS6 list
-    with open("/Users/maegbug/portal/scripts/precompute_hs6_list.json") as f:
+    with open("/Users/maegbug/potal/scripts/precompute_hs6_list.json") as f:
         hs6_list = json.load(f)
     log(f"HS6 codes: {len(hs6_list)}")
 

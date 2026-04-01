@@ -15,8 +15,7 @@ function verifyAuth(req: NextRequest): boolean {
   if (authHeader?.startsWith('Bearer ') && authHeader.slice(7) === CRON_SECRET) {
     return true;
   }
-  const secret = req.nextUrl.searchParams.get('secret');
-  return secret === CRON_SECRET;
+  return false;
 }
 
 export async function GET(req: NextRequest) {

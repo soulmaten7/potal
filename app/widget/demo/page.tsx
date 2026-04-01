@@ -75,7 +75,7 @@ export default function WidgetDemo() {
           <div id="potal-widget"></div>
           <Script
             src="/widget/potal-widget.js"
-            data-api-key="pk_live_ghTRbsEvgN7BgbuwI0d4vWOWzFIkLSqgF5BR"
+            data-api-key={process.env.NEXT_PUBLIC_POTAL_DEMO_KEY || ''}
             data-origin="CN"
             data-product-name="Cotton T-Shirt"
             data-price="49.99"
