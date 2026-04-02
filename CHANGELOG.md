@@ -1,5 +1,15 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-02 20:00 KST (CW22-O — 콘텐츠 플랫폼 구조 확정)
+> 마지막 업데이트: 2026-04-02 20:30 KST (CW22-O — 성과 트래킹 시스템 추가)
+
+## [2026-04-02 20:30 KST] CW22-O — 성과 트래킹 시스템 추가
+
+### 📊 Daily Content Calendar 성과 필드 추가
+- Views, Reactions, Comments (숫자 필드) + Best Platform (선택 필드) 추가
+- 📊 Performance 뷰 생성 (Views 내림차순 정렬)
+
+### 📝 Notion 페이지 업데이트
+- 일일 루틴: "금요일 주간 성과 회고" 섹션 추가 (LinkedIn Analytics/DEV.to Dashboard/Medium Stats 링크)
+- Content Automation Guide: "성과 트래킹" 섹션 추가 (필드 설명, 금요일 루틴, 플랫폼별 성과 확인 링크)
 
 ## [2026-04-02 20:00 KST] CW22-O — 콘텐츠 플랫폼 구조 확정
 
