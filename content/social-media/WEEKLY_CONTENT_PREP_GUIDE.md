@@ -108,17 +108,13 @@ API 예시: POST /api/v1/classify {"productName": "Men's cotton t-shirt"}
 
 한 주간 필요한 이미지/영상 소재를 일요일에 미리 만들어둔다.
 
-#### 이미지 (매주 6~8장)
+#### 이미지 (매주 4~6장)
 | 용도 | 규격 | 설명 |
 |------|------|------|
 | LinkedIn 캐러셀 | 1080x1350px (PDF) | 6~9 슬라이드. 비교 차트, 숫자 강조 |
-| Instagram 포스트 | 1080x1080px | 깔끔한 비교 그래픽, 미니멀 디자인 |
-| Instagram 캐러셀 | 1080x1350px | 스와이프용 교육 콘텐츠 |
-| X/Twitter 이미지 | 1200x675px | 텍스트 오버레이 그래픽. 숫자 강조 |
 | DEV.to 커버 | 1000x420px | 기술적 느낌. 코드+데이터 비주얼 |
-| YouTube 썸네일 | 1280x720px | 얼굴 + 텍스트 3단어 이내 + 고대비 |
-| 디스콰이어트 | 자유 | 한국어 텍스트 포함 |
 | Medium 헤더 | 자유 | 깔끔한 에세이용 |
+| 브랜드 채널용 (선택) | 1080x1080px | Instagram/X/디스콰이어트에 올릴 때 필요하면 제작 |
 
 #### 이미지 소재 유형 (반복 사용 가능)
 - **가격 비교 바 차트**: POTAL $0 vs 경쟁사 $1,500~$4,000 (홈 화면 차트 스크린샷 활용)
@@ -128,12 +124,12 @@ API 예시: POST /api/v1/classify {"productName": "Men's cotton t-shirt"}
 - **국가 지도**: 240개국 커버리지 시각화
 - **플로우 차트**: 셀러가 POTAL을 쓰는 과정
 
-#### 영상 소재 (필요 시)
+#### 영상 클립 (필요 시)
+기능별 녹화 클립을 미리 찍어두고, 브랜드 채널(Instagram/X)에 올릴 때 꺼내 쓰기.
 | 용도 | 길이 | 설명 |
 |------|------|------|
-| YouTube 데모 | 3~10분 | Dashboard 사용법, API 데모 |
-| Instagram Reels | 30~90초 | 숫자 비교, 빠른 데모 |
-| YouTube Shorts | 15~60초 | 한 가지 기능 하이라이트 |
+| 기능 데모 클립 | 30~90초 | Dashboard, API 응답, 기능 시연 |
+| 스크린 녹화 | 1~3분 | Cmd+Shift+5로 빠르게 녹화 |
 
 **작업 방법**:
 1. Claude가 주간 토픽 기반으로 필요한 이미지 목록 제안
@@ -210,10 +206,11 @@ Claude가 자동으로 에피소드를 추출하고, 최근에 다루지 않은 
 | 5 | 셀러 시나리오 | 자동 | Claude (POTAL MCP + Gmail MCP) |
 | 6 | 빌딩 에피소드 | 자동 | Claude (session-context.md + CHANGELOG.md) |
 | 7 | 비주얼 소재 목록 | 자동 | Claude (컨셉+규격 제안) |
-| 8 | 비주얼 소재 제작 | 30~60분 | 은태님 Canva 작업 (유일한 수동 작업) |
+| 8 | 브랜드 채널 아이디어 3개 | 자동 | Claude (X/Threads/Instagram/디스콰이어트 포스팅 힌트) |
+| 9 | 비주얼 소재 제작 | 30~60분 | 은태님 Canva 작업 (유일한 수동 작업) |
 
 **은태님 실제 작업 시간**: Canva 이미지 제작만 (30분~1시간)
-**Claude 자동 작업**: 1~7번 전부 (sunday-content-prep Scheduled Task, 매주 일요일 8AM)
+**Claude 자동 작업**: 1~8번 전부 (sunday-content-prep Scheduled Task, 매주 일요일 8AM)
 
 ---
 
@@ -231,7 +228,8 @@ content/social-media/
 │   ├── 2026-W15_feature-angles.md
 │   ├── 2026-W15_competitor-data.md
 │   ├── 2026-W15_scenarios.md
-│   └── 2026-W15_episodes.md
+│   ├── 2026-W15_episodes.md
+│   └── 2026-W15_brand-channel-ideas.md
 ├── community-prompts/        ← Gemini 커뮤니티 답변 프롬프트 (기존)
 ├── POTAL_Posting_Guide.xlsx  ← 플랫폼별 가이드 (기존)
 ├── VIRAL_LAUNCH_POST_DRAFT_v1.md  ← 바이럴 포스트 참조 (기존)
@@ -243,10 +241,9 @@ content/thumbnails/
 ├── weekly/
 │   ├── 2026-W15/
 │   │   ├── linkedin-carousel-avalara-vs-potal.pdf
-│   │   ├── instagram-feature-comparison.png
-│   │   ├── twitter-pricing-chart.png
 │   │   ├── devto-cover-hs-code.png
-│   │   └── youtube-thumb-demo.png
+│   │   ├── medium-header-insight.png
+│   │   └── brand-channel-visual.png (선택)
 │   └── 2026-W16/
 └── (기존 thumbnails)
 ```
@@ -270,8 +267,10 @@ content/thumbnails/
 
 | 단계 | 내용 | 상태 |
 |------|------|------|
-| 1 | daily-content-posting Scheduled Task | ✅ 완료 (매일 7AM) |
+| 1 | daily-content-posting Scheduled Task | ✅ 완료 (매일 7AM, 3개 플랫폼) |
 | 2 | 일요일 소재 준비 가이드 | ✅ 이 파일 |
-| 3 | sunday-content-prep Scheduled Task | ⏳ 다음 단계 — 1~6번 자동화 |
-| 4 | Canva MCP 연동 (이미지 자동 생성) | ⏳ Canva MCP 세팅 후 |
-| 5 | Make.com → weekly-plans 자동 데이터 수집 | ⏳ Make 시나리오 추가 |
+| 3 | sunday-content-prep Scheduled Task | ✅ 완료 (일요일 8AM, 소재 7개 + 브랜드 아이디어) |
+| 4 | Notion Daily Content Calendar 연동 | ✅ 완료 (자동 기록 + 캘린더/보드 뷰) |
+| 5 | 플랫폼 구조 확정 | ✅ 완료 (자동 3개 + 브랜드 4개) |
+| 6 | Canva MCP 연동 (이미지 자동 생성) | ⏳ Canva MCP 세팅 후 |
+| 7 | Make.com → weekly-plans 자동 데이터 수집 | ⏳ Make 시나리오 추가 |
