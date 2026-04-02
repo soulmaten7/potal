@@ -202,6 +202,23 @@
 - ✅ **폴더 정리** — portal 루트 170+ 파일 → archive/ 하위 폴더 (commands, benchmarks, audits, cold-email)
 - ✅ **모든 문서 동기화** — CHANGELOG.md, session-context.md, NEXT_SESSION_START.md 업데이트
 
+### CW22-O Cowork — PMF Outreach 실행 체계 구축 + Community 단순화 + Rahul 후속 대응 (2026-04-02)
+
+**완료 항목:**
+- ✅ **커뮤니티 답변용 Gemini 프롬프트 5개 언어권 작성** — 영어(Reddit/Shopify/IndieHackers), 독일어(Sellerforum.de), 일본어(Qiita/Zenn/note.com/Yahoo!知恵袋), 한국어(네이버카페/디스콰이어트/클리앙/뽐뿌/아이보스), 인도영어(r/developersIndia/SaaSBOOMi/Quora). 각 프롬프트에 커뮤니티별 URL, 검색 키워드, 톤 가이드, 관세 핵심 데이터 포함. 모든 답변에 한글 번역 함께 출력.
+- ✅ **Community Outreach Map 작성** — `content/social-media/community-prompts/Community_Outreach_Map.md` (전체 커뮤니티 한눈에 보기)
+- ✅ **community-prompts 폴더 구조화** — Gemini 프롬프트 6개 파일 + 맵 파일 → `content/social-media/community-prompts/`
+- ✅ **Community 페이지 단순화** — Feature Guides 사이드바 섹션 제거 + 설명 텍스트 간소화 (커밋 0d25e3a)
+- ✅ **Rahul Singireddy 후속 대응 완료** — 보안 감사에 Claude AI 사용했다고 답변 → Hydra가 PH 프로젝트 자동 스캔하는 회사라는 정보 확인 → 감사 인사 + 관계 유지 마무리
+- ✅ **CLAUDE.md 영문 콘텐츠 한글 번역 규칙 추가** — 영어로 쓴 모든 글에 한글 버전 함께 제공 규칙 명시
+- ✅ **PMF Outreach 방식 전환** — 기존 Playbook(은태님 직접 영어 답변) → Gemini 채팅 시스템(Gemini가 현지어 답변 작성 + 한글 번역)으로 전환. 영어 못해도 전 세계 커뮤니티 답변 가능한 구조.
+
+**PMF Outreach 실행 구조 (기존 Playbook 대체):**
+- Gemini 채팅 5개 (영어/독일어/일본어/한국어/인도영어)
+- 커뮤니티 글 복사 → 해당 Gemini 채팅에 붙여넣기 → 답변+한글번역 → 복사해서 게시
+- POTAL 소개는 대화 이어질 때만 자연스럽게
+- 업데이트 섹션에 정보 추가하면 Gemini가 반영
+
 ### CW22-N Cowork — 보안 감사 긴급 대응 + PMF Playbook + 폴더명 정규화 (2026-04-01)
 
 **트리거:** LinkedIn에서 Rahul Singireddy (CEO, Hydra / Stanford / ex-Delivery Hero) 보안 제보 수신 + Supabase 보안 경고 이메일 (3/30 발송)
