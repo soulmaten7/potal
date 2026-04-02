@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-02 14:30 KST (CW22-O — PMF Outreach 체계 구축, Gemini 5개 언어권 프롬프트, Community 단순화, Notion Task Board 전체 정리)
+> 마지막 업데이트: 2026-04-02 18:00 KST (CW22-O — content-posting 스킬 생성, 브랜드 가이드라인 확정, 11개 플랫폼 노출 최적화)
 
 ---
 
@@ -213,6 +213,9 @@
 - ✅ **CLAUDE.md 영문 콘텐츠 한글 번역 규칙 추가** — 영어로 쓴 모든 글에 한글 버전 함께 제공 규칙 명시
 - ✅ **PMF Outreach 방식 전환** — 기존 Playbook(은태님 직접 영어 답변) → Gemini 채팅 시스템(Gemini가 현지어 답변 작성 + 한글 번역)으로 전환. 영어 못해도 전 세계 커뮤니티 답변 가능한 구조.
 - ✅ **Notion Task Board 전체 정리** — 중복 카드 2개 Cancelled (Dashboard 데모 영상 촬영 → 데모 영상 제작으로 통합, Reddit 포스트 → Gemini 커뮤니티 답변으로 전환), 86개 Feature Guide → 140개 완성으로 상태 Done 변경, 새 카드 "커뮤니티 답변 활동 (Gemini 5개 언어권)" 추가, Shopify/HN/YouTube 등 기존 카드 Notes 최신화
+- ✅ **POTAL 브랜드 가이드라인 확정** — WHY: "국경이 장벽이 되면 안 된다. 그래서 무료다." / 성격: "시끄럽게 존재하되, 제품으로 증명한다" / 포지셔닝: FREE (무료+자유) / 톤: 팩트 기반, 과장 없이
+- ✅ **content-posting 스킬 생성** — `.claude/skills/content-posting/SKILL.md`. 브랜드 가이드라인 내장, 11개 플랫폼별 톤/길이/포맷 가이드, 플랫폼별 노출 최적화 (해시태그, 태그, 게시 시간, 알고리즘 가이드), 7가지 토픽 로테이션, 과장/구걸 금지 목록 상세화
+- ✅ **스킬 테스트 완료** — 3개 테스트(경쟁비교/HS Code/빌딩저니) × 2(with/without skill) = 6개 결과물. with-skill 83.3% vs without-skill 71.3% 통과율
 
 **PMF Outreach 실행 구조 (기존 Playbook 대체):**
 - Gemini 채팅 5개 (영어/독일어/일본어/한국어/인도영어)

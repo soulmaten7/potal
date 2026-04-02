@@ -1,5 +1,38 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-02 14:30 KST (CW22-O — PMF Outreach 체계 구축, Community 단순화, Notion Task Board 정리)
+> 마지막 업데이트: 2026-04-02 18:00 KST (CW22-O — content-posting 스킬 생성)
+
+## [2026-04-02 18:00 KST] CW22-O — content-posting 스킬 생성
+
+### 🎨 브랜드 가이드라인 확정
+- WHY: "국경이 장벽이 되면 안 된다. 그래서 무료다."
+- 브랜드 성격: "시끄럽게 존재하되, 제품으로 증명한다"
+- 포지셔닝: FREE (무료 + 자유)
+- 톤: 팩트, 과장 없이. 매일 어디에나.
+- 안 하는 것: 과장, 구걸, 이모지 떡칠
+
+### 📝 content-posting 스킬 생성
+- `.claude/skills/content-posting/SKILL.md` 생성
+- 11개 플랫폼별 톤/길이/포맷 가이드
+- 11개 플랫폼별 노출 최적화 (태그, 해시태그, 게시 시간, 알고리즘 가이드)
+  - LinkedIn: 3-5 해시태그 끝에, 링크는 첫 댓글, 캐러셀 우선
+  - DEV.to: 4 태그 + front matter + 커버이미지 + canonical_url
+  - Reddit: flair, 2-3 서브레딧만, 네이티브 이미지 우선
+  - X: 1-2 해시태그, 스레드 첫 트윗이 핵심, 링크는 리플라이
+  - Instagram: 3-5 해시태그 or 키워드 캡션, alt 텍스트, Reels 우선
+  - YouTube: 8-12 태그, 3-5 해시태그(설명), 챕터 필수
+  - Medium: 5 태그, 무료 게시, 퍼블리케이션 기고
+  - Threads: 토픽 태그 1개, 인스타 시너지
+  - Facebook Groups: 해시태그 1-2, 링크 회피, 텍스트 우선
+  - Indie Hackers: 마일스톤 포스트, 목요일 최적
+  - 디스콰이어트: 메이커로그, 진정성 우선
+- 7가지 토픽 카테고리 로테이션 시스템
+- 과장/구걸 금지 표현 목록 상세화
+
+### 🧪 스킬 테스트
+- 3개 테스트 케이스 × 2 (with/without skill) = 6개 결과물
+- with-skill 통과율 83.3% vs without-skill 71.3%
+- 주요 개선: 한글 번역 10배 증가, 과장 표현 차단, API URL 정확성
+- 금지 표현 목록 강화로 2차 반복 대비
 
 ## [2026-04-02 14:30 KST] CW22-O — PMF Outreach 실행 체계 구축 + Notion Task Board 정리
 
