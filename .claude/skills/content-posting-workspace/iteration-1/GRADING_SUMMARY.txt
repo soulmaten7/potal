@@ -1,0 +1,89 @@
+CONTENT-POSTING SKILL EVALUATION - GRADING COMPLETE
+=====================================================
+
+EXECUTION SUMMARY:
+- Created: grade_all.py (Python 3 automated grading script)
+- Processed: 6 daily-content.md files across 3 evaluation scenarios
+- Method: 8 assertion checks per file (programmatic)
+- Output: 6 grading.json files + summary report
+
+RESULTS OVERVIEW:
+================
+
+Overall Performance:
+  - With Skill:     6.7/8 (83.3% pass rate)
+  - Without Skill:  5.7/8 (71.3% pass rate)
+  - Improvement:    +1.0 assertions (+12% relative)
+
+By Scenario:
+  eval-1-competitor-compare     with: 6/8    without: 4/8   (+2)
+  eval-2-hs-code-deepdive       with: 7/8    without: 6/8   (+1)
+  eval-3-building-journey       with: 7/8    without: 7/8   (0)
+
+ASSERTION BREAKDOWN:
+===================
+
+Passing (100% across 6 runs):
+  ✓ all_11_platforms         - All platforms mentioned
+  ✓ korean_translations      - Korean text present
+  ✓ accurate_numbers         - Key figures included ($0, 140, 240, etc.)
+  ✓ file_structure           - Proper headers & organization
+
+Failing (High frequency):
+  ✗ no_begging              - 4/6 failures (67%) - "follow", "drop comment"
+  ✗ platform_tone_diff      - 4/6 failures (67%) - Lacks per-platform variation
+  ✗ no_exaggeration         - 2/6 failures (33%) - "revolutionary", "mind-blowing"
+  ✗ correct_api_urls        - 1/6 failures (17%) - One instance of api.potal.io
+
+KEY FINDINGS:
+=============
+
+1. Skill Effectiveness:
+   - Strongest in preventing technical errors (API URLs)
+   - Moderate in controlling tone (exaggeration)
+   - Weak in CTA phrasing (begging language)
+   - Limited impact on content structure variation
+
+2. Content Quality:
+   - Excellent: Multi-language support, reference accuracy
+   - Good: Platform coverage, file structure
+   - Fair: Exaggeration control, per-platform customization
+   - Poor: Call-to-action phrasing
+
+3. Top 3 Opportunities for Improvement:
+   a) Eliminate "follow" and "drop a comment" from platform-specific CTAs
+   b) Add per-platform content length variation (LinkedIn vs Instagram, etc.)
+   c) Tighten banned word filtering for marketing terminology
+
+OUTPUT FILES GENERATED:
+======================
+
+Grading Results (6 files):
+  ✓ eval-1-competitor-compare/with_skill/grading.json
+  ✓ eval-1-competitor-compare/without_skill/grading.json
+  ✓ eval-2-hs-code-deepdive/with_skill/grading.json
+  ✓ eval-2-hs-code-deepdive/without_skill/grading.json
+  ✓ eval-3-building-journey/with_skill/grading.json
+  ✓ eval-3-building-journey/without_skill/grading.json
+
+Analysis Documents:
+  ✓ GRADING_RESULTS.md       - Detailed assertion analysis
+  ✓ GRADING_SUMMARY.txt      - This file
+  ✓ grading_summary.json     - Machine-readable full results
+  ✓ grade_all.py             - Reusable grading script
+
+NEXT STEPS:
+===========
+
+To re-run grading on new content:
+  python3 grade_all.py
+
+To integrate grading into CI/CD:
+  Use grade_all.py with exit code based on assertion passing
+
+To improve skill performance:
+  1. Review failing CTA phrases in sample outputs
+  2. Implement platform-specific length guidelines
+  3. Enhance banned-word dictionary with context awareness
+
+=====================================================

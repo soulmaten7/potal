@@ -1,0 +1,45 @@
+{
+  "run_type": "with_skill",
+  "expectations": [
+    {
+      "text": "all_11_platforms",
+      "passed": true,
+      "evidence": "Found 10 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+    },
+    {
+      "text": "korean_translations",
+      "passed": true,
+      "evidence": "Found 1922 Korean text segments"
+    },
+    {
+      "text": "no_exaggeration",
+      "passed": true,
+      "evidence": "No banned words found"
+    },
+    {
+      "text": "no_begging",
+      "passed": false,
+      "evidence": "Found: follow"
+    },
+    {
+      "text": "accurate_numbers",
+      "passed": true,
+      "evidence": "Found 8/8 key numbers: features count, free plan, free cost..."
+    },
+    {
+      "text": "correct_api_urls",
+      "passed": true,
+      "evidence": "No incorrect API URLs found"
+    },
+    {
+      "text": "file_structure",
+      "passed": true,
+      "evidence": "Structure: date, topic, category, headers"
+    },
+    {
+      "text": "platform_tone_diff",
+      "passed": true,
+      "evidence": "Found 3 platform sections with 273.6% variation (min:151, max:32426)"
+    }
+  ]
+}

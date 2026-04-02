@@ -1,0 +1,15 @@
+{
+  "eval_id": 3,
+  "eval_name": "building-journey",
+  "prompt": "POTAL 빌딩 저니 콘텐츠 만들어줘. 코딩 0에서 140기능 만든 이야기.",
+  "assertions": [
+    {"name": "all_11_platforms", "description": "11개 플랫폼 전부 포함"},
+    {"name": "korean_translations", "description": "영문 콘텐츠에 한글 번역 포함"},
+    {"name": "no_exaggeration", "description": "과장 표현 없음"},
+    {"name": "founder_voice", "description": "파운더 1인칭 시점"},
+    {"name": "accurate_timeline", "description": "정확한 타임라인 (1개월, 코딩 경험 없음)"},
+    {"name": "indie_hackers_strong", "description": "Indie Hackers 콘텐츠 특히 강력"},
+    {"name": "file_structure", "description": "표준화된 파일 구조"},
+    {"name": "visual_suggestions", "description": "비주얼 제안 포함"}
+  ]
+}

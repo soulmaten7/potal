@@ -1,0 +1,284 @@
+[
+  {
+    "eval": "eval-1-competitor-compare",
+    "run_type": "with_skill",
+    "file": "/sessions/adoring-lucid-archimedes/mnt/potal/.claude/skills/content-posting-workspace/iteration-1/eval-1-competitor-compare/with_skill/outputs/daily-content.md",
+    "expectations": [
+      {
+        "text": "all_11_platforms",
+        "passed": true,
+        "evidence": "Found 11 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+      },
+      {
+        "text": "korean_translations",
+        "passed": true,
+        "evidence": "Found 2634 Korean text segments"
+      },
+      {
+        "text": "no_exaggeration",
+        "passed": true,
+        "evidence": "No banned words found"
+      },
+      {
+        "text": "no_begging",
+        "passed": false,
+        "evidence": "Found: follow"
+      },
+      {
+        "text": "accurate_numbers",
+        "passed": true,
+        "evidence": "Found 8/8 key numbers: features count, free plan, free cost..."
+      },
+      {
+        "text": "correct_api_urls",
+        "passed": true,
+        "evidence": "No incorrect API URLs found"
+      },
+      {
+        "text": "file_structure",
+        "passed": true,
+        "evidence": "Structure: date, topic, category, headers"
+      },
+      {
+        "text": "platform_tone_diff",
+        "passed": false,
+        "evidence": "Found 1 platform sections"
+      }
+    ]
+  },
+  {
+    "eval": "eval-1-competitor-compare",
+    "run_type": "without_skill",
+    "file": "/sessions/adoring-lucid-archimedes/mnt/potal/.claude/skills/content-posting-workspace/iteration-1/eval-1-competitor-compare/without_skill/outputs/daily-content.md",
+    "expectations": [
+      {
+        "text": "all_11_platforms",
+        "passed": true,
+        "evidence": "Found 11 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+      },
+      {
+        "text": "korean_translations",
+        "passed": true,
+        "evidence": "Found 232 Korean text segments"
+      },
+      {
+        "text": "no_exaggeration",
+        "passed": false,
+        "evidence": "Found: insane, revolutionary"
+      },
+      {
+        "text": "no_begging",
+        "passed": false,
+        "evidence": "Found: Drop a comment, follow"
+      },
+      {
+        "text": "accurate_numbers",
+        "passed": true,
+        "evidence": "Found 8/8 key numbers: features count, free plan, free cost..."
+      },
+      {
+        "text": "correct_api_urls",
+        "passed": false,
+        "evidence": "Found wrong URLs: api\\.potal\\.io"
+      },
+      {
+        "text": "file_structure",
+        "passed": true,
+        "evidence": "Structure: date, topic, category, headers"
+      },
+      {
+        "text": "platform_tone_diff",
+        "passed": false,
+        "evidence": "Found 1 platform sections"
+      }
+    ]
+  },
+  {
+    "eval": "eval-2-hs-code-deepdive",
+    "run_type": "with_skill",
+    "file": "/sessions/adoring-lucid-archimedes/mnt/potal/.claude/skills/content-posting-workspace/iteration-1/eval-2-hs-code-deepdive/with_skill/outputs/daily-content.md",
+    "expectations": [
+      {
+        "text": "all_11_platforms",
+        "passed": true,
+        "evidence": "Found 10 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+      },
+      {
+        "text": "korean_translations",
+        "passed": true,
+        "evidence": "Found 1922 Korean text segments"
+      },
+      {
+        "text": "no_exaggeration",
+        "passed": true,
+        "evidence": "No banned words found"
+      },
+      {
+        "text": "no_begging",
+        "passed": false,
+        "evidence": "Found: follow"
+      },
+      {
+        "text": "accurate_numbers",
+        "passed": true,
+        "evidence": "Found 8/8 key numbers: features count, free plan, free cost..."
+      },
+      {
+        "text": "correct_api_urls",
+        "passed": true,
+        "evidence": "No incorrect API URLs found"
+      },
+      {
+        "text": "file_structure",
+        "passed": true,
+        "evidence": "Structure: date, topic, category, headers"
+      },
+      {
+        "text": "platform_tone_diff",
+        "passed": true,
+        "evidence": "Found 3 platform sections with 273.6% variation (min:151, max:32426)"
+      }
+    ]
+  },
+  {
+    "eval": "eval-2-hs-code-deepdive",
+    "run_type": "without_skill",
+    "file": "/sessions/adoring-lucid-archimedes/mnt/potal/.claude/skills/content-posting-workspace/iteration-1/eval-2-hs-code-deepdive/without_skill/outputs/daily-content.md",
+    "expectations": [
+      {
+        "text": "all_11_platforms",
+        "passed": true,
+        "evidence": "Found 10 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+      },
+      {
+        "text": "korean_translations",
+        "passed": true,
+        "evidence": "Found 250 Korean text segments"
+      },
+      {
+        "text": "no_exaggeration",
+        "passed": true,
+        "evidence": "No banned words found"
+      },
+      {
+        "text": "no_begging",
+        "passed": false,
+        "evidence": "Found: follow"
+      },
+      {
+        "text": "accurate_numbers",
+        "passed": true,
+        "evidence": "Found 3/8 key numbers: free plan, free cost, countries count..."
+      },
+      {
+        "text": "correct_api_urls",
+        "passed": true,
+        "evidence": "No incorrect API URLs found"
+      },
+      {
+        "text": "file_structure",
+        "passed": true,
+        "evidence": "Structure: date, topic, category, headers"
+      },
+      {
+        "text": "platform_tone_diff",
+        "passed": false,
+        "evidence": "Found 1 platform sections"
+      }
+    ]
+  },
+  {
+    "eval": "eval-3-building-journey",
+    "run_type": "with_skill",
+    "file": "/sessions/adoring-lucid-archimedes/mnt/potal/.claude/skills/content-posting-workspace/iteration-1/eval-3-building-journey/with_skill/outputs/daily-content.md",
+    "expectations": [
+      {
+        "text": "all_11_platforms",
+        "passed": true,
+        "evidence": "Found 10 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+      },
+      {
+        "text": "korean_translations",
+        "passed": true,
+        "evidence": "Found 2885 Korean text segments"
+      },
+      {
+        "text": "no_exaggeration",
+        "passed": false,
+        "evidence": "Found: revolutionary, mind-blowing"
+      },
+      {
+        "text": "no_begging",
+        "passed": true,
+        "evidence": "No begging phrases found"
+      },
+      {
+        "text": "accurate_numbers",
+        "passed": true,
+        "evidence": "Found 8/8 key numbers: features count, free plan, free cost..."
+      },
+      {
+        "text": "correct_api_urls",
+        "passed": true,
+        "evidence": "No incorrect API URLs found"
+      },
+      {
+        "text": "file_structure",
+        "passed": true,
+        "evidence": "Structure: date, topic, category, headers"
+      },
+      {
+        "text": "platform_tone_diff",
+        "passed": true,
+        "evidence": "Found 3 platform sections with 286.8% variation (min:146, max:50154)"
+      }
+    ]
+  },
+  {
+    "eval": "eval-3-building-journey",
+    "run_type": "without_skill",
+    "file": "/sessions/adoring-lucid-archimedes/mnt/potal/.claude/skills/content-posting-workspace/iteration-1/eval-3-building-journey/without_skill/outputs/daily-content.md",
+    "expectations": [
+      {
+        "text": "all_11_platforms",
+        "passed": true,
+        "evidence": "Found 10 platforms: DEV.to, Facebook, Indie Hackers, Instagram, LinkedIn..."
+      },
+      {
+        "text": "korean_translations",
+        "passed": true,
+        "evidence": "Found 286 Korean text segments"
+      },
+      {
+        "text": "no_exaggeration",
+        "passed": true,
+        "evidence": "No banned words found"
+      },
+      {
+        "text": "no_begging",
+        "passed": true,
+        "evidence": "No begging phrases found"
+      },
+      {
+        "text": "accurate_numbers",
+        "passed": true,
+        "evidence": "Found 4/8 key numbers: features count, free plan, free cost..."
+      },
+      {
+        "text": "correct_api_urls",
+        "passed": true,
+        "evidence": "No incorrect API URLs found"
+      },
+      {
+        "text": "file_structure",
+        "passed": true,
+        "evidence": "Structure: date, topic, category, headers"
+      },
+      {
+        "text": "platform_tone_diff",
+        "passed": false,
+        "evidence": "Found 1 platform sections"
+      }
+    ]
+  }
+]

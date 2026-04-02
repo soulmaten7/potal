@@ -1,0 +1,9 @@
+README.md
+setup.py
+potal/__init__.py
+potal/client.py
+potal.egg-info/PKG-INFO
+potal.egg-info/SOURCES.txt
+potal.egg-info/dependency_links.txt
+potal.egg-info/requires.txt
+potal.egg-info/top_level.txt

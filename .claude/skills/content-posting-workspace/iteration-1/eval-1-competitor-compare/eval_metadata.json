@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "competitor-compare",
+  "prompt": "오늘 POTAL 콘텐츠 작성해줘. 경쟁사 비교 주제로.",
+  "assertions": [
+    {"name": "all_11_platforms", "description": "11개 플랫폼 전부 포함"},
+    {"name": "korean_translations", "description": "영문 콘텐츠에 한글 번역 포함"},
+    {"name": "no_exaggeration", "description": "과장 표현 없음 (insane, revolutionary 등)"},
+    {"name": "no_begging", "description": "구걸 표현 없음 (follow, share please 등)"},
+    {"name": "accurate_numbers", "description": "정확한 숫자 사용 (140기능, $0, $1500+, $4000+)"},
+    {"name": "correct_api_urls", "description": "정확한 API URL (potal.app/api/v1/)"},
+    {"name": "file_structure", "description": "표준화된 파일 구조 (날짜, 토픽, 카테고리)"},
+    {"name": "platform_tone_diff", "description": "플랫폼별 톤/길이 차별화"}
+  ]
+}

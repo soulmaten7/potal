@@ -1,0 +1,23 @@
+{
+  "skill_name": "content-posting",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "오늘 POTAL 콘텐츠 작성해줘. 경쟁사 비교 주제로.",
+      "expected_output": "11개 플랫폼별 콘텐츠 파일이 content/social-media/daily-posts/에 저장됨. 브랜드 톤 준수, 영문+한글 병기, 플랫폼별 길이/톤 차별화",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "오늘 뭐 올리지? HS Code 분류 기능에 대해 써줘.",
+      "expected_output": "기능 딥다이브 카테고리로 HS Code 분류 콘텐츠 생성. 기술적 상세(595 GRI 규칙, $0 비용 등) 포함. DEV.to는 코드 예시 포함",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "POTAL 빌딩 저니 콘텐츠 만들어줘. 코딩 0에서 140기능 만든 이야기.",
+      "expected_output": "빌딩 저니 카테고리. Indie Hackers/LinkedIn에 특히 강한 콘텐츠. 파운더 스토리 중심. 과장 없이 팩트 기반",
+      "files": []
+    }
+  ]
+}

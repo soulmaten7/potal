@@ -1,0 +1,15 @@
+{
+  "eval_id": 2,
+  "eval_name": "hs-code-deepdive",
+  "prompt": "오늘 뭐 올리지? HS Code 분류 기능에 대해 써줘.",
+  "assertions": [
+    {"name": "all_11_platforms", "description": "11개 플랫폼 전부 포함"},
+    {"name": "korean_translations", "description": "영문 콘텐츠에 한글 번역 포함"},
+    {"name": "no_exaggeration", "description": "과장 표현 없음"},
+    {"name": "technical_accuracy", "description": "기술적 정확성 (595 GRI 규칙, 21 Section 등)"},
+    {"name": "devto_code_examples", "description": "DEV.to에 코드 예시 포함"},
+    {"name": "correct_api_urls", "description": "정확한 API URL"},
+    {"name": "file_structure", "description": "표준화된 파일 구조"},
+    {"name": "brand_tone", "description": "브랜드 톤 일관성 (팩트 기반, 자신감)"}
+  ]
+}
