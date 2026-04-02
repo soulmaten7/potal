@@ -342,8 +342,8 @@ LinkedIn 원본을 각 플랫폼에 맞게 변환. 복붙이 아니라 재작성
 영문 콘텐츠에는 전부 한글 번역 포함. 번역은 자연스러운 한국어로.
 직역하지 말고 한국어 화자가 읽었을 때 자연스러운 문장으로.
 
-### Step 5: 파일 저장
-모든 결과물을 하나의 Markdown 파일로 저장:
+### Step 5: 파일 저장 + Notion 기록
+모든 결과물을 하나의 Markdown 파일로 저장하고, **Notion Daily Content Calendar DB에 자동 기록**한다:
 ```
 content/social-media/daily-posts/YYYY-MM-DD_catN_topic-slug.md
 ```
@@ -393,6 +393,35 @@ description: [한 줄 설명]
 ---
 (... 11개 플랫폼 전부, 각각 플랫폼 메타데이터 포함)
 ```
+
+### Step 5b: Notion Daily Content Calendar 기록
+파일 저장 후, Notion DB에 오늘 콘텐츠 행을 추가한다.
+
+**DB 정보:**
+- Database ID: `d597d455-98e9-4010-9bed-54f37c197df3`
+- Data Source: `collection://461a5e4c-1d3e-40ac-bbe9-31a07826f328`
+
+**기록 항목:**
+- `Topic`: 오늘 토픽 제목
+- `Date`: 오늘 날짜 (YYYY-MM-DD)
+- `Category`: 7개 중 해당 카테고리 (Feature Deep-Dive, Seller Pain Point, Building Journey, Industry News, Competitor Compare, User Story, Why Free)
+- `Status`: "Generated" (초기값)
+- 11개 플랫폼 체크박스: 전부 false (은태님이 업로드 후 체크)
+
+**페이지 본문에 포함:**
+각 플랫폼별 콘텐츠 전문을 Notion 페이지 본문에도 넣는다. 이렇게 하면 Notion에서 바로 복붙 가능.
+
+```
+## LinkedIn
+[콘텐츠 전문]
+
+## DEV.to
+[콘텐츠 전문]
+
+... (11개 플랫폼 전부)
+```
+
+Notion MCP 도구 사용: `notion-create-pages` 호출.
 
 ### Step 6: 비주얼 제안
 콘텐츠에 어울리는 이미지/그래픽 아이디어를 파일 끝에 추가:

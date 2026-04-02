@@ -1,5 +1,19 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-02 18:00 KST (CW22-O — content-posting 스킬 생성)
+> 마지막 업데이트: 2026-04-02 19:30 KST (CW22-O — Notion Daily Content Calendar 연동)
+
+## [2026-04-02 19:30 KST] CW22-O — Notion Daily Content Calendar 연동
+
+### 📊 Notion Daily Content Calendar DB 생성
+- POTAL Command Center 하위에 `Daily Content Calendar` DB 생성
+- DB ID: `d597d455-98e9-4010-9bed-54f37c197df3`
+- Data Source: `collection://461a5e4c-1d3e-40ac-bbe9-31a07826f328`
+- 속성: Topic, Date, Category(7개), Status(5개), 11개 플랫폼 체크박스, Content ID, Notes
+- 뷰 3개: 📅 Calendar (날짜별), 📋 Status Board (상태별), 🏷️ Category Board (카테고리별)
+
+### 🔗 Scheduled Task Notion 연동
+- `daily-content-posting`: 콘텐츠 생성 후 Notion에 자동 기록 (페이지 본문에 전체 콘텐츠 포함)
+- `sunday-content-prep`: 주간 소재 준비 후 월~토 6일치 빈 행 미리 생성
+- `content-posting` 스킬에 Step 5b (Notion 기록) 추가
 
 ## [2026-04-02 18:00 KST] CW22-O — content-posting 스킬 생성
 

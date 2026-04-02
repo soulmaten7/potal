@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-02 18:00 KST (CW22-O: content-posting 스킬 생성 — 브랜드 가이드라인 + 11개 플랫폼 노출 최적화 + 6개 테스트 완료)
+# 마지막 업데이트: 2026-04-02 19:30 KST (CW22-O: Notion Daily Content Calendar DB 생성 + Scheduled Task Notion 연동)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
