@@ -1,7 +1,7 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-02 11:30 KST (CW22-O — PMF Outreach 체계 구축, Community 단순화)
+> 마지막 업데이트: 2026-04-02 14:30 KST (CW22-O — PMF Outreach 체계 구축, Community 단순화, Notion Task Board 정리)
 
-## [2026-04-02 11:30 KST] CW22-O — PMF Outreach 실행 체계 구축
+## [2026-04-02 14:30 KST] CW22-O — PMF Outreach 실행 체계 구축 + Notion Task Board 정리
 
 ### 📣 커뮤니티 답변 시스템
 - Gemini 프롬프트 5개 언어권 작성 (영어/독일어/일본어/한국어/인도영어)
@@ -15,6 +15,12 @@
 ### 📝 문서
 - CLAUDE.md: 영문 콘텐츠 한글 번역 규칙 추가
 - PMF Outreach 방식 전환: Playbook(직접 영어 답변) → Gemini 채팅 시스템(AI 답변+한글번역)
+
+### 📋 Notion Task Board 정리
+- 중복 카드 2개 Cancelled: "Dashboard 데모 영상 촬영 (18개 메뉴)" → "데모 영상 제작" 통합, "Reddit 포스트" → Gemini 커뮤니티 답변 전환
+- "86개 Feature Guide 콘텐츠 보강" → Done + 제목 "140개 Feature Guide 콘텐츠 완성"으로 변경
+- 새 카드 추가: "커뮤니티 답변 활동 (Gemini 5개 언어권)" P1/D9
+- 기존 카드 Notes 최신화: YouTube, Hacker News, Shopify 심사 등
 
 ### 🤝 외부 대응
 - Rahul Singireddy LinkedIn 후속 대화 완료 (Hydra = PH 프로젝트 자동 보안 스캔 회사)

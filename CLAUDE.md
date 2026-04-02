@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-02 11:30 KST (CW22-O: PMF Outreach 체계 구축 — Gemini 프롬프트 5개 언어권, Community 단순화, Rahul 후속 대응)
+# 마지막 업데이트: 2026-04-02 14:30 KST (CW22-O: PMF Outreach 체계 + Notion Task Board 전체 정리 — Gemini 5개 언어권, 중복 카드 정리, 상태 업데이트)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -48,7 +48,7 @@
 ### Notion에서 업데이트 (Cowork에서 처리)
 | Notion DB | 업데이트 내용 | 비고 |
 |-----------|-------------|------|
-| **Session Log** | 세션명, 날짜, 요약, 커밋 해시 | 매 세션 종료 시 |
+| **Session Log** | 세션명, 날짜, 요약, 커밋 해시 | 문서 업데이트 시 함께 (세션 종료 안 기다림) |
 | **Task Board** | 작업 상태 변경 (To Do → Done) | 작업 완료 시 |
 | **Content Pipeline** | 콘텐츠 상태 변경 | 영상/SNS 작업 시 |
 | **Marketplace Tracker** | 심사 상태 변경 | 결과 도착 시 |
