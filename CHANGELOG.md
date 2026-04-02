@@ -1,5 +1,22 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-02 19:30 KST (CW22-O — Notion Daily Content Calendar 연동)
+> 마지막 업데이트: 2026-04-02 20:00 KST (CW22-O — 콘텐츠 플랫폼 구조 확정)
+
+## [2026-04-02 20:00 KST] CW22-O — 콘텐츠 플랫폼 구조 확정
+
+### 🎯 플랫폼 구조 개편 (11개 → 3+4)
+- **매일 자동 생성 (3개)**: LinkedIn, DEV.to, Medium — AI가 잘하는 전문 콘텐츠 플랫폼
+- **브랜드 채널 (4개)**: X, Threads, Instagram, 디스콰이어트 — 은태님 직접 작성 (특별한 순간에)
+- **제거됨**: YouTube (별도 파이프라인), Reddit, Indie Hackers, Facebook Groups (커뮤니티 문화 부적합)
+
+### 📝 content-posting 스킬 전면 개편
+- SKILL.md 전체 재작성: 3개 플랫폼 자동 생성 + 4개 브랜드 채널 참고 가이드
+- 실행 워크플로우 Step 3을 "3개 플랫폼 변환"으로 변경
+- Step 6 Notion 기록도 3개 체크박스만
+
+### 🔄 Scheduled Task + Notion DB 업데이트
+- daily-content-posting: 3개 플랫폼만 생성하도록 업데이트
+- sunday-content-prep: 브랜드 채널 아이디어 3개 제안 파일(08_brand-channel-ideas.md) 추가
+- Notion Daily Content Calendar: YouTube/Reddit/IH/FB/X/Threads/Instagram/Disquiet 체크박스 제거 → LinkedIn/DEV.to/Medium만 남김
 
 ## [2026-04-02 19:30 KST] CW22-O — Notion Daily Content Calendar 연동
 
