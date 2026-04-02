@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
-import { FEATURES, CATEGORIES, type FeatureCategory, CATEGORY_ICONS } from '@/app/features/features-data';
-import { COMMUNITY_CATEGORIES, CATEGORY_MAP, type CommunityCategory } from './community-categories';
+import { FEATURES } from '@/app/features/features-data';
+import { COMMUNITY_CATEGORIES, CATEGORY_MAP } from './community-categories';
 
 const TYPE_CONFIG = {
   bug: { label: 'Bug', color: '#dc2626', bg: '#fef2f2' },
@@ -55,17 +55,13 @@ export default function CommunityPage() {
 
   // Filters
   const [communityCategory, setCommunityCategory] = useState('');
-  const [featureCategory, setFeatureCategory] = useState('');
   const [postType, setPostType] = useState('');
   const [status, setStatus] = useState('');
   const [sort, setSort] = useState<'latest' | 'popular'>('latest');
   const [search, setSearch] = useState('');
-  const [showFeatureGuides, setShowFeatureGuides] = useState(false);
   const [mobileSidebar, setMobileSidebar] = useState(false);
 
   const fetchPosts = useCallback(async () => {
-    // Skip API call when viewing feature guides (rendered from static data)
-    if (featureCategory) { setLoading(false); return; }
     setLoading(true);
     const params = new URLSearchParams();
     if (communityCategory) params.set('community_category', communityCategory);
@@ -85,7 +81,7 @@ export default function CommunityPage() {
       }
     } catch { /* silent */ }
     setLoading(false);
-  }, [communityCategory, featureCategory, postType, status, sort, search, page]);
+  }, [communityCategory, postType, status, sort, search, page]);
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
@@ -95,60 +91,29 @@ export default function CommunityPage() {
 
   // Sidebar component (shared between desktop and mobile)
   const SidebarContent = () => (
-    <>
-      {/* 8 Community Categories */}
-      <div className="mb-6">
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">Categories</h3>
+    <div>
+      <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">Categories</h3>
+      <button
+        onClick={() => { setCommunityCategory(''); setPage(1); setMobileSidebar(false); }}
+        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mb-1 ${
+          !communityCategory ? 'bg-amber-100 text-amber-800 font-bold border-l-[3px] border-amber-500' : 'text-gray-600 hover:bg-gray-100'
+        }`}
+      >
+        All Posts
+      </button>
+      {COMMUNITY_CATEGORIES.map(cat => (
         <button
-          onClick={() => { setCommunityCategory(''); setFeatureCategory(''); setPage(1); setMobileSidebar(false); }}
-          className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors mb-1 ${
-            !communityCategory ? 'bg-amber-100 text-amber-800 font-bold border-l-[3px] border-amber-500' : 'text-gray-600 hover:bg-gray-100'
+          key={cat.slug}
+          onClick={() => { setCommunityCategory(cat.slug); setPage(1); setMobileSidebar(false); }}
+          className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 flex items-center gap-2 ${
+            communityCategory === cat.slug ? 'bg-amber-100 text-amber-800 font-bold border-l-[3px] border-amber-500' : 'text-gray-600 hover:bg-gray-100'
           }`}
         >
-          All Posts
+          <span>{cat.icon}</span>
+          <span className="truncate">{cat.label}</span>
         </button>
-        {COMMUNITY_CATEGORIES.map(cat => (
-          <button
-            key={cat.slug}
-            onClick={() => { setCommunityCategory(cat.slug); setFeatureCategory(''); setPage(1); setMobileSidebar(false); }}
-            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors mb-1 flex items-center gap-2 ${
-              communityCategory === cat.slug ? 'bg-amber-100 text-amber-800 font-bold border-l-[3px] border-amber-500' : 'text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <span>{cat.icon}</span>
-            <span className="truncate">{cat.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Feature Guides (collapsible) */}
-      <div className="border-t-2 border-gray-100 mt-4 pt-4">
-        <button
-          onClick={() => setShowFeatureGuides(!showFeatureGuides)}
-          className="w-full text-left px-2 flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-widest mb-3"
-        >
-          <span>Feature Guides</span>
-          <span className="text-gray-300">{showFeatureGuides ? '\u25b2' : '\u25bc'}</span>
-        </button>
-        {showFeatureGuides && (
-          <div className="space-y-0.5 max-h-60 overflow-y-auto">
-            {CATEGORIES.filter(c => c.key !== 'All').map(cat => (
-              <button
-                key={cat.key}
-                onClick={() => { setFeatureCategory(cat.key); setCommunityCategory(''); setPage(1); setMobileSidebar(false); }}
-                className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center gap-1.5 ${
-                  featureCategory === cat.key ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                <span>{CATEGORY_ICONS[cat.key as FeatureCategory] || ''}</span>
-                <span className="truncate">{cat.label}</span>
-                <span className="text-gray-300 ml-auto">{cat.count}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+      ))}
+    </div>
   );
 
   return (
@@ -158,7 +123,7 @@ export default function CommunityPage() {
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Community</h1>
           <p className="text-gray-500 text-sm mt-2 max-w-xl">
-            {activeCat ? `${activeCat.icon} ${activeCat.label} — ${activeCat.description}` : 'Share feedback, report bugs, ask questions about POTAL features.'}
+            {activeCat ? `${activeCat.icon} ${activeCat.label} — ${activeCat.description}` : 'Share feedback, report bugs, and ask questions.'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -236,57 +201,8 @@ export default function CommunityPage() {
             </select>
           </div>
 
-          {/* Posts or Feature Guides */}
-          {featureCategory ? (
-            /* Show features from the selected category */
-            (() => {
-              const filtered = FEATURES.filter(f => f.category === featureCategory);
-              return filtered.length === 0 ? (
-                <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
-                  <p className="text-gray-400 text-lg">No features in this category</p>
-                </div>
-              ) : (
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-gray-700">
-                      {CATEGORY_ICONS[featureCategory as FeatureCategory]} {CATEGORIES.find(c => c.key === featureCategory)?.label} — {filtered.length} features
-                    </h2>
-                    <button onClick={() => setFeatureCategory('')} className="text-xs text-gray-400 hover:text-gray-600">Clear filter</button>
-                  </div>
-                  {filtered.map((feature, idx) => (
-                    <Link
-                      key={feature.id}
-                      href={`/features/${feature.slug}`}
-                      className="group block"
-                    >
-                      <div className={`flex gap-4 px-5 py-4 hover:bg-gray-50 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
-                        <div className="flex items-center justify-center min-w-[48px] text-2xl">
-                          {CATEGORY_ICONS[feature.category] || '📄'}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                              feature.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                            }`}>
-                              {feature.status === 'active' ? 'Active' : 'Coming Soon'}
-                            </span>
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">{feature.id}</span>
-                          </div>
-                          <h3 className="font-bold text-gray-900 text-base mb-1 group-hover:text-amber-700 transition-colors line-clamp-1">{feature.name}</h3>
-                          <p className="text-xs text-gray-400 line-clamp-1">{feature.description}</p>
-                        </div>
-                        <div className="flex items-center text-gray-300 flex-shrink-0 self-center">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              );
-            })()
-          ) : loading ? (
+          {/* Posts */}
+          {loading ? (
             <div className="text-center py-16 text-gray-400">Loading...</div>
           ) : posts.length === 0 ? (
             <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
