@@ -64,10 +64,11 @@ export default function CommunityPage() {
   const [mobileSidebar, setMobileSidebar] = useState(false);
 
   const fetchPosts = useCallback(async () => {
+    // Skip API call when viewing feature guides (rendered from static data)
+    if (featureCategory) { setLoading(false); return; }
     setLoading(true);
     const params = new URLSearchParams();
     if (communityCategory) params.set('community_category', communityCategory);
-    if (featureCategory) params.set('category', featureCategory);
     if (postType) params.set('type', postType);
     if (status) params.set('status', status);
     if (search) params.set('q', search);
@@ -235,8 +236,57 @@ export default function CommunityPage() {
             </select>
           </div>
 
-          {/* Posts */}
-          {loading ? (
+          {/* Posts or Feature Guides */}
+          {featureCategory ? (
+            /* Show features from the selected category */
+            (() => {
+              const filtered = FEATURES.filter(f => f.category === featureCategory);
+              return filtered.length === 0 ? (
+                <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
+                  <p className="text-gray-400 text-lg">No features in this category</p>
+                </div>
+              ) : (
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="px-5 py-3 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                    <h2 className="text-sm font-bold text-gray-700">
+                      {CATEGORY_ICONS[featureCategory as FeatureCategory]} {CATEGORIES.find(c => c.key === featureCategory)?.label} — {filtered.length} features
+                    </h2>
+                    <button onClick={() => setFeatureCategory('')} className="text-xs text-gray-400 hover:text-gray-600">Clear filter</button>
+                  </div>
+                  {filtered.map((feature, idx) => (
+                    <Link
+                      key={feature.id}
+                      href={`/features/${feature.slug}`}
+                      className="group block"
+                    >
+                      <div className={`flex gap-4 px-5 py-4 hover:bg-gray-50 transition-colors ${idx > 0 ? 'border-t border-gray-100' : ''}`}>
+                        <div className="flex items-center justify-center min-w-[48px] text-2xl">
+                          {CATEGORY_ICONS[feature.category] || '📄'}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                              feature.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              {feature.status === 'active' ? 'Active' : 'Coming Soon'}
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">{feature.id}</span>
+                          </div>
+                          <h3 className="font-bold text-gray-900 text-base mb-1 group-hover:text-amber-700 transition-colors line-clamp-1">{feature.name}</h3>
+                          <p className="text-xs text-gray-400 line-clamp-1">{feature.description}</p>
+                        </div>
+                        <div className="flex items-center text-gray-300 flex-shrink-0 self-center">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              );
+            })()
+          ) : loading ? (
             <div className="text-center py-16 text-gray-400">Loading...</div>
           ) : posts.length === 0 ? (
             <div className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-sm">
