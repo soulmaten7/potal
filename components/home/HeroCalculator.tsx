@@ -71,7 +71,7 @@ interface CalcResult {
   vat: number;
   processingFee: number;
   totalLandedCost: number;
-  confidence: number; // 0-1 from API (confidenceScore)
+  ablationAccuracy: number; // 0-100 from field-validator ablation formula
 }
 
 const inputStyle: React.CSSProperties = {
@@ -177,8 +177,14 @@ export default function HeroCalculator() {
         : typeof data.salesTax === 'number' ? data.salesTax : 0;
       const tlc = typeof data.totalLandedCost === 'number' ? data.totalLandedCost : priceNum + duty + vat;
       const fee = Math.max(0, Math.round((tlc - priceNum - duty - vat) * 100) / 100);
-      const conf = typeof data.confidenceScore === 'number' ? data.confidenceScore : 0;
-      setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc, confidence: conf });
+      // Ablation-tested accuracy (466 combinations, field-validator.ts lines 452-458)
+      let acc = 0;
+      if (productName.trim().length >= 2) acc += 18;
+      if (material) acc += 45;
+      if (category) acc += 33;
+      // description not in demo form, but composition/processing don't affect this formula
+      acc = Math.min(acc, 100);
+      setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc, ablationAccuracy: acc });
     } catch {
       setError('Unable to calculate. Try with more details.');
     } finally {
@@ -471,12 +477,12 @@ export default function HeroCalculator() {
             overflow: 'hidden',
             border: '1px solid rgba(255,255,255,0.1)',
           }}>
-            {/* Confidence badge — real API confidence */}
+            {/* Classification Accuracy — ablation-tested (466 combinations) */}
             {(() => {
-              const confPct = Math.round(result.confidence * 100);
-              const confColor = confPct >= 90 ? '#4ade80' : confPct >= 70 ? '#facc15' : '#f87171';
-              const confBg = confPct >= 90 ? 'rgba(34,197,94,0.15)' : confPct >= 70 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)';
-              const confBorder = confPct >= 90 ? 'rgba(34,197,94,0.3)' : confPct >= 70 ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)';
+              const acc = result.ablationAccuracy;
+              const accColor = acc >= 96 ? '#4ade80' : acc >= 70 ? '#facc15' : '#f87171';
+              const accBg = acc >= 96 ? 'rgba(34,197,94,0.15)' : acc >= 70 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)';
+              const accBorder = acc >= 96 ? 'rgba(34,197,94,0.3)' : acc >= 70 ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)';
               return (
                 <div style={{
                   display: 'flex',
@@ -486,17 +492,17 @@ export default function HeroCalculator() {
                   borderBottom: '1px solid rgba(255,255,255,0.07)',
                   background: 'rgba(255,255,255,0.03)',
                 }}>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Classification Confidence</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Classification Accuracy</span>
                   <span style={{
                     fontSize: 12,
                     fontWeight: 700,
                     padding: '3px 10px',
                     borderRadius: 8,
-                    background: confBg,
-                    color: confColor,
-                    border: `1px solid ${confBorder}`,
+                    background: accBg,
+                    color: accColor,
+                    border: `1px solid ${accBorder}`,
                   }}>
-                    {confPct}%
+                    ~{acc}%
                   </span>
                 </div>
               );
@@ -537,10 +543,10 @@ export default function HeroCalculator() {
             </div>
           </div>
 
-          {/* Low confidence hint */}
-          {result.confidence < 0.7 && (
+          {/* Low accuracy hint */}
+          {result.ablationAccuracy < 70 && (
             <p style={{ fontSize: 11, color: 'rgba(234,179,8,0.8)', margin: '8px 0 0', lineHeight: 1.5 }}>
-              Low confidence — try adding more details or checking your inputs.
+              Low accuracy — add more fields for better results.
             </p>
           )}
 
