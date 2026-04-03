@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-02 21:00 KST (CW22-O: Task Board 정리 + 일일 루틴 포맷 수정 — YouTube/HN Cancelled, 콘텐츠 포스팅 Done)
+# 마지막 업데이트: 2026-04-03 11:30 KST (CW22-O: HS Classification 정확도 미터 UI 추가 — 실시간 정확도 바 + 필드 힌트 + 신뢰도 배지 + Material 5개 추가)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
