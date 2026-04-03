@@ -74,6 +74,7 @@ interface CalcResult {
   vat: number;
   processingFee: number;
   totalLandedCost: number;
+  confidence: number; // 0-1 from API (confidenceScore)
 }
 
 const inputStyle: React.CSSProperties = {
@@ -111,7 +112,6 @@ export default function HeroCalculator() {
   const [destination, setDestination] = useState('US');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CalcResult | null>(null);
-  const [resultAccuracy, setResultAccuracy] = useState(0);
   const [error, setError] = useState('');
 
   // Real-time accuracy calculation
@@ -163,8 +163,8 @@ export default function HeroCalculator() {
         : typeof data.salesTax === 'number' ? data.salesTax : 0;
       const tlc = typeof data.totalLandedCost === 'number' ? data.totalLandedCost : priceNum + duty + vat;
       const fee = Math.max(0, Math.round((tlc - priceNum - duty - vat) * 100) / 100);
-      setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc });
-      setResultAccuracy(accuracy);
+      const conf = typeof data.confidenceScore === 'number' ? data.confidenceScore : 0;
+      setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc, confidence: conf });
     } catch {
       setError('Unable to calculate. Try with more details.');
     } finally {
@@ -204,7 +204,7 @@ export default function HeroCalculator() {
       <div style={{ marginBottom: 18 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Classification Accuracy
+            Estimated Accuracy
           </span>
           <span style={{ fontSize: 13, fontWeight: 700, color: accuracyColor }}>
             {accuracy > 0 ? `~${accuracy}%` : '—'}
@@ -429,28 +429,36 @@ export default function HeroCalculator() {
             overflow: 'hidden',
             border: '1px solid rgba(255,255,255,0.1)',
           }}>
-            {/* Confidence badge */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '10px 16px',
-              borderBottom: '1px solid rgba(255,255,255,0.07)',
-              background: 'rgba(255,255,255,0.03)',
-            }}>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Classification Confidence</span>
-              <span style={{
-                fontSize: 12,
-                fontWeight: 700,
-                padding: '3px 10px',
-                borderRadius: 8,
-                background: resultAccuracy >= 85 ? 'rgba(34,197,94,0.15)' : resultAccuracy >= 60 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
-                color: resultAccuracy >= 85 ? '#4ade80' : resultAccuracy >= 60 ? '#facc15' : '#f87171',
-                border: `1px solid ${resultAccuracy >= 85 ? 'rgba(34,197,94,0.3)' : resultAccuracy >= 60 ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'}`,
-              }}>
-                ~{resultAccuracy}%
-              </span>
-            </div>
+            {/* Confidence badge — real API confidence */}
+            {(() => {
+              const confPct = Math.round(result.confidence * 100);
+              const confColor = confPct >= 90 ? '#4ade80' : confPct >= 70 ? '#facc15' : '#f87171';
+              const confBg = confPct >= 90 ? 'rgba(34,197,94,0.15)' : confPct >= 70 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)';
+              const confBorder = confPct >= 90 ? 'rgba(34,197,94,0.3)' : confPct >= 70 ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)';
+              return (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 16px',
+                  borderBottom: '1px solid rgba(255,255,255,0.07)',
+                  background: 'rgba(255,255,255,0.03)',
+                }}>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Classification Confidence</span>
+                  <span style={{
+                    fontSize: 12,
+                    fontWeight: 700,
+                    padding: '3px 10px',
+                    borderRadius: 8,
+                    background: confBg,
+                    color: confColor,
+                    border: `1px solid ${confBorder}`,
+                  }}>
+                    {confPct}%
+                  </span>
+                </div>
+              );
+            })()}
 
             {[
               { label: 'Import Duty', value: result.importDuty },
@@ -488,9 +496,9 @@ export default function HeroCalculator() {
           </div>
 
           {/* Low confidence hint */}
-          {resultAccuracy < 85 && (
+          {result.confidence < 0.7 && (
             <p style={{ fontSize: 11, color: 'rgba(234,179,8,0.8)', margin: '8px 0 0', lineHeight: 1.5 }}>
-              Fill in more fields above to improve accuracy.
+              Low confidence — try adding more details or checking your inputs.
             </p>
           )}
 
