@@ -134,6 +134,10 @@ export default function HeroCalculator() {
   const counterColor = filledCount <= 3 ? '#ef4444' : filledCount <= 6 ? '#eab308' : '#22c55e';
 
   const handleCalculate = async () => {
+    if (!material) {
+      setError('Please select a material.');
+      return;
+    }
     const priceNum = parseFloat(price);
     if (!price || isNaN(priceNum) || priceNum <= 0) {
       setError('Please enter a valid price.');
