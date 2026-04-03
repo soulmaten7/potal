@@ -1,5 +1,19 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-03 11:30 KST (CW22-O — HS Classification 정확도 미터 UI 추가 + D3 YELLOW 해결)
+> 마지막 업데이트: 2026-04-03 18:00 KST (CW22-O — 폴더 구조 대청소)
+
+## [2026-04-03 18:00 KST] CW22-O — 폴더 구조 대청소
+
+### 변경
+- 📁 **루트 엑셀 48개** → `archive/spreadsheets/` 이동 (폐지된 로그, Division 엑셀, 벤치마크 등)
+- 📁 **오래된 MD 9개** → `archive/old-docs/` 이동
+- 📁 **PDF 5개** → `marketing/enterprise/` + `archive/old-docs/` 이동
+- 📁 **ZIP 4개** → `archive/plugins-dist/` 이동
+- 📁 **HTML 1개** → `archive/html-charts/` 이동
+- 📁 **GIF 3개** 루트 중복 삭제 (marketing/ 원본 유지)
+- 📁 `analysis/`, `checklists/`, `accuracy-benchmark/`, `test-results/` → `archive/` 이동
+- 📁 `POTAL_Google_Drive/` → `archive/google-drive-sync/` 이동
+- 📁 로그 JSON 3개 + Python 스크립트 2개 + CSV 1개 정리
+- 🔧 `tsconfig.json` exclude에 `archive` 추가 (빌드 에러 방지)
 
 ## [2026-04-03 11:30 KST] CW22-O — HS Classification 정확도 UI + 모닝브리핑
 
