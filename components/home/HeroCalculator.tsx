@@ -100,10 +100,11 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: '0.05em',
 };
 
-const TOTAL_FIELDS = 9;
+const TOTAL_FIELDS = 10;
 
 export default function HeroCalculator() {
   const [productName, setProductName] = useState('');
+  const [description, setDescription] = useState('');
   const [material, setMaterial] = useState('');
   const [category, setCategory] = useState('');
   const [processing, setProcessing] = useState('');
@@ -120,6 +121,7 @@ export default function HeroCalculator() {
   const filledCount = useMemo(() => {
     let count = 0;
     if (productName.trim()) count++;
+    if (description.trim()) count++;
     if (material) count++;
     if (category) count++;
     if (processing.trim()) count++;
@@ -129,7 +131,7 @@ export default function HeroCalculator() {
     if (origin) count++;
     if (destination) count++;
     return count;
-  }, [productName, material, category, processing, composition, weightSpec, price, origin, destination]);
+  }, [productName, description, material, category, processing, composition, weightSpec, price, origin, destination]);
 
   const counterColor = filledCount <= 3 ? '#ef4444' : filledCount <= 6 ? '#eab308' : '#22c55e';
 
@@ -156,6 +158,7 @@ export default function HeroCalculator() {
         },
         body: JSON.stringify({
           ...(productName.trim() ? { productName: productName.trim() } : {}),
+          ...(description.trim() ? { description: description.trim() } : {}),
           material,
           productCategory: category,
           ...(processing.trim() ? { processing: processing.trim() } : {}),
@@ -182,7 +185,7 @@ export default function HeroCalculator() {
       if (productName.trim().length >= 2) acc += 18;
       if (material) acc += 45;
       if (category) acc += 33;
-      // description not in demo form, but composition/processing don't affect this formula
+      if (description.trim()) acc += 4;
       acc = Math.min(acc, 100);
       setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc, ablationAccuracy: acc });
     } catch {
@@ -259,7 +262,21 @@ export default function HeroCalculator() {
           />
         </div>
 
-        {/* Row 2: Material | Category */}
+        {/* Row 2: Description - full width textarea */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Description</label>
+          <textarea
+            rows={2}
+            placeholder="e.g. Men's crew neck short sleeve basic t-shirt for casual wear..."
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            style={{ ...inputStyle, resize: 'vertical', minHeight: 48 }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
+        {/* Row 3: Material | Category */}
         <div>
           <label style={labelStyle}>Material</label>
           <select
