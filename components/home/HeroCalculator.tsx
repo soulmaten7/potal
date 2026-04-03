@@ -262,21 +262,7 @@ export default function HeroCalculator() {
           />
         </div>
 
-        {/* Row 2: Description - full width textarea */}
-        <div style={{ gridColumn: '1 / -1' }}>
-          <label style={labelStyle}>Description</label>
-          <textarea
-            rows={2}
-            placeholder="e.g. Men's crew neck short sleeve basic t-shirt for casual wear..."
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-            style={{ ...inputStyle, resize: 'vertical', minHeight: 48 }}
-            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
-            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
-          />
-        </div>
-
-        {/* Row 3: Material | Category */}
+        {/* Row 2: Material | Category */}
         <div>
           <label style={labelStyle}>Material</label>
           <select
@@ -330,7 +316,21 @@ export default function HeroCalculator() {
           </select>
         </div>
 
-        {/* Row 3: Processing | Composition */}
+        {/* Row 3: Description - full width textarea */}
+        <div style={{ gridColumn: '1 / -1' }}>
+          <label style={labelStyle}>Description</label>
+          <textarea
+            rows={2}
+            placeholder="e.g. Men's crew neck short sleeve basic t-shirt for casual wear..."
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            style={{ ...inputStyle, resize: 'vertical', minHeight: 48 }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
+        {/* Row 4: Processing | Composition */}
         <div>
           <label style={labelStyle}>
             <span>Processing</span>
