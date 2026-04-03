@@ -1,5 +1,17 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-02 20:30 KST (CW22-O — 성과 트래킹 시스템 추가)
+> 마지막 업데이트: 2026-04-02 21:00 KST (CW22-O — Task Board 정리 + 일일 루틴 포맷 수정)
+
+## [2026-04-02 21:00 KST] CW22-O — Task Board 정리 + 일일 루틴 포맷 수정
+
+### 📋 Task Board 정리
+- YouTube 공식 채널 생성 → Cancelled (플랫폼 제거)
+- Hacker News 'Show HN' 포스트 작성 → Cancelled (플랫폼 제거)
+- 콘텐츠 포스팅 (매일, 멀티 플랫폼) → Done (자동화 완료)
+- To Do 남은 항목: 데모 영상 제작 (P0), Product Hunt 런칭 (P0), 커뮤니티 답변 활동 (P1)
+
+### 🔧 일일 루틴 Notion 페이지 포맷 수정
+- 마크다운 파이프 테이블 → Notion `<table>` 형식으로 전체 재작성
+- 테이블 렌더링 깨짐 해결
 
 ## [2026-04-02 20:30 KST] CW22-O — 성과 트래킹 시스템 추가
 

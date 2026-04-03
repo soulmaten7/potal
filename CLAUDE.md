@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-02 20:30 KST (CW22-O: 성과 트래킹 시스템 추가 — Views/Reactions/Comments 필드 + Performance 뷰 + 금요일 주간 회고)
+# 마지막 업데이트: 2026-04-02 21:00 KST (CW22-O: Task Board 정리 + 일일 루틴 포맷 수정 — YouTube/HN Cancelled, 콘텐츠 포스팅 Done)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

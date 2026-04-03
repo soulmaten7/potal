@@ -1,32 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 
 // HS Code 21 Section 기반 Material → 허용 Category 매핑
 const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
-  cotton:   ['apparel', 'footwear', 'accessories', 'other'],
-  polyester:['apparel', 'footwear', 'accessories', 'sporting_goods', 'other'],
-  wool:     ['apparel', 'accessories', 'other'],
-  silk:     ['apparel', 'accessories', 'other'],
-  linen:    ['apparel', 'furniture', 'accessories', 'other'],
-  denim:    ['apparel', 'accessories', 'other'],
-  nylon:    ['apparel', 'footwear', 'accessories', 'sporting_goods', 'other'],
-  leather:  ['apparel', 'footwear', 'accessories', 'automotive', 'other'],
-  plastic:  ['toys', 'electronics', 'automotive', 'industrial', 'other'],
-  rubber:   ['footwear', 'toys', 'automotive', 'sporting_goods', 'industrial', 'other'],
-  aluminum: ['electronics', 'automotive', 'industrial', 'sporting_goods', 'furniture', 'other'],
-  steel:    ['automotive', 'industrial', 'electronics', 'sporting_goods', 'other'],
-  wood:     ['furniture', 'toys', 'other'],
-  glass:    ['industrial', 'electronics', 'other'],
-  ceramic:  ['industrial', 'other'],
-  paper:    ['books', 'other'],
-  gold:     ['jewelry', 'accessories', 'other'],
-  silver:   ['jewelry', 'accessories', 'other'],
-  other:    ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'],
+  cotton:         ['apparel', 'footwear', 'accessories', 'other'],
+  polyester:      ['apparel', 'footwear', 'accessories', 'sporting_goods', 'other'],
+  wool:           ['apparel', 'accessories', 'other'],
+  silk:           ['apparel', 'accessories', 'other'],
+  linen:          ['apparel', 'furniture', 'accessories', 'other'],
+  denim:          ['apparel', 'accessories', 'other'],
+  nylon:          ['apparel', 'footwear', 'accessories', 'sporting_goods', 'other'],
+  leather:        ['apparel', 'footwear', 'accessories', 'automotive', 'other'],
+  plastic:        ['toys', 'electronics', 'automotive', 'industrial', 'other'],
+  rubber:         ['footwear', 'toys', 'automotive', 'sporting_goods', 'industrial', 'other'],
+  aluminum:       ['electronics', 'automotive', 'industrial', 'sporting_goods', 'furniture', 'other'],
+  steel:          ['automotive', 'industrial', 'electronics', 'sporting_goods', 'other'],
+  wood:           ['furniture', 'toys', 'other'],
+  glass:          ['industrial', 'electronics', 'other'],
+  ceramic:        ['industrial', 'other'],
+  paper:          ['books', 'other'],
+  gold:           ['jewelry', 'accessories', 'other'],
+  silver:         ['jewelry', 'accessories', 'other'],
+  copper:         ['electronics', 'industrial', 'other'],
+  zinc:           ['industrial', 'other'],
+  titanium:       ['industrial', 'electronics', 'sporting_goods', 'other'],
+  'carbon-fiber': ['automotive', 'sporting_goods', 'industrial', 'other'],
+  'lithium-ion':  ['electronics', 'automotive', 'industrial', 'other'],
+  other:          ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'],
 };
 
-const ALL_MATERIALS = ['cotton','polyester','wool','silk','linen','denim','nylon','leather','plastic','rubber','aluminum','steel','wood','glass','ceramic','paper','gold','silver','other'];
+const ALL_MATERIALS = [
+  'cotton','polyester','wool','silk','linen','denim','nylon','leather',
+  'plastic','rubber','aluminum','steel','copper','zinc','titanium',
+  'carbon-fiber','lithium-ion',
+  'wood','glass','ceramic','paper','gold','silver','other',
+];
 const ALL_CATEGORIES = ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'];
 
 const COUNTRIES = [
@@ -52,6 +62,13 @@ const COUNTRIES = [
   { code: 'ES', name: 'Spain' },
 ];
 
+// Accuracy weights matching backend field-validator.ts
+const ACCURACY = { productName: 18, material: 45, category: 33, max: 96 } as const;
+
+function formatMaterial(m: string): string {
+  return m.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-');
+}
+
 interface CalcResult {
   importDuty: number;
   vat: number;
@@ -74,7 +91,9 @@ const inputStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  display: 'block',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
   fontSize: 12,
   fontWeight: 600,
   color: 'rgba(255,255,255,0.55)',
@@ -92,7 +111,20 @@ export default function HeroCalculator() {
   const [destination, setDestination] = useState('US');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CalcResult | null>(null);
+  const [resultAccuracy, setResultAccuracy] = useState(0);
   const [error, setError] = useState('');
+
+  // Real-time accuracy calculation
+  const accuracy = useMemo(() => {
+    let acc = 0;
+    if (productName.trim().length >= 2) acc += ACCURACY.productName;
+    if (material && material !== 'other') acc += ACCURACY.material;
+    else if (material === 'other') acc += Math.round(ACCURACY.material * 0.5);
+    if (category) acc += ACCURACY.category;
+    return Math.min(acc, ACCURACY.max);
+  }, [productName, material, category]);
+
+  const accuracyColor = accuracy < 60 ? '#ef4444' : accuracy < 85 ? '#eab308' : '#22c55e';
 
   const handleCalculate = async () => {
     const priceNum = parseFloat(price);
@@ -132,6 +164,7 @@ export default function HeroCalculator() {
       const tlc = typeof data.totalLandedCost === 'number' ? data.totalLandedCost : priceNum + duty + vat;
       const fee = Math.max(0, Math.round((tlc - priceNum - duty - vat) * 100) / 100);
       setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc });
+      setResultAccuracy(accuracy);
     } catch {
       setError('Unable to calculate. Try with more details.');
     } finally {
@@ -148,7 +181,7 @@ export default function HeroCalculator() {
       color: 'white',
     }}>
       {/* Title */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 20 }}>
         <div style={{
           display: 'inline-block',
           background: 'rgba(232,100,10,0.2)',
@@ -167,11 +200,43 @@ export default function HeroCalculator() {
         </h3>
       </div>
 
+      {/* Accuracy meter */}
+      <div style={{ marginBottom: 18 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Classification Accuracy
+          </span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: accuracyColor }}>
+            {accuracy > 0 ? `~${accuracy}%` : '—'}
+          </span>
+        </div>
+        <div style={{
+          width: '100%',
+          height: 6,
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: 3,
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            width: `${accuracy}%`,
+            height: '100%',
+            background: accuracyColor,
+            borderRadius: 3,
+            transition: 'width 0.3s ease, background 0.3s ease',
+          }} />
+        </div>
+      </div>
+
       {/* Inputs grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
         {/* Product Name - full width */}
         <div style={{ gridColumn: '1 / -1' }}>
-          <label style={labelStyle}>Product Name</label>
+          <label style={labelStyle}>
+            <span>Product Name</span>
+            {!productName.trim() && (
+              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(34,197,94,0.7)', textTransform: 'none', letterSpacing: 0 }}>+{ACCURACY.productName}% accuracy</span>
+            )}
+          </label>
           <input
             type="text"
             placeholder="e.g. Cotton T-Shirt, Running Shoes..."
@@ -185,7 +250,12 @@ export default function HeroCalculator() {
 
         {/* Material */}
         <div>
-          <label style={labelStyle}>Material</label>
+          <label style={labelStyle}>
+            <span>Material</span>
+            {!material && (
+              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(34,197,94,0.7)', textTransform: 'none', letterSpacing: 0 }}>+{ACCURACY.material}% accuracy</span>
+            )}
+          </label>
           <select
             value={material}
             onChange={e => {
@@ -203,7 +273,7 @@ export default function HeroCalculator() {
             </option>
             {ALL_MATERIALS.map(m => (
               <option key={m} value={m} style={{ background: '#0a1e3d', color: 'white' }}>
-                {m.charAt(0).toUpperCase() + m.slice(1)}
+                {formatMaterial(m)}
               </option>
             ))}
           </select>
@@ -211,7 +281,12 @@ export default function HeroCalculator() {
 
         {/* Category */}
         <div>
-          <label style={labelStyle}>Category</label>
+          <label style={labelStyle}>
+            <span>Category</span>
+            {material && !category && (
+              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(34,197,94,0.7)', textTransform: 'none', letterSpacing: 0 }}>+{ACCURACY.category}% accuracy</span>
+            )}
+          </label>
           <select
             value={category}
             disabled={!material}
@@ -354,6 +429,29 @@ export default function HeroCalculator() {
             overflow: 'hidden',
             border: '1px solid rgba(255,255,255,0.1)',
           }}>
+            {/* Confidence badge */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '10px 16px',
+              borderBottom: '1px solid rgba(255,255,255,0.07)',
+              background: 'rgba(255,255,255,0.03)',
+            }}>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>Classification Confidence</span>
+              <span style={{
+                fontSize: 12,
+                fontWeight: 700,
+                padding: '3px 10px',
+                borderRadius: 8,
+                background: resultAccuracy >= 85 ? 'rgba(34,197,94,0.15)' : resultAccuracy >= 60 ? 'rgba(234,179,8,0.15)' : 'rgba(239,68,68,0.15)',
+                color: resultAccuracy >= 85 ? '#4ade80' : resultAccuracy >= 60 ? '#facc15' : '#f87171',
+                border: `1px solid ${resultAccuracy >= 85 ? 'rgba(34,197,94,0.3)' : resultAccuracy >= 60 ? 'rgba(234,179,8,0.3)' : 'rgba(239,68,68,0.3)'}`,
+              }}>
+                ~{resultAccuracy}%
+              </span>
+            </div>
+
             {[
               { label: 'Import Duty', value: result.importDuty },
               { label: 'VAT / GST', value: result.vat },
@@ -389,8 +487,15 @@ export default function HeroCalculator() {
             </div>
           </div>
 
+          {/* Low confidence hint */}
+          {resultAccuracy < 85 && (
+            <p style={{ fontSize: 11, color: 'rgba(234,179,8,0.8)', margin: '8px 0 0', lineHeight: 1.5 }}>
+              Fill in more fields above to improve accuracy.
+            </p>
+          )}
+
           {/* Disclaimer + CTA */}
-          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: '10px 0 14px', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', margin: '8px 0 14px', lineHeight: 1.5 }}>
             * Preview estimate. Sign up free for exact calculation with HS Code.
           </p>
           <Link
