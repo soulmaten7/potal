@@ -62,9 +62,6 @@ const COUNTRIES = [
   { code: 'ES', name: 'Spain' },
 ];
 
-// Accuracy weights matching backend field-validator.ts
-const ACCURACY = { productName: 18, material: 45, category: 33, max: 96 } as const;
-
 function formatMaterial(m: string): string {
   return m.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-');
 }
@@ -103,10 +100,15 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: '0.05em',
 };
 
+const TOTAL_FIELDS = 9;
+
 export default function HeroCalculator() {
   const [productName, setProductName] = useState('');
   const [material, setMaterial] = useState('');
   const [category, setCategory] = useState('');
+  const [processing, setProcessing] = useState('');
+  const [composition, setComposition] = useState('');
+  const [weightSpec, setWeightSpec] = useState('');
   const [price, setPrice] = useState('');
   const [origin, setOrigin] = useState('CN');
   const [destination, setDestination] = useState('US');
@@ -114,17 +116,22 @@ export default function HeroCalculator() {
   const [result, setResult] = useState<CalcResult | null>(null);
   const [error, setError] = useState('');
 
-  // Real-time accuracy calculation
-  const accuracy = useMemo(() => {
-    let acc = 0;
-    if (productName.trim().length >= 2) acc += ACCURACY.productName;
-    if (material && material !== 'other') acc += ACCURACY.material;
-    else if (material === 'other') acc += Math.round(ACCURACY.material * 0.5);
-    if (category) acc += ACCURACY.category;
-    return Math.min(acc, ACCURACY.max);
-  }, [productName, material, category]);
+  // Field counter
+  const filledCount = useMemo(() => {
+    let count = 0;
+    if (productName.trim()) count++;
+    if (material) count++;
+    if (category) count++;
+    if (processing.trim()) count++;
+    if (composition.trim()) count++;
+    if (weightSpec.trim()) count++;
+    if (price) count++;
+    if (origin) count++;
+    if (destination) count++;
+    return count;
+  }, [productName, material, category, processing, composition, weightSpec, price, origin, destination]);
 
-  const accuracyColor = accuracy < 60 ? '#ef4444' : accuracy < 85 ? '#eab308' : '#22c55e';
+  const counterColor = filledCount <= 3 ? '#ef4444' : filledCount <= 6 ? '#eab308' : '#22c55e';
 
   const handleCalculate = async () => {
     const priceNum = parseFloat(price);
@@ -147,6 +154,9 @@ export default function HeroCalculator() {
           ...(productName.trim() ? { productName: productName.trim() } : {}),
           material,
           productCategory: category,
+          ...(processing.trim() ? { processing: processing.trim() } : {}),
+          ...(composition.trim() ? { composition: composition.trim() } : {}),
+          ...(weightSpec.trim() ? { weight_spec: weightSpec.trim() } : {}),
           price: priceNum,
           origin,
           destinationCountry: destination,
@@ -200,43 +210,34 @@ export default function HeroCalculator() {
         </h3>
       </div>
 
-      {/* Accuracy meter */}
+      {/* Field counter with dots */}
       <div style={{ marginBottom: 18 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Estimated Accuracy
+            Fields Filled
           </span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: accuracyColor }}>
-            {accuracy > 0 ? `~${accuracy}%` : '—'}
+          <span style={{ fontSize: 13, fontWeight: 700, color: counterColor }}>
+            {filledCount} / {TOTAL_FIELDS}
           </span>
         </div>
-        <div style={{
-          width: '100%',
-          height: 6,
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: 3,
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            width: `${accuracy}%`,
-            height: '100%',
-            background: accuracyColor,
-            borderRadius: 3,
-            transition: 'width 0.3s ease, background 0.3s ease',
-          }} />
+        <div style={{ display: 'flex', gap: 4 }}>
+          {Array.from({ length: TOTAL_FIELDS }, (_, i) => (
+            <div key={i} style={{
+              flex: 1,
+              height: 4,
+              borderRadius: 2,
+              background: i < filledCount ? counterColor : 'rgba(255,255,255,0.1)',
+              transition: 'background 0.2s ease',
+            }} />
+          ))}
         </div>
       </div>
 
       {/* Inputs grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-        {/* Product Name - full width */}
+        {/* Row 1: Product Name - full width */}
         <div style={{ gridColumn: '1 / -1' }}>
-          <label style={labelStyle}>
-            <span>Product Name</span>
-            {!productName.trim() && (
-              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(34,197,94,0.7)', textTransform: 'none', letterSpacing: 0 }}>+{ACCURACY.productName}% accuracy</span>
-            )}
-          </label>
+          <label style={labelStyle}>Product Name</label>
           <input
             type="text"
             placeholder="e.g. Cotton T-Shirt, Running Shoes..."
@@ -248,14 +249,9 @@ export default function HeroCalculator() {
           />
         </div>
 
-        {/* Material */}
+        {/* Row 2: Material | Category */}
         <div>
-          <label style={labelStyle}>
-            <span>Material</span>
-            {!material && (
-              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(34,197,94,0.7)', textTransform: 'none', letterSpacing: 0 }}>+{ACCURACY.material}% accuracy</span>
-            )}
-          </label>
+          <label style={labelStyle}>Material</label>
           <select
             value={material}
             onChange={e => {
@@ -279,14 +275,8 @@ export default function HeroCalculator() {
           </select>
         </div>
 
-        {/* Category */}
         <div>
-          <label style={labelStyle}>
-            <span>Category</span>
-            {material && !category && (
-              <span style={{ fontSize: 10, fontWeight: 500, color: 'rgba(34,197,94,0.7)', textTransform: 'none', letterSpacing: 0 }}>+{ACCURACY.category}% accuracy</span>
-            )}
-          </label>
+          <label style={labelStyle}>Category</label>
           <select
             value={category}
             disabled={!material}
@@ -313,7 +303,56 @@ export default function HeroCalculator() {
           </select>
         </div>
 
-        {/* Price */}
+        {/* Row 3: Processing | Composition */}
+        <div>
+          <label style={labelStyle}>
+            <span>Processing</span>
+            <span style={{ fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.3)', textTransform: 'none', letterSpacing: 0 }}>optional</span>
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. knitted, woven, forged..."
+            value={processing}
+            onChange={e => setProcessing(e.target.value)}
+            style={{ ...inputStyle }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
+        <div>
+          <label style={labelStyle}>
+            <span>Composition</span>
+            <span style={{ fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.3)', textTransform: 'none', letterSpacing: 0 }}>optional</span>
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. 100% cotton, 80/20 poly-spandex..."
+            value={composition}
+            onChange={e => setComposition(e.target.value)}
+            style={{ ...inputStyle }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
+        {/* Row 4: Weight/Spec | Price */}
+        <div>
+          <label style={labelStyle}>
+            <span>Weight / Spec</span>
+            <span style={{ fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.3)', textTransform: 'none', letterSpacing: 0 }}>optional</span>
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. 200g, 5kg, 2.5mm thickness..."
+            value={weightSpec}
+            onChange={e => setWeightSpec(e.target.value)}
+            style={{ ...inputStyle }}
+            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
+          />
+        </div>
+
         <div>
           <label style={labelStyle}>Price (USD)</label>
           <input
@@ -329,7 +368,7 @@ export default function HeroCalculator() {
           />
         </div>
 
-        {/* Origin */}
+        {/* Row 5: Origin | Destination */}
         <div>
           <label style={labelStyle}>Origin Country</label>
           <select
@@ -347,7 +386,6 @@ export default function HeroCalculator() {
           </select>
         </div>
 
-        {/* Destination */}
         <div>
           <label style={labelStyle}>Destination</label>
           <select
