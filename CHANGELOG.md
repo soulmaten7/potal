@@ -1,5 +1,19 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-03 18:00 KST (CW22-O — 폴더 구조 대청소)
+> 마지막 업데이트: 2026-04-03 19:30 KST (CW22-O — 10-Field 데모 폼 완성)
+
+## [2026-04-03 19:30 KST] CW22-O — 10-Field 데모 폼 완성
+
+### 추가
+- 🎯 **Description 필드 추가** — 데모 폼에 description textarea 추가 (field-validator +4%, 100% accuracy 달성 가능)
+- 📐 **폼 레이아웃 정리** — Description을 Material|Category 아래로 이동 (Magic 3 우선 배치)
+- 🏷️ **Description optional 라벨** — Processing/Composition/Weight와 동일한 스타일로 optional 표시
+- 📊 **TOTAL_FIELDS 9→10** — Fields Filled 카운터 10/10 대응
+- 📄 **Pipeline HTML 10-Field 업데이트** — `POTAL_7Field_Pipeline_v3_Final.html` → `POTAL_10Field_Pipeline_v3_Final.html` (destination_country 필수 필드 추가)
+- 📝 **Notion 데모 가이드 업데이트** — 10-Field 상세 설명 + 추천 입력값 + 정확도 변화 테이블 추가, 재촬영 필요 항목 체크 해제
+
+### 수정
+- 🔧 **Classification Accuracy ~100%** — description 포함 시 product_name(+18%) + material(+45%) + category(+33%) + description(+4%) = 100% 달성
+- 🔧 **API 호출에 description 파라미터 추가** — fetch body에 description 포함
 
 ## [2026-04-03 18:00 KST] CW22-O — 폴더 구조 대청소
 
