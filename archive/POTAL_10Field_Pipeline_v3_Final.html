@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>POTAL v3 Pipeline — 9-Field → 10-Digit Complete (CW18 3차 Final)</title>
+<title>POTAL v3 Pipeline — 10-Field → 10-Digit Complete (CW22 Updated)</title>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; padding: 20px; min-height: 100vh; }
@@ -85,17 +85,17 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
 <body>
 
 <div class="header">
-  <h1>POTAL v3 — 9-Field → 10-Digit HS Code + Duty Rate (7개국 완성 ✅)</h1>
+  <h1>POTAL v3 — 10-Field → 10-Digit HS Code + Duty Rate (7개국 완성 ✅)</h1>
   <div class="sub">
-    9-Field Architecture | "거래처 데이터로 HS 10자리 + 세율까지 한번에" | AI 호출 0회<br>
+    10-Field Architecture | "거래처 데이터로 HS 10자리 + 세율까지 한번에" | AI 호출 0회<br>
     131,794행 코드화 (7개국) | 13,849 키워드 | 11개 패턴 유형 | 5회 검수 오류 0건<br>
     7개국 벤치마크 1,183건: **7개국 전부 100%** 확장 + 세율 100% | AI 호출 0회<br>
-    Step 0~6 전체 파이프라인 | 패턴 기반 매칭 | gov_tariff_schedules 131,794행 | 2026-03-21
+    Step 0~6 전체 파이프라인 | 패턴 기반 매칭 | gov_tariff_schedules 131,794행 | 2026-04-03
   </div>
 </div>
 
 <div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> INPUT (9 Fields)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> INPUT (10 Fields)</div>
   <div class="legend-item"><div class="legend-dot" style="background:#a855f7"></div> CACHE ($0)</div>
   <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> CODE ($0) — 100% ✅</div>
   <div class="legend-item"><div class="legend-dot" style="background:#7ee787"></div> 판결문 패턴 ($0)</div>
@@ -110,12 +110,13 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
     <div class="step-header">
       <div class="step-badge bg-input"><div class="num">0</div><div class="label">Input</div></div>
       <div class="step-body border-input">
-        <div class="step-title">9-Field 입력 수신 <span class="tag tag-new">v3</span> <span class="tag tag-absolute">절대값 — 수정 금지</span></div>
-        <div class="step-meta">POST /api/v1/classify → ClassifyInputV3 → step0-input.ts | 필수 3개 + 선택 6개</div>
+        <div class="step-title">10-Field 입력 수신 <span class="tag tag-new">v3</span> <span class="tag tag-absolute">절대값 — 수정 금지</span></div>
+        <div class="step-meta">POST /api/v1/classify → ClassifyInputV3 → step0-input.ts | 필수 4개 + 선택 6개</div>
         <div class="fields">
           <div class="field field-req"><b>product_name</b>상품명</div>
           <div class="field field-req"><b>material</b>소재 (21 Section 기준)</div>
           <div class="field field-req"><b>origin_country</b>원산지</div>
+          <div class="field field-req"><b>destination_country</b>목적지</div>
           <div class="field field-opt"><b>category</b>카테고리 (필수급)</div>
           <div class="field field-opt"><b>description</b>기능/용도</div>
           <div class="field field-opt"><b>processing</b>가공상태</div>
@@ -131,16 +132,17 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
               <li><strong style="color:#ef4444">category: +32.8% (CRITICAL)</strong> — 기능 vs 소재 구분의 핵심</li>
               <li><strong style="color:#f59e0b">product_name: +18.0% (HIGH)</strong> — 기본 키워드 매칭</li>
               <li><strong style="color:#94a3b8">description: +4.8% (LOW)</strong> — Chapter 레벨에서만 영향</li>
-              <li><strong style="color:#22c55e">processing/composition/weight/price/origin: 0.0%</strong> — Section/Chapter 레벨 무영향</li>
+              <li><strong style="color:#22c55e">processing/composition/weight/price/origin/destination: 0.0%</strong> — HS분류 무영향 (destination은 세율 조회 Step 6에서 사용)</li>
             </ul>
             <p style="margin-top:4px; color:#67e8f9; font-size:10px">"Magic 3" 확정: product_name + material + category = <strong>98% HS6 정확도</strong></p>
           </div>
           <div class="box">
             <h4>타겟 데이터 보유 근거</h4>
             <p>크로스보더 셀러 = 세관 신고서(Commercial Invoice) 작성 필수<br>
-            → 9가지 전부 <strong>법적으로 보유</strong><br><br>
+            → 10가지 전부 <strong>법적으로 보유</strong><br><br>
             material은 이커머스 플랫폼에서 <strong>표준화된 드롭다운</strong>으로 제공 (Amazon/Shopify/eBay)<br>
-            → 21개 Section에 매핑 가능한 깨끗한 키워드</p>
+            → 21개 Section에 매핑 가능한 깨끗한 키워드<br>
+            destination_country는 <strong>배송지 주소에서 자동 추출</strong> 가능 (이커머스 주문 = 배송지 필수)</p>
           </div>
         </div>
       </div>
@@ -156,8 +158,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
         <div class="step-meta">step05-field-extraction.ts → GPT-4o-mini | 별도 파이프라인 (v3 복사본) | ~$0.0001/건</div>
         <div class="grid2">
           <div class="box">
-            <h4>동작 (9-field 못 채우는 고객용)</h4>
-            <p>플랫폼 상품 데이터 → LLM → 9-field JSON 변환<br>
+            <h4>동작 (10-field 못 채우는 고객용)</h4>
+            <p>플랫폼 상품 데이터 → LLM → 10-field JSON 변환<br>
             필드 추출 성공: material 57%→82.4%, category 2%→82.4%<br>
             평균 필드: 3.5 → 6.2개로 증가</p>
           </div>
@@ -165,7 +167,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
             <h4>현재 성능 (HSCodeComp 632건)</h4>
             <p>Step 0.5 적용 후 HS6: 5.1% (키워드 사전이 병목)<br>
             <strong style="color:#f59e0b">이 Step은 Tier 1-2에 적용 안 함</strong><br>
-            Tier 1-2 고객은 9-field 직접 입력 → 100%</p>
+            Tier 1-2 고객은 10-field 직접 입력 → 100%</p>
           </div>
         </div>
       </div>
@@ -345,7 +347,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
         <div class="grid2">
           <div class="box">
             <h4>출력</h4>
-            <p>final_hs_code (6~10자리) + hs_code_precision (HS6/HS8/HS10)<br>
+            <p>final_hs_code (6~10자리) + hs_code_precision (HS6/HS8/HS10) — destination_country 기준 국가별 세율 조회<br>
             <strong style="color:#38bdf8">+ duty_rate (macmap MFN 세율)</strong><br>
             + confidence + decisionPath + aiCallCount (0)<br>
             + country_specific { country, national_code, duty_rate, method }</p>
@@ -379,7 +381,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
   <table class="accuracy-table">
     <tr><th>벤치마크</th><th>Section</th><th>Chapter</th><th>Heading</th><th>HS6</th><th>비고</th></tr>
     <tr style="background:#052e16">
-      <td style="font-weight:700; color:#22c55e">Amazon 50건 (9/9 Field)</td>
+      <td style="font-weight:700; color:#22c55e">Amazon 50건 (10/10 Field)</td>
       <td style="color:#22c55e">100% ✅</td>
       <td style="color:#22c55e">100% ✅</td>
       <td style="color:#22c55e">100% ✅</td>
@@ -395,7 +397,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
       <td style="font-size:10px">필드 빠질수록 정확도 하락<br>"Magic 3" = name+material+category = 98%</td>
     </tr>
     <tr style="background:#1c1917">
-      <td style="font-weight:700; color:#f59e0b">HSCodeComp 632건 (1/9 Field)</td>
+      <td style="font-weight:700; color:#f59e0b">HSCodeComp 632건 (1/10 Field)</td>
       <td style="color:#f59e0b">42.6%</td>
       <td style="color:#f59e0b">—</td>
       <td style="color:#f59e0b">15.5%</td>
@@ -405,7 +407,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
   </table>
   <div style="margin-top:10px; background:#0f172a; border-radius:6px; padding:10px; border-left:3px solid #ef4444;">
     <p style="font-size:11px; color:#fca5a5;">⚠️ HSCodeComp 6.3% 올바른 해석: "POTAL 정확도가 6.3%다" ❌ → "product_name만 넣으면 6.3%다" ✅<br>
-    9-field가 제대로 채워지면 <strong style="color:#22c55e">100%</strong>. 이것이 POTAL의 실제 성능. 불완전 입력은 Tier 3 Enterprise Custom 전용 파이프라인에서 별도 처리.</p>
+    10-field가 제대로 채워지면 <strong style="color:#22c55e">100%</strong>. 이것이 POTAL의 실제 성능. 불완전 입력은 Tier 3 Enterprise Custom 전용 파이프라인에서 별도 처리.</p>
   </div>
 </div>
 
@@ -463,17 +465,17 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
     <div class="tier" style="border-top: 3px solid #22c55e;">
       <div class="tier-name" style="color:#22c55e">Tier 1-2: Free / Basic / Pro (동일 기능)</div>
       <div class="tier-desc" style="text-align:left; padding:8px;">
-        고객이 <strong>9-field 직접 입력</strong> → <strong style="color:#22c55e">100% 정확도</strong><br><br>
-        빈 필드 있으면 진단 표시: "material 빠지면 정확도 -45%"<br>
+        고객이 <strong>10-field 직접 입력</strong> → <strong style="color:#22c55e">100% 정확도</strong><br><br>
+        빈 필드 있으면 진단 표시: "material 빠지면 정확도 -45%" | destination 없으면 세율 조회 불가<br>
         고객이 직접 채우도록 안내 (우리가 대신 채워주지 않음)<br><br>
-        <strong>근거:</strong> 크로스보더 셀러는 세관 신고서용으로 9-field를 <strong>법적으로 이미 보유</strong><br>
+        <strong>근거:</strong> 크로스보더 셀러는 세관 신고서용으로 10-field를 <strong>법적으로 이미 보유</strong><br>
         <strong>v3 파이프라인 원본 사용</strong> — 수정/실험 금지
       </div>
     </div>
     <div class="tier" style="border-top: 3px solid #f59e0b;">
       <div class="tier-name" style="color:#f59e0b">Tier 3: Enterprise Custom</div>
       <div class="tier-desc" style="text-align:left; padding:8px;">
-        9-field 못 채우는 고객<br>→ <strong>별도 파이프라인</strong> (v3 복사본)<br><br>
+        10-field 못 채우는 고객<br>→ <strong>별도 파이프라인</strong> (v3 복사본)<br><br>
         + Step 0.5 (LLM 필드 추출)<br>
         + 키워드 사전 확장<br>
         + Custom 매핑<br><br>
@@ -492,7 +494,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
     같은 원칙이 POTAL 12개 TLC 영역 전체에 동일하게 적용됨.<br><br>
     <strong>v2.0:</strong> "상품명으로 AI가 추측" (24%) → <strong>v3:</strong> "거래처 데이터로 코드가 확정 + 세율까지" (<strong style="color:#22c55e">100% + 세율 달성 ✅</strong>)<br><br>
     <strong style="color:#ef4444">⚠️ v3 파이프라인 Step 0~6 전체 = 절대값. 절대 손대지 않는다.</strong><br>
-    Step 0~3: 9-field → HS6 100% (Amazon 50건 + 466조합 Ablation).<br>
+    Step 0~3: 10-field 중 분류용 9-field → HS6 100% + destination → 세율 100% (Amazon 50건 + 466조합 Ablation).<br>
     Step 4~6: 7개국 10자리 패턴 매칭 + 세율 (1,183건 벤치마크, 5회 검수 오류 0건).<br>
     125,576행 코드화 + 13,849 키워드 + 11개 패턴 — <strong>수정 금지, 추가만 가능.</strong><br>
     추가 후 반드시 regression 테스트. 기존 결과가 깨지면 추가 취소.</p>
@@ -552,7 +554,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
 <div class="summary">
   <h2>v3 파이프라인 요약</h2>
   <div class="stat-grid">
-    <div class="stat"><div class="val" style="color:#ef4444">9</div><div class="desc">입력 필드<br>(필수3 + 선택6)</div></div>
+    <div class="stat"><div class="val" style="color:#ef4444">10</div><div class="desc">입력 필드<br>(필수4 + 선택6)</div></div>
     <div class="stat"><div class="val" style="color:#22c55e">131K</div><div class="desc">코드화 행<br>(7개국 5회 검수)</div></div>
     <div class="stat"><div class="val" style="color:#38bdf8">874K</div><div class="desc">세율 레코드<br>(140국 MFN)</div></div>
     <div class="stat"><div class="val" style="color:#f59e0b">0</div><div class="desc">AI 호출<br>(전 단계)</div></div>
