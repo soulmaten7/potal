@@ -318,7 +318,10 @@ export default function HeroCalculator() {
 
         {/* Row 3: Description - full width textarea */}
         <div style={{ gridColumn: '1 / -1' }}>
-          <label style={labelStyle}>Description</label>
+          <label style={labelStyle}>
+            <span>Description</span>
+            <span style={{ fontSize: 9, fontWeight: 400, color: 'rgba(255,255,255,0.3)', textTransform: 'none', letterSpacing: 0 }}>optional</span>
+          </label>
           <textarea
             rows={2}
             placeholder="e.g. Men's crew neck short sleeve basic t-shirt for casual wear..."
