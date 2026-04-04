@@ -66,12 +66,89 @@ function formatMaterial(m: string): string {
   return m.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-');
 }
 
+interface HsClassResult {
+  hsCode?: string;
+  description?: string;
+  section?: string;
+  chapter?: string;
+}
+
+interface FtaResult {
+  fta_available: boolean;
+  fta_count?: number;
+  fta_applied?: string | null;
+  savings?: number;
+  alternative_ftas?: Array<{ name: string; rate: number }>;
+}
+
+interface TradeRemedyCase {
+  type?: string;
+  rate?: number;
+  rate_type?: string;
+  enforcement?: string;
+}
+
+interface TradeRemedyDetail {
+  subject?: boolean;
+  cases?: TradeRemedyCase[];
+  total_additional_duty?: number;
+}
+
+interface RestrictionItem {
+  type?: string;
+  description?: string;
+  license_info?: string;
+}
+
+interface RestrictionsResult {
+  restricted?: boolean;
+  items?: RestrictionItem[];
+}
+
+interface RegulatoryWarning {
+  category?: string;
+  note?: string;
+  effective_date?: string | null;
+}
+
+interface DetailedBreakdownItem {
+  amount: number;
+  calculation_basis: string;
+}
+
+interface DetailedBreakdown {
+  product_price?: DetailedBreakdownItem;
+  import_duty?: DetailedBreakdownItem;
+  anti_dumping_duty?: DetailedBreakdownItem;
+  countervailing_duty?: DetailedBreakdownItem;
+  safeguard_duty?: DetailedBreakdownItem;
+  vat_gst?: DetailedBreakdownItem;
+  customs_processing_fee?: DetailedBreakdownItem;
+  merchandise_processing_fee?: DetailedBreakdownItem;
+  harbor_maintenance_fee?: DetailedBreakdownItem;
+  insurance_estimate?: DetailedBreakdownItem;
+  freight_estimate?: DetailedBreakdownItem;
+  broker_fee_estimate?: DetailedBreakdownItem;
+  total_landed_cost?: DetailedBreakdownItem;
+}
+
 interface CalcResult {
   importDuty: number;
   vat: number;
   processingFee: number;
   totalLandedCost: number;
-  ablationAccuracy: number; // 0-100 from field-validator ablation formula
+  ablationAccuracy: number;
+  // Extended data from API
+  hsClassification?: HsClassResult | null;
+  dutyRateSource?: string | null;
+  dutyConfidenceScore?: number | null;
+  ftaUtilization?: FtaResult | null;
+  restrictions?: RestrictionsResult | null;
+  regulatoryWarnings?: RegulatoryWarning[] | null;
+  tradeRemediesDetail?: TradeRemedyDetail | null;
+  detailedBreakdown?: DetailedBreakdown | null;
+  deMinimisApplied?: boolean;
+  dutyRate?: string | null;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -101,6 +178,71 @@ const labelStyle: React.CSSProperties = {
 };
 
 const TOTAL_FIELDS = 10;
+
+function CollapsibleSection({ title, defaultOpen = false, color, delay = 0, children }: {
+  title: string;
+  defaultOpen?: boolean;
+  color: string;
+  delay?: number;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{
+      marginTop: 10,
+      background: 'rgba(0,0,0,0.2)',
+      borderRadius: 10,
+      border: '1px solid rgba(255,255,255,0.08)',
+      overflow: 'hidden',
+      animation: `fadeSlideIn 0.3s ease ${delay}s both`,
+    }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '10px 14px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          color,
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+        }}
+      >
+        <span>{title}</span>
+        <span style={{
+          fontSize: 10,
+          transition: 'transform 0.2s',
+          transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+        }}>&#9660;</span>
+      </button>
+      {open && (
+        <div style={{ padding: '0 14px 12px' }}>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function formatSourceLabel(src: string): string {
+  const map: Record<string, string> = {
+    live_db: 'MacMap Live DB',
+    db: 'Tariff DB',
+    mfn: 'MFN Rate',
+    agr: 'Agreement Rate',
+    min: 'Minimum Rate',
+    external_api: 'External API',
+    hardcoded: 'Default',
+    ntlc: 'National Tariff',
+  };
+  return map[src] || src;
+}
 
 export default function HeroCalculator() {
   const [productName, setProductName] = useState('');
@@ -187,7 +329,23 @@ export default function HeroCalculator() {
       if (category) acc += 33;
       if (description.trim()) acc += 4;
       acc = Math.min(acc, 100);
-      setResult({ importDuty: duty, vat, processingFee: fee, totalLandedCost: tlc, ablationAccuracy: acc });
+      setResult({
+        importDuty: duty,
+        vat,
+        processingFee: fee,
+        totalLandedCost: tlc,
+        ablationAccuracy: acc,
+        hsClassification: (data.hsClassification as HsClassResult) ?? null,
+        dutyRateSource: (data.dutyRateSource as string) ?? null,
+        dutyConfidenceScore: typeof data.dutyConfidenceScore === 'number' ? data.dutyConfidenceScore : null,
+        ftaUtilization: (data.fta_utilization as FtaResult) ?? null,
+        restrictions: (data.restrictions as RestrictionsResult) ?? null,
+        regulatoryWarnings: (data.regulatory_warnings as RegulatoryWarning[]) ?? null,
+        tradeRemediesDetail: (data.trade_remedies_detail as TradeRemedyDetail) ?? null,
+        detailedBreakdown: (data.detailedCostBreakdown as DetailedBreakdown) ?? null,
+        deMinimisApplied: data.deMinimisApplied === true,
+        dutyRate: (data.detailedCostBreakdown as DetailedBreakdown)?.import_duty?.calculation_basis ?? null,
+      });
     } catch {
       setError('Unable to calculate. Try with more details.');
     } finally {
@@ -491,11 +649,13 @@ export default function HeroCalculator() {
       {/* Result breakdown */}
       {result && (
         <div style={{ marginTop: 18 }}>
+          {/* === COST BREAKDOWN (always open, matches original) === */}
           <div style={{
             background: 'rgba(0,0,0,0.25)',
             borderRadius: 14,
             overflow: 'hidden',
             border: '1px solid rgba(255,255,255,0.1)',
+            animation: 'fadeSlideIn 0.3s ease both',
           }}>
             {/* Classification Accuracy — ablation-tested (466 combinations) */}
             {(() => {
@@ -529,7 +689,7 @@ export default function HeroCalculator() {
             })()}
 
             {[
-              { label: 'Import Duty', value: result.importDuty },
+              { label: 'Import Duty', value: result.importDuty, sub: result.dutyRate },
               { label: 'VAT / GST', value: result.vat },
               ...(result.processingFee > 0 ? [{ label: 'Processing Fee', value: result.processingFee }] : []),
             ].map((item, i) => (
@@ -541,7 +701,14 @@ export default function HeroCalculator() {
                 borderBottom: '1px solid rgba(255,255,255,0.07)',
                 fontSize: 14,
               }}>
-                <span style={{ color: 'rgba(255,255,255,0.65)' }}>{item.label}</span>
+                <div>
+                  <span style={{ color: 'rgba(255,255,255,0.65)' }}>{item.label}</span>
+                  {'sub' in item && item.sub && (
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                      {item.sub}{result.dutyRateSource ? ` (${formatSourceLabel(result.dutyRateSource)})` : ''}
+                    </div>
+                  )}
+                </div>
                 <span style={{ fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>
                   ${item.value.toFixed(2)}
                 </span>
@@ -562,6 +729,147 @@ export default function HeroCalculator() {
               </span>
             </div>
           </div>
+
+          {/* === CLASSIFICATION (collapsible) === */}
+          {result.hsClassification?.hsCode && (
+            <CollapsibleSection title="Classification" color="#fb923c" delay={0.1}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>HS Code</span>
+                  <span style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: '#fb923c',
+                    fontFamily: 'monospace',
+                    background: 'rgba(251,146,60,0.12)',
+                    padding: '2px 8px',
+                    borderRadius: 6,
+                  }}>
+                    {result.hsClassification.hsCode}
+                  </span>
+                </div>
+                {result.hsClassification.description && (
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                    {result.hsClassification.description}
+                  </div>
+                )}
+                {result.dutyConfidenceScore != null && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Confidence</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: result.dutyConfidenceScore >= 0.9 ? '#4ade80' : '#facc15' }}>
+                      {Math.round(result.dutyConfidenceScore * 100)}%
+                    </span>
+                  </div>
+                )}
+                {result.dutyRateSource && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Source</span>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+                      {formatSourceLabel(result.dutyRateSource)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </CollapsibleSection>
+          )}
+
+          {/* === TRADE AGREEMENTS (collapsible) === */}
+          {result.ftaUtilization?.fta_available && (
+            <CollapsibleSection title="Trade Agreements" color="#4ade80" delay={0.2}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {result.ftaUtilization.fta_applied && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>FTA Applied</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#4ade80' }}>
+                      {result.ftaUtilization.fta_applied}
+                    </span>
+                  </div>
+                )}
+                {typeof result.ftaUtilization.savings === 'number' && result.ftaUtilization.savings > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Potential Savings</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#4ade80' }}>
+                      -${result.ftaUtilization.savings.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                {result.ftaUtilization.alternative_ftas && result.ftaUtilization.alternative_ftas.length > 0 && (
+                  <div style={{ marginTop: 4 }}>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 4 }}>
+                      Alternative agreements:
+                    </span>
+                    {result.ftaUtilization.alternative_ftas.map((fta, i) => (
+                      <div key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', paddingLeft: 8 }}>
+                        {fta.name} ({(fta.rate * 100).toFixed(1)}%)
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CollapsibleSection>
+          )}
+
+          {/* === COMPLIANCE (collapsible) === */}
+          {(result.restrictions?.restricted || (result.regulatoryWarnings && result.regulatoryWarnings.length > 0) || result.tradeRemediesDetail?.subject) && (
+            <CollapsibleSection title="Compliance" color="#facc15" delay={0.3}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {/* Restrictions */}
+                {result.restrictions?.restricted && result.restrictions.items && result.restrictions.items.length > 0 ? (
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#f87171', display: 'block', marginBottom: 4 }}>
+                      Restrictions
+                    </span>
+                    {result.restrictions.items.map((r, i) => (
+                      <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', paddingLeft: 8, marginBottom: 2 }}>
+                        <span style={{ color: '#f87171' }}>{r.type}</span>
+                        {r.description && <span> — {r.description}</span>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Restrictions</span>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>None detected</span>
+                  </div>
+                )}
+
+                {/* Trade Remedies */}
+                {result.tradeRemediesDetail?.subject && result.tradeRemediesDetail.cases && result.tradeRemediesDetail.cases.length > 0 && (
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#facc15', display: 'block', marginBottom: 4 }}>
+                      Trade Remedies
+                    </span>
+                    {result.tradeRemediesDetail.cases.map((c, i) => (
+                      <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', paddingLeft: 8, marginBottom: 2 }}>
+                        <span style={{ color: '#facc15' }}>{c.type}</span>
+                        {typeof c.rate === 'number' && <span>: {(c.rate * 100).toFixed(2)}%</span>}
+                      </div>
+                    ))}
+                    {typeof result.tradeRemediesDetail.total_additional_duty === 'number' && result.tradeRemediesDetail.total_additional_duty > 0 && (
+                      <div style={{ fontSize: 11, color: '#facc15', paddingLeft: 8, marginTop: 4 }}>
+                        Additional duty: ${result.tradeRemediesDetail.total_additional_duty.toFixed(2)}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Regulatory Warnings */}
+                {result.regulatoryWarnings && result.regulatoryWarnings.length > 0 && (
+                  <div>
+                    <span style={{ fontSize: 11, fontWeight: 600, color: '#f87171', display: 'block', marginBottom: 4 }}>
+                      Regulatory Warnings
+                    </span>
+                    {result.regulatoryWarnings.map((w, i) => (
+                      <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', paddingLeft: 8, marginBottom: 2 }}>
+                        {w.category && <span style={{ color: '#f87171' }}>{w.category}: </span>}
+                        {w.note}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CollapsibleSection>
+          )}
 
           {/* Low accuracy hint */}
           {result.ablationAccuracy < 70 && (
@@ -592,13 +900,19 @@ export default function HeroCalculator() {
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.14)'}
             onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.08)'}
           >
-            Get exact calculation →
+            Sign up free — Get API key for bulk access →
           </Link>
         </div>
       )}
 
-      {/* Spinner keyframe */}
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      {/* Keyframes */}
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }
