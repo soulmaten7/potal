@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import HeroCalculator from '@/components/home/HeroCalculator';
+import DataSourceTicker from '@/components/home/DataSourceTicker';
 
 // ─── Animated Counter ─────────────────────────────
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -550,6 +551,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════ DATA SOURCE TICKER ═══════════════════════ */}
+      <DataSourceTicker />
 
       {/* ═══════════════════ FEATURES CTA BANNER ══════════════════════ */}
       <section style={{ background: '#0A0A1A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '32px 0' }}>
