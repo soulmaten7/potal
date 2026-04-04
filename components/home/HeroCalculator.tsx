@@ -73,6 +73,15 @@ interface HsClassResult {
   chapter?: string;
 }
 
+interface Hs10Result {
+  hsCode?: string;
+  hsCodePrecision?: 'HS10' | 'HS6';
+  classificationMethod?: string;
+  description?: string;
+  confidence?: number;
+  dutyRate?: number;
+}
+
 interface FtaResult {
   fta_available: boolean;
   fta_count?: number;
@@ -149,7 +158,22 @@ interface CalcResult {
   detailedBreakdown?: DetailedBreakdown | null;
   deMinimisApplied?: boolean;
   dutyRate?: string | null;
+  hs10Resolution?: Hs10Result | null;
 }
+
+function formatHsCode(code: string): string {
+  const clean = code.replace(/\D/g, '');
+  if (clean.length <= 4) return clean;
+  if (clean.length <= 6) return `${clean.slice(0, 4)}.${clean.slice(4)}`;
+  if (clean.length <= 8) return `${clean.slice(0, 4)}.${clean.slice(4, 6)}.${clean.slice(6)}`;
+  return `${clean.slice(0, 4)}.${clean.slice(4, 6)}.${clean.slice(6, 8)}.${clean.slice(8)}`;
+}
+
+const EU_SET = new Set([
+  'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR',
+  'DE','GR','HU','IE','IT','LV','LT','LU','MT','NL',
+  'PL','PT','RO','SK','SI','ES','SE',
+]);
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -345,6 +369,7 @@ export default function HeroCalculator() {
         detailedBreakdown: (data.detailedCostBreakdown as DetailedBreakdown) ?? null,
         deMinimisApplied: data.deMinimisApplied === true,
         dutyRate: (data.detailedCostBreakdown as DetailedBreakdown)?.import_duty?.calculation_basis ?? null,
+        hs10Resolution: (data.hs10Resolution as Hs10Result) ?? null,
       });
     } catch {
       setError('Unable to calculate. Try with more details.');
@@ -736,28 +761,43 @@ export default function HeroCalculator() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>HS Code</span>
-                  <span style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: '#fb923c',
-                    fontFamily: 'monospace',
-                    background: 'rgba(251,146,60,0.12)',
-                    padding: '2px 8px',
-                    borderRadius: 6,
-                  }}>
-                    {result.hsClassification.hsCode}
-                  </span>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+                    <span style={{
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: '#fb923c',
+                      fontFamily: 'monospace',
+                      background: 'rgba(251,146,60,0.12)',
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                    }}>
+                      {result.hs10Resolution?.hsCodePrecision === 'HS10' && result.hs10Resolution?.hsCode
+                        ? formatHsCode(result.hs10Resolution.hsCode)
+                        : formatHsCode(result.hsClassification.hsCode!)}
+                    </span>
+                    <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)' }}>
+                      {result.hs10Resolution?.hsCodePrecision === 'HS10'
+                        ? (destination === 'US' ? 'HTS 10-digit'
+                          : EU_SET.has(destination) ? 'TARIC 10-digit'
+                          : 'National 10-digit')
+                        : 'HS 6-digit (international)'}
+                    </span>
+                  </div>
                 </div>
-                {result.hsClassification.description && (
+                {(result.hs10Resolution?.hsCodePrecision === 'HS10' ? result.hs10Resolution.description : result.hsClassification.description) && (
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
-                    {result.hsClassification.description}
+                    {result.hs10Resolution?.hsCodePrecision === 'HS10'
+                      ? result.hs10Resolution.description
+                      : result.hsClassification.description}
                   </div>
                 )}
-                {result.dutyConfidenceScore != null && (
+                {(result.hs10Resolution?.confidence ?? result.dutyConfidenceScore) != null && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Confidence</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: result.dutyConfidenceScore >= 0.9 ? '#4ade80' : '#facc15' }}>
-                      {Math.round(result.dutyConfidenceScore * 100)}%
+                    <span style={{ fontSize: 12, fontWeight: 600, color:
+                      ((result.hs10Resolution?.confidence ?? result.dutyConfidenceScore) || 0) >= 0.9 ? '#4ade80' : '#facc15'
+                    }}>
+                      {Math.round(((result.hs10Resolution?.confidence ?? result.dutyConfidenceScore) || 0) * 100)}%
                     </span>
                   </div>
                 )}
@@ -766,6 +806,14 @@ export default function HeroCalculator() {
                     <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Source</span>
                     <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
                       {formatSourceLabel(result.dutyRateSource)}
+                    </span>
+                  </div>
+                )}
+                {result.hs10Resolution?.classificationMethod && result.hs10Resolution.hsCodePrecision === 'HS10' && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Method</span>
+                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace' }}>
+                      {result.hs10Resolution.classificationMethod.replace(/_/g, ' ')}
                     </span>
                   </div>
                 )}
