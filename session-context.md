@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-03 19:30 KST (CW22-O — 10-Field 데모 폼 완성. Description 추가로 100% accuracy 달성. Pipeline HTML 10-Field 업데이트. 데모 가이드 Notion 상세 추가. 다음: 스크린샷 3장 재촬영 + rec_01 재녹화)
+> 마지막 업데이트: 2026-04-04 22:50 KST (CW22-O — 데모 결과 확장 라이브. API가 반환하는 HS Code/FTA/Compliance를 프론트엔드에 표시. Vercel 수동 배포 완료. .vercelignore 추가로 배포 크기 25MB. ~/portal 자동 생성 원인 해결)
 
 ---
 

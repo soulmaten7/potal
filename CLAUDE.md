@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-03 19:30 KST (CW22-O: 10-Field 데모 폼 완성 — Description 추가, 레이아웃 정리, Pipeline HTML 업데이트)
+# 마지막 업데이트: 2026-04-04 22:50 KST (CW22-O: 데모 결과 확장 — HS Code, FTA, Compliance 섹션 추가 + Vercel 배포 수정)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

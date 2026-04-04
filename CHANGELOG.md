@@ -1,5 +1,25 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-03 19:30 KST (CW22-O — 10-Field 데모 폼 완성)
+> 마지막 업데이트: 2026-04-04 22:50 KST (CW22-O — 데모 결과 확장 + Vercel 배포 수정)
+
+## [2026-04-04 22:50 KST] CW22-O — 데모 결과 확장 + Vercel 배포 수정
+
+### 추가
+- 🎯 **데모 결과 확장** — API가 이미 반환하는 HS Code, FTA, Compliance 데이터를 프론트엔드에 표시
+  - Classification 섹션: HS Code (610910), description, confidence (90%), source
+  - Trade Agreements 섹션: FTA 적용 여부, 절감액, 대안 FTA 목록
+  - Compliance 섹션: restrictions, trade remedies, regulatory warnings
+  - 접이식 UI + fade-in 애니메이션 + 컬러 코딩 (주황/초록/빨강/노랑)
+- 📄 **.vercelignore 추가** — 배포 크기 14.5GB → 25MB로 축소
+
+### 수정
+- 🔧 **Vercel 수동 배포** — Git Integration 미트리거 시 `npx vercel --prod`로 배포
+- 🔧 **CTA 문구 변경** — "Get exact calculation →" → "Sign up free — Get API key for bulk access →"
+- 🔧 **Import Duty 하위에 duty rate/source 표시** — 예: `16.5% (MacMap Live DB)`
+- 🔧 **~/portal 자동 생성 원인 해결** — scheduled-tasks.json의 3개 task가 `/Users/maegbug/portal` 참조 → `/Users/maegbug/potal`로 수정
+
+### 삭제
+- 🗑️ 임시 명령어 파일 정리: EXPAND_DEMO_RESULTS.md, FIX_VERCEL_DEPLOY.md, docs/RESULT_CONFIDENCE_COMMAND.md
+- 🗑️ 루트 명령어 파일 9개 정리: ADD_DESCRIPTION_FIELD.md 등
 
 ## [2026-04-03 19:30 KST] CW22-O — 10-Field 데모 폼 완성
 
