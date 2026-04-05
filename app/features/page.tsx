@@ -3,8 +3,10 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { FEATURES, CATEGORIES, CATEGORY_ICONS, type FeatureCategory } from './features-data';
+import { useI18n } from '@/app/i18n';
 
 export default function FeaturesPage() {
+  const { t } = useI18n();
   const [selectedCategory, setSelectedCategory] = useState<FeatureCategory | 'All'>('All');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,18 +32,17 @@ export default function FeaturesPage() {
       <section className="bg-[#02122c] text-white py-16 sm:py-24">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
-            {FEATURES.length}+ Features. One API.
+            {t('features.hero.title').replace('{count}', String(FEATURES.length))}
           </h1>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-            Everything top 10 competitors offer — unified into a single platform at 1/100th the cost.
-            No per-transaction fees. No hidden charges.
+            {t('features.hero.subtitle')}
           </p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             {[
-              { value: FEATURES.length, label: 'Active Features' },
-              { value: '240', label: 'Countries' },
-              { value: '155+', label: 'API Endpoints' },
-              { value: '$0', label: 'To Start' },
+              { value: FEATURES.length, label: t('features.stats.activeFeatures') },
+              { value: '240', label: t('features.stats.countries') },
+              { value: '155+', label: t('features.stats.apiEndpoints') },
+              { value: '$0', label: t('features.stats.toStart') },
             ].map((stat) => (
               <div key={stat.label} className="text-center min-w-[80px]">
                 <div className="text-2xl sm:text-4xl font-extrabold text-[#F59E0B]">{stat.value}</div>
@@ -62,7 +63,7 @@ export default function FeaturesPage() {
             </svg>
             <input
               type="text"
-              placeholder="Search features... (e.g. HS Code, FTA, Landed Cost)"
+              placeholder={t('features.search.placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-10 py-2.5 text-sm border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B] outline-none transition-colors placeholder:text-slate-400"
@@ -95,7 +96,9 @@ export default function FeaturesPage() {
             ))}
           </div>
           <div className="flex mt-2">
-            <span className="ml-auto text-xs text-slate-400 self-center">{filtered.length} features</span>
+            <span className="ml-auto text-xs text-slate-400 self-center">
+              {t('features.search.count').replace('{count}', String(filtered.length))}
+            </span>
           </div>
         </div>
       </section>
@@ -122,7 +125,7 @@ export default function FeaturesPage() {
                     {feature.priority === 'MUST' && (
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">MUST</span>
                     )}
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Active</span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">{t('features.badge.active')}</span>
                   </div>
                 </div>
 
@@ -144,7 +147,7 @@ export default function FeaturesPage() {
                     </div>
                   ) : <div />}
                   <span className={`text-[11px] font-bold text-[#F59E0B] transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-                    View Guide &rarr;
+                    {t('features.viewGuide')} &rarr;
                   </span>
                 </div>
               </Link>
@@ -154,9 +157,9 @@ export default function FeaturesPage() {
 
         {filtered.length === 0 && (
           <div className="text-center py-16 text-slate-400">
-            <p className="text-lg font-semibold">No features match your filter.</p>
+            <p className="text-lg font-semibold">{t('features.noResults')}</p>
             <button onClick={() => { setSelectedCategory('All'); setSearchQuery(''); }} className="mt-2 text-sm text-[#F59E0B] font-bold cursor-pointer">
-              Reset filters
+              {t('features.resetFilters')}
             </button>
           </div>
         )}
@@ -165,8 +168,8 @@ export default function FeaturesPage() {
       {/* Competitor Comparison */}
       <section className="bg-white border-t border-slate-200 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">Why POTAL?</h2>
-          <p className="text-center text-slate-500 mb-10">More features, lower cost, zero per-transaction fees.</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">{t('features.comparison.title')}</h2>
+          <p className="text-center text-slate-500 mb-10">{t('features.comparison.subtitle')}</p>
 
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -181,14 +184,14 @@ export default function FeaturesPage() {
               </thead>
               <tbody>
                 {[
-                  { label: 'Active Features', potal: '140', avalara: '44', zonos: '38', simply: '22' },
-                  { label: 'Countries', potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
-                  { label: 'HS Code Accuracy', potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
-                  { label: 'Starting Price', potal: '$0/mo', avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },
-                  { label: 'Per-Transaction Fee', potal: 'None', avalara: 'Yes', zonos: 'Yes', simply: 'Yes' },
-                  { label: 'AI Calls Required', potal: '0', avalara: 'Every request', zonos: 'Every request', simply: 'Most requests' },
-                  { label: 'API Response Time', potal: '<50ms', avalara: '200-500ms', zonos: '300-800ms', simply: '500ms+' },
-                  { label: 'MCP Server', potal: 'Yes', avalara: 'No', zonos: 'No', simply: 'No' },
+                  { label: t('features.comparison.activeFeatures'), potal: '140', avalara: '44', zonos: '38', simply: '22' },
+                  { label: t('features.comparison.countries'), potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
+                  { label: t('features.comparison.hsAccuracy'), potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
+                  { label: t('features.comparison.startingPrice'), potal: '$0/mo', avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },
+                  { label: t('features.comparison.perTransaction'), potal: t('features.comparison.none'), avalara: t('features.comparison.yes'), zonos: t('features.comparison.yes'), simply: t('features.comparison.yes') },
+                  { label: t('features.comparison.aiCalls'), potal: '0', avalara: t('features.comparison.everyRequest'), zonos: t('features.comparison.everyRequest'), simply: t('features.comparison.mostRequests') },
+                  { label: t('features.comparison.responseTime'), potal: '<50ms', avalara: '200-500ms', zonos: '300-800ms', simply: '500ms+' },
+                  { label: t('features.comparison.mcp'), potal: t('features.comparison.yes'), avalara: t('features.comparison.no'), zonos: t('features.comparison.no'), simply: t('features.comparison.no') },
                 ].map((row) => (
                   <tr key={row.label} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                     <td className="py-3 px-4 font-semibold text-slate-600">{row.label}</td>
@@ -208,27 +211,27 @@ export default function FeaturesPage() {
       <section className="bg-[#02122c] py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
-            Start Free — All 140 Features Included
+            {t('features.cta.title').replace('{count}', String(FEATURES.length))}
           </h2>
-          <p className="text-slate-400 mb-8">No credit card required. Forever Free.</p>
+          <p className="text-slate-400 mb-8">{t('features.cta.subtitle')}</p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               href="/auth/signup"
               className="px-8 py-3 bg-[#F59E0B] text-[#02122c] font-bold rounded-full hover:bg-[#e8930a] transition-colors text-sm"
             >
-              Get Started Free
+              {t('features.cta.getStarted')}
             </Link>
             <Link
               href="/pricing"
               className="px-8 py-3 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm"
             >
-              View Pricing
+              {t('features.cta.viewPricing')}
             </Link>
             <Link
               href="/developers"
               className="px-8 py-3 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm"
             >
-              API Docs
+              {t('features.cta.apiDocs')}
             </Link>
           </div>
         </div>

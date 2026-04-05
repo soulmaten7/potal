@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/app/i18n';
+import type { TranslationKey } from '@/app/i18n/translations/en';
 
-function NewsletterForm() {
+function NewsletterForm({ t }: { t: (key: TranslationKey) => string }) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -29,7 +30,7 @@ function NewsletterForm() {
   if (status === 'success') {
     return (
       <p className="text-sm text-emerald-400 font-medium mt-3">
-        Subscribed! We&apos;ll keep you updated.
+        {t('footer.newsletter.success')}
       </p>
     );
   }
@@ -37,7 +38,7 @@ function NewsletterForm() {
   if (status === 'error') {
     return (
       <p className="text-sm text-red-400 font-medium mt-3">
-        Failed to subscribe. Please try again.
+        {t('footer.newsletter.error')}
       </p>
     );
   }
@@ -56,7 +57,7 @@ function NewsletterForm() {
         type="submit"
         className="px-4 py-2 rounded-lg bg-[#F59E0B] text-[#02122c] text-sm font-bold hover:bg-[#e8930a] transition-colors cursor-pointer whitespace-nowrap"
       >
-        Subscribe
+        {t('footer.newsletter.subscribe')}
       </button>
     </form>
   );
@@ -97,9 +98,9 @@ export function Footer() {
             </div>
             {/* Newsletter */}
             <div className="mt-2">
-              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">Stay updated</p>
-              <p className="text-xs text-slate-600 mt-1">Trade regulation changes & product updates</p>
-              <NewsletterForm />
+              <p className="text-xs font-bold text-slate-600 uppercase tracking-wider">{t('footer.newsletter.title')}</p>
+              <p className="text-xs text-slate-600 mt-1">{t('footer.newsletter.description')}</p>
+              <NewsletterForm t={t} />
             </div>
           </div>
 
@@ -113,7 +114,7 @@ export function Footer() {
               {t('footer.documentation')}
             </Link>
             <Link href="/developers/playground" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Widget Playground
+              {t('footer.widgetPlayground')}
             </Link>
             <Link href="/pricing" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('nav.pricing')}
@@ -130,7 +131,7 @@ export function Footer() {
               {t('footer.helpCenter')}
             </Link>
             <Link href="/widget/demo" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Widget Demo
+              {t('footer.widgetDemo')}
             </Link>
             <Link href="/contact" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('footer.contact')}
@@ -147,7 +148,7 @@ export function Footer() {
               {t('footer.privacy')}
             </Link>
             <Link href="/refund" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              Refund Policy
+              {t('footer.refundPolicy')}
             </Link>
           </div>
         </div>
@@ -155,12 +156,12 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-10 pt-8 border-t border-slate-700/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-slate-600">
-            &copy; 2026 POTAL. All rights reserved.
+            {t('footer.copyright')}
           </p>
           <div className="flex items-center gap-4 flex-wrap justify-center">
-            {['GDPR Compliant', '240 Countries', 'SOC 2 Ready', '99.9% Uptime'].map(badge => (
-              <span key={badge} className="text-[10px] font-bold text-slate-600 uppercase tracking-wider px-2.5 py-1 rounded-full border border-slate-700/50">
-                {badge}
+            {(['footer.badge.gdpr', 'footer.badge.countries', 'footer.badge.soc2', 'footer.badge.uptime'] as const).map(key => (
+              <span key={key} className="text-[10px] font-bold text-slate-600 uppercase tracking-wider px-2.5 py-1 rounded-full border border-slate-700/50">
+                {t(key)}
               </span>
             ))}
           </div>

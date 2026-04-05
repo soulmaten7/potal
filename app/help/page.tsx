@@ -3,123 +3,55 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Icons } from '@/components/icons';
-// [중요] 방금 만든 컴포넌트 불러오기
 import { ContactForm } from '@/components/help/ContactForm';
+import { useI18n } from '@/app/i18n';
+import type { TranslationKey } from '@/app/i18n/translations/en';
 
-// --- FAQ DATA ---
-const FAQ_CATEGORIES = [
-  { id: 'all', label: 'All Topics' },
-  { id: 'about', label: 'About POTAL' },
-  { id: 'account', label: 'Account & API' },
-  { id: 'pricing', label: 'Pricing & Plans' },
-  { id: 'shopify', label: 'Shopify App' },
-  { id: 'plugins', label: 'Plugins & Widgets' },
-];
-
-const FAQ_ITEMS = [
-  {
-    id: '1',
-    category: 'about',
-    question: 'What is POTAL?',
-    answer: 'POTAL is a Total Landed Cost API and Shopify app. We help e-commerce sellers calculate and display import duties, taxes, and fees for international orders — covering 240 countries with 9-field HS Code classification (100% accuracy with complete input).'
-  },
-  {
-    id: '2',
-    category: 'about',
-    question: 'How accurate are the duty calculations?',
-    answer: 'POTAL achieves 100% HS Code accuracy when all 9 classification fields are provided (product name, material, category, description, processing, composition, weight spec, price, origin country). Our calculations are based on official tariff schedules from 7 governments, 113M+ tariff records, 63 FTAs, and WCO standards. For binding rulings, we recommend consulting a licensed customs broker.'
-  },
-  {
-    id: '3',
-    category: 'shopify',
-    question: 'How do I install the POTAL Shopify app?',
-    answer: 'Search for "POTAL" in the Shopify App Store, click Install, and approve the required permissions (read_products, read_orders, read_shipping). The widget will automatically appear on your product pages via the theme app extension.'
-  },
-  {
-    id: '4',
-    category: 'account',
-    question: 'How do I get my API key?',
-    answer: 'Sign up at potal.app, then go to your Dashboard. Your API keys are generated automatically. You can manage and rotate keys from the Dashboard at any time.'
-  },
-  {
-    id: '5',
-    category: 'pricing',
-    question: 'What happens if I exceed my plan\'s API call limit?',
-    answer: 'POTAL is Forever Free with a 100,000 API calls/month soft cap (for DDoS protection). If you consistently need higher volume, contact us for Enterprise pricing.'
-  },
-  {
-    id: '6',
-    category: 'pricing',
-    question: 'Is there a free plan?',
-    answer: 'Yes! POTAL is Forever Free — all 140+ features, 100,000 API calls/month (soft cap), no credit card required. For enterprise-scale needs, contact us.'
-  },
-  {
-    id: '7',
-    category: 'shopify',
-    question: 'What data does the Shopify app access?',
-    answer: 'The app only accesses read_products (to classify items), read_orders (to track calculation usage), and read_shipping (to include shipping in landed cost). We never modify your store data.'
-  },
-  {
-    id: '8',
-    category: 'about',
-    question: 'Which countries and currencies does POTAL support?',
-    answer: 'POTAL covers 240 countries and territories with localized tax rules, de minimis thresholds, and customs fees. We support 50 languages in the UI and display costs in local currencies using daily-updated exchange rates.'
-  },
-  {
-    id: '9',
-    category: 'plugins',
-    question: 'Do you offer WooCommerce, BigCommerce, or Magento plugins?',
-    answer: 'Yes! We provide ready-to-install plugins for WooCommerce (WordPress), BigCommerce, and Magento 2. Each plugin embeds the POTAL widget on your product pages so customers see landed cost estimates before checkout.'
-  },
-  {
-    id: '10',
-    category: 'about',
-    question: 'What is DDP (Delivered Duty Paid) and how does POTAL help?',
-    answer: 'DDP means the seller covers all import duties and taxes so the buyer pays no surprise fees at delivery. POTAL provides a DDP Quote API that calculates the exact landed cost — enabling you to offer DDP pricing with confidence.'
-  },
-  {
-    id: '11',
-    category: 'pricing',
-    question: 'Do you offer annual billing discounts?',
-    answer: 'POTAL is Forever Free — no paid plans, no billing. All 140+ features included at $0. For enterprise-scale needs, contact us.'
-  },
-  {
-    id: '12',
-    category: 'account',
-    question: 'How does HS Code classification work?',
-    answer: 'POTAL uses a 9-field classification system based on WCO General Rules of Interpretation (GRI). You provide product name, material, category, and up to 6 additional fields. The engine applies 592 codified Section/Chapter Notes, 1,233 Heading rules, and 5,621 Subheading rules — achieving 100% accuracy with complete input. No AI guessing: the system follows the same process licensed customs brokers use.'
-  },
-  {
-    id: '13',
-    category: 'plugins',
-    question: 'Can I customize the widget appearance?',
-    answer: 'Yes — the widget inherits your store\'s theme styles by default. You can also configure colors, position, and display options from your POTAL dashboard under Widget Settings.'
-  },
-];
-
-// --- MAIN CONTENT ---
 function HelpContent() {
+  const { t } = useI18n();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
-  
-  // [Logic] URL 파라미터 감지 및 자동 스크롤
+
   const searchParams = useSearchParams();
   const formRef = useRef<HTMLDivElement>(null);
   const [contactTopic, setContactTopic] = useState('general');
 
+  const FAQ_CATEGORIES = [
+    { id: 'all', label: t('help.category.all') },
+    { id: 'about', label: t('help.category.about') },
+    { id: 'account', label: t('help.category.account') },
+    { id: 'pricing', label: t('help.category.pricing') },
+    { id: 'shopify', label: t('help.category.shopify') },
+    { id: 'plugins', label: t('help.category.plugins') },
+  ];
+
+  const FAQ_ITEMS = [
+    { id: '1', category: 'about', question: t('help.faq.q1'), answer: t('help.faq.a1') },
+    { id: '2', category: 'about', question: t('help.faq.q2'), answer: t('help.faq.a2') },
+    { id: '3', category: 'shopify', question: t('help.faq.q3'), answer: t('help.faq.a3') },
+    { id: '4', category: 'account', question: t('help.faq.q4'), answer: t('help.faq.a4') },
+    { id: '5', category: 'pricing', question: t('help.faq.q5'), answer: t('help.faq.a5') },
+    { id: '6', category: 'pricing', question: t('help.faq.q6'), answer: t('help.faq.a6') },
+    { id: '7', category: 'shopify', question: t('help.faq.q7'), answer: t('help.faq.a7') },
+    { id: '8', category: 'about', question: t('help.faq.q8'), answer: t('help.faq.a8') },
+    { id: '9', category: 'plugins', question: t('help.faq.q9'), answer: t('help.faq.a9') },
+    { id: '10', category: 'about', question: t('help.faq.q10'), answer: t('help.faq.a10') },
+    { id: '11', category: 'pricing', question: t('help.faq.q11'), answer: t('help.faq.a11') },
+    { id: '12', category: 'account', question: t('help.faq.q12'), answer: t('help.faq.a12') },
+    { id: '13', category: 'plugins', question: t('help.faq.q13'), answer: t('help.faq.a13') },
+  ];
+
   useEffect(() => {
     const topicParam = searchParams.get('topic');
-    
+
     if (topicParam) {
-      // 1. 매핑
       switch(topicParam) {
         case 'sell': setContactTopic('partner'); break;
         case 'ads': setContactTopic('ads'); break;
         case 'general': setContactTopic('general'); break;
         default: setContactTopic('general');
       }
-      // 2. 자동 스크롤
       setTimeout(() => {
         formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 300);
@@ -136,7 +68,7 @@ function HelpContent() {
   };
 
   const filteredItems = FAQ_ITEMS.filter(item => {
-    const matchesSearch = item.question.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch = item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           item.answer.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeTab === 'all' || item.category === activeTab;
     return matchesSearch && matchesCategory;
@@ -149,12 +81,12 @@ function HelpContent() {
       <div style={{ padding: '80px 24px 32px' }}>
         <div className="max-w-[1440px] mx-auto flex flex-col items-center text-center">
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#02122c', marginBottom: '20px', letterSpacing: '-0.02em' }}>
-            How can we help you?
+            {t('help.title')}
           </h1>
           <div className="relative w-full max-w-2xl">
             <input
               type="text"
-              placeholder="Search for answers..."
+              placeholder={t('help.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{
@@ -211,8 +143,8 @@ function HelpContent() {
               })
             ) : (
               <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-                <p style={{ fontSize: '14px', color: '#94a3b8' }}>No results found for &ldquo;{searchTerm}&rdquo;</p>
-                <button onClick={() => setSearchTerm('')} style={{ marginTop: '12px', fontSize: '13px', fontWeight: 700, color: '#F59E0B', background: 'transparent', border: 'none', cursor: 'pointer' }}>Clear search</button>
+                <p style={{ fontSize: '14px', color: '#94a3b8' }}>{t('help.noResults')} &ldquo;{searchTerm}&rdquo;</p>
+                <button onClick={() => setSearchTerm('')} style={{ marginTop: '12px', fontSize: '13px', fontWeight: 700, color: '#F59E0B', background: 'transparent', border: 'none', cursor: 'pointer' }}>{t('help.clearSearch')}</button>
               </div>
             )}
           </div>
@@ -223,9 +155,9 @@ function HelpContent() {
       <div ref={formRef} style={{ marginTop: '40px', padding: '32px 24px 0' }}>
         <div className="max-w-[800px] mx-auto">
           <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>Still need help?</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>{t('help.contactTitle')}</h2>
             <p style={{ fontSize: '14px', color: '#94a3b8' }}>
-              Send us a message directly. We usually respond within 24 hours.
+              {t('help.contactSubtitle')}
             </p>
           </div>
 

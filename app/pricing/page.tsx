@@ -3,46 +3,10 @@
 import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { FEATURES, CATEGORIES, CATEGORY_ICONS, type FeatureCategory } from '../features/features-data';
+import { useI18n } from '@/app/i18n';
+import type { TranslationKey } from '@/app/i18n/translations/en';
 
-const COMPETITOR_DATA = [
-  { label: 'Active Features', potal: '140', avalara: '44', zonos: '38', simply: '22' },
-  { label: 'Countries', potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
-  { label: 'HS Code Accuracy', potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
-  { label: 'Starting Price', potal: 'Free forever', avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },
-  { label: 'Per-Transaction Fee', potal: 'None', avalara: 'Yes', zonos: 'Yes', simply: 'Yes' },
-  { label: 'API Response Time', potal: '<50ms', avalara: '200-500ms', zonos: '300-800ms', simply: '500ms+' },
-  { label: 'API Endpoints', potal: '155+', avalara: '~30', zonos: '~20', simply: '~10' },
-  { label: 'MCP Server', potal: 'Yes', avalara: 'No', zonos: 'No', simply: 'No' },
-];
-
-const FAQS = [
-  {
-    q: 'Why is everything free?',
-    a: 'POTAL\'s mission is to make cross-border commerce accessible to every business, regardless of size. We believe duty & tax calculation should be infrastructure — like GPS — not a premium service. Our architecture runs on code, not AI calls, so our marginal cost per request is near zero.',
-  },
-  {
-    q: 'Will it stay free forever?',
-    a: 'Yes. "Forever Free" is a commitment, not a trial. All 140 features, all 240 countries, all API endpoints — permanently free. We will never retroactively gate features behind a paywall.',
-  },
-  {
-    q: 'What about Enterprise?',
-    a: 'Enterprise is for organizations that need custom integrations, dedicated infrastructure, SLA guarantees, or white-label solutions. Contact us and we\'ll build a tailored package. For everyone else, the free plan has everything.',
-  },
-  {
-    q: 'Is there a catch? Rate limits?',
-    a: 'We apply a generous rate limit (100,000 calls/month) to prevent abuse. For 99.9% of businesses, this is more than enough. If you need higher volume, reach out via the Enterprise form.',
-  },
-  {
-    q: 'How is this different from Avalara or Zonos?',
-    a: 'Avalara charges $1,500+/month. Zonos charges $4,000+/month. Both charge per-transaction fees on top. POTAL offers more features (140 vs their 22-44), better accuracy (100% with complete input), and faster response times (<50ms) — all for free.',
-  },
-  {
-    q: 'Do you support all countries?',
-    a: 'Yes — 240 countries with duty rates, VAT/GST, de minimis thresholds, FTA detection, anti-dumping duties, and sanctions screening. 12 countries have sub-national tax calculations.',
-  },
-];
-
-function EnterpriseInquiryForm() {
+function EnterpriseInquiryForm({ t }: { t: (key: TranslationKey) => string }) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -81,25 +45,25 @@ function EnterpriseInquiryForm() {
   if (status === 'success') {
     return (
       <div className="text-center py-6">
-        <p className="text-lg font-bold text-emerald-600 mb-2">Thank you!</p>
-        <p className="text-sm text-slate-500">We&apos;ll get back to you within 24 hours.</p>
+        <p className="text-lg font-bold text-emerald-600 mb-2">{t('pricing.enterprise.thankYou')}</p>
+        <p className="text-sm text-slate-500">{t('pricing.enterprise.thankYouSub')}</p>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      <input type="text" name="company_name" placeholder="Company name" required
+      <input type="text" name="company_name" placeholder={t('pricing.enterprise.formCompany')} required
         className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors" />
-      <input type="text" name="contact_name" placeholder="Your name" required
+      <input type="text" name="contact_name" placeholder={t('pricing.enterprise.formName')} required
         className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors" />
-      <input type="email" name="contact_email" placeholder="Work email" required
+      <input type="email" name="contact_email" placeholder={t('pricing.enterprise.formEmail')} required
         className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors" />
-      <textarea name="requirements" placeholder="Tell us about your needs (volume, integrations, timeline...)" rows={3}
+      <textarea name="requirements" placeholder={t('pricing.enterprise.formNeeds')} rows={3}
         className="px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#F59E0B] transition-colors resize-none" />
       <button type="submit" disabled={status === 'submitting'}
         className="px-6 py-3 rounded-xl bg-[#02122c] text-white font-bold text-sm hover:bg-[#0a2540] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-1">
-        {status === 'submitting' ? 'Sending...' : 'Contact Sales'}
+        {status === 'submitting' ? t('pricing.enterprise.sending') : t('pricing.enterprise.contactSales')}
       </button>
       {status === 'error' && <p className="text-xs text-red-500">{errorMsg}</p>}
     </form>
@@ -107,15 +71,35 @@ function EnterpriseInquiryForm() {
 }
 
 export default function PricingPage() {
+  const { t } = useI18n();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [showAllFeatures, setShowAllFeatures] = useState(false);
 
-  // Group features by category for the feature list
   const featuresByCategory = CATEGORIES.filter(c => c.key !== 'All').map(cat => ({
     ...cat,
     icon: CATEGORY_ICONS[cat.key as FeatureCategory],
     features: FEATURES.filter(f => f.category === cat.key),
   }));
+
+  const COMPETITOR_DATA = [
+    { label: t('pricing.comparison.activeFeatures'), potal: '140', avalara: '44', zonos: '38', simply: '22' },
+    { label: t('pricing.comparison.countries'), potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
+    { label: t('pricing.comparison.hsAccuracy'), potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
+    { label: t('pricing.comparison.startingPrice'), potal: t('pricing.comparison.freeForever'), avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },
+    { label: t('pricing.comparison.perTransaction'), potal: t('pricing.comparison.none'), avalara: t('pricing.comparison.yes'), zonos: t('pricing.comparison.yes'), simply: t('pricing.comparison.yes') },
+    { label: t('pricing.comparison.responseTime'), potal: '<50ms', avalara: '200-500ms', zonos: '300-800ms', simply: '500ms+' },
+    { label: t('pricing.comparison.apiEndpoints'), potal: '155+', avalara: '~30', zonos: '~20', simply: '~10' },
+    { label: t('pricing.comparison.mcp'), potal: t('pricing.comparison.yes'), avalara: t('pricing.comparison.no'), zonos: t('pricing.comparison.no'), simply: t('pricing.comparison.no') },
+  ];
+
+  const FAQS: { q: string; a: string }[] = [
+    { q: t('pricing.faq.q1'), a: t('pricing.faq.a1') },
+    { q: t('pricing.faq.q2'), a: t('pricing.faq.a2') },
+    { q: t('pricing.faq.q3'), a: t('pricing.faq.a3') },
+    { q: t('pricing.faq.q4'), a: t('pricing.faq.a4') },
+    { q: t('pricing.faq.q5'), a: t('pricing.faq.a5') },
+    { q: t('pricing.faq.q6'), a: t('pricing.faq.a6') },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -123,24 +107,23 @@ export default function PricingPage() {
       <section className="bg-[#02122c] text-white py-16 sm:py-24">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <div className="inline-block bg-emerald-500/15 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold mb-6 uppercase tracking-wider">
-            No credit card required
+            {t('pricing.badge.noCreditCard')}
           </div>
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-5">
-            Everything Free.{' '}
-            <span className="text-[#F59E0B]">Forever.</span>
+            {t('pricing.hero.title')}{' '}
+            <span className="text-[#F59E0B]">{t('pricing.hero.titleHighlight')}</span>
           </h1>
           <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-            140 features. 240 countries. 155+ API endpoints. Zero cost.
-            What competitors charge $1,500–$4,000/month for, POTAL gives you for free.
+            {t('pricing.hero.subtitle')}
           </p>
 
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-10">
             {[
-              { value: '140', label: 'Features' },
-              { value: '240', label: 'Countries' },
-              { value: '155+', label: 'API Endpoints' },
-              { value: '$0', label: 'Forever' },
+              { value: '140', label: t('pricing.stats.features') },
+              { value: '240', label: t('pricing.stats.countries') },
+              { value: '155+', label: t('pricing.stats.apiEndpoints') },
+              { value: '$0', label: t('pricing.stats.forever') },
             ].map((stat) => (
               <div key={stat.label} className="text-center min-w-[70px]">
                 <div className="text-2xl sm:text-4xl font-extrabold text-[#F59E0B]">{stat.value}</div>
@@ -152,11 +135,11 @@ export default function PricingPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/auth/signup"
               className="px-8 py-3.5 bg-[#F59E0B] text-[#02122c] font-bold rounded-full hover:bg-[#e8930a] transition-colors text-sm">
-              Get Started Free
+              {t('pricing.hero.getStarted')}
             </Link>
             <Link href="/developers"
               className="px-8 py-3.5 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm">
-              API Docs
+              {t('pricing.hero.apiDocs')}
             </Link>
           </div>
         </div>
@@ -168,26 +151,26 @@ export default function PricingPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#02122c]">Forever Free</h2>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#02122c]">{t('pricing.plan.title')}</h2>
                 <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 uppercase tracking-wider">
-                  All Features Included
+                  {t('pricing.plan.badge')}
                 </span>
               </div>
-              <p className="text-slate-500 text-sm">Every feature, every country, every API endpoint — no limits, no catches.</p>
+              <p className="text-slate-500 text-sm">{t('pricing.plan.description')}</p>
             </div>
             <div className="text-right">
               <div className="text-4xl sm:text-5xl font-extrabold text-[#02122c]">$0</div>
-              <div className="text-sm text-slate-400">forever</div>
+              <div className="text-sm text-slate-400">{t('pricing.plan.priceLabel')}</div>
             </div>
           </div>
 
           {/* Key highlights grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
             {[
-              { icon: '⚡', label: '140 Features', sub: 'All active' },
-              { icon: '🌍', label: '240 Countries', sub: 'Full coverage' },
-              { icon: '🔗', label: '155+ Endpoints', sub: 'Full API access' },
-              { icon: '🎯', label: '100% Accuracy', sub: '9-field HS Code' },
+              { icon: '⚡', label: t('pricing.plan.highlight.features'), sub: t('pricing.plan.highlight.featuresSub') },
+              { icon: '🌍', label: t('pricing.plan.highlight.countries'), sub: t('pricing.plan.highlight.countriesSub') },
+              { icon: '🔗', label: t('pricing.plan.highlight.endpoints'), sub: t('pricing.plan.highlight.endpointsSub') },
+              { icon: '🎯', label: t('pricing.plan.highlight.accuracy'), sub: t('pricing.plan.highlight.accuracySub') },
             ].map((item) => (
               <div key={item.label} className="bg-slate-50 rounded-xl p-3 text-center">
                 <div className="text-xl mb-1">{item.icon}</div>
@@ -199,7 +182,7 @@ export default function PricingPage() {
 
           <Link href="/auth/signup"
             className="block text-center w-full py-3.5 bg-[#02122c] text-white font-bold rounded-xl hover:bg-[#0a2540] transition-colors text-sm">
-            Create Free Account
+            {t('pricing.plan.createAccount')}
           </Link>
         </div>
       </section>
@@ -207,10 +190,10 @@ export default function PricingPage() {
       {/* Feature List by Category */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
-          All {FEATURES.length} Features Included
+          {t('pricing.allFeatures.title').replace('{count}', String(FEATURES.length))}
         </h2>
         <p className="text-center text-slate-500 mb-10 text-sm">
-          Every feature below is free. No tiers, no gates, no upgrade prompts.
+          {t('pricing.allFeatures.subtitle')}
         </p>
 
         <div className="space-y-6">
@@ -219,7 +202,9 @@ export default function PricingPage() {
               <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
                 <span className="text-lg">{cat.icon}</span>
                 <h3 className="font-bold text-sm text-[#02122c]">{cat.label}</h3>
-                <span className="text-[10px] font-bold text-slate-400 ml-auto">{cat.count} features</span>
+                <span className="text-[10px] font-bold text-slate-400 ml-auto">
+                  {t('pricing.allFeatures.count').replace('{count}', String(cat.count))}
+                </span>
               </div>
               <div className="px-5 py-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5">
@@ -239,7 +224,7 @@ export default function PricingPage() {
           <div className="text-center mt-6">
             <button onClick={() => setShowAllFeatures(true)}
               className="text-sm font-bold text-[#F59E0B] hover:text-[#d97706] cursor-pointer transition-colors">
-              Show all {featuresByCategory.length} categories →
+              {t('pricing.allFeatures.showAll').replace('{count}', String(featuresByCategory.length))}
             </button>
           </div>
         )}
@@ -249,10 +234,10 @@ export default function PricingPage() {
       <section className="bg-white border-t border-b border-slate-200 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
-            Why Pay $1,500+/month?
+            {t('pricing.comparison.title')}
           </h2>
           <p className="text-center text-slate-500 mb-10 text-sm">
-            POTAL delivers more features, better accuracy, and faster performance — for free.
+            {t('pricing.comparison.subtitle')}
           </p>
 
           <div className="overflow-x-auto">
@@ -262,7 +247,7 @@ export default function PricingPage() {
                   <th className="text-left py-3 px-4 font-bold text-slate-400 text-xs uppercase">&nbsp;</th>
                   <th className="text-center py-3 px-4 font-extrabold text-[#02122c]">
                     POTAL
-                    <div className="text-[10px] font-bold text-emerald-500 mt-0.5">FREE</div>
+                    <div className="text-[10px] font-bold text-emerald-500 mt-0.5">{t('pricing.comparison.free')}</div>
                   </th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-500">Avalara</th>
                   <th className="text-center py-3 px-4 font-semibold text-slate-500">Zonos</th>
@@ -290,32 +275,31 @@ export default function PricingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#02122c] mb-4">
-              Need Custom Integration?
+              {t('pricing.enterprise.title')}
             </h2>
             <p className="text-slate-500 mb-6 text-sm leading-relaxed">
-              For organizations that need dedicated infrastructure, custom SLAs,
-              white-label solutions, or tailored integrations — let&apos;s talk.
+              {t('pricing.enterprise.description')}
             </p>
             <div className="space-y-3">
-              {[
-                'Dedicated infrastructure & SLA guarantee',
-                'White-label widget (no POTAL branding)',
-                'SSO & team management',
-                'Custom integrations & bulk APIs',
-                'Dedicated account manager',
-                'Priority support (24/7)',
-              ].map((item) => (
-                <div key={item} className="flex items-center gap-2">
+              {([
+                'pricing.enterprise.feature1',
+                'pricing.enterprise.feature2',
+                'pricing.enterprise.feature3',
+                'pricing.enterprise.feature4',
+                'pricing.enterprise.feature5',
+                'pricing.enterprise.feature6',
+              ] as const).map((key) => (
+                <div key={key} className="flex items-center gap-2">
                   <span className="text-[#F59E0B] text-sm flex-shrink-0">★</span>
-                  <span className="text-sm text-slate-600">{item}</span>
+                  <span className="text-sm text-slate-600">{t(key)}</span>
                 </div>
               ))}
             </div>
           </div>
           <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
-            <h3 className="text-lg font-bold text-[#02122c] mb-1">Contact Sales</h3>
-            <p className="text-xs text-slate-400 mb-5">We respond within 24 hours on business days.</p>
-            <EnterpriseInquiryForm />
+            <h3 className="text-lg font-bold text-[#02122c] mb-1">{t('pricing.enterprise.contactSales')}</h3>
+            <p className="text-xs text-slate-400 mb-5">{t('pricing.enterprise.responseTime')}</p>
+            <EnterpriseInquiryForm t={t} />
           </div>
         </div>
       </section>
@@ -324,10 +308,10 @@ export default function PricingPage() {
       <section className="bg-white border-t border-slate-200 py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
-            Frequently Asked Questions
+            {t('pricing.faq.title')}
           </h2>
           <p className="text-center text-slate-500 mb-10 text-sm">
-            Everything you need to know about POTAL pricing
+            {t('pricing.faq.subtitle')}
           </p>
 
           <div className="space-y-2">
@@ -357,23 +341,23 @@ export default function PricingPage() {
       <section className="bg-[#02122c] py-16">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
-            Stop paying for duty calculation.
+            {t('pricing.cta.title')}
           </h2>
           <p className="text-slate-400 mb-8">
-            140 features. 240 countries. Free forever. Get started in 30 seconds.
+            {t('pricing.cta.subtitle')}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/auth/signup"
               className="px-8 py-3 bg-[#F59E0B] text-[#02122c] font-bold rounded-full hover:bg-[#e8930a] transition-colors text-sm">
-              Create Free Account
+              {t('pricing.cta.createAccount')}
             </Link>
             <Link href="/features"
               className="px-8 py-3 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm">
-              See All Features
+              {t('pricing.cta.seeFeatures')}
             </Link>
             <Link href="/developers"
               className="px-8 py-3 border border-slate-600 text-slate-300 font-bold rounded-full hover:border-slate-400 hover:text-white transition-colors text-sm">
-              API Docs
+              {t('pricing.cta.apiDocs')}
             </Link>
           </div>
         </div>

@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useI18n } from '@/app/i18n';
+import type { TranslationKey } from '@/app/i18n/translations/en';
 
-function CopyableCodeBlock({ label, code, labelColor = '#F59E0B' }: { label: string; code: string; labelColor?: string }) {
+function CopyableCodeBlock({ t, label, code, labelColor = '#F59E0B' }: { t: (key: TranslationKey) => string; label: string; code: string; labelColor?: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(code);
@@ -27,7 +29,7 @@ function CopyableCodeBlock({ label, code, labelColor = '#F59E0B' }: { label: str
             transition: 'all 0.15s',
           }}
         >
-          {copied ? '✓ Copied' : 'Copy'}
+          {copied ? '✓ ' + t('developers.copied') : t('developers.copy')}
         </button>
       </div>
       <pre style={{ margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e5e7eb', lineHeight: 1.7, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{code}</pre>
@@ -91,7 +93,7 @@ data = response.json()
 print(data["data"]["totalLandedCost"])`,
 };
 
-function CodeTabs() {
+function CodeTabs({ t }: { t: (key: TranslationKey) => string }) {
   const tabs = Object.keys(CODE_EXAMPLES) as (keyof typeof CODE_EXAMPLES)[];
   const [active, setActive] = useState<keyof typeof CODE_EXAMPLES>(() => {
     if (typeof window !== 'undefined') {
@@ -132,7 +134,7 @@ function CodeTabs() {
         ))}
       </div>
       <div style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, overflow: 'hidden' }}>
-        <CopyableCodeBlock label={active} code={CODE_EXAMPLES[active]} labelColor="#F59E0B" />
+        <CopyableCodeBlock t={t} label={active} code={CODE_EXAMPLES[active]} labelColor="#F59E0B" />
       </div>
     </div>
   );
@@ -150,7 +152,7 @@ const EXPLORER_MOCK: Record<string, { duty: number; dutyRate: string; tax: numbe
   BR: { duty: 17.50, dutyRate: '35%', tax: 30.20, taxLabel: 'Import Taxes', hsCode: '6109.10.00', deMinimis: false, fta: false },
 };
 
-function ApiExplorer() {
+function ApiExplorer({ t }: { t: (key: TranslationKey) => string }) {
   const [origin, setOrigin] = useState('CN');
   const [destination, setDestination] = useState('US');
   const [value, setValue] = useState('49.99');
@@ -212,10 +214,10 @@ function ApiExplorer() {
     <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 24 }}>
       {/* Input Panel */}
       <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#02122c', marginBottom: 20 }}>Parameters</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#02122c', marginBottom: 20 }}>{t('developers.explorer.parameters')}</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <label style={labelStyle}>Origin Country</label>
+            <label style={labelStyle}>{t('developers.explorer.originCountry')}</label>
             <select value={origin} onChange={e => setOrigin(e.target.value)} style={inputStyle}>
               {['CN', 'US', 'DE', 'JP', 'KR', 'GB', 'VN', 'IN', 'TW', 'TH'].map(c => (
                 <option key={c} value={c}>{c}</option>
@@ -223,7 +225,7 @@ function ApiExplorer() {
             </select>
           </div>
           <div>
-            <label style={labelStyle}>Destination Country</label>
+            <label style={labelStyle}>{t('developers.explorer.destinationCountry')}</label>
             <select value={destination} onChange={e => { setDestination(e.target.value); setShowResponse(false); }} style={inputStyle}>
               {Object.keys(EXPLORER_MOCK).map(c => (
                 <option key={c} value={c}>{c}</option>
@@ -231,11 +233,11 @@ function ApiExplorer() {
             </select>
           </div>
           <div>
-            <label style={labelStyle}>HS Code</label>
+            <label style={labelStyle}>{t('developers.explorer.hsCode')}</label>
             <input type="text" value={hsCode} onChange={e => setHsCode(e.target.value)} style={inputStyle} placeholder="6109.10" />
           </div>
           <div>
-            <label style={labelStyle}>Product Value (USD)</label>
+            <label style={labelStyle}>{t('developers.explorer.productValue')}</label>
             <input type="number" value={value} onChange={e => { setValue(e.target.value); setShowResponse(false); }} style={inputStyle} placeholder="49.99" min="0" step="0.01" />
           </div>
           <button
@@ -253,14 +255,14 @@ function ApiExplorer() {
               transition: 'transform 0.15s',
             }}
           >
-            Send Request
+            {t('developers.explorer.sendRequest')}
           </button>
         </div>
       </div>
 
       {/* Code + Response Panel */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <CopyableCodeBlock label="Request (cURL)" code={curlCode} labelColor="#F59E0B" />
+        <CopyableCodeBlock t={t} label="Request (cURL)" code={curlCode} labelColor="#F59E0B" />
         {showResponse && (
           <div style={{ backgroundColor: '#0d1117', borderRadius: 12, padding: 24, position: 'relative', animation: 'fadeIn 0.3s ease-out' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
@@ -274,7 +276,7 @@ function ApiExplorer() {
         )}
         {!showResponse && (
           <div style={{ backgroundColor: '#0d1117', borderRadius: 12, padding: 40, textAlign: 'center', border: '1px dashed rgba(255,255,255,0.15)' }}>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Click &ldquo;Send Request&rdquo; to see the response</p>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>{t('developers.explorer.clickToSee')}</p>
           </div>
         )}
       </div>
@@ -282,19 +284,25 @@ function ApiExplorer() {
   );
 }
 
-const SIDEBAR_LINKS = [
-  { id: 'quick-start', label: 'Quick Start' },
-  { id: 'api-explorer', label: 'Try It Live' },
-  { id: 'api-reference', label: 'API Reference' },
-  { id: 'authentication', label: 'Authentication' },
-  { id: 'widget-customization', label: 'Widget Customization' },
-];
+function getSidebarLinks(t: (key: TranslationKey) => string) {
+  return [
+    { id: 'quick-start', label: t('developers.sidebar.quickStart') },
+    { id: 'api-explorer', label: t('developers.sidebar.tryLive') },
+    { id: 'api-reference', label: t('developers.sidebar.apiReference') },
+    { id: 'authentication', label: t('developers.sidebar.authentication') },
+    { id: 'widget-customization', label: t('developers.sidebar.widgetCustomization') },
+  ];
+}
 
 export default function DevelopersPage() {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const [activeSection, setActiveSection] = useState('quick-start');
 
+  const sidebarLinks = getSidebarLinks(t);
+
   useEffect(() => {
+    const links = getSidebarLinks(t);
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -305,12 +313,12 @@ export default function DevelopersPage() {
       },
       { rootMargin: '-80px 0px -60% 0px', threshold: 0.1 }
     );
-    for (const link of SIDEBAR_LINKS) {
+    for (const link of links) {
       const el = document.getElementById(link.id);
       if (el) observer.observe(el);
     }
     return () => observer.disconnect();
-  }, []);
+  }, [t]);
 
   const embedCode = `<!-- POTAL Widget -->
 <script src="https://www.potal.app/widget/potal-widget.js"></script>
@@ -348,14 +356,14 @@ export default function DevelopersPage() {
             marginBottom: '20px',
             letterSpacing: '-0.5px'
           }}>
-            Seller Integration Hub
+            {t('developers.hero.title')}
           </h1>
           <p style={{
             fontSize: '18px',
             color: '#d1d5db',
             marginBottom: '16px'
           }}>
-            Empower your store with real-time global shipping and tax calculations
+            {t('developers.hero.subtitle')}
           </p>
           <p style={{
             fontSize: '16px',
@@ -363,7 +371,7 @@ export default function DevelopersPage() {
             maxWidth: '600px',
             margin: '0 auto'
           }}>
-            Add POTAL to your store in 2 minutes. No backend integration required.
+            {t('developers.hero.description')}
           </p>
         </div>
       </section>
@@ -382,7 +390,7 @@ export default function DevelopersPage() {
           flexDirection: 'column',
           gap: 4,
         }}>
-          {SIDEBAR_LINKS.map((link) => (
+          {sidebarLinks.map((link) => (
             <a
               key={link.id}
               href={`#${link.id}`}
@@ -415,14 +423,14 @@ export default function DevelopersPage() {
               color: '#02122c',
               marginBottom: '12px'
             }}>
-              Quick Start
+              {t('developers.quickStart.title')}
             </h2>
             <p style={{
               fontSize: '16px',
               color: '#6b7280',
               lineHeight: '1.6'
             }}>
-              Copy and paste this code snippet into your product page HTML. Our widget will automatically calculate accurate shipping costs and taxes in real-time.
+              {t('developers.quickStart.description')}
             </p>
             <a
               href="/developers/quickstart"
@@ -438,7 +446,7 @@ export default function DevelopersPage() {
                 fontWeight: 700,
               }}
             >
-              View Full Quick Start Guide &rarr;
+              {t('developers.quickStart.viewGuide')} &rarr;
             </a>
           </div>
 
@@ -478,7 +486,7 @@ export default function DevelopersPage() {
             onMouseEnter={(e) => !copied && (e.currentTarget.style.backgroundColor = '#F59E0B')}
             onMouseLeave={(e) => !copied && (e.currentTarget.style.backgroundColor = '#02122c')}
           >
-            {copied ? '✓ Copied' : 'Copy Code'}
+            {copied ? '✓ ' + t('developers.copied') : t('developers.quickStart.copyCode')}
           </button>
 
           <a
@@ -505,7 +513,7 @@ export default function DevelopersPage() {
               e.currentTarget.style.color = '#2563eb';
             }}
           >
-            View Full Docs →
+            {t('developers.quickStart.viewDocs')} →
           </a>
         </section>
 
@@ -513,13 +521,13 @@ export default function DevelopersPage() {
         <section id="api-explorer" style={{ marginBottom: '80px', scrollMarginTop: 80 }}>
           <div style={{ marginBottom: '32px' }}>
             <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#02122c', marginBottom: '12px' }}>
-              Try It Live
+              {t('developers.tryLive.title')}
             </h2>
             <p style={{ fontSize: '16px', color: '#6b7280', lineHeight: '1.6' }}>
-              Change the parameters below and see the request and response update in real-time. Mock data — sign up for a free API key to make real calls.
+              {t('developers.tryLive.description')}
             </p>
           </div>
-          <ApiExplorer />
+          <ApiExplorer t={t} />
         </section>
 
         {/* Section B: API Reference */}
@@ -531,14 +539,14 @@ export default function DevelopersPage() {
               color: '#02122c',
               marginBottom: '12px'
             }}>
-              API Reference
+              {t('developers.apiRef.title')}
             </h2>
             <p style={{
               fontSize: '16px',
               color: '#6b7280',
               lineHeight: '1.6'
             }}>
-              Integrate directly with our REST API for custom implementations. All endpoints require authentication with your API key.
+              {t('developers.apiRef.description')}
             </p>
           </div>
 
@@ -581,7 +589,7 @@ export default function DevelopersPage() {
                 marginBottom: '16px',
                 lineHeight: '1.6'
               }}>
-                Calculate shipping cost, duties, and taxes for a single product.
+                {t('developers.apiRef.calculateDesc')}
               </p>
               <div style={{
                 backgroundColor: '#f0f4f8',
@@ -640,7 +648,7 @@ export default function DevelopersPage() {
                 marginBottom: '16px',
                 lineHeight: '1.6'
               }}>
-                Calculate for up to 100 products in a single request.
+                {t('developers.apiRef.batchDesc')}
               </p>
               <div style={{
                 backgroundColor: '#f0f4f8',
@@ -699,7 +707,7 @@ export default function DevelopersPage() {
                 marginBottom: '16px',
                 lineHeight: '1.6'
               }}>
-                Get list of supported countries. Public endpoint, no auth required.
+                {t('developers.apiRef.countriesDesc')}
               </p>
               <div style={{
                 backgroundColor: '#f0f4f8',
@@ -730,7 +738,7 @@ export default function DevelopersPage() {
             fontSize: '14px',
             color: '#6b7280'
           }}>
-            Need more details? <a href="/developers/docs" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 'bold' }}>View Full API Documentation →</a>
+            {t('developers.apiRef.needMore')} <a href="/developers/docs" style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 'bold' }}>{t('developers.apiRef.viewFullDocs')} →</a>
           </p>
         </section>
 
@@ -738,55 +746,55 @@ export default function DevelopersPage() {
         <section id="authentication" style={{ marginBottom: '80px', scrollMarginTop: 80 }}>
           <div style={{ marginBottom: '32px' }}>
             <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#02122c', marginBottom: '12px' }}>
-              Authentication
+              {t('developers.auth.title')}
             </h2>
             <p style={{ fontSize: '16px', color: '#6b7280', lineHeight: '1.6' }}>
-              All API requests (except public endpoints) require authentication via the <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, fontSize: 14 }}>X-API-Key</code> header.
+              {t('developers.auth.description')} <code style={{ background: '#f3f4f6', padding: '2px 6px', borderRadius: 4, fontSize: 14 }}>X-API-Key</code> {t('developers.auth.descriptionSuffix')}
             </p>
           </div>
 
           {/* Key Format */}
           <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#02122c', marginBottom: 16 }}>API Key Format</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#02122c', marginBottom: 16 }}>{t('developers.auth.keyFormat')}</h3>
             <div style={{ fontSize: 13, fontFamily: 'monospace', lineHeight: 2 }}>
-              <div><span style={{ color: '#2563eb', fontWeight: 'bold' }}>pk_live_...</span> — Publishable key (widget embed, client-side)</div>
-              <div><span style={{ color: '#dc2626', fontWeight: 'bold' }}>sk_live_...</span> — Secret key (server-side only, never expose in frontend)</div>
+              <div><span style={{ color: '#2563eb', fontWeight: 'bold' }}>pk_live_...</span> — {t('developers.auth.publishableKey')}</div>
+              <div><span style={{ color: '#dc2626', fontWeight: 'bold' }}>sk_live_...</span> — {t('developers.auth.secretKey')}</div>
             </div>
           </div>
 
           {/* Error Codes */}
           <div style={{ backgroundColor: '#f8f9fa', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24, marginBottom: 24 }}>
-            <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#02122c', marginBottom: 16 }}>Error Codes</h3>
+            <h3 style={{ fontSize: 18, fontWeight: 'bold', color: '#02122c', marginBottom: 16 }}>{t('developers.auth.errorCodes')}</h3>
             <table style={{ width: '100%', fontSize: 14, borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #e5e7eb', textAlign: 'left' }}>
-                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>Status</th>
-                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>Meaning</th>
-                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>Solution</th>
+                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>{t('developers.auth.status')}</th>
+                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>{t('developers.auth.meaning')}</th>
+                  <th style={{ padding: '8px 12px', color: '#6b7280', fontWeight: 600 }}>{t('developers.auth.solution')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#dc2626' }}>401</td>
-                  <td style={{ padding: '8px 12px' }}>Missing or invalid API key</td>
-                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Check X-API-Key header is set correctly</td>
+                  <td style={{ padding: '8px 12px' }}>{t('developers.auth.error401')}</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>{t('developers.auth.solution401')}</td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f3f4f6' }}>
                   <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#dc2626' }}>403</td>
-                  <td style={{ padding: '8px 12px' }}>Plan limit exceeded or key disabled</td>
-                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Upgrade your plan or contact support</td>
+                  <td style={{ padding: '8px 12px' }}>{t('developers.auth.error403')}</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>{t('developers.auth.solution403')}</td>
                 </tr>
                 <tr>
                   <td style={{ padding: '8px 12px', fontFamily: 'monospace', fontWeight: 'bold', color: '#F59E0B' }}>429</td>
-                  <td style={{ padding: '8px 12px' }}>Rate limit exceeded</td>
-                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>Wait and retry. Contact us if you need higher limits</td>
+                  <td style={{ padding: '8px 12px' }}>{t('developers.auth.error429')}</td>
+                  <td style={{ padding: '8px 12px', color: '#6b7280' }}>{t('developers.auth.solution429')}</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           {/* Code Examples — Tabbed */}
-          <CodeTabs />
+          <CodeTabs t={t} />
         </section>
 
         {/* Section D: Widget Customization */}
@@ -798,14 +806,14 @@ export default function DevelopersPage() {
               color: '#02122c',
               marginBottom: '12px'
             }}>
-              Widget Customization
+              {t('developers.widget.title')}
             </h2>
             <p style={{
               fontSize: '16px',
               color: '#6b7280',
               lineHeight: '1.6'
             }}>
-              Customize the widget behavior and appearance to match your store's design.
+              {t('developers.widget.description')}
             </p>
           </div>
 
@@ -827,32 +835,32 @@ export default function DevelopersPage() {
                 color: '#02122c',
                 marginBottom: '16px'
               }}>
-                Data Attributes
+                {t('developers.widget.dataAttributes')}
               </h3>
               <div style={{ fontSize: '13px', fontFamily: 'monospace' }}>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#2563eb', fontWeight: 'bold' }}>data-api-key</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Your POTAL API key (required)</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.attrApiKey')}</p>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#2563eb', fontWeight: 'bold' }}>data-product-name</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Product name for tracking</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.attrProductName')}</p>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#2563eb', fontWeight: 'bold' }}>data-price</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Product price in USD</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.attrPrice')}</p>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#2563eb', fontWeight: 'bold' }}>data-shipping</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Base shipping cost in USD</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.attrShipping')}</p>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#2563eb', fontWeight: 'bold' }}>data-origin</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Origin country code (e.g., US, CN)</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.attrOrigin')}</p>
                 </div>
                 <div>
                   <span style={{ color: '#2563eb', fontWeight: 'bold' }}>data-theme</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>light or dark mode</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.attrTheme')}</p>
                 </div>
               </div>
             </div>
@@ -870,11 +878,11 @@ export default function DevelopersPage() {
                 color: '#02122c',
                 marginBottom: '16px'
               }}>
-                Theme Options
+                {t('developers.widget.themeOptions')}
               </h3>
               <div style={{ fontSize: '13px' }}>
                 <div style={{ marginBottom: '16px' }}>
-                  <span style={{ fontWeight: 'bold', color: '#02122c', display: 'block', marginBottom: '8px' }}>Light Theme</span>
+                  <span style={{ fontWeight: 'bold', color: '#02122c', display: 'block', marginBottom: '8px' }}>{t('developers.widget.lightTheme')}</span>
                   <div style={{
                     backgroundColor: 'white',
                     border: '1px solid #e5e7eb',
@@ -888,7 +896,7 @@ export default function DevelopersPage() {
                   </div>
                 </div>
                 <div>
-                  <span style={{ fontWeight: 'bold', color: '#02122c', display: 'block', marginBottom: '8px' }}>Dark Theme</span>
+                  <span style={{ fontWeight: 'bold', color: '#02122c', display: 'block', marginBottom: '8px' }}>{t('developers.widget.darkTheme')}</span>
                   <div style={{
                     backgroundColor: '#0d1117',
                     border: '1px solid #374151',
@@ -917,20 +925,20 @@ export default function DevelopersPage() {
                 color: '#02122c',
                 marginBottom: '16px'
               }}>
-                Callback Events
+                {t('developers.widget.callbackEvents')}
               </h3>
               <div style={{ fontSize: '13px', fontFamily: 'monospace' }}>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#10b981', fontWeight: 'bold' }}>onCalculated</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Fired when calculation completes</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.onCalculated')}</p>
                 </div>
                 <div style={{ marginBottom: '12px' }}>
                   <span style={{ color: '#10b981', fontWeight: 'bold' }}>onError</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Fired when error occurs</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.onError')}</p>
                 </div>
                 <div>
                   <span style={{ color: '#10b981', fontWeight: 'bold' }}>onChange</span>
-                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>Fired when user changes selection</p>
+                  <p style={{ margin: '4px 0 0 0', color: '#6b7280', fontSize: '12px' }}>{t('developers.widget.onChange')}</p>
                 </div>
               </div>
             </div>
@@ -950,7 +958,7 @@ export default function DevelopersPage() {
             fontWeight: 'bold',
             marginBottom: '16px'
           }}>
-            Ready to Get Started?
+            {t('developers.cta.title')}
           </h2>
           <p style={{
             fontSize: '16px',
@@ -959,7 +967,7 @@ export default function DevelopersPage() {
             maxWidth: '500px',
             margin: '0 auto 32px'
           }}>
-            Integrate POTAL today and start offering real shipping calculations to your customers.
+            {t('developers.cta.description')}
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
@@ -979,7 +987,7 @@ export default function DevelopersPage() {
               onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
               onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
             >
-              Try the Playground
+              {t('developers.cta.playground')}
             </a>
             <a
               href="/developers/docs"
@@ -1004,7 +1012,7 @@ export default function DevelopersPage() {
                 e.currentTarget.style.color = 'white';
               }}
             >
-              Full Documentation
+              {t('developers.cta.fullDocs')}
             </a>
           </div>
         </section>
