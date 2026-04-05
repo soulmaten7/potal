@@ -275,11 +275,14 @@ async function checkDivergence(
 
     if (error || !data || data.length === 0) return null;
 
+    const filtered = data.filter((r: Record<string, unknown>) => String(r.hs10).length >= 10);
+    if (filtered.length === 0) return null;
+
     const prodLower = productName.toLowerCase();
     let bestMatch: Hs10Candidate | null = null;
     let bestScore = 0;
 
-    for (const row of data) {
+    for (const row of filtered) {
       const keywords = (row.keywords as string[]) || [];
       let score = 0;
       for (const kw of keywords) {
