@@ -41,7 +41,7 @@ export default function DataSourceTicker() {
 
   const items = DATA_SOURCES.map((src, i) => (
     <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 500 }}>
+      <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, fontWeight: 600 }}>
         {src.name}
       </span>
       <span style={{
@@ -52,11 +52,11 @@ export default function DataSourceTicker() {
         backgroundColor: getStatusColor(src.hoursAgo),
         flexShrink: 0,
       }} />
-      <span style={{ color: '#94a3b8', fontSize: 12 }}>
+      <span style={{ color: '#94a3b8', fontSize: 13 }}>
         {getTimeLabel(src.hoursAgo)}
       </span>
       {i < DATA_SOURCES.length - 1 && (
-        <span style={{ color: '#334155', margin: '0 12px', fontSize: 10 }}>|</span>
+        <span style={{ color: '#334155', margin: '0 16px', fontSize: 11 }}>|</span>
       )}
     </span>
   ));
@@ -68,16 +68,16 @@ export default function DataSourceTicker() {
       backgroundColor: 'rgba(2, 18, 44, 0.95)',
       borderTop: '1px solid rgba(255,255,255,0.05)',
       borderBottom: '1px solid rgba(255,255,255,0.05)',
-      padding: '10px 0',
+      padding: '12px 0',
       position: 'relative',
     }}>
       <div style={{
-        position: 'absolute', left: 0, top: 0, bottom: 0, width: 60,
+        position: 'absolute', left: 0, top: 0, bottom: 0, width: 80,
         background: 'linear-gradient(to right, rgba(2,18,44,0.95), transparent)',
         zIndex: 2, pointerEvents: 'none',
       }} />
       <div style={{
-        position: 'absolute', right: 0, top: 0, bottom: 0, width: 60,
+        position: 'absolute', right: 0, top: 0, bottom: 0, width: 80,
         background: 'linear-gradient(to left, rgba(2,18,44,0.95), transparent)',
         zIndex: 2, pointerEvents: 'none',
       }} />

@@ -397,6 +397,9 @@ export default function HomePage() {
       background: '#fafafa',
       color: '#1a1a1a',
     }}>
+      {/* ═══════════════════ DATA SOURCE TICKER ═══════════════════════ */}
+      <DataSourceTicker />
+
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section style={{
         background: 'linear-gradient(135deg, #02122c 0%, #0a1e3d 50%, #1a365d 100%)',
@@ -551,9 +554,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ═══════════════════ DATA SOURCE TICKER ═══════════════════════ */}
-      <DataSourceTicker />
 
       {/* ═══════════════════ FEATURES CTA BANNER ══════════════════════ */}
       <section style={{ background: '#0A0A1A', borderTop: '1px solid rgba(255,255,255,0.08)', padding: '32px 0' }}>
