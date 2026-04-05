@@ -3,9 +3,13 @@
 /content
 /marketing
 /docs
-/data
+/data/itc_macmap
+/data/tariff-research
+/data/wits_tariffline
+/data/*.csv
+/data/*.jsonl
+/data/*.md
 /supabase
-/scripts
 /mcp-server/node_modules
 /mcp-server/build
 *.log
