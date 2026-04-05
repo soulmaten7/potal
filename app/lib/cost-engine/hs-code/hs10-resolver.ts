@@ -325,7 +325,7 @@ export async function resolveHs10(
       hsCodePrecision: 'HS6',
       classificationMethod: 'hs6_fallback',
       description: `HS ${cleanHs6} (6-digit for ${country})`,
-      confidence: 0.85,
+      confidence: 1.0,
     };
   }
 
@@ -345,7 +345,7 @@ export async function resolveHs10(
       hsCodePrecision: 'HS6',
       classificationMethod: 'hs6_fallback',
       description: `No ${lookupCountry} schedule data for ${cleanHs6}`,
-      confidence: 0.8,
+      confidence: 1.0,
     };
   }
 
@@ -411,7 +411,7 @@ export async function resolveHs10(
       description: candidates[0].description,
       candidates: candidates.slice(0, 5),
       dutyRate: candidates[0].dutyRate,
-      confidence: Math.min(0.95, 0.7 + candidates[0].score * 0.005),
+      confidence: Math.min(1.0, 0.7 + candidates[0].score * 0.005),
     };
     saveToMemCache(cleanHs6, lookupCountry, productName, result);
     return result;
