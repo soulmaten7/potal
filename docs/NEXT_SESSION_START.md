@@ -1,175 +1,143 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-03-31 15:00 KST (CW22-J — Notion 마이그레이션 완료, 엑셀 로깅 폐지, 폴더 정리)
+> 마지막 업데이트: 2026-04-05 19:30 KST (CW22-S — Data Ticker + i18n + Auto-Import + Publication Ticker 완료)
 
 ---
 
 ## 현재 상태 요약
 
-### 핵심 수치 (2026-03-29 기준)
-- **외부 사용자**: 0명, **MRR**: $0 — **바이럴 런칭이 최우선**
-- **140/142 기능 구현** (100%, WON'T 2개 제외)
+### 핵심 수치 (2026-04-05 기준)
+- **외부 사용자**: 0명, **MRR**: $0 — **마케팅/고객 확보가 최우선**
+- **147/147 기능 구현** (100%, WON'T 2개 제외 = 140 Active + 5 보완 + 2 WON'T)
 - **전략**: Exit(인수) 확정 — Forever Free + 데이터 수집 → 인수
 - **요금제**: Forever Free (140개 전부 무료) + Enterprise Contact Us
 - **v3 파이프라인**: ✅ 21/21 Section 100%, codified-rules 595개
 - **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
-- **인프라 비용**: 고정 ~$114/월, AI 호출 0
-- **Shopify App**: ⏳ 심사 중
+- **i18n**: 329키 × 7언어 (en/ko/ja/zh/es/de/fr) = 2,303 번역
+- **Auto-Import**: 6/12 소스 자동화 (SDN, FR, TARIC, Trade Remedy, USITC, UK)
+- **Data Ticker**: Supabase 실시간 + JSON fallback 자동 갱신 + 2줄 구조 (업데이트 날짜 + 공식 발행일)
+- **인프라 비용**: 고정 ~$114/월, AI 호출 $0
 
-### ✅ CW22-J 완료 사항 (2026-03-31)
+---
 
-- **Notion "POTAL Command Center" 생성**: 5개 DB (Task Board, Session Log, Content Pipeline, Marketplace Tracker, Finance Tracker)
-- **엑셀 로깅 전면 폐지**: Work_Log.xlsx, Cowork_Session_Log.xlsx, D9~D15 Division 엑셀 → Notion으로 이전
-- **CLAUDE.md 전면 개정**: Notion 기반 워크플로우, 폴더 구조 문서화
-- **폴더 정리**: portal 루트 170+ 파일 → archive/ 하위 폴더 정리
-- **Notion 사용 설명서 생성**: Command Center 내 가이드 페이지
+## 가장 최근 세션: CW22-S (2026-04-05)
 
-### ✅ CW22-I 완료 사항 (2026-03-31)
+### 커밋 9개 (전부 push 완료)
+| # | 커밋 | 내용 |
+|---|------|------|
+| 1 | `3deaaff` | Live Ticker — Supabase 실시간 12개 소스 |
+| 2 | `13b9bfa` | Ticker Fallback — `scripts/update-ticker-fallback.mjs` prebuild 자동 갱신 |
+| 3 | `4ce755f` | Homepage i18n — 73키 × 7언어 |
+| 4 | `e3507a1` | Source Publication Ticker — `data/source-publications.json` 2줄 구조 |
+| 5 | `a3c6a69` | Auto-Import Pipeline — 4 모니터 DB 연결 (2/12→6/12) |
+| 6 | `09d55e1` | Sitewide i18n — 256키 × 7언어 (Footer+Features+Pricing+Developers+Community+Help) |
+| 7 | `48a16c7` | Publication Auto-Sync — 모니터 감지→Supabase→prebuild JSON |
+| 8 | `5e06cd8` | Docs 1차 (CLAUDE.md, session-context.md) |
+| 9 | `cbc2c82` | Docs 2차 (CHANGELOG.md CW22-S 섹션 + session-context CW22-S 완료 블록) |
 
-- **session-context TODO 전면 정리**: 완료항목 제거, 콜드이메일 캠페인 취소, F045~F048 marketplace 승인 시 변경
-- **바이럴 런칭 TODO 추가**: HN/Reddit/LinkedIn 포스트, Demo 영상, 유튜브, 86개 가이드 보강
+### CW22-S에서 만든 핵심 파일
+- `app/api/v1/data-freshness/route.ts` — 12개 소스 실시간 타임스탬프 API
+- `scripts/update-ticker-fallback.mjs` — Vercel prebuild 스크립트
+- `data/ticker-fallback.json` — Ticker fallback 데이터
+- `data/source-publications.json` — 12개 소스 공식 발행일
+- `app/lib/data-management/import-trigger.ts` — Auto-Import 유틸리티
+- `app/lib/data-management/publication-updater.ts` — Publication 자동 갱신
+- `app/i18n/translations/` — en/ko/ja/zh/es/de/fr 7개 언어 파일
 
-### ✅ CW22-H 완료 사항 (2026-03-31)
+### Supabase DB 변경
+- `source_publications` 테이블 신규 생성 (12행 초기 데이터)
 
-- **content/ 폴더 구조**: demo-scripts, social-media, thumbnails, recordings + README.md
-- **Dashboard Demo Scripts 엑셀**: 18개 대시보드 메뉴별 데모 스크립트 (Korean+English subtitles)
-
-### ✅ CW22-G 완료 사항 (2026-03-31)
-
-- **Forever Free cleanup**: Developers 429 에러 + Dashboard checkout/usage 3곳 paid plan 참조 제거
-
-### ✅ CW22-F 완료 사항 (2026-03-31)
-
-- **Features 검색박스**: `/features` 페이지에 실시간 검색 input 추가 (name, description, category, slug 검색)
-- **검색 초기화**: X 버튼 + Reset filters에서 검색어 함께 초기화
-
-### ✅ CW22-E 완료 사항 (2026-03-30)
-
-- **Adobe Commerce Marketplace Profile**: Vendor Name(potal), Logo, Privacy Policy URL 저장 완료
-- **Tax Forms 설정**: 비미국 거주자 + 한국-미국 조세조약 + W-8BEN 제출 선택 완료
-- **W-8BEN 발송**: IRS 공식 양식 이메일 제출 완료 (`W-8BEN_Form.pdf` portal 폴더 저장)
-
-### ✅ CW22-D 완료 사항 (2026-03-30)
-
-- **npm SDK**: `potal-sdk@1.1.0` 배포 완료 (npmjs.com/package/potal-sdk)
-- **PyPI SDK**: `potal@1.1.0` 배포 완료 (pypi.org/project/potal)
-- **WooCommerce WordPress.org 제출**: Automated Scan Pass ✅, slug: `potal-total-landed-cost-calculator`, Awaiting Review (1~10일)
-- **BigCommerce 파트너팀 이메일**: partners@bigcommerce.com 발송 완료, 답장 대기 중
-- **Marketplace_Registration_Guide.md**: 4개 플랫폼 가입 가이드 문서 생성
-
-### ✅ CW22 완료 사항 (2026-03-29~30)
-
-**CEO 결정 완료:**
-- Exit(인수) 전략 확정
-- 140개 기능 전부 Forever Free
-- Custom 세팅비 없음 — 셀프서비스 가이드로 대체
-- Enterprise는 Contact Us 문의 폼만
-
-**코드 변경 (A+B+B-ext+C+D+G 전부 완료):**
-- **A-1~A-4**: 요금제 4단계 폐기 → Forever Free + Enterprise Contact Us
-- **B-1~B-6**: 가입 통합(/auth/join→signup), 필수 5개, 프로필 완성도 위젯, trial 만료 403
-- **B-ext (2026-03-29 21:00)**: 가입 플로우 수정 — Google OAuth complete-profile, 이메일 인증 링크, FreeBanner 제거, contact_email 수정, 세션 쿠키 보존
-- **C-1~C-7**: 홈 화면 리디자인 — "140 Features. All Free." 히어로 + 경쟁사 비교 차트 2개 (FreeBanner 제거)
-- **D-1~D-5**: 140개 Features 상세 가이드 — /features/[slug] 동적 라우트 + SEO sitemap
-- **G-1~G-7**: 커뮤니티 게시판 — 버그/질문/제안, 140 기능 분류, 댓글, 추천, Header, 50 i18n
-
-**CW22-C (2026-03-30):**
-- **HeroCalculator 6필드**: Product Name + Material + Category + Price + Origin + Destination, 단방향 cascading (Material → Category)
-- **CTA 영문화**: 홈 CTA 한국어 → 영어
-- **Community 5건 수정**: 사이드바, 게시글 수정, 작성자 표시, 댓글 수정/삭제, Reddit 스타일 UI
-- **LinkedIn 최적화**: Headline/About/Banner 업데이트
-- **CLAUDE.md 구조화**: 문서 업데이트 규칙 상세화 + 3개 파일 분리
-
-**DB 마이그레이션:**
-- 055_forever_free_profile.sql: sellers 컬럼 10개 (파일 생성, 적용 대기)
-- 056_community_forum.sql: 3 테이블 + RLS + 인덱스 (파일 생성, 적용 대기)
-- 057_community_categories.sql: ✅ 이미 적용됨
-
-**가입 플로우 신규 파일:**
-- `app/auth/complete-profile/page.tsx` — Google OAuth 프로필 입력 (fullscreen overlay)
-- `app/api/v1/sellers/complete-oauth-profile/route.ts` — OAuth 프로필 완성 API
+### Notion 업데이트 완료
+- Session Log: CW22-S 기록 (커밋 9개)
+- Task Board: 4개 카드 전부 Done
+- 데모 영상 제작 가이드: 티커 데모 rec_20, rec_21 추가
 
 ---
 
 ## 다음 할 일 (우선순위)
 
-### P0: 마켓플레이스 대기 항목
-1. **BigCommerce 파트너팀 답장 확인** — partners@bigcommerce.com 답장 오면 DevTools 앱 등록
-2. **WooCommerce 심사 결과 확인** — WordPress.org에서 이메일 알림 수신 대기 (soulmaten7@gmail.com)
-3. **Adobe Commerce W-8BEN 검토 확인** — 승인 후 `potal-magento-1.0.0.zip` Extension 버전 업로드 (https://commercedeveloper.adobe.com/extensions/versions/potal-temporary-69ca230c5baa44-47764374)
-4. ~~**F045~F048 Coming Soon 처리**~~ — ✅ 완료 (CW22-F)
+### P0: 데모 영상 촬영 (진행 중)
+- **메인 4개 완료**: rec_01~04 ✅
+- **미촬영**: rec_05~12 (기능별), rec_13~16 (시나리오), rec_17~19 (비교), rec_20~21 (티커 데모)
+- **참조**: Notion "🎬 데모 영상 제작 가이드"
+- **도구**: Mac QuickTime 녹화 → CapCut 편집
+- **유튜브 업로드는 보류** (CEO 결정)
 
-### P1: 바이럴 런칭 (CEO 날짜 결정 후 즉시)
-1. **Product Hunt**: ✅ B2B 리런치 완료 — 후속 홍보/댓글 관리
-2. **Hacker News 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
-3. **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
-4. **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트
+### P1: 마케팅 (CEO 날짜 결정 시 즉시)
+1. **Hacker News "Show HN" 포스트** — 카르마 필요 (신규 계정 제한)
+2. **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur (카르마 필요)
+3. **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 완료)
+4. **커뮤니티 답변 활동** — Gemini 5개 언어권 프롬프트 준비 완료 (`content/social-media/community-prompts/`)
 
-### P2: 콘텐츠 보강 (이번 주)
-6. **140개 가이드 콘텐츠 보강** — 54개 완성, 86개 기본 구조만 있음
-7. **"Why POTAL is Free" 페이지** — 스토리텔링 마케팅
-8. **콜드이메일 재개** — 새 앵글 "All 140 Features, Free Forever"
+### P2: 마켓플레이스 심사 확인 (외부 대기 — 2026-04-05 기준 전부 미승인)
+1. **Shopify**: 3/10 제출, 26일+ 경과, 아직 미승인
+2. **WooCommerce**: WordPress.org 심사 대기 (제출 2026-03-30)
+3. **BigCommerce**: partners@bigcommerce.com 답장 대기 (발송 2026-03-30)
+4. **Adobe Commerce**: W-8BEN 검토 대기 (제출 2026-03-30) → 완료 후 Extension 업로드
+5. F045~F048 Coming Soon → marketplace 승인 시 `active`로 변경
 
-### P3: CEO 피드백 반영
-9. **홈 화면 디자인 리뷰** — 은태님 최종 확인
-10. **Features 페이지 리뷰** — 카테고리/레이아웃 피드백
-11. **비로그인 체험 UI** — 가입 없이 바로 계산 체험
+### P3: 기능 보완 (고객 확보 후)
+- **20개 Feature Guide 템플릿** — 121/140 완성, 나머지 20개 대부분 마켓플레이스 미승인+비핵심
+- **P2 남은 7개**: F054, F082, F083, F105, F138, F140, F147 (Enterprise급)
+- **Auto-Import 나머지 6/12**: tariff-change, fta-change, classification-ruling, macmap-update, CA/AU/KR/JP (웹 스크래핑/커스텀 파서 필요)
+- **Layer 3 설계** (Enterprise Custom)
 
-### P4: DB 마이그레이션
-12. ✅ **055 + 056 Supabase 적용 완료** — community_posts, community_comments, sellers.contact_email 실제 DB 확인됨
+### P4: LLM 플랫폼 (외부 조건 대기)
+- Microsoft Copilot: 365 Business 계정 필요
+- Meta AI: 지역 제한
+- xAI Grok: 앱 스토어 없음
 
 ---
 
-## 파이프라인 건강도 지표 (CW22 기준)
+## 자동화 파이프라인 현황
+
+### ✅ 자동화 완료
+| 파이프라인 | 구조 | 비고 |
+|-----------|------|------|
+| 1줄 티커 (데이터 업데이트 날짜) | Supabase 실시간 → JSON fallback 자동 갱신 | 배포마다 prebuild |
+| 2줄 티커 (출처 발행일) | 모니터 감지 → Supabase `source_publications` → prebuild JSON | 감지 시 자동 |
+| Auto-Import 6/12 | OFAC SDN, Federal Register, TARIC RSS, Trade Remedy, USITC, UK Trade Tariff | 감지→DB |
+| Kill switch | `DISABLE_AUTO_IMPORT=true` 글로벌, `DISABLE_AUTO_IMPORT_OFAC_SDN=true` 소스별 | env var |
+
+### ⏳ 수동 (향후 자동화 대상)
+| 파이프라인 | 이유 |
+|-----------|------|
+| Auto-Import 나머지 6/12 | 웹 스크래핑/커스텀 파서 개발 필요 |
+| i18n 새 텍스트 | 새 페이지 추가 시 수동 번역 추가 |
+
+---
+
+## 파이프라인 건강도 지표 (CW22-S 기준)
 
 | 지표 | 값 | 상태 |
 |------|-----|------|
 | Section coverage | 21/21 | ✅ 100% |
 | codified-rules | 595 | ✅ |
-| 기능 구현율 | 140/142 | ✅ 100% (WON'T 2 제외) |
-| 요금제 | Forever Free | ✅ 피벗 완료 |
-| Features 가이드 | 140 페이지 | ✅ |
-| 커뮤니티 | 게시판 구현 | ✅ (DB 적용 대기) |
-| 홈 화면 | 리디자인 완료 | ✅ |
-| npm SDK (potal-sdk) | v1.1.0 배포 완료 | ✅ |
-| PyPI SDK (potal) | v1.1.0 배포 완료 | ✅ |
-| WooCommerce WordPress.org | Awaiting Review (제출 2026-03-30) | ⏳ |
-| BigCommerce 파트너 | 이메일 발송, 답장 대기 | ⏳ |
-| Magento Marketplace | 미제출 | ⏳ |
+| 기능 구현율 | 147/147 (140 Active) | ✅ 100% |
+| i18n | 329키 × 7언어 | ✅ |
+| Auto-Import | 6/12 소스 | ⏳ 50% |
+| Data Ticker | Supabase 실시간 + 2줄 | ✅ |
+| npm SDK | potal-sdk@1.1.0 | ✅ |
+| PyPI SDK | potal@1.1.0 | ✅ |
+| MCP Server | potal-mcp-server@1.4.2 | ✅ |
+| Shopify | 심사 중 (26일+) | ⏳ |
+| WooCommerce | 심사 중 (6일+) | ⏳ |
 | regression test | 22/22 PASS | ✅ |
-| AI 호출 | 0회 | ✅ |
-| 인프라 비용 | ~$114/월 | ✅ |
-| build | 성공 | ✅ |
-| 가입 플로우 | 이메일 인증 + Google OAuth complete-profile | ✅ |
-| Supabase Confirm email | ON | ✅ |
-| HeroCalculator | 6필드 + 단방향 cascading | ✅ |
-| Community UI | 사이드바+수정+댓글 | ✅ |
-| LinkedIn | 프로필 + 배너 최적화 | ✅ |
-| 프로젝트 관리 | Notion Command Center (5 DB) | ✅ |
-| 엑셀 로깅 | 폐지 → Notion 이전 완료 | ✅ |
 
 ---
 
-## 읽어야 할 파일
-1. `CLAUDE.md` — 핵심 규칙
-2. `session-context.md` — 세션 히스토리
-3. `docs/PIVOT_PLAN_CW22.md` — 피벗 계획서 (32개 항목)
-4. `.cursorrules` — 코딩 표준 + Layer 구조
-5. **참조 파일 (필요 시)**:
-   - `docs/PROJECT_STATUS.md` — 핵심 수치, 기술스택, 전략
-   - `docs/CREDENTIALS.md` — 인증정보
-   - `docs/DIVISION_STATUS.md` — Division 상세
+## 참조 파일 경로
 
----
-## [Auto-saved] Compaction at 2026-03-31 12:06 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+| 파일 | 용도 |
+|------|------|
+| `CLAUDE.md` | Claude Code 지침 (절대 규칙, 문서 업데이트 규칙) |
+| `session-context.md` | 프로젝트 전체 맥락 + TODO + 히스토리 |
+| `docs/CHANGELOG.md` | 코드 변경 기록 |
+| `docs/CREDENTIALS.md` | API 키, Supabase 연결 |
+| `.cursorrules` | 코딩 표준, 파일 매핑 |
+| `docs/ORCHESTRATOR_RULES.md` | Chief Orchestrator 역할/규칙 |
+| `docs/DIVISION_STATUS.md` | 16개 Division 상세 |
 
----
-## [Auto-saved] Compaction at 2026-04-01 14:42 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
-
----
-## [Auto-saved] Compaction at 2026-04-01 23:07 KST
-컨텍스트 압축 발생. 이전 대화가 요약됨.
-압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+## 세션 시작 시 읽어야 할 파일 (순서)
+1. `CLAUDE.md` — 규칙
+2. `session-context.md` — 맥락 + TODO
+3. 이 파일 (`docs/NEXT_SESSION_START.md`) — 최신 상태

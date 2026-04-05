@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-05 17:30 KST (CW22-S: Data Ticker Supabase 연동 + i18n 329키×7언어 + Auto-Import Pipeline 6/12 + Source Publication 2줄 티커)
+# 마지막 업데이트: 2026-04-05 20:00 KST (CW22-S: 하네스 강화 — stop hook 날짜 자동 검증 + 가비지 컬렉션 규칙 + 문서 4개 일치 강제)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -96,9 +96,30 @@ potal/
 
 ---
 
+## 🔒 하네스 규칙 (자동 강제 — 부탁이 아닌 시스템)
+
+### 세션 종료 시 자동 검증 (stop-reminder.sh hook)
+- Hook이 4개 문서(CLAUDE.md, CHANGELOG.md, session-context.md, NEXT_SESSION_START.md) 헤더 날짜를 자동 검증
+- 오늘 날짜가 아니면 ❌ 표시 → **반드시 업데이트 후 push**
+- git 미커밋/미push 상태도 자동 감지
+
+### 가비지 컬렉션 (세션 시작 시 필수)
+- **매 세션 시작 시** session-context.md의 `## 2. 현재 TODO` 섹션을 점검
+- 이미 완료된 항목이 TODO에 남아있으면 즉시 제거 또는 취소선 처리
+- 날짜가 1주일 이상 지난 "대기 중" 항목은 날짜 갱신 필요 여부 확인
+- **근거**: CW22-S에서 "FIX 17개 미완료"가 실제로는 CW20에서 완료된 항목이었음. 오래된 정보가 다음 세션 판단을 오염시킴
+
+### 문서 4개 날짜 일치 규칙
+- 코드 작업이 있는 세션에서는 4개 문서 헤더 날짜가 **반드시 오늘 날짜**여야 함
+- CLAUDE.md, docs/CHANGELOG.md, session-context.md, docs/NEXT_SESSION_START.md
+- **근거**: CW22-S에서 CHANGELOG.md에 CW22-S 섹션 누락, NEXT_SESSION_START.md가 2주 전 날짜로 멈춰있었음
+
+---
+
 ## 세션 종료 체크리스트
 - [ ] git push 완료
-- [ ] **코드 문서 3개**: CLAUDE.md, CHANGELOG.md, session-context.md
+- [ ] **코드 문서 4개 날짜 확인**: CLAUDE.md, CHANGELOG.md, session-context.md, NEXT_SESSION_START.md (hook이 자동 검증)
+- [ ] **session-context.md**: 이번 세션 CW##-X 완료 블록 추가됨
 - [ ] **Notion**: Session Log에 세션 기록 추가 (Cowork에서)
 - [ ] **Notion**: Task Board 상태 업데이트 (Cowork에서)
 - [ ] 해당 시: .cursorrules, PROJECT_STATUS.md, CREDENTIALS.md, DIVISION_STATUS.md
