@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-04 22:50 KST (CW22-O — 데모 결과 확장 라이브. API가 반환하는 HS Code/FTA/Compliance를 프론트엔드에 표시. Vercel 수동 배포 완료. .vercelignore 추가로 배포 크기 25MB. ~/portal 자동 생성 원인 해결)
+> 마지막 업데이트: 2026-04-05 17:30 KST (CW22-S — Data Source Ticker Supabase 실시간 연동. 329개 번역 키×7언어 i18n 완료. Auto-Import Pipeline 4개 모니터 연결(6/12 자동화). Source Publication 2줄 티커 + 감지 시 자동 갱신 파이프라인 완성)
 
 ---
 

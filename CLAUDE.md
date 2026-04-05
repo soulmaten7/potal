@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-04 22:50 KST (CW22-O: 데모 결과 확장 — HS Code, FTA, Compliance 섹션 추가 + Vercel 배포 수정)
+# 마지막 업데이트: 2026-04-05 17:30 KST (CW22-S: Data Ticker Supabase 연동 + i18n 329키×7언어 + Auto-Import Pipeline 6/12 + Source Publication 2줄 티커)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -28,7 +28,7 @@
 3. **session-context.md에 없는 숫자 만들기 금지** — 근거 없는 수치 사용 금지
 4. **console.log 금지** — 프로덕션 코드에 남기지 않기
 5. **한 번에 하나의 작업만** — 멀티태스킹 금지
-6. **Git push는 Mac 터미널에서** — VM/EC2에서 push 불가
+6. **Git push는 Claude Code 터미널에서 직접 가능** — 별도 Mac 터미널 불필요
 7. **터미널 작업은 한 번에 하나만** — 동시에 2개 이상 다운로드/임포트 금지
 8. **문서 업데이트 시 날짜+시간(KST) 기록 필수**
 9. **유료 플랜 재도입 금지** — Forever Free 구조 유지 (CW22 CEO 확정). Enterprise Contact Us만 허용

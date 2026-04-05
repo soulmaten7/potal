@@ -1,5 +1,30 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-04 22:50 KST (CW22-O — 데모 결과 확장 + Vercel 배포 수정)
+> 마지막 업데이트: 2026-04-05 17:30 KST (CW22-S — Data Ticker + i18n + Auto-Import Pipeline)
+
+## [2026-04-05 17:30 KST] CW22-S — Data Ticker + i18n + Auto-Import Pipeline
+
+### 추가
+- 📊 **Data Source Ticker Supabase 연동** — 12개 소스 실시간 타임스탬프 표시, 5분 갱신 (3deaaff)
+- 🔄 **Ticker Fallback 자동화** — 배포마다 prebuild 스크립트가 Supabase에서 fallback JSON 갱신 (13b9bfa)
+- 🌐 **Homepage i18n** — 73개 번역 키 × 7언어 (en/ko/ja/zh/es/de/fr), trade 용어 40+ 영어 유지 (4ce755f)
+- 🌐 **Sitewide i18n** — Footer/Features/Pricing/Developers/Community/Help 256개 키 × 7언어 (09d55e1)
+- 📰 **Source Publication 2줄 티커** — 원본 출처 공식 발표일/관보 번호 표시 (e3507a1)
+- ⚡ **Auto-Import Pipeline** — OFAC SDN, Federal Register, TARIC RSS, Trade Remedy 감지→자동 DB 임포트 (a3c6a69)
+- 🔗 **Publication Auto-Sync** — 모니터 감지 시 source_publications 테이블 + JSON 자동 갱신 파이프라인 (48a16c7)
+- 🗃️ **source_publications 테이블** — Supabase에 12개 소스의 공식 발표일 메타데이터 저장
+
+### 수정
+- 🔧 **getTranslation() fallback** — 번역 키 없는 언어에서 영어 fallback 자동 적용
+- 🔧 **.vercelignore** — scripts/ 와 data/ticker-fallback.json 포함되도록 수정
+- 🔧 **절대 규칙 #6** — "Git push는 Mac 터미널에서" → "Claude Code 터미널에서 직접 가능"으로 변경
+- 🔧 **킬 스위치** — DISABLE_AUTO_IMPORT 환경변수로 자동 임포트 전체/개별 OFF 가능
+
+### 수치 변경
+- 번역 키: 108개 → 329개 (홈페이지 73 + 사이트 256)
+- 자동화 커버리지: 2/12 → 6/12 (50%)
+- 지원 언어 (번역 완료): 7개 (en, ko, ja, zh, es, de, fr), 나머지 44개는 영어 fallback
+
+---
 
 ## [2026-04-04 22:50 KST] CW22-O — 데모 결과 확장 + Vercel 배포 수정
 
