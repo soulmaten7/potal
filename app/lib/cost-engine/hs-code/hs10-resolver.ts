@@ -124,7 +124,7 @@ async function getCandidates(
     return data
       .filter((r: Record<string, unknown>) => {
         const code = String(r.hs_code);
-        return code.length > 6 && /^\d+$/.test(code);
+        return code.length >= 10 && /^\d+$/.test(code);
       })
       .map((r: Record<string, unknown>) => ({
         hs10: String(r.hs_code),
