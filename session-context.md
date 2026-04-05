@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2 — Confidence 92%→100% 수정. Vercel GitHub 연동 지원케이스 #01083440 제출. vercel --prod 필수 규칙 추가. 데모 영상 가이드 재촬영 항목 표시)
+> 마지막 업데이트: 2026-04-06 00:30 KST (CW22-S2 — Confidence 통합(Classification Accuracy 하나로). FTA Trade Agreements 표시. HS10 10자리 수정. Vercel 지원케이스 #01083440)
 
 ---
 
@@ -216,18 +216,21 @@
 
 **커밋 8개**: 3deaaff, 13b9bfa, 4ce755f, e3507a1, a3c6a69, 09d55e1, 48a16c7, 5e06cd8
 
-### CW22-S2 Cowork — Confidence 92%→100% 수정 + Vercel GitHub 연동 지원케이스 (2026-04-05)
+### CW22-S2 Cowork — Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스 (2026-04-05~06)
 
 **완료 항목:**
-- ✅ **Confidence 92%→100% 수정** — 10개 필드 완전 입력 시 100% 표시. 7개 파일의 하드코딩 캡 모두 제거 (커밋 666dbe6, 8c4ddf8, 074b2cb)
-  - confidence-calibration.ts, hs10-resolver.ts, GlobalCostEngine.ts, explainability.ts, confidence-score.ts, step3-heading.ts, step4-subheading.ts
-- ✅ **Supabase 캐시 클리어** — `hs_classification_cache` 166행 삭제 (이전 92% 값 캐싱 제거)
-- ✅ **vercel --prod 배포** — GitHub webhook 깨진 상태 발견, CLI 배포로 해결 (커밋 b645a58)
-- ✅ **CLAUDE.md 절대규칙 #11 추가** — `git push 후 vercel --prod 필수` 규칙화
-- ✅ **Vercel Support Case #01083440 제출** — GitHub App 설치 404 오류 → 백엔드 리셋 요청 (Status: Open, Severity 2)
-- ✅ **Notion 데모 영상 제작 가이드 업데이트** — Confidence 100% 반영하여 03_demo-filled, 04_result, rec_01 재촬영 필요로 표시
+- ✅ **Confidence 92%→100% 수정** — 고품질 경로 캡 제거 (7개 파일) (커밋 666dbe6, 8c4ddf8, 074b2cb)
+- ✅ **Confidence 세분화** — 저품질 경로 캡 복원: hs6_fallback 0.85, no_candidates 0.75, keyword_match 0.95, weak first_candidate 0.80 (커밋 6212fe7)
+- ✅ **Confidence 중복 제거** — CLASSIFICATION 섹션에서 Confidence 줄 삭제, Classification Accuracy 하나로 통일 (커밋 342272e)
+- ✅ **FTA Trade Agreements 표시** — tariffOptimization 없이도 getCountryFtas()로 FTA 확인 → KR→US에서 KORUS FTA 표시 (커밋 6212fe7)
+- ✅ **HS Code 10자리 수정** — getCandidates 필터 강화 (8자리 헤더행 제외) + divergence_map 정리 (커밋 224415f, 46d3163)
+- ✅ **Supabase 캐시 클리어** — hs_classification_cache + gri_classification_cache 전체 삭제
+- ✅ **vercel --prod 배포** — GitHub webhook 깨진 상태, CLI 배포로 해결
+- ✅ **CLAUDE.md 절대규칙 #11 추가 (임시)** — git push 후 vercel --prod 필수, 복구 시 삭제 지침 포함
+- ✅ **Vercel Support Case #01083440 제출** — GitHub App 설치 404 → 백엔드 리셋 요청 (Open, Severity 2)
+- ✅ **Notion 데모 영상 제작 가이드** — 재촬영 표시 + 중복 항목 삭제
 
-**커밋 4개**: 666dbe6, 8c4ddf8, 074b2cb, b645a58
+**커밋 10개**: 666dbe6, 8c4ddf8, 074b2cb, b645a58, 3e8fc77, 6212fe7, c833957, 342272e, 224415f, 46d3163
 
 ### CW22-O Cowork — PMF Outreach 실행 체계 구축 + Community 단순화 + Rahul 후속 대응 (2026-04-02)
 

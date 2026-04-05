@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2 — Confidence 100% 수정 + Vercel GitHub 연동 지원케이스 + vercel --prod 규칙)
+> 마지막 업데이트: 2026-04-06 00:30 KST (CW22-S2 — Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스)
 
 ---
 
@@ -21,18 +21,24 @@
 
 ## 가장 최근 세션: CW22-S2 (2026-04-05)
 
-### 커밋 4개 (전부 push + vercel --prod 완료)
+### 커밋 10개 (전부 push + vercel --prod 완료)
 | # | 커밋 | 내용 |
 |---|------|------|
-| 1 | `666dbe6` | Confidence 100% — confidence-calibration.ts + step3/step4 캡 제거 |
+| 1 | `666dbe6` | Confidence 100% — 고품질 경로 캡 제거 (7개 파일) |
 | 2 | `8c4ddf8` | 추가 캡 제거 — hs10-resolver, GlobalCostEngine, explainability, confidence-score |
-| 3 | `074b2cb` | 잔여 캡 제거 — hs10-resolver 0.85/0.8/0.95 → 1.0 |
+| 3 | `074b2cb` | 잔여 캡 제거 — hs10-resolver |
 | 4 | `b645a58` | 재배포 트리거 |
+| 5 | `3e8fc77` | 문서 업데이트 1차 |
+| 6 | `6212fe7` | Confidence 세분화 + FTA 표시 (tariffOpt 없이도 getCountryFtas) |
+| 7 | `c833957` | Confidence × Accuracy 곱셈 (필드 수 반영) |
+| 8 | `342272e` | Confidence 줄 삭제 (Classification Accuracy 하나로 통일) |
+| 9 | `224415f` | HS10 후보 필터 10자리 이상만 |
+| 10 | `46d3163` | divergence_map 8자리 정리 + DB 캐시 클리어 |
 
 ### CW22-S2 핵심 변경
-- **Confidence 92%→100%**: 10개 필드 완전 입력 시 100% 표시되도록 7개 파일의 하드코딩 캡 모두 제거
-- **Supabase 캐시 클리어**: `hs_classification_cache` 166행 삭제
-- **CLAUDE.md 규칙 #11 추가**: `git push 후 vercel --prod 필수`
+- **Confidence 통합**: Classification Accuracy 하나로 통일 (CLASSIFICATION 섹션에서 Confidence 줄 삭제)
+- **FTA Trade Agreements 표시**: KR→US 등 FTA 존재 시 섹션 표시
+- **HS Code 10자리**: 8자리 헤더행 필터링, US는 정확한 HTS 10자리 표시
 - **Vercel Support Case #01083440**: GitHub App 404 → 백엔드 리셋 요청 (Open, Severity 2)
 
 ### ⚠️ 미해결 사항

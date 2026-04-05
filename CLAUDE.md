@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2: Confidence 92%→100% 수정 + Vercel GitHub 연동 지원케이스 #01083440 + vercel --prod 필수 규칙 추가)
+# 마지막 업데이트: 2026-04-06 00:30 KST (CW22-S2: Confidence 통합 + FTA 표시 + HS10 10자리 수정 + Vercel 지원케이스 #01083440)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

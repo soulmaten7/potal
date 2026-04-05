@@ -1,30 +1,32 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2 — Confidence 92%→100% 수정 + Vercel GitHub 연동 지원케이스 + vercel --prod 규칙)
+> 마지막 업데이트: 2026-04-06 00:30 KST (CW22-S2 — Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스)
 
-## [2026-04-05 23:30 KST] CW22-S2 — Confidence 100% 수정 + Vercel 배포 규칙 + GitHub 연동 지원케이스
+## [2026-04-06 00:30 KST] CW22-S2 — Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 배포 규칙
 
 ### 수정 (Fixes)
-- **Confidence 92%→100% 수정** — 10개 필드 완전 입력 시 100% 표시되도록 모든 하드코딩 캡 제거
-  - `confidence-calibration.ts`: STAGE_RELIABILITY (gri_pipeline, cache, exact_match, feedback) 1.0으로, hs10Selection 1.0으로
-  - `hs10-resolver.ts`: HS6 fallback 0.85→1.0, no candidates 0.8→1.0, keyword_match cap 0.95→1.0, divergence/first_candidate/price_break 모두 1.0
-  - `GlobalCostEngine.ts`: precomputed MFN/MIN confidence 0.9/0.95→1.0/1.0
-  - `explainability.ts`: vector categoryCertainty 0.92→1.0
-  - `confidence-score.ts`: cache/vector methodScores 0.95/0.90→1.0/1.0
-  - `step3-heading.ts`: vote confidence multiplier 0.15→0.2
-  - `step4-subheading.ts`: single_survivor/vote_clear 0.9→1.0, synonym 0.95→1.0
-- **Supabase 캐시 클리어** — `hs_classification_cache` 166행 전체 삭제 (이전 92% 값 캐싱 제거)
-- **hs10-resolver.ts 메모리 캐시** — 24시간 TTL 캐시가 이전 값 반환하던 문제, 코드 수정 + 재배포로 해결
+- **Confidence 92%→100% 수정** — 10개 필드 완전 입력 시 100% 표시되도록 고품질 경로 캡 제거 (7개 파일)
+- **Confidence 세분화** — 저품질 경로 캡 복원: hs6_fallback 0.85, no_candidates 0.75, keyword_match 0.95, weak first_candidate 0.80
+- **Confidence 중복 제거** — CLASSIFICATION 섹션에서 Confidence 줄 삭제, Classification Accuracy 하나로 통일
+- **FTA 표시 수정** — `calculate/route.ts`에서 tariffOptimization 없이도 `getCountryFtas()`로 FTA 존재 확인 → Trade Agreements 섹션 표시 (KR→US: KORUS FTA)
+- **HS Code 10자리 수정** — `getCandidates` 필터를 `code.length > 6` → `code.length >= 10`으로 강화, 8자리 헤더행 제외
+- **divergence_map 8자리 정리** — divergence_map에서도 8자리 코드 제거
+- **Supabase 캐시 클리어** — `hs_classification_cache`, `gri_classification_cache` 전체 삭제 (이전 잘못된 값 제거)
 
 ### 인프라
-- **CLAUDE.md 절대규칙 #11 추가**: `git push 후 vercel --prod 필수` — GitHub-Vercel 자동 배포 해제 상태 대응
+- **CLAUDE.md 절대규칙 #11 추가 (임시)**: `git push 후 vercel --prod 필수` — GitHub-Vercel 자동 배포 해제 상태, 복구 시 삭제할 것
 - **Vercel Support Case #01083440 제출** — GitHub App 설치 404 오류, 백엔드 리셋 요청 (Status: Open, Severity 2)
-- **Notion 데모 영상 제작 가이드 업데이트** — Confidence 100% 반영하여 03_demo-filled, 04_result, rec_01 재촬영 필요로 표시
+- **Notion 데모 영상 제작 가이드** — Confidence 100% 반영 재촬영 표시 + 중복 항목 삭제
 
-### 커밋 (4개)
+### 커밋 (10개)
 - `666dbe6` fix: confidence 100% for complete 10-field input (was capped at 92%)
 - `8c4ddf8` fix: remove all hardcoded confidence caps blocking 100% display
-- `074b2cb` fix: remove remaining confidence caps in hs10-resolver (0.85/0.8/0.95 → 1.0)
+- `074b2cb` fix: remove remaining confidence caps in hs10-resolver
 - `b645a58` trigger: redeploy for confidence fix
+- `6212fe7` fix: restore low-quality confidence caps + FTA logic without tariffOpt
+- `c833957` fix: multiply confidence by ablation accuracy for field-count differentiation
+- `342272e` fix: remove duplicate Confidence line from CLASSIFICATION section
+- `224415f` fix: filter HS10 candidates to 10+ digits only (exclude 8-digit headers)
+- `46d3163` fix: filter 8-digit header rows from divergence_map + DB cleanup
 
 ---
 
