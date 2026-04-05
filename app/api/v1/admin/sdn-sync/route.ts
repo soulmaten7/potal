@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { logImportResult, isAutoImportEnabled, type ImportTriggerResult } from '@/app/lib/data-management/import-trigger';
+import { savePublicationToDb } from '@/app/lib/data-management/publication-updater';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const SDN_XML_URL = 'https://www.treasury.gov/ofac/downloads/sdn.xml';
@@ -170,6 +171,10 @@ export async function GET(req: NextRequest) {
       importResult = await autoImportSdn(supabase);
       if (importResult.success) {
         entryCount = importResult.recordsUpdated;
+        await savePublicationToDb('Trade Remedies', {
+          reference: `${importResult.recordsUpdated.toLocaleString()} active entries`,
+          shortLabel: `${importResult.recordsUpdated.toLocaleString()} Active Entries`,
+        });
       }
       await logImportResult(importResult);
     }

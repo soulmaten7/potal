@@ -1,17 +1,99 @@
 {
   "lastManualUpdate": "2026-04-05",
   "sources": [
-    { "name": "USITC", "shortLabel": "HTS 2026 — Eff. Jan 1" },
-    { "name": "UK Trade Tariff", "shortLabel": "UKGT 2026 — Eff. Jan 1" },
-    { "name": "EU TARIC", "shortLabel": "CN 2026 — Eff. Jan 1" },
-    { "name": "Canada CBSA", "shortLabel": "Customs Tariff 2026 — Eff. Jan 1" },
-    { "name": "Australia ABF", "shortLabel": "AU Tariff 2026 — Eff. Jan 1" },
-    { "name": "Korea KCS", "shortLabel": "KR Tariff 2026 — Eff. Jan 1" },
-    { "name": "Japan Customs", "shortLabel": "JP Tariff FY2026 — Eff. Apr 1" },
-    { "name": "MacMap MFN", "shortLabel": "MacMap 2023 — HS2017 Rev." },
-    { "name": "Exchange Rates", "shortLabel": "ECB — Daily Reference" },
-    { "name": "Section 301/232", "shortLabel": "EO 14307 — Mar 12, 2025" },
-    { "name": "Trade Remedies", "shortLabel": "10,999 Active Cases" },
-    { "name": "FTA Agreements", "shortLabel": "1,319 FTAs — WTO Registry" }
-  ]
+    {
+      "name": "USITC",
+      "shortLabel": "HTS 2026 — Eff. Jan 1",
+      "publication": "HTS 2026 Edition",
+      "effectiveDate": "2026-01-01",
+      "reference": "USITC Pub. 5765",
+      "sourceUrl": "https://hts.usitc.gov/"
+    },
+    {
+      "name": "UK Trade Tariff",
+      "shortLabel": "UKGT 2026 — Eff. Jan 1",
+      "publication": "UK Global Tariff 2026",
+      "effectiveDate": "2026-01-01",
+      "reference": "UK Trade Tariff",
+      "sourceUrl": "https://www.trade-tariff.service.gov.uk/"
+    },
+    {
+      "name": "EU TARIC",
+      "shortLabel": "CN 2026 — Eff. Jan 1",
+      "publication": "Combined Nomenclature 2026",
+      "effectiveDate": "2026-01-01",
+      "reference": "OJ L 2025/2782",
+      "sourceUrl": "https://ec.europa.eu/taxation_customs/dds2/taric/"
+    },
+    {
+      "name": "Canada CBSA",
+      "shortLabel": "Customs Tariff 2026 — Eff. Jan 1",
+      "publication": "Customs Tariff Schedule 2026",
+      "effectiveDate": "2026-01-01",
+      "reference": "CBSA D-Memoranda",
+      "sourceUrl": "https://www.cbsa-asfc.gc.ca/trade-commerce/tariff-tarif/"
+    },
+    {
+      "name": "Australia ABF",
+      "shortLabel": "AU Tariff 2026 — Eff. Jan 1",
+      "publication": "Customs Tariff 2026",
+      "effectiveDate": "2026-01-01",
+      "reference": "Schedule 3",
+      "sourceUrl": "https://www.abf.gov.au/"
+    },
+    {
+      "name": "Korea KCS",
+      "shortLabel": "KR Tariff 2026 — Eff. Jan 1",
+      "publication": "관세율표 2026",
+      "effectiveDate": "2026-01-01",
+      "reference": "KCS Tariff Schedule",
+      "sourceUrl": "https://www.customs.go.kr/"
+    },
+    {
+      "name": "Japan Customs",
+      "shortLabel": "JP Tariff FY2026 — Eff. Apr 1",
+      "publication": "Customs Tariff Schedule 2026",
+      "effectiveDate": "2026-04-01",
+      "reference": "MOF Notification",
+      "sourceUrl": "https://www.customs.go.jp/english/tariff/"
+    },
+    {
+      "name": "MacMap MFN",
+      "shortLabel": "MacMap 2023 — HS2017 Rev.",
+      "publication": "ITC MacMap MFN Rates",
+      "effectiveDate": "2023-01-01",
+      "reference": "HS2017 (H6 Revision)",
+      "sourceUrl": "https://www.macmap.org/"
+    },
+    {
+      "name": "Exchange Rates",
+      "shortLabel": "ECB — Daily Reference",
+      "publication": "ECB Euro Foreign Exchange Reference Rates",
+      "reference": "Daily Publication",
+      "sourceUrl": "https://www.ecb.europa.eu/stats/eurofxref/"
+    },
+    {
+      "name": "Section 301/232",
+      "shortLabel": "EO 14307 — Mar 12, 2025",
+      "publication": "Executive Order — 25% Steel & Aluminum",
+      "effectiveDate": "2025-03-12",
+      "reference": "EO 14307",
+      "sourceUrl": "https://www.federalregister.gov/"
+    },
+    {
+      "name": "Trade Remedies",
+      "shortLabel": "10,999 Active Cases",
+      "publication": "AD/CVD Orders & Safeguards",
+      "reference": "10,999 active cases",
+      "sourceUrl": "https://www.trade.gov/enforcement-and-compliance"
+    },
+    {
+      "name": "FTA Agreements",
+      "shortLabel": "1,319 FTAs — WTO Registry",
+      "publication": "Free Trade Agreements Registry",
+      "reference": "1,319 agreements (WTO RTA-IS)",
+      "sourceUrl": "https://rtais.wto.org/"
+    }
+  ],
+  "lastAutoUpdate": "2026-04-05T08:30:22.293Z"
 }

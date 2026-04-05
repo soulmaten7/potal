@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { logImportResult, isAutoImportEnabled } from '@/app/lib/data-management/import-trigger';
+import { savePublicationToDb } from '@/app/lib/data-management/publication-updater';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
@@ -154,6 +155,16 @@ export async function GET(req: NextRequest) {
           }));
           await supabaseImport.from('country_regulatory_notes').insert(notes);
           await logImportResult({ success: true, source: 'federal_register', recordsUpdated: notes.length, triggeredBy: 'federal-register-monitor', triggeredAt: new Date().toISOString() });
+
+          const latestDoc = tariffDocs[0];
+          const category = latestDoc.title.match(/301/i) ? 'Section 301' :
+                           latestDoc.title.match(/232/i) ? 'Section 232' : 'Trade';
+          await savePublicationToDb('Section 301/232', {
+            publication: `${category} — ${latestDoc.title.substring(0, 60)}`,
+            effectiveDate: latestDoc.publication_date,
+            reference: latestDoc.document_number,
+            shortLabel: `${latestDoc.document_number} — ${latestDoc.publication_date}`,
+          });
         } catch {
           await logImportResult({ success: false, source: 'federal_register', recordsUpdated: 0, error: 'Insert failed', triggeredBy: 'federal-register-monitor', triggeredAt: new Date().toISOString() });
         }

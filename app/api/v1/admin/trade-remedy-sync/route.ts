@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { logImportResult, isAutoImportEnabled } from '@/app/lib/data-management/import-trigger';
+import { savePublicationToDb } from '@/app/lib/data-management/publication-updater';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 
@@ -108,6 +109,16 @@ export async function GET(req: NextRequest) {
       error: `${redTables.length} tables below threshold: ${redTables.map(r => r.table).join(', ')}`,
       triggeredBy: 'trade-remedy-sync-cron',
       triggeredAt: new Date().toISOString(),
+    });
+  }
+
+  // Update source publication with latest case count
+  const casesResult = results.find(r => r.table === 'trade_remedy_cases');
+  if (casesResult && casesResult.status === 'green' && casesResult.rowCount > 0) {
+    await savePublicationToDb('Trade Remedies', {
+      publication: 'AD/CVD Orders & Safeguards',
+      reference: `${casesResult.rowCount.toLocaleString()} active cases`,
+      shortLabel: `${casesResult.rowCount.toLocaleString()} Active Cases`,
     });
   }
 

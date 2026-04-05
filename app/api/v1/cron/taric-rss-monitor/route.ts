@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { logImportResult, isAutoImportEnabled } from '@/app/lib/data-management/import-trigger';
+import { savePublicationToDb } from '@/app/lib/data-management/publication-updater';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
@@ -189,6 +190,14 @@ export async function GET(req: NextRequest) {
           recordsUpdated: affectedHsCodes.size,
           triggeredBy: 'taric-rss-monitor',
           triggeredAt: new Date().toISOString(),
+        });
+
+        const latest = recentItems[0];
+        const regMatch = latest.title.match(/(?:Regulation|OJ\s*L)\s*[\d/]+/i);
+        await savePublicationToDb('EU TARIC', {
+          publication: `CN 2026 + ${regMatch?.[0] || 'Amendment'}`,
+          reference: regMatch?.[0] || latest.title.substring(0, 40),
+          shortLabel: `CN 2026 + ${regMatch?.[0] || 'Recent Amendment'}`,
         });
       }
     } else {

@@ -68,6 +68,51 @@ async function main() {
   const output = { generatedAt: new Date().toISOString(), sources: results };
   writeFileSync(OUTPUT_PATH, JSON.stringify(output, null, 2));
   console.log(`[ticker-fallback] ${results.filter(r => r.lastUpdated).length}/${results.length} sources updated`);
+
+  // Sync source-publications.json from DB
+  await syncPublications(sb);
+}
+
+async function syncPublications(sb) {
+  const PUB_PATH = join(__dirname, '..', 'data', 'source-publications.json');
+
+  try {
+    const { data, error } = await sb
+      .from('source_publications')
+      .select('*')
+      .order('source_name');
+
+    if (error || !data || data.length === 0) {
+      console.log('[source-publications] No DB data — keeping existing JSON');
+      return;
+    }
+
+    let existing;
+    try {
+      existing = JSON.parse(readFileSync(PUB_PATH, 'utf-8'));
+    } catch {
+      existing = { lastManualUpdate: new Date().toISOString().split('T')[0], sources: [] };
+    }
+
+    let updated = 0;
+    for (const dbRow of data) {
+      const idx = existing.sources.findIndex(s => s.name === dbRow.source_name);
+      if (idx !== -1) {
+        if (dbRow.publication) existing.sources[idx].publication = dbRow.publication;
+        if (dbRow.effective_date) existing.sources[idx].effectiveDate = dbRow.effective_date;
+        if (dbRow.reference) existing.sources[idx].reference = dbRow.reference;
+        if (dbRow.short_label) existing.sources[idx].shortLabel = dbRow.short_label;
+        if (dbRow.source_url) existing.sources[idx].sourceUrl = dbRow.source_url;
+        updated++;
+      }
+    }
+
+    existing.lastAutoUpdate = new Date().toISOString();
+    writeFileSync(PUB_PATH, JSON.stringify(existing, null, 2));
+    console.log(`[source-publications] ${updated}/${data.length} sources synced from DB`);
+  } catch (err) {
+    console.log('[source-publications] Sync failed (keeping existing):', err.message);
+  }
 }
 
 main().catch((err) => {
