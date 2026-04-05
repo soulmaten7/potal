@@ -123,27 +123,28 @@ const _calculateHandler = async (req: NextRequest, context: ApiAuthContext): Pro
     const resultObj = result as unknown as Record<string, unknown>;
     const tariffOpt = resultObj.tariffOptimization as { optimalRateType?: string; optimalAgreementName?: string; savingsVsMfn?: number; rateOptions?: { rateType: string; agreementName?: string; rate: number }[] } | undefined;
 
+    const originFtas = getCountryFtas(origin);
+    const destFtas = getCountryFtas(dest);
+    const originCodes = new Set(originFtas.map(f => f.code));
+    const sharedFtas = destFtas.filter(f => originCodes.has(f.code));
+    const sharedFtaCount = sharedFtas.length;
+
     let ftaUtilization = null;
-    if (tariffOpt) {
-      const isFtaApplied = tariffOpt.optimalRateType === 'AGR' || tariffOpt.optimalRateType === 'FTA';
+    if (sharedFtaCount > 0 || tariffOpt) {
+      const isFtaApplied = tariffOpt ? (tariffOpt.optimalRateType === 'AGR' || tariffOpt.optimalRateType === 'FTA') : false;
       const productValue = typeof costInput.price === 'number' ? costInput.price : parseFloat(String(costInput.price)) || 0;
-
-      // Find alternative FTAs from rate options
-      const altFtas = (tariffOpt.rateOptions || [])
-        .filter(r => (r.rateType === 'AGR' || r.rateType === 'FTA') && r.agreementName !== tariffOpt.optimalAgreementName)
-        .map(r => ({ name: r.agreementName || r.rateType, rate: r.rate }));
-
-      // Also check hardcoded FTA list for available FTAs
-      const originFtas = getCountryFtas(origin);
-      const destFtas = getCountryFtas(dest);
-      const originCodes = new Set(originFtas.map(f => f.code));
-      const sharedFtaCount = destFtas.filter(f => originCodes.has(f.code)).length;
-
+      const altFtas = tariffOpt
+        ? (tariffOpt.rateOptions || []).filter(r => (r.rateType === 'AGR' || r.rateType === 'FTA') && r.agreementName !== tariffOpt.optimalAgreementName).map(r => ({ name: r.agreementName || r.rateType, rate: r.rate }))
+        : [];
+      const altNames = new Set(altFtas.map(f => f.name));
+      for (const fta of sharedFtas) {
+        if (!altNames.has(fta.name)) altFtas.push({ name: fta.name, rate: 0 });
+      }
       ftaUtilization = {
         fta_available: sharedFtaCount > 0,
         fta_count: sharedFtaCount,
-        fta_applied: isFtaApplied ? (tariffOpt.optimalAgreementName || 'FTA') : null,
-        savings: isFtaApplied ? Math.round((tariffOpt.savingsVsMfn || 0) * productValue * 100) / 100 : 0,
+        fta_applied: isFtaApplied ? (tariffOpt!.optimalAgreementName || 'FTA') : null,
+        savings: isFtaApplied ? Math.round((tariffOpt!.savingsVsMfn || 0) * productValue * 100) / 100 : 0,
         alternative_ftas: altFtas,
       };
     }
