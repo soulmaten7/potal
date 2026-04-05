@@ -1,0 +1,17 @@
+{
+  "lastManualUpdate": "2026-04-05",
+  "sources": [
+    { "name": "USITC", "shortLabel": "HTS 2026 — Eff. Jan 1" },
+    { "name": "UK Trade Tariff", "shortLabel": "UKGT 2026 — Eff. Jan 1" },
+    { "name": "EU TARIC", "shortLabel": "CN 2026 — Eff. Jan 1" },
+    { "name": "Canada CBSA", "shortLabel": "Customs Tariff 2026 — Eff. Jan 1" },
+    { "name": "Australia ABF", "shortLabel": "AU Tariff 2026 — Eff. Jan 1" },
+    { "name": "Korea KCS", "shortLabel": "KR Tariff 2026 — Eff. Jan 1" },
+    { "name": "Japan Customs", "shortLabel": "JP Tariff FY2026 — Eff. Apr 1" },
+    { "name": "MacMap MFN", "shortLabel": "MacMap 2023 — HS2017 Rev." },
+    { "name": "Exchange Rates", "shortLabel": "ECB — Daily Reference" },
+    { "name": "Section 301/232", "shortLabel": "EO 14307 — Mar 12, 2025" },
+    { "name": "Trade Remedies", "shortLabel": "10,999 Active Cases" },
+    { "name": "FTA Agreements", "shortLabel": "1,319 FTAs — WTO Registry" }
+  ]
+}

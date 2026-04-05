@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import fallbackData from '@/data/ticker-fallback.json';
+import publicationData from '@/data/source-publications.json';
 
 interface DataSource {
   name: string;
@@ -35,6 +36,8 @@ const FALLBACK_SOURCES: DataSource[] = fallbackData.sources.map((src) => ({
   isLive: false,
 }));
 
+const BG = 'rgba(2, 18, 44, 0.95)';
+
 export default function DataSourceTicker() {
   const [mounted, setMounted] = useState(false);
   const [sources, setSources] = useState<DataSource[]>(FALLBACK_SOURCES);
@@ -67,7 +70,7 @@ export default function DataSourceTicker() {
 
   if (!mounted) return null;
 
-  const items = sources.map((src, i) => (
+  const freshnessItems = sources.map((src, i) => (
     <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
       <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, fontWeight: 600 }}>
         {src.name}
@@ -89,42 +92,69 @@ export default function DataSourceTicker() {
     </span>
   ));
 
-  return (
-    <div style={{
-      width: '100%',
-      overflow: 'hidden',
-      backgroundColor: 'rgba(2, 18, 44, 0.95)',
-      borderTop: '1px solid rgba(255,255,255,0.05)',
-      borderBottom: '1px solid rgba(255,255,255,0.05)',
-      padding: '12px 0',
-      position: 'relative',
-    }}>
-      <div style={{
-        position: 'absolute', left: 0, top: 0, bottom: 0, width: 80,
-        background: 'linear-gradient(to right, rgba(2,18,44,0.95), transparent)',
-        zIndex: 2, pointerEvents: 'none',
-      }} />
-      <div style={{
-        position: 'absolute', right: 0, top: 0, bottom: 0, width: 80,
-        background: 'linear-gradient(to left, rgba(2,18,44,0.95), transparent)',
-        zIndex: 2, pointerEvents: 'none',
-      }} />
+  const pubItems = publicationData.sources.map((pub, i) => (
+    <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+      <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500 }}>
+        {pub.name}
+      </span>
+      <span style={{ color: 'rgba(245,158,11,0.8)', fontSize: 12, fontWeight: 600 }}>
+        {pub.shortLabel}
+      </span>
+      {i < publicationData.sources.length - 1 && (
+        <span style={{ color: 'rgba(255,255,255,0.1)', margin: '0 14px' }}>|</span>
+      )}
+    </span>
+  ));
 
-      <div
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          animation: 'tickerScroll 40s linear infinite',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.animationPlayState = 'paused'; }}
-        onMouseLeave={e => { e.currentTarget.style.animationPlayState = 'running'; }}
-      >
-        {items}
-        {items}
+  return (
+    <div style={{ backgroundColor: BG }}>
+      {/* Row 1: DB Freshness */}
+      <div style={{
+        width: '100%',
+        overflow: 'hidden',
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        padding: '12px 0',
+        position: 'relative',
+      }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 80, background: `linear-gradient(to right, ${BG}, transparent)`, zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 80, background: `linear-gradient(to left, ${BG}, transparent)`, zIndex: 2, pointerEvents: 'none' }} />
+        <div
+          style={{ display: 'inline-flex', alignItems: 'center', animation: 'tickerScroll 40s linear infinite' }}
+          onMouseEnter={e => { e.currentTarget.style.animationPlayState = 'paused'; }}
+          onMouseLeave={e => { e.currentTarget.style.animationPlayState = 'running'; }}
+        >
+          {freshnessItems}
+          {freshnessItems}
+        </div>
+      </div>
+
+      {/* Row 2: Source Publications */}
+      <div style={{
+        width: '100%',
+        overflow: 'hidden',
+        borderBottom: '1px solid rgba(255,255,255,0.05)',
+        padding: '6px 0',
+        position: 'relative',
+      }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 80, background: `linear-gradient(to right, ${BG}, transparent)`, zIndex: 2, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 80, background: `linear-gradient(to left, ${BG}, transparent)`, zIndex: 2, pointerEvents: 'none' }} />
+        <div
+          style={{ display: 'inline-flex', alignItems: 'center', animation: 'tickerScroll2 90s linear infinite' }}
+          onMouseEnter={e => { e.currentTarget.style.animationPlayState = 'paused'; }}
+          onMouseLeave={e => { e.currentTarget.style.animationPlayState = 'running'; }}
+        >
+          {pubItems}
+          {pubItems}
+        </div>
       </div>
 
       <style>{`
         @keyframes tickerScroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes tickerScroll2 {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
