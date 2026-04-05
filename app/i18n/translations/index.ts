@@ -117,5 +117,7 @@ export const SUPPORTED_LANGUAGES: Array<{ code: LanguageCode; name: string; nati
 export const DEFAULT_LANGUAGE: LanguageCode = 'en';
 
 export function getTranslation(language: LanguageCode): Record<TranslationKey, string> {
-  return (translations[language] || translations[DEFAULT_LANGUAGE]) as Record<TranslationKey, string>;
+  const target = translations[language] || translations[DEFAULT_LANGUAGE];
+  if (language === DEFAULT_LANGUAGE) return target as Record<TranslationKey, string>;
+  return { ...translations[DEFAULT_LANGUAGE], ...target } as Record<TranslationKey, string>;
 }

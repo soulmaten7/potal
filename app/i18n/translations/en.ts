@@ -124,6 +124,112 @@ export const en = {
   'common.backHome': 'Back Home',
   'common.learnMore': 'Learn More',
   'common.getStarted': 'Get Started',
+
+  // ═══════════════ Homepage — Hero ═══════════════
+  'home.hero.badge': 'ALL FEATURES FREE — FOREVER',
+  'home.hero.title.part1': '140 Features.',
+  'home.hero.title.part2': 'All Free.',
+  'home.hero.title.part3': 'Forever.',
+  'home.hero.description': 'Top 10 competitors combined offer fewer features — and charge up to $50,000/year. POTAL gives you everything. For $0.',
+  'home.hero.ctaPrimary': 'Start Free Now',
+  'home.hero.ctaSecondary': 'API Docs',
+  'home.hero.stat.features': 'Features',
+  'home.hero.stat.countries': 'Countries',
+  'home.hero.stat.endpoints': 'API Endpoints',
+  'home.hero.stat.cost': 'Cost — Forever',
+  'home.hero.trustedBy': 'Built on official data from',
+
+  // ═══════════════ Homepage — Features CTA Banner ═══════════════
+  'home.featuresBanner.count': '140 FEATURES',
+  'home.featuresBanner.title': 'Try every feature with a live demo',
+  'home.featuresBanner.description': 'No sign-up required. All 140 features free to try.',
+  'home.featuresBanner.cta': 'Explore 140 Features →',
+
+  // ═══════════════ Homepage — Competitor Comparison ═══════════════
+  'home.competitor.title': 'More features than all competitors combined',
+  'home.competitor.description': 'We analyzed every feature from the top 10 cross-border commerce platforms. POTAL covers them all — and more.',
+  'home.competitor.source': 'Source: Feature-by-feature audit of each competitor\'s public documentation and product pages.',
+
+  // ═══════════════ Homepage — Cost Comparison ═══════════════
+  'home.cost.title': 'They charge enterprise prices. We don\'t charge at all.',
+  'home.cost.description': 'Every competitor below charges per-transaction fees, setup costs, or enterprise minimums. POTAL is free. No asterisks.',
+  'home.cost.table.provider': 'Provider',
+  'home.cost.table.features': 'Features',
+  'home.cost.table.annualCost': 'Annual Cost',
+  'home.cost.table.perTransaction': 'Per-Transaction',
+  'home.cost.table.free': 'FREE',
+  'home.cost.table.none': 'None',
+  'home.cost.table.yes': 'Yes',
+  'home.cost.conclusion': 'They charge enterprise prices for fewer features. We give you more — for free.',
+
+  // ═══════════════ Homepage — How It Works ═══════════════
+  'home.howItWorks.title': 'How it works',
+  'home.howItWorks.subtitle': 'Three steps to show your customers the true cost of cross-border purchases',
+  'home.howItWorks.step1.title': 'Get your API key',
+  'home.howItWorks.step1.description': 'Sign up for free and get your publishable key in seconds. No credit card required.',
+  'home.howItWorks.step2.title': 'Embed the widget',
+  'home.howItWorks.step2.description': 'Add one script tag to your product page. The widget auto-detects your API endpoint.',
+  'home.howItWorks.step3.title': 'Buyers see true cost',
+  'home.howItWorks.step3.description': 'Customers select their country and instantly see duties, taxes, and total landed cost.',
+
+  // ═══════════════ Homepage — Features Grid ═══════════════
+  'home.features.title': 'Everything you need for global commerce',
+  'home.features.subtitle': 'One API that handles the complexity of international trade regulations.',
+  'home.features.seeAll': 'See all 140 features →',
+  'home.features.countries.title': '240 Countries',
+  'home.features.countries.desc': 'Complete duty rates, VAT/GST, de minimis thresholds, and FTA agreements for 240 countries worldwide.',
+  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.desc': 'Input 9 standardized fields — product name, material, category, and more — validated against WCO standards. Get 100% accurate HS Codes.',
+  'home.features.tax.title': 'Sub-national Tax',
+  'home.features.tax.desc': 'State-level tax for US (50 states), Canada (13 provinces — GST/HST/PST), and Brazil (27 states — ICMS).',
+  'home.features.fta.title': 'FTA Detection',
+  'home.features.fta.desc': 'Automatically detects Free Trade Agreements between origin and destination countries for reduced duty rates.',
+  'home.features.deMinimis.title': 'De Minimis Rules',
+  'home.features.deMinimis.desc': 'Knows every country\'s duty-free threshold. Orders under the limit? Zero import duty, automatically applied.',
+  'home.features.widget.title': 'Embeddable Widget',
+  'home.features.widget.desc': 'Drop-in JavaScript widget with Shadow DOM isolation. Works on any site with zero CSS conflicts.',
+  'home.features.sanctions.title': 'Sanctions & Export Controls',
+  'home.features.sanctions.desc': 'Screen against OFAC SDN, BIS Entity List, and 19 sanctions sources. 21,300+ entries with fuzzy matching.',
+  'home.features.remedies.title': 'Trade Remedies',
+  'home.features.remedies.desc': 'Anti-dumping duties, countervailing duties, and safeguard measures. 119,700+ cases across 36 countries.',
+  'home.features.mcp.title': 'AI Agent Ready (MCP)',
+  'home.features.mcp.desc': 'Official MCP server on the registry. Any AI agent can call POTAL via one command.',
+
+  // ═══════════════ Homepage — API Response ═══════════════
+  'home.apiResponse.title': 'One request, complete breakdown',
+  'home.apiResponse.description': 'Every calculation returns a detailed breakdown including product price, import duty, taxes, shipping, HS code, FTA status, and de minimis eligibility.',
+  'home.apiResponse.check1': 'Total landed cost in one number',
+  'home.apiResponse.check2': 'Line-by-line cost breakdown',
+  'home.apiResponse.check3': 'HS code with duty rate',
+  'home.apiResponse.check4': 'State-level tax for US, CA, BR',
+  'home.apiResponse.check5': 'FTA & de minimis detection',
+
+  // ═══════════════ Homepage — Widget Demo ═══════════════
+  'home.widgetDemo.title': 'Your customers see this',
+  'home.widgetDemo.description': 'The POTAL widget embeds directly into your product page. Select a country below to see it in action.',
+  'home.widgetDemo.cta': 'Try Widget Playground',
+
+  // ═══════════════ Homepage — Before vs After ═══════════════
+  'home.before.label': 'Without POTAL',
+  'home.before.title': 'Customer sees $45 at checkout...',
+  'home.before.item1': 'Unexpected $18 customs charge at delivery',
+  'home.before.item2': 'Customer refuses package → return shipping costs',
+  'home.before.item3': 'Negative review: "Hidden fees!"',
+  'home.before.item4': 'Lost customer lifetime value',
+  'home.before.stat': 'Cart abandonment rate: up to 48%',
+  'home.after.label': 'With POTAL',
+  'home.after.title': 'Customer sees $63 total landed cost',
+  'home.after.item1': 'Duties, taxes & fees shown before checkout',
+  'home.after.item2': 'No surprise charges at delivery',
+  'home.after.item3': '5-star review: "Exactly what I expected to pay"',
+  'home.after.item4': 'Repeat customer → higher LTV',
+  'home.after.stat': 'Conversion rate increase: up to 25%',
+
+  // ═══════════════ Homepage — Final CTA ═══════════════
+  'home.cta.title': 'Stop paying for duty calculation.',
+  'home.cta.description': '140 features. 240 countries. Free forever. No credit card, no trial, no limits.',
+  'home.cta.primary': 'Start Free Now',
+  'home.cta.secondary': 'See All Features',
 } as const;
 
 export type TranslationKey = keyof typeof en;
