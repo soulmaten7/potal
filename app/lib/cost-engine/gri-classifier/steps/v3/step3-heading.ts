@@ -380,7 +380,7 @@ export function selectHeading(
     const hd = headingsList.find(h => h.heading === bestCode);
     if (hd) {
       const voteInfo = headingVotes.get(bestCode)!;
-      const confidence = Math.min(0.5 + voteInfo.count * 0.15, 1.0);
+      const confidence = Math.min(0.5 + voteInfo.count * 0.2, 1.0);
       return {
         confirmed_heading: hd.heading,
         heading_description: hd.description,

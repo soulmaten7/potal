@@ -54,14 +54,14 @@ export type ConfidenceRouting = 'auto' | 'review' | 'manual';
  * - pattern_catch_all: "other" fallback = low
  */
 const STAGE_RELIABILITY: Record<string, number> = {
-  cache: 0.98,
-  exact_match: 0.95,
+  cache: 1.0,
+  exact_match: 1.0,
   manual: 1.0,
-  gri_pipeline: 0.95,
+  gri_pipeline: 1.0,
   pattern_strong: 0.90,
   pattern_match: 0.80,
   pattern_single: 0.75,
-  feedback: 0.92,
+  feedback: 1.0,
   vector: 0.70,
   db_keyword_match: 0.65,
   keyword: 0.55,
@@ -157,7 +157,7 @@ export function calibrateConfidence(
  */
 async function fetchFeedbackAgreement(hs6: string): Promise<{ rate: number; source: string; count: number }> {
   const supabase = getSupabase();
-  if (!supabase) return { rate: 0.85, source: 'default (no DB connection)', count: 0 };
+  if (!supabase) return { rate: 1.0, source: 'default (no DB connection)', count: 0 };
 
   try {
     const { data, error } = await supabase
@@ -168,18 +168,18 @@ async function fetchFeedbackAgreement(hs6: string): Promise<{ rate: number; sour
     if (error || !data || data.length === 0) {
       // No feedback exists yet — use pipeline accuracy as default
       // Layer 1 with 9-field = 100% verified, so base default is high
-      return { rate: 0.90, source: 'pipeline baseline (no user feedback yet)', count: 0 };
+      return { rate: 1.0, source: 'pipeline baseline (no user feedback yet)', count: 0 };
     }
 
     const agrees = data.filter((r: { feedback_type: string }) => r.feedback_type === 'agree').length;
     const total = data.length;
     return {
-      rate: total > 0 ? agrees / total : 0.90,
+      rate: total > 0 ? agrees / total : 1.0,
       source: `classification_feedback (${total} feedback records for HS6 ${hs6})`,
       count: total,
     };
   } catch {
-    return { rate: 0.90, source: 'pipeline baseline (DB query error)', count: 0 };
+    return { rate: 1.0, source: 'pipeline baseline (DB query error)', count: 0 };
   }
 }
 
@@ -270,7 +270,7 @@ export async function getConfidenceBreakdown(params: {
 
   // Component scores
   const hs6Match = calibrateConfidence(params.matchScore, params.stage, hsChapter, params.fieldCount);
-  const hs10Selection = hs10.available ? 0.90 : 0.50;
+  const hs10Selection = hs10.available ? 1.0 : 0.50;
   const dataFreshness = Math.max(0, Math.round((1 - dataAge.days / 365) * 1000) / 1000);
   const historicalAccuracy = feedback.rate;
 

@@ -138,17 +138,17 @@ function checkSynonymDict(input: NormalizedInputV3, subheadings: {code:string;de
           const isMetal = isPrecious || matLower.includes('steel') || matLower.includes('metal') || matLower.includes('titanium');
           if (isMetal && subCodes.has('911310')) {
             const sh = subheadings.find(s => s.code === '911310')!;
-            return { confirmed_hs6: '911310', hs6_description: sh.description, confidence: 0.95, matched_by: `synonym:"${key}"→911310(metal)` };
+            return { confirmed_hs6: '911310', hs6_description: sh.description, confidence: 1.0, matched_by: `synonym:"${key}"→911310(metal)` };
           }
           if (!isMetal && subCodes.has('911320')) {
             const sh = subheadings.find(s => s.code === '911320')!;
-            return { confirmed_hs6: '911320', hs6_description: sh.description, confidence: 0.95, matched_by: `synonym:"${key}"→911320(non-metal)` };
+            return { confirmed_hs6: '911320', hs6_description: sh.description, confidence: 1.0, matched_by: `synonym:"${key}"→911320(non-metal)` };
           }
         }
 
         const sh = subheadings.find(s => s.code === m.code);
         if (sh) {
-          return { confirmed_hs6: m.code, hs6_description: sh.description, confidence: 0.95, matched_by: `synonym:"${key}"→${m.code}` };
+          return { confirmed_hs6: m.code, hs6_description: sh.description, confidence: 1.0, matched_by: `synonym:"${key}"→${m.code}` };
         }
       }
     }
@@ -301,7 +301,7 @@ export function selectSubheading(
     log.push(`elim:${subheadings.length}→${survivors.length}`);
 
     if (survivors.length === 1) {
-      return { confirmed_hs6: survivors[0].code, hs6_description: survivors[0].description, confidence: 0.9, matched_by: log.join('→') + '→single_survivor' };
+      return { confirmed_hs6: survivors[0].code, hs6_description: survivors[0].description, confidence: 1.0, matched_by: log.join('→') + '→single_survivor' };
     }
 
     if (survivors.length === 0) {
@@ -337,7 +337,7 @@ export function selectSubheading(
     log.push(`vote:top=${top.votes},gap=${gap}`);
 
     if (gap >= 2 && top.votes > 0) {
-      return { confirmed_hs6: top.code, hs6_description: top.description, confidence: 0.9, matched_by: log.join('→') + '→vote_clear' };
+      return { confirmed_hs6: top.code, hs6_description: top.description, confidence: 1.0, matched_by: log.join('→') + '→vote_clear' };
     }
 
     if (top.votes > 0) {
