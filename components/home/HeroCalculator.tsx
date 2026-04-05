@@ -791,20 +791,6 @@ export default function HeroCalculator() {
                       : result.hsClassification.description}
                   </div>
                 )}
-                {(result.hs10Resolution?.confidence ?? result.dutyConfidenceScore) != null && (() => {
-                  const engineConf = result.hs10Resolution?.confidence ?? result.dutyConfidenceScore ?? 1;
-                  const displayConf = engineConf * (result.ablationAccuracy / 100);
-                  return (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Confidence</span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color:
-                        displayConf >= 0.9 ? '#4ade80' : '#facc15'
-                      }}>
-                        {Math.round(displayConf * 100)}%
-                      </span>
-                    </div>
-                  );
-                })()}
                 {result.dutyRateSource && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Source</span>
