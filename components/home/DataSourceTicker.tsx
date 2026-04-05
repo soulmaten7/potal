@@ -5,30 +5,39 @@ import { useEffect, useState } from 'react';
 interface DataSource {
   name: string;
   hoursAgo: number;
+  isLive: boolean;
 }
 
-const DATA_SOURCES: DataSource[] = [
-  { name: 'USITC', hoursAgo: 2 },
-  { name: 'UK Trade Tariff', hoursAgo: 4 },
-  { name: 'EU TARIC', hoursAgo: 6 },
-  { name: 'Canada CBSA', hoursAgo: 8 },
-  { name: 'Australia ABF', hoursAgo: 12 },
-  { name: 'Korea KCS', hoursAgo: 6 },
-  { name: 'Japan Customs', hoursAgo: 8 },
-  { name: 'MacMap MFN', hoursAgo: 24 },
-  { name: 'Exchange Rates', hoursAgo: 1 },
-  { name: 'Section 301/232', hoursAgo: 12 },
-  { name: 'Trade Remedies', hoursAgo: 24 },
-  { name: 'FTA Agreements', hoursAgo: 48 },
+const FALLBACK_SOURCES: DataSource[] = [
+  { name: 'USITC', hoursAgo: 2, isLive: false },
+  { name: 'UK Trade Tariff', hoursAgo: 4, isLive: false },
+  { name: 'EU TARIC', hoursAgo: 6, isLive: false },
+  { name: 'Canada CBSA', hoursAgo: 8, isLive: false },
+  { name: 'Australia ABF', hoursAgo: 12, isLive: false },
+  { name: 'Korea KCS', hoursAgo: 6, isLive: false },
+  { name: 'Japan Customs', hoursAgo: 8, isLive: false },
+  { name: 'MacMap MFN', hoursAgo: 24, isLive: false },
+  { name: 'Exchange Rates', hoursAgo: 1, isLive: false },
+  { name: 'Section 301/232', hoursAgo: 12, isLive: false },
+  { name: 'Trade Remedies', hoursAgo: 24, isLive: false },
+  { name: 'FTA Agreements', hoursAgo: 48, isLive: false },
 ];
 
+function isoToHoursAgo(isoString: string | null): number {
+  if (!isoString) return 999;
+  const diff = Date.now() - new Date(isoString).getTime();
+  return Math.max(0, Math.floor(diff / (1000 * 60 * 60)));
+}
+
 function getTimeLabel(hoursAgo: number): string {
+  if (hoursAgo >= 999) return 'unknown';
   if (hoursAgo < 1) return 'just now';
   if (hoursAgo < 24) return `${hoursAgo}h ago`;
   return `${Math.floor(hoursAgo / 24)}d ago`;
 }
 
 function getStatusColor(hoursAgo: number): string {
+  if (hoursAgo >= 999) return '#64748b';
   if (hoursAgo < 24) return '#22c55e';
   if (hoursAgo < 72) return '#eab308';
   return '#ef4444';
@@ -36,10 +45,37 @@ function getStatusColor(hoursAgo: number): string {
 
 export default function DataSourceTicker() {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
+  const [sources, setSources] = useState<DataSource[]>(FALLBACK_SOURCES);
+
+  useEffect(() => {
+    setMounted(true);
+
+    async function fetchFreshness() {
+      try {
+        const res = await fetch('/api/v1/data-freshness');
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json.sources && json.sources.length > 0) {
+          const live: DataSource[] = json.sources.map((s: { name: string; lastUpdated: string | null }) => ({
+            name: s.name,
+            hoursAgo: isoToHoursAgo(s.lastUpdated),
+            isLive: s.lastUpdated !== null,
+          }));
+          setSources(live);
+        }
+      } catch {
+        // fallback maintained
+      }
+    }
+
+    fetchFreshness();
+    const interval = setInterval(fetchFreshness, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   if (!mounted) return null;
 
-  const items = DATA_SOURCES.map((src, i) => (
+  const items = sources.map((src, i) => (
     <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
       <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: 15, fontWeight: 600 }}>
         {src.name}
@@ -55,7 +91,7 @@ export default function DataSourceTicker() {
       <span style={{ color: '#94a3b8', fontSize: 13 }}>
         {getTimeLabel(src.hoursAgo)}
       </span>
-      {i < DATA_SOURCES.length - 1 && (
+      {i < sources.length - 1 && (
         <span style={{ color: '#334155', margin: '0 16px', fontSize: 11 }}>|</span>
       )}
     </span>
