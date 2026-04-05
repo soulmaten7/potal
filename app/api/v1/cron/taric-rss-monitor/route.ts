@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { logImportResult, isAutoImportEnabled } from '@/app/lib/data-management/import-trigger';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
@@ -173,6 +174,23 @@ export async function GET(req: NextRequest) {
       status = 'yellow';
       message = `${recentItems.length} new TARIC RSS items${hashChanged ? ' + consultation page changed' : ''}`;
       await sendAlert(recentItems.length > 0 ? recentItems : rssItems.slice(0, 5), consultationHash, prevHash);
+
+      // Auto-import: extract HS codes from RSS items and log
+      if (isAutoImportEnabled('EU_TARIC') && recentItems.length > 0) {
+        const hsPattern = /\b\d{4}[\s.]?\d{2}(?:[\s.]?\d{2}){0,2}\b/g;
+        const affectedHsCodes = new Set<string>();
+        for (const item of recentItems) {
+          const matches = ((item.title || '') + ' ' + (item.description || '')).match(hsPattern);
+          if (matches) matches.forEach(m => affectedHsCodes.add(m.replace(/[\s.]/g, '')));
+        }
+        await logImportResult({
+          success: true,
+          source: 'eu_taric',
+          recordsUpdated: affectedHsCodes.size,
+          triggeredBy: 'taric-rss-monitor',
+          triggeredAt: new Date().toISOString(),
+        });
+      }
     } else {
       message = `Checked TARIC RSS (${rssItems.length} total items), no new updates`;
     }

@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { logImportResult, isAutoImportEnabled } from '@/app/lib/data-management/import-trigger';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
@@ -137,6 +138,26 @@ export async function GET(req: NextRequest) {
       status = 'yellow';
       message = `${tariffDocs.length} tariff-related Federal Register documents found`;
       await sendAlert(tariffDocs);
+
+      // Auto-import: add to country_regulatory_notes
+      if (isAutoImportEnabled('FEDERAL_REGISTER')) {
+        try {
+          const supabaseImport = getSupabase();
+          const notes = tariffDocs.map(doc => ({
+            country: 'US',
+            category: doc.title.match(/301/i) ? 'section_301' : doc.title.match(/232/i) ? 'section_232' : 'trade',
+            title: doc.title.substring(0, 500),
+            summary: (doc.abstract || '').substring(0, 500),
+            effective_date: null,
+            source_url: doc.html_url,
+            created_at: new Date().toISOString(),
+          }));
+          await supabaseImport.from('country_regulatory_notes').insert(notes);
+          await logImportResult({ success: true, source: 'federal_register', recordsUpdated: notes.length, triggeredBy: 'federal-register-monitor', triggeredAt: new Date().toISOString() });
+        } catch {
+          await logImportResult({ success: false, source: 'federal_register', recordsUpdated: 0, error: 'Insert failed', triggeredBy: 'federal-register-monitor', triggeredAt: new Date().toISOString() });
+        }
+      }
     } else {
       message = `Checked ${allDocs.length} documents, no tariff changes detected`;
     }

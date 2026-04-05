@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { logImportResult, isAutoImportEnabled } from '@/app/lib/data-management/import-trigger';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 
@@ -97,7 +98,20 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const hasRed = results.some(r => r.status === 'red');
+  // Auto-log if any table is red and auto-import enabled
+  const redTables = results.filter(r => r.status === 'red');
+  if (redTables.length > 0 && isAutoImportEnabled('TRADE_REMEDIES')) {
+    await logImportResult({
+      success: false,
+      source: 'trade_remedies',
+      recordsUpdated: 0,
+      error: `${redTables.length} tables below threshold: ${redTables.map(r => r.table).join(', ')}`,
+      triggeredBy: 'trade-remedy-sync-cron',
+      triggeredAt: new Date().toISOString(),
+    });
+  }
+
+  const hasRed = redTables.length > 0;
   const hasYellow = results.some(r => r.status === 'yellow');
   const overall = hasRed ? 'red' : hasYellow ? 'yellow' : 'green';
   const durationMs = Date.now() - start;

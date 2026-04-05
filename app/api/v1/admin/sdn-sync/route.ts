@@ -16,6 +16,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { logImportResult, isAutoImportEnabled, type ImportTriggerResult } from '@/app/lib/data-management/import-trigger';
 
 const CRON_SECRET = process.env.CRON_SECRET || '';
 const SDN_XML_URL = 'https://www.treasury.gov/ofac/downloads/sdn.xml';
@@ -40,6 +41,62 @@ async function computeHash(data: ArrayBuffer): Promise<string> {
   return Array.from(new Uint8Array(hashBuffer))
     .map(b => b.toString(16).padStart(2, '0'))
     .join('');
+}
+
+const SDN_CSV_URL = 'https://www.treasury.gov/ofac/downloads/sdn.csv';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function autoImportSdn(supabase: any): Promise<ImportTriggerResult> {
+  const triggeredAt = new Date().toISOString();
+  try {
+    const res = await fetch(SDN_CSV_URL, { signal: AbortSignal.timeout(30000) });
+    if (!res.ok) throw new Error(`Fetch SDN CSV failed: ${res.status}`);
+    const csvText = await res.text();
+
+    const lines = csvText.split('\n').filter(l => l.trim());
+    const entries: Array<Record<string, unknown>> = [];
+    for (const line of lines) {
+      const fields = line.split(',');
+      const entNum = fields[0]?.trim().replace(/"/g, '');
+      const name = fields[1]?.trim().replace(/"/g, '');
+      const sdnType = fields[2]?.trim().replace(/"/g, '');
+      const program = fields[3]?.trim().replace(/"/g, '');
+      if (!entNum || !name || entNum === 'ent_num') continue;
+      entries.push({
+        source: 'OFAC_SDN',
+        source_id: entNum,
+        name,
+        sdn_type: sdnType || 'Entity',
+        programs: program ? [program] : [],
+        entity_type: (sdnType || '').toLowerCase().includes('individual') ? 'individual' : 'entity',
+        is_active: true,
+        updated_at: triggeredAt,
+      });
+    }
+
+    if (entries.length < 100) throw new Error(`Too few entries parsed: ${entries.length}`);
+
+    const BATCH = 500;
+    let upserted = 0;
+    for (let i = 0; i < entries.length; i += BATCH) {
+      const batch = entries.slice(i, i + BATCH);
+      const { error } = await (supabase.from('sanctions_entries' as any) as any)
+        .upsert(batch, { onConflict: 'source,source_id' });
+      if (error) throw error;
+      upserted += batch.length;
+    }
+
+    await (supabase.from('sanctions_load_meta' as any) as any).upsert({
+      source: 'OFAC_SDN',
+      last_loaded_at: triggeredAt,
+      record_count: upserted,
+      import_method: 'auto_cron',
+    }, { onConflict: 'source' });
+
+    return { success: true, source: 'ofac_sdn', recordsUpdated: upserted, triggeredBy: 'sdn-sync-cron', triggeredAt };
+  } catch (err) {
+    return { success: false, source: 'ofac_sdn', recordsUpdated: 0, error: err instanceof Error ? err.message : String(err), triggeredBy: 'sdn-sync-cron', triggeredAt };
+  }
 }
 
 export async function GET(req: NextRequest) {
@@ -107,6 +164,16 @@ export async function GET(req: NextRequest) {
       // HEAD failed — not critical, just skip freshness check
     }
 
+    // 3b. Auto-import if remote changed and enabled
+    let importResult: ImportTriggerResult | null = null;
+    if (remoteChanged && supabase && isAutoImportEnabled('OFAC_SDN')) {
+      importResult = await autoImportSdn(supabase);
+      if (importResult.success) {
+        entryCount = importResult.recordsUpdated;
+      }
+      await logImportResult(importResult);
+    }
+
     // 4. Determine status
     let status: 'green' | 'yellow' | 'red' = 'green';
     let message = '';
@@ -114,9 +181,9 @@ export async function GET(req: NextRequest) {
     if (!dbMeta || entryCount === 0) {
       status = 'red';
       message = 'SDN data not loaded. Run: python3 scripts/import_ofac_sdn.py';
-    } else if (remoteChanged) {
+    } else if (remoteChanged && (!importResult || !importResult.success)) {
       status = 'yellow';
-      message = `SDN update available. DB has ${entryCount} entries (loaded: ${dbMeta.last_loaded_at}). Run import to update.`;
+      message = `SDN update available but auto-import ${importResult ? 'failed: ' + importResult.error : 'disabled'}. DB has ${entryCount} entries.`;
     } else {
       const daysSinceLoad = dbMeta.last_loaded_at
         ? Math.floor((Date.now() - new Date(dbMeta.last_loaded_at).getTime()) / (1000 * 60 * 60 * 24))
