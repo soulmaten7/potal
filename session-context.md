@@ -64,7 +64,7 @@
 - 이메일: soulmaten7@gmail.com / contact@potal.app
 - 프로젝트 경로 (Mac): `~/potal/`
 - DB: Supabase / 배포: Vercel (https://potal.app)
-- Git push: HTTPS 인증 실패 → Mac 터미널에서 직접 push
+- Git push: Claude Code 터미널에서 직접 가능
 - **⚠️ 빌드 규칙**: `npm run build` 확인 후 push 필수
 
 ### ⚠️⚠️⚠️ 출구 전략 (Exit Strategy) — CW22 확정 (2026-03-29)
@@ -201,6 +201,20 @@
 - ✅ **LOGGING_RULES.md 재작성** — 엑셀 → Notion 워크플로우 규칙으로 전환
 - ✅ **폴더 정리** — portal 루트 170+ 파일 → archive/ 하위 폴더 (commands, benchmarks, audits, cold-email)
 - ✅ **모든 문서 동기화** — CHANGELOG.md, session-context.md, NEXT_SESSION_START.md 업데이트
+
+### CW22-S Cowork — Data Source Ticker + i18n + Auto-Import + Publication Ticker (2026-04-05)
+
+**완료 항목:**
+- ✅ **Data Source Ticker Supabase 실시간 연동** — `data-freshness/route.ts` API, 12개 소스 실시간 조회, 5분 캐시 (커밋 3deaaff)
+- ✅ **Ticker Fallback 자동 갱신** — `scripts/update-ticker-fallback.mjs` prebuild, 배포마다 `data/ticker-fallback.json` 갱신 (커밋 13b9bfa)
+- ✅ **Homepage i18n 73키×7언어** — en/ko/ja/zh/es/de/fr 번역, `getTranslation()` EN fallback merge (커밋 4ce755f)
+- ✅ **Source Publication 2줄 티커** — `data/source-publications.json` 12개 소스 공식 발행일, 2줄 ticker 구조 (커밋 e3507a1)
+- ✅ **Auto-Import Pipeline 4개 모니터 연결** — SDN/Federal Register/TARIC/Trade Remedy 감지→자동 DB 임포트, 2/12→6/12 (커밋 a3c6a69)
+- ✅ **Sitewide i18n 256키×7언어** — Footer+Features+Pricing+Developers+Community+Help 전체 번역 (커밋 09d55e1)
+- ✅ **Publication Auto-Sync** — 모니터 감지→Supabase `source_publications` 테이블→prebuild JSON 동기화 (커밋 48a16c7)
+- ✅ **문서 업데이트** — CLAUDE.md+CHANGELOG.md+session-context.md (커밋 5e06cd8)
+
+**커밋 8개**: 3deaaff, 13b9bfa, 4ce755f, e3507a1, a3c6a69, 09d55e1, 48a16c7, 5e06cd8
 
 ### CW22-O Cowork — PMF Outreach 실행 체계 구축 + Community 단순화 + Rahul 후속 대응 (2026-04-02)
 
@@ -340,19 +354,19 @@
 - ⏳ **Hacker News "Show HN" 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
 - ⏳ **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
 - ⏳ **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 ✅ 완료)
-- ⏳ **Demo Scripts 기반 영상 촬영** — 18개 Dashboard 메뉴 (content/demo-scripts/ 엑셀 준비 완료)
-- ⏳ **유튜브 공식 채널 생성 + 영상 업로드** — 우선: Overview, HS Classification, Tariff Calculator
-- ⏳ **86개 Feature Guide 콘텐츠 보강** — 현재 템플릿 상태, 54개만 완성
+- ⏳ **데모 영상 촬영 진행 중** — Notion "데모 영상 제작 가이드" 기반 촬영 중. 메인 4개(rec_01~04) 완료, 기능별 클립(rec_05~12) + 시나리오(rec_13~16) + 비교(rec_17~19) + 티커 데모(rec_20~21) 미촬영
+- ⏸ **유튜브 업로드 보류** — CEO 결정. 영상 촬영은 계속, 유튜브 채널 생성/업로드는 보류
+- ⏳ **20개 Feature Guide 템플릿 보강** — CW22-M에서 121/140 완성. 나머지 20개 (bigcommerce-plugin, magento-module, woocommerce-plugin 등 마켓플레이스 미승인+비핵심 페이지)
 
 ### ⏳ 고객 확보
-- ⏳ Shopify 심사 결과 확인 (3/10 제출, 21일 경과)
+- ⏳ Shopify 심사 결과 확인 (3/10 제출, 26일+ 경과 — 2026-04-05 기준 아직 미승인)
 - ⏳ 파트너십 첫 접촉 (A그룹: Royal Mail, Australia Post, Canada Post)
-- ~~콜드이메일 글로벌 대규모 캠페인~~ — CEO 판단: Forever Free 전환 후 접근법 변경. 새 앵글 "All 140 Features, Free Forever"로 재개 시 재설계
+- ~~콜드이메일 글로벌 대규모 캠페인~~ — CEO 판단: Forever Free 전환 후 접근법 변경
 
-### ⏳ 마켓플레이스 (외부 대기)
-- ⏳ WooCommerce: WordPress.org 심사 대기 (제출 2026-03-30, 1~10일)
-- ⏳ BigCommerce: partners@bigcommerce.com 답장 대기 (1~3 영업일)
-- ⏳ Adobe Commerce: W-8BEN 검토 대기 (2~5 영업일) → 완료 후 Extension 업로드
+### ⏳ 마켓플레이스 (외부 대기 — 2026-04-05 기준 전부 아직 미승인)
+- ⏳ WooCommerce: WordPress.org 심사 대기 (제출 2026-03-30, 6일+ 경과)
+- ⏳ BigCommerce: partners@bigcommerce.com 답장 대기 (발송 2026-03-30)
+- ⏳ Adobe Commerce: W-8BEN 검토 대기 (제출 2026-03-30) → 완료 후 Extension 업로드
 - ⏳ F045~F048 Coming Soon → marketplace 승인 시 `active`로 변경 예정
 
 ### ⏳ LLM 플랫폼 (대기)
@@ -361,7 +375,8 @@
 - xAI Grok: 앱 스토어 없음 (출시 시 진입)
 
 ### ⏳ 기능 보완
-- P2 남은 7개 + FIX 17개 (Sprint Priority List 참조)
+- P2 남은 7개: F054 Nexus Tracking, F082 Marketplace Integration, F083 ERP Integration, F105 Compliance Audit Report, F138 Dedicated CSM, F140 AEO Certification, F147 Revenue Share Program (대부분 Enterprise급, 고객 확보 후 진행)
+- ~~FIX 17개~~ → CW20에서 전부 완료 (142/147 → 147/147)
 - Layer 3 설계 (Enterprise Custom, 고객 확보 후)
 
 ### 🟢 장기

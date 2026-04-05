@@ -1,5 +1,41 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-03-29 22:00 KST (CW22 — Exit 전략 피벗, Forever Free, 가입 플로우 수정)
+> 마지막 업데이트: 2026-04-05 18:00 KST (CW22-S — Data Ticker + i18n + Auto-Import + Publication Ticker)
+
+## [2026-04-05 18:00 KST] CW22-S — Data Source Ticker + i18n 329키×7언어 + Auto-Import Pipeline + Source Publication Ticker
+
+### 추가 (Additions)
+- **Data Source Ticker Supabase 실시간 연동** — `app/api/v1/data-freshness/route.ts` 신규, 12개 소스 실시간 타임스탬프 조회, 5분 캐시 (커밋 3deaaff)
+- **Ticker Fallback 자동 갱신** — `scripts/update-ticker-fallback.mjs` prebuild 스크립트, `data/ticker-fallback.json` 배포마다 자동 갱신 (커밋 13b9bfa)
+- **Homepage i18n 73키×7언어** — `app/i18n/translations/` en/ko/ja/zh/es/de/fr, `getTranslation()` EN fallback merge (커밋 4ce755f)
+- **Source Publication 2줄 티커** — `data/source-publications.json` 12개 소스 공식 발행일/판본, `DataSourceTicker.tsx` 2줄 구조 (커밋 e3507a1)
+- **Auto-Import Pipeline 4개 모니터 연결** — `app/lib/data-management/import-trigger.ts` 신규, SDN/Federal Register/TARIC/Trade Remedy 감지→자동 DB 임포트 (커밋 a3c6a69)
+- **Sitewide i18n 256키×7언어** — Footer(14)+Features(33)+Pricing(76)+Developers(67)+Community+Help(66) 전체 번역 (커밋 09d55e1)
+- **Publication Auto-Sync** — `app/lib/data-management/publication-updater.ts` 신규, 모니터 감지→Supabase `source_publications` 테이블→prebuild JSON 동기화 (커밋 48a16c7)
+
+### 수정 (Fixes)
+- `.vercelignore` — `/data`, `/scripts` 제외 해제 (prebuild 스크립트 + fallback JSON 배포 포함되도록)
+- `data-freshness/route.ts` TypeScript 타입 오류 수정 (`Record<string, unknown>` → 캐스팅)
+- `CLAUDE.md` 절대 규칙 #6 — "Mac 터미널에서 push" → "Claude Code 터미널에서 직접 가능"
+
+### 수치 변경
+- i18n: 0키 → 329키 × 7언어 = 2,303 번역
+- Auto-Import: 2/12 → 6/12 소스 자동화
+- Ticker: 하드코딩 → Supabase 실시간 + JSON fallback + 2줄 구조
+
+### DB 변경
+- `source_publications` 테이블 신규 (12행 초기 데이터)
+
+### 커밋 (8개)
+- `3deaaff` Live Ticker Supabase
+- `13b9bfa` Ticker Fallback Auto
+- `4ce755f` Homepage i18n
+- `e3507a1` Source Publication Ticker
+- `a3c6a69` Auto-Import Pipeline
+- `09d55e1` Sitewide i18n
+- `48a16c7` Publication Auto-Sync
+- `5e06cd8` Docs update
+
+---
 
 ## [2026-03-29 22:00 KST] CW22 — Exit 전략 피벗 + Forever Free + 가입 플로우 수정
 
