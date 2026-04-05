@@ -83,8 +83,8 @@ export function calculateConfidenceScore(
   // Factor 1: Classification method reliability
   const methodScores: Record<string, number> = {
     manual: 1.0,
-    cache: 0.95,
-    vector: 0.90,
+    cache: 1.0,
+    vector: 1.0,
     keyword: 0.75,
     ai: 0.85,
     keyword_fallback: 0.40,

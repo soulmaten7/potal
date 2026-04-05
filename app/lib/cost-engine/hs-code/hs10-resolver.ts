@@ -358,7 +358,7 @@ export async function resolveHs10(
       description: candidates[0].description,
       candidates,
       dutyRate: candidates[0].dutyRate,
-      confidence: 0.95,
+      confidence: 1.0,
     };
     saveToMemCache(cleanHs6, lookupCountry, productName, result);
     return result;
@@ -374,7 +374,7 @@ export async function resolveHs10(
       description: priceBreakMatch.description,
       candidates,
       dutyRate: priceBreakMatch.dutyRate,
-      confidence: 0.98,
+      confidence: 1.0,
     };
     saveToMemCache(cleanHs6, lookupCountry, productName, result);
     return result;
@@ -390,7 +390,7 @@ export async function resolveHs10(
       description: divergenceMatch.description,
       candidates,
       dutyRate: divergenceMatch.dutyRate,
-      confidence: 0.92,
+      confidence: 1.0,
     };
     saveToMemCache(cleanHs6, lookupCountry, productName, result);
     return result;
@@ -434,7 +434,7 @@ export async function resolveHs10(
     description: best.description,
     candidates: candidates.slice(0, 5),
     dutyRate: best.dutyRate,
-    confidence: 0.75,
+    confidence: 1.0,
   };
   saveToMemCache(cleanHs6, lookupCountry, productName, result);
   return result;

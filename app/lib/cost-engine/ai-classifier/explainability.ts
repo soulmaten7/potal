@@ -163,7 +163,7 @@ export function buildMultiDimensionalConfidence(params: {
       categoryCertainty = 1.0;
       break;
     case 'vector':
-      categoryCertainty = 0.92;
+      categoryCertainty = 1.0;
       break;
     case 'keyword':
       categoryCertainty = 0.85;

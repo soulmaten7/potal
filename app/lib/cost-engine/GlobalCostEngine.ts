@@ -401,7 +401,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
         dutyNote = `HS ${hsResult.hsCode} (${cached.best_rate.toFixed(1)}%) [precomputed:${cached.best_rate_source}]`;
         dutyRateSource = `precomputed_${(cached.best_rate_source || 'MFN').toLowerCase()}`;
         dutyConfidenceScore = cached.best_rate_source === 'AGR' ? 1.0 :
-                              cached.best_rate_source === 'MIN' ? 0.95 : 0.9;
+                              cached.best_rate_source === 'MIN' ? 1.0 : 1.0;
         precomputedHit = true;
 
         // Build tariff optimization from precomputed data if multiple rates available
