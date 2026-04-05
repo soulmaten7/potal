@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-05 17:30 KST (CW22-S — Data Source Ticker Supabase 실시간 연동. 329개 번역 키×7언어 i18n 완료. Auto-Import Pipeline 4개 모니터 연결(6/12 자동화). Source Publication 2줄 티커 + 감지 시 자동 갱신 파이프라인 완성)
+> 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2 — Confidence 92%→100% 수정. Vercel GitHub 연동 지원케이스 #01083440 제출. vercel --prod 필수 규칙 추가. 데모 영상 가이드 재촬영 항목 표시)
 
 ---
 
@@ -215,6 +215,19 @@
 - ✅ **문서 업데이트** — CLAUDE.md+CHANGELOG.md+session-context.md (커밋 5e06cd8)
 
 **커밋 8개**: 3deaaff, 13b9bfa, 4ce755f, e3507a1, a3c6a69, 09d55e1, 48a16c7, 5e06cd8
+
+### CW22-S2 Cowork — Confidence 92%→100% 수정 + Vercel GitHub 연동 지원케이스 (2026-04-05)
+
+**완료 항목:**
+- ✅ **Confidence 92%→100% 수정** — 10개 필드 완전 입력 시 100% 표시. 7개 파일의 하드코딩 캡 모두 제거 (커밋 666dbe6, 8c4ddf8, 074b2cb)
+  - confidence-calibration.ts, hs10-resolver.ts, GlobalCostEngine.ts, explainability.ts, confidence-score.ts, step3-heading.ts, step4-subheading.ts
+- ✅ **Supabase 캐시 클리어** — `hs_classification_cache` 166행 삭제 (이전 92% 값 캐싱 제거)
+- ✅ **vercel --prod 배포** — GitHub webhook 깨진 상태 발견, CLI 배포로 해결 (커밋 b645a58)
+- ✅ **CLAUDE.md 절대규칙 #11 추가** — `git push 후 vercel --prod 필수` 규칙화
+- ✅ **Vercel Support Case #01083440 제출** — GitHub App 설치 404 오류 → 백엔드 리셋 요청 (Status: Open, Severity 2)
+- ✅ **Notion 데모 영상 제작 가이드 업데이트** — Confidence 100% 반영하여 03_demo-filled, 04_result, rec_01 재촬영 필요로 표시
+
+**커밋 4개**: 666dbe6, 8c4ddf8, 074b2cb, b645a58
 
 ### CW22-O Cowork — PMF Outreach 실행 체계 구축 + Community 단순화 + Rahul 후속 대응 (2026-04-02)
 

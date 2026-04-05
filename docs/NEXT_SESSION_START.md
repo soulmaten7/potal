@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-05 19:30 KST (CW22-S — Data Ticker + i18n + Auto-Import + Publication Ticker 완료)
+> 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2 — Confidence 100% 수정 + Vercel GitHub 연동 지원케이스 + vercel --prod 규칙)
 
 ---
 
@@ -19,37 +19,31 @@
 
 ---
 
-## 가장 최근 세션: CW22-S (2026-04-05)
+## 가장 최근 세션: CW22-S2 (2026-04-05)
 
-### 커밋 9개 (전부 push 완료)
+### 커밋 4개 (전부 push + vercel --prod 완료)
 | # | 커밋 | 내용 |
 |---|------|------|
-| 1 | `3deaaff` | Live Ticker — Supabase 실시간 12개 소스 |
-| 2 | `13b9bfa` | Ticker Fallback — `scripts/update-ticker-fallback.mjs` prebuild 자동 갱신 |
-| 3 | `4ce755f` | Homepage i18n — 73키 × 7언어 |
-| 4 | `e3507a1` | Source Publication Ticker — `data/source-publications.json` 2줄 구조 |
-| 5 | `a3c6a69` | Auto-Import Pipeline — 4 모니터 DB 연결 (2/12→6/12) |
-| 6 | `09d55e1` | Sitewide i18n — 256키 × 7언어 (Footer+Features+Pricing+Developers+Community+Help) |
-| 7 | `48a16c7` | Publication Auto-Sync — 모니터 감지→Supabase→prebuild JSON |
-| 8 | `5e06cd8` | Docs 1차 (CLAUDE.md, session-context.md) |
-| 9 | `cbc2c82` | Docs 2차 (CHANGELOG.md CW22-S 섹션 + session-context CW22-S 완료 블록) |
+| 1 | `666dbe6` | Confidence 100% — confidence-calibration.ts + step3/step4 캡 제거 |
+| 2 | `8c4ddf8` | 추가 캡 제거 — hs10-resolver, GlobalCostEngine, explainability, confidence-score |
+| 3 | `074b2cb` | 잔여 캡 제거 — hs10-resolver 0.85/0.8/0.95 → 1.0 |
+| 4 | `b645a58` | 재배포 트리거 |
 
-### CW22-S에서 만든 핵심 파일
-- `app/api/v1/data-freshness/route.ts` — 12개 소스 실시간 타임스탬프 API
-- `scripts/update-ticker-fallback.mjs` — Vercel prebuild 스크립트
-- `data/ticker-fallback.json` — Ticker fallback 데이터
-- `data/source-publications.json` — 12개 소스 공식 발행일
-- `app/lib/data-management/import-trigger.ts` — Auto-Import 유틸리티
-- `app/lib/data-management/publication-updater.ts` — Publication 자동 갱신
-- `app/i18n/translations/` — en/ko/ja/zh/es/de/fr 7개 언어 파일
+### CW22-S2 핵심 변경
+- **Confidence 92%→100%**: 10개 필드 완전 입력 시 100% 표시되도록 7개 파일의 하드코딩 캡 모두 제거
+- **Supabase 캐시 클리어**: `hs_classification_cache` 166행 삭제
+- **CLAUDE.md 규칙 #11 추가**: `git push 후 vercel --prod 필수`
+- **Vercel Support Case #01083440**: GitHub App 404 → 백엔드 리셋 요청 (Open, Severity 2)
 
-### Supabase DB 변경
-- `source_publications` 테이블 신규 생성 (12행 초기 데이터)
+### ⚠️ 미해결 사항
+- **GitHub-Vercel 자동 배포 끊김** — Vercel 서포트 답변 대기 중 (Case #01083440). 그동안 `vercel --prod` CLI로 배포
+  - **복구 확인 방법**: git push 후 Vercel 대시보드에서 자동 배포가 트리거되는지 확인
+  - **복구 시 해야 할 일**: ① CLAUDE.md 절대규칙 #11에서 "(임시)" 및 복구 안내 문구 삭제하고 규칙 자체를 삭제 ② 세션 종료 체크리스트에서 "vercel --prod 배포 완료" 항목 삭제 ③ 이 미해결 사항 섹션에서 해당 항목 삭제 ④ CHANGELOG.md에 "GitHub-Vercel 자동 배포 복구" 기록
+- **데모 영상 재촬영 필요** — 03_demo-filled.png, 04_result.png, rec_01 (Confidence 100% 반영)
 
-### Notion 업데이트 완료
-- Session Log: CW22-S 기록 (커밋 9개)
-- Task Board: 4개 카드 전부 Done
-- 데모 영상 제작 가이드: 티커 데모 rec_20, rec_21 추가
+### 이전 세션: CW22-S (2026-04-05)
+- 커밋 9개: Data Source Ticker + i18n 329키×7언어 + Auto-Import Pipeline + Publication Ticker
+- 상세: CHANGELOG.md CW22-S 섹션 참조
 
 ---
 

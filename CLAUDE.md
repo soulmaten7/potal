@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-05 20:00 KST (CW22-S: 하네스 강화 — stop hook 날짜 자동 검증 + 가비지 컬렉션 규칙 + 문서 4개 일치 강제)
+# 마지막 업데이트: 2026-04-05 23:30 KST (CW22-S2: Confidence 92%→100% 수정 + Vercel GitHub 연동 지원케이스 #01083440 + vercel --prod 필수 규칙 추가)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -33,6 +33,7 @@
 8. **문서 업데이트 시 날짜+시간(KST) 기록 필수**
 9. **유료 플랜 재도입 금지** — Forever Free 구조 유지 (CW22 CEO 확정). Enterprise Contact Us만 허용
 10. **HS Code 벤치마크 오류 시 `archive/benchmarks/POTAL_Ablation_V2.xlsx` 대조 필수**
+11. **git push 후 vercel --prod 필수 (임시)** — GitHub-Vercel 자동 배포 해제 상태 (2026-04-05~, Vercel Support Case #01083440 대기 중). git push만으로는 사이트에 반영 안 됨. 반드시 vercel --prod 실행 후 배포 확인. **⚠️ GitHub 연동 복구 시**: 이 규칙 삭제 + 세션 종료 체크리스트에서 "vercel --prod" 항목 삭제 + NEXT_SESSION_START.md 미해결 사항에서 제거할 것.
 
 ---
 
@@ -118,6 +119,7 @@ potal/
 
 ## 세션 종료 체크리스트
 - [ ] git push 완료
+- [ ] vercel --prod 배포 완료 (git push만으로는 배포 안 됨)
 - [ ] **코드 문서 4개 날짜 확인**: CLAUDE.md, CHANGELOG.md, session-context.md, NEXT_SESSION_START.md (hook이 자동 검증)
 - [ ] **session-context.md**: 이번 세션 CW##-X 완료 블록 추가됨
 - [ ] **Notion**: Session Log에 세션 기록 추가 (Cowork에서)
