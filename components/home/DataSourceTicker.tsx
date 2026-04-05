@@ -1,27 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import fallbackData from '@/data/ticker-fallback.json';
 
 interface DataSource {
   name: string;
   hoursAgo: number;
   isLive: boolean;
 }
-
-const FALLBACK_SOURCES: DataSource[] = [
-  { name: 'USITC', hoursAgo: 2, isLive: false },
-  { name: 'UK Trade Tariff', hoursAgo: 4, isLive: false },
-  { name: 'EU TARIC', hoursAgo: 6, isLive: false },
-  { name: 'Canada CBSA', hoursAgo: 8, isLive: false },
-  { name: 'Australia ABF', hoursAgo: 12, isLive: false },
-  { name: 'Korea KCS', hoursAgo: 6, isLive: false },
-  { name: 'Japan Customs', hoursAgo: 8, isLive: false },
-  { name: 'MacMap MFN', hoursAgo: 24, isLive: false },
-  { name: 'Exchange Rates', hoursAgo: 1, isLive: false },
-  { name: 'Section 301/232', hoursAgo: 12, isLive: false },
-  { name: 'Trade Remedies', hoursAgo: 24, isLive: false },
-  { name: 'FTA Agreements', hoursAgo: 48, isLive: false },
-];
 
 function isoToHoursAgo(isoString: string | null): number {
   if (!isoString) return 999;
@@ -42,6 +28,12 @@ function getStatusColor(hoursAgo: number): string {
   if (hoursAgo < 72) return '#eab308';
   return '#ef4444';
 }
+
+const FALLBACK_SOURCES: DataSource[] = fallbackData.sources.map((src) => ({
+  name: src.name,
+  hoursAgo: isoToHoursAgo(src.lastUpdated),
+  isLive: false,
+}));
 
 export default function DataSourceTicker() {
   const [mounted, setMounted] = useState(false);
