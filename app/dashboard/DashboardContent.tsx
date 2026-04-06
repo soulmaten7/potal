@@ -236,6 +236,10 @@ export default function DashboardContent() {
   const [ftaDest, setFtaDest] = useState('');
   const [screenCountry, setScreenCountry] = useState('');
   const [partyCountry, setPartyCountry] = useState('');
+  const [classifyMaterial, setClassifyMaterial] = useState('');
+  const [classifyCategory, setClassifyCategory] = useState('');
+  const [classifyOrigin, setClassifyOrigin] = useState('');
+  const [classifyDest, setClassifyDest] = useState('');
 
   // 240 countries sorted by name, with popular ones first
   const allCountries = useMemo(() => {
@@ -1147,10 +1151,20 @@ export default function DashboardContent() {
                 <div style={{ marginBottom: 10 }}>
                   <input id="classify-input" type="text" placeholder="Product Name — e.g. Organic cotton t-shirt for men" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
                 </div>
-                {/* Row 2: Material | Category */}
+                {/* Row 2: Material | Category (dropdowns) */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
-                  <input id="classify-material" type="text" placeholder="Material — e.g. cotton, leather, plastic" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                  <input id="classify-category" type="text" placeholder="Category — e.g. apparel, electronics" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <select value={classifyMaterial} onChange={e => setClassifyMaterial(e.target.value)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, background: 'white', color: classifyMaterial ? '#333' : '#9ca3af', cursor: 'pointer' }}>
+                    <option value="" disabled>Select material...</option>
+                    {['cotton','polyester','wool','silk','linen','denim','nylon','leather','plastic','rubber','aluminum','steel','copper','zinc','titanium','carbon-fiber','lithium-ion','wood','glass','ceramic','paper','gold','silver','other'].map(m => (
+                      <option key={m} value={m}>{m.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')}</option>
+                    ))}
+                  </select>
+                  <select value={classifyCategory} onChange={e => setClassifyCategory(e.target.value)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, background: 'white', color: classifyCategory ? '#333' : '#9ca3af', cursor: 'pointer' }}>
+                    <option value="" disabled>Select category...</option>
+                    {['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'].map(c => (
+                      <option key={c} value={c}>{c.replace('_', ' ')}</option>
+                    ))}
+                  </select>
                 </div>
                 {/* Row 3: Description (full width) */}
                 <div style={{ marginBottom: 10 }}>
@@ -1168,44 +1182,41 @@ export default function DashboardContent() {
                 </div>
                 {/* Row 6: Origin | Destination | Classify button */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 10, marginBottom: 16 }}>
-                  <input id="classify-origin" type="text" placeholder="Origin — e.g. CN, US" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                  <input id="classify-destination" type="text" placeholder="Destination — e.g. US, DE" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <DashCountrySelect value={classifyOrigin} onChange={setClassifyOrigin} placeholder="Origin country..." />
+                  <DashCountrySelect value={classifyDest} onChange={setClassifyDest} placeholder="Destination country..." />
                   <button onClick={async () => {
                     const g = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value?.trim() || '';
                     const input = g('classify-input');
-                    const material = g('classify-material');
-                    const category = g('classify-category');
                     const description = g('classify-description');
                     const processing = g('classify-processing');
                     const composition = g('classify-composition');
                     const weightSpec = g('classify-weight');
                     const price = g('classify-price');
-                    const origin = g('classify-origin');
-                    const destination = g('classify-destination');
                     // Update confidence counter
-                    const filled = [input, material, category, description, processing, composition, weightSpec, price, origin, destination].filter(Boolean).length;
+                    const filled = [input, classifyMaterial, classifyCategory, description, processing, composition, weightSpec, price, classifyOrigin, classifyDest].filter(Boolean).length;
                     const confEl = document.getElementById('classify-confidence');
                     if (confEl) { confEl.textContent = `${filled} / 10 fields`; confEl.style.color = filled >= 8 ? '#16a34a' : filled >= 5 ? '#ca8a04' : '#888'; }
                     const el = document.getElementById('classify-result');
                     if (!input) { if (el) el.textContent = 'Please enter a product name.'; return; }
-                    if (!material) { if (el) el.textContent = 'Material is required (e.g. cotton, leather, plastic).'; return; }
+                    if (!classifyMaterial) { if (el) el.textContent = 'Material is required. Please select from the dropdown.'; return; }
                     if (el) el.textContent = 'Classifying...';
                     try {
                       const token = session?.access_token;
                       if (!token) { if (el) el.textContent = 'Error: Not authenticated. Please log in again.'; return; }
-                      const reqBody: Record<string, unknown> = { productName: input, material };
-                      if (category) reqBody.category = category;
+                      const reqBody: Record<string, unknown> = { productName: input, material: classifyMaterial };
+                      if (classifyCategory) reqBody.category = classifyCategory;
                       if (description) reqBody.description = description;
                       if (processing) reqBody.processing = processing;
                       if (composition) reqBody.composition = composition;
                       if (weightSpec) reqBody.weight_spec = weightSpec;
                       if (price) reqBody.price = parseFloat(price);
-                      if (origin) reqBody.originCountry = origin.toUpperCase();
-                      if (destination) reqBody.destinationCountry = destination.toUpperCase();
+                      if (classifyOrigin) reqBody.originCountry = classifyOrigin;
+                      if (classifyDest) reqBody.destinationCountry = classifyDest;
                       const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(reqBody) });
                       const data = await res.json();
-                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `API Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
-                    } catch (e) { if (el) el.textContent = `Network Error: ${e instanceof Error ? e.message : String(e)}`; }
+                      if (res.status === 401) { if (el) el.textContent = 'API Key가 필요합니다. API Keys 탭에서 키를 생성하세요.'; return; }
+                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                    } catch { if (el) el.textContent = 'Network error. Please check your connection and try again.'; }
                   }} style={{ padding: '10px 24px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap' }}>Classify</button>
                 </div>
                 <pre id="classify-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 60, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
@@ -1226,6 +1237,7 @@ export default function DashboardContent() {
                   <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/classify</code>
                   <div style={{ fontSize: 12, color: '#666' }}>
                     <div>Body: <code>{`{ "productName": "...", "material": "cotton", "category": "apparel", "description": "...", "processing": "knitted", "composition": "100% cotton", "weight_spec": "200g", "price": 29.99, "originCountry": "CN", "destinationCountry": "US" }`}</code></div>
+                    <div style={{ marginTop: 4, fontSize: 11, color: '#999' }}>Material: 24 options (dropdown) | Category: 14 options (dropdown) | Origin/Destination: 240 countries (searchable)</div>
                     <div style={{ marginTop: 4 }}>Batch: <code>POST /api/v1/classify/batch</code> (up to 50 items)</div>
                   </div>
                 </div>
