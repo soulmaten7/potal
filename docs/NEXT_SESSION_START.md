@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3 — 140기능 프론트엔드 UI 대규모 구축)
+> 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3 — 140기능 프론트엔드 UI + Dashboard CountrySelect + GitHub flagged)
 
 ---
 
@@ -51,11 +51,11 @@
 - ⚠️ `/tools/screening` API 호출 시 error boundary — API 에러 핸들링 강화 필요
 
 ### ⚠️ 미해결 사항
-- **GitHub-Vercel 자동 배포 끊김** — Vercel 서포트 답변 대기 중 (Case #01083440). 그동안 `vercel --prod` CLI로 배포
-  - **복구 확인 방법**: git push 후 Vercel 대시보드에서 자동 배포가 트리거되는지 확인
+- **GitHub 계정 flagged → 자동 배포 장애** — GitHub 계정이 flagged 상태로 확인됨. GitHub Support Ticket #4248922 답변 완료, 복구 대기 중. Vercel Case #01083440도 이 원인. 그동안 `vercel --prod` CLI로 배포
+  - **복구 확인 방법**: GitHub 프로필 접속 시 "flagged" 배너 사라졌는지 확인 → git push → Vercel 대시보드에서 자동 배포 트리거 확인
   - **복구 시 해야 할 일**: ① CLAUDE.md 절대규칙 #11 삭제 ② 세션 종료 체크리스트에서 "vercel --prod" 삭제 ③ 이 미해결 사항에서 제거 ④ CHANGELOG.md에 기록
 - **데모 영상 재촬영 필요** — 03_demo-filled.png, 04_result.png, rec_01 (Confidence 100% 반영)
-- **API 호출 도구 에러 핸들링** — screening 등 API 호출 시 error boundary catch 필요 (try/catch 내 setState 개선)
+- **API 호출 도구 에러 핸들링** — Dashboard Calculator/FTA/Sanctions는 개선 완료 (50b08a1). 나머지 tools/* 페이지도 점진적 개선 필요
 
 ### 이전 세션: CW22-S2 (2026-04-05~06)
 - 커밋 10개: Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스
@@ -65,8 +65,12 @@
 
 ## 다음 할 일 (우선순위)
 
-### P0: API 호출 도구 에러 핸들링 강화
-- screening, export-controls 등 API 호출 도구에서 에러 시 "Something went wrong" 대신 친절한 에러 메시지 표시
+### P0: GitHub 계정 복구 확인 → Vercel 연동 테스트
+- GitHub 계정 flagged 복구 확인 → git push → Vercel 자동 배포 트리거 확인
+- 복구 시: CLAUDE.md 규칙11 삭제, 세션 체크리스트 정리, CHANGELOG 기록
+
+### P0-B: API 호출 도구 에러 핸들링 강화
+- Dashboard는 완료 (50b08a1). tools/* 페이지의 에러 핸들링 점진적 개선
 - error boundary가 아닌 컴포넌트 내 try/catch로 처리하도록 수정
 
 ### P1: 데모 영상 촬영 (진행 중)

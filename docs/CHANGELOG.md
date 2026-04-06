@@ -1,5 +1,5 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3 — 140기능 프론트엔드 UI 대규모 구축)
+> 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3 — 140기능 프론트엔드 UI + Dashboard CountrySelect)
 
 ## [2026-04-06 15:30 KST] CW22-S3 — 140기능 프론트엔드 UI 대규모 구축 (5라운드 × 3터미널)
 
@@ -24,6 +24,13 @@
 ### 인프라
 - **Scheduled Task 업데이트** — daily-content-posting, sunday-content-prep에 🎬 첨부 에셋 안내 섹션 추가
 - **Daily Content MD** — 2026-04-06 US De Minimis 콘텐츠에 플랫폼별 에셋 가이드 추가
+
+### 추가 (Additions) — Dashboard 개선
+- `a4c6dff` feat: Dashboard HS Classification 4→10 필드 업데이트 (HeroCalculator와 동일한 10-field 입력 + Confidence 카운터)
+- `50b08a1` feat: Dashboard Tariff Calculator/FTA/Sanctions에 240국 CountrySelect 드롭다운 추가, 인증 체크 추가, 에러 핸들링 개선
+
+### 수정 (Fixes) — 기타
+- **GitHub 계정 flagged 확인** — Vercel-GitHub 자동배포 장애 원인이 GitHub 계정 flagged 상태임을 파악, GitHub Support 티켓 #4248922 답변 완료
 
 ### 커밋 (10+개, 3터미널 병렬)
 - `b380b04` feat: add 5 compliance tool pages (Round 1 터미널1)

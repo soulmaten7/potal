@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3: 140기능 프론트엔드 UI 대규모 구축 — 5라운드 × 3터미널 = ~79 새 페이지, Tools Hub + Dashboard + Developer Docs + Navigation 업데이트)
+# 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3: 140기능 프론트엔드 UI 대규모 구축 + Dashboard CountrySelect/에러핸들링 개선)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
