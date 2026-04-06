@@ -1,184 +1,96 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-const levels = [
-  {
-    name: 'POTAL Certified Associate',
-    description: 'Foundational knowledge of cross-border trade compliance, HS classification basics, and POTAL API usage.',
-    topics: ['HS Code fundamentals', 'Landed cost components', 'API integration basics', 'Widget installation'],
-    color: 'bg-blue-100 text-blue-700',
-    exam: { questions: 30, passingScore: 70, duration: '45 minutes', fee: 'Free' },
-  },
-  {
-    name: 'POTAL Certified Professional',
-    description: 'Advanced compliance, FTA optimization, multi-country tax strategies, and enterprise integration patterns.',
-    topics: ['FTA utilization', 'Rules of Origin', 'Trade remedies (AD/CVD)', 'Batch processing & webhooks', 'Multi-country strategies'],
-    color: 'bg-purple-100 text-purple-700',
-    exam: { questions: 50, passingScore: 75, duration: '75 minutes', fee: '$49' },
-  },
-  {
-    name: 'POTAL Certified Expert',
-    description: 'Expert-level mastery of global trade compliance, data architecture, and AI-driven classification systems.',
-    topics: ['AI classification pipeline', 'Regulatory RAG systems', 'Custom integrations', 'Enterprise architecture', 'Compliance auditing'],
-    color: 'bg-amber-100 text-amber-700',
-    exam: { questions: 60, passingScore: 80, duration: '90 minutes', fee: '$99' },
-  },
-];
+const bg = '#0a1e3d';
+const accent = '#E8640A';
 
-// Sample question bank structure for F137
-const sampleQuestions = [
+const LEVELS = [
   {
-    id: 'q1',
-    level: 'associate',
-    category: 'HS Code',
-    question: 'What is the minimum number of digits in an HS code under the Harmonized System?',
-    options: ['4 digits', '6 digits', '8 digits', '10 digits'],
-    correctIndex: 1,
+    name: 'Bronze',
+    title: 'HS Classification Specialist',
+    color: '#CD7F32',
+    icon: '🥉',
+    requirements: ['Complete Getting Started track', 'Classify 20 products correctly', 'Pass HS Classification exam (80%+)'],
+    examTopics: ['6-digit HS Code structure', 'GRI rules of interpretation', 'Section & Chapter notes', 'Material-based classification'],
+    examDuration: '30 minutes',
+    questions: 25,
   },
   {
-    id: 'q2',
-    level: 'associate',
-    category: 'Landed Cost',
-    question: 'Which of the following is NOT a component of Total Landed Cost?',
-    options: ['Import Duty', 'VAT/GST', 'Marketing Cost', 'Customs Brokerage Fee'],
-    correctIndex: 2,
+    name: 'Silver',
+    title: 'Trade Compliance Professional',
+    color: '#C0C0C0',
+    icon: '🥈',
+    requirements: ['Hold Bronze certification', 'Complete Advanced Compliance track', 'Pass Full Compliance exam (85%+)', '50+ successful calculations'],
+    examTopics: ['Denied party screening', 'FTA utilization', 'De minimis rules', 'Country restrictions', 'Export controls (ECCN)', 'Customs documentation'],
+    examDuration: '45 minutes',
+    questions: 40,
   },
   {
-    id: 'q3',
-    level: 'professional',
-    category: 'FTA',
-    question: 'Under USMCA, what is the general Rules of Origin requirement for preferential treatment?',
-    options: ['Regional Value Content of 75%', 'Tariff shift + 50% RVC', 'Wholly obtained in member country', 'Change in tariff classification'],
-    correctIndex: 0,
+    name: 'Gold',
+    title: 'Enterprise Integration Architect',
+    color: '#FFD700',
+    icon: '🥇',
+    requirements: ['Hold Silver certification', 'Complete API Integration track', 'Pass Enterprise Integration exam (90%+)', 'Implement 1 live integration'],
+    examTopics: ['REST API design patterns', 'Webhook implementation', 'Batch processing optimization', 'White-label configuration', 'SSO & team management', 'Rate limit strategies', 'Error handling & retry logic', 'Performance benchmarking'],
+    examDuration: '60 minutes',
+    questions: 50,
   },
 ];
 
 export default function CertificationPage() {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState('');
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    if (!email || !email.includes('@')) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-
-    try {
-      const res = await fetch('/api/v1/certification/waitlist', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error?.message || 'Something went wrong.');
-        return;
-      }
-      setSubmitted(true);
-    } catch {
-      setError('Network error. Please try again.');
-    }
-  }
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">POTAL Certification Program</h1>
-      <p className="text-gray-600 mb-10">
-        Validate your expertise in cross-border trade compliance and POTAL platform mastery.
-      </p>
+    <div style={{ minHeight: '100vh', background: `linear-gradient(135deg, ${bg} 0%, #1a365d 100%)`, color: 'white', padding: '80px 20px' }}>
+      <div style={{ maxWidth: 800, margin: '0 auto' }}>
+        <div style={{ display: 'inline-block', background: 'rgba(232,100,10,0.2)', color: accent, padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, marginBottom: 12 }}>CERTIFICATION</div>
+        <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>Certification Program</h1>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 15, marginBottom: 36 }}>Validate your trade compliance expertise with POTAL certifications.</p>
 
-      {/* Certification Levels */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Certification Levels</h2>
-        <div className="space-y-6">
-          {levels.map((level) => (
-            <div key={level.name} className="border rounded-lg p-6 bg-white">
-              <div className="flex items-center gap-3 mb-3">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${level.color}`}>
-                  {level.name}
-                </span>
-              </div>
-              <p className="text-gray-600 mb-4">{level.description}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {level.topics.map((t) => (
-                  <span key={t} className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs">
-                    {t}
-                  </span>
-                ))}
-              </div>
-              <div className="border-t pt-3 mt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">{level.exam.questions}</p>
-                  <p className="text-xs text-gray-500">Questions</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">{level.exam.passingScore}%</p>
-                  <p className="text-xs text-gray-500">Passing Score</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">{level.exam.duration}</p>
-                  <p className="text-xs text-gray-500">Duration</p>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-800">{level.exam.fee}</p>
-                  <p className="text-xs text-gray-500">Fee</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Benefits */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6">Why Get Certified?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { title: 'Career Growth', desc: 'Stand out in the growing cross-border commerce industry.' },
-            { title: 'Partner Badge', desc: 'Display your certification on your company profile.' },
-            { title: 'Early Access', desc: 'Certified members get early access to new features and beta programs.' },
-          ].map((b) => (
-            <div key={b.title} className="border rounded-lg p-5 bg-white">
-              <h3 className="font-semibold text-gray-900 mb-1">{b.title}</h3>
-              <p className="text-sm text-gray-500">{b.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Waitlist */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 text-white">
-        <h2 className="text-2xl font-bold mb-2">Join the Waitlist</h2>
-        <p className="text-blue-100 mb-6">
-          The certification program is launching soon. Be the first to know when enrollment opens.
-        </p>
-        {submitted ? (
-          <div className="bg-white/10 rounded-lg p-4">
-            <p className="font-medium">You are on the list! We will notify you when the program launches.</p>
+        <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: 20, border: '1px solid rgba(255,255,255,0.1)', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>👤</div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700 }}>Your Certifications</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>No certifications earned yet. Start with Bronze!</div>
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              className="flex-1 px-4 py-2 rounded-lg text-gray-900 placeholder-gray-400"
-            />
-            <button
-              type="submit"
-              className="bg-white text-blue-700 px-6 py-2 rounded-lg font-medium hover:bg-blue-50"
-            >
-              Join Waitlist
-            </button>
-          </form>
-        )}
-        {error && <p className="text-red-200 mt-2 text-sm">{error}</p>}
-      </section>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {LEVELS.map((level, i) => {
+            const isSelected = selectedLevel === i;
+            return (
+              <div key={level.name} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, border: isSelected ? `2px solid ${level.color}` : '1px solid rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                <button onClick={() => setSelectedLevel(isSelected ? null : i)}
+                  style={{ width: '100%', padding: '24px', background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{ width: 64, height: 64, borderRadius: '50%', border: `3px solid ${level.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0, background: `${level.color}15` }}>{level.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: level.color, marginBottom: 2 }}>{level.name}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>{level.title}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{level.questions} questions · {level.examDuration}</div>
+                  </div>
+                  <span style={{ fontSize: 20, color: 'rgba(255,255,255,0.3)', transform: isSelected ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▾</span>
+                </button>
+                {isSelected && (
+                  <div style={{ padding: '0 24px 24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                      <div>
+                        <h4 style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 10 }}>Requirements</h4>
+                        {level.requirements.map((r, j) => <div key={j} style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 6, display: 'flex', alignItems: 'flex-start', gap: 6 }}><span style={{ color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>☐</span> {r}</div>)}
+                      </div>
+                      <div>
+                        <h4 style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', marginBottom: 10 }}>Exam Topics</h4>
+                        {level.examTopics.map((t, j) => <div key={j} style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 4 }}>• {t}</div>)}
+                      </div>
+                    </div>
+                    <button style={{ marginTop: 16, padding: '12px 32px', borderRadius: 10, border: 'none', background: level.color, color: '#000', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Start Exam</button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
