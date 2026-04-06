@@ -1,84 +1,88 @@
-# 2026-W15 기능 딥다이브 소재
-> 자동 생성: 2026-04-02 (sunday-content-prep)
-> 소스: app/features/features-guides.ts (140개 기능)
+# W15 기능 딥다이브 소재
+> 생성일: 2026-04-05 (sunday-content-prep 자동 생성)
+> 업데이트: 2026-04-06 16:45 KST — CW22-S3: 10-field 파이프라인 + Dashboard CountrySelect 반영
+> 데이터 소스: app/features/features-guides.ts (140개 기능)
 
 ---
 
-## 이번 주 딥다이브 기능: Total Landed Cost Calculator (수요일)
+## 이번 주 메인 기능: HS Code Classification (F001)
 
-### 기능 상세
-- **기능 ID**: F002
-- **카테고리**: Core Engine
-- **슬러그**: /features/total-landed-cost-calculator
+### 앵글
+"경쟁사는 AI GPU 클라우드에 투자한다. POTAL은 595개 GRI 규칙으로 $0에 분류한다. 정확도는 더 높다."
 
-### 핵심 앵글
-**"가격표에 적힌 $24.99가 끝이 아니다. 관세, 세금, 수수료 합치면 $38.34. 이 차이를 모르면 마진이 사라진다."**
+### 상세 데이터
+- **방식**: v3.3 GRI Pipeline — 595개 codified rules, 21 Sections
+- **비용**: $0/건 (AI 호출 없음, DB 조회 + 룰 매칭)
+- **경쟁사**: Avalara AI 분류 건당 $0.02~0.05, Zonos CoreWeave GPU 클라우드 투자
+- **입력 필드**: 10-field (productName, description, material, category, processing, composition, weightSpec, price, origin, destination) — Homepage + Dashboard 동일 (CW22-S3 업데이트)
+- **정확도**: 필드 추가 시 단계적 향상 — productName만(+18%) → +material(+45%) → +category(+33%) → +description(+4%) = ~100%. Dashboard에서 Confidence N/10 카운터 표시 (8+: 초록, 5+: 노랑, <5: 회색)
+- **Dashboard UI**: 240국 CountrySelect 드롭다운 (검색 + Popular 20국 + Show All), 인증 체크, 에러 핸들링 개선 (CW22-S3)
 
-### 구체적 소재
-
-**무엇을 하는가:**
-- 상품 가격 + 관세(duty) + VAT/GST + 배송비 + 보험 + 수수료 = 최종 소비자 지불 가격
-- 240개국 간 모든 루트 계산 가능
-- HS Code 자동 분류 → 관세율 적용 → 세금 적용 → 수수료 적용
-
-**왜 중요한가:**
-- De Minimis 폐지 후 모든 소포에 관세 발생 → TLC 없이는 마진 계산 불가
-- Reciprocal Tariff로 관세율 급변 → 실시간 계산 필수
-- 셀러가 가장 자주 실수하는 것: "상품 가격 = 고객 지불 가격" 착각
-
-**경쟁사 비교:**
-- Avalara TLC: $1,500+/월 (Cross-Border 모듈 별도)
-- Zonos: 주문당 $2 + GMV 10% (비용 예측 불가)
-- POTAL: $0. API 호출로 즉시 계산.
-
-**API 예시:**
+### API 예시
 ```bash
-curl -X POST https://potal.app/api/v1/calculate-landed-cost \
-  -H "Authorization: Bearer sk_live_..." \
-  -d '{
-    "productName": "Men'\''s cotton t-shirt",
-    "material": "cotton",
-    "price": 24.99,
-    "origin": "KR",
-    "destinationCountry": "US",
-    "shippingPrice": 8.50
-  }'
+curl -X POST https://potal.app/api/v1/classify \
+  -H "X-API-Key: pk_live_your_key" \
+  -H "Content-Type: application/json" \
+  -d '{"productName": "Men'\''s cotton t-shirt", "material": "cotton", "category": "apparel"}'
 ```
 
-**실제 계산 결과 (POTAL MCP 2026-04-02):**
-- 상품가: $24.99 → Total: $38.34 (53% 증가)
-- 관세: $0 (KORUS FTA 혜택), Sales Tax: $2.34 (7%), MPF: $2.00
+### 응답 예시
+```json
+{
+  "hsCode": "6109.10",
+  "description": "T-shirts, singlets and other vests, of cotton, knitted or crocheted",
+  "confidence": 0.95,
+  "alternatives": [{"hsCode": "6109.90", "confidence": 0.82}]
+}
+```
 
-### 핵심 숫자
+---
+
+## 보조 기능 1: Total Landed Cost Calculator (F002)
+
+### 앵글
+"$59.99 이어버드가 미국 도착하면 $88.75. 그 차이 $28.76이 정확히 어디서 오는지 0.01달러까지 분해한다."
+
+### 상세 데이터
+- Section 301 List 1: +25% (CN origin)
+- CBP MPF: $2.00 (informal entry)
+- Insurance: 1.5% of CIF
+- Sales Tax: 7.0%
+- 중국 CBEC tax, 멕시코 IEPS, 브라질 cascading tax, 인도 IGST 등 12개국 특수 세금 지원
+
+---
+
+## 보조 기능 2: Import Restriction Check (F005)
+
+### 앵글
+"HS Code 분류만으로 끝이 아니다. 그 상품이 목적지 국가에서 금지/제한인지까지 한 번에."
+
+### 상세 데이터
+- 금지 품목, 필수 허가, 주의 품목, 운송사 제한 4가지 체크
 - 240개국 지원
-- 12개국 특수 세금 계산 (중국 CBEC, 멕시코 IEPS, 브라질 cascading, 인도 IGST 등)
-- 7개국 정부 API 연동
-- 실시간 환율 적용
+- API 1회 호출로 compliance 전체 확인
 
 ---
 
-## 보충 기능 소재 (이번 주 다른 요일에 활용)
+## 보조 기능 3: FTA Lookup (F004)
 
-### 목요일 개발자용 — POTAL API + MCP 연동
-- **F007 REST API** + **F031 Claude MCP** + **F029 Custom GPT**
-- 앵글: "AI 에이전트가 관세를 계산하는 시대. 3줄 코드면 충분하다."
-- MCP: `npx -y potal-mcp-server` → classify_product, calculate_landed_cost
-- GPT Actions: OpenAPI spec으로 바로 연동
+### 앵글
+"FTA 적용하면 관세가 0%가 되기도 한다. 문제는 어떤 FTA가 적용되는지 아는 것. POTAL이 자동으로 찾아준다."
 
-### 토요일 데이터/인사이트 — 국가별 관세 비교
-- **F003 Duty Rates Database** + **F012 Country Comparison**
-- 앵글: "240개국 중 관세가 가장 높은 나라. Reciprocal Tariff 후 판이 바뀌었다."
-- compare_countries API로 실제 비교 데이터 제공
+### 상세 데이터
+- 원산지-목적지 조합에 따른 FTA 자동 매칭
+- 절감액 계산 + 대안 FTA 목록 제공
+- 한-미 FTA, EU-일본 EPA, RCEP 등 주요 협정 커버
 
 ---
 
-## 아직 안 다룬 기능 (W16 이후 후보)
+## 아직 콘텐츠로 안 다룬 기능 후보 (향후 주간용)
 
-| 기능 | 앵글 | 우선순위 |
-|------|------|---------|
-| F004 FTA Lookup | "FTA를 쓰면 관세 0%. 문제는 어떤 FTA가 적용되는지 모른다는 것" | 높음 |
-| F005 Confidence Score | "AI가 분류한 HS Code를 얼마나 믿을 수 있나? POTAL은 신뢰도 점수를 준다" | 중간 |
-| F008 Denied Party Screening | "수출금지 대상에게 물건을 팔면? 벌금 $1M+" | 높음 |
-| F010 De Minimis Check | "면세 한도가 나라마다 다르다. 이걸 자동으로 체크하는 기능" | 높음 |
-| F015 Multi-currency | "환율은 매일 바뀐다. 관세 계산에 어제 환율을 쓰면 마진이 틀어진다" | 중간 |
-| F022 Sandbox Mode | "프로덕션 API 키 없이 테스트. 개발자 온보딩 30초" | 중간 |
+| 기능 | slug | 콘텐츠 포텐셜 |
+|------|------|-------------|
+| Image Classification (F006) | image-classification | "상품 사진만 올리면 HS Code 자동 분류" |
+| Batch Classification (F007) | batch-classification | "CSV 업로드 → 수백 개 상품 일괄 분류" |
+| Multi-Currency Support (F010) | multi-currency-support | "51개 통화 실시간 환율 자동 적용" |
+| Denied Party Screening (F013) | denied-party-screening | "거래 상대방이 제재 대상인지 1초 확인" |
+| Trade Remedy Database (F015) | trade-remedy-database | "반덤핑/상계관세 자동 반영" |
+| Confidence Score (F003) | confidence-score | "AI가 '확실하지 않다'고 말해주는 시스템" |

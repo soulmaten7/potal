@@ -74,8 +74,9 @@
 ```
 기능: HS Code Classification (F001)
 앵글: "경쟁사는 AI로 분류해서 건당 $0.02. POTAL은 595개 규칙으로 $0. 정확도는 더 높음."
-API 예시: POST /api/v1/classify {"productName": "Men's cotton t-shirt"}
-핵심 숫자: 595 GRI 규칙, 21 Section, 95%+ confidence, <50ms
+API 예시: POST /api/v1/classify {"productName": "Men's cotton t-shirt", "material": "cotton", "category": "apparel", ...}
+핵심 숫자: 595 GRI 규칙, 21 Section, 10-field 입력 (Confidence N/10), <50ms
+Dashboard: 10-field 입력 + 240국 CountrySelect 드롭다운으로 시연 가능
 ```
 
 ---
@@ -119,10 +120,11 @@ API 예시: POST /api/v1/classify {"productName": "Men's cotton t-shirt"}
 #### 이미지 소재 유형 (반복 사용 가능)
 - **가격 비교 바 차트**: POTAL $0 vs 경쟁사 $1,500~$4,000 (홈 화면 차트 스크린샷 활용)
 - **기능 수 비교**: 140 vs 31 (파이 차트 or 바 차트)
-- **스크린샷**: Dashboard, Features 페이지, API 응답, HeroCalculator
+- **스크린샷**: Dashboard (10-field HS Classification + CountrySelect 드롭다운), Features 페이지, API 응답, HeroCalculator, Tools Hub (34개 도구 카드)
 - **코드 스니펫**: curl 명령어, API 응답 JSON (DEV.to/개발자용)
 - **국가 지도**: 240개국 커버리지 시각화
 - **플로우 차트**: 셀러가 POTAL을 쓰는 과정
+- **Tools Hub**: 34개 도구를 카테고리별로 탐색하는 화면 (CW22-S3 신규)
 
 #### 영상 클립 (필요 시)
 기능별 녹화 클립을 미리 찍어두고, 브랜드 채널(Instagram/X)에 올릴 때 꺼내 쓰기.
