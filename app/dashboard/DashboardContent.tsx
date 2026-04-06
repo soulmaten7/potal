@@ -111,6 +111,96 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
 // Plan display — Forever Free (CW22 pivot)
 const PLANS_DEPRECATED = true; // Legacy plan cards removed — all users are Forever Free
 
+// ── Dashboard CountrySelect (light theme) ──
+const DB_POPULAR_CODES = new Set(['CN','US','GB','DE','JP','KR','AU','CA','FR','IT','IN','MX','BR','SG','HK','TH','VN','ID','NL','ES']);
+const DB_ALL_COUNTRIES = Object.values(COUNTRY_DATA).map(c => ({ code: c.code, name: c.name })).sort((a, b) => a.name.localeCompare(b.name));
+const DB_POPULAR = DB_ALL_COUNTRIES.filter(c => DB_POPULAR_CODES.has(c.code));
+const DB_OTHER = DB_ALL_COUNTRIES.filter(c => !DB_POPULAR_CODES.has(c.code));
+
+function DashCountrySelect({ value, onChange, placeholder }: { value: string; onChange: (code: string) => void; placeholder?: string }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const selected = DB_ALL_COUNTRIES.find(c => c.code === value);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) { if (containerRef.current && !containerRef.current.contains(e.target as Node)) { setOpen(false); setSearch(''); } }
+    if (open) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  useEffect(() => { if (open && searchRef.current) searchRef.current.focus(); }, [open]);
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return null;
+    const q = search.toLowerCase();
+    return DB_ALL_COUNTRIES.filter(c => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
+  }, [search]);
+
+  const handleSelect = useCallback((code: string) => { onChange(code); setOpen(false); setSearch(''); setShowAll(false); }, [onChange]);
+
+  const optStyle = (isSelected: boolean): React.CSSProperties => ({
+    width: '100%', padding: '7px 10px', background: isSelected ? 'rgba(2,18,44,0.1)' : 'transparent',
+    border: 'none', borderRadius: 6, color: isSelected ? '#02122c' : '#333', fontSize: 13,
+    cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6, fontWeight: isSelected ? 600 : 400,
+  });
+
+  const renderOpt = (c: { code: string; name: string }) => (
+    <button key={c.code} type="button" onClick={() => handleSelect(c.code)} style={optStyle(c.code === value)}
+      onMouseEnter={e => { if (c.code !== value) e.currentTarget.style.background = '#f3f4f6'; }}
+      onMouseLeave={e => { if (c.code !== value) e.currentTarget.style.background = 'transparent'; }}
+    >
+      {c.code === value && <span style={{ fontSize: 11 }}>✓</span>}
+      {c.code} — {c.name}
+    </button>
+  );
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      <button type="button" onClick={() => setOpen(o => !o)} style={{
+        width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14,
+        background: 'white', color: selected ? '#333' : '#9ca3af', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left', boxSizing: 'border-box',
+      }}>
+        <span>{selected ? `${selected.code} — ${selected.name}` : (placeholder || 'Select country...')}</span>
+        <span style={{ fontSize: 10, color: '#9ca3af', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>▼</span>
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, background: 'white', border: '1px solid #d1d5db', borderRadius: 10, zIndex: 9999, maxHeight: 400, display: 'flex', flexDirection: 'column', boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input ref={searchRef} type="text" placeholder="Search country..." value={search} onChange={e => setSearch(e.target.value)}
+              style={{ width: '100%', padding: '7px 10px', background: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: 7, color: '#333', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
+          </div>
+          <div style={{ overflowY: 'auto', flex: 1, padding: '0 4px 4px' }}>
+            {filtered ? (
+              filtered.length === 0 ? <div style={{ padding: '12px 8px', color: '#9ca3af', fontSize: 13, textAlign: 'center' }}>No countries found</div>
+              : filtered.map(renderOpt)
+            ) : (
+              <>
+                <div style={{ padding: '4px 10px 2px', fontSize: 10, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Popular</div>
+                {DB_POPULAR.map(renderOpt)}
+                {showAll ? (
+                  <>
+                    <div style={{ padding: '8px 10px 2px', fontSize: 10, color: '#9ca3af', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', borderTop: '1px solid #e5e7eb', marginTop: 4 }}>All Countries ({DB_ALL_COUNTRIES.length})</div>
+                    {DB_OTHER.map(renderOpt)}
+                  </>
+                ) : (
+                  <button type="button" onClick={() => setShowAll(true)} style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: 'none', borderTop: '1px solid #e5e7eb', marginTop: 4, color: '#02122c', fontSize: 13, fontWeight: 600, cursor: 'pointer', textAlign: 'center' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#f3f4f6'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    Show all {DB_ALL_COUNTRIES.length} countries ▾
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -138,6 +228,14 @@ export default function DashboardContent() {
   const [originSearch, setOriginSearch] = useState('');
   const [originDropdownOpen, setOriginDropdownOpen] = useState(false);
   const originRef = useRef<HTMLDivElement>(null);
+
+  // Country select state for Calculator, FTA, Sanctions
+  const [calcDest, setCalcDest] = useState('');
+  const [calcOrigin, setCalcOrigin] = useState('CN');
+  const [ftaOrigin, setFtaOrigin] = useState('');
+  const [ftaDest, setFtaDest] = useState('');
+  const [screenCountry, setScreenCountry] = useState('');
+  const [partyCountry, setPartyCountry] = useState('');
 
   // 240 countries sorted by name, with popular ones first
   const allCountries = useMemo(() => {
@@ -1150,7 +1248,7 @@ export default function DashboardContent() {
                   </div>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Destination Country</label>
-                    <input id="calc-country" type="text" placeholder="e.g. US" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                    <DashCountrySelect value={calcDest} onChange={setCalcDest} placeholder="Select destination..." />
                   </div>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Value (USD)</label>
@@ -1160,7 +1258,7 @@ export default function DashboardContent() {
                 <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Origin Country</label>
-                    <input id="calc-origin" type="text" placeholder="e.g. CN" defaultValue="CN" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                    <DashCountrySelect value={calcOrigin} onChange={setCalcOrigin} placeholder="Select origin..." />
                   </div>
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Weight (kg)</label>
@@ -1168,20 +1266,18 @@ export default function DashboardContent() {
                   </div>
                   <button onClick={async () => {
                     const hs = (document.getElementById('calc-hs') as HTMLInputElement)?.value;
-                    const country = (document.getElementById('calc-country') as HTMLInputElement)?.value;
                     const value = (document.getElementById('calc-value') as HTMLInputElement)?.value;
-                    const origin = (document.getElementById('calc-origin') as HTMLInputElement)?.value;
                     const weight = (document.getElementById('calc-weight') as HTMLInputElement)?.value;
                     const el = document.getElementById('calc-result');
-                    if (!hs && !country && !value) { if (el) el.textContent = 'Please fill in HS Code, Destination, and Value.'; return; }
+                    if (!hs && !calcDest && !value) { if (el) el.textContent = 'Please fill in HS Code, Destination, and Value.'; return; }
                     if (el) el.textContent = 'Calculating...';
                     try {
                       const token = session?.access_token;
                       if (!token) { if (el) el.textContent = 'Error: Not authenticated. Please log in again.'; return; }
-                      const res = await fetch('/api/v1/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ hsCode: hs, destinationCountry: country?.toUpperCase(), price: parseFloat(value || '0') || 100, origin: (origin || 'CN').toUpperCase(), weight: parseFloat(weight || '0') || 0.5 }) });
+                      const res = await fetch('/api/v1/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ hsCode: hs, destinationCountry: calcDest, price: parseFloat(value || '0') || 100, origin: calcOrigin || 'CN', weight: parseFloat(weight || '0') || 0.5 }) });
                       const data = await res.json();
-                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `API Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
-                    } catch (e) { if (el) el.textContent = `Network Error: ${e instanceof Error ? e.message : String(e)}`; }
+                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                    } catch { if (el) el.textContent = 'Network error. Please check your connection and try again.'; }
                   }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, alignSelf: 'flex-end' }}>Calculate</button>
                 </div>
                 <pre id="calc-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 80, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
@@ -1212,31 +1308,30 @@ export default function DashboardContent() {
 
               <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 20 }}>
                 <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>FTA Lookup</h3>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                  <div style={{ flex: 1 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto', gap: 12, marginBottom: 16, alignItems: 'end' }}>
+                  <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Origin</label>
-                    <input id="fta-origin" type="text" placeholder="e.g. KR" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                    <DashCountrySelect value={ftaOrigin} onChange={setFtaOrigin} placeholder="Select origin..." />
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>Destination</label>
-                    <input id="fta-dest" type="text" placeholder="e.g. US" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                    <DashCountrySelect value={ftaDest} onChange={setFtaDest} placeholder="Select destination..." />
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: '#666', display: 'block', marginBottom: 4 }}>HS Code</label>
                     <input id="fta-hs" type="text" placeholder="e.g. 610910" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
                   </div>
                   <button onClick={async () => {
-                    const origin = (document.getElementById('fta-origin') as HTMLInputElement)?.value;
-                    const dest = (document.getElementById('fta-dest') as HTMLInputElement)?.value;
                     const hs = (document.getElementById('fta-hs') as HTMLInputElement)?.value;
                     const el = document.getElementById('fta-result');
+                    if (!session?.access_token) { if (el) el.textContent = 'Error: Not authenticated. Please log in.'; return; }
                     if (el) el.textContent = 'Looking up...';
                     try {
-                      const res = await fetch(`/api/v1/fta?origin=${origin}&destination=${dest}${hs ? `&hsCode=${hs}` : ''}`, { headers: { 'Authorization': `Bearer ${session?.access_token || ''}` } });
+                      const res = await fetch(`/api/v1/fta?origin=${ftaOrigin}&destination=${ftaDest}${hs ? `&hsCode=${hs}` : ''}`, { headers: { 'Authorization': `Bearer ${session.access_token}` } });
                       const data = await res.json();
-                      if (el) el.textContent = JSON.stringify(data, null, 2);
-                    } catch (e) { if (el) el.textContent = `Error: ${e}`; }
-                  }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, alignSelf: 'flex-end' }}>Lookup</button>
+                      if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                    } catch { if (el) el.textContent = 'Network error. Please check your connection and try again.'; }
+                  }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Lookup</button>
                 </div>
                 <pre id="fta-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 60, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
               </div>
@@ -1272,18 +1367,17 @@ export default function DashboardContent() {
                 <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
                   <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Shipment Screening</h3>
                   <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
-                    <input id="screen-country" type="text" placeholder="Destination country (e.g. IR)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                    <DashCountrySelect value={screenCountry} onChange={setScreenCountry} placeholder="Destination country..." />
                     <input id="screen-hs" type="text" placeholder="HS Code (e.g. 847130)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                     <button onClick={async () => {
-                      const country = (document.getElementById('screen-country') as HTMLInputElement)?.value;
-                      const hs = (document.getElementById('screen-hs') as HTMLInputElement)?.value;
                       const el = document.getElementById('screen-result');
+                      if (!session?.access_token) { if (el) el.textContent = 'Error: Not authenticated. Please log in.'; return; }
                       if (el) el.textContent = 'Screening...';
                       try {
-                        const res = await fetch('/api/v1/sanctions/screen', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ name: country, country: country }) });
+                        const res = await fetch('/api/v1/sanctions/screen', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, body: JSON.stringify({ name: screenCountry, country: screenCountry }) });
                         const data = await res.json();
-                        if (el) el.textContent = JSON.stringify(data, null, 2);
-                      } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                        if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                      } catch { if (el) el.textContent = 'Network error. Please check your connection and try again.'; }
                     }} style={{ padding: '10px 20px', background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Screen Shipment</button>
                   </div>
                   <pre id="screen-result" style={{ background: '#fef2f2', borderRadius: 8, padding: 12, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 40, border: '1px solid #fecaca', marginTop: 12 }}>Results will appear here...</pre>
@@ -1293,17 +1387,17 @@ export default function DashboardContent() {
                   <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Denied Party Screening</h3>
                   <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 12 }}>
                     <input id="party-name" type="text" placeholder="Party name (e.g. Company XYZ)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                    <input id="party-country" type="text" placeholder="Country (e.g. CN)" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                    <DashCountrySelect value={partyCountry} onChange={setPartyCountry} placeholder="Country..." />
                     <button onClick={async () => {
                       const name = (document.getElementById('party-name') as HTMLInputElement)?.value;
-                      const country = (document.getElementById('party-country') as HTMLInputElement)?.value;
                       const el = document.getElementById('party-result');
+                      if (!session?.access_token) { if (el) el.textContent = 'Error: Not authenticated. Please log in.'; return; }
                       if (el) el.textContent = 'Screening...';
                       try {
-                        const res = await fetch('/api/v1/sanctions/screen', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` }, body: JSON.stringify({ name: name, country: country }) });
+                        const res = await fetch('/api/v1/sanctions/screen', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, body: JSON.stringify({ name, country: partyCountry }) });
                         const data = await res.json();
-                        if (el) el.textContent = JSON.stringify(data, null, 2);
-                      } catch (e) { if (el) el.textContent = `Error: ${e}`; }
+                        if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
+                      } catch { if (el) el.textContent = 'Network error. Please check your connection and try again.'; }
                     }} style={{ padding: '10px 20px', background: '#dc2626', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Screen Party</button>
                   </div>
                   <pre id="party-result" style={{ background: '#fef2f2', borderRadius: 8, padding: 12, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 40, border: '1px solid #fecaca', marginTop: 12 }}>Results will appear here...</pre>
