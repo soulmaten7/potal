@@ -131,7 +131,7 @@ function CountrySelect({ value, onChange, style: baseStyle }: {
           border: '1px solid rgba(255,255,255,0.2)',
           borderRadius: 10,
           zIndex: 9999,
-          maxHeight: 320,
+          maxHeight: 480,
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
