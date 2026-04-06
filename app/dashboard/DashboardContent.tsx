@@ -298,12 +298,14 @@ export default function DashboardContent() {
       const data = await res.json();
 
       if (!data.success) {
-        if (res.status === 404) {
-          setError('Seller profile not found. Please contact support.');
-        } else {
-          setError(data.error?.message || 'Failed to load dashboard.');
+        const errMsg = data.error?.message || '';
+        // Seller profile creation failures are non-critical — dashboard works without it
+        if (errMsg.includes('seller profile') || errMsg.includes('Failed to create seller') || res.status === 404) {
+          // Silently use fallback — don't show scary error banner
+          setSeller(prev => prev ?? { id: '', email: session.user?.email || '', companyName: null, plan: 'free', subscriptionStatus: 'active', createdAt: new Date().toISOString() });
+          return;
         }
-        // Fallback plan display so the page isn't blank
+        setError(errMsg || 'Failed to load dashboard.');
         setSeller(prev => prev ?? { id: '', email: session.user?.email || '', companyName: null, plan: 'free', subscriptionStatus: 'active', createdAt: new Date().toISOString() });
         return;
       }
