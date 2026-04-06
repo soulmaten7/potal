@@ -1,5 +1,5 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3 — 140기능 프론트엔드 UI + Dashboard CountrySelect)
+> 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3 — Dashboard 드롭다운 + Usage탭 + seller profile 배너 수정)
 
 ## [2026-04-06 15:30 KST] CW22-S3 — 140기능 프론트엔드 UI 대규모 구축 (5라운드 × 3터미널)
 
@@ -28,6 +28,9 @@
 ### 추가 (Additions) — Dashboard 개선
 - `a4c6dff` feat: Dashboard HS Classification 4→10 필드 업데이트 (HeroCalculator와 동일한 10-field 입력 + Confidence 카운터)
 - `50b08a1` feat: Dashboard Tariff Calculator/FTA/Sanctions에 240국 CountrySelect 드롭다운 추가, 인증 체크 추가, 에러 핸들링 개선
+- `2e40c41` feat: Dashboard HS Classification — Material 24옵션/Category 14옵션 드롭다운 + Origin/Destination CountrySelect + 401 에러 처리
+- `2709ebc` feat: Dashboard Usage 탭 — 4개 메트릭 카드 (Total/Successful/Failed/Avg Response) + empty state UI
+- `a7cb555` fix: Dashboard "Failed to create seller profile" 경고 배너 제거 — seller profile 생성 실패 시 조용히 fallback 사용
 
 ### 수정 (Fixes) — 기타
 - **GitHub 계정 flagged 확인** — Vercel-GitHub 자동배포 장애 원인이 GitHub 계정 flagged 상태임을 파악, GitHub Support 티켓 #4248922 답변 완료

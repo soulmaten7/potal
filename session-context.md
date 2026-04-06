@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3 — 140기능 프론트엔드 UI 대규모 구축 + Dashboard HS 10-field + CountrySelect + GitHub flagged 이슈 대응. 사이트 총 503페이지.)
+> 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3 — Dashboard HS Classification 드롭다운 + Usage탭 + seller profile 배너 수정. 사이트 총 503페이지.)
 
 ---
 
@@ -253,8 +253,11 @@
 - Dashboard HS Classification 10-field 업데이트 (a4c6dff)
 - Dashboard CountrySelect 드롭다운 + 에러핸들링 (50b08a1)
 - GitHub 계정 flagged 이슈 대응 (Ticket #4248922)
+- Dashboard HS Classification — Material/Category 드롭다운 + CountrySelect + 401 처리 (2e40c41)
+- Dashboard Usage 탭 — 4개 메트릭 카드 + empty state (2709ebc)
+- Dashboard seller profile 배너 수정 — 경고 제거, fallback 사용 (a7cb555)
 
-**커밋 15+개 (3터미널 병렬)**: b380b04, 6ebb5ce, 96e546a, 03aa20b, 3cc991c, 3f61f0f, 430c5bf, c82d23a, 7097533, c21dbd2, 94fc3e4, 3d0796c, dd46ac4, a4c6dff, 50b08a1
+**커밋 18+개 (3터미널 병렬)**: b380b04, 6ebb5ce, 96e546a, 03aa20b, 3cc991c, 3f61f0f, 430c5bf, c82d23a, 7097533, c21dbd2, 94fc3e4, 3d0796c, dd46ac4, a4c6dff, 50b08a1, 2e40c41, 2709ebc, a7cb555
 
 **사이트 총 페이지**: ~503페이지 (Vercel 빌드 기준)
 

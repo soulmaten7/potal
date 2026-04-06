@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3: 140기능 프론트엔드 UI 대규모 구축 + Dashboard CountrySelect/에러핸들링 개선)
+# 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3: Dashboard HS Classification 드롭다운/Usage탭/seller profile 배너 수정)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

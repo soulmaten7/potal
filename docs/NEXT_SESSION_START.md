@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-06 16:40 KST (CW22-S3 — 140기능 프론트엔드 UI + Dashboard CountrySelect + GitHub flagged)
+> 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3 — Dashboard 드롭다운 + Usage탭 + seller profile 배너 수정)
 
 ---
 
@@ -55,7 +55,8 @@
   - **복구 확인 방법**: GitHub 프로필 접속 시 "flagged" 배너 사라졌는지 확인 → git push → Vercel 대시보드에서 자동 배포 트리거 확인
   - **복구 시 해야 할 일**: ① CLAUDE.md 절대규칙 #11 삭제 ② 세션 종료 체크리스트에서 "vercel --prod" 삭제 ③ 이 미해결 사항에서 제거 ④ CHANGELOG.md에 기록
 - **데모 영상 재촬영 필요** — 03_demo-filled.png, 04_result.png, rec_01 (Confidence 100% 반영)
-- **API 호출 도구 에러 핸들링** — Dashboard Calculator/FTA/Sanctions는 개선 완료 (50b08a1). 나머지 tools/* 페이지도 점진적 개선 필요
+- **API 호출 도구 에러 핸들링** — Dashboard 전탭 개선 완료 (50b08a1, 2e40c41, a7cb555). 나머지 tools/* 페이지도 점진적 개선 필요
+- **Dashboard seller profile 이슈 해결됨** — "Failed to create seller profile" 배너 제거 (a7cb555). seller 레코드 없어도 fallback으로 정상 작동
 
 ### 이전 세션: CW22-S2 (2026-04-05~06)
 - 커밋 10개: Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스
