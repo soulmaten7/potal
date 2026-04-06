@@ -1041,19 +1041,53 @@ export default function DashboardContent() {
               <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Classify products into HS codes using our AI-powered 3-stage pipeline: Cache → Vector Search → Keyword Match → LLM Fallback.</p>
 
               <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 20 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Single Product Classification</h3>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
-                  <input id="classify-input" type="text" placeholder="e.g. Organic cotton t-shirt for men" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <h3 style={{ fontSize: 16, fontWeight: 600, margin: 0 }}>Single Product Classification — 10-Field Input</h3>
+                  <span id="classify-confidence" style={{ fontSize: 12, fontWeight: 600, color: '#888', padding: '4px 10px', borderRadius: 6, background: '#f1f5f9' }}>0 / 10 fields</span>
                 </div>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                  <input id="classify-material" type="text" placeholder="Material (e.g. cotton, leather)" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                  <input id="classify-category" type="text" placeholder="Category (e.g. clothing, electronics)" style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
-                  <input id="classify-origin" type="text" placeholder="Origin (e.g. CN, US)" style={{ width: 120, padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                {/* Row 1: Product Name (full width) */}
+                <div style={{ marginBottom: 10 }}>
+                  <input id="classify-input" type="text" placeholder="Product Name — e.g. Organic cotton t-shirt for men" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                </div>
+                {/* Row 2: Material | Category */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                  <input id="classify-material" type="text" placeholder="Material — e.g. cotton, leather, plastic" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <input id="classify-category" type="text" placeholder="Category — e.g. apparel, electronics" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                </div>
+                {/* Row 3: Description (full width) */}
+                <div style={{ marginBottom: 10 }}>
+                  <input id="classify-description" type="text" placeholder="Description — e.g. Men's crew neck short sleeve basic t-shirt for casual wear" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14, boxSizing: 'border-box' }} />
+                </div>
+                {/* Row 4: Processing | Composition */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                  <input id="classify-processing" type="text" placeholder="Processing — e.g. knitted, woven, forged" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <input id="classify-composition" type="text" placeholder="Composition — e.g. 100% cotton, 80/20 blend" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                </div>
+                {/* Row 5: Weight/Spec | Price */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                  <input id="classify-weight" type="text" placeholder="Weight / Spec — e.g. 200g, 5kg, 2.5mm" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <input id="classify-price" type="number" placeholder="Price (USD) — e.g. 29.99" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                </div>
+                {/* Row 6: Origin | Destination | Classify button */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 10, marginBottom: 16 }}>
+                  <input id="classify-origin" type="text" placeholder="Origin — e.g. CN, US" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
+                  <input id="classify-destination" type="text" placeholder="Destination — e.g. US, DE" style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid #d1d5db', fontSize: 14 }} />
                   <button onClick={async () => {
-                    const input = (document.getElementById('classify-input') as HTMLInputElement)?.value;
-                    const material = (document.getElementById('classify-material') as HTMLInputElement)?.value || '';
-                    const category = (document.getElementById('classify-category') as HTMLInputElement)?.value || '';
-                    const origin = (document.getElementById('classify-origin') as HTMLInputElement)?.value || '';
+                    const g = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value?.trim() || '';
+                    const input = g('classify-input');
+                    const material = g('classify-material');
+                    const category = g('classify-category');
+                    const description = g('classify-description');
+                    const processing = g('classify-processing');
+                    const composition = g('classify-composition');
+                    const weightSpec = g('classify-weight');
+                    const price = g('classify-price');
+                    const origin = g('classify-origin');
+                    const destination = g('classify-destination');
+                    // Update confidence counter
+                    const filled = [input, material, category, description, processing, composition, weightSpec, price, origin, destination].filter(Boolean).length;
+                    const confEl = document.getElementById('classify-confidence');
+                    if (confEl) { confEl.textContent = `${filled} / 10 fields`; confEl.style.color = filled >= 8 ? '#16a34a' : filled >= 5 ? '#ca8a04' : '#888'; }
                     const el = document.getElementById('classify-result');
                     if (!input) { if (el) el.textContent = 'Please enter a product name.'; return; }
                     if (!material) { if (el) el.textContent = 'Material is required (e.g. cotton, leather, plastic).'; return; }
@@ -1061,17 +1095,20 @@ export default function DashboardContent() {
                     try {
                       const token = session?.access_token;
                       if (!token) { if (el) el.textContent = 'Error: Not authenticated. Please log in again.'; return; }
-                      const reqBody: Record<string, unknown> = {
-                        productName: input,
-                        material: material,
-                      };
+                      const reqBody: Record<string, unknown> = { productName: input, material };
                       if (category) reqBody.category = category;
+                      if (description) reqBody.description = description;
+                      if (processing) reqBody.processing = processing;
+                      if (composition) reqBody.composition = composition;
+                      if (weightSpec) reqBody.weight_spec = weightSpec;
+                      if (price) reqBody.price = parseFloat(price);
                       if (origin) reqBody.originCountry = origin.toUpperCase();
+                      if (destination) reqBody.destinationCountry = destination.toUpperCase();
                       const res = await fetch('/api/v1/classify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(reqBody) });
                       const data = await res.json();
                       if (el) el.textContent = res.ok ? JSON.stringify(data, null, 2) : `API Error ${res.status}: ${JSON.stringify(data, null, 2)}`;
                     } catch (e) { if (el) el.textContent = `Network Error: ${e instanceof Error ? e.message : String(e)}`; }
-                  }} style={{ padding: '10px 20px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14 }}>Classify</button>
+                  }} style={{ padding: '10px 24px', background: '#02122c', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', fontWeight: 600, fontSize: 14, whiteSpace: 'nowrap' }}>Classify</button>
                 </div>
                 <pre id="classify-result" style={{ background: '#f8fafc', borderRadius: 8, padding: 16, fontSize: 12, fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#333', minHeight: 60, border: '1px solid #e5e7eb' }}>Results will appear here...</pre>
               </div>
@@ -1090,7 +1127,7 @@ export default function DashboardContent() {
                   <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>API Endpoint</h4>
                   <code style={{ fontSize: 12, background: '#f1f5f9', padding: '8px 12px', borderRadius: 6, display: 'block', marginBottom: 8 }}>POST /api/v1/classify</code>
                   <div style={{ fontSize: 12, color: '#666' }}>
-                    <div>Body: <code>{`{ "productName": "...", "material": "cotton", "originCountry": "CN" }`}</code></div>
+                    <div>Body: <code>{`{ "productName": "...", "material": "cotton", "category": "apparel", "description": "...", "processing": "knitted", "composition": "100% cotton", "weight_spec": "200g", "price": 29.99, "originCountry": "CN", "destinationCountry": "US" }`}</code></div>
                     <div style={{ marginTop: 4 }}>Batch: <code>POST /api/v1/classify/batch</code> (up to 50 items)</div>
                   </div>
                 </div>
