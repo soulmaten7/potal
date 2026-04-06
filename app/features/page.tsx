@@ -2,11 +2,49 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { FEATURES, CATEGORIES, CATEGORY_ICONS, type FeatureCategory } from './features-data';
 import { useI18n } from '@/app/i18n';
 
+/** Map feature slug → /tools/* or /dashboard/* live demo URL */
+const TOOL_LINKS: Record<string, string> = {
+  'hs-code-classification':    '/tools/hs-lookup',
+  'duty-rate-calculation':     '/',
+  'tax-calculation-vat-gst':   '/tools/tax',
+  'total-landed-cost':         '/',
+  'confidence-score':          '/tools/confidence',
+  'de-minimis-check':          '/tools/de-minimis',
+  'batch-classification':      '/tools/batch',
+  'image-classification':      '/tools/image-classify',
+  'currency-conversion':       '/tools/multi-currency',
+  'audit-trail':               '/tools/audit-trail',
+  'price-break-rules':         '/tools/price-break',
+  'restricted-items':          '/tools/restrictions',
+  'sanctions-screening':       '/tools/screening',
+  'denied-party-screening':    '/tools/screening',
+  'export-controls':           '/tools/export-controls',
+  'anti-dumping-duties':       '/tools/anti-dumping',
+  'countervailing-duties':     '/tools/anti-dumping',
+  'safeguard-measures':        '/tools/anti-dumping',
+  'fta-detection':             '/tools/fta',
+  'rules-of-origin':           '/tools/fta',
+  'preferential-rates':        '/tools/fta',
+  'ioss-registration':         '/tools/ioss',
+  'vat-registration-check':    '/tools/vat-check',
+  'ddp-ddu-calculator':        '/tools/ddp-calculator',
+  'customs-documentation':     '/tools/customs-docs',
+  'dangerous-goods':           '/tools/dangerous-goods',
+  'shipping-rates':            '/tools/shipping',
+  'compliance-report':         '/tools/compliance-report',
+  'trade-embargo-check':       '/tools/embargo',
+  'pre-shipment-check':        '/tools/pre-shipment',
+  'eccn-classification':       '/tools/export-controls',
+  'compare-origins':           '/tools/compare',
+};
+
 export default function FeaturesPage() {
   const { t } = useI18n();
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<FeatureCategory | 'All'>('All');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,16 +177,26 @@ export default function FeaturesPage() {
                   {feature.description}
                 </p>
 
-                {/* API badge + View Guide */}
+                {/* API badge + View Guide / Try it */}
                 <div className="flex items-center justify-between mt-3">
                   {feature.apiEndpoint ? (
                     <div className={`text-[10px] font-mono text-slate-400 bg-slate-50 px-2 py-1 rounded inline-block transition-opacity ${isHovered ? 'opacity-100' : 'opacity-60'}`}>
                       {feature.apiEndpoint}
                     </div>
                   ) : <div />}
-                  <span className={`text-[11px] font-bold text-[#F59E0B] transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-                    {t('features.viewGuide')} &rarr;
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {TOOL_LINKS[feature.slug] && TOOL_LINKS[feature.slug] !== '/' && (
+                      <span
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); router.push(TOOL_LINKS[feature.slug]); }}
+                        className={`text-[11px] font-bold text-emerald-600 transition-opacity cursor-pointer hover:text-emerald-700 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                      >
+                        Try it →
+                      </span>
+                    )}
+                    <span className={`text-[11px] font-bold text-[#F59E0B] transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+                      {t('features.viewGuide')} &rarr;
+                    </span>
+                  </div>
                 </div>
               </Link>
             );
