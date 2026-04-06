@@ -1,5 +1,5 @@
 # PROJECT_STATUS.md — POTAL 프로젝트 현황/수치
-# 마지막 업데이트: 2026-03-31 15:30 KST (CW22-J: Notion 마이그레이션, 폴더 정리, Features 검색박스, Forever Free cleanup)
+# 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3: 140기능 프론트엔드 UI 대규모 구축 — ~79 신규 페이지, 사이트 503페이지)
 # 이 파일은 참조용. Claude Code가 수치 확인 필요 시 읽는 파일.
 
 ## 프로젝트 개요
@@ -72,9 +72,16 @@ portal/
 - **WooCommerce Plugin**: WordPress.org 제출 완료 ✅ slug: potal-total-landed-cost-calculator, Awaiting Review
 - **BigCommerce**: 파트너팀 이메일 발송 ⏳ (partners@bigcommerce.com, 답장 대기)
 - **Magento**: Adobe Commerce Marketplace 제출 대기 ⏳
-- **Features 페이지**: /features — 140 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어
+- **Features 페이지**: /features — 140 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어, "Try it →" 버튼 (tool 페이지 연결)
 - **Feature 가이드**: /features/[slug] — 140개 정적 페이지 (SEO, sitemap 포함)
 - **커뮤니티**: /community — 게시판, 글쓰기, 댓글, 추천, 기능별 필터
+- **Tools Hub**: /tools — 34개 도구 카드 허브 (카테고리 필터 11개, 검색 기능)
+- **도구 페이지**: /tools/* — 34개 인터랙티브 도구 (Screening, DIM Weight, ECCN, ICS2, Checkout Demo 등)
+- **Dashboard**: /dashboard/* — 18개 (Analytics, Webhooks, API Keys, Reports, Branding, Widget, Batch, Orders, Inventory, Visualization, Status, Audit Log, Settings, Onboarding, Partner 등)
+- **Developer Docs**: /developers/* — SDK Hub, API Changelog, Migration Guide, OpenAPI Reference, API Sandbox
+- **Learning**: /learn (3 트랙), /certification (Bronze/Silver/Gold)
+- **Integration Pages**: /integrations/* — Shopify, WooCommerce, BigCommerce, Magento Coming Soon
+- **사이트 총 페이지**: ~503페이지 (Vercel 빌드 기준, CW22-S3)
 
 ## ⭐ 인프라 비용 분석 (CW21 Cowork, 2026-03-29)
 - **고정 비용**: ~$114/mo (Vercel Pro $20 + Supabase Pro $25 + 도메인 $69/yr ≈ $5.75/mo + 기타)

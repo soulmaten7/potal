@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-06 00:30 KST (CW22-S2: Confidence 통합 + FTA 표시 + HS10 10자리 수정 + Vercel 지원케이스 #01083440)
+# 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3: 140기능 프론트엔드 UI 대규모 구축 — 5라운드 × 3터미널 = ~79 새 페이지, Tools Hub + Dashboard + Developer Docs + Navigation 업데이트)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

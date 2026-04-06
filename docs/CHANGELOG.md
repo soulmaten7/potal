@@ -1,5 +1,54 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-06 00:30 KST (CW22-S2 — Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스)
+> 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3 — 140기능 프론트엔드 UI 대규모 구축)
+
+## [2026-04-06 15:30 KST] CW22-S3 — 140기능 프론트엔드 UI 대규모 구축 (5라운드 × 3터미널)
+
+### 추가 (Additions) — ~79 새 페이지
+- **Tools Hub** (`/tools`) — 34개 도구 카드 허브, 카테고리 필터 (Compliance/Customs/Classification/Trade/Tax/Shipping/Documentation/Integration/Export/Reference), 검색 기능
+- **Round 1 도구 15개** — screening, export-controls, embargo, restrictions, pre-shipment, tax, customs-docs, ddp-calculator, vat-check, shipping, fta, hs-lookup, compare, batch, currency
+- **Round 2 도구 15개** — classify-eccn, dual-use, ics2, type86, customs-forms, e-invoice, digital-tax, tax-exemptions, label-generation, returns, de-minimis, image-classify, anti-dumping, ioss, compliance-report
+- **Round 3 도구 15개** — pdf-reports, csv-export, checkout, countries (240국 브라우저), insurance (클라이언트), dim-weight (클라이언트), certificates, origin-detection, safeguard, dangerous-goods, price-break, audit-trail, confidence, multi-currency
+- **Round 4 대시보드 18개** — analytics, webhooks, api-keys, notifications, rate-monitor, sla, reports, branding, widget, batch-history, integrations, orders, inventory, visualization, status, audit-log, settings, onboarding, partner
+- **Round 5 개발자 문서 5개** — SDK Hub, API Changelog, Migration Guide, OpenAPI Reference, API Sandbox
+- **Round 5 학습/커뮤니티 2개** — Learn Hub (3 트랙), Certification (Bronze/Silver/Gold 리디자인)
+- **Round 5 통합 페이지 4개** — Shopify, WooCommerce, BigCommerce, Magento 통합 Coming Soon
+- **Features 페이지 개선** — 각 기능 카드에 "Try it →" 버튼 추가 (해당 tool 페이지 연결)
+- **Header Navigation** — "Tools" 메뉴 추가 (데스크탑 + 모바일)
+- **Homepage 개선** — Country dropdown 240국 확장 (검색 + 인기 20 + Show all), z-index/overflow 수정, 높이 480px
+
+### 수정 (Fixes)
+- **Homepage dropdown clipping** — Hero section overflow: hidden → visible, 배경 dot pattern에만 overflow hidden 적용
+- **Homepage dropdown z-index** — 50 → 9999, HeroCalculator container zIndex: 10
+- **빌드 충돌 해결** — 3개 터미널 동시 빌드 시 .next/lock 충돌, route group 충돌 (integrations 중복) 자동 해결
+
+### 인프라
+- **Scheduled Task 업데이트** — daily-content-posting, sunday-content-prep에 🎬 첨부 에셋 안내 섹션 추가
+- **Daily Content MD** — 2026-04-06 US De Minimis 콘텐츠에 플랫폼별 에셋 가이드 추가
+
+### 커밋 (10+개, 3터미널 병렬)
+- `b380b04` feat: add 5 compliance tool pages (Round 1 터미널1)
+- `6ebb5ce` feat: add 5 tool pages round 2 (ECCN, dual-use, ICS2, Type 86, customs forms)
+- `96e546a` feat: add 5 tool pages — E-Invoice, Digital Tax, Tax Exemptions, Labels, Returns
+- `03aa20b` feat: add 5 Tax & Documentation tool pages — Round 2 (터미널3)
+- `3cc991c` feat: add 5 tool pages round 3 (PDF, CSV, checkout, countries, hub)
+- `3f61f0f` feat: add 5 tool pages — Insurance, DIM Weight, Certificates, Origin, Safeguard
+- `430c5bf` feat: add 5 tool pages — Round 3 (터미널3)
+- `c82d23a` feat: add 6 dashboard pages (analytics, webhooks, api-keys, notifications, rate-monitor, sla)
+- `7097533` feat: add 6 dashboard pages — Reports, Branding, Widget, Batch, Orders, Inventory
+- `c21dbd2` feat: add 6 dashboard pages — Round 4 (터미널3)
+- `94fc3e4` feat: add 5 developer pages (SDK, changelog, migration, openapi, sandbox)
+- `3d0796c` feat: redesign Learn & Certification pages with dark theme
+- `dd46ac4` feat: Round 5 — integrations pages + features Try it + Header Tools nav
+
+### Chrome MCP 검증
+- `/tools` 허브: ✅ 34개 카드 + 검색 + 필터
+- `/tools/dim-weight`: ✅ 클라이언트 계산 완벽 작동 (DIM 4.8kg vs Actual 3kg → Billable 4.8kg)
+- `/dashboard/analytics`: ✅ 메트릭 카드 + 바 차트 + Top Endpoints
+- `/developers/sandbox`: ✅ Endpoint 목록 + JSON 편집기 + Send
+- `/tools/screening` API 호출: ⚠️ error boundary 작동 (API 에러 핸들링 강화 필요)
+- Header에 "Tools" 메뉴: ✅ 확인
+
+---
 
 ## [2026-04-06 00:30 KST] CW22-S2 — Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 배포 규칙
 
