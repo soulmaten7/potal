@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
 
 // HS Code 21 Section 기반 Material → 허용 Category 매핑
 const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
@@ -39,28 +40,258 @@ const ALL_MATERIALS = [
 ];
 const ALL_CATEGORIES = ['apparel','electronics','footwear','accessories','cosmetics','food','furniture','toys','books','automotive','jewelry','sporting_goods','industrial','other'];
 
-const COUNTRIES = [
-  { code: 'CN', name: 'China' },
-  { code: 'US', name: 'United States' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'JP', name: 'Japan' },
-  { code: 'KR', name: 'South Korea' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'FR', name: 'France' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'IN', name: 'India' },
-  { code: 'MX', name: 'Mexico' },
-  { code: 'BR', name: 'Brazil' },
-  { code: 'SG', name: 'Singapore' },
-  { code: 'HK', name: 'Hong Kong' },
-  { code: 'TH', name: 'Thailand' },
-  { code: 'VN', name: 'Vietnam' },
-  { code: 'ID', name: 'Indonesia' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'ES', name: 'Spain' },
-];
+const POPULAR_CODES = new Set([
+  'CN','US','GB','DE','JP','KR','AU','CA','FR','IT',
+  'IN','MX','BR','SG','HK','TH','VN','ID','NL','ES',
+]);
+
+const ALL_COUNTRIES = Object.values(COUNTRY_DATA)
+  .map(c => ({ code: c.code, name: c.name }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const POPULAR_COUNTRIES = ALL_COUNTRIES.filter(c => POPULAR_CODES.has(c.code));
+const OTHER_COUNTRIES = ALL_COUNTRIES.filter(c => !POPULAR_CODES.has(c.code));
+
+// Searchable Country Dropdown Component
+function CountrySelect({ value, onChange, style: baseStyle }: {
+  value: string;
+  onChange: (code: string) => void;
+  style?: React.CSSProperties;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const selectedCountry = ALL_COUNTRIES.find(c => c.code === value);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearch('');
+      }
+    }
+    if (open) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  // Focus search when opened
+  useEffect(() => {
+    if (open && searchRef.current) searchRef.current.focus();
+  }, [open]);
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return null; // null = use popular/all split
+    const q = search.toLowerCase();
+    return ALL_COUNTRIES.filter(c =>
+      c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
+    );
+  }, [search]);
+
+  const handleSelect = useCallback((code: string) => {
+    onChange(code);
+    setOpen(false);
+    setSearch('');
+    setShowAll(false);
+  }, [onChange]);
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative' }}>
+      {/* Trigger button */}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          ...baseStyle,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          textAlign: 'left',
+        }}
+        onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+        onBlur={e => { if (!open) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+      >
+        <span>{selectedCountry ? `${selectedCountry.code} — ${selectedCountry.name}` : value}</span>
+        <span style={{ fontSize: 10, opacity: 0.6, transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}>▼</span>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: 4,
+          background: '#0a1e3d',
+          border: '1px solid rgba(255,255,255,0.2)',
+          borderRadius: 10,
+          zIndex: 50,
+          maxHeight: 320,
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+        }}>
+          {/* Search input */}
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search country..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '7px 10px',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 7,
+                color: 'white',
+                fontSize: 13,
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
+              onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'}
+            />
+          </div>
+
+          {/* Options list */}
+          <div style={{ overflowY: 'auto', flex: 1, padding: '0 4px 4px' }}>
+            {filtered ? (
+              // Search results
+              filtered.length === 0 ? (
+                <div style={{ padding: '12px 8px', color: 'rgba(255,255,255,0.4)', fontSize: 13, textAlign: 'center' }}>
+                  No countries found
+                </div>
+              ) : (
+                filtered.map(c => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    onClick={() => handleSelect(c.code)}
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px',
+                      background: c.code === value ? 'rgba(232,100,10,0.3)' : 'transparent',
+                      border: 'none',
+                      borderRadius: 6,
+                      color: c.code === value ? '#E8640A' : 'white',
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                    onMouseEnter={e => { if (c.code !== value) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+                    onMouseLeave={e => { if (c.code !== value) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {c.code === value && <span style={{ fontSize: 11 }}>✓</span>}
+                    {c.code} — {c.name}
+                  </button>
+                ))
+              )
+            ) : (
+              // Popular + Show More
+              <>
+                <div style={{ padding: '4px 10px 2px', fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                  Popular
+                </div>
+                {POPULAR_COUNTRIES.map(c => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    onClick={() => handleSelect(c.code)}
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px',
+                      background: c.code === value ? 'rgba(232,100,10,0.3)' : 'transparent',
+                      border: 'none',
+                      borderRadius: 6,
+                      color: c.code === value ? '#E8640A' : 'white',
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                    onMouseEnter={e => { if (c.code !== value) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+                    onMouseLeave={e => { if (c.code !== value) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {c.code === value && <span style={{ fontSize: 11 }}>✓</span>}
+                    {c.code} — {c.name}
+                  </button>
+                ))}
+
+                {showAll ? (
+                  <>
+                    <div style={{ padding: '8px 10px 2px', fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 4 }}>
+                      All Countries ({ALL_COUNTRIES.length})
+                    </div>
+                    {OTHER_COUNTRIES.map(c => (
+                      <button
+                        key={c.code}
+                        type="button"
+                        onClick={() => handleSelect(c.code)}
+                        style={{
+                          width: '100%',
+                          padding: '7px 10px',
+                          background: c.code === value ? 'rgba(232,100,10,0.3)' : 'transparent',
+                          border: 'none',
+                          borderRadius: 6,
+                          color: c.code === value ? '#E8640A' : 'white',
+                          fontSize: 13,
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                        }}
+                        onMouseEnter={e => { if (c.code !== value) e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+                        onMouseLeave={e => { if (c.code !== value) e.currentTarget.style.background = 'transparent'; }}
+                      >
+                        {c.code === value && <span style={{ fontSize: 11 }}>✓</span>}
+                        {c.code} — {c.name}
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowAll(true)}
+                    style={{
+                      width: '100%',
+                      padding: '8px 10px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderTop: '1px solid rgba(255,255,255,0.1)',
+                      marginTop: 4,
+                      color: '#E8640A',
+                      fontSize: 13,
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textAlign: 'center',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(232,100,10,0.1)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    Show all {ALL_COUNTRIES.length} countries ▾
+                  </button>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function formatMaterial(m: string): string {
   return m.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-');
@@ -584,36 +815,20 @@ export default function HeroCalculator() {
         {/* Row 5: Origin | Destination */}
         <div>
           <label style={labelStyle}>Origin Country</label>
-          <select
+          <CountrySelect
             value={origin}
-            onChange={e => setOrigin(e.target.value)}
-            style={{ ...inputStyle, cursor: 'pointer' }}
-            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
-            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
-          >
-            {COUNTRIES.map(c => (
-              <option key={c.code} value={c.code} style={{ background: '#0a1e3d', color: 'white' }}>
-                {c.code} — {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={setOrigin}
+            style={{ ...inputStyle }}
+          />
         </div>
 
         <div>
           <label style={labelStyle}>Destination</label>
-          <select
+          <CountrySelect
             value={destination}
-            onChange={e => setDestination(e.target.value)}
-            style={{ ...inputStyle, cursor: 'pointer' }}
-            onFocus={e => e.currentTarget.style.borderColor = '#E8640A'}
-            onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'}
-          >
-            {COUNTRIES.map(c => (
-              <option key={c.code} value={c.code} style={{ background: '#0a1e3d', color: 'white' }}>
-                {c.code} — {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={setDestination}
+            style={{ ...inputStyle }}
+          />
         </div>
       </div>
 
