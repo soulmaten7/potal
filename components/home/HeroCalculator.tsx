@@ -130,7 +130,7 @@ function CountrySelect({ value, onChange, style: baseStyle }: {
           background: '#0a1e3d',
           border: '1px solid rgba(255,255,255,0.2)',
           borderRadius: 10,
-          zIndex: 50,
+          zIndex: 9999,
           maxHeight: 320,
           display: 'flex',
           flexDirection: 'column',
@@ -616,6 +616,9 @@ export default function HeroCalculator() {
       borderRadius: 20,
       padding: 32,
       color: 'white',
+      position: 'relative',
+      zIndex: 10,
+      overflow: 'visible',
     }}>
       {/* Title */}
       <div style={{ marginBottom: 20 }}>

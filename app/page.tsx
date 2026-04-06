@@ -408,13 +408,15 @@ export default function HomePage() {
         color: 'white',
         padding: '100px 20px 80px',
         position: 'relative',
-        overflow: 'hidden',
+        overflow: 'visible',
       }}>
         <div style={{
           position: 'absolute',
           inset: 0,
           backgroundImage: 'radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)',
           backgroundSize: '24px 24px',
+          overflow: 'hidden',
+          pointerEvents: 'none',
         }} />
 
         <div style={{ maxWidth: 1340, margin: '0 auto', position: 'relative', zIndex: 1 }}>
