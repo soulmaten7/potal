@@ -46,7 +46,7 @@ const faqStructuredData = {
       name: 'How does POTAL classify products to HS codes?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'POTAL uses a 9-field classification system following WCO General Rules of Interpretation (GRI). The engine applies 592 codified rules, 1,233 Heading descriptions, and 5,621 Subheading conditions with 0-2 AI calls (most products need zero). Results are cached for instant future lookups at $0 cost.',
+        text: 'POTAL uses a 10-field classification system following WCO General Rules of Interpretation (GRI). The engine applies 592 codified rules, 1,233 Heading descriptions, and 5,621 Subheading conditions with 0-2 AI calls (most products need zero). Results are cached for instant future lookups at $0 cost.',
       },
     },
     {

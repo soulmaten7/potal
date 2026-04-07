@@ -414,7 +414,7 @@ export const zh = {
   'home.features.seeAll': '查看全部140项功能 →',
   'home.features.countries.title': '240个国家',
   'home.features.countries.desc': '覆盖240个国家的关税率、VAT/GST、De Minimis标准和FTA协议。',
-  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.title': '10-Field HS Classification',
   'home.features.hsCode.desc': '输入产品名、材料、类别等9个标准字段，经WCO标准验证，获得100%准确的HS Code。',
   'home.features.tax.title': '地方税（Sub-national Tax）',
   'home.features.tax.desc': '美国（50个州）、加拿大（13个省 — GST/HST/PST）、巴西（27个州 — ICMS）的州级税。',

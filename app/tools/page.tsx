@@ -32,7 +32,7 @@ const TOOLS: Tool[] = [
   { name: 'De Minimis Check', description: 'Check duty-free thresholds for any country.', category: 'Customs', href: '/tools/de-minimis' },
 
   // Classification
-  { name: 'HS Code Lookup', description: 'Classify products into HS codes using 9-field input.', category: 'Classification', href: '/tools/hs-lookup' },
+  { name: 'HS Code Lookup', description: 'Classify products into HS codes using 10-field input.', category: 'Classification', href: '/tools/hs-lookup' },
   { name: 'Image Classification', description: 'Classify products from uploaded images.', category: 'Classification', href: '/tools/image-classify' },
   { name: 'Batch Classification', description: 'Classify multiple products via CSV upload.', category: 'Classification', href: '/tools/batch' },
 

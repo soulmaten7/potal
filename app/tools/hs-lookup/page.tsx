@@ -39,7 +39,11 @@ export default function HsLookupPage() {
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        setError(json.error?.message || 'Classification failed');
+        if (res.status === 401 || res.status === 403 || (json.error?.message || '').includes('API key')) {
+          setError('Free account required. Sign up at /auth/signup to get an API key and use this tool.');
+        } else {
+          setError(typeof json.error === 'string' ? json.error : json.error?.message || 'Classification failed');
+        }
         return;
       }
       setResult(json.data);

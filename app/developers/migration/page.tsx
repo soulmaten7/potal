@@ -18,7 +18,7 @@ const GUIDES: MigrationGuide[] = [
     time: '2-4 hours',
     differences: [
       { aspect: 'Pricing', theirs: 'Per-transaction fees + annual license', potal: 'Free forever' },
-      { aspect: 'HS Classification', theirs: 'Manual or separate product', potal: 'Built-in 9-field AI classification' },
+      { aspect: 'HS Classification', theirs: 'Manual or separate product', potal: 'Built-in 10-field AI classification' },
       { aspect: 'Countries', theirs: '~100 countries', potal: '240 countries' },
       { aspect: 'Trade Remedies', theirs: 'Not included', potal: '119,700+ AD/CVD cases' },
       { aspect: 'FTA Detection', theirs: 'Limited', potal: 'Automatic for all country pairs' },
@@ -65,7 +65,7 @@ const GUIDES: MigrationGuide[] = [
     time: '30 minutes',
     differences: [
       { aspect: 'Speed', theirs: 'Hours of research per shipment', potal: 'Milliseconds per API call' },
-      { aspect: 'Accuracy', theirs: 'Human error prone', potal: '100% accuracy with 9-field classification' },
+      { aspect: 'Accuracy', theirs: 'Human error prone', potal: '100% accuracy with 10-field classification' },
       { aspect: 'Coverage', theirs: 'Few countries you know well', potal: '240 countries, all tariff schedules' },
       { aspect: 'Updates', theirs: 'Manual tracking of rate changes', potal: 'Auto-updated from 12 official sources' },
     ],

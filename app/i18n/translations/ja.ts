@@ -414,7 +414,7 @@ export const ja = {
   'home.features.seeAll': '140の全機能を見る →',
   'home.features.countries.title': '240カ国',
   'home.features.countries.desc': '240カ国の関税率、VAT/GST、De Minimis基準、FTA協定を完全サポート。',
-  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.title': '10-Field HS Classification',
   'home.features.hsCode.desc': '商品名、素材、カテゴリなど9つの標準フィールドを入力。WCO基準で検証された100%正確なHS Code。',
   'home.features.tax.title': '地方税（Sub-national Tax）',
   'home.features.tax.desc': '米国（50州）、カナダ（13州 — GST/HST/PST）、ブラジル（27州 — ICMS）の州レベル税金。',

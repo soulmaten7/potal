@@ -42,7 +42,7 @@ export interface FeatureGuide {
 const CORE_GUIDES: FeatureGuide[] = [
   {
     slug: 'hs-code-classification',
-    detailedDescription: 'Classify any product into its correct HS (Harmonized System) code using POTAL\'s v3.3 GRI pipeline. The system uses 595 codified rules across all 21 Sections of the HS nomenclature — zero AI calls, zero per-request cost. Supports text-based classification with 9-field input, image-based classification, and batch processing for hundreds of products at once.',
+    detailedDescription: 'Classify any product into its correct HS (Harmonized System) code using POTAL\'s v3.3 GRI pipeline. The system uses 595 codified rules across all 21 Sections of the HS nomenclature — zero AI calls, zero per-request cost. Supports text-based classification with 10-field input, image-based classification, and batch processing for hundreds of products at once.',
     howToUse: [
       { step: 1, title: 'Get your API key', description: 'Sign up at potal.app and generate an API key from the Dashboard > API Keys section.' },
       { step: 2, title: 'Prepare your product data', description: 'At minimum, provide a productName. For best accuracy, include category, material, and processing details.' },
@@ -518,7 +518,7 @@ const CORE_GUIDES: FeatureGuide[] = [
   },
   {
     slug: 'hs-code-validation',
-    detailedDescription: 'Validate HS code inputs using POTAL\'s 9-field validation system. Before classification, the system checks that all input fields are valid and complete. It verifies product name format, material groups against the 79 WCO-defined groups, processing methods, and composition data to ensure the most accurate classification possible.',
+    detailedDescription: 'Validate HS code inputs using POTAL\'s 10-field validation system. Before classification, the system checks that all input fields are valid and complete. It verifies product name format, material groups against the 79 WCO-defined groups, processing methods, and composition data to ensure the most accurate classification possible.',
     howToUse: [
       { step: 1, title: 'Submit product fields', description: 'Provide as many of the 9 fields as possible: productName, category, material, processing, composition, weight, price, origin, intended use.' },
       { step: 2, title: 'Review validation', description: 'The classify endpoint validates all fields before processing and returns warnings for invalid inputs.' },

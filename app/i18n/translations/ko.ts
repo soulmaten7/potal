@@ -416,7 +416,7 @@ export const ko = {
   'home.features.seeAll': '140개 전체 기능 보기 →',
   'home.features.countries.title': '240개 국가',
   'home.features.countries.desc': '240개국의 관세율, VAT/GST, De Minimis 기준, FTA 협정을 완벽하게 지원합니다.',
-  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.title': '10-Field HS Classification',
   'home.features.hsCode.desc': '제품명, 소재, 카테고리 등 9개 표준 필드를 입력하면 WCO 기준으로 검증된 100% 정확한 HS Code를 제공합니다.',
   'home.features.tax.title': '지방세 (Sub-national Tax)',
   'home.features.tax.desc': '미국 (50개 주), 캐나다 (13개 주 — GST/HST/PST), 브라질 (27개 주 — ICMS)의 주 단위 세금.',

@@ -1030,47 +1030,45 @@ export default function HeroCalculator() {
           )}
 
           {/* === TRADE AGREEMENTS (collapsible) === */}
-          {result.ftaUtilization?.fta_available && (
-            <CollapsibleSection title="Trade Agreements" color="#4ade80" delay={0.2}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {result.ftaUtilization.fta_applied && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>FTA Applied</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: '#4ade80' }}>
-                      {result.ftaUtilization.fta_applied}
-                    </span>
-                  </div>
-                )}
-                {typeof result.ftaUtilization.savings === 'number' && result.ftaUtilization.savings > 0 && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Potential Savings</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#4ade80' }}>
-                      -${result.ftaUtilization.savings.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-                {result.ftaUtilization.alternative_ftas && result.ftaUtilization.alternative_ftas.length > 0 && (
-                  <div style={{ marginTop: 4 }}>
-                    <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 4 }}>
-                      Alternative agreements:
-                    </span>
-                    {result.ftaUtilization.alternative_ftas.map((fta, i) => (
-                      <div key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', paddingLeft: 8 }}>
-                        {fta.name} ({(fta.rate * 100).toFixed(1)}%)
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </CollapsibleSection>
-          )}
+          <CollapsibleSection title="Trade Agreements" color="#4ade80" delay={0.2}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {result.ftaUtilization?.fta_available ? (
+                <>
+                  {result.ftaUtilization.fta_applied && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>FTA Applied</span>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#4ade80' }}>{result.ftaUtilization.fta_applied}</span>
+                    </div>
+                  )}
+                  {typeof result.ftaUtilization.savings === 'number' && result.ftaUtilization.savings > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Potential Savings</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#4ade80' }}>-${result.ftaUtilization.savings.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {result.ftaUtilization.alternative_ftas && result.ftaUtilization.alternative_ftas.length > 0 && (
+                    <div style={{ marginTop: 4 }}>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', display: 'block', marginBottom: 4 }}>Alternative agreements:</span>
+                      {result.ftaUtilization.alternative_ftas.map((fta, i) => (
+                        <div key={i} style={{ fontSize: 11, color: 'rgba(255,255,255,0.55)', paddingLeft: 8 }}>{fta.name} ({(fta.rate * 100).toFixed(1)}%)</div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>FTA Available</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>No FTA between these countries</span>
+                </div>
+              )}
+            </div>
+          </CollapsibleSection>
 
           {/* === COMPLIANCE (collapsible) === */}
-          {(result.restrictions?.restricted || (result.regulatoryWarnings && result.regulatoryWarnings.length > 0) || result.tradeRemediesDetail?.subject) && (
-            <CollapsibleSection title="Compliance" color="#facc15" delay={0.3}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {/* Restrictions */}
-                {result.restrictions?.restricted && result.restrictions.items && result.restrictions.items.length > 0 ? (
+          <CollapsibleSection title="Compliance" color="#facc15" delay={0.3}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {/* Restrictions */}
+              {result.restrictions?.restricted && result.restrictions.items && result.restrictions.items.length > 0 ? (
                   <div>
                     <span style={{ fontSize: 11, fontWeight: 600, color: '#f87171', display: 'block', marginBottom: 4 }}>
                       Restrictions
@@ -1123,9 +1121,14 @@ export default function HeroCalculator() {
                     ))}
                   </div>
                 )}
-              </div>
-            </CollapsibleSection>
-          )}
+              {!result.restrictions?.restricted && !(result.regulatoryWarnings && result.regulatoryWarnings.length > 0) && !result.tradeRemediesDetail?.subject && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Status</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>No issues detected</span>
+                </div>
+              )}
+            </div>
+          </CollapsibleSection>
 
           {/* Low accuracy hint */}
           {result.ablationAccuracy < 70 && (

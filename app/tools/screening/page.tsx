@@ -44,9 +44,19 @@ export default function ScreeningPage() {
         body: JSON.stringify({ name: name.trim(), ...(country ? { country } : {}) }),
       });
       const json = await res.json();
-      if (!res.ok) { setError(json.error || 'Screening failed.'); return; }
-      setResult(json.data ?? json);
-    } catch { setError('Network error.'); }
+      if (!res.ok) {
+        const msg = typeof json.error === 'string' ? json.error : json.error?.message || `Error ${res.status}`;
+        setError(msg);
+        return;
+      }
+      const data = json.data ?? json;
+      setResult({
+        status: data.status || '',
+        matches: Array.isArray(data.matches) ? data.matches : [],
+        totalMatches: data.totalMatches ?? 0,
+        embargo: data.embargo ?? null,
+      });
+    } catch { setError('Network error. Please try again.'); }
     finally { setLoading(false); }
   };
 

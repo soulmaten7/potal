@@ -272,7 +272,7 @@ curl "https://www.potal.app/api/v1/sellers/usage?month=2026-03" \\
     id: 'classify',
     method: 'POST',
     path: '/api/v1/classify',
-    summary: 'Classify Product (9-Field HS Code)',
+    summary: 'Classify Product (10-Field HS Code)',
     description: 'Classify a product into an HS Code using up to 9 input fields. Each field is validated against international legal standards (WCO, ISO, SI). With all 9 fields provided, classification accuracy reaches 100%. See the Classification Guide (/guide) for detailed field standards.',
     tag: 'Classification',
     auth: true,

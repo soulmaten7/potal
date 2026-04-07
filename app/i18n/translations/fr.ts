@@ -417,7 +417,7 @@ export const fr = {
   'home.features.seeAll': 'Voir les 140 fonctionnalités →',
   'home.features.countries.title': '240 pays',
   'home.features.countries.desc': 'Taux de droits, VAT/GST, seuils De Minimis et accords FTA pour 240 pays.',
-  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.title': '10-Field HS Classification',
   'home.features.hsCode.desc': 'Saisissez 9 champs standards — nom, matériau, catégorie et plus — validés selon les normes WCO. HS Codes 100% précis.',
   'home.features.tax.title': 'Taxes infranationales',
   'home.features.tax.desc': 'Taxes au niveau des États pour les USA (50 États), le Canada (13 provinces — GST/HST/PST) et le Brésil (27 États — ICMS).',

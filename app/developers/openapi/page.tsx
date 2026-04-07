@@ -9,7 +9,7 @@ interface Category { name: string; endpoints: Endpoint[] }
 
 const CATEGORIES: Category[] = [
   { name: 'Classification', endpoints: [
-    { method: 'POST', path: '/api/v1/classify', description: 'Classify a product into HS codes using 9-field input', params: 'productName, material, category, description, processing, composition, weight_spec, origin, destinationCountry', requestExample: '{"productName":"Cotton T-Shirt","material":"cotton","category":"apparel"}', responseExample: '{"hsCode":"610910","description":"T-shirts of cotton","confidence":0.92}' },
+    { method: 'POST', path: '/api/v1/classify', description: 'Classify a product into HS codes using 10-field input', params: 'productName, material, category, description, processing, composition, weight_spec, origin, destinationCountry', requestExample: '{"productName":"Cotton T-Shirt","material":"cotton","category":"apparel"}', responseExample: '{"hsCode":"610910","description":"T-shirts of cotton","confidence":0.92}' },
     { method: 'POST', path: '/api/v1/classify/eccn', description: 'Classify product under EAR Commerce Control List', params: 'productName, hsCode?, technicalSpecs?, destinationCountry?' },
     { method: 'POST', path: '/api/v1/classify/batch', description: 'Batch classify multiple products', params: 'items[]' },
     { method: 'POST', path: '/api/v1/classify/image', description: 'Classify product from uploaded image', params: 'image (multipart)' },

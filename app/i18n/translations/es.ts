@@ -417,7 +417,7 @@ export const es = {
   'home.features.seeAll': 'Ver las 140 funciones →',
   'home.features.countries.title': '240 países',
   'home.features.countries.desc': 'Tasas arancelarias, VAT/GST, umbrales De Minimis y acuerdos FTA para 240 países.',
-  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.title': '10-Field HS Classification',
   'home.features.hsCode.desc': 'Ingresa 9 campos estándar — nombre, material, categoría y más — validados contra estándares WCO. HS Codes 100% precisos.',
   'home.features.tax.title': 'Impuestos subnacionales',
   'home.features.tax.desc': 'Impuestos estatales para EE.UU. (50 estados), Canadá (13 provincias — GST/HST/PST) y Brasil (27 estados — ICMS).',

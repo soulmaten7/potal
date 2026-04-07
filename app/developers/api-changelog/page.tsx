@@ -29,7 +29,7 @@ const VERSIONS: Version[] = [
   { version: 'v2.2.0', date: 'February 2026', changes: [
     { type: 'Added', text: 'Batch classification via CSV upload (/classify/csv)' },
     { type: 'Added', text: 'Multi-country cost comparison endpoint' },
-    { type: 'Changed', text: 'HS classification now uses 9-field input (was 7)' },
+    { type: 'Changed', text: 'HS classification now uses 10-field input (was 7)' },
     { type: 'Fixed', text: 'VAT calculation for UK reverse charge mechanism' },
   ]},
   { version: 'v2.1.0', date: 'January 2026', changes: [

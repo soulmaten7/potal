@@ -416,7 +416,7 @@ export const de = {
   'home.features.seeAll': 'Alle 140 Funktionen ansehen →',
   'home.features.countries.title': '240 Länder',
   'home.features.countries.desc': 'Vollständige Zollsätze, VAT/GST, De Minimis-Schwellen und FTA-Abkommen für 240 Länder.',
-  'home.features.hsCode.title': '9-Field HS Classification',
+  'home.features.hsCode.title': '10-Field HS Classification',
   'home.features.hsCode.desc': '9 standardisierte Felder eingeben — Produktname, Material, Kategorie u.m. — nach WCO-Standards validiert. 100% genaue HS Codes.',
   'home.features.tax.title': 'Regionale Steuern (Sub-national Tax)',
   'home.features.tax.desc': 'Steuern auf Bundesstaatsebene für USA (50 Staaten), Kanada (13 Provinzen — GST/HST/PST) und Brasilien (27 Staaten — ICMS).',
