@@ -36,7 +36,7 @@ export async function logUsage(
     status_code: entry.statusCode,
     response_time_ms: entry.responseTimeMs,
     origin_country: entry.originCountry || null,
-    destination_country: entry.destinationCountry || 'US',
+    destination_country: entry.destinationCountry || null,
     product_price_cents: entry.productPriceCents || null,
     mode: entry.mode || 'live',
   });
