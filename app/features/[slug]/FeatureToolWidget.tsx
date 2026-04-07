@@ -168,6 +168,16 @@ const TOOL_CONFIGS: Record<string, ToolConfig> = {
       { name: 'destinationCountry', label: 'Destination Country', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'US', required: true },
     ],
   },
+  'restricted-items': {
+    endpoint: '/api/v1/restrictions',
+    method: 'POST',
+    fields: [
+      { name: 'destinationCountry', label: 'Destination Country', type: 'select', options: COUNTRY_OPTIONS, required: true },
+      { name: 'hsCode', label: 'HS Code', type: 'text', placeholder: 'e.g. 9302.00' },
+      { name: 'productName', label: 'Product Name', type: 'text', placeholder: 'e.g. Rifle scope' },
+    ],
+    submitLabel: 'Check Restrictions',
+  },
 };
 
 export default function FeatureToolWidget({ slug }: { slug: string }) {
