@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
+import { useI18n } from '@/app/i18n';
 
 export default function LoginPage() {
   const router = useRouter();
   const { supabase } = useSupabase();
+  const { t } = useI18n();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +22,7 @@ export default function LoginPage() {
     setError(null);
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+      setError(t('auth.login.errorPassword'));
       setLoading(false);
       return;
     }
@@ -33,7 +35,7 @@ export default function LoginPage() {
     if (loginError) {
       setError(
         loginError.message === 'Invalid login credentials'
-          ? 'Email or password is incorrect. Please try again.'
+          ? t('auth.login.errorCredentials')
           : loginError.message
       );
       setLoading(false);
@@ -82,10 +84,10 @@ export default function LoginPage() {
             </span>
           </Link>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: '#02122c', marginTop: 16, marginBottom: 4 }}>
-            Welcome back
+            {t('auth.login.welcome')}
           </h1>
           <p style={{ fontSize: 14, color: '#64748b', margin: 0 }}>
-            Sign in to your seller account
+            {t('auth.login.subtitle')}
           </p>
         </div>
 
@@ -118,7 +120,7 @@ export default function LoginPage() {
             <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
             <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
           </svg>
-          Continue with Google
+          {t('auth.login.googleContinue')}
         </button>
 
         {/* Divider */}
@@ -129,7 +131,7 @@ export default function LoginPage() {
           margin: '24px 0',
         }}>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>or</span>
+          <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>{t('auth.login.or')}</span>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
         </div>
 
@@ -137,7 +139,7 @@ export default function LoginPage() {
           {/* Email */}
           <div style={{ marginBottom: 16 }}>
             <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Email
+              {t('auth.login.emailLabel')}
             </label>
             <input
               type="email"
@@ -163,7 +165,7 @@ export default function LoginPage() {
           {/* Password */}
           <div style={{ marginBottom: 8 }}>
             <label style={{ fontSize: 13, fontWeight: 600, color: '#374151', display: 'block', marginBottom: 6 }}>
-              Password
+              {t('auth.login.passwordLabel')}
             </label>
             <input
               type="password"
@@ -190,7 +192,7 @@ export default function LoginPage() {
           {/* Forgot password */}
           <div style={{ textAlign: 'right', marginBottom: 20 }}>
             <Link href="/auth/forgot-password" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none', fontWeight: 500 }}>
-              Forgot password?
+              {t('auth.login.forgotPassword')}
             </Link>
           </div>
 
@@ -225,17 +227,17 @@ export default function LoginPage() {
               transition: 'background 0.2s',
             }}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('auth.login.submitting') : t('auth.login.submit')}
           </button>
         </form>
 
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 28 }}>
           <span style={{ fontSize: 14, color: '#64748b' }}>
-            Don&apos;t have an account?{' '}
+            {t('auth.login.noAccount')}{' '}
           </span>
           <Link href="/auth/signup" style={{ color: '#F59E0B', textDecoration: 'none', fontWeight: 700, fontSize: 14 }}>
-            Sign Up Free
+            {t('auth.login.signUpFree')}
           </Link>
         </div>
       </div>

@@ -4,18 +4,11 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useSupabase } from '@/app/context/SupabaseProvider';
 import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
-
-const INDUSTRIES = [
-  { value: 'ecommerce_seller', label: 'E-commerce Seller' },
-  { value: 'logistics_freight', label: 'Logistics & Freight' },
-  { value: 'customs_broker', label: 'Customs Broker' },
-  { value: 'marketplace_operator', label: 'Marketplace Operator' },
-  { value: 'developer', label: 'Developer' },
-  { value: 'other', label: 'Other' },
-];
+import { useI18n } from '@/app/i18n';
 
 export default function SignupPage() {
   const { supabase } = useSupabase();
+  const { t } = useI18n();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -64,32 +57,32 @@ export default function SignupPage() {
 
     // Validation
     if (!email.trim() || !email.includes('@')) {
-      setError('Please enter a valid email address.');
+      setError(t('auth.signup.errorEmail'));
       setLoading(false);
       return;
     }
     if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
-      setError('Password must be at least 8 characters with letters and numbers.');
+      setError(t('auth.signup.errorPasswordWeak'));
       setLoading(false);
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('auth.signup.errorPasswordMatch'));
       setLoading(false);
       return;
     }
     if (!isIndividual && !companyName.trim()) {
-      setError('Company name is required. Select "Individual" if not applicable.');
+      setError(t('auth.signup.errorCompany'));
       setLoading(false);
       return;
     }
     if (!country) {
-      setError('Please select your country.');
+      setError(t('auth.signup.errorCountry'));
       setLoading(false);
       return;
     }
     if (!industry) {
-      setError('Please select your industry.');
+      setError(t('auth.signup.errorIndustry'));
       setLoading(false);
       return;
     }
@@ -115,7 +108,7 @@ export default function SignupPage() {
 
       if (signUpError) {
         if (signUpError.message?.includes('already') || signUpError.message?.includes('exists')) {
-          setError('An account with this email already exists.');
+          setError(t('auth.signup.errorExists'));
         } else {
           setError(signUpError.message || 'Registration failed.');
         }
@@ -125,7 +118,7 @@ export default function SignupPage() {
 
       setEmailSent(true);
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('auth.signup.errorGeneric'));
     } finally {
       setLoading(false);
     }
@@ -165,10 +158,10 @@ export default function SignupPage() {
         }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>&#9993;</div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#02122c', marginBottom: 8 }}>
-            Check your email
+            {t('auth.signup.emailSentTitle')}
           </h1>
           <p style={{ fontSize: 14, color: '#64748b', marginBottom: 4, lineHeight: 1.6 }}>
-            We sent a confirmation link to
+            {t('auth.signup.emailSentBody')}
           </p>
           <p style={{ fontSize: 15, fontWeight: 700, color: '#02122c', marginBottom: 20 }}>
             {email}
@@ -183,12 +176,12 @@ export default function SignupPage() {
             lineHeight: 1.6,
             marginBottom: 24,
           }}>
-            Click the link in the email to verify your account and get started.
+            {t('auth.signup.emailSentAction')}
             <br />
-            Your API keys will be generated automatically.
+            {t('auth.signup.emailSentKeys')}
           </div>
           <p style={{ fontSize: 12, color: '#94a3b8', marginBottom: 16 }}>
-            Didn&apos;t receive the email? Check your spam folder or try signing up again.
+            {t('auth.signup.emailSentSpam')}
           </p>
           <Link
             href="/auth/login"
@@ -203,7 +196,7 @@ export default function SignupPage() {
               textDecoration: 'none',
             }}
           >
-            Go to Sign In
+            {t('auth.signup.goToSignIn')}
           </Link>
         </div>
       </div>
@@ -240,10 +233,10 @@ export default function SignupPage() {
             </span>
           </Link>
           <h1 style={{ fontSize: 20, fontWeight: 700, color: '#02122c', marginTop: 14, marginBottom: 4 }}>
-            Start Free — All 140 Features Included
+            {t('auth.signup.title')}
           </h1>
           <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
-            No credit card required. Complete your profile for Forever Free access.
+            {t('auth.signup.subtitle')}
           </p>
         </div>
 
@@ -264,20 +257,20 @@ export default function SignupPage() {
             <path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.997 8.997 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
             <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
           </svg>
-          Continue with Google
+          {t('auth.signup.googleContinue')}
         </button>
 
         {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0' }}>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>or</span>
+          <span style={{ fontSize: 12, color: '#94a3b8', fontWeight: 500 }}>{t('auth.signup.or')}</span>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
         </div>
 
         <form onSubmit={handleSignup}>
           {/* Email */}
           <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>Email *</label>
+            <label style={labelStyle}>{t('auth.signup.emailLabel')}</label>
             <input
               type="email" value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="you@company.com" required style={inputStyle}
@@ -288,7 +281,7 @@ export default function SignupPage() {
 
           {/* Password */}
           <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>Password *</label>
+            <label style={labelStyle}>{t('auth.signup.passwordLabel')}</label>
             <input
               type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder="8+ chars, letters & numbers" required minLength={8} style={inputStyle}
@@ -299,7 +292,7 @@ export default function SignupPage() {
 
           {/* Confirm Password */}
           <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>Confirm Password *</label>
+            <label style={labelStyle}>{t('auth.signup.confirmLabel')}</label>
             <input
               type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter password" required
@@ -308,20 +301,20 @@ export default function SignupPage() {
               onBlur={(e) => e.target.style.borderColor = confirmPassword.length > 0 && password !== confirmPassword ? '#fca5a5' : '#e5e7eb'}
             />
             {confirmPassword.length > 0 && password !== confirmPassword && (
-              <span style={{ fontSize: 12, color: '#dc2626', marginTop: 4, display: 'block' }}>Passwords do not match</span>
+              <span style={{ fontSize: 12, color: '#dc2626', marginTop: 4, display: 'block' }}>{t('auth.signup.passwordMismatch')}</span>
             )}
           </div>
 
           {/* Company Name */}
           <div style={{ marginBottom: 14 }}>
             <label style={labelStyle}>
-              Company Name *
+              {t('auth.signup.companyLabel')}
               <label style={{ marginLeft: 12, fontWeight: 400, fontSize: 12, color: '#64748b', cursor: 'pointer' }}>
                 <input
                   type="checkbox" checked={isIndividual} onChange={(e) => { setIsIndividual(e.target.checked); if (e.target.checked) setCompanyName(''); }}
                   style={{ marginRight: 4, accentColor: '#F59E0B' }}
                 />
-                Individual (no company)
+                {t('auth.signup.individualLabel')}
               </label>
             </label>
             {!isIndividual && (
@@ -336,14 +329,14 @@ export default function SignupPage() {
 
           {/* Country */}
           <div style={{ marginBottom: 14 }}>
-            <label style={labelStyle}>Country *</label>
+            <label style={labelStyle}>{t('auth.signup.countryLabel')}</label>
             <select
               value={country} onChange={(e) => setCountry(e.target.value)} required
               style={{ ...inputStyle, background: 'white', color: country ? '#374151' : '#94a3b8', cursor: 'pointer' }}
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             >
-              <option value="" disabled>Select your country</option>
+              <option value="" disabled>{t('auth.signup.countryPlaceholder')}</option>
               {countries.map(c => (
                 <option key={c.code} value={c.code}>{c.name}</option>
               ))}
@@ -352,16 +345,23 @@ export default function SignupPage() {
 
           {/* Industry */}
           <div style={{ marginBottom: 20 }}>
-            <label style={labelStyle}>Industry *</label>
+            <label style={labelStyle}>{t('auth.signup.industryLabel')}</label>
             <select
               value={industry} onChange={(e) => setIndustry(e.target.value)} required
               style={{ ...inputStyle, background: 'white', color: industry ? '#374151' : '#94a3b8', cursor: 'pointer' }}
               onFocus={(e) => e.target.style.borderColor = '#F59E0B'}
               onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             >
-              <option value="" disabled>Select your industry</option>
-              {INDUSTRIES.map(i => (
-                <option key={i.value} value={i.value}>{i.label}</option>
+              <option value="" disabled>{t('auth.signup.industryPlaceholder')}</option>
+              {[
+                { value: 'ecommerce_seller', key: 'auth.signup.industry.ecommerce' as const },
+                { value: 'logistics_freight', key: 'auth.signup.industry.logistics' as const },
+                { value: 'customs_broker', key: 'auth.signup.industry.customs' as const },
+                { value: 'marketplace_operator', key: 'auth.signup.industry.marketplace' as const },
+                { value: 'developer', key: 'auth.signup.industry.developer' as const },
+                { value: 'other', key: 'auth.signup.industry.other' as const },
+              ].map(i => (
+                <option key={i.value} value={i.value}>{t(i.key)}</option>
               ))}
             </select>
           </div>
@@ -385,23 +385,23 @@ export default function SignupPage() {
               fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer',
             }}
           >
-            {loading ? 'Creating account...' : 'Start Free — All 140 Features Included'}
+            {loading ? t('auth.signup.submitting') : t('auth.signup.submit')}
           </button>
         </form>
 
         {/* Terms */}
         <p style={{ textAlign: 'center', marginTop: 14, fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>
-          By signing up, you agree to our{' '}
-          <Link href="/terms" style={{ color: '#64748b', textDecoration: 'underline' }}>Terms</Link>
-          {' '}and{' '}
-          <Link href="/privacy" style={{ color: '#64748b', textDecoration: 'underline' }}>Privacy Policy</Link>
+          {t('auth.signup.termsPrefix')}{' '}
+          <Link href="/terms" style={{ color: '#64748b', textDecoration: 'underline' }}>{t('auth.signup.termsLink')}</Link>
+          {' '}{t('auth.signup.termsAnd')}{' '}
+          <Link href="/privacy" style={{ color: '#64748b', textDecoration: 'underline' }}>{t('auth.signup.privacyLink')}</Link>
         </p>
 
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <span style={{ fontSize: 14, color: '#64748b' }}>Already have an account? </span>
+          <span style={{ fontSize: 14, color: '#64748b' }}>{t('auth.signup.hasAccount')} </span>
           <Link href="/auth/login" style={{ color: '#F59E0B', textDecoration: 'none', fontWeight: 700, fontSize: 14 }}>
-            Sign In
+            {t('auth.signup.signIn')}
           </Link>
         </div>
       </div>

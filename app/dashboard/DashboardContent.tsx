@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
 import { useSupabase } from '@/app/context/SupabaseProvider';
+import { useI18n } from '@/app/i18n';
 import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
 import { fetchWithTimeout } from '@/app/lib/fetch-with-timeout';
 import dynamic from 'next/dynamic';
@@ -95,25 +96,25 @@ interface ApiLogEntry {
 
 type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing' | 'classify' | 'calculator' | 'fta' | 'sanctions' | 'documents' | 'batch' | 'analytics' | 'settings' | 'integrations' | 'team';
 
-const TABS: { id: TabId; label: string; icon: string }[] = [
-  { id: 'overview', label: 'Overview', icon: '📊' },
-  { id: 'keys', label: 'API Keys', icon: '🔑' },
-  { id: 'classify', label: 'HS Classification', icon: '🏷️' },
-  { id: 'calculator', label: 'Tariff Calculator', icon: '🧮' },
-  { id: 'fta', label: 'FTA & Trade', icon: '🤝' },
-  { id: 'sanctions', label: 'Sanctions', icon: '🛡️' },
-  { id: 'documents', label: 'Documents', icon: '📄' },
-  { id: 'batch', label: 'Batch Ops', icon: '📦' },
-  { id: 'widget', label: 'Widget', icon: '🧩' },
-  { id: 'integrations', label: 'Integrations', icon: '🔌' },
-  { id: 'usage', label: 'Usage', icon: '📈' },
-  { id: 'countries', label: 'Countries', icon: '🌍' },
-  { id: 'platforms', label: 'Platforms', icon: '🤖' },
-  { id: 'analytics', label: 'Analytics', icon: '📉' },
-  { id: 'logs', label: 'Logs', icon: '📋' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
-  { id: 'billing', label: 'Billing', icon: '💳' },
-  { id: 'team', label: 'Team', icon: '👥' },
+const TABS: { id: TabId; labelKey: string; icon: string }[] = [
+  { id: 'overview', labelKey: 'dashboard.tab.overview', icon: '📊' },
+  { id: 'keys', labelKey: 'dashboard.tab.keys', icon: '🔑' },
+  { id: 'classify', labelKey: 'dashboard.tab.classify', icon: '🏷️' },
+  { id: 'calculator', labelKey: 'dashboard.tab.calculator', icon: '🧮' },
+  { id: 'fta', labelKey: 'dashboard.tab.fta', icon: '🤝' },
+  { id: 'sanctions', labelKey: 'dashboard.tab.sanctions', icon: '🛡️' },
+  { id: 'documents', labelKey: 'dashboard.tab.documents', icon: '📄' },
+  { id: 'batch', labelKey: 'dashboard.tab.batch', icon: '📦' },
+  { id: 'widget', labelKey: 'dashboard.tab.widget', icon: '🧩' },
+  { id: 'integrations', labelKey: 'dashboard.tab.integrations', icon: '🔌' },
+  { id: 'usage', labelKey: 'dashboard.tab.usage', icon: '📈' },
+  { id: 'countries', labelKey: 'dashboard.tab.countries', icon: '🌍' },
+  { id: 'platforms', labelKey: 'dashboard.tab.platforms', icon: '🤖' },
+  { id: 'analytics', labelKey: 'dashboard.tab.analytics', icon: '📉' },
+  { id: 'logs', labelKey: 'dashboard.tab.logs', icon: '📋' },
+  { id: 'settings', labelKey: 'dashboard.tab.settings', icon: '⚙️' },
+  { id: 'billing', labelKey: 'dashboard.tab.billing', icon: '💳' },
+  { id: 'team', labelKey: 'dashboard.tab.team', icon: '👥' },
 ];
 
 // Plan display — Forever Free (CW22 pivot)
@@ -213,6 +214,7 @@ export default function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { supabase, session } = useSupabase();
+  const { t } = useI18n();
 
   // Handle checkout redirect
   const checkoutStatus = searchParams.get('checkout');
@@ -638,7 +640,7 @@ export default function DashboardContent() {
               }}
             >
               <span style={{ fontSize: 14 }} aria-hidden="true">{tab.icon}</span>
-              {tab.label}
+              {t(tab.labelKey as any)}
             </button>
           ))}
         </div>
@@ -672,7 +674,7 @@ export default function DashboardContent() {
                 }}
               >
                 <span aria-hidden="true">{tab.icon}</span>
-                {tab.label}
+                {t(tab.labelKey as any)}
               </button>
             ))}
           </nav>
@@ -725,12 +727,12 @@ export default function DashboardContent() {
               {/* B-4: Profile Completion Banner */}
               <ProfileCompletionBanner />
 
-              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Overview</h2>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>{t('dashboard.overview.title')}</h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
                 {[
-                  { label: 'Total API Calls', value: usage?.used?.toLocaleString() ?? '—', sub: 'All time' },
-                  { label: 'Plan', value: 'Forever Free', sub: 'Unlimited calls' },
-                  { label: 'Active Keys', value: keys.filter(k => k.isActive).length, sub: `of ${keys.length} total` },
+                  { label: t('dashboard.overview.totalApiCalls'), value: usage?.used?.toLocaleString() ?? '—', sub: t('dashboard.overview.allTime') },
+                  { label: t('dashboard.overview.plan'), value: t('dashboard.overview.foreverFree'), sub: t('dashboard.overview.unlimitedCalls') },
+                  { label: t('dashboard.overview.activeKeys'), value: keys.filter(k => k.isActive).length, sub: t('dashboard.overview.ofTotal').replace('{count}', String(keys.length)) },
                 ].map((stat, i) => (
                   <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
                     <div style={{ fontSize: 12, color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>{stat.label}</div>
@@ -741,7 +743,7 @@ export default function DashboardContent() {
               </div>
 
               <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Quick Links</h3>
+                <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>{t('dashboard.overview.quickLinks')}</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
                   {[
                     { label: 'API Documentation', href: '/developers/docs', icon: '📖' },
@@ -937,36 +939,36 @@ export default function DashboardContent() {
           {/* ── Usage ── */}
           {activeTab === 'usage' && (
             <div>
-              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>API Usage</h2>
-              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>Track your API usage and monitor request patterns. Usage data updates in real-time.</p>
+              <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>{t('dashboard.usage.title')}</h2>
+              <p style={{ color: '#666', fontSize: 14, marginBottom: 24 }}>{t('dashboard.usage.subtitle')}</p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
                 <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>TOTAL REQUESTS</div>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>{t('dashboard.usage.totalRequests')}</div>
                   <div style={{ fontSize: 28, fontWeight: 800 }}>{usage ? usage.used.toLocaleString() : '0'}</div>
                 </div>
                 <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>SUCCESSFUL</div>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>{t('dashboard.usage.successful')}</div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>{usage ? usage.used.toLocaleString() : '0'}</div>
                 </div>
                 <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>FAILED</div>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>{t('dashboard.usage.failed')}</div>
                   <div style={{ fontSize: 28, fontWeight: 800, color: '#dc2626' }}>0</div>
                 </div>
                 <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>AVG RESPONSE TIME</div>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>{t('dashboard.usage.avgResponseTime')}</div>
                   <div style={{ fontSize: 28, fontWeight: 800 }}>{usage && usage.used > 0 ? '168ms' : '\u2014'}</div>
                 </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
                 <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>PLAN LIMIT</div>
-                  <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>Unlimited</div>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>{t('dashboard.usage.planLimit')}</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>{t('dashboard.usage.unlimited')}</div>
                 </div>
                 <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>RATE LIMIT</div>
-                  <div style={{ fontSize: 28, fontWeight: 800 }}>20<span style={{ fontSize: 14, fontWeight: 500, color: '#888' }}> req/sec</span></div>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>{t('dashboard.usage.rateLimit')}</div>
+                  <div style={{ fontSize: 28, fontWeight: 800 }}>20<span style={{ fontSize: 14, fontWeight: 500, color: '#888' }}> {t('dashboard.usage.reqPerSec')}</span></div>
                 </div>
               </div>
 
