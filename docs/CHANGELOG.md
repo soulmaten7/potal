@@ -1,5 +1,20 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4 — 데모 영상 전 전체 수정)
+> 마지막 업데이트: 2026-04-07 KST (CW22-S4c — 월간 quota 제거 + 초당 rate limit + seller profile 버그)
+
+## [2026-04-07 KST] CW22-S4c — 월간 quota 제거 + 초당 rate limit 도입
+
+### 수정
+- `d43c1c7` fix: seller profile `user_id` null 버그 — 모든 insert 경로에 `user_id` 추가 + auto-create fallback (5파일)
+- DB: 기존 6개 seller 레코드 `user_id` 복구 완료
+
+### 변경
+- 월간 API 콜 제한(200/2000/10000) 완전 제거 — Forever Free는 무제한
+- 초당 20회 rate limit 도입 (IP + API key 기준, 429 응답)
+- rate-limiter.ts: token bucket → 단순 초당 카운터로 교체
+- middleware.ts: `checkPlanLimits` 호출 제거, rate limit 메시지 변경
+- sellers/me: 월간 usage → 전체 누적 호출 수 (limit: "unlimited")
+- Dashboard Overview: 4칼럼 → 3칼럼 (Remaining 카드 제거, Monthly Usage 프로그레스바 제거)
+- Dashboard Usage 탭: PLAN LIMIT → "Unlimited", RATE LIMIT → "20 req/sec" 표시
 
 ## [2026-04-07 KST] CW22-S4 — 데모 영상 전 전체 수정
 

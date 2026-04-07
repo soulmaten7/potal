@@ -89,24 +89,15 @@ export async function GET(req: NextRequest) {
       .eq('seller_id', sellerId)
       .order('created_at', { ascending: false });
 
-    // Get current month usage
+    // Get total usage count (no monthly limit — Forever Free)
     const now = new Date();
-    const startDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01T00:00:00.000Z`;
 
-    const { data: usageLogs } = await (supabase
+    const { count: totalUsed } = await (supabase
       .from('usage_logs') as any)
-      .select('id')
-      .eq('seller_id', sellerId)
-      .gte('created_at', startDate);
+      .select('*', { count: 'exact', head: true })
+      .eq('seller_id', sellerId);
 
-    const planLimits: Record<string, number> = {
-      free: 200,
-      basic: 2000,
-      pro: 10000,
-      enterprise: 50000,
-    };
-    const limit = planLimits[s.plan_id] ?? 100;
-    const used = usageLogs?.length || 0;
+    const used = totalUsed || 0;
 
     return NextResponse.json({
       success: true,
@@ -133,11 +124,12 @@ export async function GET(req: NextRequest) {
           lastUsedAt: k.last_used_at,
         })),
         usage: {
-          period: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`,
+          period: 'all-time',
           used,
-          limit: limit === -1 ? 'unlimited' : limit,
-          remaining: limit === -1 ? 'unlimited' : Math.max(0, limit - used),
-          usagePercent: limit === -1 ? 0 : Math.round((used / limit) * 100),
+          limit: 'unlimited',
+          remaining: 'unlimited',
+          usagePercent: 0,
+          rateLimitPerSecond: 20,
         },
       },
     });

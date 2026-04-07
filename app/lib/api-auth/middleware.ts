@@ -19,11 +19,11 @@ import { createClient } from '@supabase/supabase-js';
 import { lookupApiKey, type KeyType } from './keys';
 import { checkRateLimit } from './rate-limiter';
 import { logUsage } from './usage-logger';
-import { checkPlanLimits } from './plan-checker';
+// checkPlanLimits removed — Forever Free has no monthly quota (CW22-S4c)
 import { apiError, ApiErrorCode } from './response';
 import { generateFingerprint, hashRequestBody, checkFraud, recordFraudStrike } from './fraud-prevention';
 import { revokeApiKey } from './keys';
-import { SANDBOX_CONFIG } from './sandbox';
+// SANDBOX_CONFIG import removed — rate limit is now flat 20/sec for all keys (CW22-S4c)
 
 // ─── Supabase Service Client ─────────────────────────
 
@@ -271,25 +271,18 @@ export function withApiAuth(handler: ApiHandler) {
       return apiError(ApiErrorCode.RATE_LIMITED, fraudResult.reason || 'Request blocked by fraud detection.');
     }
 
-    // 8. Rate limiting (sandbox keys get generous limits)
-    const effectiveRateLimit = isSandbox ? SANDBOX_CONFIG.maxRequestsPerMinute : keyInfo.rateLimitPerMinute;
-    const rateLimitResult = checkRateLimit(keyInfo.keyId, effectiveRateLimit);
+    // 8. Rate limiting — 20 requests/sec per API key
+    const rateLimitResult = checkRateLimit(keyInfo.keyId);
     if (!rateLimitResult.allowed) {
-      const response = apiError(ApiErrorCode.RATE_LIMITED, `Rate limit exceeded. ${effectiveRateLimit} requests/minute allowed.`);
-      response.headers.set('X-RateLimit-Limit', String(effectiveRateLimit));
+      const response = apiError(ApiErrorCode.RATE_LIMITED, 'Rate limit: max 20 requests/sec. Please slow down.');
+      response.headers.set('X-RateLimit-Limit', '20');
       response.headers.set('X-RateLimit-Remaining', '0');
       response.headers.set('X-RateLimit-Reset', String(rateLimitResult.resetAt));
-      response.headers.set('Retry-After', String(Math.ceil((rateLimitResult.resetAt - Date.now()) / 1000)));
+      response.headers.set('Retry-After', '1');
       return response;
     }
 
-    // 9. Plan usage limits (sandbox requests are exempt)
-    const planCheck = isSandbox
-      ? { allowed: true, used: 0, limit: 999999, isOverage: false, overageCount: 0, overageRate: 0 }
-      : await checkPlanLimits(supabase as any, keyInfo.sellerId, keyInfo.planId);
-    if (!planCheck.allowed) {
-      return apiError(ApiErrorCode.PLAN_LIMIT_EXCEEDED, `Monthly usage limit reached (${planCheck.used}/${planCheck.limit}). Contact us for Enterprise access.`);
-    }
+    // 9. (Monthly quota removed — Forever Free has no call caps)
 
     // 9b. Trial expiration check (B-5: profile incomplete + trial expired = blocked)
     if (!isSandbox) {
@@ -347,15 +340,9 @@ export function withApiAuth(handler: ApiHandler) {
     }).catch(() => {});
 
     // 13. Response headers
-    response.headers.set('X-RateLimit-Limit', String(effectiveRateLimit));
+    response.headers.set('X-RateLimit-Limit', '20');
     response.headers.set('X-RateLimit-Remaining', String(rateLimitResult.remaining));
-    response.headers.set('X-Plan-Usage', String(planCheck.used));
-    response.headers.set('X-Plan-Limit', String(planCheck.limit));
     if (isSandbox) response.headers.set('X-Sandbox-Mode', 'true');
-    if (planCheck.isOverage) {
-      response.headers.set('X-Plan-Overage', String(planCheck.overageCount));
-      response.headers.set('X-Plan-Overage-Rate', String(planCheck.overageRate));
-    }
     if (fraudResult.riskScore > 0) {
       response.headers.set('X-Fraud-Risk', String(fraudResult.riskScore));
     }

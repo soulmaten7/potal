@@ -1,26 +1,23 @@
 /**
  * POTAL API Rate Limiter
  *
- * Token bucket algorithm with burst allowance.
- * In-memory primary + DB sync comment for future enhancement.
+ * Simple per-second rate limiter: 20 requests/second per identifier (IP or API key).
+ * In-memory sliding window counter.
  *
- * Free: 30/min + 5 burst, Basic: 60/min + 10 burst,
- * Pro: 120/min + 20 burst, Enterprise: 300/min + 50 burst.
- *
- * NOTE: In-memory store resets on Vercel cold start. This is acceptable
- * because plan-checker.ts enforces monthly quotas via DB. The rate limiter
- * prevents short-term abuse (API flooding), not long-term quota evasion.
+ * CW22-S4c: Replaced token bucket + monthly quota with simple per-second limit.
+ * Monthly quotas removed entirely — Forever Free has no call caps.
  */
 
-interface TokenBucket {
-  tokens: number;
-  maxTokens: number;
-  refillRate: number; // tokens per second
-  lastRefill: number;
+interface WindowCounter {
+  count: number;
+  windowStart: number; // ms timestamp
 }
 
-// In-memory store
-const store = new Map<string, TokenBucket>();
+// In-memory store keyed by identifier (API key ID or IP)
+const store = new Map<string, WindowCounter>();
+
+const MAX_REQUESTS_PER_SECOND = 20;
+const WINDOW_MS = 1000;
 
 // Cleanup old entries every 5 minutes
 const CLEANUP_INTERVAL = 5 * 60 * 1000;
@@ -31,25 +28,12 @@ function cleanup() {
   if (now - lastCleanup < CLEANUP_INTERVAL) return;
   lastCleanup = now;
 
-  const cutoff = now - 120000; // Remove entries idle for 2+ minutes
-  for (const [key, bucket] of store) {
-    if (bucket.lastRefill < cutoff) {
+  const cutoff = now - 60000; // Remove entries idle for 1+ minute
+  for (const [key, entry] of store) {
+    if (entry.windowStart < cutoff) {
       store.delete(key);
     }
   }
-}
-
-// ─── Burst Allowance per Plan ────────────────────────
-
-const BURST_ALLOWANCE: Record<string, number> = {
-  free: 5,
-  basic: 10,
-  pro: 20,
-  enterprise: 50,
-};
-
-export function getBurstForPlan(planId: string): number {
-  return BURST_ALLOWANCE[planId] ?? BURST_ALLOWANCE.free;
 }
 
 export interface RateLimitResult {
@@ -60,68 +44,50 @@ export interface RateLimitResult {
 }
 
 /**
- * Check rate limit using token bucket algorithm.
- * Allows burst traffic up to plan-specific allowance.
+ * Check rate limit: max 20 requests per second per identifier.
  *
- * @param keyId - API key identifier
- * @param limitPerMinute - Base rate limit (e.g., 30 for Free)
- * @param planId - Plan for burst calculation
+ * @param identifier - API key ID, IP address, or combined key
+ * @param _limitPerMinute - DEPRECATED, ignored. Kept for backward compatibility.
+ * @param _planId - DEPRECATED, ignored.
  */
 export function checkRateLimit(
-  keyId: string,
-  limitPerMinute: number,
-  planId?: string
+  identifier: string,
+  _limitPerMinute?: number,
+  _planId?: string
 ): RateLimitResult {
-  // Unlimited plan
-  if (limitPerMinute <= 0) {
-    return { allowed: true, remaining: 999999, resetAt: 0, burst: false };
-  }
-
   cleanup();
 
   const now = Date.now();
-  const burstAllowance = getBurstForPlan(planId || 'free');
-  const maxTokens = limitPerMinute + burstAllowance;
-  const refillRate = limitPerMinute / 60; // tokens per second
+  let entry = store.get(identifier);
 
-  let bucket = store.get(keyId);
-  if (!bucket) {
-    bucket = {
-      tokens: maxTokens, // Start full
-      maxTokens,
-      refillRate,
-      lastRefill: now,
-    };
-    store.set(keyId, bucket);
+  if (!entry || now - entry.windowStart >= WINDOW_MS) {
+    // New window
+    entry = { count: 0, windowStart: now };
+    store.set(identifier, entry);
   }
 
-  // Refill tokens based on elapsed time
-  const elapsed = (now - bucket.lastRefill) / 1000; // seconds
-  const refill = elapsed * bucket.refillRate;
-  bucket.tokens = Math.min(bucket.maxTokens, bucket.tokens + refill);
-  bucket.lastRefill = now;
-
-  if (bucket.tokens < 1) {
-    // Calculate when next token available
-    const waitMs = ((1 - bucket.tokens) / bucket.refillRate) * 1000;
+  if (entry.count >= MAX_REQUESTS_PER_SECOND) {
+    const resetAt = entry.windowStart + WINDOW_MS;
     return {
       allowed: false,
       remaining: 0,
-      resetAt: now + Math.ceil(waitMs),
+      resetAt,
       burst: false,
     };
   }
 
-  // Consume a token
-  bucket.tokens -= 1;
-  const isBurst = bucket.tokens < burstAllowance;
+  entry.count += 1;
 
   return {
     allowed: true,
-    remaining: Math.floor(bucket.tokens),
-    resetAt: now + 60000,
-    burst: isBurst,
+    remaining: MAX_REQUESTS_PER_SECOND - entry.count,
+    resetAt: entry.windowStart + WINDOW_MS,
+    burst: false,
   };
+}
+
+export function getBurstForPlan(_planId: string): number {
+  return 0; // No burst concept — flat 20/sec for everyone
 }
 
 /** Reset all rate limit entries — for testing only */

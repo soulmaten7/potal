@@ -718,12 +718,11 @@ export default function DashboardContent() {
               <ProfileCompletionBanner />
 
               <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 20 }}>Overview</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
                 {[
-                  { label: 'API Calls', value: usage?.used ?? '—', sub: 'This month' },
-                  { label: 'Plan', value: 'Forever Free', sub: 'active' },
+                  { label: 'Total API Calls', value: usage?.used?.toLocaleString() ?? '—', sub: 'All time' },
+                  { label: 'Plan', value: 'Forever Free', sub: 'Unlimited calls' },
                   { label: 'Active Keys', value: keys.filter(k => k.isActive).length, sub: `of ${keys.length} total` },
-                  { label: 'Remaining', value: typeof usage?.remaining === 'number' ? usage.remaining.toLocaleString() : usage?.remaining ?? '—', sub: 'This month' },
                 ].map((stat, i) => (
                   <div key={i} style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
                     <div style={{ fontSize: 12, color: '#888', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}>{stat.label}</div>
@@ -732,18 +731,6 @@ export default function DashboardContent() {
                   </div>
                 ))}
               </div>
-
-              {usage && typeof usage.limit === 'number' && (
-                <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb', marginBottom: 24 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                    <span style={{ fontSize: 14, fontWeight: 600 }}>Monthly Usage</span>
-                    <span style={{ fontSize: 14, color: '#666' }}>{usage.used.toLocaleString()} / {(usage.limit as number).toLocaleString()}</span>
-                  </div>
-                  <div style={{ background: '#f0f0f0', borderRadius: 8, height: 12, overflow: 'hidden' }}>
-                    <div style={{ background: usage.usagePercent > 80 ? '#ef4444' : usage.usagePercent > 50 ? '#F59E0B' : '#10b981', height: '100%', width: `${Math.min(100, usage.usagePercent)}%`, borderRadius: 8 }} />
-                  </div>
-                </div>
-              )}
 
               <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
                 <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Quick Links</h3>
@@ -964,39 +951,18 @@ export default function DashboardContent() {
                 </div>
               </div>
 
-              {usage && typeof usage.limit === 'number' ? (
-                <>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-                    <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                      <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>PLAN LIMIT</div>
-                      <div style={{ fontSize: 28, fontWeight: 800 }}>{usage.limit.toLocaleString()}</div>
-                    </div>
-                    <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
-                      <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>REMAINING</div>
-                      <div style={{ fontSize: 28, fontWeight: 800 }}>{typeof usage.remaining === 'number' ? usage.remaining.toLocaleString() : usage.remaining}</div>
-                    </div>
+              <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>PLAN LIMIT</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>Unlimited</div>
                   </div>
-                  <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-                      <span style={{ fontSize: 14, fontWeight: 600 }}>Usage ({usage.usagePercent}%)</span>
-                    </div>
-                    <div style={{ background: '#f0f0f0', borderRadius: 8, height: 16, overflow: 'hidden' }}>
-                      <div style={{ background: usage.usagePercent > 80 ? '#ef4444' : usage.usagePercent > 50 ? '#F59E0B' : '#10b981', height: '100%', width: `${Math.min(100, usage.usagePercent)}%`, borderRadius: 8 }} />
-                    </div>
-                    {usage.usagePercent > 80 && (
-                      <div style={{ marginTop: 16, padding: '12px 16px', background: '#fef3c7', borderRadius: 8, fontSize: 13, color: '#92400e' }}>
-                        Approaching limit. <Link href="/pricing#enterprise" style={{ color: '#d97706', fontWeight: 700 }}>Contact us</Link> for higher limits.
-                      </div>
-                    )}
+                  <div>
+                    <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>RATE LIMIT</div>
+                    <div style={{ fontSize: 28, fontWeight: 800 }}>20<span style={{ fontSize: 14, fontWeight: 500, color: '#888' }}> req/sec</span></div>
                   </div>
-                </>
-              ) : (
-                <div style={{ background: 'white', borderRadius: 12, padding: 40, border: '1px solid #e5e7eb', textAlign: 'center' }}>
-                  <div style={{ fontSize: 40, marginBottom: 12 }}>&#128202;</div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#333', marginBottom: 8 }}>No usage data yet</div>
-                  <div style={{ fontSize: 14, color: '#888' }}>Make your first API call to see usage statistics here.</div>
                 </div>
-              )}
+              </div>
             </div>
           )}
           {/* ── Countries (4-08) ── */}
