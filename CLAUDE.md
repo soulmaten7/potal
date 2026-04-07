@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-07 KST (CW22-S4c: 월간 quota 제거, 초당 20회 rate limit 도입, seller profile user_id 버그 수정)
+# 마지막 업데이트: 2026-04-07 KST (CW22-S4e: /tools 제거→/features 통합, API middleware demo bypass, i18n 6개 언어)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

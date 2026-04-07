@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4c — 월간 quota 제거 + 초당 rate limit + seller profile 버그)
+> 마지막 업데이트: 2026-04-07 KST (CW22-S4e — /tools 제거→/features 통합, API demo bypass, i18n 6개 언어)
 
 ---
 

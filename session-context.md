@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4c — 월간 quota 제거, 초당 20회 rate limit, seller profile user_id 버그 수정. 사이트 총 503페이지.)
+> 마지막 업데이트: 2026-04-07 KST (CW22-S4e — /tools 제거→/features 통합, API demo bypass, i18n 6개 언어, usage chart. 사이트 총 ~470페이지.)
 
 ---
 

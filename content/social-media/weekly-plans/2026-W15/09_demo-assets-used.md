@@ -53,3 +53,4 @@
 | 날짜 | 파일 | 반영된 소재 |
 |------|------|------------|
 | 2026-04-06 | (없음 — Case 4 자체 생성) | 데모 소재 미사용 |
+| 2026-04-07 | 2026-04-07_cat5_zonos-coreweave-pricing.md | 07_competitors.png, 06_pricing.png, rec_04_pricing.mov, 09_api-docs.png, 01_hero.png |

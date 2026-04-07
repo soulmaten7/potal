@@ -1,5 +1,25 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4c — 월간 quota 제거 + 초당 rate limit + seller profile 버그)
+> 마지막 업데이트: 2026-04-07 KST (CW22-S4e — /tools 제거, /features 통합, API demo bypass, i18n)
+
+## [2026-04-07 KST] CW22-S4e — /tools 제거 + /features 통합 + API middleware demo bypass + i18n
+
+### 추가
+- API middleware: X-Demo-Request 바이패스 전체 API 엔드포인트 적용 (10 req/min/IP)
+- FeatureToolWidget: /features/[slug] 페이지에 인터랙티브 "Try it live" 섹션 추가 (15+ 도구)
+- 누락 API: /tax/exemption, /tax/digital-services 엔드포인트 생성
+- i18n: Auth/Tools/Dashboard 6개 언어 번역 (en/ko/ja/zh/es/de, 150+ 키)
+- Dashboard Usage 탭: 일별 API 호출 bar chart (recharts)
+
+### 변경
+- /tools/* → /features/* 301 리다이렉트 (42개 경로)
+- Header 네비 "Tools" 링크 제거
+- TOOL_LINKS: /tools/* → /features/*#try-it 변경
+- 월간 API 제한 제거 → 초당 20회 rate limit
+- seller profile user_id null 버그 수정 (5개 파일)
+- usage_logs: mode 컬럼 추가, 로깅 정상화
+
+### 삭제
+- app/tools/ → archive/tools-deprecated/ 이동
 
 ## [2026-04-07 KST] CW22-S4c — 월간 quota 제거 + 초당 rate limit 도입
 

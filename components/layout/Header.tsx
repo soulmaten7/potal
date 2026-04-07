@@ -138,7 +138,6 @@ export function Header() {
         <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-[#02122c]">
           {[
             { href: '/features', label: t('nav.features') },
-            { href: '/tools', label: 'Tools' },
             { href: '/developers', label: t('nav.developers') },
             { href: '/pricing', label: t('nav.pricing') },
             { href: '/dashboard', label: t('nav.dashboard') },

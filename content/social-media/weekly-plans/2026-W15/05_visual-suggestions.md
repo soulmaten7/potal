@@ -1,83 +1,107 @@
-# 2026-W15 비주얼 소재 제안
-> 자동 생성: 2026-04-02 (sunday-content-prep)
+# W15 비주얼 소재 제안
+> 생성일: 2026-04-05 (sunday-content-prep 자동 생성)
 
 ---
 
-## 이번 주 필요 이미지 목록
+## 월요일: US De Minimis 종료 후 7개월
 
-### 월요일 — Reciprocal Tariff 뉴스
-| 용도 | 규격 | 컨셉 |
-|------|------|------|
-| LinkedIn 이미지 | 1080×1350px | **세계 지도 + 국가별 세율 오버레이**. 중국 34%, EU 20%, 일본 24%, 대만 32%, 한국 25%. "April 9: New tariffs for 185 countries. Calculate yours at potal.app" |
-| DEV.to 커버 | 1000×420px | 다크 배경 + "185 Countries. New Tariff Rates. One API." + POTAL 로고 |
-| Medium 헤더 | 자유 | 미니멀. 관세 세율표 이미지 or 세관 컨셉 |
+### LinkedIn 캐러셀 (1080x1350px, 6 슬라이드)
+1. **표지**: "US De Minimis is Dead. Here's What It Actually Costs Now." — 검정 배경, 흰 텍스트, $800에 빨간 X
+2. **Before/After**: $800 면세 시절 vs 현재 비용 구조 (2열 비교)
+3. **비용 분해**: $30 상품의 실제 추가 비용 ($2 MPF + 관세 + 보험) 워터폴 차트
+4. **타임라인**: 2025-08 → 2026-02 → 현재 규제 변화 타임라인
+5. **POTAL 솔루션**: "POTAL calculates all of this. For free." + 스크린샷
+6. **CTA**: potal.app — 깔끔하게 URL만
 
-**Canva 제작 팁**: Canva에서 세계 지도 템플릿 → 국가별 색상 구분 (빨강=높은 관세, 노랑=중간, 초록=낮음). 텍스트 오버레이로 세율 표시.
-
----
-
-### 화요일 — 경쟁사 가격 비교
-| 용도 | 규격 | 컨셉 |
-|------|------|------|
-| LinkedIn 캐러셀 (PDF) | 1080×1350px, 6슬라이드 | **슬라이드 구성**: (1) 타이틀 "The Real Cost of Cross-Border Compliance" (2) Avalara: $18,000/year (3) Zonos: $24,000/year (4) POTAL: $0/year (5) 기능 수 비교 바 차트 140 vs 31 (6) CTA "potal.app" |
-| DEV.to 커버 | 1000×420px | 바 차트 — 가격 비교. POTAL 바만 녹색, 나머지 빨강 |
-
-**Canva 제작 팁**: 홈 화면의 경쟁사 비교 바 차트 스크린샷 활용 가능. 또는 Canva 프레젠테이션 → PDF 내보내기로 캐러셀 제작.
+### DEV.to 커버 (1000x420px)
+- 좌측: "$800" 숫자에 빨간 취소선
+- 우측: 터미널 스타일로 `calculate_landed_cost` API 응답 일부
+- 톤: 기술적, 다크 테마
 
 ---
 
-### 수요일 — Total Landed Cost 기능 딥다이브
-| 용도 | 규격 | 컨셉 |
-|------|------|------|
-| LinkedIn 이미지 | 1080×1350px | **비용 분해 인포그래픽**: Product $24.99 → + Duty $0 → + Tax $2.34 → + Shipping $8.50 → + Fees $2.51 = **$38.34**. "The price tag isn't the final cost." |
-| DEV.to 커버 | 1000×420px | API 응답 JSON 스크린샷 + "calculate_landed_cost" 텍스트 |
-| Medium 헤더 | 자유 | 깔끔한 수식 비주얼: Price + Duty + Tax + Shipping = Total |
+## 화요일: Zonos CoreWeave 투자 비교
 
-**Canva 제작 팁**: 세로 인포그래픽. 각 비용 항목을 블록으로 쌓는 시각화. POTAL 브랜드 컬러(미니멀, 여백).
+### LinkedIn 캐러셀 (1080x1350px, 5 슬라이드)
+1. **표지**: "Your competitor just bought GPU clouds. You need $0." — 미니멀
+2. **인프라 비교**: Zonos(GPU Cloud + AI) vs POTAL(595 Rules + DB) — 아이콘 대비
+3. **가격 비교 바 차트**: Zonos $4,000/월 vs POTAL $0 (홈 화면 바 차트 스타일)
+4. **기능 수 비교**: 31 vs 140 원형 차트
+5. **CTA**: "140 features. $0. potal.app"
 
----
-
-### 목요일 — 개발자 API 가이드
-| 용도 | 규격 | 컨셉 |
-|------|------|------|
-| DEV.to 커버 | 1000×420px | **코드 스니펫 이미지**: `curl -X POST .../calculate-landed-cost` + 터미널 UI 느낌. 다크 배경 |
-| LinkedIn 이미지 | 1080×1350px | "3 Lines of Code" + 코드 블록 + POTAL 로고 |
-
-**Canva 제작 팁**: Carbon.now.sh 또는 ray.so에서 코드 스크린샷 생성 → Canva에 삽입.
+### DEV.to 커버 (1000x420px)
+- "Rules > GPUs" 텍스트 + 595 숫자 강조
+- 코드 에디터 배경 느낌
 
 ---
 
-### 금요일 — 빌딩 저니
-| 용도 | 규격 | 컨셉 |
-|------|------|------|
-| LinkedIn 이미지 | 1080×1350px | **타임라인 비주얼**: Day 1 → Day 34. 주요 마일스톤 표시 (140 기능, 보안 감사, MCP 배포, 5개 언어 커뮤니티 등) |
-| Medium 헤더 | 자유 | 미니멀 타이포그래피 "Day 34" |
+## 수요일: 중국산 이어버드 Section 301
 
-**Canva 제작 팁**: 가로 타임라인 or 세로 마일스톤. 숫자를 크게, 설명은 작게.
+### LinkedIn 캐러셀 (1080x1350px, 7 슬라이드)
+1. **표지**: "$59.99 earbuds from China. Your customer pays $88.75." — 이어버드 이미지
+2. **비용 워터폴**: Product $59.99 → +Shipping $4.99 → +Section 301 $16.25 → +Tax $4.55 → +MPF $2.00 → Total $88.75
+3. **Section 301 설명**: "What is Section 301?" 간단 인포그래픽
+4. **POTAL API 결과**: 실제 calculate_landed_cost 응답 스크린샷
+5. **다른 국가 비교**: 같은 이어버드를 EU/JP/CA로 보낼 때 비용 차이
+6. **"Hidden costs kill margins"**: 셀러가 이걸 몰랐을 때 손해 시나리오
+7. **CTA**: "Know the real cost. potal.app"
 
----
-
-### 토요일 — 데이터 인사이트
-| 용도 | 규격 | 컨셉 |
-|------|------|------|
-| LinkedIn 캐러셀 (PDF) | 1080×1350px, 4~6슬라이드 | **국가별 관세율 TOP 10 차트**. (1) 타이틀 (2) TOP 10 바 차트 (3~4) 개별 국가 상세 (5) POTAL CTA |
-| DEV.to 커버 | 1000×420px | 바 차트 + "240 Countries. Real Tariff Data." |
-
-**Canva 제작 팁**: 수평 바 차트. 국기 아이콘 + 세율%. POTAL Dashboard 스크린샷도 활용 가능.
+### Medium 헤더 (자유 규격)
+- 이어버드 사진 + 가격 태그 $59.99 → $88.75 오버레이
+- 깔끔한 에세이 톤
 
 ---
 
-## 이번 주 필요 이미지 총정리
+## 목요일: POTAL MCP 3줄 코드
 
-| 요일 | LinkedIn | DEV.to | Medium | 합계 |
-|------|---------|--------|--------|------|
-| 월 | 1 | 1 | 1 | 3 |
-| 화 | 1 (캐러셀 6p) | 1 | — | 2 |
-| 수 | 1 | 1 | 1 | 3 |
-| 목 | 1 | 1 | — | 2 |
-| 금 | 1 | — | 1 | 2 |
-| 토 | 1 (캐러셀 5p) | 1 | — | 2 |
-| **합계** | **6** | **5** | **3** | **14** |
+### DEV.to 커버 (1000x420px) — 메인
+- 다크 테마 터미널
+- 3줄 코드: `npm install potal-mcp-server` → classify → calculate
+- "3 lines. 240 countries." 텍스트
 
-> 은태님 Canva 작업량: 이미지 14장 (캐러셀 포함). 예상 시간: 45분~1시간.
-> 우선순위: 월(뉴스 긴급) > 화(캐러셀) > 수(인포그래픽) > 나머지
+### LinkedIn 이미지 (1200x627px)
+- 코드 스니펫 스크린샷 (밝은 배경)
+- ChatGPT + Claude + Gemini 로고 3개 나란히
+- "Your AI agent now calculates tariffs."
+
+---
+
+## 금요일: RLS 90개 테이블 보안 감사
+
+### LinkedIn 이미지 (1200x627px)
+- 좌측: "67 tables unprotected" (빨간)
+- 우측: "90 tables secured" (초록)
+- 가운데: 화살표 + "1 day"
+- 심플, 임팩트
+
+### Medium 헤더 (자유 규격)
+- Supabase 대시보드 스타일 모킹 + "RLS: ON" 배지
+- 빌딩 저니 에세이 톤
+
+---
+
+## 토요일: EU €150 면세 폐지 카운트다운
+
+### LinkedIn 캐러셀 (1080x1350px, 5 슬라이드)
+1. **표지**: "EU De Minimis ends July 1, 2026. D-87." — 카운트다운 숫자 크게
+2. **현재 → 7월**: €150 면세 → €3 flat-rate → 일반 관세 (2028) 타임라인
+3. **영향**: Shein/Temu 모델에 미치는 영향 인포그래픽
+4. **POTAL**: "Already supports 240 countries including EU." + calculate_landed_cost 예시
+5. **CTA**: "Prepare now. potal.app"
+
+---
+
+## Canva 제작 가이드
+
+### 공통 스타일
+- **폰트**: Inter 또는 DM Sans (깔끔, 프리미엄)
+- **컬러**: 흰 배경 + 다크 텍스트 기본. 강조: POTAL 브랜드 블루
+- **여백**: 넉넉하게. 빽빽하지 않게
+- **이미지**: 미니멀 아이콘 > 사진. 데이터 차트 > 장식
+- **텍스트 양**: 슬라이드당 최대 3줄. 숫자를 크게
+
+### 제작 우선순위
+1. 수요일 이어버드 워터폴 (가장 구체적 데이터)
+2. 화요일 가격 비교 바 차트 (재사용 가능)
+3. 토요일 카운트다운 (시의성)
+4. 나머지는 텍스트 중심으로도 가능

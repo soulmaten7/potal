@@ -1,88 +1,82 @@
-# 2026-W15 업계 뉴스 & 규제 변화
-> 자동 생성: 2026-04-02 (sunday-content-prep)
-> 소스: 웹 검색 + D15 Intelligence + D4 Data Pipeline
+# W15 업계 뉴스 & 규제 변화
+> 생성일: 2026-04-05 (sunday-content-prep 자동 생성)
+> 데이터 소스: 웹 검색 + POTAL MCP + session-context.md
 
 ---
 
-## 1. 🔴 [긴급] 미국 Reciprocal Tariff — 4월 9일 발효
+## 1. US De Minimis 완전 폐지 — Ad Valorem 의무화 (2026-02-28~)
 
-**내용**: 트럼프 대통령, 185개국 대상 상호관세 행정명령 서명 (4/2). 4/9부터 발효.
-- 중국: ~34% (기존 Section 301 25% + 추가)
-- EU: ~20%
-- 일본: ~24%
-- 대만: ~32%
-- 한국: ~25%
-- 각국 미국 수입품 관세율의 절반 수준으로 부과
+**요약**: 2025년 8월 29일 $800 면세 폐지 이후, 2026년 2월 28일부터 ad valorem duty 방식만 허용. 고정 금액($80~$200) 선택지 사라짐.
 
-**POTAL 앵글**: "185개국 새 관세율, POTAL은 이미 240개국 관세 계산 지원. $0."
-**콘텐츠 활용**: 월요일 뉴스, 목요일 개발자 가이드, 토요일 데이터 인사이트
+**상세**:
+- 2025-08-29: 모든 국가 대상 duty-free de minimis 정지 (Executive Order 14324)
+- 2026-02-24: 수정 행정명령 발효
+- 2026-02-28: ad valorem duty만 허용 (고정 요율 $80/$160/$200 방식 폐지)
+- IEEPA 세율 기준: <16% → $80, 16~25% → $160, >25% → $200 (과도기 종료)
 
-**출처**: [White House Executive Order](https://www.whitehouse.gov/presidential-actions/2026/02/continuing-the-suspension-of-duty-free-de-minimis-treatment-for-all-countries/)
+**POTAL 앵글**: POTAL calculate_landed_cost는 CBP MPF + Section 301 + IEEPA 관세를 전부 자동 반영. 셀러가 직접 계산할 필요 없음.
 
----
-
-## 2. 미국 De Minimis $800 면세 — 여전히 중단 상태
-
-**내용**: 2025년 8월 29일 폐지 후, 2026년 2월 행정명령으로 중단 연장 확인.
-- 모든 국가에서 미국 수입 시 $800 이하 면세 없음
-- 우편 소포: 54% 관세 or $100 정액 중 택 1 → 2/28부터 종가세(ad valorem)만 적용
-- 연간 14억 개 소포가 영향 (Shein, Temu, AliExpress 직격)
-
-**POTAL 앵글**: "이제 모든 소포에 관세 계산이 필요하다. Avalara는 월 $1,500. POTAL은 $0."
-**콘텐츠 활용**: 화요일 경쟁 비교
-
-**출처**: [Marketplace.org](https://www.marketplace.org/story/2026/03/03/supreme-court-tariffs-de-minimis-exemption-cheap-imports)
+**콘텐츠 활용**: 월요일 토픽 (데이터/인사이트)
 
 ---
 
-## 3. EU €150 면세 폐지 — 2026년 7월 1일 시행
+## 2. EU €150 면세 폐지 — €3 Flat-Rate Duty (2026-07-01 시행)
 
-**내용**: EU가 €150 이하 소포 면세 폐지 확정. 7/1부터 임시 체제로 전환.
-- 소포당 €3 정액 관세 부과
-- IOSS(수입 원스톱) 시스템 확대
-- EU Import Reform Package 2028 완전 시행까지 과도기
+**요약**: EU가 2026년 7월 1일부터 €150 이하 소포에도 관세 부과. 과도기 €3 flat-rate 적용.
 
-**POTAL 앵글**: "EU도 면세 없앤다. 7월부터 모든 EU 수입에 관세 계산 필요. POTAL은 이미 EU 27개국 지원."
-**콘텐츠 활용**: 다음 주 이후 별도 토픽 가능 (7월 시행 전 시리즈)
+**상세**:
+- 시행일: 2026-07-01
+- 과도기: €3 flat-rate duty (관세 heading별 부과)
+- 본격 시행: EU Customs Data Hub 가동 시 (2028년 예상) 일반 관세율 적용
+- 영향: Shein, Temu 등 저가 직배송 모델에 직격탄
 
-**출처**: [Avalara EU Blog](https://www.avalara.com/blog/en/europe/2025/11/eu-end-150-customs-duty-exemption-2026.html)
+**POTAL 앵글**: POTAL은 이미 240개국 관세 계산 지원. EU €3 flat-rate도 반영 준비 완료. D-87.
 
----
-
-## 4. Avalara 2026 IPO 추진 + 무료 e-Invoicing 출시
-
-**내용**:
-- Avalara가 2026년 두 번째 IPO 추진 중 (2022년 PE 인수 후)
-- 무료 US e-Invoicing 출시 (DBNAlliance 인증 access point)
-- 연간 세율 변화: 2025년에만 300만 개 새 관세율 추가
-
-**POTAL 앵글**: "Avalara도 '무료' e-Invoicing을 내놓았다. 하지만 cross-border 관세 계산은 여전히 $1,500+/월. POTAL은 140개 기능 전부 $0."
-**콘텐츠 활용**: 화요일 경쟁 비교 보충 데이터
-
-**출처**: [TaxCloud - Avalara IPO 2026](https://taxcloud.com/blog/avalara-ipo-2026/)
+**콘텐츠 활용**: 토요일 토픽 (기능 딥다이브)
 
 ---
 
-## 5. 글로벌 De Minimis 도미노 — 각국 면세 한도 하향/폐지 추세
+## 3. Zonos, CoreWeave 클라우드 플랫폼 선택
 
-**내용**: 미국 De Minimis 폐지 이후 다른 나라들도 면세 한도 재검토 중.
-- 캐나다, 호주 등 주요국 면세 한도 축소 논의
-- "Small parcels, big problems" — Brookings 보고서
-- 글로벌 이커머스 규제 강화 트렌드
+**요약**: Zonos가 AI 기반 관세/세금/체크아웃 시스템 구동을 위해 CoreWeave 클라우드 인프라 선택.
 
-**POTAL 앵글**: "면세가 사라지는 세상. 모든 국가, 모든 소포에 관세 계산이 필요해진다. 이게 POTAL이 존재하는 이유."
-**콘텐츠 활용**: 토요일 데이터 인사이트 보충
+**상세**:
+- Zonos 고객: Cotopaxi, LIV Golf, USPS, Canada Post
+- CoreWeave: AI/ML 특화 GPU 클라우드 (NVIDIA 기반)
+- 의미: Zonos가 AI 인프라에 대규모 투자 → 인프라 비용이 고객 가격에 전가될 가능성
 
-**출처**: [Brookings](https://www.brookings.edu/articles/small-parcels-big-problems-modernizing-de-minimis-in-a-global-economy/)
+**POTAL 앵글**: POTAL은 595 GRI 규칙 기반 분류 = AI 호출 $0. 클라우드 GPU 비용 자체가 발생하지 않음. Zonos $4,000+/월 vs POTAL $0.
+
+**콘텐츠 활용**: 화요일 토픽 (경쟁 비교)
 
 ---
 
-## 이번 주 뉴스 활용 요약
+## 4. Avalara "Cross-Border Chaos" 리포트 — 83%가 "더 복잡해졌다"
 
-| 뉴스 | 활용 요일 | 카테고리 |
-|------|----------|---------|
-| Reciprocal Tariff 4/9 발효 | 월, 목, 토 | 뉴스, 개발자, 데이터 |
-| De Minimis 중단 연장 | 화 | 경쟁 비교 |
-| EU €150 폐지 | (다음 주 예약) | 뉴스 |
-| Avalara IPO + e-Invoicing | 화 | 경쟁 비교 |
-| 글로벌 De Minimis 도미노 | 토 | 데이터/인사이트 |
+**요약**: Avalara 2026 Cross-Border Chaos Report에서 비즈니스 리더 83%가 크로스보더 운영이 1년 전보다 복잡해졌다고 응답.
+
+**상세**:
+- 83% 비즈니스 리더: 크로스보더 운영 복잡성 증가
+- 39% 기업: 규제 불확실성으로 신규 시장 진입 지연
+- 87% 기업: AI를 크로스보더 운영에 활용 중
+- 3M 신규 관세율: 2025년 한 해 동안 전 세계 약 300만 개 새 관세율 추가
+
+**POTAL 앵글**: 복잡성 증가 = POTAL 같은 자동화 도구의 가치 상승. 140개 기능 무료로 이 복잡성 해결.
+
+**콘텐츠 활용**: 전 주간 배경 데이터로 활용
+
+---
+
+## 5. US 관세 구조 현황 (2026 Q2 기준)
+
+**요약**: 미국의 주요 교역국별 관세율 현황. Section 301, IEEPA, 반덤핑 등 중첩 구조.
+
+**주요 국가별 관세율**:
+- 중국: 145% 총합 (fentanyl 20% + reciprocal 125% + Section 301 품목별)
+- EU: 10~20% (품목별 상이)
+- 베트남: 46% (협상 중 10% 일시 적용)
+- 인도: 26% reciprocal + 반덤핑 추가
+
+**POTAL 앵글**: calculate_landed_cost가 이 모든 중첩 관세를 자동 계산. 셀러가 Section 301 + IEEPA + MFN을 일일이 더할 필요 없음.
+
+**콘텐츠 활용**: 수요일 토픽 (사용 사례) 배경 데이터
