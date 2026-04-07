@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     const { data: existingSeller } = await (service
       .from("sellers") as any)
       .select("id")
-      .eq("id", userId)
+      .or(`id.eq.${userId},user_id.eq.${userId}`)
       .single();
 
     if (existingSeller) {
@@ -63,6 +63,7 @@ export async function GET(request: Request) {
         .from("sellers") as any)
         .insert({
           id: userId,
+          user_id: userId,
           contact_email: email,
           company_name: companyName,
           country: typeof country === "string" ? country.toUpperCase() : country,

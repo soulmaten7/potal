@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
     const { data: existing } = await (service
       .from("sellers") as any)
       .select("id")
-      .eq("id", userId)
+      .or(`id.eq.${userId},user_id.eq.${userId}`)
       .single();
 
     if (existing) {
@@ -91,6 +91,7 @@ export async function POST(req: NextRequest) {
       .from("sellers") as any)
       .insert({
         id: userId,
+        user_id: userId,
         contact_email: email,
         company_name: companyName.trim(),
         country: country.toUpperCase(),

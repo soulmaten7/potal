@@ -41,18 +41,39 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify seller exists
-    const { data: seller } = await (supabase
+    // Verify seller exists (or auto-create)
+    let { data: seller } = await (supabase
       .from('sellers') as any)
       .select('id')
       .eq('user_id', user.id)
       .single();
 
     if (!seller) {
-      return NextResponse.json(
-        { success: false, error: { message: 'Seller profile not found.' } },
-        { status: 404 }
-      );
+      // Auto-create seller profile
+      const meta = user.user_metadata || {};
+      const { data: newSeller, error: createErr } = await (supabase
+        .from('sellers') as any)
+        .insert({
+          user_id: user.id,
+          contact_email: user.email,
+          company_name: meta.company_name || meta.full_name || user.email?.split('@')[0] || 'My Company',
+          country: typeof meta.country === 'string' ? meta.country.toUpperCase() : '',
+          industry: meta.industry || '',
+          plan_id: 'free',
+          subscription_status: 'active',
+          trial_type: 'monthly',
+          trial_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        })
+        .select('id')
+        .single();
+
+      if (createErr || !newSeller) {
+        return NextResponse.json(
+          { success: false, error: { message: 'Seller profile not found and auto-creation failed.' } },
+          { status: 404 }
+        );
+      }
+      seller = newSeller;
     }
 
     // Parse body

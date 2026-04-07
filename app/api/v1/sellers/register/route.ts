@@ -139,6 +139,7 @@ export async function POST(req: NextRequest) {
       .from('sellers') as any)
       .insert({
         id: userId,
+        user_id: userId,
         contact_email: email,
         company_name: companyName.trim(),
         country: country.toUpperCase(),

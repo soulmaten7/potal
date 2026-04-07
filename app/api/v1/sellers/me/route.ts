@@ -51,13 +51,19 @@ export async function GET(req: NextRequest) {
 
     if (sellerError || !seller) {
       // Auto-create seller profile for authenticated users
+      const meta = user.user_metadata || {};
       const { data: newSeller, error: createError } = await (supabase
         .from('sellers') as any)
         .insert({
           user_id: user.id,
           contact_email: user.email,
+          company_name: meta.company_name || meta.full_name || user.email?.split('@')[0] || 'My Company',
+          country: typeof meta.country === 'string' ? meta.country.toUpperCase() : '',
+          industry: meta.industry || '',
           plan_id: 'free',
           subscription_status: 'active',
+          trial_type: 'monthly',
+          trial_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
