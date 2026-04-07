@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { FEATURES, CATEGORY_ICONS, getAllFeatureSlugs, getFeatureBySlug, type Feature } from '../features-data';
 import { getGuideBySlug, type FieldSpec } from '../features-guides';
 import CopyButton from './CopyButton';
+import FeatureToolWidget from './FeatureToolWidget';
 
 // ─── Static Generation ──────────────────────────────
 
@@ -269,6 +270,9 @@ export default async function FeatureGuidePage({ params }: PageProps) {
             </div>
           </section>
         )}
+
+        {/* Try it live */}
+        <FeatureToolWidget slug={slug} />
 
         {/* Having issues? */}
         <section className="bg-white rounded-xl border border-slate-200 p-6">
