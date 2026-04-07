@@ -1,5 +1,13 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3 — Dashboard 드롭다운 + Usage탭 + seller profile 배너 수정)
+> 마지막 업데이트: 2026-04-07 KST (CW22-S4 — 데모 영상 전 전체 수정)
+
+## [2026-04-07 KST] CW22-S4 — 데모 영상 전 전체 수정
+
+### 수정
+- `dcb0abc` fix: "9-Field" → "10-Field" 전체 수정 (20개 파일: homepage, pricing, features, tools, i18n 7개, docs)
+- `dcb0abc` fix: Trade Agreements/Compliance 아코디언 항상 표시 (데이터 없으면 "No FTA"/"No issues" fallback)
+- `dcb0abc` fix: /tools/screening 크래시 방지 — API 에러 시 페이지 이동 대신 에러 메시지 표시
+- `dcb0abc` fix: /tools/hs-lookup 401 에러 → "Free account required" 사용자 친화적 메시지
 
 ## [2026-04-06 15:30 KST] CW22-S3 — 140기능 프론트엔드 UI 대규모 구축 (5라운드 × 3터미널)
 

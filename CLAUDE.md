@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3: Dashboard HS Classification 드롭다운/Usage탭/seller profile 배너 수정)
+# 마지막 업데이트: 2026-04-07 KST (CW22-S4: 9→10 field 전체 수정, 아코디언 항상 표시, screening 크래시 수정, hs-lookup 인증 메시지 개선)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

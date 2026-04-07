@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-06 22:50 KST (CW22-S3 — Dashboard HS Classification 드롭다운 + Usage탭 + seller profile 배너 수정. 사이트 총 503페이지.)
+> 마지막 업데이트: 2026-04-07 KST (CW22-S4 — 데모 영상 전 전체 수정. 9→10 field, 아코디언, screening 크래시, hs-lookup 인증. 사이트 총 503페이지.)
 
 ---
 
