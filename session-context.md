@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4e — /tools 제거→/features 통합, API demo bypass, i18n 6개 언어, usage chart. 사이트 총 ~470페이지.)
+> 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f — restricted-items 위젯 추가, 데모 영상 STEP 1~3 완료, content-posting 스킬 에셋 목록 추가. 사이트 총 ~470페이지.)
 
 ---
 
@@ -202,6 +202,18 @@
 - ✅ **폴더 정리** — portal 루트 170+ 파일 → archive/ 하위 폴더 (commands, benchmarks, audits, cold-email)
 - ✅ **모든 문서 동기화** — CHANGELOG.md, session-context.md, NEXT_SESSION_START.md 업데이트
 
+### CW22-S4f Cowork — restricted-items 위젯 + 데모 영상 완성 + content-posting 에셋 목록 (2026-04-07)
+
+**완료 항목:**
+- ✅ **FeatureToolWidget에 restricted-items config 추가** — endpoint: `/api/v1/restrictions`, method: POST, fields: destinationCountry(필수 select), hsCode(선택 text), productName(선택 text), submitLabel: "Check Restrictions". `/features/restricted-items#try-it`에서 "Try it live" 위젯 동작 확인 (커밋 d9eb9cf)
+- ✅ **Notion 데모 영상 제작 가이드 전면 업데이트 (5차 수정)** — rec_08(JSON 형식), rec_09(선행코드 완료 표시), rec_13(HS 8518.21, $50.18), rec_14(cosmetics 수정), rec_16(food 수동선택), rec_22(Confidence 비실시간, footwear 수동선택), rec_17(실측 금액 $42.09/$33.44/$36.14), STEP 2 재촬영 완료 표시, STEP 3 카드 완료 체크
+- ✅ **데모 영상 STEP 1~3 전부 완료** — 스크린샷 10장 + 녹화 24개 + Canva 카드 2장 재촬영/제작 완료 (2026-04-07). 소재 라이브러리 완성
+- ✅ **content-posting 스킬 에셋 목록 추가** — Step 7 전면 재작성: "비주얼 제안" → "에셋 첨부 안내 (🎬 필수 섹션)". 스크린샷 10장 + 녹화 24개 + Canva 카드 2장 전체 인벤토리 (파일명/내용/추천토픽). 에셋 매칭 규칙 + 품질 체크리스트 3항목 추가
+- ✅ **daily-posts 2개 파일 에셋 참고사항 업데이트** — 4/6 파일: ⚠️ 재촬영 필요 5곳 → ✅ 재촬영 완료, 금액 $42.10→$42.09 수정. 4/7 파일: "기존 완성 소재" → "✅ 전체 재촬영 완료"
+- ✅ **rec_14 Category 수정** — `beauty`(존재하지 않음) → `cosmetics`(국제 무역 분류 기준 정확한 키워드)
+
+**커밋**: d9eb9cf (restricted-items config 추가)
+
 ### CW22-S Cowork — Data Source Ticker + i18n + Auto-Import + Publication Ticker (2026-04-05)
 
 **완료 항목:**
@@ -399,7 +411,8 @@
 - ⏳ **Hacker News "Show HN" 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
 - ⏳ **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
 - ⏳ **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 ✅ 완료)
-- ⏳ **데모 영상 촬영 진행 중** — Notion "데모 영상 제작 가이드" 기반 촬영 중. 메인 4개(rec_01~04) 완료, 기능별 클립(rec_05~12) + 시나리오(rec_13~16) + 비교(rec_17~19) + 티커 데모(rec_20~21) 미촬영
+- ✅ **데모 영상 STEP 1~3 완료** — 스크린샷 10장 + 녹화 24개(rec_01~24) + Canva 카드 2장 전부 완료 (2026-04-07). STEP 4(CapCut 편집) + STEP 5(최종 파일 정리) 남음
+- ⏳ **데모 영상 STEP 4~5 미완료** — CapCut으로 60초 메인 데모 영상 편집 + 최종 파일 content/thumbnails/ 정리
 - ⏸ **유튜브 업로드 보류** — CEO 결정. 영상 촬영은 계속, 유튜브 채널 생성/업로드는 보류
 - ⏳ **20개 Feature Guide 템플릿 보강** — CW22-M에서 121/140 완성. 나머지 20개 (bigcommerce-plugin, magento-module, woocommerce-plugin 등 마켓플레이스 미승인+비핵심 페이지)
 

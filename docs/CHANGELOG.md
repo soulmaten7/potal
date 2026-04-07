@@ -1,5 +1,17 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4e — /tools 제거, /features 통합, API demo bypass, i18n)
+> 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f — restricted-items 위젯 추가, content-posting 에셋 목록)
+
+## [2026-04-07 22:30 KST] CW22-S4f — restricted-items 위젯 + content-posting 에셋 인벤토리
+
+### 추가
+- FeatureToolWidget: `restricted-items` config 추가 — endpoint `/api/v1/restrictions`, fields: destinationCountry(required select), hsCode(text), productName(text), submitLabel "Check Restrictions" (커밋 d9eb9cf)
+- content-posting 스킬: 에셋 인벤토리 추가 — 스크린샷 10장 + 녹화 24개 + Canva 카드 2장 전체 목록 (파일명/내용/추천토픽), 에셋 첨부 안내 포맷, 매칭 규칙, 품질 체크리스트 3항목
+
+### 변경
+- content-posting 스킬 Step 7: "비주얼 제안" → "에셋 첨부 안내 (🎬 필수 섹션)" 전면 재작성
+- daily-posts 2개 파일: ⚠️ 재촬영 필요 → ✅ 재촬영 완료, 금액 $42.10→$42.09 수정
+- Notion 데모 영상 제작 가이드: rec_14 Category `beauty`→`cosmetics` (국제 무역 분류 기준 정확 키워드)
+- Notion 데모 영상 제작 가이드: STEP 2 "⚠️ 전체 재촬영 필요" → "✅ 전체 재촬영 완료", STEP 3 카드 2개 완료 체크
 
 ## [2026-04-07 KST] CW22-S4e — /tools 제거 + /features 통합 + API middleware demo bypass + i18n
 

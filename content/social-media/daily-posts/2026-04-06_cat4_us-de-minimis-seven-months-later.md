@@ -11,15 +11,15 @@
 ### LinkedIn
 | 순서 | 에셋 파일명 | 유형 | 사용 방법 |
 |------|-----------|------|----------|
-| 1 | rec_01_demo-flow.mov | 영상 | 메인 첨부 — Cotton T-Shirt $30 입력 → $42.10 결과 나오는 전체 플로우. 포스트 내용과 직접 일치 ⚠️ 재촬영 필요 (Confidence 92%→100%) |
-| 2 | 04_result.png | 이미지 | 영상 대신 사용 가능 — Calculate 결과 화면 (Landed Cost Breakdown 전체 보이게) ⚠️ 재촬영 필요 |
+| 1 | rec_01_demo-flow.mov | 영상 | 메인 첨부 — Cotton T-Shirt $29.99 입력 → $42.09 결과 나오는 전체 플로우. 포스트 내용과 직접 일치 ✅ 재촬영 완료 |
+| 2 | 04_result.png | 이미지 | 영상 대신 사용 가능 — Calculate 결과 화면 (Landed Cost Breakdown 전체 보이게) ✅ 재촬영 완료 |
 | 3 | 07_competitors.png | 이미지 | 캐러셀 2번째 — 경쟁사 가격 비교 테이블 (포스트 마지막 "cost of calculating" 문맥에 맞음) |
 | 4 | 06_pricing.png | 이미지 | 캐러셀 3번째 — Forever Free 플랜 카드 ($0/month 강조) |
 
 ### DEV.to
 | 순서 | 에셋 파일명 | 유형 | 삽입 위치 |
 |------|-----------|------|----------|
-| 1 | 04_result.png | 이미지 | "## The Real Numbers" 섹션 아래, Product 1 결과 테이블 바로 위 ⚠️ 재촬영 필요 |
+| 1 | 04_result.png | 이미지 | "## The Real Numbers" 섹션 아래, Product 1 결과 테이블 바로 위 ✅ 재촬영 완료 |
 | 2 | 09_api-docs.png | 이미지 | curl 코드 블록 바로 위 — API 문서 페이지 스크린샷으로 개발자 신뢰감 |
 | 3 | 07_competitors.png | 이미지 | "## How POTAL Handles This" 섹션 앞 — 경쟁사 가격 비교 시각화 |
 
@@ -27,12 +27,11 @@
 | 순서 | 에셋 파일명 | 유형 | 사용 방법 |
 |------|-----------|------|----------|
 | 1 | 01_hero.png | 히어로 이미지 | 글 최상단 — POTAL 홈페이지 "140 Features. All Free. Forever." |
-| 2 | 04_result.png | 본문 이미지 | "What a $30 Product Actually Costs Now" 섹션 아래 삽입 ⚠️ 재촬영 필요 |
+| 2 | 04_result.png | 본문 이미지 | "What a $30 Product Actually Costs Now" 섹션 아래 삽입 ✅ 재촬영 완료 |
 | 3 | 06_pricing.png | 본문 이미지 | "Where the Industry Is Heading" 섹션 — Forever Free vs 경쟁사 가격 문맥 |
 
 ### 에셋 참고사항
-- rec_01_demo-flow.mov, 04_result.png 은 ⚠️ 재촬영 필요 (Confidence 92%→100% 수정 후)
-- 재촬영 전에는 07_competitors.png, 06_pricing.png, 01_hero.png, 09_api-docs.png 만 사용 권장
+- ✅ 전체 에셋 재촬영 완료 (2026-04-07). 모든 에셋 사용 가능
 - rec_05_accuracy-meter.mov (간접 관련) — 정확도 미터 시각화. 이 포스트의 "정확한 비용 계산" 메시지와 연결 가능하나 직접적이지는 않음
 
 ---

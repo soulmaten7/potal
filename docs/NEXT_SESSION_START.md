@@ -1,11 +1,11 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-07 KST (CW22-S4e — /tools 제거→/features 통합, API demo bypass, i18n 6개 언어)
+> 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f — restricted-items 위젯, 데모 STEP 1~3 완료, content-posting 에셋 목록)
 
 ---
 
 ## 현재 상태 요약
 
-### 핵심 수치 (2026-04-06 기준)
+### 핵심 수치 (2026-04-07 기준)
 - **외부 사용자**: 0명, **MRR**: $0 — **마케팅/고객 확보가 최우선**
 - **147/147 기능 구현** (100%, WON'T 2개 제외 = 140 Active + 5 보완 + 2 WON'T)
 - **프론트엔드 도구 페이지**: ~79 신규 (Tools 34 + Dashboard 18 + Developer 5 + Learn/Cert/Integration/Features 개선)
@@ -21,23 +21,23 @@
 
 ---
 
-## 가장 최근 세션: CW22-S3 (2026-04-06)
+## 가장 최근 세션: CW22-S4f (2026-04-07)
 
-### 핵심 변경 — 140기능 프론트엔드 UI 대규모 구축
-5라운드 × 3터미널 병렬 빌드로 ~79개 새 프론트엔드 페이지 생성:
+### 핵심 변경 — restricted-items 위젯 + 데모 영상 소재 완성 + content-posting 에셋 인벤토리
 
-| 라운드 | 내용 | 페이지 수 |
-|--------|------|----------|
-| Round 1 | 도구 페이지 (Compliance, Tax, Trade, Classification) | 15 |
-| Round 2 | 도구 페이지 (ECCN, Customs, Invoice, Returns 등) | 15 |
-| Round 3 | 도구 페이지 + Tools Hub (/tools) | 16 |
-| Round 4 | Dashboard 페이지 (Analytics, Webhooks, API Keys 등) | 18 |
-| Round 5 | Developer Docs + Learn + Integration + Nav 업데이트 | ~15 |
+**코드 변경:**
+- FeatureToolWidget.tsx에 `restricted-items` config 추가 → `/features/restricted-items#try-it`에서 "Try it live" 위젯 동작 (커밋 d9eb9cf)
 
-### 추가 완료 항목
-- **Homepage Country Dropdown** — 20국 → 240국, 검색 + 인기 20 + Show all, z-index/overflow 수정, 480px 높이
-- **Features 페이지** — 각 기능에 "Try it →" 버튼 → /tools/* 연결
-- **Header Navigation** — "Tools" 메뉴 추가
+**콘텐츠/문서:**
+- 데모 영상 STEP 1~3 전부 완료 — 스크린샷 10장 + 녹화 24개 + Canva 카드 2장 (소재 라이브러리 완성)
+- content-posting 스킬에 에셋 인벤토리 추가 (36개 파일 전체 목록 + 토픽 매칭 규칙)
+- Notion 데모 영상 제작 가이드 전면 업데이트 (rec_08~22 상세 수정, Category cosmetics 수정)
+- daily-posts 2개 파일 재촬영 완료 반영
+
+### 다음 세션에서 할 일
+- **데모 영상 STEP 4** — CapCut에서 60초 메인 데모 영상 편집 (card_opening → rec_01 → rec_03 → rec_04 → rec_02 → card_ending)
+- **데모 영상 STEP 5** — 최종 파일 정리, `content/thumbnails/`에 저장
+- **Vercel Support Case #01083440** 확인 — GitHub-Vercel 자동 배포 복구 여부
 - **Scheduled Tasks** — 에셋 가이드 섹션 추가 (daily-content-posting, sunday-content-prep)
 
 ### 커밋 13+개 (3터미널 병렬, 전부 push + vercel --prod 완료)

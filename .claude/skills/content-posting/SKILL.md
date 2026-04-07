@@ -322,11 +322,87 @@ description: [한 줄 설명]
 
 Notion MCP 도구 사용: `notion-create-pages` 호출.
 
-### Step 7: 비주얼 제안
-콘텐츠에 어울리는 이미지/그래픽 아이디어를 파일 끝에 추가:
-- 어떤 비교 차트가 효과적인지
-- 어떤 스크린샷이 필요한지
-- LinkedIn 캐러셀(PDF) 슬라이드 구조 제안
+### Step 7: 에셋 첨부 안내 (🎬 필수 섹션)
+매일 생성하는 콘텐츠에 **반드시** `🎬 첨부 에셋 안내` 섹션을 포함한다. 토픽에 가장 잘 맞는 에셋을 아래 목록에서 골라 플랫폼별로 지정한다.
+
+**에셋 안내 포맷:**
+```markdown
+## 🎬 첨부 에셋 안내 (★ 필수 섹션)
+
+### LinkedIn
+| 순서 | 에셋 파일명 | 유형 | 사용 방법 |
+|------|-----------|------|----------|
+| 1 | [파일명] | 이미지/영상 | [어디에 어떻게 사용] |
+
+### DEV.to
+| 순서 | 에셋 파일명 | 유형 | 삽입 위치 |
+|------|-----------|------|----------|
+| 1 | [파일명] | 이미지 | [본문 어느 섹션 아래] |
+
+### Medium
+| 순서 | 에셋 파일명 | 유형 | 사용 방법 |
+|------|-----------|------|----------|
+| 1 | [파일명] | 이미지 | [어디에 사용] |
+```
+
+**에셋 매칭 규칙:**
+- 토픽과 직접 관련된 에셋을 우선 선택
+- 플랫폼당 최소 1개, 최대 3개 에셋 지정
+- 같은 에셋을 여러 플랫폼에 사용 가능
+- 영상(rec_)은 LinkedIn에서만 사용 (DEV.to/Medium은 이미지만)
+
+---
+
+## 사용 가능 에셋 목록 (2026-04-07 재촬영 완료)
+
+모든 파일은 `content/thumbnails/` 폴더에 저장. 아래 목록에 없는 파일명을 사용하지 말 것.
+
+### 스크린샷 (10장)
+| 파일명 | 내용 | 추천 토픽 |
+|--------|------|----------|
+| `01_hero.png` | 홈페이지 상단 "140 Features. All Free. Forever." | 브랜드, WHY FREE, 일반 |
+| `02_demo-empty.png` | LIVE DEMO 빈 폼 (10-Field + Fields Filled 카운터) | 기능 딥다이브, 사용 사례 |
+| `04_result.png` | Calculate 결과 (Accuracy ~100% + Confidence + Breakdown) | HS Code, Landed Cost, 기능 딥다이브 |
+| `05_features.png` | /features 페이지 (140개 기능 그리드) | 기능 딥다이브, 경쟁 비교 |
+| `06_pricing.png` | /pricing Forever Free 플랜 카드 | WHY FREE, 경쟁 비교 |
+| `07_competitors.png` | 경쟁사 가격 비교 테이블 (POTAL FREE vs 나머지) | 경쟁 비교 (가장 범용적) |
+| `08_widget.png` | 홈페이지 위젯 데모 (US 선택, Total Landed Cost) | 개발자용, 플랫폼 연동 |
+| `09_api-docs.png` | /developers 페이지 상단 | 개발자용, API, SDK |
+| `10_dashboard.png` | Dashboard Usage 탭 (Daily API Calls + Unlimited) | 대시보드, 사용량, 개발자용 |
+
+### 녹화 영상 (24개) — LinkedIn 영상 첨부용
+| 파일명 | 길이 | 내용 | 추천 토픽 |
+|--------|------|------|----------|
+| `rec_01_demo-flow.mov` | ~20초 | 홈페이지 LIVE DEMO 입력→결과 풀 플로우 | **메인 데모 (가장 범용적)** |
+| `rec_02_widget.mov` | ~10초 | 위젯 데모 (US→GB→JP 가격 변경) | 위젯, 플랫폼 연동 |
+| `rec_03_features-scroll.mov` | ~10초 | /features 페이지 스크롤 | 기능 소개, 140개 기능 |
+| `rec_04_pricing.mov` | ~5초 | /pricing + 경쟁사 비교 테이블 | 경쟁 비교, WHY FREE |
+| `rec_05_accuracy-meter.mov` | ~15초 | 정확도 미터 (1/10→3/10 바 변화) | 정확도, Magic 3, AI |
+| `rec_06_hs-code-result.mov` | ~15초 | HS Code 결과 상세 + Breakdown | HS Code, 분류, 기능 딥다이브 |
+| `rec_07_fta-check.mov` | ~20초 | FTA 협정 확인 + 절감액 | FTA, 무역 협정 |
+| `rec_08_denied-party.mov` | ~15초 | Sanctions Screening "Try it live" (Huawei) | 제재, 컴플라이언스 |
+| `rec_09_country-restrictions.mov` | ~15초 | Restricted Items "Try it live" (JP + 화기류) | 규제, 수출 통제 |
+| `rec_10_landed-cost-breakdown.mov` | ~20초 | Landed Cost 상세 분해 (CN→US T-Shirt $42.09) | Landed Cost, 관세 계산 |
+| `rec_11_dashboard.mov` | ~15초 | Dashboard 둘러보기 (Overview→Usage→API Keys→HS) | 대시보드, 사용자 경험 |
+| `rec_12_api-docs.mov` | ~15초 | /developers 코드 예시 + Copy + endpoint 목록 | 개발자용, API |
+| `rec_13_scenario-electronics-japan.mov` | ~30초 | Bluetooth Speaker US→JP ($50.18) | 전자제품, 일본, 시나리오 |
+| `rec_14_scenario-cosmetics-eu.mov` | ~30초 | Moisturizing Cream KR→DE ($42.18) | 화장품, EU, 규제 |
+| `rec_15_scenario-clothing-us.mov` | ~30초 | Cotton T-Shirt KR→US ($29.13, KORUS FTA) | 의류, FTA, 한미 |
+| `rec_16_scenario-food-uk.mov` | ~30초 | Green Tea KR→GB ($21.87) | 식품, 영국, 규제 |
+| `rec_17_country-compare.mov` | ~20초 | 같은 T-Shirt US/JP/DE 비교 ($42/$33/$36) | 국가 비교, 관세 차이 |
+| `rec_18_empty-vs-full.mov` | ~15초 | 1/10(빨강) → 10/10(초록) 변화 | 정확도, UX, 시각적 |
+| `rec_19_speed-test.mov` | ~10초 | Laptop $999 Calculate ~120ms 속도 | 속도, 성능 |
+| `rec_20_ticker-scroll.mov` | ~15초 | 홈페이지 2줄 티커 자동 스크롤 | 데이터 소스, 실시간, 신뢰 |
+| `rec_21_ticker-colors.mov` | ~10초 | 티커 초록/노랑/빨강 색상 상태 | 데이터 신선도 |
+| `rec_22_dashboard-10field.mov` | ~20초 | Dashboard HS Classification 10-field → Classify | 대시보드, HS Code, 10-field |
+| `rec_23_dashboard-country-select.mov` | ~15초 | 240국 CountrySelect 드롭다운 | 240개국, UI, 대시보드 |
+| `rec_24_features-browse.mov` | ~15초 | Features 카테고리/검색 → Try it live | Features 페이지, UX |
+
+### Canva 카드 (2장)
+| 파일명 | 내용 | 용도 |
+|--------|------|------|
+| `card_opening.png` | "Your customer sees $45... gets $63 customs bill" (검정 배경) | 60초 영상 오프닝 |
+| `card_ending.png` | POTAL 로고 + potal.app + "Just use it." (검정 배경) | 60초 영상 엔딩 |
 
 ---
 
@@ -346,6 +422,9 @@ Notion MCP 도구 사용: `notion-create-pages` 호출.
 - [ ] **POTAL ONLY** — 외부 주제를 다루지 않았는가?
 - [ ] **CTA** — 구걸이 아닌 자연스러운 CTA인가? (potal.app 링크 정도)
 - [ ] **API URL 확인** — potal.app/api/v1/ 만 사용 (api.potal.io 등 잘못된 URL 금지)
+- [ ] **에셋 첨부 안내** — 🎬 필수 섹션이 포함되어 있는가?
+- [ ] **에셋 파일명 확인** — 위 "사용 가능 에셋 목록"에 있는 파일명만 사용했는가?
+- [ ] **에셋-토픽 매칭** — 에셋이 오늘 토픽과 관련성이 있는가?
 
 ---
 
