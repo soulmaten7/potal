@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 
 const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), { ssr: false });
 const ProfileCompletionBanner = dynamic(() => import('./ProfileCompletionBanner'), { ssr: false });
+const DailyUsageChart = dynamic(() => import('./DailyUsageChart'), { ssr: false });
 
 // Paddle.js global type
 declare global {
@@ -55,12 +56,19 @@ interface SellerProfile {
   createdAt: string;
 }
 
+interface DailyUsage {
+  date: string;
+  success: number;
+  failed: number;
+}
+
 interface UsageData {
   period: string;
   used: number;
   limit: number | string;
   remaining: number | string;
   usagePercent: number;
+  daily?: DailyUsage[];
 }
 
 interface CountryAnalytics {
@@ -951,18 +959,18 @@ export default function DashboardContent() {
                 </div>
               </div>
 
-              <div style={{ background: 'white', borderRadius: 12, padding: 24, border: '1px solid #e5e7eb' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div>
-                    <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>PLAN LIMIT</div>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>Unlimited</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>RATE LIMIT</div>
-                    <div style={{ fontSize: 28, fontWeight: 800 }}>20<span style={{ fontSize: 14, fontWeight: 500, color: '#888' }}> req/sec</span></div>
-                  </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>PLAN LIMIT</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>Unlimited</div>
+                </div>
+                <div style={{ background: 'white', borderRadius: 12, padding: 20, border: '1px solid #e5e7eb' }}>
+                  <div style={{ fontSize: 12, color: '#888', fontWeight: 600, marginBottom: 8 }}>RATE LIMIT</div>
+                  <div style={{ fontSize: 28, fontWeight: 800 }}>20<span style={{ fontSize: 14, fontWeight: 500, color: '#888' }}> req/sec</span></div>
                 </div>
               </div>
+
+              {usage?.daily && <DailyUsageChart data={usage.daily} />}
             </div>
           )}
           {/* ── Countries (4-08) ── */}

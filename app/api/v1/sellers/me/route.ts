@@ -99,6 +99,38 @@ export async function GET(req: NextRequest) {
 
     const used = totalUsed || 0;
 
+    // Get daily usage for last 30 days
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const { data: dailyLogs } = await (supabase
+      .from('usage_logs') as any)
+      .select('created_at, status_code')
+      .eq('seller_id', sellerId)
+      .gte('created_at', thirtyDaysAgo)
+      .order('created_at', { ascending: true });
+
+    // Aggregate by date
+    const dailyMap = new Map<string, { success: number; failed: number }>();
+    for (let d = 0; d < 30; d++) {
+      const date = new Date(now.getTime() - (29 - d) * 24 * 60 * 60 * 1000);
+      dailyMap.set(date.toISOString().split('T')[0], { success: 0, failed: 0 });
+    }
+    for (const log of dailyLogs || []) {
+      const date = new Date(log.created_at).toISOString().split('T')[0];
+      const entry = dailyMap.get(date);
+      if (entry) {
+        if (log.status_code >= 200 && log.status_code < 400) {
+          entry.success++;
+        } else {
+          entry.failed++;
+        }
+      }
+    }
+    const dailyUsage = Array.from(dailyMap.entries()).map(([date, counts]) => ({
+      date,
+      success: counts.success,
+      failed: counts.failed,
+    }));
+
     return NextResponse.json({
       success: true,
       data: {
@@ -130,6 +162,7 @@ export async function GET(req: NextRequest) {
           remaining: 'unlimited',
           usagePercent: 0,
           rateLimitPerSecond: 20,
+          daily: dailyUsage,
         },
       },
     });
