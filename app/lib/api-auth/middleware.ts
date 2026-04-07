@@ -157,6 +157,30 @@ export async function logKeyAuditEvent(
   }
 }
 
+// ─── Demo Rate Limiter (10 req/min/IP) ──────────────
+const demoRateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function checkDemoRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = demoRateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    demoRateLimitMap.set(ip, { count: 1, resetAt: now + 60_000 });
+    return true;
+  }
+  if (entry.count >= 10) return false;
+  entry.count++;
+  return true;
+}
+
+const DEMO_CONTEXT: ApiAuthContext = {
+  keyId: 'demo',
+  sellerId: 'demo',
+  keyType: 'publishable',
+  planId: 'free',
+  subscriptionStatus: 'active',
+  rateLimitPerMinute: 10,
+  sandbox: true,
+};
+
 // ─── Middleware Wrapper ──────────────────────────────
 
 type ApiHandler = (req: NextRequest, context: ApiAuthContext) => Promise<Response>;
@@ -164,6 +188,22 @@ type ApiHandler = (req: NextRequest, context: ApiAuthContext) => Promise<Respons
 export function withApiAuth(handler: ApiHandler) {
   return async (req: NextRequest): Promise<Response> => {
     const startTime = Date.now();
+
+    // Demo bypass — X-Demo-Request: true, no API key required
+    if (req.headers.get('X-Demo-Request') === 'true') {
+      const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+      if (!checkDemoRateLimit(ip)) {
+        return apiError(ApiErrorCode.RATE_LIMITED, 'Demo rate limit exceeded (10/min). Sign up for unlimited access.');
+      }
+      try {
+        const response = await handler(req, DEMO_CONTEXT);
+        response.headers.set('X-Demo-Mode', 'true');
+        return response;
+      } catch {
+        return apiError(ApiErrorCode.INTERNAL_ERROR, 'Internal server error.');
+      }
+    }
+
     const supabase = getServiceClient();
 
     // 1. Extract API key

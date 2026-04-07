@@ -33,10 +33,8 @@ export default function CurrencyPage() {
     setError('');
     setResult(null);
     try {
-      const res = await fetch('/api/v1/exchange-rate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Demo-Request': 'true' },
-        body: JSON.stringify({ amount: numAmount, from, to }),
+      const res = await fetch(`/api/v1/exchange-rate?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&amount=${numAmount}`, {
+        headers: { 'X-Demo-Request': 'true' },
       });
       const json = await res.json();
       if (!res.ok || !json.success) {

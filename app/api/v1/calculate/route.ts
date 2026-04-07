@@ -31,29 +31,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 function getSupabase() { return createClient(supabaseUrl, supabaseKey); }
 
-// ─── Demo Rate Limiter (10 req/min/IP) ───────────────
-const _demoRateMap = new Map<string, { count: number; resetAt: number }>();
-function checkDemoRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = _demoRateMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    _demoRateMap.set(ip, { count: 1, resetAt: now + 60_000 });
-    return true;
-  }
-  if (entry.count >= 10) return false;
-  entry.count++;
-  return true;
-}
-
-const DEMO_CONTEXT: ApiAuthContext = {
-  keyId: 'demo',
-  sellerId: 'demo',
-  keyType: 'publishable',
-  planId: 'free',
-  subscriptionStatus: 'active',
-  rateLimitPerMinute: 10,
-  sandbox: true,
-};
+// Demo bypass moved to withApiAuth middleware (CW22-S4e)
 
 const EU_COUNTRIES = new Set(['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE']);
 
@@ -373,17 +351,7 @@ const _calculateHandler = async (req: NextRequest, context: ApiAuthContext): Pro
   }
 };
 
-export async function POST(req: NextRequest): Promise<Response> {
-  // Demo bypass — X-Demo-Request: true, no API key required, rate limited 10/min/IP
-  if (req.headers.get('X-Demo-Request') === 'true') {
-    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
-    if (!checkDemoRateLimit(ip)) {
-      return apiError(ApiErrorCode.RATE_LIMITED, 'Demo rate limit exceeded (10/min). Sign up for unlimited access.');
-    }
-    return _calculateHandler(req, DEMO_CONTEXT);
-  }
-  return withApiAuth(_calculateHandler)(req);
-}
+export const POST = withApiAuth(_calculateHandler);
 
 // ─── GET Handler (method not allowed) ───────────────
 

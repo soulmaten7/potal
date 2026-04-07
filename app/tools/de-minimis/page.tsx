@@ -48,7 +48,7 @@ export default function DeMinimisPage() {
         body: JSON.stringify({
           type: 'de-minimis',
           destinationCountry: destCountry.trim().toUpperCase(),
-          productValue: parseFloat(productValue),
+          price: parseFloat(productValue),
           productCategory: category,
           currency: 'USD',
         }),

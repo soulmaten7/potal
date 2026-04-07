@@ -31,15 +31,11 @@ export default function FtaLookupPage() {
     setError('');
     setResult(null);
     try {
-      const res = await fetch('/api/v1/fta', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Demo-Request': 'true' },
-        body: JSON.stringify({
-          originCountry: origin,
-          destinationCountry: destination,
-          ...(hsCode.trim() ? { hsCode: hsCode.trim() } : {}),
-          ...(price.trim() ? { declaredValue: parseFloat(price) } : {}),
-        }),
+      const params = new URLSearchParams({ origin, destination });
+      if (hsCode.trim()) params.set('hsCode', hsCode.trim());
+      if (price.trim()) params.set('declaredValue', price.trim());
+      const res = await fetch(`/api/v1/fta?${params}`, {
+        headers: { 'X-Demo-Request': 'true' },
       });
       const json = await res.json();
       if (!res.ok || !json.success) {

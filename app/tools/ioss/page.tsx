@@ -65,7 +65,7 @@ export default function IOSSPage() {
         headers: { 'Content-Type': 'application/json', 'X-Demo-Request': 'true' },
         body: JSON.stringify({
           type: 'ioss',
-          productValue: parseFloat(productValue),
+          price: parseFloat(productValue),
           currency: 'EUR',
           originCountry: originCountry.trim().toUpperCase() || undefined,
           destinationCountry: destCountry,

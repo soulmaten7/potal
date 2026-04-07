@@ -57,7 +57,7 @@ export default function AntiDumpingPage() {
           hsCode: hsCode.trim(),
           originCountry: originCountry.trim().toUpperCase(),
           destinationCountry: destCountry.trim().toUpperCase(),
-          productValue: productValue ? parseFloat(productValue) : undefined,
+          price: productValue ? parseFloat(productValue) : undefined,
         }),
       });
       const json = await res.json();
