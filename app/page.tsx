@@ -769,6 +769,73 @@ export default function HomePage() {
       </section>
       </FadeInSection>
 
+      {/* ═══════════════════ VIDEO GUIDES ═════════════ */}
+      <FadeInSection>
+      <section style={{ padding: '96px 20px', background: '#f8fafc' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontSize: 34, fontWeight: 800, color: '#02122c', marginBottom: 12 }}>
+            See POTAL in Action
+          </h2>
+          <p style={{ fontSize: 16, color: '#666', marginBottom: 48, maxWidth: 500, margin: '0 auto 48px' }}>
+            Watch real demos — from 60-second overviews to feature deep dives.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 40 }}>
+            {[
+              { icon: '🎯', title: 'Quick Start', desc: '5 videos — Calculate landed cost, see live pricing, explore the dashboard', playlist: 'Quick Start' },
+              { icon: '🌍', title: 'Real Scenarios', desc: 'Ship cosmetics to EU, electronics to Japan, clothing to US with FTA benefits', playlist: 'Real Scenarios' },
+              { icon: '🔧', title: 'Features Deep Dive', desc: 'HS code classification, FTA lookup, sanctions screening, restrictions check', playlist: 'Features Deep Dive' },
+              { icon: '💻', title: 'For Developers', desc: 'API docs walkthrough, dashboard demo, 140 features browser', playlist: 'For Developers' },
+              { icon: '📊', title: 'Data & Transparency', desc: 'Live data ticker, 12 sources monitored, freshness indicators explained', playlist: 'Data & Transparency' },
+            ].map((item, i) => (
+              <a
+                key={i}
+                href="https://youtube.com/@POTAL-Official"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  background: 'white',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 16,
+                  padding: 28,
+                  textDecoration: 'none',
+                  textAlign: 'left',
+                  transition: 'all 0.2s',
+                  cursor: 'pointer',
+                  display: 'block',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#F59E0B'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.08)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                <div style={{ fontSize: 28, marginBottom: 12 }}>{item.icon}</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: '#02122c', marginBottom: 8 }}>{item.title}</div>
+                <div style={{ fontSize: 14, color: '#666', lineHeight: 1.6 }}>{item.desc}</div>
+              </a>
+            ))}
+          </div>
+          <a
+            href="https://youtube.com/@POTAL-Official"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '14px 32px',
+              borderRadius: 10,
+              background: '#FF0000',
+              color: 'white',
+              fontWeight: 700,
+              fontSize: 15,
+              textDecoration: 'none',
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M23.5 6.2c-.3-1-1-1.8-2-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.5.6c-1 .3-1.7 1.1-2 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8c.3 1 1 1.8 2 2.1 1.9.6 9.5.6 9.5.6s7.6 0 9.5-.6c1-.3 1.7-1.1 2-2.1.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+            Watch All Videos on YouTube
+          </a>
+        </div>
+      </section>
+      </FadeInSection>
+
       {/* ═══════════════════ BEFORE vs AFTER ═════════ */}
       <FadeInSection>
       <section style={{ padding: '96px 20px', maxWidth: 1100, margin: '0 auto' }}>
