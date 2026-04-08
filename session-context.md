@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f — restricted-items 위젯 추가, 데모 영상 STEP 1~3 완료, content-posting 스킬 에셋 목록 추가. 사이트 총 ~470페이지.)
+> 마지막 업데이트: 2026-04-08 KST (CW22-S5 — 데모 영상 STEP 4-5 완성, 콘텐츠 플랫폼 전환 DEV.to/Medium→X/Instagram/Threads, Notion 가이드 6개 생성/업데이트. 사이트 총 ~503페이지.)
 
 ---
 
@@ -212,6 +212,12 @@
 - ✅ **daily-posts 2개 파일 에셋 참고사항 업데이트** — 4/6 파일: ⚠️ 재촬영 필요 5곳 → ✅ 재촬영 완료, 금액 $42.10→$42.09 수정. 4/7 파일: "기존 완성 소재" → "✅ 전체 재촬영 완료"
 - ✅ **rec_14 Category 수정** — `beauty`(존재하지 않음) → `cosmetics`(국제 무역 분류 기준 정확한 키워드)
 
+**⚠️ 에러 핸들링 현황 (CW22-S4f 기준 확인 완료):**
+- **FeatureToolWidget (`/features/*#try-it`)**: ✅ 에러 핸들링 완료 — try/catch(네트워크 에러) + HTTP 에러 체크(!res.ok || json.success===false) + 빨간 에러 UI 표시. API 실패 시 페이지 크래시 없음, error boundary 불필요
+- **Dashboard 모든 탭**: ✅ CW22-S3에서 에러 핸들링 추가 완료
+- **옛날 `/tools/*` 페이지**: ✅ CW22-S4e에서 전부 삭제됨 → `/features/*`로 301 리다이렉트 (42개 경로). FeatureToolWidget으로 통합되어 에러 핸들링 포함
+- **결론: API 에러 핸들링 추가 작업 불필요**
+
 **커밋**: d9eb9cf (restricted-items config 추가)
 
 ### CW22-S Cowork — Data Source Ticker + i18n + Auto-Import + Publication Ticker (2026-04-05)
@@ -411,9 +417,10 @@
 - ⏳ **Hacker News "Show HN" 포스트** — "Show HN: POTAL — 140 cross-border trade features, all free"
 - ⏳ **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
 - ⏳ **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 ✅ 완료)
-- ✅ **데모 영상 STEP 1~3 완료** — 스크린샷 10장 + 녹화 24개(rec_01~24) + Canva 카드 2장 전부 완료 (2026-04-07). STEP 4(CapCut 편집) + STEP 5(최종 파일 정리) 남음
-- ⏳ **데모 영상 STEP 4~5 미완료** — CapCut으로 60초 메인 데모 영상 편집 + 최종 파일 content/thumbnails/ 정리
-- ⏸ **유튜브 업로드 보류** — CEO 결정. 영상 촬영은 계속, 유튜브 채널 생성/업로드는 보류
+- ✅ **데모 영상 STEP 1~5 전부 완료** (2026-04-08) — 최종 파일: `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
+- ⏳ **YouTube 채널 세팅** — 채널 생성 + 5개 플레이리스트 + 22개 롱폼/5개 쇼츠 업로드 (Notion 가이드 참조)
+- ⏳ **Product Hunt 런칭** — Phase 1 코멘트 활동 → Phase 2 런치 페이지 (Notion 가이드 참조)
+- ⏳ **일일 콘텐츠 포스팅 시작** — LinkedIn/X/Instagram/Threads 4개 플랫폼 (content-posting 스킬, DEV.to/Medium 폐지)
 - ⏳ **20개 Feature Guide 템플릿 보강** — CW22-M에서 121/140 완성. 나머지 20개 (bigcommerce-plugin, magento-module, woocommerce-plugin 등 마켓플레이스 미승인+비핵심 페이지)
 
 ### ⏳ 고객 확보

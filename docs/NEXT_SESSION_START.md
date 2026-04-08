@@ -1,11 +1,11 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f — restricted-items 위젯, 데모 STEP 1~3 완료, content-posting 에셋 목록)
+> 마지막 업데이트: 2026-04-08 KST (CW22-S5 — 데모 영상 완성, 콘텐츠 플랫폼 전환, Notion 가이드 6개 생성/업데이트)
 
 ---
 
 ## 현재 상태 요약
 
-### 핵심 수치 (2026-04-07 기준)
+### 핵심 수치 (2026-04-08 기준)
 - **외부 사용자**: 0명, **MRR**: $0 — **마케팅/고객 확보가 최우선**
 - **147/147 기능 구현** (100%, WON'T 2개 제외 = 140 Active + 5 보완 + 2 WON'T)
 - **프론트엔드 도구 페이지**: ~79 신규 (Tools 34 + Dashboard 18 + Developer 5 + Learn/Cert/Integration/Features 개선)
@@ -21,42 +21,47 @@
 
 ---
 
-## 가장 최근 세션: CW22-S4f (2026-04-07)
+## 가장 최근 세션: CW22-S5 (2026-04-08)
 
-### 핵심 변경 — restricted-items 위젯 + 데모 영상 소재 완성 + content-posting 에셋 인벤토리
+### 핵심 변경 — 데모 영상 완성 + 콘텐츠 플랫폼 전환 + Notion 가이드 대량 업데이트
 
-**코드 변경:**
-- FeatureToolWidget.tsx에 `restricted-items` config 추가 → `/features/restricted-items#try-it`에서 "Try it live" 위젯 동작 (커밋 d9eb9cf)
+**데모 영상:**
+- STEP 4 CapCut 편집 완료 → `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
+- STEP 5 최종 파일 정리 완료 — 파일은 STEP 1-4 폴더에 유지, STEP 5는 체크리스트 전용
 
-**콘텐츠/문서:**
-- 데모 영상 STEP 1~3 전부 완료 — 스크린샷 10장 + 녹화 24개 + Canva 카드 2장 (소재 라이브러리 완성)
-- content-posting 스킬에 에셋 인벤토리 추가 (36개 파일 전체 목록 + 토픽 매칭 규칙)
-- Notion 데모 영상 제작 가이드 전면 업데이트 (rec_08~22 상세 수정, Category cosmetics 수정)
-- daily-posts 2개 파일 재촬영 완료 반영
+**콘텐츠 플랫폼 전환:**
+- content-posting 스킬: DEV.to/Medium → X/Instagram/Threads 전환 (일일 자동 콘텐츠)
+- 브랜드 채널: 디스콰이어트 + YouTube (2개로 축소)
+
+**Notion 가이드 신규 3개:**
+- 📺 YouTube 채널 세팅 가이드 — 채널명 POTAL/@potalapp, 5개 플레이리스트, 22+5 영상 매핑
+- 🚀 Product Hunt 런칭 전략 가이드 — 3-Phase 전략 (코멘트→런치→후속)
+- 📝 Daily Content Posting 업데이트
+
+**Notion 페이지 업데이트 3개:**
+- 일일 루틴: DEV.to/Medium → X/Instagram/Threads 전환
+- Content Automation Guide: 플랫폼 구조/워크플로우/성과 추적 전면 개편
+- POTAL Notion 사용 설명서: 플랫폼 정보/영상 흐름/FAQ 업데이트
+- POTAL Command Center 메인: 수치 업데이트, Quick Links 재구성
+
+### ⚠️ 이미 해결된 사항 (새 세션에서 다시 건드리지 말 것)
+- **API 에러 핸들링**: 전부 완료. 추가 작업 불필요
+- **`/tools→/features` 통합**: 전부 완료. 42개 301 리다이렉트 + FeatureToolWidget 16개 slug
+- **데모 영상 STEP 1~5**: 전부 완료. 추가 촬영/편집 불필요
 
 ### 다음 세션에서 할 일
-- **데모 영상 STEP 4** — CapCut에서 60초 메인 데모 영상 편집 (card_opening → rec_01 → rec_03 → rec_04 → rec_02 → card_ending)
-- **데모 영상 STEP 5** — 최종 파일 정리, `content/thumbnails/`에 저장
+- **YouTube 채널 생성 + 영상 업로드** — Notion 가이드 참조
+- **Product Hunt 코멘트 활동 시작** — Notion 가이드 Phase 1
+- **일일 콘텐츠 포스팅 시작** — content-posting 스킬 사용, LinkedIn/X/Instagram/Threads
 - **Vercel Support Case #01083440** 확인 — GitHub-Vercel 자동 배포 복구 여부
-- **Scheduled Tasks** — 에셋 가이드 섹션 추가 (daily-content-posting, sunday-content-prep)
-
-### 커밋 13+개 (3터미널 병렬, 전부 push + vercel --prod 완료)
-- b380b04, 6ebb5ce, 96e546a, 03aa20b, 3cc991c, 3f61f0f, 430c5bf, c82d23a, 7097533, c21dbd2, 94fc3e4, 3d0796c, dd46ac4
-
-### Chrome MCP 검증 결과
-- ✅ `/tools` 허브 — 34개 카드 + 카테고리 필터 + 검색
-- ✅ `/tools/dim-weight` — 클라이언트 계산 완벽 (DIM 4.8kg, Billable 4.8kg, 비교 바)
-- ✅ `/dashboard/analytics` — 메트릭 카드 + 바 차트 + Top Endpoints
-- ✅ `/developers/sandbox` — Endpoint 목록 + JSON 편집기
-- ⚠️ `/tools/screening` API 호출 시 error boundary — API 에러 핸들링 강화 필요
 
 ### ⚠️ 미해결 사항
 - **GitHub 계정 flagged → 자동 배포 장애** — GitHub 계정이 flagged 상태로 확인됨. GitHub Support Ticket #4248922 답변 완료, 복구 대기 중. Vercel Case #01083440도 이 원인. 그동안 `vercel --prod` CLI로 배포
   - **복구 확인 방법**: GitHub 프로필 접속 시 "flagged" 배너 사라졌는지 확인 → git push → Vercel 대시보드에서 자동 배포 트리거 확인
   - **복구 시 해야 할 일**: ① CLAUDE.md 절대규칙 #11 삭제 ② 세션 종료 체크리스트에서 "vercel --prod" 삭제 ③ 이 미해결 사항에서 제거 ④ CHANGELOG.md에 기록
-- **데모 영상 재촬영 필요** — 03_demo-filled.png, 04_result.png, rec_01 (Confidence 100% 반영)
-- **API 호출 도구 에러 핸들링** — Dashboard 전탭 개선 완료 (50b08a1, 2e40c41, a7cb555). 나머지 tools/* 페이지도 점진적 개선 필요
-- **Dashboard seller profile 이슈 해결됨** — "Failed to create seller profile" 배너 제거 (a7cb555). seller 레코드 없어도 fallback으로 정상 작동
+- ~~데모 영상~~ — STEP 1~5 전부 완료 (2026-04-08)
+- ~~API 에러 핸들링~~ — 전부 완료, /tools→/features 통합 완료
+- ~~Dashboard seller profile~~ — 해결됨
 
 ### 이전 세션: CW22-S2 (2026-04-05~06)
 - 커밋 10개: Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스
@@ -70,21 +75,14 @@
 - GitHub 계정 flagged 복구 확인 → git push → Vercel 자동 배포 트리거 확인
 - 복구 시: CLAUDE.md 규칙11 삭제, 세션 체크리스트 정리, CHANGELOG 기록
 
-### P0-B: API 호출 도구 에러 핸들링 강화
-- Dashboard는 완료 (50b08a1). tools/* 페이지의 에러 핸들링 점진적 개선
-- error boundary가 아닌 컴포넌트 내 try/catch로 처리하도록 수정
-
-### P1: 데모 영상 촬영 (진행 중)
-- **메인 4개 완료**: rec_01~04 ✅
-- **미촬영**: rec_05~12 (기능별), rec_13~16 (시나리오), rec_17~19 (비교), rec_20~21 (티커 데모)
-- **참조**: Notion "🎬 데모 영상 제작 가이드"
-- **도구**: Mac QuickTime 녹화 → CapCut 편집
-
-### P2: 마케팅 (CEO 날짜 결정 시 즉시)
-1. **Hacker News "Show HN" 포스트** — 카르마 필요 (신규 계정 제한)
-2. **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur (카르마 필요)
-3. **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 완료)
-4. **커뮤니티 답변 활동** — Gemini 5개 언어권 프롬프트 준비 완료
+### P1: 마케팅 — YouTube + Product Hunt + 일일 콘텐츠 (최우선)
+1. **YouTube 채널 세팅 + 업로드** — Notion 가이드 참조 (22개 롱폼 + 5개 쇼츠)
+2. **Product Hunt 런칭** — Phase 1 코멘트 → Phase 2 런치 페이지 (Notion 가이드 참조)
+3. **일일 콘텐츠 포스팅** — LinkedIn/X/Instagram/Threads (content-posting 스킬)
+4. **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트
+5. **Hacker News "Show HN"** — 카르마 필요
+6. **Reddit** — r/ecommerce, r/shopify, r/entrepreneur
+7. **커뮤니티 답변 활동** — Gemini 5개 언어권 프롬프트 준비 완료
 
 ### P3: 마켓플레이스 심사 확인 (외부 대기 — 2026-04-06 기준 전부 미승인)
 1. **Shopify**: 3/10 제출, 27일+ 경과, 아직 미승인

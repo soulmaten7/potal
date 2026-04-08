@@ -1,5 +1,25 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f — restricted-items 위젯 추가, content-posting 에셋 목록)
+> 마지막 업데이트: 2026-04-08 KST (CW22-S5 — 데모 영상 완성, 콘텐츠 플랫폼 전환, Notion 가이드 대량 업데이트)
+
+## [2026-04-08 KST] CW22-S5 — 데모 영상 STEP 4-5 완성 + 콘텐츠 플랫폼 전환 + Notion 가이드 6개 생성/업데이트
+
+### 추가 (Notion 가이드 신규 3개)
+- 📺 YouTube 채널 세팅 가이드 — 채널명 POTAL/@potalapp, 5개 플레이리스트, 22개 롱폼+5개 쇼츠 매핑, SEO 키워드, 업로드 일정
+- 🚀 Product Hunt 런칭 전략 가이드 — Phase 1 코멘트 활동(30+ 키워드), Phase 2 런치 페이지, Phase 3 후속
+- 📝 Daily Content Posting 가이드 업데이트 — DEV.to/Medium → X/Instagram/Threads 전환
+
+### 변경
+- content-posting 스킬: 3개 플랫폼(LinkedIn/DEV.to/Medium) → 4개 플랫폼(LinkedIn/X/Instagram/Threads) 전환
+- 브랜드 채널: 4개(X/Threads/Instagram/디스콰이어트) → 2개(디스콰이어트/YouTube)로 축소
+- Notion 일일 루틴: DEV.to/Medium 참조 전부 X/Instagram/Threads로 교체
+- Notion Content Automation Guide: 플랫폼 구조/워크플로우/성과 추적 전면 개편
+- Notion 사용 설명서: 플랫폼 정보/영상 흐름/FAQ 업데이트
+- Notion POTAL Command Center 메인: 수치 업데이트(~503페이지), Quick Links 재구성
+- Notion 데모 영상 제작 가이드: STEP 4 완료(CapCut 편집), STEP 5 체크리스트 전용으로 변경
+
+### 데모 영상
+- STEP 4 CapCut 편집 완료 → `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
+- STEP 5 최종 파일 정리 완료 — 파일은 STEP 1-4 폴더에 유지, STEP 5는 체크리스트 전용
 
 ## [2026-04-07 22:30 KST] CW22-S4f — restricted-items 위젯 + content-posting 에셋 인벤토리
 

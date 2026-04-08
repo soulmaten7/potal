@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-07 22:30 KST (CW22-S4f: restricted-items 위젯 추가, 데모 STEP 1~3 완료, content-posting 에셋 목록)
+# 마지막 업데이트: 2026-04-08 KST (CW22-S5: 데모 STEP 4-5 완료, content-posting 플랫폼 전환, Notion 가이드 3개 신규+3개 업데이트)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
