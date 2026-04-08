@@ -13,6 +13,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
 import { CrispChat } from "@/components/common/CrispChat";
+import { YouTubeFloatingButton } from "@/components/common/YouTubeFloatingButton";
 import { CookieConsent } from "@/components/common/CookieConsent";
 import { ShopifyAppBridge } from "@/components/shopify/ShopifyAppBridge";
 import { ShopifyNavMenu } from "@/components/shopify/ShopifyNavMenu";
@@ -160,6 +161,7 @@ export default function RootLayout({
         />
         {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
         <CrispChat />
+        <YouTubeFloatingButton />
         {/* 태블릿 viewport는 iOS 네이티브(TabletViewController.swift)에서 WKUserScript로 처리 */}
         {/* PWA Service Worker 등록 (프로덕션만) */}
         <script
