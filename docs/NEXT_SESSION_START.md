@@ -50,7 +50,7 @@
 - **데모 영상 STEP 1~5**: 전부 완료. 추가 촬영/편집 불필요
 
 ### 다음 세션에서 할 일
-- **YouTube 채널 생성 + 영상 업로드** — Notion 가이드 참조
+- **YouTube 나머지 영상 업로드** — 10/27개 완료 (일일 제한 도달), 나머지 17개 업로드 계속 (채널: youtube.com/@POTAL-Official)
 - **Product Hunt 코멘트 활동 시작** — Notion 가이드 Phase 1
 - **일일 콘텐츠 포스팅 시작** — content-posting 스킬 사용, LinkedIn/X/Instagram/Threads
 - **Vercel Support Case #01083440** 확인 — GitHub-Vercel 자동 배포 복구 여부

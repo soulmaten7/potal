@@ -21,6 +21,12 @@
 - STEP 4 CapCut 편집 완료 → `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
 - STEP 5 최종 파일 정리 완료 — 파일은 STEP 1-4 폴더에 유지, STEP 5는 체크리스트 전용
 
+### YouTube
+- YouTube 채널 생성 완료 — @POTAL-Official (youtube.com/@POTAL-Official)
+- 배너: "Total Landed Cost Calculator · 140 Features · 240 Countries · Free Forever"
+- 동영상 10개 업로드 (일일 업로드 제한 도달): Export Cosmetics to EU(1:33), Dashboard Tour(0:33), One Widget Any Country(0:26), Full Landed Cost Breakdown(0:43), Watch Accuracy Jump(0:18), rec 20 ticker scroll(0:20) 등
+- 플레이리스트 5개 생성: POTAL Quick Start(5), Real Scenarios(2), Features Deep Dive(1), For Developers(1), Data & Transparency(1)
+
 ## [2026-04-07 22:30 KST] CW22-S4f — restricted-items 위젯 + content-posting 에셋 인벤토리
 
 ### 추가

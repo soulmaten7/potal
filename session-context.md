@@ -418,7 +418,7 @@
 - ⏳ **Reddit 포스트** — r/ecommerce, r/shopify, r/entrepreneur
 - ⏳ **LinkedIn 포스트** — 은태님 스토리 + 경쟁사 비교 차트 (프로필 최적화 ✅ 완료)
 - ✅ **데모 영상 STEP 1~5 전부 완료** (2026-04-08) — 최종 파일: `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
-- ⏳ **YouTube 채널 세팅** — 채널 생성 + 5개 플레이리스트 + 22개 롱폼/5개 쇼츠 업로드 (Notion 가이드 참조)
+- ✅ **YouTube 채널 생성 + 10개 영상 업로드** (2026-04-08) — @POTAL-Official (youtube.com/@POTAL-Official), 동영상 10개 업로드 (일일 제한 도달), 플레이리스트 5개 생성 (Quick Start 5개, Real Scenarios 2개, Features Deep Dive 1개, For Developers 1개, Data & Transparency 1개). 나머지 영상은 다음 세션에서 계속 업로드
 - ⏳ **Product Hunt 런칭** — Phase 1 코멘트 활동 → Phase 2 런치 페이지 (Notion 가이드 참조)
 - ⏳ **일일 콘텐츠 포스팅 시작** — LinkedIn/X/Instagram/Threads 4개 플랫폼 (content-posting 스킬, DEV.to/Medium 폐지)
 - ⏳ **20개 Feature Guide 템플릿 보강** — CW22-M에서 121/140 완성. 나머지 20개 (bigcommerce-plugin, magento-module, woocommerce-plugin 등 마켓플레이스 미승인+비핵심 페이지)
