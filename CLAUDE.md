@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-09 KST (CW22-S6: F148 US Sales Tax Nexus Tracking 신규 — 51개 주 threshold + API + MCP v1.4.3 + UI + 매년 2회 cron, 140→141 active)
+# 마지막 업데이트: 2026-04-10 KST (CW22-S7 완료: POTAL 홈페이지 리디자인 스펙 v1 확정 — docs/HOMEPAGE_REDESIGN_SPEC.md 작성, 12가지 결정 사항 문서화, Phase 1 구현은 CW23+)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -93,6 +93,7 @@ potal/
 | `docs/ORCHESTRATOR_RULES.md` | Chief Orchestrator 역할/규칙 | COO 가동 시 |
 | `docs/DIVISION_STATUS.md` | 16개 Division 상세 | Division 작업 시 |
 | `app/features/features-guides.ts` | 140개 기능 가이드 데이터 | Features 작업 시 |
+| `docs/HOMEPAGE_REDESIGN_SPEC.md` | 홈페이지 리디자인 스펙 v1 (12 결정) | **CW23+ 홈페이지 작업 시 최우선 필독** |
 
 ---
 

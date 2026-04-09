@@ -1,5 +1,53 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking Forever Free 런칭: 51개 주 데이터 + API + MCP v1.4.3 + /features + Dashboard 조건부 + 매년 2회 cron. 140→141 active)
+> 마지막 업데이트: 2026-04-10 KST (CW22-S7 완료 — POTAL 홈페이지 리디자인 스펙 v1 확정, docs/HOMEPAGE_REDESIGN_SPEC.md 작성, 12가지 결정 사항 문서화, Phase 1 구현은 CW23+)
+
+---
+
+## 🚨 CW23 첫 액션 (반드시 이 순서로)
+
+### Step 0: 필독 문서 (코드 작업 전 반드시 읽기)
+1. **`docs/HOMEPAGE_REDESIGN_SPEC.md`** — 홈페이지 리디자인 스펙 v1 (12가지 결정 + 7 디자인 원칙 + Sprint 1~8 로드맵) **최우선 필독**
+2. `session-context.md` Section 10 CW22-S7 항목 — 전체 맥락
+3. `CLAUDE.md` 절대 규칙 #1 (B2C 코드 수정 금지), #2 (build 확인 후 push), #9 (Forever Free 유지)
+
+### Step 1: CW23 Sprint 1 구현 (홈페이지 뼈대)
+목표: HeaderMinimal + LiveTicker(2줄) + ScenarioSelector(6버튼) + DesktopOnlyGuard
+
+생성할 컴포넌트:
+- `components/home/HeaderMinimal.tsx` — 로고 + Community + Help (Features/Developers/Pricing/Dashboard/Sign up 전부 제거)
+- `components/home/LiveTicker.tsx` — 2줄 구조 + Live indicator 점 애니메이션 + 기관 풀네임
+- `components/home/ScenarioSelector.tsx` — "당신의 수출입 방식은?" + 6버튼 (온라인 셀러 / D2C 브랜드 / 수입업자 / 수출업자 / 포워더·3PL / CUSTOM)
+- `components/home/DesktopOnlyGuard.tsx` — 모바일 감지 시 "데스크톱에서 접속해주세요" 페이지로 리다이렉트 (태블릿은 데스크톱 뷰 유지)
+
+### Step 2: 기존 app/page.tsx 처리
+- **삭제 금지, 주석 처리만** — 기존 Hero/Features/Pricing 섹션들은 comment-out
+- 이유: 롤백 가능성 + B2C 코드와의 의존관계 확인 필요
+- 절대 규칙 #1 준수: lib/search/, lib/agent/, components/search/ 건드리지 말 것
+
+### Step 3: 빌드 검증 (push 전 필수)
+- `npm run build` 통과 확인
+- 로컬 `npm run dev`에서 데스크톱/모바일 양쪽 확인
+- 모바일 브라우저 시뮬레이션으로 DesktopOnlyGuard 동작 확인
+
+### Step 4: 문서 업데이트 + push
+- CLAUDE.md / CHANGELOG.md / session-context.md / NEXT_SESSION_START.md 4개 헤더 날짜 통일
+- Notion Session Log + Task Board 업데이트
+- git commit + push
+
+---
+
+## 📋 이월된 작업 (은태님 직접)
+- **커뮤니티 댓글 활동** (CW22-S6에서 이월): Product Hunt + Reddit + Hacker News 관련 글에 POTAL 자연스럽게 언급 — 문서화 완료 후 은태님이 직접 진행
+
+---
+
+## ⚠️ CW23 작업 시 주의사항 (HOMEPAGE_REDESIGN_SPEC.md에서 발췌)
+1. **"내 조합(My Combos)"은 CUSTOM 영역 전용** — 다른 5개 시나리오에는 절대 적용 금지 (Claude Code가 혼동하기 쉬움)
+2. **140개 기능 전부 CUSTOM 체크박스에 노출** — "+더 보기" 숨김 처리 금지
+3. **모바일 미지원** — 반응형 작업 금지, 모바일 접속 시 안내 페이지만
+4. **광고 슬롯은 Phase 2로 미룸** — Sprint 1~4에서는 파트너 링크 슬롯 UI만 placeholder로
+5. **Feature-level 코드 복사 버튼 [📋]** — 각 기능 카드에 개별 복사 버튼 (시나리오 전체 코드 X)
+6. **Login-based Gating** — Rate Limit 방식 사용 금지, 특정 기능은 로그인 필수로 처리
 
 ---
 
@@ -60,10 +108,13 @@
 - **홈페이지 Video Guides + 플로팅 버튼**: 코드 배포됨
 
 ### 다음 세션에서 할 일
+- **커뮤니티 댓글 활동 (Product Hunt + Reddit + Hacker News)** — CW22-S6에서 미완료
 - **YouTube 나머지 17개 영상 업로드** — 10/27개 완료 (일일 제한 도달), 채널: youtube.com/@POTAL-Official
-- **Product Hunt 코멘트 활동** — Notion Content Automation Guide Phase 1
-- **Reddit / Hacker News 댓글 활동** — daily-content-posting이 타겟 글 리스트업해줌
-- **Vercel Support Case #01083440** — GitHub 복구 완료되어 자동배포 재작동 확인됨, case close 요청 예정
+- **Vercel Support Case #01083440** — close 요청 예정
+- **git rm docs/B2C_PLATFORM_STRATEGY.md** — Cowork에서 파일 삭제 권한 없어 POTAL Claude Code 터미널에서 직접 실행 필요:
+  ```bash
+  cd ~/potal && git rm docs/B2C_PLATFORM_STRATEGY.md && git commit -m "chore: remove B2C strategy doc (moved to ~/b2c-platform)"
+  ```
 
 ### ⚠️ 미해결 사항
 - ✅ **GitHub 계정 flagged → 자동 배포 장애** (해결 완료, 2026-04-09 17:56 KST)

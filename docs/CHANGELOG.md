@@ -1,5 +1,64 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking 신규 + GitHub-Vercel 자동배포 복구)
+> 마지막 업데이트: 2026-04-10 KST (CW22-S7 완료 — POTAL 홈페이지 리디자인 스펙 v1 확정)
+
+## [2026-04-10 KST] CW22-S7 완료 — POTAL 홈페이지 리디자인 스펙 v1
+
+### 추가
+- **`docs/HOMEPAGE_REDESIGN_SPEC.md` 신규 작성** — CEO 전략 세션(2026-04-10) 기반 12가지 결정 사항 확정 문서. CW23+ Claude Code가 이 문서만 읽고 바로 구현 착수 가능한 수준의 고도화 스펙
+- **설계 철학 7가지** — One-Question Entry / Zero-friction Onboarding / Zero-explanation Platform / Conversion이 아닌 Habit / Trust via Authority Transfer / 중립적 계산 인프라 / Desktop-First
+- **12가지 확정 결정 사항**:
+  1. 헤더 구조 — 로고 가운데 + Community/Help + 🌐/Log in (Features/Developers/Pricing/Dashboard/Sign up 전부 제거)
+  2. 티커 2줄 — Live Indicator + 기관 풀네임 병기 + 업데이트 시각 (Authority Transfer 강화)
+  3. 5+1 유형 선택 — "당신의 수출입 방식은?" 질문 하나 + 6개 버튼 (CUSTOM 포함)
+  4. 시나리오 페이지 좌우 2분할 — 비개발자(데모 + 기능별 [📋 코드 복사] 버튼) / 개발자(조합 워크플로우 예제)
+  5+6. CUSTOM 전용 기능 — 140개 체크박스 + 실시간 코드 조립 + 내 조합 리스트 (⚠️ 다른 시나리오 페이지 적용 금지 명시)
+  7. 로그인 기반 기능 차단 — Rate Limit 폐기. 데모 무제한, 코드 복사/저장/공유만 로그인 필요
+  8. 데스크톱 전용 — 모바일/태블릿 지원 X. 모바일 접속 시 안내 페이지
+  9. 제거 항목 — Features/Developers/Pricing/Dashboard/Sign up 메뉴 + "140 Features" 강조 + 복잡한 데모 폼
+  10. 수익화 제외 — 직접 광고 X, Embedded Quote X, Direct Referral X
+  11. CUSTOM 140개 전부 표시 — 숨김/접기 없음 (체크박스 UI 특성)
+  12. 배송사 링크 슬롯 광고 — Phase 2 예약. Sponsored 표기 + 슬롯 임대 방식
+- **Supabase 신규 스키마** — `user_combos` 테이블 설계 (id/user_id/name/selected_features/share_slug/is_public + RLS), `partner_slots` 테이블 (Phase 2용)
+- **구현 우선순위** — Sprint 1~8 (CW23~CW30) 로드맵
+
+### 맥락
+- 은태님이 현재 POTAL 홈페이지가 "어렵다, 복잡하다" 느낌을 준다고 지적 → 전면 리디자인 논의 시작
+- 2시간 이상 전략 세션: 140개 기능 vs 7개 핵심, 사용자 유형별 시나리오 조합, 비개발자/개발자 분할, CUSTOM 빌더, 내 조합 리스트, 모바일 미지원, 광고 vs 링크 슬롯
+- CEO 최종 결정: 트래픽 극대화가 Exit 전략 → 수익 모델 복잡화 금지 → 단순 "링크 슬롯 광고"만 허용
+- 심리학 근거 포함 — Cialdini Authority, Thaler Endowment Effect, HBS Operational Transparency
+- 벤치마크 SaaS — Stripe / Linear / Vercel / Notion / Figma / Retool
+
+### 파일 변경
+- **신규**: `docs/HOMEPAGE_REDESIGN_SPEC.md` (고도화 스펙 문서)
+- **업데이트**: `CLAUDE.md` (헤더 + 참조 파일 테이블에 HOMEPAGE_REDESIGN_SPEC.md 추가)
+- **업데이트**: `docs/CHANGELOG.md` (이 엔트리)
+- **업데이트**: `session-context.md` (CW22-S7 완료 블록)
+- **업데이트**: `docs/NEXT_SESSION_START.md` (CW23 Sprint 1 작업)
+
+### 코드 영향
+- **Phase 1 구현은 CW23+에서 시작** — 본 세션에서는 스펙 문서만 작성. 코드 변경 없음
+- 구현 예정 신규 컴포넌트: HeaderMinimal / LiveTicker / ScenarioSelector / ScenarioPanel / CodeCopyModal / CustomBuilder / LiveCodeAssembler / MySavedCombos / DesktopOnlyGuard / PartnerLinkSlot 등
+
+### 다음 세션 (CW23) 우선순위
+1. `docs/HOMEPAGE_REDESIGN_SPEC.md` 첫 번째로 읽기
+2. Sprint 1 — HeaderMinimal + LiveTicker + ScenarioSelector + DesktopOnlyGuard 구현
+3. 기존 `app/page.tsx`에 신규 컴포넌트 통합 (기존 코드는 주석 처리로 보존)
+
+---
+
+## [2026-04-09 KST] CW22-S6 완료 — B2C One Trillion 독립 분리
+
+### 변경
+- **`docs/B2C_PLATFORM_STRATEGY.md` 제거** — B2C 전략 문서를 독립 프로젝트(`~/b2c-platform/docs/PROJECT_STRATEGY.md`)로 이전 완료. POTAL B2B에서 잔재 제거
+- **B2C One Trillion 독립 분리 완료** — `~/potal/b2c-platform-init/` → `~/b2c-platform/` 이동, git init + bootstrap.sh 실행
+- **CLAUDE.md 헤더 업데이트** — CW22-S6 완료 반영
+
+### 맥락
+- CW22-S6 세션 중 CEO와 B2C 전략 v1→v2 재정립 (마켓플레이스 X → 크로스보더 셀러 노출 플랫폼)
+- 22개 문서로 구성된 초기화 키트(CLAUDE.md, SESSION_START_COMMAND.md, Phase 체크리스트 등)를 `~/b2c-platform/`에 구성
+- POTAL B2B와 완전히 독립 운영. 코드 공유 없음 (Phase 1에서 복사만 예정)
+
+---
 
 ## [2026-04-09 17:56 KST] CW22-S6 추가 — GitHub-Vercel 자동배포 복구
 
