@@ -72,7 +72,7 @@ portal/
 - **WooCommerce Plugin**: WordPress.org 제출 완료 ✅ slug: potal-total-landed-cost-calculator, Awaiting Review
 - **BigCommerce**: 파트너팀 이메일 발송 ⏳ (partners@bigcommerce.com, 답장 대기)
 - **Magento**: Adobe Commerce Marketplace 제출 대기 ⏳
-- **Features 페이지**: /features — 140 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어, "Try it →" 버튼 (tool 페이지 연결)
+- **Features 페이지**: /features — 141 Active, 12 카테고리, 경쟁사 비교표, i18n 51개 언어, "Try it →" 버튼 (tool 페이지 연결)
 - **Feature 가이드**: /features/[slug] — 140개 정적 페이지 (SEO, sitemap 포함)
 - **커뮤니티**: /community — 게시판, 글쓰기, 댓글, 추천, 기능별 필터
 - **Tools Hub**: /tools — 34개 도구 카드 허브 (카테고리 필터 11개, 검색 기능)

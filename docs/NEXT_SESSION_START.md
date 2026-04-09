@@ -13,7 +13,7 @@
 - **전략**: Exit(인수) 확정 — Forever Free + 데이터 수집 → 인수
 - **요금제**: Forever Free (140개 전부 무료) + Enterprise Contact Us
 - **v3 파이프라인**: ✅ 21/21 Section 100%, codified-rules 595개
-- **API 엔드포인트**: ~160개+, **Vercel Cron**: 24개
+- **API 엔드포인트**: ~160개+, **Vercel Cron**: 25개
 - **i18n**: 329키 × 7언어 (en/ko/ja/zh/es/de/fr) = 2,303 번역
 - **Auto-Import**: 6/12 소스 자동화 (SDN, FR, TARIC, Trade Remedy, USITC, UK)
 - **Data Ticker**: Supabase 실시간 + JSON fallback 자동 갱신 + 2줄 구조
@@ -21,50 +21,59 @@
 
 ---
 
-## 가장 최근 세션: CW22-S5 (2026-04-08)
+## 가장 최근 세션: CW22-S6 (2026-04-09)
 
 ### 핵심 변경
 
-**데모 영상:** STEP 4-5 완성 → `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
+**F148 US Sales Tax Nexus Tracking Forever Free 런칭 (커밋 e70868f):**
+- 데이터: `data/us-nexus-thresholds.json` — 51개 주 + DC, Sales Tax Institute + 각 주 DOR 교차검증
+- API: `POST /api/v1/nexus/check` (10 req/min/IP, X-Demo-Request 지원)
+- UI: `/features/us-sales-tax-nexus-tracking` + Dashboard calcDest==='US' 조건부 섹션
+- MCP: `check_us_nexus` 10번째 함수 추가, v1.4.2 → v1.4.3 (npm publish 완료)
+- Cron: `us-nexus-threshold-check` 매년 1/1, 7/1 03:00 UTC — Telegram + Notion 알림
+- Active 140 → **141**, Vercel Cron 24 → **25**, MCP tools 9 → **10**
 
-**YouTube 채널:** @POTAL-Official 생성 + 동영상 10개 업로드 (일일 제한 도달) + 플레이리스트 5개
+**X(Twitter) 글자수 제한 강화:**
+- daily-content-posting 스케줄 태스크 prompt 업데이트 — 각 트윗 280자 이내 검증 절차 + 플랫폼별 제한 테이블 추가
+- 커뮤니티 댓글 활동(PH/Reddit/HN) 섹션도 prompt에 추가
 
-**홈페이지 코드 변경:**
-- "See POTAL in Action" 섹션 추가 — 5개 플레이리스트별 카드 + YouTube 링크 (커밋 da8bf33)
-- YouTubeFloatingButton 우하단 고정 — 빨간 YouTube 아이콘, 클릭 시 플레이리스트 메뉴 (커밋 20cce2d)
+**Vercel Cron 알림 환경변수 세팅 완료:**
+- NOTION_API_KEY Vercel Production + .env.local + CREDENTIALS.md 기록
+- NOTION_TASK_BOARD_DB_ID, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID 전부 확인됨
 
-**콘텐츠 플랫폼 전환:** DEV.to/Medium → X/Instagram/Threads (일일 자동), 브랜드 채널: 디스콰이어트+YouTube
+**외부 이슈 처리:**
+- GitHub Reinstatement Request 제출 (Ticket #4248922 + 신규 폼)
+- Vercel Support Case #01092535 오픈 (기존 #01083440 연속선)
+- Vercel Support Neeraj Kumar: "중복이라 닫고 #01083440에서 계속 진행"
 
-**커뮤니티 댓글 활동 가이드:** Product Hunt/Reddit/Hacker News 3개 플랫폼별 검색 키워드 + 댓글 대상 글 유형 정리
-
-**Notion 가이드 신규 3개:** YouTube 채널 세팅, Product Hunt 런칭 전략, Daily Content Posting
-
-**Notion 업데이트 4개:** 일일 루틴, Content Automation Guide(+커뮤니티 섹션), Notion 사용 설명서, Command Center 메인
+**P2 7개 stale cleanup:**
+- F054/F082/F083/F105/F138/F140/F147 → 전부 이미 active (stale 정보였음)
+- 실제 미구현: F045-F048 e-commerce 플러그인 4개만
 
 ### ⚠️ 이미 해결된 사항 (새 세션에서 다시 건드리지 말 것)
-- **API 에러 핸들링**: 전부 완료. 추가 작업 불필요
-- **`/tools→/features` 통합**: 전부 완료. 42개 301 리다이렉트 + FeatureToolWidget 16개 slug
-- **데모 영상 STEP 1~5**: 전부 완료. 추가 촬영/편집 불필요
-- **YouTube 채널 생성**: 완료. @POTAL-Official, 10개 영상, 5개 플레이리스트
-- **홈페이지 Video Guides + 플로팅 버튼**: 완료. 코드 배포됨
+- **F148 US Nexus Tracking**: 완료. /features/us-sales-tax-nexus-tracking 배포됨
+- **MCP v1.4.3**: npm publish 완료
+- **Vercel Cron 알림 env vars**: 전부 세팅됨
+- **X 글자수 제한**: daily-content-posting 스케줄 업데이트됨
+- **데모 영상 STEP 1~5**: 전부 완료
+- **YouTube 채널 생성**: @POTAL-Official, 10개 영상, 5개 플레이리스트
+- **홈페이지 Video Guides + 플로팅 버튼**: 코드 배포됨
 
 ### 다음 세션에서 할 일
-- **YouTube 나머지 영상 업로드** — 10/27개 완료 (일일 제한 도달), 나머지 17개 업로드 계속 (채널: youtube.com/@POTAL-Official)
-- **Product Hunt 코멘트 활동 시작** — Notion 가이드 Phase 1
-- **일일 콘텐츠 포스팅 시작** — content-posting 스킬 사용, LinkedIn/X/Instagram/Threads
-- **Vercel Support Case #01083440** 확인 — GitHub-Vercel 자동 배포 복구 여부
+- **YouTube 나머지 17개 영상 업로드** — 10/27개 완료 (일일 제한 도달), 채널: youtube.com/@POTAL-Official
+- **Product Hunt 코멘트 활동** — Notion Content Automation Guide Phase 1
+- **Reddit / Hacker News 댓글 활동** — daily-content-posting이 타겟 글 리스트업해줌
+- **Vercel Support Case #01083440** — GitHub 복구 완료되어 자동배포 재작동 확인됨, case close 요청 예정
 
 ### ⚠️ 미해결 사항
-- **GitHub 계정 flagged → 자동 배포 장애** — GitHub 계정이 flagged 상태로 확인됨. GitHub Support Ticket #4248922 답변 완료, 복구 대기 중. Vercel Case #01083440도 이 원인. 그동안 `vercel --prod` CLI로 배포
-  - **복구 확인 방법**: GitHub 프로필 접속 시 "flagged" 배너 사라졌는지 확인 → git push → Vercel 대시보드에서 자동 배포 트리거 확인
-  - **복구 시 해야 할 일**: ① CLAUDE.md 절대규칙 #11 삭제 ② 세션 종료 체크리스트에서 "vercel --prod" 삭제 ③ 이 미해결 사항에서 제거 ④ CHANGELOG.md에 기록
-- ~~데모 영상~~ — STEP 1~5 전부 완료 (2026-04-08)
-- ~~API 에러 핸들링~~ — 전부 완료, /tools→/features 통합 완료
-- ~~Dashboard seller profile~~ — 해결됨
+- ✅ **GitHub 계정 flagged → 자동 배포 장애** (해결 완료, 2026-04-09 17:56 KST)
+  - GitHub Support Ticket #4248922 — Geoffrey가 계정 제약 해제
+  - Vercel-GitHub 재연결 + 테스트 커밋 `f6b190c` 자동배포 성공 확인
+  - CLAUDE.md 절대규칙 #11 삭제 완료, 세션 체크리스트에서 `vercel --prod` 제거 완료
 
-### 이전 세션: CW22-S2 (2026-04-05~06)
-- 커밋 10개: Confidence 통합 + FTA 표시 + HS10 10자리 + Vercel 지원케이스
-- 상세: CHANGELOG.md CW22-S2 섹션 참조
+### 이전 세션: CW22-S5 (2026-04-08)
+- 데모 STEP 4-5 완성, YouTube @POTAL-Official 채널+10영상+5플레이리스트, 홈페이지 Video Guides+플로팅버튼, 커뮤니티 댓글 가이드(PH/Reddit/HN), Notion 가이드 3개 신규+4개 업데이트
+- 커밋: da8bf33 (Video Guides), 20cce2d (YouTube 플로팅버튼)
 
 ---
 

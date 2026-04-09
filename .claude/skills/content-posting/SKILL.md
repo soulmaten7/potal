@@ -1,7 +1,7 @@
 ---
 name: content-posting
 description: >
-  POTAL 일일 콘텐츠 생성 스킬. 매일 하나의 핵심 콘텐츠를 작성하고 3개 플랫폼(LinkedIn, DEV.to, Medium)에 맞게 변환.
+  POTAL 일일 콘텐츠 생성 스킬. 매일 하나의 핵심 콘텐츠를 작성하고 4개 플랫폼(LinkedIn, X, Instagram, Threads)에 맞게 변환.
   트리거: '콘텐츠 작성', 'content posting', '오늘 글', '포스팅', 'daily content',
   '글 써줘', 'SNS 글', '플랫폼 포스팅', '콘텐츠 만들어', 'write posts'.
   매일 글을 올려야 하는 상황이거나, 특정 플랫폼에 POTAL 관련 글을 쓰고 싶을 때 반드시 이 스킬을 사용할 것.
@@ -10,16 +10,17 @@ description: >
 
 # POTAL Daily Content Posting Skill
 
-이 스킬은 POTAL에 대한 일일 콘텐츠를 생성한다. 하나의 핵심 메시지를 잡고, 3개 플랫폼 각각의 톤과 포맷에 맞게 변환하는 것이 핵심이다.
+이 스킬은 POTAL에 대한 일일 콘텐츠를 생성한다. 하나의 핵심 메시지를 잡고, 4개 플랫폼 각각의 톤과 포맷에 맞게 변환하는 것이 핵심이다.
 
 ## 플랫폼 구조
 
 | 구분 | 플랫폼 | 방식 |
 |------|--------|------|
-| **매일 자동 생성** | LinkedIn, DEV.to, Medium | 이 스킬이 매일 생성 |
-| **브랜드 채널** | X, Threads, Instagram, 디스콰이어트 | 은태님이 직접 작성 (특별한 순간에) |
+| **매일 자동 생성** | LinkedIn, X, Instagram, Threads | 이 스킬이 매일 생성 |
+| **참고용 (SEO 백링크)** | DEV.to, Medium | 우선순위 낮음, 나중에 SEO용으로만. 매일 생성 안 함 |
+| **브랜드 채널** | 디스콰이어트, YouTube | 은태님이 직접 작성 (특별한 순간에) |
 
-브랜드 채널은 이 스킬의 자동 생성 대상이 아니다. 일요일 주간 소재 준비 시 "브랜드 채널 포스팅 아이디어 3개"를 제안하는 것으로 충분.
+> **CW22-S5 변경 (2026-04-08):** DEV.to/Medium → X/Instagram/Threads로 교체. 이유: DEV.to/Medium은 팔로워 없으면 노출 0. X/Instagram/Threads가 타겟층 도달에 훨씬 효과적.
 
 ---
 
@@ -136,12 +137,12 @@ insane, revolutionary, mind-blowing, game-changer, groundbreaking, disruptive, c
 
 ---
 
-## 플랫폼별 가이드 + 노출 최적화 (매일 자동 생성 3개)
+## 플랫폼별 가이드 + 노출 최적화 (매일 자동 생성 4개)
 
 하나의 핵심 메시지를 쓰고, 각 플랫폼에 맞게 변환한다. 전부 같은 글을 복붙하는 게 아니다.
 각 플랫폼의 발견(discovery) 시스템을 이해하고 최적화해야 같은 내용이라도 노출이 완전히 달라진다.
 
-### 1. LinkedIn
+### 1. LinkedIn (메인 — B2B 타겟)
 - **톤**: 프로페셔널, B2B. "I built..." 1인칭 파운더 관점
 - **길이**: 150~300 단어 (800~1,600자)
 - **포맷**: 첫 2줄이 hook (210자 이내 — "see more" 전에 보이는 영역). 줄바꿈 많이.
@@ -158,75 +159,136 @@ insane, revolutionary, mind-blowing, game-changer, groundbreaking, disruptive, c
 - **게시 시간**: 화~수요일, 오후 1~3시 GMT (글로벌 B2B 최적)
 - **뉴스레터**: 구독자에게 인앱+이메일 알림 → 알고리즘 우회 가능
 
-### 2. DEV.to
-- **톤**: 기술적, 개발자 친화적. 코드 예시 포함
-- **길이**: 500~1500 단어 (7분 읽기가 최적 — 기술 글은 길어야 가치가 있다)
-- **포맷**: Markdown. 코드 블록, 헤더 활용
+### 2. X (Twitter) — 짧고 강렬
+- **톤**: 짧고 임팩트. 한 문장이 한 트윗. 숫자 비교가 가장 강력
+- **길이**: 1~3 트윗. 단독 또는 스레드
+- **포맷**: 첫 트윗이 hook. 스레드면 1/N 넘버링
 - **언어**: 영어 (한글 번역 별도)
-- **특징**: API 사용법, 아키텍처, 기술 결정 과정
+- **특징**: 비교 숫자가 가장 바이럴. "Avalara: $1,500/mo. POTAL: $0. Same 140 features."
 
 **노출 최적화:**
-- **태그**: 정확히 4개 (DEV.to 최대), 각 20자 이내
-- **POTAL용 태그 풀**: `api`, `webdev`, `javascript`, `python`, `saas`, `tutorial`, `opensource`, `productivity`, `beginners`, `devops`, `ecommerce`, `node`
-- **Front matter 필수 작성**:
-```yaml
----
-title: "제목"
-description: "검색에 노출될 설명 (1~2문장)"
-tags: api, webdev, saas, tutorial
-cover_image: https://potal.app/og-image.png
-series: "시리즈명 (관련 글 연결 시)"
-canonical_url: https://potal.app/blog/원본URL (크로스포스팅 시)
----
+- **해시태그**: 1~2개만 (3개 이상 → 약 40% 도달 패널티)
+- **POTAL용 해시태그**: #ecommerce #crossborder (니치하게, 2개만)
+- **링크**: 첫 번째 리플라이에 넣기 (본문 링크 → 도달 감소)
+- **미디어**: 이미지 또는 짧은 영상 첨부 시 노출 2~3배 증가
+- **게시 시간**: 평일 오전 8~10시 EST (미국 비즈니스 타임)
+- **스레드 전략**: 핵심 1트윗 + "Here's why:" 스레드 = 높은 참여율
+- **인용 RT**: 관련 뉴스(관세, de minimis, 무역 등) 인용 RT하면서 POTAL 관점 추가
+
+**X 콘텐츠 패턴 (효과적인 것들):**
 ```
-- **커버 이미지**: 반드시 포함 (1000x420px). 피드에서 눈에 띄는 효과
-- **크로스포스팅**: canonical_url 설정하면 SEO 패널티 없음
+패턴 1 — 숫자 비교:
+"Avalara: $1,500/month. 31 features.
+POTAL: $0. 140 features.
+Same problem. Different philosophy.
+potal.app"
 
-### 3. Medium
-- **톤**: 에세이/칼럼 느낌. 깊이 있는 사고
-- **길이**: 500~1500 단어 (7분 읽기 최적)
-- **포맷**: 깔끔한 프로즈. 소제목 활용
+패턴 2 — 문제→해결:
+"Your customer sees $45 at checkout.
+They get a $63 customs bill at the door.
+That's a returned package and a lost customer.
+POTAL calculates the true cost before checkout."
+
+패턴 3 — 한 줄 팩트:
+"96% HS code accuracy with just 3 fields.
+No AI. No tokens. $0.
+potal.app"
+
+패턴 4 — 빌딩 저니:
+"30 days. Zero coding experience. 140 features.
+Built with Claude AI + vibe coding.
+Cross-border commerce shouldn't require a $50K/yr software license."
+```
+
+### 3. Instagram — 비주얼 중심
+- **톤**: 비주얼이 주인공, 텍스트는 보조. 약간 캐주얼
+- **길이**: 캡션 50~150 단어. 첫 125자가 "더 보기" 전에 보이므로 hook 배치
+- **포맷**: Reels > 캐러셀 > 단일 이미지. 스토리도 활용
 - **언어**: 영어 (한글 번역 별도)
-- **특징**: 업계 인사이트 + POTAL 자연스럽게 연결
+- **특징**: 숫자 시각화 + 비교 차트가 효과적
 
 **노출 최적화:**
-- **태그**: 5개 (최대치 전부 사용). 대형 2~3개 + 니치 2~3개 조합
-- **POTAL용 태그**: `Cross Border Commerce`, `Ecommerce`, `SaaS`, `API Development`, `International Trade`, `Startup`, `Developer Tools`, `Customs`, `Free Tools`, `Build In Public`
-- **퍼블리케이션**: 초기에는 기존 퍼블리케이션에 기고 → 큐레이션 확률 증가. 이후 자체 퍼블리케이션 전환
-- **페이월**: 무료로 게시 (페이월 → 구글 유기 트래픽 44% 감소)
-- **SEO**: 제목과 첫 문장이 자동으로 meta description이 됨. 키워드 자연스럽게 포함
-- **게시 시간**: 화~수 오전 10시~오후 1시
+- **해시태그**: 3~5개, 캡션 끝에 배치. 또는 캡션 내 키워드가 도달 약 30% 높음
+- **POTAL용 해시태그**: #ecommerce #crossbordercommerce #customsduty #internationaltrade #freetool
+- **Reels**: 도달 약 2.25배. 15~30초, 세로 9:16 (YouTube Shorts와 동시 활용)
+- **캐러셀**: 참여 약 2.14배. 슬라이드 5~10장 (비교 차트, 단계별 설명)
+- **스토리**: "New feature" 스티커 + 링크 스티커 (potal.app)
+- **게시 시간**: 화~목 오전 10시~오후 2시 (글로벌)
+- **CTA**: "Link in bio" 금지 → 대신 "potal.app" 텍스트만
+
+**Instagram 콘텐츠 유형:**
+1. **비교 캐러셀**: POTAL vs 경쟁사 가격/기능 비교 (슬라이드 5장)
+2. **데모 Reels**: 녹화 영상을 세로 크롭 → 자막 추가
+3. **숫자 카드**: 하나의 숫자 강조 이미지 (예: "$0 — 140 features")
+4. **결과 스크린샷**: 04_result.png 같은 스크린샷 + 캡션 설명
+
+### 4. Threads — X의 캐주얼 버전
+- **톤**: X와 비슷하지만 좀 더 대화체, 캐주얼. 커뮤니티 느낌
+- **길이**: 1~3 포스트. 500자 제한
+- **포맷**: 텍스트 중심 + 이미지 1장 첨부 가능
+- **언어**: 영어 (한글 번역 별도)
+- **특징**: Instagram과 연동 → 크로스 공유하면 도달 약 4배
+
+**노출 최적화:**
+- **토픽 태그**: 1개만 (pill-style). 예: `ecommerce`, `startups`
+- **Instagram 공유**: Threads 작성 후 Instagram에 공유 → 도달 극대화
+- **리포스트**: 관련 스레드에 가치 있는 답글 달기 (Product Hunt 댓글 전략과 동일)
+- **게시 시간**: Instagram과 동시 게시
+- **링크**: 본문에 직접 넣어도 OK (X보다 패널티 적음)
+
+**Threads 콘텐츠 패턴:**
+```
+패턴 1 — 질문형:
+"your customer adds a $30 item to cart.
+shipping says $8.
+they pay $38.
+
+then a $22 customs bill arrives at their door.
+
+how many of those customers come back?
+(hint: not many)
+
+this is why landed cost calculation matters."
+
+패턴 2 — 간결한 팩트:
+"built a tool with 140 features.
+competitors charge $1,500-$4,000/month for 31.
+made it free. forever.
+potal.app"
+
+패턴 3 — 빌딩 업데이트:
+"day 30 update:
+- 140 features live
+- 240 countries supported
+- 0 lines of code written by me
+- built entirely with AI
+
+cross-border commerce shouldn't be expensive to solve."
+```
 
 ---
 
 ## 브랜드 채널 참고 가이드 (자동 생성 아님 — 은태님 직접 작성 시 참고)
 
-아래 4개 플랫폼은 매일 자동 생성하지 않는다. 은태님이 특별한 순간(새 기능 출시, 마일스톤, 유저 피드백, 규제 뉴스 등)에 직접 작성할 때 참고하는 가이드.
-
-### X (Twitter)
-- **톤**: 짧고 강렬. 한 문장이 한 트윗
-- **길이**: 1~3 트윗 (스레드 가능)
-- **해시태그**: 1~2개만 (3개 이상 → 40% 패널티)
-- **링크**: 첫 번째 리플라이에
-- **핵심**: 비교 숫자가 가장 효과적. "Avalara: $1,500/mo. POTAL: $0."
-
-### Threads
-- **톤**: X와 비슷하지만 좀 더 캐주얼
-- **길이**: 1~3 포스트
-- **토픽 태그**: 1개만 (pill-style)
-- **핵심**: Instagram에서 공유하면 도달 4배
-
-### Instagram
-- **톤**: 비주얼 중심. 캡션은 짧게
-- **길이**: 캡션 50~150 단어. 첫 125자가 "더 보기" 전에 보임
-- **해시태그**: 3~5개 또는 캡션 내 키워드 (키워드가 도달 30% 높음)
-- **핵심**: Reels(도달 2.25x) > 캐러셀(참여 2.14x) > 단일 이미지
+아래 플랫폼은 매일 자동 생성하지 않는다. 은태님이 특별한 순간(새 기능 출시, 마일스톤, 유저 피드백, 규제 뉴스 등)에 직접 작성할 때 참고하는 가이드.
 
 ### 디스콰이어트
 - **톤**: 한국 스타트업 커뮤니티. 빌더의 솔직한 이야기
 - **길이**: 200~500 단어
 - **언어**: 한국어
 - **핵심**: 홍보성 글보다 진짜 빌딩 과정, 인사이트 공유가 효과적
+
+### YouTube
+- **채널 세팅 가이드**: Notion "📺 YouTube 채널 세팅 가이드" 참조
+- 24개 데모 녹화를 롱폼+쇼츠로 편집하여 업로드
+- Vrew로 자막 추가 후 업로드
+- 매일 생성 대상 아님, 별도 일정으로 관리
+
+### DEV.to / Medium (SEO 백링크용 — 우선순위 낮음)
+- 나중에 SEO 백링크용으로 활용
+- 기술 블로그 (API 사용법, 아키텍처) → DEV.to
+- 업계 인사이트 에세이 → Medium
+- 매일 생성 안 함, 필요할 때만
 
 ---
 
@@ -242,10 +304,10 @@ canonical_url: https://potal.app/blog/원본URL (크로스포스팅 시)
 1. 핵심 메시지 기반으로 **LinkedIn 버전**을 먼저 작성 (기준 콘텐츠)
 2. 이게 오늘의 "원본"이 됨
 
-### Step 3: 3개 플랫폼 변환
-LinkedIn 원본을 DEV.to, Medium에 맞게 변환. 복붙이 아니라 재작성.
-- 길이 조절
-- 톤 조절
+### Step 3: 4개 플랫폼 변환
+LinkedIn 원본을 X, Instagram, Threads에 맞게 변환. 복붙이 아니라 재작성.
+- 길이 조절 (LinkedIn 300단어 → X 280자 → Instagram 150단어 → Threads 200자)
+- 톤 조절 (LinkedIn 프로페셔널 → X 임팩트 → Instagram 비주얼 → Threads 캐주얼)
 - 포맷 변환
 - **플랫폼 고유 태그/해시태그/메타데이터** 각각 다르게 적용
 - 위의 플랫폼별 노출 최적화 규칙 반드시 따르기
@@ -280,11 +342,10 @@ content/social-media/daily-posts/YYYY-MM-DD_catN_topic-slug.md
 
 ---
 
-## DEV.to
-**Front matter**:
-tags: tag1, tag2, tag3, tag4
-cover_image: [URL]
-description: [한 줄 설명]
+## X (Twitter)
+**해시태그**: #tag1 #tag2 (1~2개만)
+**리플라이 링크**: potal.app
+**게시 시간 권장**: 평일 오전 8~10시 EST
 
 [영문 콘텐츠]
 
@@ -293,9 +354,22 @@ description: [한 줄 설명]
 
 ---
 
-## Medium
-**태그**: Tag1, Tag2, Tag3, Tag4, Tag5
-**게시 시간 권장**: 화~수 오전 10시~오후 1시
+## Instagram
+**해시태그**: #tag1 #tag2 #tag3 #tag4 #tag5
+**콘텐츠 유형**: [Reels / 캐러셀 / 이미지]
+**게시 시간 권장**: 화~목 오전 10시~오후 2시
+
+[캡션 영문]
+
+### 한글 번역
+[캡션 한글]
+
+---
+
+## Threads
+**토픽 태그**: [1개]
+**Instagram 공유**: 예
+**게시 시간 권장**: Instagram과 동시
 
 [영문 콘텐츠]
 
@@ -315,7 +389,7 @@ description: [한 줄 설명]
 - `Date`: 오늘 날짜 (YYYY-MM-DD)
 - `Category`: 7개 중 해당 카테고리 (Feature Deep-Dive, Seller Pain Point, Building Journey, Industry News, Competitor Compare, User Story, Why Free)
 - `Status`: "Generated" (초기값)
-- `LinkedIn`, `DEV.to`, `Medium` 체크박스: 전부 false (은태님이 업로드 후 체크)
+- `LinkedIn`, `X`, `Instagram`, `Threads` 체크박스: 전부 false (은태님이 업로드 후 체크)
 
 **페이지 본문에 포함:**
 각 플랫폼별 콘텐츠 전문을 Notion 페이지 본문에도 넣는다. Notion에서 바로 복붙 가능.
@@ -349,7 +423,7 @@ Notion MCP 도구 사용: `notion-create-pages` 호출.
 - 토픽과 직접 관련된 에셋을 우선 선택
 - 플랫폼당 최소 1개, 최대 3개 에셋 지정
 - 같은 에셋을 여러 플랫폼에 사용 가능
-- 영상(rec_)은 LinkedIn에서만 사용 (DEV.to/Medium은 이미지만)
+- 영상(rec_)은 LinkedIn과 Instagram Reels에서 사용 (X는 짧은 클립만, Threads는 이미지만)
 
 ---
 

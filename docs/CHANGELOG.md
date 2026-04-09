@@ -1,5 +1,25 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking 신규 + 140→141 active)
+> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking 신규 + GitHub-Vercel 자동배포 복구)
+
+## [2026-04-09 17:56 KST] CW22-S6 추가 — GitHub-Vercel 자동배포 복구
+
+### 해결
+- **GitHub 계정 Reinstatement 완료** — Ticket #4248922, Geoffrey (GitHub Support)가 계정 제약 전부 해제
+- **Vercel-GitHub 재연결** — Project Settings → Git → Connect → soulmaten7/potal
+- **자동배포 동작 확인** — 테스트 커밋 `f6b190c` push 후 Vercel이 webhook으로 자동 트리거, 배포 성공 (commit by `soulmaten7` 표시 = webhook 경로 확정)
+- **GitHub Apps 설치 확인** — Vercel GitHub App이 사용자 계정에 정상 설치됨
+
+### 정리
+- **CLAUDE.md 절대 규칙 #11 삭제** — "git push 후 vercel --prod 필수 (임시)" 제거
+- **세션 종료 체크리스트** — "vercel --prod 배포 완료" 항목 제거
+- **NEXT_SESSION_START.md** — 미해결 사항에서 "GitHub 계정 flagged → 자동 배포 장애" 해결 완료 처리
+
+### 영향
+- 2026-04-05부터 유지하던 `git push && vercel --prod` 2단계 배포 워크플로우 종료
+- 이제부터 `git push`만으로 자동 배포 (4일 만에 원상복구)
+- Vercel Support Case #01083440 — close 요청 예정
+
+---
 
 ## [2026-04-09 KST] CW22-S6 — F148 US Sales Tax Nexus Tracking (Forever Free)
 
@@ -26,6 +46,17 @@
 
 ### 정리
 - `session-context.md` P2 남은 7개 재검증 → 전부 이미 active (stale 제거, F045-F048 4개 e-commerce 플러그인만 실제 미구현)
+
+### 추가 (코드 외 — Cowork 처리)
+- **X(Twitter) 글자수 제한 강화**: daily-content-posting 스케줄 태스크 prompt 업데이트
+  - 플랫폼별 제한 테이블 (X 280자, Threads 500자, LinkedIn 3000자, Instagram 2200자)
+  - 각 트윗 작성 후 글자수 카운트 의무화, 초과 시 줄이기 규칙 추가
+  - 커뮤니티 댓글 활동(PH/Reddit/HN) 섹션 prompt에 포함
+- **Vercel Cron 알림 환경변수 세팅**: NOTION_API_KEY + NOTION_TASK_BOARD_DB_ID Vercel Production 추가, CREDENTIALS.md 기록
+- **MCP npm publish**: potal-mcp-server@1.4.3 npm 배포 완료
+- **GitHub Reinstatement Request 제출**: Ticket #4248922 + 신규 폼 제출 (2026-04-09)
+- **Vercel Support Case #01092535**: GitHub flagged 설명 답변 → Neeraj Kumar가 #01083440으로 통합 처리
+- **Notion 업데이트**: Session Log CW22-S6 생성, Task Board F148 Done, Content Pipeline 블로그 태스크 신규
 
 ## [2026-04-08 KST] CW22-S5 — 데모 완성 + YouTube 채널 + 홈페이지 Video Guides + 커뮤니티 댓글 가이드
 

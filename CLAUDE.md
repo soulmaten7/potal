@@ -33,7 +33,6 @@
 8. **문서 업데이트 시 날짜+시간(KST) 기록 필수**
 9. **유료 플랜 재도입 금지** — Forever Free 구조 유지 (CW22 CEO 확정). Enterprise Contact Us만 허용
 10. **HS Code 벤치마크 오류 시 `archive/benchmarks/POTAL_Ablation_V2.xlsx` 대조 필수**
-11. **git push 후 vercel --prod 필수 (임시)** — GitHub-Vercel 자동 배포 해제 상태 (2026-04-05~, Vercel Support Case #01083440 대기 중). git push만으로는 사이트에 반영 안 됨. 반드시 vercel --prod 실행 후 배포 확인. **⚠️ GitHub 연동 복구 시**: 이 규칙 삭제 + 세션 종료 체크리스트에서 "vercel --prod" 항목 삭제 + NEXT_SESSION_START.md 미해결 사항에서 제거할 것.
 
 ---
 
@@ -119,7 +118,6 @@ potal/
 
 ## 세션 종료 체크리스트
 - [ ] git push 완료
-- [ ] vercel --prod 배포 완료 (git push만으로는 배포 안 됨)
 - [ ] **코드 문서 4개 날짜 확인**: CLAUDE.md, CHANGELOG.md, session-context.md, NEXT_SESSION_START.md (hook이 자동 검증)
 - [ ] **session-context.md**: 이번 세션 CW##-X 완료 블록 추가됨
 - [ ] **Notion**: Session Log에 세션 기록 추가 (Cowork에서)

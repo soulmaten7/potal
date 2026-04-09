@@ -1,5 +1,5 @@
 # 데모 소재 사용 기록 — 2026-W15
-> 마지막 업데이트: 2026-04-06 16:45 KST (CW22-S3 Dashboard 업데이트 반영)
+> 마지막 업데이트: 2026-04-09 KST (04-09 MCP 개발자 콘텐츠 에셋 반영)
 
 ## 반영 완료된 데모 소재
 
@@ -54,3 +54,5 @@
 |------|------|------------|
 | 2026-04-06 | (없음 — Case 4 자체 생성) | 데모 소재 미사용 |
 | 2026-04-07 | 2026-04-07_cat5_zonos-coreweave-pricing.md | 07_competitors.png, 06_pricing.png, rec_04_pricing.mov, 09_api-docs.png, 01_hero.png |
+| 2026-04-08 | 2026-04-08_cat3_bluetooth-earbuds-section-301.md | rec_10_landed-cost-breakdown.mov, rec_17_country-compare.mov, 04_result.png, 07_competitors.png, rec_22_dashboard-10field.mov (간접) |
+| 2026-04-09 | 2026-04-09_cat2_potal-mcp-claude-3-lines.md | rec_12_api-docs.mov, 09_api-docs.png, rec_22_dashboard-10field.mov (간접), rec_24_features-browse.mov (간접), 04_result.png, 01_hero.png |
