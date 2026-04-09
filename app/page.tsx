@@ -331,7 +331,7 @@ function FadeInSection({ children, delay = 0 }: { children: React.ReactNode; del
 // Source: archive/Competitor_Feature_Matrix.xlsx (기능 체크리스트 시트, R61)
 // Feature counts: 47-feature matrix ✅ counts mapped to full feature sets
 const COMPETITORS = [
-  { name: 'POTAL', features: 140, cost: '$0', costNote: 'Forever Free', isPotal: true },
+  { name: 'POTAL', features: 141, cost: '$0', costNote: 'Forever Free', isPotal: true },
   { name: 'Global-e', features: 35, cost: '$39,000+', costNote: '/yr (6.5% GMV)', isPotal: false },
   { name: 'Avalara', features: 31, cost: '$18,000+', costNote: '/yr ($1,500/mo+)', isPotal: false },
   { name: 'Zonos', features: 31, cost: '$48,000+', costNote: '/yr ($2/order+10%)', isPotal: false },
@@ -347,7 +347,7 @@ function CompetitorBarChart() {
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
       {COMPETITORS.map((c) => {
-        const pct = Math.round((c.features / 140) * 100);
+        const pct = Math.round((c.features / 141) * 100);
         return (
           <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
             <div style={{
@@ -500,7 +500,7 @@ export default function HomePage() {
               {/* Stats */}
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                 {[
-                  { value: 140, suffix: '', label: t('home.hero.stat.features'), icon: '⚡' },
+                  { value: 141, suffix: '', label: t('home.hero.stat.features'), icon: '⚡' },
                   { value: 240, suffix: '', label: t('home.hero.stat.countries'), icon: '🌍' },
                   { value: 155, suffix: '+', label: t('home.hero.stat.endpoints'), icon: '🔗' },
                   { value: 0, suffix: '', label: t('home.hero.stat.cost'), icon: '💰', display: '$0' },
@@ -784,7 +784,7 @@ export default function HomePage() {
               { icon: '🎯', title: 'Quick Start', desc: '5 videos — Calculate landed cost, see live pricing, explore the dashboard', playlist: 'Quick Start' },
               { icon: '🌍', title: 'Real Scenarios', desc: 'Ship cosmetics to EU, electronics to Japan, clothing to US with FTA benefits', playlist: 'Real Scenarios' },
               { icon: '🔧', title: 'Features Deep Dive', desc: 'HS code classification, FTA lookup, sanctions screening, restrictions check', playlist: 'Features Deep Dive' },
-              { icon: '💻', title: 'For Developers', desc: 'API docs walkthrough, dashboard demo, 140 features browser', playlist: 'For Developers' },
+              { icon: '💻', title: 'For Developers', desc: 'API docs walkthrough, dashboard demo, 141 features browser', playlist: 'For Developers' },
               { icon: '📊', title: 'Data & Transparency', desc: 'Live data ticker, 12 sources monitored, freshness indicators explained', playlist: 'Data & Transparency' },
             ].map((item, i) => (
               <a

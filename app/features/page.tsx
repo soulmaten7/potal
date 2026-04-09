@@ -232,7 +232,7 @@ export default function FeaturesPage() {
               </thead>
               <tbody>
                 {[
-                  { label: t('features.comparison.activeFeatures'), potal: '140', avalara: '44', zonos: '38', simply: '22' },
+                  { label: t('features.comparison.activeFeatures'), potal: '141', avalara: '44', zonos: '38', simply: '22' },
                   { label: t('features.comparison.countries'), potal: '240', avalara: '100+', zonos: '200+', simply: '180+' },
                   { label: t('features.comparison.hsAccuracy'), potal: '100%', avalara: '~85%', zonos: '~80%', simply: '~75%' },
                   { label: t('features.comparison.startingPrice'), potal: '$0/mo', avalara: '$1,500/mo', zonos: '$4,000/mo', simply: '$99/mo' },

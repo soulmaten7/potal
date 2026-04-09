@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-08 KST (CW22-S5 — 데모 영상 완성, 콘텐츠 플랫폼 전환, Notion 가이드 6개 생성/업데이트)
+> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking Forever Free 런칭: 51개 주 데이터 + API + MCP v1.4.3 + /features + Dashboard 조건부 + 매년 2회 cron. 140→141 active)
 
 ---
 
@@ -23,31 +23,30 @@
 
 ## 가장 최근 세션: CW22-S5 (2026-04-08)
 
-### 핵심 변경 — 데모 영상 완성 + 콘텐츠 플랫폼 전환 + Notion 가이드 대량 업데이트
+### 핵심 변경
 
-**데모 영상:**
-- STEP 4 CapCut 편집 완료 → `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
-- STEP 5 최종 파일 정리 완료 — 파일은 STEP 1-4 폴더에 유지, STEP 5는 체크리스트 전용
+**데모 영상:** STEP 4-5 완성 → `Total Landed Cost Calculator — 140 Features, Free Forever | POTAL Demo.mov` (33.7MB)
 
-**콘텐츠 플랫폼 전환:**
-- content-posting 스킬: DEV.to/Medium → X/Instagram/Threads 전환 (일일 자동 콘텐츠)
-- 브랜드 채널: 디스콰이어트 + YouTube (2개로 축소)
+**YouTube 채널:** @POTAL-Official 생성 + 동영상 10개 업로드 (일일 제한 도달) + 플레이리스트 5개
 
-**Notion 가이드 신규 3개:**
-- 📺 YouTube 채널 세팅 가이드 — 채널명 POTAL/@potalapp, 5개 플레이리스트, 22+5 영상 매핑
-- 🚀 Product Hunt 런칭 전략 가이드 — 3-Phase 전략 (코멘트→런치→후속)
-- 📝 Daily Content Posting 업데이트
+**홈페이지 코드 변경:**
+- "See POTAL in Action" 섹션 추가 — 5개 플레이리스트별 카드 + YouTube 링크 (커밋 da8bf33)
+- YouTubeFloatingButton 우하단 고정 — 빨간 YouTube 아이콘, 클릭 시 플레이리스트 메뉴 (커밋 20cce2d)
 
-**Notion 페이지 업데이트 3개:**
-- 일일 루틴: DEV.to/Medium → X/Instagram/Threads 전환
-- Content Automation Guide: 플랫폼 구조/워크플로우/성과 추적 전면 개편
-- POTAL Notion 사용 설명서: 플랫폼 정보/영상 흐름/FAQ 업데이트
-- POTAL Command Center 메인: 수치 업데이트, Quick Links 재구성
+**콘텐츠 플랫폼 전환:** DEV.to/Medium → X/Instagram/Threads (일일 자동), 브랜드 채널: 디스콰이어트+YouTube
+
+**커뮤니티 댓글 활동 가이드:** Product Hunt/Reddit/Hacker News 3개 플랫폼별 검색 키워드 + 댓글 대상 글 유형 정리
+
+**Notion 가이드 신규 3개:** YouTube 채널 세팅, Product Hunt 런칭 전략, Daily Content Posting
+
+**Notion 업데이트 4개:** 일일 루틴, Content Automation Guide(+커뮤니티 섹션), Notion 사용 설명서, Command Center 메인
 
 ### ⚠️ 이미 해결된 사항 (새 세션에서 다시 건드리지 말 것)
 - **API 에러 핸들링**: 전부 완료. 추가 작업 불필요
 - **`/tools→/features` 통합**: 전부 완료. 42개 301 리다이렉트 + FeatureToolWidget 16개 slug
 - **데모 영상 STEP 1~5**: 전부 완료. 추가 촬영/편집 불필요
+- **YouTube 채널 생성**: 완료. @POTAL-Official, 10개 영상, 5개 플레이리스트
+- **홈페이지 Video Guides + 플로팅 버튼**: 완료. 코드 배포됨
 
 ### 다음 세션에서 할 일
 - **YouTube 나머지 영상 업로드** — 10/27개 완료 (일일 제한 도달), 나머지 17개 업로드 계속 (채널: youtube.com/@POTAL-Official)

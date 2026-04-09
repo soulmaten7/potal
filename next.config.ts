@@ -48,6 +48,9 @@ const nextConfig: NextConfig = {
       { source: '/tools/price-break', destination: '/features/price-break-rules', permanent: true },
       { source: '/tools/origin-detection', destination: '/features/origin-determination', permanent: true },
       { source: '/tools/insurance', destination: '/features/shipping-insurance', permanent: true },
+      // CW22-S6: F148 US Sales Tax Nexus Tracking
+      { source: '/tools/us-nexus-tracker', destination: '/features/us-sales-tax-nexus-tracking', permanent: true },
+      { source: '/tools/nexus', destination: '/features/us-sales-tax-nexus-tracking', permanent: true },
     ];
   },
   images: {

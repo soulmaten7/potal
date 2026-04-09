@@ -178,6 +178,8 @@ const TOOL_CONFIGS: Record<string, ToolConfig> = {
     ],
     submitLabel: 'Check Restrictions',
   },
+  // F148 — US Sales Tax Nexus Tracking — handled by dedicated UsNexusChecker component
+  // (FeatureToolWidget supports only simple flat forms; nexus check needs multi-row state input)
 };
 
 export default function FeatureToolWidget({ slug }: { slug: string }) {

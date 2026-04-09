@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-08 KST (CW22-S5 — 데모 영상 STEP 4-5 완성, 콘텐츠 플랫폼 전환 DEV.to/Medium→X/Instagram/Threads, Notion 가이드 6개 생성/업데이트. 사이트 총 ~503페이지.)
+> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking Forever Free 런칭: 51개 주 threshold, API, MCP v1.4.3, /features + Dashboard 조건부 UI, 매년 2회 cron. 140→141 active.)
 
 ---
 
@@ -87,7 +87,7 @@
 
 | 플랜 | 가격 | 할당량 | 비고 |
 |------|------|--------|------|
-| Forever Free | $0 | 100K건/월 (소프트 캡) | 140개 기능 전부 무료 |
+| Forever Free | $0 | 100K건/월 (소프트 캡) | 141개 기능 전부 무료 |
 | Enterprise | Contact Us | 커스텀 | 가격 미표시, 문의 시 협의 |
 
 - **MRR: $0 (의도적 — Exit 전략)**
@@ -440,15 +440,17 @@
 - xAI Grok: 앱 스토어 없음 (출시 시 진입)
 
 ### ⏳ 기능 보완
-- P2 남은 7개: F054 Nexus Tracking, F082 Marketplace Integration, F083 ERP Integration, F105 Compliance Audit Report, F138 Dedicated CSM, F140 AEO Certification, F147 Revenue Share Program (대부분 Enterprise급, 고객 확보 후 진행)
+- **미구현 (coming_soon)**: F045 Shopify App, F046 WooCommerce Plugin, F047 BigCommerce Plugin, F048 Magento Module — 4개 e-commerce 플랫폼 플러그인만 실제 미구현 상태
+- ~~P2 남은 7개 (F054/F082/F083/F105/F138/F140/F147)~~ → 2026-04-09 재검증: 전부 이미 active (stale 항목이었음). F054 Sub-national Tax, F082 Marketplace Connect, F083 ERP Integration, F105 Pricing Page, F138 Customer Success, F140 Onboarding Wizard, F147 Partner Ecosystem 모두 구현 완료
 - ~~FIX 17개~~ → CW20에서 전부 완료 (142/147 → 147/147)
 - Layer 3 설계 (Enterprise Custom, 고객 확보 후)
+- **신규 (2026-04-09)**: F148 US Sales Tax Nexus Tracking — Forever Free 런칭 완료
 
 ### 🟢 장기
 - 투자자 피치 원페이저 PDF (숫자 생긴 후)
 - 글로벌 확장 (US 시장 장악 후)
 
-> **완료된 Phase/기능 상세는 아래 "5. 완료된 내용" 참조. B2B Phase 0~1 전체 완료, Phase 2 LLM 3개 완료(GPT/Claude/Gemini), 결제 Paddle Live 완료, Shopify 심사 제출 완료, 140/142 기능 구현 완료.**
+> **완료된 Phase/기능 상세는 아래 "5. 완료된 내용" 참조. B2B Phase 0~1 전체 완료, Phase 2 LLM 3개 완료(GPT/Claude/Gemini), 결제 Paddle Live 완료, Shopify 심사 제출 완료, 141/141 기능 중 137 active + 4 coming_soon (F045-F048 e-commerce 플러그인 미구현).**
 
 ---
 

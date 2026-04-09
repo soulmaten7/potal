@@ -1,5 +1,5 @@
 # PROJECT_STATUS.md — POTAL 프로젝트 현황/수치
-# 마지막 업데이트: 2026-04-06 15:30 KST (CW22-S3: 140기능 프론트엔드 UI 대규모 구축 — ~79 신규 페이지, 사이트 503페이지)
+# 마지막 업데이트: 2026-04-09 KST (CW22-S6: F148 US Sales Tax Nexus Tracking 신규 — 51개 주 threshold, API, MCP v1.4.3, /features + Dashboard 조건부, 매년 2회 cron. 140→141 active, MCP 9→10, Cron 24→25)
 # 이 파일은 참조용. Claude Code가 수치 확인 필요 시 읽는 파일.
 
 ## 프로젝트 개요
@@ -58,15 +58,15 @@ portal/
 - **제재 스크리닝**: sanctions_entries 21,301건 + aliases 22,328 + addresses 24,176 + ids 8,000 ✅
 - 정부 API: 7개국 (USITC, UK, EU TARIC, Canada, Australia, Japan, Korea)
 - **7개국 HS 벌크 다운로드**: gov_tariff_schedules **131,794행** ✅
-- **관세율 자동업데이트**: Vercel Cron **24개**
-- **MCP Server**: v1.4.0, 9개 도구, 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
+- **관세율 자동업데이트**: Vercel Cron **25개** (us-nexus-threshold-check 추가, 매년 1/1 + 7/1)
+- **MCP Server**: v1.4.3, 10개 도구 (check_us_nexus 추가), 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
 - **Pre-computing**: 490 HS6 × 240국 = **117,600 조합** 사전 계산 (캐시 <50ms)
 - **HS10 파이프라인**: ✅ 7개국 10자리 파이프라인 구현 완료
 - **기능 감사 (2026-03-29)**: CW14 142개 기능 코드 기반 정밀 검증 → **140 Active + 2 WON'T = 142** (구현율 140/140 = 100%, WON'T: Power BI, Mobile App) — 엑셀: POTAL_Feature_Audit_2603290000.xlsx
 - **API 엔드포인트**: **~155개+**
 - **심층 검증 84/84 PASS** ✅
 - **경쟁사 대비 HS Code 매핑**: Avalara 40M+ → **POTAL 500M+** (WDC 5억+ 사전 매핑 전략)
-- **MCP Server**: v1.4.0, 9개 도구, 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
+- **MCP Server**: v1.4.3, 10개 도구 (check_us_nexus 추가), 9-field v3.3 파이프라인 지원, npm + MCP 공식 레지스트리
 - **npm SDK**: `potal-sdk@1.1.0` 공개 배포 ✅ (https://www.npmjs.com/package/potal-sdk)
 - **PyPI SDK**: `potal@1.1.0` 공개 배포 ✅ (https://pypi.org/project/potal/1.1.0/)
 - **WooCommerce Plugin**: WordPress.org 제출 완료 ✅ slug: potal-total-landed-cost-calculator, Awaiting Review

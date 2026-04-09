@@ -1,7 +1,33 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-08 KST (CW22-S5 — 데모 영상 완성, 콘텐츠 플랫폼 전환, Notion 가이드 대량 업데이트)
+> 마지막 업데이트: 2026-04-09 KST (CW22-S6 — F148 US Sales Tax Nexus Tracking 신규 + 140→141 active)
 
-## [2026-04-08 KST] CW22-S5 — 데모 영상 STEP 4-5 완성 + 콘텐츠 플랫폼 전환 + Notion 가이드 6개 생성/업데이트
+## [2026-04-09 KST] CW22-S6 — F148 US Sales Tax Nexus Tracking (Forever Free)
+
+### 배경
+- Avalara가 $50K/yr에 판매하는 기능을 POTAL은 $0로 차별화
+- CEO 결정: Enterprise 전용 → Forever Free 전환 (2026-04-09)
+- US 도착지 선택 시에만 조건부 노출 → cross-border 포지션 훼손 없음
+
+### 추가 — F148 US Sales Tax Nexus Tracking (slug: us-sales-tax-nexus-tracking)
+- **데이터**: `data/us-nexus-thresholds.json` — 51개 엔트리 (50주 + DC)
+  - 1차 출처: Sales Tax Institute 2026-01-01 기준 차트
+  - 각 주 DOR 공식 URL 2차 검증
+  - 4가지 threshold type: sales_only(28) / sales_or_transactions(16) / sales_and_transactions(2: CT,NY) / no_state_tax(5: AK,DE,MT,NH,OR)
+  - 각 엔트리에 effectiveDate, measurementPeriod, marketplaceFacilitator, sourceUrl, lastVerified 기록
+- **핵심 로직**: `lib/nexus/check-nexus.ts` — 타입 정의 + `checkNexus()` 함수. OR/AND 로직 정확 처리, 80% 경고 zone
+- **API**: `POST /api/v1/nexus/check` (X-Demo-Request 지원, 10 req/min/IP)
+- **UI 컴포넌트**: `app/components/UsNexusChecker.tsx` — 다중 입력 폼, 3섹션 결과 (triggered/warning/safe), compact 모드
+- **Features 페이지**: `/features/us-sales-tax-nexus-tracking` — slug 분기로 UsNexusChecker 렌더 (id="try-it")
+- **Dashboard**: Tariff Calculator 탭 내 `calcDest === 'US'` 조건부 섹션 (호박색 border)
+- **MCP 서버**: `check_us_nexus` 10번째 도구 추가, v1.4.2 → **v1.4.3** (publish는 별도)
+- **Cron**: `/api/cron/us-nexus-threshold-check` — 매년 1/1, 7/1 03:00 UTC, Sales Tax Institute 페치 + Telegram/Notion 알림
+- **SEO 리다이렉트**: `/tools/us-nexus-tracker`, `/tools/nexus` → `/features/us-sales-tax-nexus-tracking` 301
+- **카운트**: 140 active → 141 active (homepage, features 비교표, "For Developers" 영상 설명)
+
+### 정리
+- `session-context.md` P2 남은 7개 재검증 → 전부 이미 active (stale 제거, F045-F048 4개 e-commerce 플러그인만 실제 미구현)
+
+## [2026-04-08 KST] CW22-S5 — 데모 완성 + YouTube 채널 + 홈페이지 Video Guides + 커뮤니티 댓글 가이드
 
 ### 추가 (Notion 가이드 신규 3개)
 - 📺 YouTube 채널 세팅 가이드 — 채널명 POTAL/@potalapp, 5개 플레이리스트, 22개 롱폼+5개 쇼츠 매핑, SEO 키워드, 업로드 일정
@@ -26,6 +52,16 @@
 - 배너: "Total Landed Cost Calculator · 140 Features · 240 Countries · Free Forever"
 - 동영상 10개 업로드 (일일 업로드 제한 도달): Export Cosmetics to EU(1:33), Dashboard Tour(0:33), One Widget Any Country(0:26), Full Landed Cost Breakdown(0:43), Watch Accuracy Jump(0:18), rec 20 ticker scroll(0:20) 등
 - 플레이리스트 5개 생성: POTAL Quick Start(5), Real Scenarios(2), Features Deep Dive(1), For Developers(1), Data & Transparency(1)
+
+### 코드 변경
+- 홈페이지(page.tsx): "See POTAL in Action" 섹션 추가 — 5개 플레이리스트별 카드 + YouTube 채널 링크 버튼 (커밋 da8bf33)
+- YouTubeFloatingButton 컴포넌트 신규 — 우하단 고정 빨간 YouTube 버튼, 호버 시 "Video Guides" 확장, 클릭 시 4개 플레이리스트 메뉴 팝업 (커밋 20cce2d)
+- layout.tsx에 YouTubeFloatingButton 추가 (전 페이지 표시)
+
+### 커뮤니티 댓글 활동 가이드
+- Notion Task Board "커뮤니티 댓글 활동 (Product Hunt + Reddit + Hacker News)" 페이지 작성
+- 3개 플랫폼별 검색 키워드 + 댓글 대상 글 유형 + 주의사항 + 진행 추적 테이블
+- Content Automation Guide에 커뮤니티 댓글 활동 섹션 추가
 
 ## [2026-04-07 22:30 KST] CW22-S4f — restricted-items 위젯 + content-posting 에셋 인벤토리
 

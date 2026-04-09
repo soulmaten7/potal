@@ -214,6 +214,9 @@ export const FEATURES: Feature[] = [
 
   // ─── Marketing (1) ─────────────────────────────────
   { id: 'F142', slug: 'email-campaigns', name: 'Email Campaigns', category: 'Marketing', priority: 'SHOULD', status: 'active', description: 'Automated welcome emails and engagement campaign workflows' },
+
+  // ─── Tax (added CW22-S6: F148 US Sales Tax Nexus Tracking) ──
+  { id: 'F148', slug: 'us-sales-tax-nexus-tracking', name: 'US Sales Tax Nexus Tracking', category: 'Tax', priority: 'MUST', status: 'active', description: 'Track US state sales tax nexus thresholds across all 50 states + DC. Get warnings when approaching economic nexus triggers. Post-Wayfair compliant, data verified against state DORs.', apiEndpoint: '/api/v1/nexus/check' },
 ];
 
 export const CATEGORIES: { key: FeatureCategory | 'All'; label: string; count: number }[] = [

@@ -91,6 +91,10 @@
     {
       "path": "/api/v1/cron/api-key-monitor",
       "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/cron/us-nexus-threshold-check",
+      "schedule": "0 3 1 1,7 *"
     }
   ]
 }

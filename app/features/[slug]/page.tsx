@@ -5,6 +5,7 @@ import { FEATURES, CATEGORY_ICONS, getAllFeatureSlugs, getFeatureBySlug, type Fe
 import { getGuideBySlug, type FieldSpec } from '../features-guides';
 import CopyButton from './CopyButton';
 import FeatureToolWidget from './FeatureToolWidget';
+import UsNexusChecker from '@/app/components/UsNexusChecker';
 
 // ─── Static Generation ──────────────────────────────
 
@@ -272,7 +273,14 @@ export default async function FeatureGuidePage({ params }: PageProps) {
         )}
 
         {/* Try it live */}
-        <FeatureToolWidget slug={slug} />
+        {slug === 'us-sales-tax-nexus-tracking' ? (
+          <section id="try-it" className="mb-10">
+            <h2 className="text-lg font-bold text-[#02122c] mb-4">Try it live</h2>
+            <UsNexusChecker />
+          </section>
+        ) : (
+          <FeatureToolWidget slug={slug} />
+        )}
 
         {/* Having issues? */}
         <section className="bg-white rounded-xl border border-slate-200 p-6">

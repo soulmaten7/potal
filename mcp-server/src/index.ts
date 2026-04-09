@@ -7,7 +7,7 @@
  * Calculates import duties, taxes (VAT/GST), customs fees, and shipping
  * for cross-border purchases across 240 countries and territories.
  *
- * Tools (9):
+ * Tools (10):
  *   - calculate_landed_cost: Calculate total cost for international purchases (with 9-field classify support)
  *   - classify_product: HS code classification via v3.3 GRI pipeline (9-field input)
  *   - check_restrictions: Import restriction & compliance check
@@ -17,6 +17,7 @@
  *   - list_supported_countries: Get all supported countries with tax info
  *   - generate_document: Generate trade documents (CI/PL/C/O)
  *   - compare_countries: Compare TLC across multiple destination countries (with 9-field classify)
+ *   - check_us_nexus: US sales tax economic nexus check across 50 states + DC
  */
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -26,12 +27,12 @@ import { z } from "zod";
 // ─── Configuration ──────────────────────────────────────────
 const POTAL_API_BASE = "https://www.potal.app/api/v1";
 const API_KEY = process.env.POTAL_API_KEY || "";
-const USER_AGENT = "potal-mcp-server/1.4.1";
+const USER_AGENT = "potal-mcp-server/1.4.3";
 
 // ─── Server Instance ────────────────────────────────────────
 const server = new McpServer({
   name: "potal",
-  version: "1.4.1",
+  version: "1.4.3",
 });
 
 // ─── API Helper ─────────────────────────────────────────────
@@ -778,6 +779,117 @@ server.tool(
         return total < minTotal ? r : min;
       });
       lines.push(`\n> 💡 **Cheapest route**: ${cheapest.country}`);
+    }
+
+    return {
+      content: [{ type: "text" as const, text: lines.join("\n") }],
+    };
+  }
+);
+
+// ─── Tool: check_us_nexus ───────────────────────────────────
+
+server.tool(
+  "check_us_nexus",
+  "Check US sales tax economic nexus exposure across 50 states + DC. " +
+    "Given per-state sales amounts (and optional transaction counts), determine which states have " +
+    "triggered economic nexus (exceeded threshold), which are in the warning zone (≥80% of threshold), " +
+    "and which are safe. Based on post-Wayfair (2018) state thresholds — most states use $100K in sales " +
+    "or 200 transactions. California/Texas use $500K sales only. New York/Connecticut require both " +
+    "sales AND transaction thresholds. Alaska/Delaware/Montana/New Hampshire/Oregon have no state sales tax.",
+  {
+    sales: z
+      .array(
+        z.object({
+          state: z.string().describe("2-letter US state code (e.g., 'CA', 'TX', 'NY')"),
+          amount: z.number().describe("Sales amount in USD for the measurement period"),
+          transactions: z
+            .number()
+            .optional()
+            .describe("Number of transactions (required for NY, CT, and states with OR-logic)"),
+        })
+      )
+      .describe("Array of per-state sales entries"),
+    measurementPeriod: z
+      .enum(["last_12_months", "previous_calendar_year", "current_calendar_year"])
+      .optional()
+      .describe("Measurement period for sales totals (default: last_12_months)"),
+  },
+  async (args) => {
+    if (!API_KEY) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: "❌ POTAL API key is not configured. Set POTAL_API_KEY environment variable.",
+          },
+        ],
+      };
+    }
+
+    const result = await callPotalApi("/nexus/check", "POST", {
+      sales: args.sales,
+      measurementPeriod: args.measurementPeriod || "last_12_months",
+    });
+
+    if (!result.success || !result.data) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: `❌ Nexus check failed: ${result.error || "Unknown error"}`,
+          },
+        ],
+      };
+    }
+
+    const d = result.data as Record<string, unknown>;
+    const triggered = (d.triggered as Array<Record<string, unknown>>) || [];
+    const warnings = (d.warnings as Array<Record<string, unknown>>) || [];
+    const safe = (d.safe as Array<Record<string, unknown>>) || [];
+    const summary = (d.summary as Record<string, number>) || {};
+
+    const lines: string[] = [];
+    lines.push(`## US Sales Tax Nexus Check\n`);
+    lines.push(
+      `**Total states checked**: ${summary.totalStates || 0} | **Triggered**: ${summary.triggered || 0} | **Warning**: ${summary.warning || 0} | **Safe**: ${summary.safe || 0}\n`
+    );
+
+    if (triggered.length > 0) {
+      lines.push(`### 🔴 Nexus Triggered (${triggered.length})`);
+      lines.push("| State | Amount | Threshold | Exceeded By | Reason |");
+      lines.push("|-------|--------|-----------|-------------|--------|");
+      for (const t of triggered) {
+        const state = `${t.state} (${t.stateName})`;
+        const amount = formatCurrency(Number(t.amount || 0));
+        const threshold =
+          t.salesThreshold !== null ? formatCurrency(Number(t.salesThreshold)) : "—";
+        const exceededBy = formatCurrency(Number(t.exceededBy || 0));
+        const reason = String(t.reason || "").replace(/_/g, " ");
+        lines.push(`| ${state} | ${amount} | ${threshold} | ${exceededBy} | ${reason} |`);
+      }
+      lines.push("");
+    }
+
+    if (warnings.length > 0) {
+      lines.push(`### 🟡 Approaching Threshold (${warnings.length})`);
+      for (const w of warnings) {
+        lines.push(`- **${w.state}** (${w.stateName}): ${w.message}`);
+      }
+      lines.push("");
+    }
+
+    if (safe.length > 0 && triggered.length === 0 && warnings.length === 0) {
+      lines.push(`### 🟢 All States Safe`);
+      lines.push(`No economic nexus triggered across ${safe.length} state(s) checked.`);
+      lines.push("");
+    }
+
+    if (d.disclaimer) {
+      lines.push(`\n> ⚠️ ${d.disclaimer}`);
+    }
+    if (d.dataVersion) {
+      lines.push(`\n*Data version: ${d.dataVersion} | Last updated: ${d.dataLastUpdated}*`);
     }
 
     return {

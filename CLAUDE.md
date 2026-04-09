@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-08 KST (CW22-S5: 데모 STEP 4-5 완료, content-posting 플랫폼 전환, Notion 가이드 3개 신규+3개 업데이트)
+# 마지막 업데이트: 2026-04-09 KST (CW22-S6: F148 US Sales Tax Nexus Tracking 신규 — 51개 주 threshold + API + MCP v1.4.3 + UI + 매년 2회 cron, 140→141 active)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

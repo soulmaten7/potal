@@ -1,6 +1,6 @@
 {
   "name": "potal-mcp-server",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "mcpName": "io.github.soulmaten7/potal",
   "description": "Calculate total landed costs for cross-border commerce. 240 countries, 257M+ tariff records, 131K government tariff schedules, 1.36M product-HS mappings, 63 FTAs, 9-field 100% HS Code accuracy (GRI Pipeline), sanctions screening (21K+ entries). MCP server for Claude, Cursor, and any MCP-compatible AI.",
   "type": "module",

@@ -13,6 +13,7 @@ import dynamic from 'next/dynamic';
 const AnalyticsCharts = dynamic(() => import('./AnalyticsCharts'), { ssr: false });
 const ProfileCompletionBanner = dynamic(() => import('./ProfileCompletionBanner'), { ssr: false });
 const DailyUsageChart = dynamic(() => import('./DailyUsageChart'), { ssr: false });
+const UsNexusChecker = dynamic(() => import('@/app/components/UsNexusChecker'), { ssr: false });
 
 // Paddle.js global type
 declare global {
@@ -1312,6 +1313,24 @@ export default function DashboardContent() {
                   <div style={{ fontSize: 13, color: '#666' }}>Anti-dumping, countervailing duties, safeguards — 119,706 cases checked.</div>
                 </div>
               </div>
+
+              {/* F148 — US Sales Tax Nexus Check (conditional on US destination) */}
+              {calcDest === 'US' && (
+                <div style={{ marginTop: 24, border: '2px solid #fed7aa', borderRadius: 12, padding: 20, background: '#fffbeb' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                    <span style={{ fontSize: 20 }}>⚠️</span>
+                    <div>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: '#92400e', margin: 0 }}>
+                        US Sales Tax Nexus Check <span style={{ fontSize: 11, fontWeight: 500, color: '#a16207', marginLeft: 6 }}>(Optional)</span>
+                      </h3>
+                      <p style={{ fontSize: 12, color: '#a16207', margin: '4px 0 0 0' }}>
+                        Shipping to US? Check your state-by-state sales tax nexus exposure. Free — Avalara charges $50K/yr for this.
+                      </p>
+                    </div>
+                  </div>
+                  <UsNexusChecker compact />
+                </div>
+              )}
             </div>
           )}
 
