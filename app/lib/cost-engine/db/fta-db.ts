@@ -10,6 +10,32 @@ import { findApplicableFta as hardcodedFindFta, applyFtaRate as hardcodedApplyFt
 import type { FtaResult } from '../hs-code/fta';
 
 /**
+ * CW32: FTAs added to hs-code/fta.ts after the Supabase fta_agreements
+ * table was last synced. When the DB lookup fails to find a match we also
+ * consult the hardcoded list so new agreements (Korea-UK, KCFTA…) apply
+ * without waiting for a DB migration.
+ *
+ * Safe because hardcodedFindFta() returns `hasFta:false` when nothing
+ * applies, and the merge only replaces a "no FTA" result with a hit.
+ */
+function mergeWithHardcoded(
+  dbResult: FtaResult,
+  originCountry: string,
+  destinationCountry: string,
+  hsChapter: string | undefined,
+): FtaResult {
+  // DB already found a preferential agreement — keep it.
+  if (dbResult.hasFta && (dbResult.preferentialMultiplier ?? 1) < 1) {
+    return dbResult;
+  }
+  const hardcoded = hardcodedFindFta(originCountry, destinationCountry, hsChapter);
+  if (hardcoded.hasFta && (hardcoded.preferentialMultiplier ?? 1) < 1) {
+    return hardcoded;
+  }
+  return dbResult;
+}
+
+/**
  * Find applicable FTA from DB.
  */
 export async function findApplicableFtaFromDb(
@@ -44,16 +70,17 @@ export async function findApplicableFtaFromDb(
       }
     }
 
-    if (!bestFta) {
-      return { hasFta: false };
-    }
+    const dbResult: FtaResult = bestFta
+      ? {
+          hasFta: true,
+          ftaName: bestFta.ftaName,
+          ftaCode: bestFta.ftaCode,
+          preferentialMultiplier: bestMultiplier,
+        }
+      : { hasFta: false };
 
-    return {
-      hasFta: true,
-      ftaName: bestFta.ftaName,
-      ftaCode: bestFta.ftaCode,
-      preferentialMultiplier: bestMultiplier,
-    };
+    // CW32: merge hardcoded additions so new FTAs apply without a DB migration.
+    return mergeWithHardcoded(dbResult, originCountry, destinationCountry, hsChapter);
   } catch {
     // Fallback to hardcoded
     return hardcodedFindFta(originCountry, destinationCountry, hsChapter);

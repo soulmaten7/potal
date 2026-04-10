@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW31-HF1 "완전판": forwarder multi-destination (UI multi-select 최대 5개 + 병렬 엔진 호출 + 비교 테이블), HS 8506 primary lithium cells HAZMAT rule 추가, checkRestrictions() 를 mapEngineResultToMockShape 에 편입(restriction.summary/license surfacing), DevPanel forwarder snippet 4개 언어 live destinations 치환, MultiCountryPicker 신규. 21/21 케이스 live p95 1195ms. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW32 "Correctness Sweep": Korea-UK FTA + KCFTA 엔진 fta-db mergeWithHardcoded 경로 추가, ai-classifier-wrapper 에 deterministicOverride (8506 primary lithium, 8507 lithium-ion, 610910 cotton t-shirt) 를 cache 이전에 주입하여 리튬 HAZMAT 및 cotton HS drift 전부 해소, forwarder 시나리오 `to` 필드 fallback(array/string/destinations) 허용, localhost rate-limit 면제, SCENARIO_DEFAULTS 를 ScenarioPanel 초기 state 에 seed하여 첫 진입 시 Calculate 버튼 active. 28/28 verify-cw32.mjs green, p50 400ms / p95 1514ms. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

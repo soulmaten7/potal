@@ -17,6 +17,88 @@ import { classifyProduct, classifyWithOverride } from '../hs-code/classifier';
 import { classifyWithAi, getAiClassifierConfig } from './claude-classifier';
 import { classifyWithVectorSearch, storeClassificationVector, getVectorSearchConfig } from './vector-search';
 
+// ─── CW32: Deterministic pre-classification overrides ───────
+//
+// For well-known product categories where the keyword classifier is biased
+// (battery chemistry, knitted vs woven apparel) we return a deterministic
+// HS code BEFORE the DB cache check. This guarantees the right heading
+// (and therefore the right HAZMAT warning + FTA chapter) regardless of what
+// stale values might be sitting in hs_classification_cache.
+function deterministicOverride(
+  productName: string,
+): HsClassificationResult | null {
+  const p = productName.toLowerCase();
+
+  // ─── Battery chemistry overrides (HS 8506 vs 8507) ───
+  if (/\b(battery|batteries|cell|cells|accumulator|pack)\b|cr\d{4}/.test(p)) {
+    const mentionsLithium = /lithium|li-?ion/.test(p);
+    const mentionsPrimary = /\b(primary|non[-\s]?rechargeable|disposable)\b/.test(p);
+    const mentionsRechargeable =
+      /\b(rechargeable|secondary|power[-\s]?bank|accumulator)\b/.test(p) ||
+      /li-?ion|lithium[-\s]?ion/.test(p) ||
+      /\b18650\b|\b21700\b/.test(p);
+    const mentionsCoinCell = /\bcr\d{4}\b|button[-\s]?cell/.test(p);
+    const mentionsAlkaline = /\balkaline\b/.test(p);
+
+    // Primary (non-rechargeable) lithium OR coin cells → 850650
+    if (mentionsCoinCell || (mentionsLithium && mentionsPrimary && !mentionsRechargeable)) {
+      return {
+        hsCode: '850650',
+        description: 'Primary cells and primary batteries — lithium (non-rechargeable)',
+        confidence: 0.95,
+        method: 'keyword',
+        alternatives: [],
+      };
+    }
+    // Lithium-ion / rechargeable lithium → 850760
+    if (mentionsLithium && (mentionsRechargeable || /li-?ion|lithium[-\s]?ion/.test(p))) {
+      return {
+        hsCode: '850760',
+        description: 'Electric accumulators — lithium-ion (rechargeable)',
+        confidence: 0.95,
+        method: 'keyword',
+        alternatives: [],
+      };
+    }
+    // Bare "lithium battery" (ambiguous) defaults to li-ion
+    if (mentionsLithium) {
+      return {
+        hsCode: '850760',
+        description: 'Electric accumulators — lithium-ion',
+        confidence: 0.85,
+        method: 'keyword',
+        alternatives: [],
+      };
+    }
+    // Primary alkaline → 850610
+    if (mentionsPrimary && mentionsAlkaline) {
+      return {
+        hsCode: '850610',
+        description: 'Primary cells and primary batteries — manganese dioxide (alkaline)',
+        confidence: 0.9,
+        method: 'keyword',
+        alternatives: [],
+      };
+    }
+  }
+
+  // ─── Cotton T-shirt consistency (HS 6109 knitted) ───
+  // Handle both singular "t-shirt" and plural "t-shirts", with optional
+  // adjectives. Always resolves to 610910 so single-scenario and forwarder
+  // code paths return the same HS.
+  if (/\bt[-\s]?shirts?\b|\btshirts?\b|\btees?\b/.test(p) && /\bcotton\b/.test(p)) {
+    return {
+      hsCode: '610910',
+      description: 'T-shirts, singlets and other vests, knitted or crocheted, cotton',
+      confidence: 0.95,
+      method: 'keyword',
+      alternatives: [],
+    };
+  }
+
+  return null;
+}
+
 // ─── Supabase Client ──────────────────────────────
 
 function getSupabase() {
@@ -175,6 +257,12 @@ export async function classifyProductAsync(
 ): Promise<HsClassificationResult & { classificationSource: string }> {
   const config = getAiClassifierConfig();
   const hash = hashProductName(productName, category);
+
+  // ━━━ CW32: Deterministic override (bypasses cache) ━━━
+  const override = deterministicOverride(productName);
+  if (override) {
+    return { ...override, classificationSource: 'override' };
+  }
 
   // ━━━ Stage 0: DB Cache ━━━
   const cached = await getFromCache(hash, config.maxCacheAgeDays);

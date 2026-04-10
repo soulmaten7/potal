@@ -85,6 +85,17 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
     isActive: true,
   },
 
+  // CW32: Korea-Canada FTA (KCFTA, in force 2015-01-01). Most textiles
+  // (Ch.61-62) have completed their 10-year phase-out and are at 0% since
+  // 2025-01-01. Auto parts and a handful of agricultural lines still phasing.
+  {
+    name: 'Canada-Korea Free Trade Agreement',
+    code: 'KCFTA',
+    members: ['CA', 'KR'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+
   // ─── Australia FTAs ───
   {
     name: 'China-Australia Free Trade Agreement',
@@ -114,6 +125,16 @@ const FTA_AGREEMENTS: FtaAgreement[] = [
     name: 'UK-Australia FTA',
     code: 'UK-AU',
     members: ['GB', 'AU'],
+    preferentialMultiplier: 0.0,
+    isActive: true,
+  },
+  // CW32: Korea-UK FTA (signed 2019-08, in force 2021-01-01 post-Brexit,
+  // succeeds EU-Korea FTA rules of origin. Textile/apparel Ch.61-62 at 0%
+  // from day one because EU-Korea had already phased out by 2016.)
+  {
+    name: 'United Kingdom-Korea Free Trade Agreement',
+    code: 'UK-KR',
+    members: ['GB', 'KR'],
     preferentialMultiplier: 0.0,
     isActive: true,
   },

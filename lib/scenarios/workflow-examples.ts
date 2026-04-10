@@ -655,18 +655,17 @@ export function getWorkflowExample(scenarioId: string): WorkflowExample | null {
  * the DevPanel replaces these with the live values so the example code
  * always matches the calculation they just ran.
  */
-const SCENARIO_DEFAULTS: Record<
-  string,
-  {
-    product: string;
-    from: string;
-    to: string;
-    value: number | string;
-    quantity?: number;
-    /** CW31-HF1: forwarder multi-destination default list */
-    destinations?: string[];
-  }
-> = {
+export interface ScenarioDefault {
+  product: string;
+  from: string;
+  to: string;
+  value: number | string;
+  quantity?: number;
+  /** CW31-HF1: forwarder multi-destination default list */
+  destinations?: string[];
+}
+
+export const SCENARIO_DEFAULTS: Record<string, ScenarioDefault> = {
   seller: { product: 'Handmade leather wallet', from: 'KR', to: 'US', value: 45 },
   d2c: {
     product: 'Organic cotton T-shirt',

@@ -138,11 +138,33 @@ function normalize(text: string): string {
     .trim();
 }
 
+// CW32: simple plural → singular for tokens ending in 's' (len > 3).
+// Keeps "t-shirts" → "t-shirt" so the classifier matches the same HS as
+// the singular form. Preserves 'ss' words (e.g. 'glass'), short words, and
+// irregular plurals are left as-is (they'll still score by partial match).
+function singularize(word: string): string | null {
+  if (word.length <= 3) return null;
+  if (word.endsWith('ss')) return null;
+  if (word.endsWith('ies') && word.length > 4) return word.slice(0, -3) + 'y';
+  if (word.endsWith('es') && word.length > 4) return word.slice(0, -2);
+  if (word.endsWith('s')) return word.slice(0, -1);
+  return null;
+}
+
 function tokenize(text: string): string[] {
   const words = normalize(text).split(' ').filter(Boolean);
   const tokens = [...words];
+  // CW32: add singular form of each plural word so the HS keyword list
+  // (which stores singular forms like 't-shirt') matches plural inputs.
+  for (const w of words) {
+    const singular = singularize(w);
+    if (singular && singular !== w) tokens.push(singular);
+  }
   for (let i = 0; i < words.length - 1; i++) {
     tokens.push(`${words[i]} ${words[i + 1]}`);
+    // Also emit singularized bigrams when the second word is plural
+    const s2 = singularize(words[i + 1]);
+    if (s2 && s2 !== words[i + 1]) tokens.push(`${words[i]} ${s2}`);
   }
   return tokens;
 }
@@ -387,6 +409,97 @@ function rerankForFinishedProducts(
   }).sort((a, b) => b.rawScore - a.rawScore);
 }
 
+// ─── CW32: Battery classification overrides ─────────
+//
+// The keyword-based scorer is biased toward HS 8506 for anything containing
+// "battery" because the 850650 entry's keywords include a generic "battery"
+// token and several partial-matching aliases. Lithium-ion (rechargeable) is
+// a different HS heading (8507) and must carry different HAZMAT warnings
+// (UN3480/3481 vs UN3090/3091). Pre-classify battery-adjacent products with
+// an explicit keyword rule so downstream restriction + FTA logic branches
+// on the correct heading.
+function overrideBatteryClassification(
+  productName: string,
+): HsClassificationResult | null {
+  const p = productName.toLowerCase();
+  if (!/\b(battery|batteries|cell|cells|accumulator|pack)\b|cr\d{4}/.test(p)) {
+    return null;
+  }
+
+  const mentionsLithium = /\blithium|li.ion\b|li-ion/.test(p);
+  const mentionsPrimary = /\b(primary|non[-\s]?rechargeable|disposable)\b/.test(p);
+  const mentionsRechargeable =
+    /\b(rechargeable|secondary|li.ion|lithium.ion|lithium-ion|power[-\s]?bank|accumulator)\b/.test(
+      p,
+    ) || /\b18650\b|\b21700\b/.test(p);
+  const mentionsCoinCell = /\bcr\d{4}\b|\bbutton[-\s]?cell/.test(p);
+  const mentionsAlkaline = /\balkaline\b|\baa\b|\baaa\b/.test(p);
+
+  // Primary (non-rechargeable) lithium cells → 850650
+  if ((mentionsLithium && (mentionsPrimary || mentionsCoinCell)) || mentionsCoinCell) {
+    return {
+      hsCode: '850650',
+      description: 'Primary cells and primary batteries — lithium (non-rechargeable)',
+      confidence: 0.95,
+      method: 'keyword',
+      alternatives: [
+        { hsCode: '850680', description: 'Primary cells — other', confidence: 0.4 },
+      ],
+    };
+  }
+
+  // Lithium-ion / rechargeable lithium / Li-ion accumulator → 850760
+  if (mentionsLithium && mentionsRechargeable) {
+    return {
+      hsCode: '850760',
+      description: 'Electric accumulators — lithium-ion (rechargeable)',
+      confidence: 0.95,
+      method: 'keyword',
+      alternatives: [
+        { hsCode: '850780', description: 'Electric accumulators — other', confidence: 0.4 },
+      ],
+    };
+  }
+
+  // Lithium-ion without explicit "rechargeable" keyword — still li-ion chemistry
+  if (/li.ion\b|li-ion|lithium.ion|lithium-ion/.test(p)) {
+    return {
+      hsCode: '850760',
+      description: 'Electric accumulators — lithium-ion',
+      confidence: 0.9,
+      method: 'keyword',
+      alternatives: [],
+    };
+  }
+
+  // Bare "lithium battery" (ambiguous) — default to li-ion (the more common
+  // consumer-facing case in 2025+)
+  if (mentionsLithium) {
+    return {
+      hsCode: '850760',
+      description: 'Electric accumulators — lithium-ion (default for "lithium battery")',
+      confidence: 0.8,
+      method: 'keyword',
+      alternatives: [
+        { hsCode: '850650', description: 'Primary cells — lithium', confidence: 0.3 },
+      ],
+    };
+  }
+
+  // Primary alkaline (AA/AAA) → 850610
+  if (mentionsPrimary && mentionsAlkaline) {
+    return {
+      hsCode: '850610',
+      description: 'Primary cells and primary batteries — manganese dioxide (alkaline)',
+      confidence: 0.9,
+      method: 'keyword',
+      alternatives: [],
+    };
+  }
+
+  return null;
+}
+
 // ─── Main Classification ─────────────────────────────
 
 export function classifyProduct(
@@ -402,6 +515,10 @@ export function classifyProduct(
       alternatives: [],
     };
   }
+
+  // CW32: pre-classification override for batteries (8506 vs 8507)
+  const batteryOverride = overrideBatteryClassification(productName);
+  if (batteryOverride) return batteryOverride;
 
   const tokens = tokenize(productName);
 

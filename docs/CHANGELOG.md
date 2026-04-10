@@ -1,5 +1,58 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW31-HF1 — 정직한 리셋 완전판: HAZMAT + forwarder multi-dest + DevPanel 치환)
+> 마지막 업데이트: 2026-04-10 KST (CW32 — Correctness Sweep: FTA 2건 + HS classifier 2건 + forwarder contract + seller UX)
+
+## [2026-04-10 KST] CW32 — "Correctness Sweep": 6 homepage correctness bugs eliminated
+
+### Fixed (6건 전부 — Phase 2 트래픽 유입 전 필수)
+
+- **FTA-KR-GB**: Korea-UK FTA (2021-01-01 발효) 엔진 누락
+  - `app/lib/cost-engine/hs-code/fta.ts` 에 `UK-KR` 엔트리 추가 (`members: ['GB','KR']`, `preferentialMultiplier: 0.0`)
+  - `app/lib/cost-engine/db/fta-db.ts`: 신규 `mergeWithHardcoded()` — DB `fta_agreements` 테이블에 없는 엔트리는 hardcoded fallback 을 사용. Supabase 마이그레이션 없이 즉시 반영
+  - 검증: KR→GB cotton $12k → `Korea-UK FTA` applied, duty $0
+- **FTA-KR-CA**: Korea-Canada FTA (KCFTA, 2015 발효) 엔진 누락
+  - `fta.ts` 에 `KCFTA` 엔트리 추가 (2025-01-01 이후 텍스타일 완전 철폐 상태 반영)
+  - 검증: KR→CA cotton $12k → `Canada-Korea FTA` applied, duty $0
+- **HS-8506-CLASSIFY**: HF1 에서 추가한 HS 8506 rule 이 classifier 부재로 dead code 상태
+  - `app/lib/cost-engine/ai-classifier/ai-classifier-wrapper.ts` 에 `deterministicOverride()` 신규 — DB 캐시 조회 **이전** 에 실행되는 확정적 override layer
+  - 규칙:
+    - `primary` + `lithium` 또는 `CR####` 코인셀 → **850650**
+    - `lithium` + `rechargeable|ion|18650|21700|power bank|accumulator` → **850760**
+    - 모호한 `lithium battery` → **850760** (기본값)
+    - `primary alkaline` + (AA|AAA) → **850610**
+  - `primary lithium` + `CR2032` 같은 1차 리튬은 UN3090/3091 경고 (restrictions/rules.ts HS 8506 rule), `lithium-ion` 은 UN3480/3481 경고 (HS 8507 rule) 로 정확히 분기
+  - **주의**: CW31-HF1 matrix 에서 "Lithium-ion battery cells" 가 850650 으로 잘못 분류되던 것이 이제 850760 으로 정정 (의도적 수정). 총액은 0% duty 이므로 $0.00 변동
+- **COTTON-HS-DRIFT**: 같은 입력이 단일(610910) vs forwarder(620630) 에서 다른 HS 반환
+  - `deterministicOverride()` 가 `/cotton/ + /t-?shirt/` 패턴을 감지하면 양쪽 경로 모두 **610910 (knitted)** 반환
+  - `classifier.ts tokenize()` 에 plural→singular 토큰 추가 (`t-shirts` → `t-shirt`) 로 일반 plural 케이스도 일관성 확보
+  - **주의**: CW31-HF1 forwarder 13/14/15 케이스는 잘못된 HS 620630 기준 totals 였음. CW32 에서 610910 으로 정정되어 JP/KR 의 RCEP/Korea-China 프리페런셜 rate 가 knitted schedule 에 맞춰 재계산 → $수 달러 수준의 total 변동 (의도된 정정)
+- **FWD-CONTRACT**: forwarder scenario `inputs.to: string[]` silent mock fallback
+  - `app/api/demo/scenario/route.ts buildForwarderInputs()` 가 `destinations`, `to: string[]`, `to: string` (단일 → 배열 승격) 3가지 입력 쉐이프 전부 live 경로로 진입
+  - localhost (127.0.0.1 / ::1 / unknown) rate-limit 면제 — `scripts/verify-cw32.mjs` 전수 검증 목적
+- **SELLER-UX**: 첫 진입 시 Calculate 버튼 disabled 로 "데모 고장" 오인
+  - `lib/scenarios/workflow-examples.ts`: `SCENARIO_DEFAULTS` export 로 전환
+  - `components/home/ScenarioPanel.tsx`: `useState` 초기값을 `makeInitialInputs()` 로 seed — 5개 일반 시나리오 전부 진입 즉시 기본값 채워진 상태, Calculate 버튼 active
+  - importer 는 `container: '40ft'` 도 기본값, forwarder 는 `destinations: ['US','DE','JP']`
+
+### Added
+- `scripts/verify-cw32.mjs` — 28-case 자동 검증 스크립트 (CW31 18 + CW32 10 새 케이스). FTA/HS/restriction/rowsCount 단언 포함, forwarder cotton HS drift 검증 asserion 내장
+- `docs/API_CONTRACT.md` — demo API 입력/출력 스키마 문서 (forwarder `to`/`destinations` 3가지 쉐이프 명시)
+
+### Verified — 28/28 live
+| 범위 | 케이스 | 결과 |
+|---|---|---|
+| CW31 legacy 01-12, 16-18 | 15 cases | 전부 total/hs/fta 완전 일치 ($0.00 diff) |
+| CW31 forwarder 13-15 (legacy) | 3 cases | HS 620630 → 610910 정정, JP/KR totals 재계산 |
+| CW32 new 22-30 | 10 cases | 전부 live + 단언 통과 |
+| Timing | p50 400ms, p95 1514ms, max 2871ms | 2s 예산 준수 |
+
+### Known
+- 27번 (Lithium-ion Battery Pack) total = $269,634.04 는 CW31-HF1 의 850650 결과와 동일. 이유: 둘 다 KORUS FTA 0% duty, 세율/운임/VAT 구조 동일. HS 만 바뀌고 현금 흐름은 같음
+
+### Build
+- `npm run build`: ✅ 475/475 pages
+- TypeScript 변경 파일 error 0
+
+---
 
 ## [2026-04-10 KST] CW31-HF1 — "Honest Reset Complete": HAZMAT + forwarder multi-dest + DevPanel
 

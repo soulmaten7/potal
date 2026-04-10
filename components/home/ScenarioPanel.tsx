@@ -13,9 +13,36 @@
 
 import { useState } from 'react';
 import { getScenarioById, SCENARIO_FALLBACK_COPY } from '@/lib/scenarios/scenario-config';
+import { SCENARIO_DEFAULTS } from '@/lib/scenarios/workflow-examples';
 import NonDevPanel from './NonDevPanel';
 import DevPanel from './DevPanel';
 import CustomBuilder from '@/components/custom/CustomBuilder';
+
+/**
+ * CW32: Seed the lifted inputs state with each scenario's default values
+ * so the Calculate button is active the moment a user lands on the page.
+ * Users can still edit any field; their edits are preserved per scenarioId.
+ */
+function makeInitialInputs(): Record<string, Record<string, string | number | string[]>> {
+  const out: Record<string, Record<string, string | number | string[]>> = {};
+  for (const [id, d] of Object.entries(SCENARIO_DEFAULTS)) {
+    const entry: Record<string, string | number | string[]> = {
+      product: d.product,
+      from: d.from,
+      value: typeof d.value === 'number' ? d.value : Number(d.value) || 0,
+    };
+    if (id === 'forwarder' && d.destinations) {
+      entry.destinations = [...d.destinations];
+    } else {
+      entry.to = d.to;
+    }
+    if (d.quantity !== undefined) entry.quantity = d.quantity;
+    // importer scenario needs a container default — pick a common one
+    if (id === 'importer') entry.container = '40ft';
+    out[id] = entry;
+  }
+  return out;
+}
 
 export interface ScenarioPanelProps {
   scenarioId: string;
@@ -58,9 +85,11 @@ export default function ScenarioPanel({ scenarioId }: ScenarioPanelProps) {
   // whatever the user typed in NonDevPanel. Keyed by scenarioId so switching
   // scenarios resets the shared state.
   // CW31-HF1: values can be string | number | string[] (multiselect).
+  // CW32: seed with SCENARIO_DEFAULTS so first-time visitors see an active
+  // Calculate button and can run the demo without typing anything.
   const [inputsByScenario, setInputsByScenario] = useState<
     Record<string, Record<string, string | number | string[]>>
-  >({});
+  >(() => makeInitialInputs());
   const currentInputs = inputsByScenario[scenarioId] || {};
   const setCurrentInputs = (next: Record<string, string | number | string[]>) => {
     setInputsByScenario(prev => ({ ...prev, [scenarioId]: next }));
