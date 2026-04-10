@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW27-S5 완료 — Sprint 5 로그인 게이트. 다음 세션: Sprint 6 (CW28) Phase 2 광고 슬롯 UI — PartnerLinkSlot.tsx + partner-config.ts + 계산 결과 하단 슬롯 영역 예약. docs/HOMEPAGE_REDESIGN_SPEC.md 720~724행 참조)
+> 마지막 업데이트: 2026-04-10 KST (CW28-S6 완료 — Sprint 6 Partner Link Slot UI 예약. 다음 세션: Sprint 7 (CW29) 실제 엔진 연결 + 성능 최적화 — demo API가 현재 mock만 반환. classifier/cost-engine/restrictions 실제 호출 + Redis/Upstash 캐시 검토 + Supabase 인덱스 점검 + 51개 언어 자동 감지 검증. docs/HOMEPAGE_REDESIGN_SPEC.md 725~730행 참조)
 
 ---
 

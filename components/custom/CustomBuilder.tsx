@@ -21,6 +21,7 @@ import FeatureCheckbox from './FeatureCheckbox';
 import LiveCodeAssembler from './LiveCodeAssembler';
 import MySavedCombos from './MySavedCombos';
 import SaveComboModal from './SaveComboModal';
+import PartnerLinkSlot from '@/components/home/PartnerLinkSlot';
 
 export default function CustomBuilder() {
   const { session } = useSupabase();
@@ -158,6 +159,13 @@ export default function CustomBuilder() {
           Save this combo
         </button>
       </div>
+
+      {/* CW28-S6: Partner link slot — only when user has assembled a workflow */}
+      {selected.size > 0 && (
+        <div className="max-w-[720px] mx-auto">
+          <PartnerLinkSlot />
+        </div>
+      )}
 
       {/* Saved combos list */}
       <MySavedCombos

@@ -1,5 +1,38 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW27-S5 — 로그인 게이트: feature-gate hook + LoginRequiredModal + 6개 진입점)
+> 마지막 업데이트: 2026-04-10 KST (CW28-S6 — Partner slot UI 예약: 4 슬롯 Phase 1 placeholder)
+
+## [2026-04-10 KST] CW28-S6 — Sprint 6: Partner Link Slot UI (Phase 1 reservation)
+
+### 배경
+결정 6, 10, 12 (HOMEPAGE_REDESIGN_SPEC.md 34~35, 540~647, 720~723):
+POTAL은 중립 계산 엔진. 배송 중개 X. 배송사 "바로가기 링크" 슬롯만 월정액 임대.
+Phase 1 (CW28): UI 예약만. Phase 2 (트래픽 10k+): 실제 광고주 영업 + isActive=true.
+
+### 신규 파일 (2개)
+- `lib/partners/partner-config.ts` — `PartnerCategory` ('shipping'|'logistics'), `PartnerSlot` 인터페이스, `PARTNER_SLOTS` 배열(4개 전부 `isActive: false`), 헤딩/Sponsored 라벨 상수
+- `components/home/PartnerLinkSlot.tsx` — `<aside role="complementary">` 컨테이너. 비활성 슬롯: dashed border + slate-50 + `pointer-events-none` + `tabIndex={-1}` + "—". 활성 슬롯(Phase 2 대비): `<a rel="sponsored noopener noreferrer" target="_blank">` + hover amber. 하단 "Sponsored" 라벨 + 중립성 문구
+
+### 수정 파일 (2개)
+- `components/home/NonDevPanel.tsx` — import + 결과 블록(`result &&`) 내부 notes 아래 `<PartnerLinkSlot />` 마운트. 계산 결과 있을 때만 노출
+- `components/custom/CustomBuilder.tsx` — import + Save 버튼 하단 + MySavedCombos 위에 조건부 마운트 (`selected.size > 0` 일 때만, `max-w-[720px]` 중앙 정렬)
+
+### 절대 규칙 준수
+- ❌ 실제 배송사 URL/로고 이미지 연동 없음 (Phase 2)
+- ❌ Supabase `partner_slots` 테이블 생성 없음
+- ❌ 클릭 추적/광고 API/배너 광고 없음
+- ❌ 견적 비교/가격 표시 없음
+- ❌ 한국어 UI 문구 없음 (영문만)
+- ✅ Phase 1 주석 명시 ("UI reservation only. Phase 2 (traffic 10k+): activate via partner-config.ts")
+- ✅ 배송/물류 회사만 (`PartnerCategory` 타입 제약)
+- ✅ "Sponsored" 라벨 시각적으로 명확 (text-[10px] uppercase tracking-wide slate-400)
+- ✅ 파트너 로고는 이모지만 (🚚 📦 🚛 🏢)
+- ✅ `rel="sponsored noopener noreferrer"` (Google SEO 투명성)
+- ✅ 빌드 성공 475 pages, console.log 0건, B2C 미수정
+
+### 의도적 제외 (Sprint 7+)
+- 실제 엔진 연결 + 성능 최적화 (Sprint 7 · CW29)
+- E2E 테스트 (Sprint 8 · CW30)
+- Phase 2: 배송사 영업/계약/월정액 과금/Supabase partner_slots
 
 ## [2026-04-10 KST] CW27-S5 — Sprint 5: 로그인 게이트 (Login Feature Gate)
 

@@ -16,6 +16,7 @@ import { getMockResult, type MockResult } from '@/lib/scenarios/mock-results';
 import { useFeatureGate } from '@/lib/auth/feature-gate';
 import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 import CodeCopyModal from './CodeCopyModal';
+import PartnerLinkSlot from './PartnerLinkSlot';
 
 export interface NonDevPanelProps {
   scenarioId: string;
@@ -398,6 +399,9 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
               ))}
             </ul>
           )}
+
+          {/* CW28-S6: Partner link slot — only when result is shown (natural extension of calculation) */}
+          <PartnerLinkSlot />
         </div>
       )}
 

@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW27-S5 완료: 로그인 게이트 — feature-gate hook + LoginRequiredModal + 6개 진입점 게이트(NonDevPanel/DevPanel/CustomBuilder/LiveCodeAssembler/MySavedCombos). 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW28-S6 완료: Partner slot UI 예약 — PartnerLinkSlot.tsx + partner-config.ts + NonDev 결과 하단 + CUSTOM LiveCodeAssembler 하단 마운트. 4 슬롯 전부 Phase 1 placeholder. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
