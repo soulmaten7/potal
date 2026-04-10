@@ -1,5 +1,62 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW30-HF1 — 홈 진입 시 기본 시나리오 seller 자동 선택)
+> 마지막 업데이트: 2026-04-10 KST (CW30-HF2 — 첫 화면 압축 4종 세트: Hero + 1줄 박스 + 패널 헤더 서브타이틀 + 빈 입력란)
+
+## [2026-04-10 KST] CW30-HF2 — Hotfix: compress hero + 1-line scenario boxes + panel subtitle + empty inputs
+
+### 배경
+HF1 으로 seller 자동 선택 완료. 그러나 프로덕션 실측 결과 Calculate 버튼이 top=1019px 로 958px 뷰포트 밖에 위치 → 유저가 스크롤해야 데모 시작 가능. 또한 입력란에 `"Handmade leather wallet"` 같은 pre-fill 값이 있어서 유저가 자기 상품 입력하려면 먼저 지워야 함 (friction).
+
+### 수정 파일 (3개)
+
+#### `components/home/ScenarioSelector.tsx`
+- Hero section padding: `py-12` (96px) → `pt-6 pb-4` (40px) = **56px 절감**
+- H1: `text-[32px] md:text-[40px] mb-10` → `text-[22px] md:text-[26px] mb-5` = **~36px 절감**
+- ScenarioButton: `flex-col min-h-[110px]` → `flex-row min-h-[52px]` = **58px 절감**
+  - 서브타이틀 `<div>` 삭제 (패널 헤더로 이전)
+  - 이모지 `text-[26px]` → `text-[20px]`
+  - `rounded-xl` → `rounded-lg`
+  - `aria-label="{title} — {subtitle}"` 추가 (스크린리더 접근성 유지)
+
+#### `components/home/ScenarioPanel.tsx`
+- Section padding: `pt-6` → `pt-4` = **8px 절감**
+- `TitleBar` 완전 재작성:
+  - 기존: "POTAL for {slug} / Try the demo on the left..."
+  - 신규: `🛒 POTAL for seller — Etsy, Shopify, eBay` (서브타이틀이 `—` 구분자와 함께 이 자리로 이동)
+  - `SCENARIO_FALLBACK_COPY` import 추가하여 subtitle 텍스트 재사용
+  - `<h2>` 시맨틱 요소로 승격
+  - `mb-6` → `mb-4` = **8px 절감**
+  - 이모지 `text-[28px]` → `text-[30px]` (타이틀 옆에서 균형)
+
+#### `components/home/NonDevPanel.tsx`
+- `SCENARIO_FIELDS` 5개 시나리오 전부 `defaultValue` **완전 제거**
+- 모든 text/number 필드에 `placeholder` 추가 (힌트만 표시)
+- `COUNTRY_OPTIONS_WITH_PLACEHOLDER` 추가 — 첫 옵션 `{ value: '', label: 'Select country…' }`
+- `container`, `forwarder.to` 드롭다운도 빈 placeholder 옵션 포함
+- `useState` 초기값: 모든 필드를 `''` 로 초기화 (`defaultValue` fallback 로직은 유지)
+- Calculate 버튼 disabled 조건 강화: `loading || !allFilled` — 모든 필드 채워져야 활성. 미입력 시 `bg-slate-200 text-slate-400 cursor-not-allowed`
+- mount 시 auto-fetch 없음 (사용자가 직접 클릭해야 결과)
+
+### 예상 레이아웃 변화 (1920×958 뷰포트)
+
+| 요소 | 기존 top | 신규 top | 절감 |
+|---|---|---|---|
+| H1 "What describes..." | 266px | ~145px | 121px |
+| 시나리오 박스 하단 | 464px | ~230px | 234px |
+| 패널 헤더 시작 | 632px | ~300px | 332px |
+| 입력 폼 시작 | ~720px | ~390px | ~330px |
+| **Calculate 버튼** | **1019px** | **~680px** | **339px** |
+
+→ Calculate 버튼이 958px 뷰포트 안으로 들어옴 ✅
+
+### 절대 규칙 준수
+- ✅ 수정 파일 3개 (ScenarioSelector / ScenarioPanel / NonDevPanel)
+- ✅ HF1 동작 보존 (seller 자동 선택 + URL `/` 유지)
+- ✅ mount 시 자동 fetch 없음 (Calculate 버튼 클릭에만 호출)
+- ✅ `SCENARIO_FALLBACK_COPY` subtitle 텍스트 그대로 유지 (박스에서 안 쓰지만 헤더에서 사용)
+- ✅ 결과 렌더링 로직 보존 (유저가 Calculate 누르면 기존대로 동작)
+- ✅ `aria-label` 접근성 유지
+- ✅ `console.log` 0건, B2C 미수정
+- ✅ `npm run build` ✓ 475 pages
 
 ## [2026-04-10 KST] CW30-HF1 — Hotfix: default scenario = seller on fresh home visit
 

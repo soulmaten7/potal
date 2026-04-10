@@ -45,58 +45,67 @@ const COUNTRY_OPTIONS = [
   { value: 'SG', label: '🇸🇬 Singapore' },
 ];
 
+// CW30-HF2: empty placeholder option for country/select dropdowns
+const COUNTRY_OPTIONS_WITH_PLACEHOLDER = [
+  { value: '', label: 'Select country…' },
+  ...COUNTRY_OPTIONS,
+];
+
+// CW30-HF2: all defaultValue removed. Users start from an empty form and type
+// their own inputs — no need to clear pre-filled values first. Placeholders
+// provide illustrative hints only.
 const SCENARIO_FIELDS: Record<string, FieldDef[]> = {
   seller: [
-    { key: 'product', label: 'Product', type: 'text', defaultValue: 'Handmade leather wallet' },
-    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'KR' },
-    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'US' },
-    { key: 'value', label: 'Declared value', type: 'number', defaultValue: 45, unit: 'USD' },
+    { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Handmade leather wallet' },
+    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'value', label: 'Declared value', type: 'number', placeholder: '45', unit: 'USD' },
   ],
   d2c: [
-    { key: 'product', label: 'Product', type: 'text', defaultValue: 'Organic cotton T-shirt' },
-    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'KR' },
-    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'DE' },
-    { key: 'value', label: 'Unit value', type: 'number', defaultValue: 28, unit: 'USD' },
-    { key: 'quantity', label: 'Quantity', type: 'number', defaultValue: 500, unit: 'units' },
+    { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Organic cotton T-shirt' },
+    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'value', label: 'Unit value', type: 'number', placeholder: '28', unit: 'USD' },
+    { key: 'quantity', label: 'Quantity', type: 'number', placeholder: '500', unit: 'units' },
   ],
   importer: [
-    { key: 'product', label: 'Product', type: 'text', defaultValue: 'Industrial centrifugal pumps' },
-    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'DE' },
-    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'KR' },
-    { key: 'value', label: 'Shipment value', type: 'number', defaultValue: 85000, unit: 'USD' },
+    { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Industrial centrifugal pumps' },
+    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'value', label: 'Shipment value', type: 'number', placeholder: '85000', unit: 'USD' },
     {
       key: 'container',
       label: 'Container',
       type: 'select',
       options: [
+        { value: '', label: 'Select container…' },
         { value: '20ft', label: '20ft' },
         { value: '40ft', label: '40ft' },
         { value: '40hc', label: '40ft HC' },
       ],
-      defaultValue: '40ft',
     },
   ],
   exporter: [
-    { key: 'product', label: 'Product', type: 'text', defaultValue: 'Lithium-ion battery cells' },
-    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'KR' },
-    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'US' },
-    { key: 'value', label: 'Shipment value', type: 'number', defaultValue: 250000, unit: 'USD' },
+    { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Lithium-ion battery cells' },
+    { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
+    { key: 'value', label: 'Shipment value', type: 'number', placeholder: '250000', unit: 'USD' },
   ],
   forwarder: [
-    { key: 'product', label: 'Product type', type: 'text', defaultValue: 'Cotton T-shirts (batch)' },
-    { key: 'from', label: 'Origin', type: 'select', options: COUNTRY_OPTIONS, defaultValue: 'KR' },
+    { key: 'product', label: 'Product type', type: 'text', placeholder: 'e.g. Cotton T-shirts (batch)' },
+    { key: 'from', label: 'Origin', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     {
       key: 'to',
       label: 'Destinations',
       type: 'select',
       options: [
+        { value: '', label: 'Select destination…' },
         { value: 'US', label: '🇺🇸 United States' },
         { value: 'DE', label: '🇩🇪 Germany' },
         { value: 'JP', label: '🇯🇵 Japan' },
       ],
-      defaultValue: 'US',
     },
-    { key: 'value', label: 'Value per shipment', type: 'number', defaultValue: 12000, unit: 'USD' },
+    { key: 'value', label: 'Value per shipment', type: 'number', placeholder: '12000', unit: 'USD' },
   ],
 };
 
@@ -159,10 +168,12 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
     question: 'Try POTAL live.',
   };
 
+  // CW30-HF2: defaultValue 제거됨 → 모든 필드를 빈 문자열로 초기화.
+  // defaultValue fallback 로직은 유지 (혹시 나중에 특정 필드에만 default 넣고 싶을 때).
   const [inputs, setInputs] = useState<Record<string, string | number>>(() => {
     const init: Record<string, string | number> = {};
     for (const f of fields) {
-      if (f.defaultValue !== undefined) init[f.key] = f.defaultValue;
+      init[f.key] = f.defaultValue !== undefined ? f.defaultValue : '';
     }
     return init;
   });
@@ -274,18 +285,30 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
           </div>
         ))}
 
-        <button
-          type="button"
-          onClick={handleCalculate}
-          disabled={loading}
-          className={`w-full mt-2 py-3 rounded-lg font-bold text-[14px] transition-colors ${
-            loading
-              ? 'bg-slate-300 text-white cursor-wait'
-              : 'bg-[#02122c] text-white hover:bg-[#0a1e3d]'
-          }`}
-        >
-          {loading ? 'Calculating…' : 'Calculate landed cost'}
-        </button>
+        {(() => {
+          // CW30-HF2: Calculate 버튼 활성화 조건 — 모든 필드 채워져야 활성
+          const allFilled = fields.every(f => {
+            const v = inputs[f.key];
+            return v !== undefined && v !== '' && v !== null;
+          });
+          const disabled = loading || !allFilled;
+          return (
+            <button
+              type="button"
+              onClick={handleCalculate}
+              disabled={disabled}
+              className={`w-full mt-2 py-3 rounded-lg font-bold text-[14px] transition-colors ${
+                loading
+                  ? 'bg-slate-300 text-white cursor-wait'
+                  : !allFilled
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                    : 'bg-[#02122c] text-white hover:bg-[#0a1e3d]'
+              }`}
+            >
+              {loading ? 'Calculating…' : 'Calculate landed cost'}
+            </button>
+          );
+        })()}
 
         {error && (
           <div className="mt-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-[12px] text-red-700">

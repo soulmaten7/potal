@@ -217,6 +217,8 @@ POTAL은 개발자/셀러/수출입 담당자가 **책상 앞에서 진지하게
 
 **기본값**: `seller` (CW30 hotfix 1, 2026-04-10). 홈에 `?type=` 쿼리 없이 진입하면 seller 박스가 자동 선택되어 POTAL for seller 시나리오 패널이 첫 화면부터 표시된다. URL은 `/` 깨끗 유지 (기본 상태 rewrite 없음).
 
+**박스 레이아웃** (CW30 hotfix 2, 2026-04-10): 6개 박스는 1줄 compact 표시 (이모지 + 제목만, `min-h-[52px]`, `flex-row`). 서브타이틀은 박스에서 제거되고 선택된 시나리오의 **패널 헤더** 로 이전되어 `🛒 POTAL for seller — Etsy, Shopify, eBay` 포맷으로 표시. 접근성은 `aria-label="{title} — {subtitle}"` 로 유지. 목적: Calculate 버튼을 1920×958 뷰포트의 fold 안으로 끌어올려 스크롤 없이 즉시 체험 가능하게 함.
+
 **구현 파일**:
 - `components/home/ScenarioSelector.tsx` (신규)
 - `lib/scenarios/scenario-config.ts` (신규) — 6개 유형 정의

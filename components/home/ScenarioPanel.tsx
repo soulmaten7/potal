@@ -11,7 +11,7 @@
  * 선택된 시나리오가 바뀌면 자식 컴포넌트가 각자 상태를 리셋한다 (key 전달).
  */
 
-import { getScenarioById } from '@/lib/scenarios/scenario-config';
+import { getScenarioById, SCENARIO_FALLBACK_COPY } from '@/lib/scenarios/scenario-config';
 import NonDevPanel from './NonDevPanel';
 import DevPanel from './DevPanel';
 import CustomBuilder from '@/components/custom/CustomBuilder';
@@ -22,22 +22,30 @@ export interface ScenarioPanelProps {
 
 // CustomPlaceholder removed — Sprint 3 (CW25) implemented the real CustomBuilder.
 
+// CW30-HF2: 시나리오 박스의 서브타이틀을 이쪽 헤더로 이전.
+// 포맷: `🛒 POTAL for seller — Etsy, Shopify, eBay`
 function TitleBar({ scenarioId }: { scenarioId: string }) {
   const scenario = getScenarioById(scenarioId);
   if (!scenario) return null;
+
+  // Fallback copy lookup — scenario-config.ts 에서 정의한 subtitle 문구 재사용.
+  const subtitle = SCENARIO_FALLBACK_COPY[scenario.subtitleKey] || '';
+
   return (
-    <div className="flex items-center gap-3 mb-6">
-      <span className="text-[28px]" aria-hidden="true">{scenario.icon}</span>
-      <div>
-        <div className="text-[20px] font-extrabold text-[#02122c] leading-tight">
-          POTAL for {scenario.titleKey.split('.').slice(-2, -1)[0]
-            ? scenario.titleKey.replace('home.scenario.', '').replace('.title', '')
-            : scenarioId}
-        </div>
-        <div className="text-[12px] text-slate-500 mt-0.5">
-          Try the demo on the left — grab the code on the right.
-        </div>
-      </div>
+    <div className="flex items-center gap-3 mb-4">
+      <span className="text-[30px] leading-none flex-none" aria-hidden="true">
+        {scenario.icon}
+      </span>
+      <h2 className="flex items-baseline gap-2 flex-wrap">
+        <span className="text-[22px] md:text-[26px] font-extrabold text-[#02122c] leading-tight">
+          POTAL for {scenarioId}
+        </span>
+        {subtitle && (
+          <span className="text-[13px] md:text-[15px] font-normal text-slate-500 leading-tight">
+            — {subtitle}
+          </span>
+        )}
+      </h2>
     </div>
   );
 }
@@ -49,7 +57,7 @@ export default function ScenarioPanel({ scenarioId }: ScenarioPanelProps) {
     <section
       aria-live="polite"
       aria-label="Scenario detail panel"
-      className="w-full max-w-[1440px] mx-auto px-8 pt-6 pb-16"
+      className="w-full max-w-[1440px] mx-auto px-8 pt-4 pb-16"
     >
       <TitleBar scenarioId={scenarioId} />
 

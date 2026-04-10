@@ -38,34 +38,28 @@ interface ScenarioButtonProps {
 }
 
 function ScenarioButton({ scenario, selected, onSelect }: ScenarioButtonProps) {
-  // 1행 6열 레이아웃. 한 버튼의 가로폭이 1440px/6 - gap 을 고려해
-  // 아이콘 + 짧은 제목 + 한 줄 서브타이틀만 콤팩트하게 보여준다.
+  // CW30-HF2: 가로 1줄 배치, 서브타이틀 제거 (패널 헤더로 이전).
+  // min-h 110px → 52px 로 대폭 축소 → hero 압축과 합쳐 Calculate 버튼을 fold 위로 끌어올림.
   const base =
-    'group relative flex flex-col items-center justify-center w-full min-h-[110px] px-3 py-4 rounded-xl border-2 text-center transition-all duration-150 cursor-pointer';
+    'group relative flex flex-row items-center justify-center gap-2 w-full min-h-[52px] px-3 py-2 rounded-lg border-2 text-center transition-all duration-150 cursor-pointer';
   const stateClass = selected
-    ? 'bg-[#02122c] border-[#02122c] text-white shadow-lg'
-    : 'bg-white border-slate-200 text-[#02122c] hover:border-[#F59E0B] hover:shadow-md';
+    ? 'bg-[#02122c] border-[#02122c] text-white shadow-md'
+    : 'bg-white border-slate-200 text-[#02122c] hover:border-[#F59E0B] hover:shadow-sm';
 
   return (
     <button
       type="button"
       onClick={() => onSelect(scenario.id)}
       aria-pressed={selected}
+      aria-label={`${c(scenario.titleKey)} — ${c(scenario.subtitleKey)}`}
       className={`${base} ${stateClass}`}
     >
-      <span className="text-[26px] leading-none mb-2" aria-hidden="true">
+      <span className="text-[20px] leading-none flex-none" aria-hidden="true">
         {scenario.icon}
       </span>
-      <div className="text-[13px] font-bold leading-tight">
+      <span className="text-[13px] font-bold leading-tight whitespace-nowrap">
         {c(scenario.titleKey)}
-      </div>
-      <div
-        className={`text-[11px] mt-1 font-normal leading-snug ${
-          selected ? 'text-slate-300' : 'text-slate-500'
-        }`}
-      >
-        {c(scenario.subtitleKey)}
-      </div>
+      </span>
     </button>
   );
 }
@@ -113,9 +107,9 @@ export function ScenarioSelector({
   return (
     <section
       aria-label="Choose your scenario"
-      className="w-full max-w-[1440px] mx-auto px-8 py-12"
+      className="w-full max-w-[1440px] mx-auto px-8 pt-6 pb-4"
     >
-      <h1 className="text-center text-[32px] md:text-[40px] font-extrabold text-[#02122c] mb-10 leading-tight">
+      <h1 className="text-center text-[22px] md:text-[26px] font-extrabold text-[#02122c] mb-5 leading-tight">
         {c(SCENARIO_TOP_QUESTION_KEY)}
       </h1>
 
