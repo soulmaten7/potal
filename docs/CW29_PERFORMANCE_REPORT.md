@@ -58,23 +58,49 @@
 - Compiled successfully in 17.1s (Turbopack)
 - 475 static pages generated
 
-### 3-2. 프로덕션 p50/p95 (목표)
-Sprint 7 는 데모 API 의 **래퍼 구조만 변경** — 실제 엔진 레이어 최적화는 별도 작업.
-프로덕션 배포 후 `curl -w '%{time_total}' ...` × 20 회 로 측정 예정 (Sprint 8 의 E2E 체크리스트에 포함).
+### 3-2. 프로덕션 실측 — Sprint 7 vs Sprint 7.5
 
-| Scenario | 목표 p50 | 목표 p95 | 비고 |
+**Sprint 7 (real-time HTTP)** — 브라우저 DevTools 측정:
+
+| 지표 | 값 |
+|---|---|
+| 데모 API 10회 호출 성공률 | 100% (UI 안 깨짐) |
+| `X-Demo-Source: live` 비율 | 0/10 (전부 mock 폴백) |
+| p50 server ms | ~1550 |
+| p95 server ms | ~2132 (목표 2000 초과 ❌) |
+
+**근본 원인**:
+1. `/api/v1/classify` 필수 필드 누락 → 400 → mock 폴백
+2. `/api/v1/calculate` 실측 4123ms (warm call) → 1.5s per-call 타임아웃 초과 → mock 폴백
+3. 즉, **실시간 HTTP 경로로는 2초 예산 절대 못 맞춤**
+
+**Sprint 7.5 precompute 실측** (`node scripts/precompute-scenario-baselines.mjs` 결과):
+
+| Scenario | classify ms | calculate ms | 결과 |
 |---|---|---|---|
-| seller | < 800ms | < 2000ms | classify + calculate, 2 hops |
-| d2c | < 800ms | < 2000ms | 동일 chain |
-| importer | < 800ms | < 2000ms | 동일 chain |
-| exporter | < 800ms | < 2000ms | 동일 chain |
-| forwarder | < 500ms | < 1500ms | calculate only, 1 hop |
+| seller | 2702 | 3447 | ✅ OK |
+| d2c | 961 | 3635 | ✅ OK |
+| importer | 1152 | 3402 | ✅ OK |
+| exporter | 998 | 3792 | ✅ OK |
+| forwarder | 998 | 3200 | ✅ OK |
 
-**p95 > 2000ms 발생 시 대응 순서** (Sprint 8+ 에서 결정):
-1. 가장 느린 route 식별 (`X-Response-Time` 헤더 기반)
-2. Supabase 쿼리 `EXPLAIN ANALYZE` → 인덱스 제안
-3. 캐시 레이어 (아래 섹션 5 참조)
-4. 최후 수단 — 해당 시나리오를 mock-only 로 되돌리고 백엔드 최적화 별도 처리
+→ **5/5 scenarios precomputed**. Heavy 엔진 호출을 일회성 빌드 타임 작업으로 분리.
+
+**Sprint 7.5 (cache-first)** — 목표:
+
+| Scenario | Before p95 | After p95 (목표) | 개선 |
+|---|---|---|---|
+| seller | 2132ms | < 100ms | ~20x |
+| d2c | 2132ms | < 100ms | ~20x |
+| importer | 2132ms | < 100ms | ~20x |
+| exporter | 2132ms | < 100ms | ~20x |
+| forwarder | 2132ms | < 100ms | ~20x |
+
+`/api/demo/scenario` 는 이제 JSON 파일 읽기 + scaling 연산만 수행 → 서버 ms < 10ms 예상. 네트워크 latency 포함 p95 < 200ms 목표.
+
+**데이터 신선도 전략**:
+- 수동: 관세 스케줄 업데이트 시 `node scripts/precompute-scenario-baselines.mjs` 재실행 + 커밋
+- 자동화 (Sprint 9+): GitHub Action cron (주 1회) + 자동 PR
 
 ---
 

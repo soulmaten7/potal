@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW29-S7 완료: 데모 API real-first + mock fallback — /api/demo/scenario 가 /api/v1/classify + /api/v1/calculate 실제 호출, 2.5s 타임아웃, 실패 시 mock 폴백. X-Response-Time + X-Demo-Source 헤더. navigator.language 자동 감지. CW29_PERFORMANCE_REPORT.md 생성. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW29-S7.5 완료: live 엔진 precompute + 캐시 — scripts/precompute-scenario-baselines.mjs로 5/5 scenarios 수집, lib/scenarios/live-baseline.json 생성, route.ts를 cache-first로 전환(tryLiveEngine HTTP 경로 전부 제거). p95 2132ms → <100ms 목표, source: live-cached. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

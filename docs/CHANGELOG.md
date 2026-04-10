@@ -1,5 +1,76 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW29-S7 — 데모 API real-first + mock fallback + perf report)
+> 마지막 업데이트: 2026-04-10 KST (CW29-S7.5 — live 엔진 precompute + cache-first: p95 2132ms → <100ms)
+
+## [2026-04-10 KST] CW29-S7.5 — Sprint 7.5: Precompute live baseline + cache-first demo API
+
+### 배경 (왜 7.5가 필요했나)
+Sprint 7 배포 후 브라우저 실측 결과:
+- `X-Demo-Source: live` 비율 **0/10** (100% mock 폴백)
+- p95 **2132ms** (목표 2000ms 초과)
+- 근본 원인: `/api/v1/classify` 필수 필드 누락(400) + `/api/v1/calculate` 실측 4123ms (1.5s 타임아웃 초과)
+- 결론: 실시간 HTTP 경로로는 UX 예산(2s) 절대 못 맞춤 → precompute + cache 전환
+
+### 신규 파일 (3개)
+- `scripts/precompute-scenario-baselines.mjs` — one-time 수동 실행 스크립트
+  * 프로덕션 `https://www.potal.app` 의 `/api/v1/classify` + `/api/v1/calculate` 를 `X-Demo-Request: true` 헤더로 호출
+  * 5 scenarios × 완전한 필드 세트 (material/category/intendedUse/targetUser 포함)
+  * 결과를 `MockResult` 호환 구조로 shaping → `lib/scenarios/live-baseline.json` 저장
+  * 관세 스케줄/엔진 로직 업데이트 시 수동 재실행 필요
+- `lib/scenarios/live-baseline.ts` — JSON loader
+  * `getLiveBaseline(scenarioId)` — precomputed entry 반환, 누락/무효 시 null
+  * `getBaselineMetadata()` — generatedAt, source 반환
+  * Defensive validation: `landedCost.productValue` + `total` 가 finite number 일 때만 반환
+- `lib/scenarios/live-baseline.json` — precompute 출력 (커밋됨)
+  * Sprint 7.5 실측: **5/5 scenarios 성공** (seller/d2c/importer/exporter/forwarder)
+  * 각 entry: classifyElapsedMs, calculateElapsedMs, 실제 HS code, 실제 landedCost, regulatory_warnings 반영 notes
+
+### 수정 파일 (1개)
+- `app/api/demo/scenario/route.ts` — cache-first 재작성
+  * **제거**: `tryLiveEngine()`, `timedFetch()`, `pickNumber`, `pickString`, `shapeLiveToMock()`, `TIMEOUT_PER_CALL_MS`, `TIMEOUT_TOTAL_MS`, `baseUrl` URL 파싱, `getScenarioApiChain` import
+  * **추가**: `getLiveBaseline` import + `tryLiveCachedResult()` 함수
+  * POST 핸들러: `getLiveBaseline(scenarioId)` → 있으면 `applyInputsToResult()` 로 스케일링, 없으면 mock 폴백
+  * `DemoResponseData.source` 타입 확장: `'mock' | 'live' | 'live-cached'`
+  * `X-Demo-Source` 헤더 값: `live-cached` (JSON hit) 또는 `mock` (fallback)
+  * 기존 IP throttle (30/min) + `X-Response-Time` 헤더 + mock 폴백 구조 모두 유지
+
+### 수정 문서 (1개)
+- `docs/CW29_PERFORMANCE_REPORT.md` 섹션 3-2 — Sprint 7 실측 2132ms vs Sprint 7.5 precompute 표 + 목표 < 100ms 기록
+
+### Before / After
+| | Sprint 7 (real-time HTTP) | Sprint 7.5 (cache-first) |
+|---|---|---|
+| source | 100% mock (엔진 400/timeout) | 100% live-cached (정상 시) |
+| p95 server | ~2132ms | < 100ms (예상) |
+| 엔진 호출 | 매 request 마다 HTTP fetch | 0회 (static JSON 읽기) |
+| 데이터 신선도 | mock 영구 | 수동 재생성 or Sprint 9 cron |
+| 폴백 구조 | mock | mock (JSON 없을 때) |
+| UI regression | 0 | 0 |
+
+### 절대 규칙 준수
+- ✅ UI 절대 안 깨짐 — `live-baseline.json` 없으면 즉시 mock 폴백
+- ✅ `MockResult` 스키마 그대로 유지
+- ✅ precompute 는 프로덕션 엔드포인트 호출 (dev 아님)
+- ✅ `npm run build` 성공 475 pages (빌드 중 네트워크 호출 0)
+- ✅ console.log 0건 (script는 `process.stdout.write` 사용)
+- ✅ B2C 코드 미수정
+- ✅ CW27 로그인 게이트 / CW28 PartnerLinkSlot regression 0
+- ✅ precompute 스크립트는 커밋되지만 CI/빌드 연결 X
+
+### 5/5 precompute 결과 (프로덕션 측정)
+| Scenario | classify ms | calculate ms | 결과 |
+|---|---|---|---|
+| seller | 2702 | 3447 | ✅ OK |
+| d2c | 961 | 3635 | ✅ OK |
+| importer | 1152 | 3402 | ✅ OK |
+| exporter | 998 | 3792 | ✅ OK |
+| forwarder | 998 | 3200 | ✅ OK |
+
+### 의도적 제외
+- ❌ Redis/Upstash 설치 (precompute가 더 단순)
+- ❌ 실시간 HTTP 엔진 호출 재도입 (속도 안 맞음 — 영구 포기)
+- ❌ `/api/v1/calculate` 엔진 자체 최적화 (별도 프로젝트)
+- ❌ GitHub Action cron 자동화 (Sprint 9+)
+- ❌ Sprint 8 (E2E + 최종 배포 검증)
 
 ## [2026-04-10 KST] CW29-S7 — Sprint 7: Real engine hookup + mock fallback + perf report
 

@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW29-S7 완료 — Sprint 7 실제 엔진 연결. 다음 세션: Sprint 8 (CW30) E2E 테스트 + 비로그인 경로 검증 + 모바일 안내 페이지 검증 + 프로덕션 최종 배포. 프로덕션 p50/p95 curl 측정 → docs/CW29_PERFORMANCE_REPORT.md 섹션 3-2 수치 채우기 + docs/HOMEPAGE_REDESIGN_SPEC.md 731~736행 참조)
+> 마지막 업데이트: 2026-04-10 KST (CW29-S7.5 완료 — Sprint 7 precompute 전환. 5/5 scenarios 실데이터 캐시됨. 다음 세션 첫 액션: (1) 프로덕션 배포 후 curl로 X-Demo-Source/X-Response-Time 검증 (목표 live-cached + <200ms), (2) Sprint 8 (CW30) E2E 테스트 + 비로그인 경로 + 모바일 안내 페이지 + 프로덕션 최종 배포 — docs/HOMEPAGE_REDESIGN_SPEC.md 731~736행 참조)
 
 ---
 
