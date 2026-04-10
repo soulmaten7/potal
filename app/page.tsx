@@ -5,6 +5,11 @@ import Link from 'next/link';
 import HeroCalculator from '@/components/home/HeroCalculator';
 import DataSourceTicker from '@/components/home/DataSourceTicker';
 import { useI18n } from '@/app/context/I18nProvider';
+// CW23 Sprint 1 imports
+import HeaderMinimal from '@/components/layout/HeaderMinimal';
+import DesktopOnlyGuard from '@/components/layout/DesktopOnlyGuard';
+import LiveTicker from '@/components/ticker/LiveTicker';
+import ScenarioSelector from '@/components/home/ScenarioSelector';
 
 // ─── Animated Counter ─────────────────────────────
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -391,7 +396,15 @@ function CompetitorBarChart() {
 }
 
 // ─── Main Page ────────────────────────────────────
-export default function HomePage() {
+// ─── CW23 Sprint 1 — Legacy homepage preserved ─────────────────
+// Per docs/HOMEPAGE_REDESIGN_SPEC.md and user instruction (2026-04-10),
+// the original CW22 homepage is preserved below as `HomePageLegacyCW22`
+// (no longer the default export) so that content/logic can be referenced
+// during the CW23+ rebuild. It is NOT rendered anywhere. The new minimal
+// Sprint 1 home is exported at the bottom of this file.
+// DO NOT DELETE this function — see CLAUDE.md session notes for CW23.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function HomePageLegacyCW22() {
   const { t } = useI18n();
   return (
     <div style={{
@@ -907,5 +920,26 @@ export default function HomePage() {
       </section>
       </FadeInSection>
     </div>
+  );
+}
+
+// ─── CW23 Sprint 1 — New minimal homepage ──────────────────────
+// Spec: docs/HOMEPAGE_REDESIGN_SPEC.md
+// Components:
+//   - DesktopOnlyGuard (Decision 8 — mobile not supported)
+//   - HeaderMinimal (Decision 1 — logo + Community/Help only)
+//   - LiveTicker (Decision 2 — 2-row authority ticker)
+//   - ScenarioSelector (Decision 3 — 6 entry types)
+// Sprint 2 (CW24) will fill in the ScenarioPanel/NonDevPanel/DevPanel.
+
+export default function HomePage() {
+  return (
+    <DesktopOnlyGuard>
+      <div className="min-h-screen bg-white">
+        <HeaderMinimal />
+        <LiveTicker />
+        <ScenarioSelector />
+      </div>
+    </DesktopOnlyGuard>
   );
 }
