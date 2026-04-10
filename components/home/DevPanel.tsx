@@ -18,6 +18,8 @@ import {
   type Language,
   type WorkflowExample,
 } from '@/lib/scenarios/workflow-examples';
+import { useFeatureGate } from '@/lib/auth/feature-gate';
+import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 
 export interface DevPanelProps {
   scenarioId: string;
@@ -26,6 +28,7 @@ export interface DevPanelProps {
 export default function DevPanel({ scenarioId }: DevPanelProps) {
   const [lang, setLang] = useState<Language>('curl');
   const [copied, setCopied] = useState(false);
+  const { requireLogin, loginRequired, closeLoginRequired, featureLabel } = useFeatureGate();
 
   const example: WorkflowExample | null = getWorkflowExample(scenarioId);
 
@@ -44,6 +47,7 @@ export default function DevPanel({ scenarioId }: DevPanelProps) {
   }
 
   const handleCopy = async () => {
+    if (!requireLogin('code copy')) return;
     try {
       await navigator.clipboard.writeText(example.code[lang]);
       setCopied(true);
@@ -128,6 +132,12 @@ export default function DevPanel({ scenarioId }: DevPanelProps) {
           {copied ? '✓ Copied!' : '📋 Copy code'}
         </button>
       </div>
+
+      <LoginRequiredModal
+        open={loginRequired}
+        onClose={closeLoginRequired}
+        featureLabel={featureLabel}
+      />
     </div>
   );
 }

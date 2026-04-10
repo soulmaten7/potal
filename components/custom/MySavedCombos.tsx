@@ -116,13 +116,19 @@ export default function MySavedCombos({ onLoadCombo }: MySavedCombosProps) {
     setCombos(prev => prev.map(c => c.id === id ? { ...c, name: newName } : c));
   };
 
-  // Not logged in
+  // Not logged in — show templates + placeholder for saved combos
   if (!isLoggedIn) {
     return (
-      <div className="mt-12">
+      <div className="mt-12 space-y-8">
         <RecommendedTemplates mode="empty" onLoad={onLoadCombo} />
-        <div className="mt-4 text-center text-[12px] text-slate-400">
-          Log in to save and manage your feature combos.
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
+          <div className="text-[32px] mb-3" aria-hidden="true">🔒</div>
+          <h3 className="text-[15px] font-extrabold text-[#02122c] mb-2">
+            Log in to see your saved combos
+          </h3>
+          <p className="text-[13px] text-slate-500">
+            Your custom workflow combinations will appear here.
+          </p>
         </div>
       </div>
     );

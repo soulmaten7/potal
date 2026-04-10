@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW26-S4 완료: 내 조합 저장/공유/복제/삭제 + 추천 템플릿 + 공유 URL 페이지 + Supabase user_combos 마이그레이션 + combo CRUD API 3개. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW27-S5 완료: 로그인 게이트 — feature-gate hook + LoginRequiredModal + 6개 진입점 게이트(NonDevPanel/DevPanel/CustomBuilder/LiveCodeAssembler/MySavedCombos). 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

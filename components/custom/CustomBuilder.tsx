@@ -14,6 +14,8 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useSupabase } from '@/app/context/SupabaseProvider';
+import { useFeatureGate } from '@/lib/auth/feature-gate';
+import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 import { getCategoryGroups, FEATURE_COUNT, type CatalogEntry } from '@/lib/features/feature-catalog';
 import FeatureCheckbox from './FeatureCheckbox';
 import LiveCodeAssembler from './LiveCodeAssembler';
@@ -29,6 +31,7 @@ export default function CustomBuilder() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveToast, setSaveToast] = useState('');
   const [comboRefreshKey, setComboRefreshKey] = useState(0);
+  const { requireLogin, loginRequired, closeLoginRequired, featureLabel } = useFeatureGate();
 
   const handleToggle = useCallback((slug: string, checked: boolean) => {
     setSelected(prev => {
@@ -143,11 +146,7 @@ export default function CustomBuilder() {
           type="button"
           disabled={selected.size === 0}
           onClick={() => {
-            if (!session?.access_token) {
-              setSaveToast('Log in to save your combo');
-              setTimeout(() => setSaveToast(''), 3000);
-              return;
-            }
+            if (!requireLogin('save combos')) return;
             setShowSaveModal(true);
           }}
           className={`px-8 py-3 rounded-xl text-[14px] font-bold transition-colors ${
@@ -199,6 +198,12 @@ export default function CustomBuilder() {
           {saveToast}
         </div>
       )}
+
+      <LoginRequiredModal
+        open={loginRequired}
+        onClose={closeLoginRequired}
+        featureLabel={featureLabel}
+      />
     </section>
   );
 }

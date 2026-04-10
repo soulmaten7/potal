@@ -16,6 +16,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import type { CatalogEntry } from '@/lib/features/feature-catalog';
+import { useFeatureGate } from '@/lib/auth/feature-gate';
+import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 
 export type Language = 'curl' | 'python' | 'node' | 'go';
 
@@ -163,8 +165,10 @@ export default function LiveCodeAssembler({
   }, [lang, selectedFeatures]);
 
   const apiCount = selectedFeatures.filter(f => f.hasApi).length;
+  const { requireLogin, loginRequired, closeLoginRequired, featureLabel } = useFeatureGate();
 
   const handleCopy = async () => {
+    if (!requireLogin('code copy')) return;
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
@@ -237,6 +241,12 @@ export default function LiveCodeAssembler({
           {copied ? '✓ Copied!' : '📋 Copy code'}
         </button>
       </div>
+
+      <LoginRequiredModal
+        open={loginRequired}
+        onClose={closeLoginRequired}
+        featureLabel={featureLabel}
+      />
     </div>
   );
 }

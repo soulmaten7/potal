@@ -13,6 +13,8 @@
 
 import { useState } from 'react';
 import { getMockResult, type MockResult } from '@/lib/scenarios/mock-results';
+import { useFeatureGate } from '@/lib/auth/feature-gate';
+import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 import CodeCopyModal from './CodeCopyModal';
 
 export interface NonDevPanelProps {
@@ -172,6 +174,7 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
     fieldType: 'input',
     fieldKey: '',
   });
+  const { requireLogin, loginRequired, closeLoginRequired, featureLabel } = useFeatureGate();
 
   const handleCalculate = async () => {
     setLoading(true);
@@ -203,6 +206,7 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
   };
 
   const openCopyModal = (fieldType: 'input' | 'result', fieldKey: string, fieldValue?: string | number) => {
+    if (!requireLogin('code copy')) return;
     setModal({ open: true, fieldType, fieldKey, fieldValue });
   };
 
@@ -405,6 +409,12 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
         fieldKey={modal.fieldKey}
         fieldValue={modal.fieldValue}
         inputs={inputs}
+      />
+
+      <LoginRequiredModal
+        open={loginRequired}
+        onClose={closeLoginRequired}
+        featureLabel={featureLabel}
       />
     </div>
   );

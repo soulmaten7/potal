@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW26-S4 완료 — Sprint 4 내 조합 저장/공유. 다음: (1) 은태님 Supabase에 058_user_combos.sql 실행 (2) Sprint 5 (CW27) 로그인 게이트 — 📋 코드 복사 + 조합 저장 전부 로그인 필요 — docs/HOMEPAGE_REDESIGN_SPEC.md 715~719행)
+> 마지막 업데이트: 2026-04-10 KST (CW27-S5 완료 — Sprint 5 로그인 게이트. 다음 세션: Sprint 6 (CW28) Phase 2 광고 슬롯 UI — PartnerLinkSlot.tsx + partner-config.ts + 계산 결과 하단 슬롯 영역 예약. docs/HOMEPAGE_REDESIGN_SPEC.md 720~724행 참조)
 
 ---
 

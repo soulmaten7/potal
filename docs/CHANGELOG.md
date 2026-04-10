@@ -1,5 +1,34 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW26-S4 — 내 조합 저장/공유 + combo CRUD API + Supabase migration + 추천 템플릿)
+> 마지막 업데이트: 2026-04-10 KST (CW27-S5 — 로그인 게이트: feature-gate hook + LoginRequiredModal + 6개 진입점)
+
+## [2026-04-10 KST] CW27-S5 — Sprint 5: 로그인 게이트 (Login Feature Gate)
+
+### 배경
+결정 7 (HOMEPAGE_REDESIGN_SPEC.md 432~464): Rate Limit 폐기 → "가치 교환 기반" 로그인 게이트.
+비로그인도 데모/코드 보기는 무제한, 가치 있는 순간(복사/저장/공유)에만 로그인 요구.
+
+### 신규 파일 (2개)
+- `lib/auth/feature-gate.ts` — `useFeatureGate()` hook. `requireLogin(feature)` 호출 시 로그인 상태 체크, 미로그인이면 modal state 설정 후 false 반환
+- `components/modals/LoginRequiredModal.tsx` — 재사용 모달. 4가지 `GatedFeature` 메시지 분기(code copy / save combos / share combos / view saved combos). 🔒 아이콘, [Keep browsing] [Log in] 버튼, ESC/백드롭/X 닫기, body scroll lock, `/auth/login?next=<현재 URL>` 이동
+
+### 수정 파일 (5개)
+- `components/home/NonDevPanel.tsx` — `openCopyModal` 진입부에 `requireLogin('code copy')` 게이트. `<LoginRequiredModal />` 마운트
+- `components/home/DevPanel.tsx` — `handleCopy` 진입부 게이트. hook을 early return 전에 호출 (Rules of Hooks 준수)
+- `components/custom/CustomBuilder.tsx` — 기존 `setSaveToast('Log in to save your combo')` 제거 → `requireLogin('save combos')`. LoginRequiredModal 마운트
+- `components/custom/LiveCodeAssembler.tsx` — `handleCopy` 진입부 게이트 + 모달 마운트
+- `components/custom/MySavedCombos.tsx` — 비로그인 분기 문구 정비 ("Log in to see your saved combos" placeholder + 🔒 아이콘 + 기존 RecommendedTemplates)
+
+### 절대 규칙 준수
+- Rate Limit 재도입 없음 (grep rateLimit 결과 0건 — auth 신규 파일)
+- B2C 코드 미수정
+- 로그인 모달은 친화적 톤 ("POTAL stays free — login just unlocks ...")
+- 차단 버튼에 `aria-disabled` 없음 (스펙: 클릭 가능, 누르면 모달)
+- 빌드 성공 475 pages
+- console.log 없음 (lib/auth, components/modals)
+
+### 의도적 제외
+- ❌ Sprint 6+ (광고 슬롯/E2E)
+- ❌ 이메일·소셜 로그인 플로우 신규 구현 (기존 Supabase Auth + LoginModal 재사용)
 
 ## [2026-04-10 KST] CW26-S4 — Sprint 4: 내 조합 저장 + 공유 + 추천 템플릿
 
