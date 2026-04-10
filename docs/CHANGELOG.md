@@ -1,5 +1,68 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW30-HF4 — CUSTOM section 이중 래핑 제거, 1440px 폭 정렬)
+> 마지막 업데이트: 2026-04-10 KST (CW31 — "정직한 리셋": demo API가 실제 POTAL 엔진 직접 호출)
+
+## [2026-04-10 KST] CW31 — "Honest Reset": connect demo to real cost engine
+
+### 배경
+CW29-S7.5에서 속도 예산(2초)을 맞추기 위해 도입한 `applyInputsToResult()` 가격 비율 스케일링은 **실제 거짓말**이었음. 사용자가 KR→US 가죽지갑을 테스트해도 CN→US 기준의 Section 301 tariff가 찍혔음 ($79.38). 실제 KORUS FTA 적용 시 정답은 ~$50.83. "빠르지만 거짓말하는 데모"는 개발자 신뢰의 정반대.
+
+### 해결 — 엔진 연결만 바꾼다
+`app/lib/cost-engine/GlobalCostEngine.ts`의 `calculateGlobalLandedCostAsync()`는 이미 존재하고 프로덕션에서 동작 중. 새 엔진을 만들 필요 없음 — 연결만 바꾼다.
+
+### 변경 사항
+- **`app/api/demo/scenario/route.ts` 리라이트**
+  - `getLiveBaseline` / `tryLiveCachedResult` / `applyInputsToResult` 완전 제거
+  - `calculateGlobalLandedCostAsync()` 직접 호출 + 5초 timeout wrapper (`Promise.race`)
+  - 신규 `mapEngineResultToMockShape()` — 엔진의 `GlobalLandedCost` → UI의 `MockResult` 매핑
+  - 엔진 필드명은 실제 인터페이스(`importDuty`, `ftaApplied`, `tradeRemedies`, `additionalTariffNote`, `insurance`, `brokerageFee`)에 정확히 맞춤. 스펙의 가상 필드명(`antiDumpingDuty`, `ftaUtilization` 등)은 실제 존재하지 않음
+  - source enum: `'mock' | 'live-cached'` → `'mock' | 'live'`
+  - IP throttle (30/min), `X-Response-Time` / `X-Demo-Source` 헤더, `Cache-Control: no-store` 유지
+  - 엔진 실패/timeout 시 mock fallback 유지 — UI는 절대 깨지지 않음
+- **삭제**: `lib/scenarios/live-baseline.json`, `lib/scenarios/live-baseline.ts`
+- **`components/home/NonDevPanel.tsx`**: 국가 드롭다운 **10개 → 240개** (COUNTRY_DATA 전체, ISO3166-1 alpha-2)
+- **`components/home/ScenarioPanel.tsx`**: `inputs` 상태를 부모로 lift-up (key: scenarioId)
+- **`components/home/DevPanel.tsx`**: 새 prop `inputs` 수신 → `renderWorkflowCode()` 호출
+- **`lib/scenarios/workflow-examples.ts`**: 신규 `renderWorkflowCode(scenarioId, lang, inputs)` — 사용자 입력(product/from/to/value/quantity)을 5개 시나리오 코드 스니펫의 하드코드 기본값과 regex 치환. 빈 값은 기본값 유지 → 처음 페이지 로드 시에도 실행 가능한 예제 유지
+- **`CLAUDE.md`**: CW 넘버링 규칙(Rule 11) 신설 — `CW{week}-{S|HF}{n}` 또는 근본 재작업은 `CW{week}`만
+
+### 18-case matrix 검증 (로컬 `npm start`, 2026-04-10 09:49 KST)
+| # | 시나리오 / 루트 | source | HS | duty | total | FTA | ms |
+|---|---|---|---|---|---|---|---|
+| 1 | seller KR→US wallet $45 | live | 4202210000 | $0 | **$50.83** | KORUS FTA | 325 |
+| 2 | seller CN→US wallet $45 | live | 4202210000 | $11.27 | $62.10 | — | 227 |
+| 3 | seller KR→DE wallet $45 | live | 4202210000 | $0 | $54.22 | EU-Korea | 500 |
+| 4 | d2c KR→DE tshirt×500 | live | 610910 | $0 | $16,800.00 | EU-Korea | 427 |
+| 5 | d2c KR→US tshirt×500 | live | 610910 | $0 | $15,168.50 | KORUS | 233 |
+| 6 | d2c CN→US tshirt×500 | live | 610910 | $3,523.10 | $18,691.60 | — | 277 |
+| 7 | importer DE→KR pumps $85k | live | 8413910000 | $0 | $94,190.00 | EU-Korea | 482 |
+| 8 | importer US→KR pumps $85k | live | 8413910000 | $0 | $94,190.00 | KORUS | 453 |
+| 9 | importer CN→KR pumps $85k | live | 8413910000 | $0 | $94,190.00 | Korea-China FTA | 524 |
+| 10 | exporter KR→US Li-ion $250k | live | 850650 | $0 | $269,634.04 | KORUS | 428 |
+| 11 | exporter KR→DE Li-ion $250k | live | 850650 | $0 | $299,000.00 | EU-Korea | 544 |
+| 12 | exporter KR→JP Li-ion $250k | live | 850650 | $0 | $276,520.00 | RCEP | 670 |
+| 13 | forwarder KR→US batch $12k | live | 620630 | $0 | $13,001.57 | KORUS | 455 |
+| 14 | forwarder KR→DE batch $12k | live | 620630 | $0 | $14,400.00 | EU-Korea | 457 |
+| 15 | forwarder KR→JP batch $12k | live | 620630 | $486.00 | $13,874.60 | RCEP | 611 |
+| 16 | seller CN→US wallet $200 | live | 4202210000 | $50.11 | $269.11 | — | 249 |
+| 17 | seller KR→GB wallet $45 | live | 4202210000 | $0 | $54.68 | — | 217 |
+| 18 | d2c KR→FR tshirt×100 | live | 610910 | $0 | $3,396.40 | EU-Korea | 423 |
+
+- **18/18 live** (100% real engine)
+- **p50 ~450ms, p95 670ms, max 670ms** — 5초 timeout 대비 여유 충분
+- CN→US 에서 Section 301 추가관세 정상 반영 (case 2/6/16)
+- KR→US/DE/JP 모두 해당 FTA 자동 감지
+- 다국가 CN→KR pumps 는 Korea-China FTA 적용으로 duty $0
+
+### Known limitations (의도적)
+- `restriction.blocked` 는 항상 `false` — 엔진에 boolean block flag가 없음. exporter ECCN 경고는 엔진의 `additionalTariffNote` 경로로만 노출
+- forwarder 시나리오는 단일 목적지 계산만 수행 (엔진에 batch 엔드포인트 없음 → Sprint에서 추가 고려)
+- DevPanel의 forwarder 코드 스니펫은 치환 대상 기본값이 없어 단일 입력 수정이 반영되지 않음 (복잡한 batch 구조)
+
+### Build
+- `npm run build`: ✅ 475/475 pages, 11.9s compile
+- TypeScript: 변경 파일 에러 0
+
+---
 
 ## [2026-04-10 KST] CW30-HF4 — Hotfix: remove nested section wrapper, align CUSTOM box with 1440px
 

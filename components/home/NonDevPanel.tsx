@@ -13,6 +13,7 @@
 
 import { useState } from 'react';
 import { getMockResult, type MockResult } from '@/lib/scenarios/mock-results';
+import { COUNTRY_DATA } from '@/app/lib/cost-engine/country-data';
 import { useFeatureGate } from '@/lib/auth/feature-gate';
 import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 import CodeCopyModal from './CodeCopyModal';
@@ -20,6 +21,9 @@ import PartnerLinkSlot from './PartnerLinkSlot';
 
 export interface NonDevPanelProps {
   scenarioId: string;
+  /** CW31: lifted state so DevPanel code snippets see the same inputs. */
+  inputs?: Record<string, string | number>;
+  onInputsChange?: (next: Record<string, string | number>) => void;
 }
 
 interface FieldDef {
@@ -32,18 +36,12 @@ interface FieldDef {
   unit?: string;
 }
 
-const COUNTRY_OPTIONS = [
-  { value: 'US', label: '🇺🇸 United States' },
-  { value: 'KR', label: '🇰🇷 Korea' },
-  { value: 'DE', label: '🇩🇪 Germany' },
-  { value: 'FR', label: '🇫🇷 France' },
-  { value: 'GB', label: '🇬🇧 United Kingdom' },
-  { value: 'JP', label: '🇯🇵 Japan' },
-  { value: 'CN', label: '🇨🇳 China' },
-  { value: 'CA', label: '🇨🇦 Canada' },
-  { value: 'AU', label: '🇦🇺 Australia' },
-  { value: 'SG', label: '🇸🇬 Singapore' },
-];
+// CW31 "Honest Reset": full ISO3166-1 alpha-2 country list (240 countries)
+// derived from COUNTRY_DATA. Matches whatever the real cost engine supports —
+// no more "I can only test 10 countries" limitation.
+const COUNTRY_OPTIONS = Object.values(COUNTRY_DATA)
+  .map(c => ({ value: c.code, label: c.name }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 // CW30-HF2: empty placeholder option for country/select dropdowns
 const COUNTRY_OPTIONS_WITH_PLACEHOLDER = [
@@ -161,22 +159,34 @@ function CopyBadge({ onClick }: { onClick: () => void }) {
   );
 }
 
-export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
+export default function NonDevPanel({
+  scenarioId,
+  inputs: inputsProp,
+  onInputsChange,
+}: NonDevPanelProps) {
   const fields = SCENARIO_FIELDS[scenarioId] || [];
   const meta = SCENARIO_TITLES[scenarioId] || {
     title: 'Demo',
     question: 'Try POTAL live.',
   };
 
-  // CW30-HF2: defaultValue 제거됨 → 모든 필드를 빈 문자열로 초기화.
-  // defaultValue fallback 로직은 유지 (혹시 나중에 특정 필드에만 default 넣고 싶을 때).
-  const [inputs, setInputs] = useState<Record<string, string | number>>(() => {
+  // CW31: if parent lifted state, use it. Otherwise fall back to local state
+  // (preserves standalone usage if another page mounts NonDevPanel directly).
+  const [localInputs, setLocalInputs] = useState<Record<string, string | number>>(() => {
     const init: Record<string, string | number> = {};
     for (const f of fields) {
       init[f.key] = f.defaultValue !== undefined ? f.defaultValue : '';
     }
     return init;
   });
+  const inputs = inputsProp && Object.keys(inputsProp).length > 0 ? inputsProp : localInputs;
+  const setInputs = (
+    updater: (prev: Record<string, string | number>) => Record<string, string | number>
+  ) => {
+    const next = updater(inputs);
+    if (onInputsChange) onInputsChange(next);
+    else setLocalInputs(next);
+  };
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<MockResult | null>(null);
   const [source, setSource] = useState<'mock' | 'live' | null>(null);

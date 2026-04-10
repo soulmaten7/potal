@@ -11,6 +11,7 @@
  * 선택된 시나리오가 바뀌면 자식 컴포넌트가 각자 상태를 리셋한다 (key 전달).
  */
 
+import { useState } from 'react';
 import { getScenarioById, SCENARIO_FALLBACK_COPY } from '@/lib/scenarios/scenario-config';
 import NonDevPanel from './NonDevPanel';
 import DevPanel from './DevPanel';
@@ -53,6 +54,17 @@ function TitleBar({ scenarioId }: { scenarioId: string }) {
 export default function ScenarioPanel({ scenarioId }: ScenarioPanelProps) {
   const scenario = getScenarioById(scenarioId);
 
+  // CW31 "Honest Reset": lift inputs up so DevPanel code snippets reflect
+  // whatever the user typed in NonDevPanel. Keyed by scenarioId so switching
+  // scenarios resets the shared state.
+  const [inputsByScenario, setInputsByScenario] = useState<
+    Record<string, Record<string, string | number>>
+  >({});
+  const currentInputs = inputsByScenario[scenarioId] || {};
+  const setCurrentInputs = (next: Record<string, string | number>) => {
+    setInputsByScenario(prev => ({ ...prev, [scenarioId]: next }));
+  };
+
   return (
     <section
       aria-live="polite"
@@ -66,9 +78,18 @@ export default function ScenarioPanel({ scenarioId }: ScenarioPanelProps) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <div className="lg:sticky lg:top-6">
-            <NonDevPanel key={`nd-${scenarioId}`} scenarioId={scenarioId} />
+            <NonDevPanel
+              key={`nd-${scenarioId}`}
+              scenarioId={scenarioId}
+              inputs={currentInputs}
+              onInputsChange={setCurrentInputs}
+            />
           </div>
-          <DevPanel key={`dv-${scenarioId}`} scenarioId={scenarioId} />
+          <DevPanel
+            key={`dv-${scenarioId}`}
+            scenarioId={scenarioId}
+            inputs={currentInputs}
+          />
         </div>
       )}
     </section>

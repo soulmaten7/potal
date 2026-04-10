@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW30-HF4: CUSTOM section 이중 래핑 제거 — CustomBuilder outer <section max-w-[1440px] px-8 pb-16> → 스타일 없는 <div aria-label=...>, 부모 ScenarioPanel의 max-w-[1440px] + px-8 단일 래퍼 사용. CUSTOM 2-column grid가 5개 일반 시나리오와 동일 폭으로 정렬. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW31 "정직한 리셋": /api/demo/scenario 가 calculateGlobalLandedCostAsync() 직접 호출. 가격 비율 스케일링/live-baseline 삭제, 국가 드롭다운 10→240개, DevPanel 코드 스니펫이 실시간 입력 반영(ScenarioPanel 상태 lift-up), 18/18 케이스 live 엔진 응답 확인 p95 670ms. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
@@ -33,6 +33,7 @@
 8. **문서 업데이트 시 날짜+시간(KST) 기록 필수**
 9. **유료 플랜 재도입 금지** — Forever Free 구조 유지 (CW22 CEO 확정). Enterprise Contact Us만 허용
 10. **HS Code 벤치마크 오류 시 `archive/benchmarks/POTAL_Ablation_V2.xlsx` 대조 필수**
+11. **CW 넘버링 규칙 (CW31 신설)** — 작업은 `CW{주차}-{종류}{번호}` 포맷으로 라벨링. 종류: `S`=Sprint (계획된 중대 작업), `HF`=Hotfix (이미 배포된 코드의 긴급 수정). 별도 종류 없이 `CW31`처럼만 쓰면 해당 주차의 주요 작업(Sprint/Hotfix 구분이 애매하거나 근본 재작업일 때). 커밋 메시지/세션 문서/Notion Task Board 모두 같은 라벨 사용. 근거: CW30-HF4 다음 작업이 "CW31-?"인지 "CW31-HF5"인지 애매했음 — "정직한 리셋"은 Hotfix가 아닌 근본 재작업이므로 그냥 `CW31`.
 
 ---
 

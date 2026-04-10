@@ -650,6 +650,148 @@ export function getWorkflowExample(scenarioId: string): WorkflowExample | null {
 }
 
 /**
+ * CW31 "Honest Reset": Hardcoded placeholder values the 5 scenario code
+ * snippets use by default. When the user types real inputs in NonDevPanel,
+ * the DevPanel replaces these with the live values so the example code
+ * always matches the calculation they just ran.
+ */
+const SCENARIO_DEFAULTS: Record<
+  string,
+  {
+    product: string;
+    from: string;
+    to: string;
+    value: number | string;
+    quantity?: number;
+  }
+> = {
+  seller: { product: 'Handmade leather wallet', from: 'KR', to: 'US', value: 45 },
+  d2c: {
+    product: 'Organic cotton T-shirt',
+    from: 'KR',
+    to: 'DE',
+    value: 28,
+    quantity: 500,
+  },
+  importer: {
+    product: 'Industrial centrifugal pumps',
+    from: 'DE',
+    to: 'KR',
+    value: 85000,
+  },
+  exporter: {
+    product: 'Lithium-ion battery cells',
+    from: 'KR',
+    to: 'US',
+    value: 250000,
+  },
+  forwarder: {
+    product: 'Cotton T-shirts (batch)',
+    from: 'KR',
+    to: 'US',
+    value: 12000,
+  },
+};
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Render a workflow example's code block with live inputs substituted.
+ * Any input that's empty/0 falls back to the scenario's hardcoded default,
+ * so the sample code is always runnable even before the user types anything.
+ */
+export function renderWorkflowCode(
+  scenarioId: string,
+  lang: Language,
+  inputs: Record<string, string | number | undefined>
+): string {
+  const example = getWorkflowExample(scenarioId);
+  if (!example) return '';
+  const defaults = SCENARIO_DEFAULTS[scenarioId];
+  if (!defaults) return example.code[lang];
+
+  const product = (inputs.product as string) || defaults.product;
+  const from = ((inputs.from as string) || defaults.from).toUpperCase();
+  const to = ((inputs.to as string) || defaults.to).toUpperCase();
+  const valueNum = Number(inputs.value);
+  const value =
+    Number.isFinite(valueNum) && valueNum > 0 ? valueNum : defaults.value;
+  const qtyNum = Number(inputs.quantity);
+  const quantity =
+    Number.isFinite(qtyNum) && qtyNum > 0
+      ? qtyNum
+      : defaults.quantity ?? undefined;
+
+  let code = example.code[lang];
+
+  // 1. product description — quoted string replacements
+  code = code.replace(
+    new RegExp(`"${escapeRegExp(defaults.product)}"`, 'g'),
+    `"${product}"`
+  );
+  code = code.replace(
+    new RegExp(`'${escapeRegExp(defaults.product)}'`, 'g'),
+    `'${product}'`
+  );
+
+  // 2. from / to ISO2 — match both quoted forms and KR→US style literals
+  const fromPatterns = [
+    new RegExp(`"${escapeRegExp(defaults.from)}"`, 'g'),
+    new RegExp(`'${escapeRegExp(defaults.from)}'`, 'g'),
+    new RegExp(`\\\\"${escapeRegExp(defaults.from)}\\\\"`, 'g'),
+  ];
+  const toPatterns = [
+    new RegExp(`"${escapeRegExp(defaults.to)}"`, 'g'),
+    new RegExp(`'${escapeRegExp(defaults.to)}'`, 'g'),
+    new RegExp(`\\\\"${escapeRegExp(defaults.to)}\\\\"`, 'g'),
+  ];
+  // Only replace from/to codes when they differ — otherwise risk of
+  // overlapping replacements (e.g. "KR" → user also picked KR).
+  if (from !== defaults.from) {
+    for (const p of fromPatterns) code = code.replace(p, `"${from}"`);
+    code = code.replace(
+      new RegExp(`From:\\s*"${escapeRegExp(defaults.from)}"`, 'g'),
+      `From: "${from}"`
+    );
+  }
+  if (to !== defaults.to) {
+    for (const p of toPatterns) code = code.replace(p, `"${to}"`);
+    code = code.replace(
+      new RegExp(`To:\\s*"${escapeRegExp(defaults.to)}"`, 'g'),
+      `To: "${to}"`
+    );
+  }
+
+  // 3. value — numeric literal
+  if (value !== defaults.value) {
+    code = code.replace(
+      new RegExp(`\\bvalue["\\s:=]+${defaults.value}\\b`, 'g'),
+      match => match.replace(String(defaults.value), String(value))
+    );
+    code = code.replace(
+      new RegExp(`Value:\\s*${defaults.value}\\b`, 'g'),
+      `Value: ${value}`
+    );
+  }
+
+  // 4. quantity — numeric literal (d2c only)
+  if (quantity !== undefined && quantity !== defaults.quantity) {
+    code = code.replace(
+      new RegExp(`\\bquantity["\\s:=]+${defaults.quantity}\\b`, 'g'),
+      match => match.replace(String(defaults.quantity), String(quantity))
+    );
+    code = code.replace(
+      new RegExp(`Quantity:\\s*${defaults.quantity}\\b`, 'g'),
+      `Quantity: ${quantity}`
+    );
+  }
+
+  return code;
+}
+
+/**
  * Real Next.js API routes the demo backend should call per scenario.
  *
  * NOTE: WorkflowExample.apiChain contains marketing-style short paths

@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (🎉 PHASE 1 DONE + HF1/HF2/HF3/HF4 완료 — seller 기본 선택 + 첫 화면 압축 + CUSTOM 헤더 중복 제거 + CUSTOM section 이중 래핑 제거(1440px 폭 정렬). 다음 세션: Phase 2 traffic acquisition — (1) SNS 포스팅/SEO/Product Hunt 런칭 전략 수립, (2) 트래픽 10k/월 달성 후 PartnerLinkSlot Phase 2 활성화 영업 시작, (3) lint/type cleanup 별도 sprint. 완료 요약: docs/PHASE1_COMPLETE.md 참조)
+> 마지막 업데이트: 2026-04-10 KST (CW31 "정직한 리셋" 완료 — demo API가 실제 POTAL 엔진(`calculateGlobalLandedCostAsync`) 직접 호출. applyInputsToResult 가격 비율 스케일링/live-baseline.json/ts 삭제. 국가 드롭다운 10→240개, DevPanel 코드 스니펫 실시간 입력 반영. 18/18 case live(p95 670ms), KR→US wallet = $50.83 KORUS FTA 0% 정답. 다음 세션 우선순위: (1) 프로덕션 배포 후 Cowork 브라우저 검증 — 18 케이스 + 국가 드롭다운 UX + DevPanel 치환 확인, (2) restriction.blocked 엔진 노출 경로 설계 (exporter ECCN 경고 복구), (3) forwarder scenario 에 batch 엔드포인트 가능성 검토, (4) Phase 2 traffic acquisition 재개 — SNS/SEO/Product Hunt. 미해결: vercel --prod 수동 배포(GitHub-Vercel auto deploy 해제 상태), Vercel Support Case #01083440 대기 중)
 
 ---
 
@@ -221,5 +221,10 @@
 
 ---
 ## [Auto-saved] Compaction at 2026-04-06 15:04 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.
+
+---
+## [Auto-saved] Compaction at 2026-04-10 18:39 KST
 컨텍스트 압축 발생. 이전 대화가 요약됨.
 압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.

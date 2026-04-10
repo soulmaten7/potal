@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import {
   LANGUAGE_TABS,
   getWorkflowExample,
+  renderWorkflowCode,
   type Language,
   type WorkflowExample,
 } from '@/lib/scenarios/workflow-examples';
@@ -23,14 +24,17 @@ import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 
 export interface DevPanelProps {
   scenarioId: string;
+  /** CW31: lifted from ScenarioPanel so code snippets reflect live inputs. */
+  inputs?: Record<string, string | number>;
 }
 
-export default function DevPanel({ scenarioId }: DevPanelProps) {
+export default function DevPanel({ scenarioId, inputs = {} }: DevPanelProps) {
   const [lang, setLang] = useState<Language>('curl');
   const [copied, setCopied] = useState(false);
   const { requireLogin, loginRequired, closeLoginRequired, featureLabel } = useFeatureGate();
 
   const example: WorkflowExample | null = getWorkflowExample(scenarioId);
+  const renderedCode = example ? renderWorkflowCode(scenarioId, lang, inputs) : '';
 
   useEffect(() => {
     setCopied(false);
@@ -49,7 +53,7 @@ export default function DevPanel({ scenarioId }: DevPanelProps) {
   const handleCopy = async () => {
     if (!requireLogin('code copy')) return;
     try {
-      await navigator.clipboard.writeText(example.code[lang]);
+      await navigator.clipboard.writeText(renderedCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
@@ -108,7 +112,7 @@ export default function DevPanel({ scenarioId }: DevPanelProps) {
       {/* Code block */}
       <div className="flex-1 bg-[#0a1628] overflow-y-auto relative max-h-[500px]">
         <pre className="text-slate-100 p-6 text-[12px] leading-relaxed font-mono whitespace-pre">
-          {example.code[lang]}
+          {renderedCode}
         </pre>
       </div>
 
