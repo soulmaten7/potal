@@ -46,6 +46,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         if (savedLanguage in translations) {
           setLanguageState(savedLanguage as LanguageCode);
         }
+      } else if (typeof navigator !== 'undefined' && navigator.language) {
+        // CW29 Sprint 7: auto-detect browser language on first visit.
+        // Falls back to DEFAULT_LANGUAGE (en) when navigator.language isn't
+        // in our translation catalog.
+        const primary = navigator.language.split('-')[0].toLowerCase();
+        if (primary in translations) {
+          setLanguageState(primary as LanguageCode);
+        }
       }
     } catch (e) {
       console.error('I18n: Failed to load language preference', e);

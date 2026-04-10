@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW28-S6 완료: Partner slot UI 예약 — PartnerLinkSlot.tsx + partner-config.ts + NonDev 결과 하단 + CUSTOM LiveCodeAssembler 하단 마운트. 4 슬롯 전부 Phase 1 placeholder. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW29-S7 완료: 데모 API real-first + mock fallback — /api/demo/scenario 가 /api/v1/classify + /api/v1/calculate 실제 호출, 2.5s 타임아웃, 실패 시 mock 폴백. X-Response-Time + X-Demo-Source 헤더. navigator.language 자동 감지. CW29_PERFORMANCE_REPORT.md 생성. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

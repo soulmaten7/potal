@@ -1,5 +1,51 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW28-S6 — Partner slot UI 예약: 4 슬롯 Phase 1 placeholder)
+> 마지막 업데이트: 2026-04-10 KST (CW29-S7 — 데모 API real-first + mock fallback + perf report)
+
+## [2026-04-10 KST] CW29-S7 — Sprint 7: Real engine hookup + mock fallback + perf report
+
+### 배경
+스펙 기술 전제 1~3 (HOMEPAGE_REDESIGN_SPEC.md 657~672) + Sprint 7 체크리스트 (725~729):
+Sprint 2 부터 `/api/demo/scenario` 는 항상 `source: 'mock'` 만 반환. 이번 스프린트에서 실제 POTAL 엔진(classify + calculate)에 연결 + 실패 시 기존 mock 으로 자동 폴백.
+
+### 수정 파일 (3개)
+- `app/api/demo/scenario/route.ts` — real-first 전면 재작성
+  * `tryLiveEngine(scenarioId, inputs, baseUrl, deadline)` — classify → calculate 순차 호출, `X-Demo-Request: true` 헤더로 withApiAuth 데모 바이패스 사용, 각 호출 1.5s / 전체 2.5s `AbortSignal.timeout`
+  * `shapeLiveToMock()` — 엔진 응답을 `MockResult` 형태로 변환. `pickNumber`/`pickString` helper 로 필드명 다양성 흡수. `duty` + `total` 모두 없으면 null 반환 → mock fallback
+  * `applyInputsToResult()` — mock baseline 유지, 사용자 value 반영
+  * 응답 헤더: `X-Response-Time: {ms}` + `X-Demo-Source: {live|mock}` 추가
+  * 타임아웃/에러/JSON 파싱 실패 → `getMockResult(scenarioId)` 폴백, UI 절대 안 깨짐
+- `lib/scenarios/workflow-examples.ts` — `getScenarioApiChain(scenarioId)` helper 추가
+  * WorkflowExample.apiChain 은 marketing 경로(`/v1/classify`), 실제 Next.js route 경로는 이 helper 가 반환 (`/api/v1/classify` 등)
+  * 매핑: seller/d2c/importer/exporter → `[classify, calculate]`, forwarder → `[calculate]`
+- `app/context/I18nProvider.tsx` — `navigator.language` 기반 자동 감지 추가
+  * localStorage 에 저장된 언어 없을 때 `navigator.language.split('-')[0]` 파싱 → 지원 언어면 세팅, 아니면 en 폴백
+
+### 신규 파일 (1개)
+- `docs/CW29_PERFORMANCE_REPORT.md` — 성능 리포트
+  * 구조 변경 before/after, 시나리오 매핑 표
+  * 타임아웃/안정성 전략 (1.5s per call, 2.5s total, 30 req/min)
+  * 성능 목표 (p95 < 2000ms per scenario)
+  * Supabase 인덱스 점검 섹션 (Sprint 8 이후 EXPLAIN ANALYZE 권장)
+  * Redis/Upstash 캐시 레이어 검토 결과 — Sprint 7 보류, 트래픽 1만/월 돌파 시 재검토
+  * 50개 언어 자동 감지 변경 사항 기록
+  * Sprint 8 이월 이슈 5건
+
+### 절대 규칙 준수
+- ✅ UI 절대 깨지지 않음 (mock fallback 100%)
+- ✅ `/api/v1/*` 엔드포인트 로직 변경 없음 (홈페이지 데모 래퍼만 수정)
+- ✅ Rate Limit 유지 (30 req/min)
+- ✅ X-Demo-Request 바이패스만 사용, API 키 발급 없음
+- ✅ AbortSignal.timeout 으로 타임아웃 (try/catch 단독 사용 X)
+- ✅ 응답 JSON 스키마 그대로 (NonDevPanel `json.data.result` 구조 유지)
+- ✅ 에러 stack trace 외부 노출 없음
+- ✅ B2C 코드 미수정
+- ✅ 빌드 성공 475 pages, console.log 0건
+
+### 의도적 제외
+- ❌ Redis/Upstash 실제 설치 (검토만)
+- ❌ 인덱스 신규 생성 (점검·보고만)
+- ❌ Edge Runtime 이전
+- ❌ Sprint 8 (E2E + 최종 배포 검증)
 
 ## [2026-04-10 KST] CW28-S6 — Sprint 6: Partner Link Slot UI (Phase 1 reservation)
 

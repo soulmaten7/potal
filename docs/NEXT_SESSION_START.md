@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW28-S6 완료 — Sprint 6 Partner Link Slot UI 예약. 다음 세션: Sprint 7 (CW29) 실제 엔진 연결 + 성능 최적화 — demo API가 현재 mock만 반환. classifier/cost-engine/restrictions 실제 호출 + Redis/Upstash 캐시 검토 + Supabase 인덱스 점검 + 51개 언어 자동 감지 검증. docs/HOMEPAGE_REDESIGN_SPEC.md 725~730행 참조)
+> 마지막 업데이트: 2026-04-10 KST (CW29-S7 완료 — Sprint 7 실제 엔진 연결. 다음 세션: Sprint 8 (CW30) E2E 테스트 + 비로그인 경로 검증 + 모바일 안내 페이지 검증 + 프로덕션 최종 배포. 프로덕션 p50/p95 curl 측정 → docs/CW29_PERFORMANCE_REPORT.md 섹션 3-2 수치 채우기 + docs/HOMEPAGE_REDESIGN_SPEC.md 731~736행 참조)
 
 ---
 

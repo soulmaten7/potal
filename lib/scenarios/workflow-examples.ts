@@ -649,6 +649,26 @@ export function getWorkflowExample(scenarioId: string): WorkflowExample | null {
   return WORKFLOW_EXAMPLES[scenarioId] || null;
 }
 
+/**
+ * Real Next.js API routes the demo backend should call per scenario.
+ *
+ * NOTE: WorkflowExample.apiChain contains marketing-style short paths
+ * ("/v1/classify") intended for code examples shown to users. This helper
+ * returns the actual route paths the demo server will hit internally.
+ *
+ * CW29 Sprint 7: used by /api/demo/scenario to orchestrate live engine calls.
+ */
+export function getScenarioApiChain(scenarioId: string): string[] {
+  const chains: Record<string, string[]> = {
+    seller: ['/api/v1/classify', '/api/v1/calculate'],
+    d2c: ['/api/v1/classify', '/api/v1/calculate'],
+    importer: ['/api/v1/classify', '/api/v1/calculate'],
+    exporter: ['/api/v1/classify', '/api/v1/calculate'],
+    forwarder: ['/api/v1/calculate'],
+  };
+  return chains[scenarioId] || [];
+}
+
 export const LANGUAGE_TABS: Array<{ id: Language; label: string }> = [
   { id: 'curl', label: 'cURL' },
   { id: 'python', label: 'Python' },
