@@ -201,7 +201,7 @@ export function HeaderMinimal() {
               href="/auth/login"
               className="text-[13px] font-bold text-[#02122c] hover:text-[#F59E0B] transition-colors no-underline"
             >
-              {t('nav.signIn')}
+              Log in
             </Link>
           )}
         </div>
