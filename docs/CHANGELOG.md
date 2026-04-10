@@ -1,5 +1,35 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW23-S1b — UX 피드백: Footer 복구 + 1440px max-width + 6버튼 1행 콤팩트 레이아웃)
+> 마지막 업데이트: 2026-04-10 KST (CW24-S2 — 시나리오 상세 패널 구현: 좌우 2분할 + workflow examples + demo API)
+
+## [2026-04-10 KST] CW24-S2 — Sprint 2: 시나리오 상세 패널 구현
+
+### 배경
+CW23 Sprint 1 에서 ScenarioSelector 가 6버튼 선택까지만 동작했고, 선택 후에는
+placeholder 박스만 표시되던 상태. 이번 스프린트에서 결정 4 (HOMEPAGE_REDESIGN_SPEC.md
+233~280행) 좌우 2분할 시나리오 페이지를 완성.
+
+### 신규 파일 (7개)
+- `lib/scenarios/workflow-examples.ts` — 5 시나리오 × 4 언어(cURL/Python/Node/Go) 조합된 워크플로우 코드 카탈로그 + WorkflowExample 타입 + LANGUAGE_TABS
+- `lib/scenarios/mock-results.ts` — 시나리오별 fallback mock 결과 (NonDevPanel 이 demo API 실패해도 UI 안 깨지도록)
+- `app/api/demo/scenario/route.ts` — 홈페이지 전용 데모 API (POST, no-auth, IP 30 req/min throttle, Cache-Control: no-store). 사용자 입력(value/declaredValue)을 반영하여 mock 결과를 스케일링
+- `components/home/ScenarioPanel.tsx` — 좌우 2분할 컨테이너. `custom` 선택 시 CustomBuilder placeholder (Sprint 3 · CW25 예정)
+- `components/home/NonDevPanel.tsx` — 왼쪽 50% 인터랙티브 데모. 시나리오별 입력 필드(product/from/to/value/quantity/container) + Calculate 버튼 + 결과 카드(HS code/restriction/landed cost breakdown + extras/notes) + 각 필드 옆 [📋] 버튼
+- `components/home/DevPanel.tsx` — 오른쪽 50% 워크플로우 코드. 4 언어 탭, 수동 tone(Prism/Shiki 미도입), Full API docs 링크, [📋 Copy code]
+- `components/home/CodeCopyModal.tsx` — 3 탭 모달(Embed iframe / API cURL·Python·Node / Link). role="dialog" aria-modal + ESC + 바깥 클릭 + X 버튼 모두 지원, body scroll lock
+
+### 수정 파일 (1개)
+- `components/home/ScenarioSelector.tsx` — Sprint 1 placeholder 제거, 선택 시 `<ScenarioPanel scenarioId={selected} />` 렌더. `-mx-8` 으로 ScenarioSelector 패딩 cancel → ScenarioPanel 이 자체 max-w-[1440px] 사용
+
+### 절대 규칙 준수
+- #1 B2C 코드 미수정 (lib/search, lib/agent, components/search 전부 손 안 댐)
+- #2 npm run build ✓ — Compiled in 19.1s, Generating static pages 474/474 in 2.8s
+- #4 console.log — 실행 코드 0건. workflow-examples.ts 내 `console.log(...)` 는 전부 템플릿 문자열 안의 사용자 예제 코드 (DevPanel 에 표시되는 문자열), 실행되지 않음
+
+### Sprint 2 범위에서 의도적으로 제외
+- ❌ 로그인 게이트 (Sprint 5 · CW27). 현재 [📋] 는 아무나 모달 열림
+- ❌ CustomBuilder 실제 구현 (Sprint 3 · CW25). `custom` 선택 시 "Coming in Sprint 3" placeholder
+- ❌ Prism/Shiki 등 syntax highlighter (빌드 무거워짐)
+- ❌ 실제 POTAL 엔진 호출 (classifier/cost-engine/restrictions). 현재 demo API 는 `source: 'mock'` 만 반환. Sprint 7 최적화 때 실제 호출 추가
 
 ## [2026-04-10 KST] CW23-S1b — Sprint 1 UX 피드백 반영
 

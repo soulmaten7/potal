@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW23-S1b 완료: 사용자 UX 피드백 반영 — ChromeGate에서 Footer 복구, HeaderMinimal + ScenarioSelector 1440px max-width, 6버튼 1행 6열 콤팩트 레이아웃. 로컬 빌드 473 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW24-S2 완료: 시나리오 상세 패널 — ScenarioPanel/NonDevPanel/DevPanel/CodeCopyModal + workflow-examples 5×4언어 + demo API route + mock fallback. 5개 시나리오 좌우 2분할 인터랙티브 데모 live, 474 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

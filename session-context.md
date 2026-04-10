@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-10 KST (CW23-S1b 완료 — UX 피드백 4건 반영: (1) ChromeGate에서 Footer만 홈 숨김 제외 → 홈에도 Footer 표시, (2) HeaderMinimal Row1+Row2 모두 max-w-[1440px] mx-auto 컨테이너로 감쌈, (3) ScenarioSelector max-w 1100→1440, 그리드 `grid-cols-3 lg:grid-cols-6`로 ≥1024px에서 6버튼 1행, (4) 버튼 콤팩트화(min-h 140→110, padding 축소, 중앙정렬, 질문 텍스트는 선택 후 placeholder로 이동). 로컬 빌드 ✓ 473 pages)
+> 마지막 업데이트: 2026-04-10 KST (CW24-S2 완료 — Sprint 2 시나리오 상세 패널 구현: ScenarioPanel(좌우 2분할 컨테이너) + NonDevPanel(인터랙티브 데모 + 결과 + 📋버튼) + DevPanel(4언어 탭 + 코드 복사) + CodeCopyModal(Embed/API/Link 3탭) + lib/scenarios/workflow-examples.ts(5시나리오×4언어) + lib/scenarios/mock-results.ts + app/api/demo/scenario demo API. 5개 시나리오 버튼 선택 시 인터랙티브 데모 live, custom 은 Sprint 3 placeholder. 로컬 빌드 ✓ 474 pages)
 
 ---
 

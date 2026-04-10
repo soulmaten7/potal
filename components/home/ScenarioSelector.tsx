@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import ScenarioPanel from './ScenarioPanel';
 import {
   SCENARIOS,
   SCENARIO_FALLBACK_COPY,
@@ -123,26 +124,11 @@ export function ScenarioSelector({
         ))}
       </div>
 
-      {/* Sprint 1 placeholder: scenario detail panel will be built in Sprint 2.
-          Show the scenario's guiding question so the panel does not feel empty
-          even without the interactive demo. */}
+      {/* Sprint 2 (CW24): 좌우 2분할 시나리오 상세 패널.
+          custom 은 ScenarioPanel 내부에서 placeholder 로 처리. */}
       {selected && (
-        <div
-          aria-live="polite"
-          className="mt-10 rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-10 text-center"
-        >
-          <div className="text-[14px] text-slate-500 font-semibold uppercase tracking-wider mb-2">
-            Selected scenario
-          </div>
-          <div className="text-[24px] font-bold text-[#02122c]">
-            {c(SCENARIOS.find(s => s.id === selected)?.titleKey || '')}
-          </div>
-          <div className="text-[16px] italic text-slate-600 mt-3">
-            &ldquo;{c(SCENARIOS.find(s => s.id === selected)?.questionKey || '')}&rdquo;
-          </div>
-          <div className="text-[12px] text-slate-400 mt-6">
-            Interactive demo + workflow code will appear here (Sprint 2 · CW24).
-          </div>
+        <div className="mt-10 -mx-8">
+          <ScenarioPanel scenarioId={selected} />
         </div>
       )}
     </section>

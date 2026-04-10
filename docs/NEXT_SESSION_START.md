@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW23-S1 완료 — Sprint 1 홈페이지 SSR 버그 2+1건 수정. ChromeGate + DesktopOnlyGuard SSR-safe + Suspense. 다음 세션 첫 액션: 프로덕션(www.potal.app) HTML에서 HeaderMinimal/LiveTicker/ScenarioSelector 마커 확인 후 Sprint 2 착수)
+> 마지막 업데이트: 2026-04-10 KST (CW24-S2 완료 — Sprint 2 시나리오 상세 패널 구현. 다음 세션 첫 액션: 프로덕션 5개 시나리오 버튼 클릭 검증 + Sprint 3 (CW25) CUSTOM Builder 140개 기능 체크박스 시작 — docs/HOMEPAGE_REDESIGN_SPEC.md 699~705행 참조)
 
 ---
 
