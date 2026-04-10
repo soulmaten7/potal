@@ -215,9 +215,56 @@ function MobileNoticeInner() {
   );
 }
 
+/**
+ * Static fallback rendered during SSR and while the client component hydrates.
+ * This guarantees crawlers + E2E smoke tests see the "desktop-only" message
+ * even before JavaScript runs. The interactive email form is added once
+ * <MobileNoticeInner /> hydrates on the client.
+ */
+function MobileNoticeFallback() {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f8fafc',
+        padding: 20,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      }}
+    >
+      <div
+        style={{
+          background: 'white',
+          borderRadius: 20,
+          padding: '40px 28px',
+          maxWidth: 420,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          border: '1px solid #e2e8f0',
+          textAlign: 'center',
+        }}
+      >
+        <div style={{ fontSize: 36, fontWeight: 800, marginBottom: 20, lineHeight: 1 }}>
+          <span style={{ color: '#02122c' }}>P</span>
+          <span style={{ color: '#F59E0B' }}>O</span>
+          <span style={{ color: '#02122c' }}>TAL</span>
+        </div>
+        <h1 style={{ fontSize: 22, fontWeight: 800, color: '#02122c', marginBottom: 8 }}>
+          POTAL is a desktop-only tool
+        </h1>
+        <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6 }}>
+          POTAL is built for focused work on a larger screen. Please visit us
+          from a computer or laptop to access the full experience.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function MobileNoticePage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<MobileNoticeFallback />}>
       <MobileNoticeInner />
     </Suspense>
   );

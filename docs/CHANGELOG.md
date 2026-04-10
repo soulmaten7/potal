@@ -1,5 +1,74 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW29-S7.5 — live 엔진 precompute + cache-first: p95 2132ms → <100ms)
+> 마지막 업데이트: 2026-04-10 KST (CW30-S8 완료 — Phase 1 홈페이지 리디자인 전체 완료 🎉)
+
+## [2026-04-10 KST] CW30-S8 — Sprint 8: E2E + mobile guard + Phase 1 complete
+
+### 배경
+Phase 1 홈페이지 리디자인 마지막 스프린트. 새 기능 추가 없이 **전체 플로우 E2E 검증 + 모바일 가드 확인 + Phase 1 완료 선언**.
+
+### 신규 파일 (3개)
+- `scripts/e2e-homepage-smoke.mjs` — 의존성 없는 순수 fetch 기반 E2E smoke
+  * 프로덕션 `https://www.potal.app` 대상
+  * `/`, `/?type=custom`, `/mobile-notice`, `/api/demo/scenario` × 5 scenarios 검증
+  * `X-Demo-Source`, `X-Response-Time` 헤더 기록
+  * p50/p95/max 자동 계산
+  * 실패 시 exit 1
+  * `package.json` 에 `"e2e:smoke": "node scripts/e2e-homepage-smoke.mjs"` 추가
+- `docs/CW30_E2E_REPORT.md` — E2E 실측 결과 + Cowork 수동 검증 체크리스트
+  * 1차 실행 (Sprint 8 commit 전): 7/8 passed, `/mobile-notice` 마커 누락
+  * Sprint 8 fix 설명
+  * 비로그인 경로 / 모바일 가드 / i18n / regression 체크박스 스켈레톤
+- `docs/PHASE1_COMPLETE.md` — Phase 1 완료 선언 문서
+  * 8 sprint 전체 요약 테이블 (S1~S8, 커밋 해시 + 빌드 상태)
+  * 최종 수치 (475 pages, server p95 5ms, live-cached 5/5)
+  * 12개 스펙 결정 이행 현황
+  * 5개 기술 전제 이행 현황
+  * Phase 2 대기 항목 (partner slot activation, cron 자동화, lint cleanup)
+  * 회고 (잘된 것/실패에서 배운 것/다음 Phase 전 할 것)
+
+### 수정 파일 (2개)
+- `app/mobile-notice/page.tsx` — SSR fallback 추가
+  * 문제: `Suspense fallback={null}` → SSR HTML 빈 body → 크롤러/E2E 에 "desktop" 마커 안 보임
+  * 해결: `MobileNoticeFallback` 컴포넌트 신규 — 로고 + "POTAL is a desktop-only tool" 헤딩 + "larger screen" 본문
+  * `Suspense fallback={<MobileNoticeFallback />}` 로 교체
+  * Client hydration 후에는 기존 interactive form (`MobileNoticeInner`) 그대로
+- `package.json` — `"e2e:smoke"` script 추가
+
+### E2E Smoke 결과 (Sprint 7.5 baseline)
+```
+✓ GET /                     — 200
+✓ GET /?type=custom         — 200
+✓ POST demo/scenario [seller]    — server=5ms source=live-cached total=79.38
+✓ POST demo/scenario [d2c]       — server=1ms source=live-cached total=59.33
+✓ POST demo/scenario [importer]  — server=1ms source=live-cached total=3187.99
+✓ POST demo/scenario [exporter]  — server=0ms source=live-cached total=8137.78
+✓ POST demo/scenario [forwarder] — server=1ms source=live-cached total=1007.21
+✗ GET /mobile-notice        — fixed in Sprint 8
+
+p50=274ms p95=921ms (wall time)
+server p95 ~5ms
+5/5 live-cached (Sprint 7 대비 0→100%)
+```
+
+### 절대 규칙 준수
+- ✅ 새 기능 추가 0건 (mobile-notice 는 SSR fix)
+- ✅ 레이아웃 변경 0건
+- ✅ Playwright/Puppeteer 미도입 (순수 fetch)
+- ✅ B2C 코드 미수정
+- ✅ console.log 0건
+- ✅ regression 0 (CW23~S7.5 전부 유지)
+- ✅ `npm run build` ✓ 475 pages
+
+### Pre-existing Issues (Sprint 8 범위 외)
+- ⚠️ `npx tsc --noEmit` — `app/lib/tests/s-grade-verification.test.ts` 5 errors (commit `0d70c0c`, legacy)
+- ⚠️ `npm run lint` — 808 problems codebase-wide (Sprint 8 introduces 0)
+- ⚠️ `app/mobile-notice/page.tsx:27` setState in useEffect warning — Sprint 1 부터 존재
+
+### Phase 1 DONE 🎉
+- S1 ~ S8 전부 완료 (8 스프린트, CW23~CW30)
+- 12개 결정 사항 전부 이행
+- 5개 기술 전제 전부 이행
+- `docs/PHASE1_COMPLETE.md` 참조
 
 ## [2026-04-10 KST] CW29-S7.5 — Sprint 7.5: Precompute live baseline + cache-first demo API
 

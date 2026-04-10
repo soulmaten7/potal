@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "node scripts/update-ticker-fallback.mjs && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "e2e:smoke": "node scripts/e2e-homepage-smoke.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW29-S7.5 완료 — Sprint 7 precompute 전환. 5/5 scenarios 실데이터 캐시됨. 다음 세션 첫 액션: (1) 프로덕션 배포 후 curl로 X-Demo-Source/X-Response-Time 검증 (목표 live-cached + <200ms), (2) Sprint 8 (CW30) E2E 테스트 + 비로그인 경로 + 모바일 안내 페이지 + 프로덕션 최종 배포 — docs/HOMEPAGE_REDESIGN_SPEC.md 731~736행 참조)
+> 마지막 업데이트: 2026-04-10 KST (🎉 PHASE 1 DONE — CW30-S8 완료. 다음 세션: Phase 2 준비 — (1) Cowork Chrome MCP로 docs/CW30_E2E_REPORT.md 섹션 2/4/5 수동 체크박스 검증, (2) 트래픽 확보 활동(SNS 포스팅/SEO/Product Hunt), (3) 트래픽 10k/월 달성 후 PartnerLinkSlot Phase 2 활성화 영업 시작. 완료 요약: docs/PHASE1_COMPLETE.md 참조)
 
 ---
 
