@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW25-S3 완료: CUSTOM Builder — 141개 기능 체크박스 + LiveCodeAssembler 실시간 4언어 코드 조립 + feature-catalog.ts. 카테고리 12개 그룹, 검색, ℹ️ 툴팁, Sprint 4 저장 버튼 placeholder. 474 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW26-S4 완료: 내 조합 저장/공유/복제/삭제 + 추천 템플릿 + 공유 URL 페이지 + Supabase user_combos 마이그레이션 + combo CRUD API 3개. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

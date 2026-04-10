@@ -13,15 +13,22 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
+import { useSupabase } from '@/app/context/SupabaseProvider';
 import { getCategoryGroups, FEATURE_COUNT, type CatalogEntry } from '@/lib/features/feature-catalog';
 import FeatureCheckbox from './FeatureCheckbox';
 import LiveCodeAssembler from './LiveCodeAssembler';
+import MySavedCombos from './MySavedCombos';
+import SaveComboModal from './SaveComboModal';
 
 export default function CustomBuilder() {
+  const { session } = useSupabase();
   const groups = useMemo(() => getCategoryGroups(), []);
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveToast, setSaveToast] = useState('');
+  const [comboRefreshKey, setComboRefreshKey] = useState(0);
 
   const handleToggle = useCallback((slug: string, checked: boolean) => {
     setSelected(prev => {
@@ -130,17 +137,68 @@ export default function CustomBuilder() {
         </div>
       </div>
 
-      {/* Save combo button (Sprint 4 placeholder) */}
+      {/* Save combo button */}
       <div className="mt-8 text-center">
         <button
           type="button"
-          disabled
-          className="px-8 py-3 rounded-xl border-2 border-dashed border-slate-300 text-[14px] font-bold text-slate-400 cursor-not-allowed"
-          title="Login required — coming in Sprint 4"
+          disabled={selected.size === 0}
+          onClick={() => {
+            if (!session?.access_token) {
+              setSaveToast('Log in to save your combo');
+              setTimeout(() => setSaveToast(''), 3000);
+              return;
+            }
+            setShowSaveModal(true);
+          }}
+          className={`px-8 py-3 rounded-xl text-[14px] font-bold transition-colors ${
+            selected.size === 0
+              ? 'border-2 border-dashed border-slate-300 text-slate-400 cursor-not-allowed'
+              : 'bg-[#02122c] text-white hover:bg-[#0a1e3d]'
+          }`}
         >
-          Save this combo (Sprint 4 · CW26)
+          Save this combo
         </button>
       </div>
+
+      {/* Saved combos list */}
+      <MySavedCombos
+        key={comboRefreshKey}
+        onLoadCombo={(features) => setSelected(new Set(features))}
+      />
+
+      {/* Save modal */}
+      <SaveComboModal
+        open={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        featureCount={selected.size}
+        onSave={async (name, description) => {
+          const res = await fetch('/api/combos', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session!.access_token}`,
+            },
+            body: JSON.stringify({
+              name,
+              description: description || undefined,
+              selected_features: Array.from(selected),
+            }),
+          });
+          const json = await res.json();
+          if (!json.success) throw new Error(json.error?.message || 'Save failed');
+          setShowSaveModal(false);
+          setComboRefreshKey(k => k + 1);
+          setSaveToast('Combo saved!');
+          setTimeout(() => setSaveToast(''), 3000);
+        }}
+      />
+
+      {/* Toast */}
+      {saveToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] bg-[#02122c] text-white rounded-lg px-4 py-2 text-[13px] font-semibold shadow-lg">
+          {saveToast}
+        </div>
+      )}
     </section>
   );
 }

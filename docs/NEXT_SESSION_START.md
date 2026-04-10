@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW25-S3 완료 — Sprint 3 CUSTOM Builder 구현. 다음 세션 첫 액션: 프로덕션 CUSTOM 클릭 → 141개 기능 체크박스 + 실시간 코드 조립 검증 + Sprint 4 (CW26) 내 조합 저장/공유 (Supabase user_combos) — docs/HOMEPAGE_REDESIGN_SPEC.md 706~714행 참조)
+> 마지막 업데이트: 2026-04-10 KST (CW26-S4 완료 — Sprint 4 내 조합 저장/공유. 다음: (1) 은태님 Supabase에 058_user_combos.sql 실행 (2) Sprint 5 (CW27) 로그인 게이트 — 📋 코드 복사 + 조합 저장 전부 로그인 필요 — docs/HOMEPAGE_REDESIGN_SPEC.md 715~719행)
 
 ---
 

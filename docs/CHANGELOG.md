@@ -1,5 +1,30 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW25-S3 — CUSTOM Builder: 141기능 체크박스 + 실시간 코드 조립 + feature-catalog)
+> 마지막 업데이트: 2026-04-10 KST (CW26-S4 — 내 조합 저장/공유 + combo CRUD API + Supabase migration + 추천 템플릿)
+
+## [2026-04-10 KST] CW26-S4 — Sprint 4: 내 조합 저장 + 공유 + 추천 템플릿
+
+### 신규 파일 (10개)
+- `supabase/migrations/058_user_combos.sql` — user_combos 테이블 + RLS (파일만 생성, 자동 실행 아님)
+- `lib/custom/combo-storage.ts` — CRUD 함수 9개 (listCombos, createCombo, duplicateCombo, generateShareSlug 등)
+- `app/api/combos/route.ts` — GET/POST/PATCH/DELETE (인증 필수, ?sort + ?q 지원)
+- `app/api/combos/[id]/share/route.ts` — POST (공유 slug 생성+public) / DELETE (비공개화)
+- `app/api/combos/[id]/duplicate/route.ts` — POST (이름 + " (copy)" 복제)
+- `app/combos/[slug]/page.tsx` — 공유 URL 접근 → combo 정보 + "Open in CUSTOM Builder" 링크
+- `components/custom/MySavedCombos.tsx` — 내 조합 리스트 (검색/정렬/5개+더보기/Toast/비로그인 분기)
+- `components/custom/ComboListItem.tsx` — 1줄 아이템 (⭐즐겨찾기/이름클릭로드/상대시간/사용횟수/공유/복제/삭제/···/이름바꾸기/JSON내보내기)
+- `components/custom/RecommendedTemplates.tsx` — 5개 큐레이션 템플릿 (Empty=카드, Active=pill 스크롤)
+- `components/custom/SaveComboModal.tsx` — 이름/설명 입력 모달 (role="dialog", ESC/바깥클릭/X)
+
+### 수정 파일 (1개)
+- `components/custom/CustomBuilder.tsx` — placeholder → 실제 Save 버튼(비로그인 안내/로그인 모달) + MySavedCombos + handleLoadCombo(features → setSelected)
+
+### 절대 규칙 준수
+- #1 B2C 미수정, #2 build ✓ 475 pages, #4 console.log 없음
+
+### 의도적 제외
+- ❌ 마이그레이션 자동 실행 (은태님 수동)
+- ❌ 로그인 게이트 전체 (Sprint 5 · CW27) — Save + 내 조합 접근에만 인증 체크
+- ❌ Make 연결/팀 공유 (후속)
 
 ## [2026-04-10 KST] CW25-S3 — Sprint 3: CUSTOM Builder (141개 기능 체크박스 + 실시간 코드 조립)
 
