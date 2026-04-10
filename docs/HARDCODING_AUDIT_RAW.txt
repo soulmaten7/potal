@@ -1,0 +1,570 @@
+=== CW33 Phase A — Hardcoding Audit Raw Output ===
+Date: 2026-04-11 KST
+
+=== GREP 1: Explicit hardcoding markers ===
+app/lib/data-management/data-registry.ts:79:  { path: 'app/lib/compliance/export-controls.ts', area: 10, areaName: 'Export Controls', type: 'code', description: 'ECCN classification (9 chapters hardcoded)', updateFrequency: 'quarterly', priority: 'P2', sourceUrl: 'https://www.bis.doc.gov/index.php/regulations/commerce-control-list-ccl' },
+app/lib/tax/us-sales-tax.ts:141:  // Fallback: state-level hardcoded rates
+app/lib/cost-engine/macmap-lookup.ts:8: *   ④ hardcoded/MFN     — 하드코딩 챕터 레벨 폴백
+app/lib/cost-engine/macmap-lookup.ts:224: * @returns MacMapDutyResult or null (hardcoded fallback 필요)
+app/lib/cost-engine/macmap-lookup.ts:251:    // Stage 4: null → caller uses hardcoded/MFN fallback
+app/lib/cost-engine/GlobalCostEngine.ts:33:// DB-backed modules (async, with cache + hardcoded fallback)
+app/lib/cost-engine/GlobalCostEngine.ts:48:import { getEffectiveDutyRate as getHardcodedEffectiveDutyRate, getDutyRate as getHardcodedDutyRate, hasCountryDutyData as hardcodedHasCountryDutyData } from './hs-code';
+app/lib/cost-engine/GlobalCostEngine.ts:49:import { applyFtaRate as hardcodedApplyFtaRate } from './hs-code/fta';
+app/lib/cost-engine/GlobalCostEngine.ts:186:  /** Where the duty rate came from: 'agr' | 'min' | 'ntlc' | 'mfn' | 'live_db' | 'external_api' | 'db' | 'hardcoded' */
+app/lib/cost-engine/GlobalCostEngine.ts:188:  /** Confidence score of the duty rate (1.0=agr, 0.9=min, 0.8=ntlc, 0.7=mfn/hardcoded) */
+app/lib/cost-engine/GlobalCostEngine.ts:304: * Falls back to hardcoded data if DB unavailable.
+app/lib/cost-engine/GlobalCostEngine.ts:389:  let dutyRateSource: string = 'hardcoded';
+app/lib/cost-engine/GlobalCostEngine.ts:484:      // ━━━ 4차: hardcoded (dutyRate는 profile.avgDutyRate 유지) ━━━
+app/lib/cost-engine/GlobalCostEngine.ts:485:      // dutyRateSource = 'hardcoded', dutyConfidenceScore = 0.7
+app/lib/cost-engine/GlobalCostEngine.ts:1113:        const dataQuality = dutyRateSource === 'hardcoded' ? 'fallback' as const
+app/lib/cost-engine/GlobalCostEngine.ts:1129:        if (dutyRateSource === 'hardcoded') { factors.push('Estimated duty rate'); score *= 0.8; }
+app/lib/cost-engine/GlobalCostEngine.ts:1139:        ? 'macmap_db' : dutyRateSource || 'hardcoded',
+app/lib/cost-engine/GlobalCostEngine.ts:1141:      quality: dutyRateSource === 'hardcoded' ? 'fallback'
+app/lib/cost-engine/GlobalCostEngine.ts:1161:// SYNC VERSION (hardcoded) — used by tests, B2C, widget
+app/lib/cost-engine/GlobalCostEngine.ts:1165: * Calculate Total Landed Cost — SYNC (hardcoded data)
+app/lib/cost-engine/GlobalCostEngine.ts:1167: * Uses in-memory hardcoded data only. No DB calls.
+app/lib/cost-engine/GlobalCostEngine.ts:1179:  // US fallback if no hardcoded profile
+app/lib/cost-engine/GlobalCostEngine.ts:1221:    if (hardcodedHasCountryDutyData(profile.code)) {
+app/lib/cost-engine/GlobalCostEngine.ts:1235:      const ftaCalc = hardcodedApplyFtaRate(dutyRate, originCountry, profile.code, hsChapter);
+app/lib/cost-engine/GlobalCostEngine.ts:1243:    const ftaCalc = hardcodedApplyFtaRate(dutyRate, originCountry, profile.code);
+app/lib/cost-engine/exchange-rate/exchange-rate-service.ts:215:    source: 'hardcoded-fallback',
+app/lib/cost-engine/country-i18n.ts:381:  // Fallback: use Intl.DisplayNames for languages without hardcoded data
+app/lib/cost-engine/hs-code/classifier.ts:375: * This is different from the old approach: instead of hardcoded category lists,
+app/lib/cost-engine/db/fta-db.ts:5: * Falls back to hardcoded data if DB is unavailable.
+app/lib/cost-engine/db/fta-db.ts:9:import { findApplicableFta as hardcodedFindFta, applyFtaRate as hardcodedApplyFta } from '../hs-code/fta';
+app/lib/cost-engine/db/fta-db.ts:15: * consult the hardcoded list so new agreements (Korea-UK, KCFTA…) apply
+app/lib/cost-engine/db/fta-db.ts:18: * Safe because hardcodedFindFta() returns `hasFta:false` when nothing
+app/lib/cost-engine/db/fta-db.ts:31:  const hardcoded = hardcodedFindFta(originCountry, destinationCountry, hsChapter);
+app/lib/cost-engine/db/fta-db.ts:32:  if (hardcoded.hasFta && (hardcoded.preferentialMultiplier ?? 1) < 1) {
+app/lib/cost-engine/db/fta-db.ts:33:    return hardcoded;
+app/lib/cost-engine/db/fta-db.ts:82:    // CW32: merge hardcoded additions so new FTAs apply without a DB migration.
+app/lib/cost-engine/db/fta-db.ts:85:    // Fallback to hardcoded
+app/lib/cost-engine/db/fta-db.ts:86:    return hardcodedFindFta(originCountry, destinationCountry, hsChapter);
+app/lib/cost-engine/db/fta-db.ts:109:    return hardcodedApplyFta(mfnRate, originCountry, destinationCountry, hsChapter);
+app/lib/cost-engine/db/duty-rates-db.ts:5: * Falls back to hardcoded data if DB is unavailable.
+app/lib/cost-engine/db/duty-rates-db.ts:22: * Falls back to hardcoded data on DB error.
+app/lib/cost-engine/db/duty-rates-db.ts:69:    // Fallback to hardcoded
+app/lib/cost-engine/db/index.ts:5: * Falls back to hardcoded data if DB unavailable.
+app/lib/cost-engine/db/country-data-db.ts:5: * Falls back to hardcoded data if DB is unavailable.
+app/lib/cost-engine/db/country-data-db.ts:11:import { COUNTRY_DATA as HARDCODED_COUNTRY_DATA } from '../country-data';
+app/lib/cost-engine/db/country-data-db.ts:32: * Falls back to hardcoded data on DB error.
+app/lib/cost-engine/db/country-data-db.ts:41:    // Fallback to hardcoded
+app/lib/cost-engine/db/country-data-db.ts:42:    return HARDCODED_COUNTRY_DATA[code.toUpperCase()] || null;
+app/lib/cost-engine/db/country-data-db.ts:54:    return Object.values(HARDCODED_COUNTRY_DATA);
+app/lib/cost-engine/db/country-data-db.ts:66:    return Object.keys(HARDCODED_COUNTRY_DATA).length;
+app/lib/cost-engine/index.ts:17:// Global multi-country calculator (sync = hardcoded, async = DB-backed)
+app/lib/cost-engine/screening/db-screen.ts:4: * Replaces hardcoded 65 entries with live DB queries against sanctions_entries.
+app/lib/cost-engine/screening/screen.ts:6: * Current implementation uses hardcoded high-profile entries + fuzzy matching.
+app/api/v1/roo/check/route.ts:72:  } catch { /* DB unavailable, try hardcoded */ }
+app/api/v1/roo/check/route.ts:74:  // Also get general RoO from hardcoded FTA definitions
+app/api/v1/ioss/check/route.ts:33:  // Convert to EUR using real exchange rates (not hardcoded)
+app/api/v1/calculate/compare-origins/route.ts:88:        duty_rate_source: result.dutyRateSource || 'hardcoded',
+app/api/v1/admin/exchange-rate-sync/route.ts:60:    if (rates.source === 'hardcoded-fallback') {
+app/api/v1/admin/exchange-rate-sync/route.ts:64:        message: 'All exchange rate APIs failed — using hardcoded fallback',
+app/api/v1/tax/us-sales-tax/route.ts:187:    } catch { /* fallback to hardcoded */ }
+app/api/v1/tax/us-sales-tax/route.ts:198:    source: 'hardcoded',
+app/api/v1/fta/compare/route.ts:74:  // If no NTLC, try hardcoded
+app/api/v1/support/route.ts:82:    answer: 'Each calculation includes a confidence score. Our 4-stage fallback (AGR → MIN → NTLC MFN → hardcoded) ensures the best available rate. Government API data scores 85%+ confidence. With HS classification, accuracy typically exceeds 95%.',
+lib/ticker/live-status.ts:27:// ticker shows realistic "N min ago" values. This avoids hardcoded "14 min ago"
+lib/scenarios/workflow-examples.ts:704: * Any input that's empty/0 falls back to the scenario's hardcoded default,
+components/home/HeroCalculator.tsx:496:    hardcoded: 'Default',
+
+=== GREP 2: mock / fallback / stub patterns ===
+app/lib/classification/reverse-matcher.ts:417:    // If no country-specific data, use US as fallback (largest dataset)
+app/lib/classification/reverse-matcher.ts:420:      decisionPath.push(`No data for ${destCountry}, using US fallback`);
+app/lib/classification/confidence-calibration.ts:54: * - pattern_catch_all: "other" fallback = low
+app/lib/classification/confidence-calibration.ts:70:  keyword_fallback: 0.30,
+app/lib/classification/price-break-engine.ts:93:    return null; // DB failure — graceful fallback, no price break applied
+app/lib/retailerConfig.ts:420:  // 부분 매칭 (fallback)
+app/lib/secretary/command-processor.ts:513:  // 2단계: Claude API 자연어 처리 (fallback)
+app/lib/data-management/error-handler.ts:73:      suggestedFix: 'Search for new URL using fallback strategy',
+app/lib/data-management/source-verifier.ts:14:  fallbackUrls: string[];
+app/lib/data-management/source-verifier.ts:30:    fallbackUrls: ['https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html'],
+app/lib/data-management/source-verifier.ts:36:    fallbackUrls: ['https://www.treasury.gov/ofac/downloads/sdnlist.txt'],
+app/lib/data-management/source-verifier.ts:42:    fallbackUrls: [],
+app/lib/data-management/source-verifier.ts:48:    fallbackUrls: ['https://www.usitc.gov/'],
+app/lib/data-management/source-verifier.ts:54:    fallbackUrls: [],
+app/lib/learning/SearchLogger.ts:70:  // Client-side: try crypto.randomUUID, fallback to date-based
+app/lib/tax/us-sales-tax.ts:138:    } catch { /* fallback */ }
+app/lib/utils/DeliveryStandard.ts:242:  // 9. Site fallback — 추정 배송비 표시 (비교 쇼핑 사이트에 적합)
+app/lib/utils/zipCodeDatabase.ts:476: * For unknown ZIP codes, returns a generic city placeholder with state info
+app/lib/utils/zipCodeDatabase.ts:509:    city: stateInfo.name, // Use state name as fallback
+app/lib/shipping/label-generator.ts:140:  // EU member state fallback
+app/lib/compliance/export-license.ts:177:    } catch { /* fallback to static check */ }
+app/lib/compliance/export-license.ts:180:  // Static partial sanctions fallback
+app/lib/cost-engine/landed-cost-guarantee.ts:100:  dataQuality: 'fresh' | 'stale' | 'fallback';
+app/lib/cost-engine/landed-cost-guarantee.ts:114:  if (params.dataQuality === 'fallback') {
+app/lib/cost-engine/landed-cost-guarantee.ts:115:    issues.push('Calculation used fallback/estimated duty rates');
+app/lib/cost-engine/landed-cost-guarantee.ts:202:      // Try dedicated guarantee_claims table first, fallback to health_check_logs
+app/lib/cost-engine/landed-cost-guarantee.ts:218:      // If table doesn't exist, store in health_check_logs as fallback
+app/lib/cost-engine/CostEngine.ts:150:export const BRAZIL_IPI_DEFAULT = 0.10;       // fallback avg
+app/lib/cost-engine/gri-classifier/pipeline.ts:146:  // Step 2: Section matching (LLM with keyword fallback)
+app/lib/cost-engine/gri-classifier/pipeline.ts:168:  // Step 4: Chapter matching (LLM with keyword fallback)
+app/lib/cost-engine/gri-classifier/pipeline.ts:189:  // Step 6: Heading matching (LLM with keyword fallback)
+app/lib/cost-engine/gri-classifier/pipeline.ts:233:  // Step 8: Subheading matching (LLM with keyword fallback)
+app/lib/cost-engine/gri-classifier/types.ts:101:  method: 'pattern_match' | 'ai_resolution' | 'score_fallback';
+app/lib/cost-engine/gri-classifier/steps/step06-heading-match.ts:3: * LLM-based with keyword fallback.
+app/lib/cost-engine/gri-classifier/steps/step06-heading-match.ts:12:// Keyword fallback (original)
+app/lib/cost-engine/gri-classifier/steps/step06-heading-match.ts:34:      const fallback = hds.find(h => h.description.toLowerCase().startsWith('other')) || hds[0];
+app/lib/cost-engine/gri-classifier/steps/step06-heading-match.ts:35:      if (fallback) candidates.push({ heading: fallback.code, description: fallback.description, score: 0.1 });
+app/lib/cost-engine/gri-classifier/steps/step08-subheading-match.ts:3: * LLM-based with keyword fallback. Applies GRI 6.
+app/lib/cost-engine/gri-classifier/steps/step08-subheading-match.ts:11:// Keyword fallback (original)
+app/lib/cost-engine/gri-classifier/steps/step07-conflict-resolve.ts:61:        method: 'score_fallback',
+app/lib/cost-engine/gri-classifier/steps/step07-conflict-resolve.ts:76:    // AI failed, fall through to score fallback
+app/lib/cost-engine/gri-classifier/steps/step07-conflict-resolve.ts:79:  // Step 4: Score fallback
+app/lib/cost-engine/gri-classifier/steps/step07-conflict-resolve.ts:82:    method: 'score_fallback',
+app/lib/cost-engine/gri-classifier/steps/step01-keyword-extract.ts:76:// Code-only fallback (renamed from extractKeywords)
+app/lib/cost-engine/gri-classifier/steps/step02-section-match.ts:110:// Keyword-only fallback (renamed from matchSections)
+app/lib/cost-engine/gri-classifier/steps/step02-section-match.ts:178:  // Default fallback
+app/lib/cost-engine/gri-classifier/steps/step02-section-match.ts:479: * Main export — v2.2 pre-filter + LLM, fallback to keyword.
+app/lib/cost-engine/gri-classifier/steps/v3/step2-1-section-candidate.ts:390:  //   Tier B: Legacy CATEGORY_TO_SECTION (128 manual keywords) — fallback
+app/lib/cost-engine/gri-classifier/steps/v3/step2-1-section-candidate.ts:459:  // ── Tier B: Legacy CATEGORY_TO_SECTION fallback (128 manual keywords) ──
+app/lib/cost-engine/gri-classifier/steps/v3/step2-1-section-candidate.ts:480:  // Also check product_name for legacy category keywords (fallback)
+app/lib/cost-engine/gri-classifier/steps/v3/step2-1-section-candidate.ts:509:  // 4. Product name fallback if no candidates
+app/lib/cost-engine/gri-classifier/steps/v3/step05-field-extraction.ts:117:  return fallbackExtract(platformData);
+app/lib/cost-engine/gri-classifier/steps/v3/step05-field-extraction.ts:140:function fallbackExtract(data: Record<string, any>): ExtractedFields {
+app/lib/cost-engine/gri-classifier/steps/v3/step2-2-section-notes.ts:67:          matched_by: 'fallback_after_exclusion',
+app/lib/cost-engine/gri-classifier/steps/v3/step2-2-section-notes.ts:77:    // Ultimate fallback
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:4: * 조회 체인: macmap_ntlc_rates (MFN) → macmap_min_rates (MIN, fallback)
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:70:    // 2차: macmap_min_rates (MIN 세율, fallback)
+app/lib/cost-engine/gri-classifier/steps/v3/step2-3-chapter-candidate.ts:177:      candidates.set(ch, { score: 0.3, matched_by: 'fallback:all_in_section' });
+app/lib/cost-engine/gri-classifier/steps/v3/step3-heading.ts:4: * Then fallback to keyword overlap on heading description.
+app/lib/cost-engine/gri-classifier/steps/v3/step3-heading.ts:414:    matched_by: `fallback_overlap(${best.matchCount})`,
+app/lib/cost-engine/gri-classifier/steps/step04-chapter-match.ts:3: * LLM-based with keyword fallback.
+app/lib/cost-engine/gri-classifier/steps/step04-chapter-match.ts:12:// Keyword fallback (original)
+app/lib/cost-engine/gri-classifier/data/subheading-notes.ts:2: * Subheading Notes — minimal fallback.
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:3: * Uses codified_national JSON (pattern_types, conditions, keywords) + DB fallback.
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:246:    // Simple keyword scoring fallback
+app/lib/cost-engine/trade-remedy-lookup.ts:9: * - Firm-specific AD/CVD duty matching (exact company → "All Others" fallback)
+app/lib/cost-engine/trade-remedy-lookup.ts:318: * 5. Highest available rate (conservative fallback)
+app/lib/cost-engine/trade-remedy-lookup.ts:401:  // 3. Country-wide fallback — use highest rate (conservative for compliance)
+app/lib/cost-engine/macmap-lookup.ts:23:  /** Which fallback stage produced the result */
+app/lib/cost-engine/macmap-lookup.ts:88:/** Generate HS code prefix variants for fallback matching (exact → 8 → 6) */
+app/lib/cost-engine/macmap-lookup.ts:224: * @returns MacMapDutyResult or null (hardcoded fallback 필요)
+app/lib/cost-engine/macmap-lookup.ts:251:    // Stage 4: null → caller uses hardcoded/MFN fallback
+app/lib/cost-engine/macmap-lookup.ts:409:    const baseline = mfnRate ?? rateOptions[rateOptions.length - 1].rate; // highest rate as fallback baseline
+app/lib/cost-engine/tariff-api/usitc-provider.ts:15: * - "$1.50/pr." → 종량세 (ad valorem으로 변환 불가 → fallback)
+app/lib/cost-engine/tariff-api/asean-provider.ts:132:  // Default fallback for ASEAN: ~5%
+app/lib/cost-engine/tariff-api/eu-taric-provider.ts:156:            notes: `Source: EU TARIC (via XI) | ${code8} (fallback)`,
+app/lib/cost-engine/tariff-api/uk-tariff-provider.ts:140:            notes: `Source: UK Trade Tariff | Commodity ${code8} (fallback)`,
+app/lib/cost-engine/GlobalCostEngine.ts:8: * 2. Hardcoded fallback — if DB unavailable
+app/lib/cost-engine/GlobalCostEngine.ts:33:// DB-backed modules (async, with cache + hardcoded fallback)
+app/lib/cost-engine/GlobalCostEngine.ts:38:// MacMap 4-stage fallback lookup (AGR → MIN → NTLC → MFN) + tariff optimization
+app/lib/cost-engine/GlobalCostEngine.ts:47:// Hardcoded fallbacks (sync, for backward compat)
+app/lib/cost-engine/GlobalCostEngine.ts:184:  /** How the HS code was classified: 'cache' | 'keyword' | 'ai' | 'manual' | 'keyword_fallback' */
+app/lib/cost-engine/GlobalCostEngine.ts:246:    /** Overall data quality: fresh/stale/fallback */
+app/lib/cost-engine/GlobalCostEngine.ts:247:    quality: 'fresh' | 'stale' | 'fallback';
+app/lib/cost-engine/GlobalCostEngine.ts:317:  // US fallback if no DB profile found
+app/lib/cost-engine/GlobalCostEngine.ts:1113:        const dataQuality = dutyRateSource === 'hardcoded' ? 'fallback' as const
+app/lib/cost-engine/GlobalCostEngine.ts:1141:      quality: dutyRateSource === 'hardcoded' ? 'fallback'
+app/lib/cost-engine/GlobalCostEngine.ts:1179:  // US fallback if no hardcoded profile
+app/lib/cost-engine/exchange-rate/exchange-rate-service.ts:215:    source: 'hardcoded-fallback',
+app/lib/cost-engine/exchange-rate/exchange-rate-service.ts:251:  console.warn('[POTAL FX] All APIs failed, using fallback rates');
+app/lib/cost-engine/exchange-rate/exchange-rate-service.ts:253:  // 이전 캐시가 있으면 만료되었더라도 사용 (stale > fallback)
+app/lib/cost-engine/country-i18n.ts:388:  // Final fallback to English
+app/lib/cost-engine/ai-classifier/explainability.ts:94:    case 'keyword_fallback':
+app/lib/cost-engine/ai-classifier/explainability.ts:97:        detail: `Keyword fallback: best match '${p.productName.substring(0, 50)}' → HS ${p.hsCode} (low confidence, LLM unavailable)`,
+app/lib/cost-engine/ai-classifier/claude-classifier.ts:396: * Uses OpenAI GPT-4o-mini (vision-capable) with Anthropic Claude as fallback.
+app/lib/cost-engine/ai-classifier/index.ts:7: *   ③ LLM fallback (Claude/Groq)
+app/lib/cost-engine/ai-classifier/ai-classifier-wrapper.ts:327:  return { ...keywordResult, classificationSource: 'keyword_fallback' };
+app/lib/cost-engine/ai-classifier/confidence-score.ts:71: * 1. Classification method reliability (cache/vector/keyword/ai/fallback)
+app/lib/cost-engine/ai-classifier/confidence-score.ts:90:    keyword_fallback: 0.40,
+app/lib/cost-engine/ai-classifier/confidence-score.ts:137:      ? 'Generic fallback code — no specific classification found'
+app/lib/cost-engine/hs-code/chapters/ch39.ts:72:  { code: '391721', description: 'Tubes, pipes and hoses, and fittings therefor (for example, joints, elbows, f...', chapter: '39', category: 'plastics', keywords: ['tubes', 'pipes', 'hoses', 'fittings', 'therefor', 'example', 'joints', 'elbows', 'flanges', 'plasticstubes'] },
+app/lib/cost-engine/hs-code/chapters/ch39.ts:73:  { code: '391722', description: 'Tubes, pipes and hoses, and fittings therefor (for example, joints, elbows, f...', chapter: '39', category: 'plastics', keywords: ['tubes', 'pipes', 'hoses', 'fittings', 'therefor', 'example', 'joints', 'elbows', 'flanges', 'plasticstubes'] },
+app/lib/cost-engine/hs-code/chapters/ch39.ts:74:  { code: '391723', description: 'Tubes, pipes and hoses, and fittings therefor (for example, joints, elbows, f...', chapter: '39', category: 'plastics', keywords: ['tubes', 'pipes', 'hoses', 'fittings', 'therefor', 'example', 'joints', 'elbows', 'flanges', 'plasticstubes'] },
+app/lib/cost-engine/hs-code/chapters/ch39.ts:75:  { code: '391729', description: 'Tubes, pipes and hoses, and fittings therefor (for example, joints, elbows, f...', chapter: '39', category: 'plastics', keywords: ['tubes', 'pipes', 'hoses', 'fittings', 'therefor', 'example', 'joints', 'elbows', 'flanges', 'plasticstubes'] },
+app/lib/cost-engine/hs-code/chapters/ch67.ts:7:  { code: '670200', description: 'Artificial flowers', chapter: '67', category: 'home', keywords: ['artificial flower', 'fake flower', 'silk flower', 'floral arrangement', 'flower bouquet'] },
+app/lib/cost-engine/hs-code/hs10-resolver.ts:12: * 233 countries: HS 6-digit fallback with MFN/MIN/AGR rates
+app/lib/cost-engine/hs-code/hs10-resolver.ts:32:    | 'hs6_fallback';
+app/lib/cost-engine/hs-code/hs10-resolver.ts:313: * Returns HS6 fallback for 233 other countries.
+app/lib/cost-engine/hs-code/hs10-resolver.ts:324:  // Non-HS10 countries → HS6 fallback
+app/lib/cost-engine/hs-code/hs10-resolver.ts:329:      classificationMethod: 'hs6_fallback',
+app/lib/cost-engine/hs-code/hs10-resolver.ts:349:      classificationMethod: 'hs6_fallback',
+app/lib/cost-engine/hs-code/heading-subdivider.ts:138:  // Strategy 4: Prefer "90/99" (other) suffix as safe fallback
+app/lib/cost-engine/hs-code/heading-subdivider.ts:146:      reason: 'fallback to "Other" subheading',
+app/lib/cost-engine/hs-code/fta.ts:784:// Generic fallback RoO for FTAs without specific rules
+app/lib/cost-engine/hs-code/classifier.ts:8: * 2. Material-only matches (e.g., "cotton") get LOW confidence → LLM fallback
+app/lib/cost-engine/hs-code/classifier.ts:10: * 4. Cross-category ambiguity lowers confidence → LLM fallback
+app/lib/cost-engine/db/duty-rates-db.ts:10:// Hardcoded fallback
+app/lib/cost-engine/db/country-data-db.ts:10:// Hardcoded fallback
+app/lib/cost-engine/regulation-rag/index.ts:6: * - pgvector semantic search with RPC fallback to ilike
+app/lib/cost-engine/regulation-rag/index.ts:49:    searchMethod: 'vector' | 'fallback_ilike' | 'none';
+app/lib/cost-engine/regulation-rag/index.ts:213:  let searchMethod: 'vector' | 'fallback_ilike' = 'vector';
+app/lib/cost-engine/regulation-rag/index.ts:232:      searchMethod = 'fallback_ilike';
+app/lib/cost-engine/regulation-rag/index.ts:235:    searchMethod = 'fallback_ilike';
+app/lib/cost-engine/regulation-rag/index.ts:239:  if (searchMethod === 'fallback_ilike') {
+app/lib/cost-engine/documents/pdf-generator.ts:637:  // Barcode placeholder
+app/lib/cost-engine/screening/db-screen.ts:93:      // DB empty — fallback to in-memory
+app/lib/cost-engine/screening/db-screen.ts:209:    // DB error — fallback to in-memory
+app/lib/integrations/marketplace.ts:6: * C3: Product sync stub (per-marketplace API abstraction)
+app/lib/integrations/marketplace.ts:10: * C7: Webhook registration stub
+app/lib/integrations/marketplace.ts:167:  // Derive a key from CRON_SECRET or a fallback
+app/lib/integrations/marketplace.ts:210:  // Shopify: replace {shop} placeholder
+app/lib/integrations/marketplace.ts:498:// ─── C3: Product Sync (stub — per-marketplace) ─────
+app/lib/integrations/marketplace.ts:508:  // For now, return a structured stub
+app/lib/integrations/marketplace.ts:517:// ─── C7: Webhook Registration (stub) ───────────────
+app/lib/ai/engine.ts:18: *   const result = await executePrompt<SmartFilterOutput>(config, messages, fallbackFn);
+app/lib/ai/engine.ts:80:  /** AI 실패 시 fallback 결과 */
+app/lib/ai/engine.ts:81:  fallback: () => T;
+app/lib/ai/engine.ts:87:  const { config, systemPrompt, userMessage, fewShot, fallback, parseOutput } = options;
+app/lib/ai/engine.ts:90:  // API 키 없음 → graceful fallback
+app/lib/ai/engine.ts:93:    return buildResult(config, fallback(), startTime, true, 'No OPENAI_API_KEY');
+app/lib/ai/engine.ts:128:      return buildResult(config, fallback(), startTime, true, 'Empty AI response');
+app/lib/ai/engine.ts:154:      return buildResult(config, fallback(), startTime, true, `Parse error: ${parseMsg}`);
+app/lib/ai/engine.ts:172:      console.warn(`⚠️ [${config.id} v${config.version}] Timeout (${config.timeoutMs}ms) — using fallback`);
+app/lib/ai/engine.ts:177:    return buildResult(config, fallback(), startTime, true, errorMsg);
+app/lib/ai/types.ts:33:  /** 타임아웃 (ms) — 초과 시 fallback 실행 */
+app/lib/ai/types.ts:56:    /** fallback 사용 여부 */
+app/lib/ai/types.ts:58:    /** 에러 메시지 (fallback 사용 시) */
+app/lib/ai/prompts/product-judge.ts:58:4. SUSPICIOUSLY CHEAP DUPLICATES — items priced 90%+ below the median that are likely fake listings or misrepresented items
+app/lib/ai/prompts/product-judge.ts:142:export function fallback(input: ProductJudgeInput): ProductJudgeOutput {
+app/lib/ai/prompts/product-judge.ts:161:    fallback: () => fallback(input),
+app/lib/ai/prompts/smart-filter.ts:308:  // fallback: titles만 있는 경우 (하위호환)
+app/lib/ai/prompts/smart-filter.ts:371:// executePrompt 호환용 기본 fallback (input 없이 호출될 때)
+app/lib/ai/prompts/smart-filter.ts:372:export function fallback(): SmartFilterOutput {
+app/lib/ai/prompts/smart-filter.ts:377: * 빈도 기반 fallback — AI 없이 상품 타이틀에서 패턴 추출
+app/lib/ai/prompts/smart-filter.ts:495:    fallback: createFallback(input),  // 클로저로 input 캡처 — 레이스 컨디션 방지
+app/lib/ai/prompts/query-enhancer.ts:183:export function fallback(input: QueryEnhancerInput): QueryEnhancerOutput {
+app/lib/ai/prompts/query-enhancer.ts:203:    fallback: () => fallback(input),
+app/lib/ai/prompts/intent-router.ts:227:/** 카테고리 키워드 → 추천 상품 키워드 (fallback용) */
+app/lib/ai/prompts/intent-router.ts:266:export function fallback(input: IntentRouterInput): IntentRouterOutput {
+app/lib/ai/prompts/intent-router.ts:329:      data: fallback({ query: '' }),
+app/lib/ai/prompts/intent-router.ts:346:    fallback: () => fallback(input),
+app/lib/native-auth.ts:4: * 기존 import를 유지하기 위한 stub 함수들.
+app/lib/native-auth.ts:15:/** stub — 항상 null 반환 */
+app/lib/native-auth.ts:23:/** stub — 항상 false 반환 */
+app/lib/native-auth.ts:31:/** stub — no-op cleanup 반환 */
+app/lib/webhooks/webhook-sender.ts:75: * Record a delivery attempt in webhook_deliveries (health_check_logs fallback).
+app/lib/chief-orchestrator/command-processor.ts:454:  // 2단계: Claude API 자연어 처리 (fallback)
+app/lib/api-auth/middleware.ts:212:    // 1b. Dashboard session auth fallback — accept Supabase JWT tokens
+app/lib/api-auth/sandbox.ts:54: * Generate a sandbox/mock response for a given endpoint.
+app/lib/api-auth/sandbox.ts:55: * Used when sandbox mode is detected and mock responses are appropriate.
+app/lib/analytics/export-formatter.ts:6: * Convert data array to CSV and return as Response, or null for JSON fallback.
+app/api/v1/roo/check/route.ts:58:  // Query PSR table with fallback: exact HS6 → prefix match on HS4
+app/api/v1/ioss/check/route.ts:43:      const fallbackRates: Record<string, number> = { USD: 0.92, GBP: 1.17, JPY: 0.006, CNY: 0.13, KRW: 0.00069 };
+app/api/v1/ioss/check/route.ts:44:      exchangeRate = fallbackRates[currency] || 1;
+app/api/v1/ioss/check/route.ts:95:        const fallback: Record<string, number> = { USD: 0.79, EUR: 0.86 };
+app/api/v1/ioss/check/route.ts:96:        gbpRate = fallback[currency] || 1;
+app/api/v1/classify/url/route.ts:10: * - OpenGraph meta tag fallback
+app/api/v1/classify/url/route.ts:136:  // 2. OpenGraph meta tags (fallback)
+app/api/v1/classify/image/route.ts:39:  return 'image/jpeg'; // fallback
+app/api/v1/classify/eccn/route.ts:57:// HS chapter fallback (C1: lower confidence)
+app/api/v1/classify/eccn/route.ts:276:  // C1: HS4-level ECCN mapping first, then chapter fallback
+app/api/v1/verify/route.ts:244:      declaredValueEur = price * 0.92; // fallback approximation
+app/api/v1/customs/status/route.ts:45:    // Return mock status when DB unavailable
+app/api/v1/admin/division-monitor/route.ts:200: * Send Layer 3 issues via Make.com webhook as fallback.
+app/api/v1/admin/division-monitor/route.ts:232: * Send Layer 3 alert email via Resend as last fallback.
+app/api/v1/admin/gov-api-health/route.ts:28:  fallbackUrls?: string[];
+app/api/v1/admin/gov-api-health/route.ts:83:    fallbackUrls: [
+app/api/v1/admin/gov-api-health/route.ts:146:  // Check all APIs in parallel — with fallback chain support
+app/api/v1/admin/gov-api-health/route.ts:148:    // Try primary, then fallbacks until one succeeds
+app/api/v1/admin/gov-api-health/route.ts:149:    const urls = [api.testUrl, ...(api.fallbackUrls || [])];
+app/api/v1/admin/gov-api-health/route.ts:172:        message: usedFallback ? `${last.message} (via fallback)` : last.message,
+app/api/v1/admin/exchange-rate-sync/route.ts:60:    if (rates.source === 'hardcoded-fallback') {
+app/api/v1/admin/exchange-rate-sync/route.ts:64:        message: 'All exchange rate APIs failed — using hardcoded fallback',
+app/api/v1/fulfillment/inventory/route.ts:70:    const fallbackId = regionMap[dest] || 'us-east';
+app/api/v1/fulfillment/inventory/route.ts:71:    bestHub = FULFILLMENT_HUBS.find(h => h.id === fallbackId) || FULFILLMENT_HUBS[0];
+app/api/v1/tax/us-sales-tax/route.ts:187:    } catch { /* fallback to hardcoded */ }
+app/api/v1/tax/filing/route.ts:242:    inputVat: 0, // Would come from purchase records — placeholder
+app/api/v1/compliance/export-license/route.ts:6: * - C1: Real-time sanctions/embargo check (DB + static fallback)
+app/api/v1/compliance/aeo/guide/route.ts:78:  const steps = APPLICATION_STEPS[country] || APPLICATION_STEPS['US']; // fallback to US pattern
+app/api/v1/checkout/route.ts:29:function parseNum(val: unknown, fallback = 0): number {
+
+=== GREP 3: Large const objects ===
+app/lib/tax/us-sales-tax.ts:96:const DEFAULT_NEXUS_THRESHOLD = { revenue: 100000, transactions: 200 };
+app/lib/utils/zipCodeDatabase.ts:27:const STATE_NAMES = {
+app/lib/cost-engine/gri-classifier/conflict-resolution-engine.ts:346:const WEIGHTS = {
+
+=== GREP 4: Array literal const exports ===
+app/lib/rbac/index.ts:82:export const ROLE_PERMISSIONS: Record<Role, { resources: Resource[]; canDelete: boolean; canManageTeam: boolean; canViewKeys: boolean }> = {
+app/lib/rbac/index.ts:90:export const ROLE_VISIBLE_TABS: Record<Role, string[]> = {
+app/lib/agent-sdk/tools.ts:27:export const POTAL_TOOLS: ToolDefinition[] = [
+app/lib/retailerConfig.ts:46:export const RETAILER_CONFIGS: RetailerConfig[] = [
+app/lib/data-management/validation-rules.ts:15:export const VALIDATION_RULES: ValidationRule[] = [
+app/lib/data-management/dependency-chain.ts:12:export const DEPENDENCY_CHAINS: DependencyChain[] = [
+app/lib/data-management/source-verifier.ts:25:export const SOURCE_CONFIGS: SourceConfig[] = [
+app/lib/data-management/update-scheduler.ts:14:export const CRON_TO_DATA_MAP: Record<string, string[]> = {
+app/lib/data-management/data-registry.ts:20:export const DATA_REGISTRY: DataFile[] = [
+app/lib/data-management/audit-trail.ts:24:export const VALID_ACTORS = ['system', 'cron', 'admin', 'api', 'user', 'migration'] as const;
+app/lib/data-management/audit-trail.ts:27:export const VALID_ACTIONS = ['create', 'update', 'delete', 'rollback', 'validate', 'verify'] as const;
+app/lib/tax/us-sales-tax.ts:51:export const NO_SALES_TAX_STATES = new Set(['OR', 'MT', 'NH', 'DE', 'AK']);
+app/lib/tax/us-sales-tax.ts:54:export const ORIGIN_BASED_STATES = new Set([
+app/lib/tax/us-sales-tax.ts:59:export const MARKETPLACE_FACILITATOR_STATES = new Set([
+app/lib/shipping/dangerous-goods.ts:56:export const CARRIER_RULES: CarrierDgRule[] = [
+app/lib/compliance/aeo-programs.ts:205:export const MRA_AGREEMENTS: MraAgreement[] = [
+app/lib/cost-engine/gri-classifier/steps/v3/step0-input.ts:8:export const MATERIAL_KEYWORDS: Record<string, string[]> = {
+app/lib/cost-engine/gri-classifier/steps/v3/step0-input.ts:123:export const PROCESSING_KEYWORDS = [
+app/lib/cost-engine/country-i18n.ts:45:export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ['en', 'ko', 'ja', 'zh', 'es', 'fr', 'de', 'pt', 'ru', 'ar', 'hi', 'th', 'vi', 'id', 'tr', 'pl', 'nl', 'sv', 'da', 'fi', 'nb', 'cs', 'ro', 'hu', 'uk', 'el', 'he', 'ms', 'it', 'bg', 'bn', 'fa', 'tl', 'sw', 'am', 'ur', 'my', 'km', 'lo', 'ka', 'az', 'uz', 'kk', 'ne', 'si', 'hr', 'sr', 'lt', 'lv', 'sk'];
+app/lib/cost-engine/hs-code/hs-database.ts:107:export const HS_DATABASE: HsCodeEntry[] = [
+app/lib/cost-engine/regulation-rag/index.ts:66:export const REGULATION_TOPICS = [
+app/lib/integrations/base.ts:30:export const INTEGRATIONS: IntegrationConfig[] = [
+app/lib/ai/prompts/product-judge.ts:86:export const FEW_SHOT_EXAMPLES: FewShotExample[] = [
+app/lib/ai/prompts/smart-filter.ts:149:export const FEW_SHOT_EXAMPLES: FewShotExample[] = [
+app/lib/ai/prompts/query-enhancer.ts:117:export const FEW_SHOT_EXAMPLES: FewShotExample[] = [
+app/lib/ai/prompts/intent-router.ts:117:export const FEW_SHOT_EXAMPLES: FewShotExample[] = [
+app/lib/monitoring/division-checklists.ts:32:export const DIVISION_CHECKLISTS: DivisionChecklist[] = [
+app/lib/monitoring/agent-roles.ts:36:export const DIVISION_TEAMS: DivisionTeam[] = [
+app/lib/monitoring/agent-roles.ts:395:export const OPUS_ALWAYS_DIVISIONS = ['D1', 'D3', 'D13'] as const;
+app/lib/monitoring/agent-roles.ts:398:export const OPUS_ESCALATION_DIVISIONS = ['D1', 'D4', 'D8', 'D11', 'D14', 'D15'] as const;
+app/lib/suggestions.ts:5:export const MOCK_SUGGESTIONS = [
+app/lib/webhooks/webhook-sender.ts:23:export const SUPPORTED_EVENTS = [
+app/lib/membership/MembershipConfig.ts:63:export const MEMBERSHIP_REGISTRY: RetailerMembership[] = [
+
+=== GREP 5: override / hsMapping / hsRule ===
+app/lib/cost-engine/ai-classifier/ai-classifier-wrapper.ts:27:function deterministicOverride(
+app/lib/cost-engine/ai-classifier/ai-classifier-wrapper.ts:262:  const override = deterministicOverride(productName);
+app/lib/cost-engine/hs-code/classifier.ts:421:function overrideBatteryClassification(
+app/lib/cost-engine/hs-code/classifier.ts:520:  const batteryOverride = overrideBatteryClassification(productName);
+app/lib/cost-engine/db/fta-db.ts:21:function mergeWithHardcoded(
+app/lib/cost-engine/db/fta-db.ts:83:    return mergeWithHardcoded(dbResult, originCountry, destinationCountry, hsChapter);
+
+=== GREP 6: Numeric rate/tariff/duty/vat constants ===
+app/lib/cost-engine/eu-vat-rates.ts:27:    '01': { rate: 0.07, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:28:    '02': { rate: 0.07, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:29:    '03': { rate: 0.07, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:30:    '04': { rate: 0.07, label: 'Reduced (dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:31:    '06': { rate: 0.07, label: 'Reduced (plants)' },
+app/lib/cost-engine/eu-vat-rates.ts:32:    '07': { rate: 0.07, label: 'Reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:33:    '08': { rate: 0.07, label: 'Reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:34:    '09': { rate: 0.07, label: 'Reduced (coffee/tea)' },
+app/lib/cost-engine/eu-vat-rates.ts:35:    '10': { rate: 0.07, label: 'Reduced (cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:36:    '11': { rate: 0.07, label: 'Reduced (milling)' },
+app/lib/cost-engine/eu-vat-rates.ts:37:    '12': { rate: 0.07, label: 'Reduced (oil seeds)' },
+app/lib/cost-engine/eu-vat-rates.ts:38:    '15': { rate: 0.07, label: 'Reduced (fats/oils)' },
+app/lib/cost-engine/eu-vat-rates.ts:39:    '16': { rate: 0.07, label: 'Reduced (food preparations)' },
+app/lib/cost-engine/eu-vat-rates.ts:40:    '17': { rate: 0.07, label: 'Reduced (sugar)' },
+app/lib/cost-engine/eu-vat-rates.ts:41:    '18': { rate: 0.07, label: 'Reduced (cocoa)' },
+app/lib/cost-engine/eu-vat-rates.ts:42:    '19': { rate: 0.07, label: 'Reduced (bakery)' },
+app/lib/cost-engine/eu-vat-rates.ts:43:    '20': { rate: 0.07, label: 'Reduced (preserved food)' },
+app/lib/cost-engine/eu-vat-rates.ts:44:    '21': { rate: 0.07, label: 'Reduced (misc food)' },
+app/lib/cost-engine/eu-vat-rates.ts:45:    '22': { rate: 0.07, label: 'Reduced (water/juice only)' },
+app/lib/cost-engine/eu-vat-rates.ts:46:    '49': { rate: 0.07, label: 'Reduced (books/newspapers)' },
+app/lib/cost-engine/eu-vat-rates.ts:50:    '01': { rate: 0.055, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:51:    '02': { rate: 0.055, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:52:    '03': { rate: 0.055, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:53:    '04': { rate: 0.055, label: 'Reduced (dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:54:    '07': { rate: 0.055, label: 'Reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:55:    '08': { rate: 0.055, label: 'Reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:56:    '09': { rate: 0.055, label: 'Reduced (coffee/tea)' },
+app/lib/cost-engine/eu-vat-rates.ts:57:    '10': { rate: 0.055, label: 'Reduced (cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:58:    '15': { rate: 0.055, label: 'Reduced (fats/oils)' },
+app/lib/cost-engine/eu-vat-rates.ts:59:    '16': { rate: 0.055, label: 'Reduced (food preparations)' },
+app/lib/cost-engine/eu-vat-rates.ts:60:    '19': { rate: 0.055, label: 'Reduced (bakery)' },
+app/lib/cost-engine/eu-vat-rates.ts:61:    '20': { rate: 0.055, label: 'Reduced (preserved food)' },
+app/lib/cost-engine/eu-vat-rates.ts:62:    '21': { rate: 0.055, label: 'Reduced (misc food)' },
+app/lib/cost-engine/eu-vat-rates.ts:63:    '30': { rate: 0.021, label: 'Super-reduced (pharmaceuticals)' },
+app/lib/cost-engine/eu-vat-rates.ts:64:    '49': { rate: 0.055, label: 'Reduced (books)' },
+app/lib/cost-engine/eu-vat-rates.ts:68:    '01': { rate: 0.10, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:69:    '02': { rate: 0.10, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:70:    '03': { rate: 0.10, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:71:    '04': { rate: 0.04, label: 'Super-reduced (milk/dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:72:    '07': { rate: 0.04, label: 'Super-reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:73:    '08': { rate: 0.04, label: 'Super-reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:74:    '09': { rate: 0.10, label: 'Reduced (coffee/tea)' },
+app/lib/cost-engine/eu-vat-rates.ts:75:    '10': { rate: 0.04, label: 'Super-reduced (cereals/bread)' },
+app/lib/cost-engine/eu-vat-rates.ts:76:    '15': { rate: 0.04, label: 'Super-reduced (olive oil)' },
+app/lib/cost-engine/eu-vat-rates.ts:77:    '19': { rate: 0.04, label: 'Super-reduced (bread/pasta)' },
+app/lib/cost-engine/eu-vat-rates.ts:78:    '30': { rate: 0.10, label: 'Reduced (pharmaceuticals)' },
+app/lib/cost-engine/eu-vat-rates.ts:79:    '49': { rate: 0.04, label: 'Super-reduced (books)' },
+app/lib/cost-engine/eu-vat-rates.ts:83:    '01': { rate: 0.10, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:84:    '02': { rate: 0.10, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:85:    '03': { rate: 0.10, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:86:    '04': { rate: 0.04, label: 'Super-reduced (milk/eggs)' },
+app/lib/cost-engine/eu-vat-rates.ts:87:    '07': { rate: 0.04, label: 'Super-reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:88:    '08': { rate: 0.04, label: 'Super-reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:89:    '09': { rate: 0.10, label: 'Reduced (coffee/tea)' },
+app/lib/cost-engine/eu-vat-rates.ts:90:    '10': { rate: 0.04, label: 'Super-reduced (bread/cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:91:    '15': { rate: 0.10, label: 'Reduced (oils)' },
+app/lib/cost-engine/eu-vat-rates.ts:92:    '19': { rate: 0.04, label: 'Super-reduced (bread)' },
+app/lib/cost-engine/eu-vat-rates.ts:93:    '30': { rate: 0.04, label: 'Super-reduced (pharmaceuticals)' },
+app/lib/cost-engine/eu-vat-rates.ts:94:    '49': { rate: 0.04, label: 'Super-reduced (books)' },
+app/lib/cost-engine/eu-vat-rates.ts:98:    '01': { rate: 0.09, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:99:    '02': { rate: 0.09, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:100:    '03': { rate: 0.09, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:101:    '04': { rate: 0.09, label: 'Reduced (dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:102:    '07': { rate: 0.09, label: 'Reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:103:    '08': { rate: 0.09, label: 'Reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:104:    '09': { rate: 0.09, label: 'Reduced (coffee/tea)' },
+app/lib/cost-engine/eu-vat-rates.ts:105:    '10': { rate: 0.09, label: 'Reduced (cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:106:    '19': { rate: 0.09, label: 'Reduced (bakery)' },
+app/lib/cost-engine/eu-vat-rates.ts:107:    '30': { rate: 0.09, label: 'Reduced (pharmaceuticals)' },
+app/lib/cost-engine/eu-vat-rates.ts:108:    '49': { rate: 0.09, label: 'Reduced (books)' },
+app/lib/cost-engine/eu-vat-rates.ts:112:    '01': { rate: 0.06, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:113:    '02': { rate: 0.06, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:114:    '03': { rate: 0.06, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:115:    '04': { rate: 0.06, label: 'Reduced (dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:116:    '07': { rate: 0.06, label: 'Reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:117:    '08': { rate: 0.06, label: 'Reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:118:    '09': { rate: 0.06, label: 'Reduced (coffee/tea)' },
+app/lib/cost-engine/eu-vat-rates.ts:119:    '10': { rate: 0.06, label: 'Reduced (cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:120:    '19': { rate: 0.06, label: 'Reduced (bakery)' },
+app/lib/cost-engine/eu-vat-rates.ts:121:    '30': { rate: 0.06, label: 'Reduced (pharmaceuticals)' },
+app/lib/cost-engine/eu-vat-rates.ts:122:    '49': { rate: 0.06, label: 'Reduced (books)' },
+app/lib/cost-engine/eu-vat-rates.ts:126:    '01': { rate: 0.10, label: 'Reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:127:    '02': { rate: 0.10, label: 'Reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:128:    '03': { rate: 0.10, label: 'Reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:129:    '04': { rate: 0.10, label: 'Reduced (dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:130:    '07': { rate: 0.10, label: 'Reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:131:    '08': { rate: 0.10, label: 'Reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:132:    '10': { rate: 0.10, label: 'Reduced (cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:133:    '19': { rate: 0.10, label: 'Reduced (bakery)' },
+app/lib/cost-engine/eu-vat-rates.ts:134:    '30': { rate: 0.10, label: 'Reduced (pharmaceuticals)' },
+app/lib/cost-engine/eu-vat-rates.ts:135:    '49': { rate: 0.10, label: 'Reduced (books)' },
+app/lib/cost-engine/eu-vat-rates.ts:139:    '01': { rate: 0.05, label: 'Super-reduced (live animals)' },
+app/lib/cost-engine/eu-vat-rates.ts:140:    '02': { rate: 0.05, label: 'Super-reduced (meat)' },
+app/lib/cost-engine/eu-vat-rates.ts:141:    '03': { rate: 0.05, label: 'Super-reduced (fish)' },
+app/lib/cost-engine/eu-vat-rates.ts:142:    '04': { rate: 0.05, label: 'Super-reduced (dairy)' },
+app/lib/cost-engine/eu-vat-rates.ts:143:    '07': { rate: 0.05, label: 'Super-reduced (vegetables)' },
+app/lib/cost-engine/eu-vat-rates.ts:144:    '08': { rate: 0.05, label: 'Super-reduced (fruit)' },
+app/lib/cost-engine/eu-vat-rates.ts:145:    '10': { rate: 0.05, label: 'Super-reduced (cereals)' },
+app/lib/cost-engine/eu-vat-rates.ts:146:    '19': { rate: 0.08, label: 'Reduced (bakery)' },
+app/lib/cost-engine/eu-vat-rates.ts:147:    '30': { rate: 0.08, label: 'Reduced (pharmaceuticals)' },
+
+=== GREP 7: country/hs/restriction list patterns ===
+app/lib/agent-sdk/executor.ts:202:      restrictions: restrictionResult,
+app/lib/customs/de-minimis-tracker.ts:15:  restrictions: string[];
+app/lib/customs/de-minimis-tracker.ts:70:  const restrictions: string[] = [];
+app/lib/customs/de-minimis-tracker.ts:79:      restrictions: [],
+app/lib/tax/special-taxes-db.ts:20:  hsCodes: string[];
+app/lib/tax/special-taxes-db.ts:77:      hsCodes: (row.hs_codes as string[]) || [],
+app/lib/compliance/product-restrictions.ts:18:  restrictions: Array<{ regulation: string; reason: string; requirement: string; authority: string }>;
+app/lib/compliance/product-restrictions.ts:56:  const restrictions: RestrictionResult['restrictions'] = [];
+app/lib/cost-engine/updater/tariff-updater.ts:32:  hsCodes: number;
+app/lib/cost-engine/updater/tariff-updater.ts:43:  countries: UpdateResult[];
+app/lib/cost-engine/updater/tariff-updater.ts:162:      hsCodes: codesToCheck.length,
+app/lib/cost-engine/updater/tariff-updater.ts:174:    countries: results,
+app/lib/cost-engine/restrictions/types.ts:34:  restrictions: MatchedRestriction[];
+app/lib/cost-engine/restrictions/rules.ts:224:    countries: ['SA', 'AE', 'KW', 'QA', 'BH', 'OM', 'IR', 'PK', 'AF'],
+app/lib/cost-engine/restrictions/rules.ts:231:    countries: ['SA', 'AE', 'KW', 'QA', 'BH', 'OM', 'IR', 'PK', 'AF'],
+app/lib/cost-engine/restrictions/rules.ts:239:    countries: ['IN'],
+app/lib/cost-engine/restrictions/rules.ts:246:    countries: ['IN'],
+app/lib/cost-engine/restrictions/rules.ts:255:    countries: ['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'GR', 'IE', 'FI', 'SE', 'DK', 'PL', 'CZ', 'SK', 'HU', 'RO', 'BG', 'HR', 'SI', 'LT', 'LV', 'EE', 'CY', 'MT', 'LU'],
+app/lib/cost-engine/restrictions/rules.ts:264:    countries: ['AU'],
+app/lib/cost-engine/restrictions/rules.ts:272:    countries: ['AU', 'NZ'],
+app/lib/cost-engine/restrictions/rules.ts:281:    countries: ['JP'],
+app/lib/cost-engine/restrictions/rules.ts:290:    countries: ['BR'],
+app/lib/cost-engine/restrictions/rules.ts:299:    countries: ['KR'],
+app/lib/cost-engine/restrictions/rules.ts:308:    countries: ['CN'],
+app/lib/cost-engine/restrictions/check.ts:30:      restrictions: [],
+app/lib/cost-engine/restrictions/check.ts:75:    restrictions: matched,
+app/lib/cost-engine/GlobalCostEngine.ts:51:// HS 10-digit resolver (7 countries: US/EU/GB/KR/CA/AU/JP)
+app/lib/cost-engine/GlobalCostEngine.ts:563:  // Tax threshold: most countries = same as duty, but UK/EU/AU have $0 (tax always applies on imports)
+app/lib/cost-engine/GlobalCostEngine.ts:741:    // GCC countries: VAT on (CIF + duty) — rate varies by country
+app/lib/cost-engine/hs-code/hs10-resolver.ts:12: * 233 countries: HS 6-digit fallback with MFN/MIN/AGR rates
+app/lib/cost-engine/db/precomputed-cache.ts:5: * Covers 490 HS6 × 240 countries = 117,600 combinations.
+app/lib/cost-engine/documents/doc-auto-populate.ts:132:      origin_countries: origins.join(', '),
+app/lib/monitoring/health-monitor.ts:76:        ? `DB slow: ${latency}ms (countries: ${countryCount})`
+app/lib/monitoring/health-monitor.ts:77:        : `DB OK (countries: ${countryCount})`,
+app/lib/api-auth/middleware.ts:91:  countries: ['/countries'],
+
+=== GREP 8: supabase references in cost-engine ===
+app/lib/cost-engine/landed-cost-guarantee.ts:11:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/landed-cost-guarantee.ts:183:  const supabase = getSupabase();
+app/lib/cost-engine/landed-cost-guarantee.ts:200:  if (supabase) {
+app/lib/cost-engine/landed-cost-guarantee.ts:203:      const { error: claimError } = await supabase
+app/lib/cost-engine/landed-cost-guarantee.ts:204:        .from('guarantee_claims')
+app/lib/cost-engine/landed-cost-guarantee.ts:220:        await supabase
+app/lib/cost-engine/landed-cost-guarantee.ts:221:          .from('health_check_logs')
+app/lib/cost-engine/landed-cost-guarantee.ts:240:  const supabase = getSupabase();
+app/lib/cost-engine/landed-cost-guarantee.ts:241:  if (!supabase) return [];
+app/lib/cost-engine/landed-cost-guarantee.ts:245:    const { data: claimRows, error: claimError } = await supabase
+app/lib/cost-engine/landed-cost-guarantee.ts:246:      .from('guarantee_claims')
+app/lib/cost-engine/landed-cost-guarantee.ts:270:    const { data: logRows } = await supabase
+app/lib/cost-engine/landed-cost-guarantee.ts:271:      .from('health_check_logs')
+app/lib/cost-engine/gri-classifier/field-validator.ts:52:  const dp: number[][] = Array.from({ length: m + 1 }, (_, i) =>
+app/lib/cost-engine/gri-classifier/field-validator.ts:53:    Array.from({ length: n + 1 }, (_, j) => (i === 0 ? j : j === 0 ? i : 0))
+app/lib/cost-engine/gri-classifier/pipeline.ts:23:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/gri-classifier/pipeline.ts:36:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/pipeline.ts:37:  if (!supabase) return null;
+app/lib/cost-engine/gri-classifier/pipeline.ts:40:    const { data, error } = await supabase
+app/lib/cost-engine/gri-classifier/pipeline.ts:41:      .from('gri_classification_cache')
+app/lib/cost-engine/gri-classifier/pipeline.ts:69:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/pipeline.ts:70:  if (!supabase) return;
+app/lib/cost-engine/gri-classifier/pipeline.ts:74:    await supabase.from('gri_classification_cache').upsert({
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:6:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:21:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:22:  if (!supabase) return null;
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:29:    const { data: exactMatch } = await supabase
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:30:      .from('product_hs_mappings')
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:43:    const { data: partialMatches } = await supabase
+app/lib/cost-engine/gri-classifier/steps/step00-db-cache.ts:44:      .from('product_hs_mappings')
+app/lib/cost-engine/gri-classifier/steps/step10-price-break.ts:6:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/gri-classifier/steps/step10-price-break.ts:29:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/steps/step10-price-break.ts:30:  if (!supabase) {
+app/lib/cost-engine/gri-classifier/steps/step10-price-break.ts:38:    const { data, error } = await supabase
+app/lib/cost-engine/gri-classifier/steps/step10-price-break.ts:39:      .from('hs_price_break_rules')
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:32:    const { createClient } = await import('@supabase/supabase-js');
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:33:    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:34:    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:36:    if (!supabaseUrl || !supabaseKey) return null;
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:38:    const supabase = createClient(supabaseUrl, supabaseKey);
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:39:    const { data } = await supabase
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:40:      .from('gri_classification_cache')
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:64:    const { createClient } = await import('@supabase/supabase-js');
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:65:    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:66:    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:68:    if (!supabaseUrl || !supabaseKey) return;
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:70:    const supabase = createClient(supabaseUrl, supabaseKey);
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:71:    await supabase
+app/lib/cost-engine/gri-classifier/steps/v3/step1-cache.ts:72:      .from('gri_classification_cache')
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:11:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:39:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:40:  if (!supabase) return null;
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:49:    const { data, error } = await supabase
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:50:      .from('macmap_ntlc_rates')
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:72:    const { data: minData, error: minErr } = await supabase
+app/lib/cost-engine/gri-classifier/steps/v3/duty-rate-lookup.ts:73:      .from('macmap_min_rates')
+app/lib/cost-engine/gri-classifier/steps/v3/step6-price-break.ts:11:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/gri-classifier/steps/v3/step6-price-break.ts:39:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/steps/v3/step6-price-break.ts:40:  if (!supabase) {
+app/lib/cost-engine/gri-classifier/steps/v3/step6-price-break.ts:48:    let query = supabase
+app/lib/cost-engine/gri-classifier/steps/v3/step6-price-break.ts:49:      .from('hs_price_break_rules')
+app/lib/cost-engine/gri-classifier/steps/v3/step2-3-chapter-candidate.ts:183:    chapter_candidates: Array.from(candidates.entries())
+app/lib/cost-engine/gri-classifier/steps/v3/step3-heading.ts:325:  const dedupedWords = Array.from(new Set(allInputWords));
+app/lib/cost-engine/gri-classifier/steps/v3/step3-heading.ts:355:    const sorted = Array.from(headingVotes.entries()).sort((a, b) => b[1].count - a[1].count);
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:6:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:224:  const supabase = getSupabase();
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:225:  if (!supabase) {
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:230:    const { data, error } = await supabase
+app/lib/cost-engine/gri-classifier/country-agents/base-agent.ts:231:      .from('gov_tariff_schedules')
+app/lib/cost-engine/trade-remedy-lookup.ts:16:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/trade-remedy-lookup.ts:157:  const supabase = getSupabase();
+app/lib/cost-engine/trade-remedy-lookup.ts:158:  if (!supabase) return empty;
+app/lib/cost-engine/trade-remedy-lookup.ts:168:    const productResult: any = await supabase
+app/lib/cost-engine/trade-remedy-lookup.ts:169:      .from('trade_remedy_products' as any)
+app/lib/cost-engine/trade-remedy-lookup.ts:198:    const caseResult: any = await supabase
+app/lib/cost-engine/trade-remedy-lookup.ts:199:      .from('trade_remedy_cases' as any)
+app/lib/cost-engine/trade-remedy-lookup.ts:221:      const exemptResult: any = await supabase
+app/lib/cost-engine/trade-remedy-lookup.ts:222:        .from('safeguard_exemptions' as any)
+app/lib/cost-engine/trade-remedy-lookup.ts:235:    const dutyResult: any = await supabase
+app/lib/cost-engine/trade-remedy-lookup.ts:236:      .from('trade_remedy_duties' as any)
+app/lib/cost-engine/trade-remedy-lookup.ts:427:  const supabase = getSupabase();
+app/lib/cost-engine/trade-remedy-lookup.ts:428:  if (!supabase) return null;
+app/lib/cost-engine/trade-remedy-lookup.ts:431:    const result: any = await supabase.rpc('search_firm_trgm' as any, {
+app/lib/cost-engine/macmap-lookup.ts:14:import { createClient } from '@supabase/supabase-js';
+app/lib/cost-engine/macmap-lookup.ts:101:  supabase: any,
+app/lib/cost-engine/macmap-lookup.ts:109:    const result: any = await supabase
+app/lib/cost-engine/macmap-lookup.ts:110:      .from('macmap_agr_rates' as any)
+app/lib/cost-engine/macmap-lookup.ts:142:  supabase: any,
+app/lib/cost-engine/macmap-lookup.ts:150:    const result: any = await supabase
+app/lib/cost-engine/macmap-lookup.ts:151:      .from('macmap_min_rates' as any)
+app/lib/cost-engine/macmap-lookup.ts:181:  supabase: any,
+app/lib/cost-engine/macmap-lookup.ts:188:    const result: any = await supabase
+app/lib/cost-engine/macmap-lookup.ts:189:      .from('macmap_ntlc_rates' as any)
+app/lib/cost-engine/macmap-lookup.ts:231:  const supabase = getSupabase();
+app/lib/cost-engine/macmap-lookup.ts:232:  if (!supabase) return null;
+app/lib/cost-engine/macmap-lookup.ts:240:    const agrResult = await lookupAgr(supabase, reporter, partner, productCode);
+app/lib/cost-engine/macmap-lookup.ts:244:    const minResult = await lookupMin(supabase, reporter, partner, productCode);
+app/lib/cost-engine/macmap-lookup.ts:248:    const ntlcResult = await lookupNtlc(supabase, reporter, productCode);
+app/lib/cost-engine/macmap-lookup.ts:262:  supabase: any,
+app/lib/cost-engine/macmap-lookup.ts:272:    const result: any = await supabase
+
+=== GREP 9 (bonus): mergeWith / WithFallback patterns ===
+app/lib/cost-engine/tariff-api/tariff-api-client.ts:300:export async function fetchDutyRateWithFallback(
+app/lib/cost-engine/tariff-api/index.ts:12:  fetchDutyRateWithFallback,
+app/lib/cost-engine/GlobalCostEngine.ts:28:import { fetchDutyRateWithFallback, getFtaRateFromLiveDb } from './tariff-api';
+app/lib/cost-engine/GlobalCostEngine.ts:459:      const liveRate = await fetchDutyRateWithFallback(hsResult.hsCode, profile.code, originCountry);
+app/lib/cost-engine/db/fta-db.ts:21:function mergeWithHardcoded(
+app/lib/cost-engine/db/fta-db.ts:83:    return mergeWithHardcoded(dbResult, originCountry, destinationCountry, hsChapter);
+app/lib/cost-engine/index.ts:36:export { fetchDutyRateWithFallback, invalidateAllLiveCache } from './tariff-api';

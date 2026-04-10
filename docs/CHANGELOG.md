@@ -1,5 +1,66 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW32 — Correctness Sweep: FTA 2건 + HS classifier 2건 + forwarder contract + seller UX)
+> 마지막 업데이트: 2026-04-11 KST (CW33 Phase A — Hardcoding audit: 140 features 전수조사, 🔴 19건 + 🟡 8건 발견, 코드 수정 0)
+
+## [2026-04-11 KST] CW33 Phase A — Hardcoding Audit (read-only)
+
+### 감사 범위
+- `app/lib/**`, `app/api/**`, `components/home/**`, `lib/scenarios/**`
+- 140 features (`app/features/features-data.ts`) 전수조사
+- 12개 cost-engine sub-system 상세 inspection
+- 제외: `lib/search/`, `lib/agent/`, `components/search/` (CLAUDE.md 절대 규칙 1)
+
+### 발견 건수
+| Severity | Count | CW33 포함 |
+|---|---|---|
+| 🔴 Critical (DB 이전 필수) | **19** | YES (P0) |
+| 🟡 Important (외부 API 연동) | **8** | YES (P1) |
+| 🟢 Acceptable (UI seed) | **73** | NO |
+| ⚪ Legal/Static (국제 표준) | **40** | NO |
+| **Total tracked** | **140 features + 12 engine findings** | |
+
+### 🔴 Critical 19건 요약
+- C-01 FTA 관세율 테이블 하드코딩 + DB merge (CW32 mergeWithHardcoded)
+- C-02 deterministicOverride 하드코딩 (CW32, cache 이전 실행)
+- C-03 240개 국가 VAT/de minimis/기본관세 하드코딩
+- C-04 제재/금지품 규칙 70+ 하드코딩
+- C-05 Section 301/232 US 추가관세 하드코딩
+- C-06 US TRQ 372 엔트리 하드코딩
+- C-07 EU VAT 감면세율 27국 × chapter 하드코딩
+- C-08 EU 계절관세 13 제품 하드코딩
+- C-09 보험료율 + 위험국가 10개 하드코딩
+- C-10 Origin Detection 130+ 브랜드 매핑 하드코딩
+- C-11 제재 리스트 65 엔트리 하드코딩 (OFAC/BIS 허위광고 리스크)
+- C-12 AD/CVD "All Others" fallback 하드코딩
+- C-13 HS Database 2000+ 코드 키워드 하드코딩
+- C-14 Exchange rate 하드코딩 fallback
+- C-15 IOSS/OSS €150 threshold 하드코딩
+- C-16 Price break rules 하드코딩
+- C-17 US 50주+DC sales tax + nexus 하드코딩
+- C-18 Specialized tax 12개국 하드코딩
+- C-19 Shipping rates 8개 캐리어 하드코딩/외부 API 불명
+
+### 🟡 Important 8건 요약
+- I-01 VAT Registration (F058) → VIES/HMRC 외부 API 필요
+- I-02 Image classification (F010) → Claude Vision fallback 체인 문서화
+- I-03 Checkout fraud (F073) → Stripe Radar 통합 필요
+- I-04 Carrier tracking (F063) → DHL/FedEx webhooks 통합
+- I-05 OCR 문서 분석 → Textract/Document AI 통합
+- I-06 Email sender (F086) → Resend + DKIM
+- I-07 AI chatbot (F143) → Crisp + RAG
+- I-08 Uptime monitoring (F101) → 외부 BetterStack/Pingdom
+
+### 산출물
+- `docs/HARDCODING_AUDIT.md` — 메인 리포트 (140 feature 매트릭스, 19 critical 상세, Supabase 스키마 제안)
+- `docs/CW33_SCOPE.md` — 작업 범위 제안 (9 sprint 분할, 18 신규 테이블, 4개 결정 질문)
+- `docs/HARDCODING_AUDIT_RAW.txt` — 8 grep 명령어 원본 출력 (570 lines)
+
+### 코드 변경
+- **없음** — Phase A 는 읽기 전용 감사. 코드 수정 0 건.
+
+### 결론
+CW31/CW31-HF1/CW32 에서 "데모 UI green" 으로 보고된 것 중 19개가 고객 API 정확성에 영향을 주는 하드코딩 경로임을 확정. CW33 본작업(Phase B)은 별도 sprint 에서 P0 19건부터 순차 해결 예정. F023/F024 sanctions screening 은 허위광고 리스크가 있어 우선순위 높음.
+
+---
 
 ## [2026-04-10 KST] CW32 — "Correctness Sweep": 6 homepage correctness bugs eliminated
 
