@@ -1,5 +1,32 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW30-HF2 — 첫 화면 압축 4종 세트: Hero + 1줄 박스 + 패널 헤더 서브타이틀 + 빈 입력란)
+> 마지막 업데이트: 2026-04-10 KST (CW30-HF3 — CUSTOM 시나리오 헤더 중복 제거)
+
+## [2026-04-10 KST] CW30-HF3 — Hotfix: remove duplicate heading on CUSTOM scenario
+
+### 배경
+CW30-HF2 에서 `ScenarioPanel.tsx` 의 `TitleBar` 를 통일하여 모든 시나리오에 `⚙️ POTAL for custom — Build your own combo` 형태의 패널 헤더를 적용. 그러나 CUSTOM 시나리오는 내부에 별도 `CustomBuilder` 컴포넌트를 쓰고 있고, 이 컴포넌트에도 자체 헤더 (`⚙️ CUSTOM — Build your own workflow`) 가 있어서 **CUSTOM 페이지에서만 헤더가 이중으로 보이는 문제** 발생.
+
+CEO 확정 해결책 (Option B): CustomBuilder 내부 Title 블록 통째 제거, instructional hint 는 살려서 grid 위 helper text 로 이동.
+
+### 수정 파일 (1개)
+- `components/custom/CustomBuilder.tsx`
+  * `{/* Title */}` 블록 전체 삭제 (이모지 `⚙️` + `<h2>CUSTOM — Build your own workflow</h2>` + `mt-0.5` 래퍼 div)
+  * `Pick any combination of POTAL's 141 features. The code on the right updates instantly.` 힌트 문구는 `text-[12px] text-slate-500 mb-3` 단일 `<p>` 로 축소되어 2-column grid 바로 위에 배치
+  * `<section>` `pt-4` → `pt-0` — HF2 TitleBar 바로 아래에 붙도록 세로 공간 추가 절약
+
+### 결과
+- HF2 패널 헤더 `⚙️ POTAL for custom — Build your own combo` 가 CUSTOM 의 **유일한 헤더**
+- 힌트 문구 `Pick any combination of POTAL's 141 features...` 는 사라지지 않고 작은 회색 텍스트로 살아있음
+- 5개 일반 시나리오와 CUSTOM 레이아웃 일관성 확보
+
+### 절대 규칙 준수
+- ✅ 수정 파일 1개 (CustomBuilder.tsx) — 다른 파일 미수정
+- ✅ HF1 (seller 기본 선택) 보존
+- ✅ HF2 (Hero 압축 + 박스 1줄화 + TitleBar + 빈 입력란) 보존
+- ✅ `ScenarioPanel.tsx`, `ScenarioSelector.tsx`, `scenario-config.ts` 미수정
+- ✅ B2C 코드 미수정
+- ✅ `console.log` 0건
+- ✅ `npm run build` ✓ 475 pages (Compiled in 30.9s)
 
 ## [2026-04-10 KST] CW30-HF2 — Hotfix: compress hero + 1-line scenario boxes + panel subtitle + empty inputs
 

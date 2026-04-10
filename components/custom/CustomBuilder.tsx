@@ -58,21 +58,15 @@ export default function CustomBuilder() {
   return (
     <section
       aria-label="CUSTOM builder — assemble your workflow"
-      className="w-full max-w-[1440px] mx-auto px-8 pt-4 pb-16"
+      className="w-full max-w-[1440px] mx-auto px-8 pt-0 pb-16"
     >
-      {/* Title */}
-      <div className="flex items-center gap-3 mb-6">
-        <span className="text-[28px]" aria-hidden="true">⚙️</span>
-        <div>
-          <h2 className="text-[20px] font-extrabold text-[#02122c] leading-tight">
-            CUSTOM — Build your own workflow
-          </h2>
-          <p className="text-[12px] text-slate-500 mt-0.5">
-            Pick any combination of POTAL&apos;s {FEATURE_COUNT} features. The code
-            on the right updates instantly.
-          </p>
-        </div>
-      </div>
+      {/* CW30-HF3: 내부 타이틀 블록 제거됨 — HF2 의 ScenarioPanel TitleBar
+          (⚙️ POTAL for custom — Build your own combo) 가 유일한 헤더 역할.
+          instructional hint 는 살려서 grid 바로 위 헬퍼 텍스트로 배치. */}
+      <p className="text-[12px] text-slate-500 mb-3">
+        Pick any combination of POTAL&apos;s {FEATURE_COUNT} features. The code
+        on the right updates instantly.
+      </p>
 
       {/* 2-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">

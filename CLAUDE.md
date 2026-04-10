@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW30-HF2: 첫 화면 압축 — Hero padding py-12→pt-6 pb-4, H1 40→26px, 박스 1줄화(min-h 110→52), 서브타이틀 패널 헤더로 이전(🛒 POTAL for seller — Etsy, Shopify, eBay), 입력란 defaultValue 전부 제거 → placeholder 힌트만 + Calculate 버튼 empty-state disabled. Calculate 버튼 1019px→~680px fold 진입. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW30-HF3: CUSTOM 시나리오 헤더 중복 제거 — CustomBuilder 내부 '⚙️ CUSTOM — Build your own workflow' 타이틀 블록 삭제, 힌트 문구만 살려서 grid 위 헬퍼 텍스트로 이동. HF2 패널 헤더가 CUSTOM의 단일 헤더 역할. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
