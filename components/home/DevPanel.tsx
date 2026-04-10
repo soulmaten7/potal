@@ -102,7 +102,7 @@ export default function DevPanel({ scenarioId }: DevPanelProps) {
       </div>
 
       {/* Code block */}
-      <div className="flex-1 bg-[#0a1628] overflow-auto relative min-h-[420px] max-h-[560px]">
+      <div className="flex-1 bg-[#0a1628] overflow-y-auto relative max-h-[500px]">
         <pre className="text-slate-100 p-6 text-[12px] leading-relaxed font-mono whitespace-pre">
           {example.code[lang]}
         </pre>
