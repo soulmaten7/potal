@@ -89,8 +89,8 @@ export function HeaderMinimal() {
       className="border-b border-slate-200 bg-white"
       aria-label="Main header"
     >
-      {/* Row 1 — POTAL logo large, centered */}
-      <div className="flex justify-center pt-8 pb-4">
+      {/* Row 1 — POTAL logo large, centered (inside 1440px container) */}
+      <div className="w-full max-w-[1440px] mx-auto flex justify-center pt-8 pb-4 px-8">
         <Link href="/" aria-label="POTAL home" className="no-underline">
           <span className="text-[44px] font-extrabold tracking-tight leading-none select-none">
             <span className="text-[#02122c]">P</span>
@@ -100,8 +100,8 @@ export function HeaderMinimal() {
         </Link>
       </div>
 
-      {/* Row 2 — left nav (Community/Help) + right (lang + login) */}
-      <div className="flex items-center justify-between px-8 pb-4">
+      {/* Row 2 — left nav (Community/Help) + right (lang + login), constrained to 1440px */}
+      <div className="w-full max-w-[1440px] mx-auto flex items-center justify-between px-8 pb-4">
         <nav
           aria-label="Primary navigation"
           className="flex items-center gap-6 text-[14px] font-semibold text-slate-700"

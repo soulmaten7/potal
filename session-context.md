@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-10 KST (CW23-S1 완료 — Sprint 1 홈페이지 SSR 버그 2+1건 수정: (1) app/layout.tsx가 홈에서도 구 Header를 강제 렌더 → ChromeGate client wrapper 신설, (2) DesktopOnlyGuard가 SSR에서 null 반환 → children 기본 렌더 + 모바일만 useEffect redirect, (3) ScenarioSelector의 useSearchParams가 Suspense 없이 SSR prerender 실패 → Suspense fallback=null 추가. 로컬 빌드 ✓ 17.8s, 473 pages 성공. Vercel 배포 후 프로덕션 검증 예정)
+> 마지막 업데이트: 2026-04-10 KST (CW23-S1b 완료 — UX 피드백 4건 반영: (1) ChromeGate에서 Footer만 홈 숨김 제외 → 홈에도 Footer 표시, (2) HeaderMinimal Row1+Row2 모두 max-w-[1440px] mx-auto 컨테이너로 감쌈, (3) ScenarioSelector max-w 1100→1440, 그리드 `grid-cols-3 lg:grid-cols-6`로 ≥1024px에서 6버튼 1행, (4) 버튼 콤팩트화(min-h 140→110, padding 축소, 중앙정렬, 질문 텍스트는 선택 후 placeholder로 이동). 로컬 빌드 ✓ 473 pages)
 
 ---
 

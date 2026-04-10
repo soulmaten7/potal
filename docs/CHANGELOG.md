@@ -1,5 +1,27 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW23-S1 — Sprint 1 홈페이지 리디자인 SSR 버그 2+1건 수정, 로컬 빌드 성공)
+> 마지막 업데이트: 2026-04-10 KST (CW23-S1b — UX 피드백: Footer 복구 + 1440px max-width + 6버튼 1행 콤팩트 레이아웃)
+
+## [2026-04-10 KST] CW23-S1b — Sprint 1 UX 피드백 반영
+
+### 사용자 피드백 (프로덕션 육안 검증)
+1. 홈에서 Footer가 사라졌음 — 복구 필요
+2. Header/본문 내용이 브라우저 전폭으로 늘어남 — 1440px로 제한
+3. ScenarioSelector 6버튼이 3×2로 2줄 병렬 + 박스가 너무 큼 — 1행 6열 + 콤팩트 버튼
+4. 시나리오 선택 시 placeholder가 너무 비어 보임 — guiding question 노출
+
+### 수정
+- **`components/layout/ChromeGate.tsx`** — `HIDE_HEADER_ON`, `HIDE_FOOTER_ON`, `HIDE_MOBILE_NAV_ON` 세 Set으로 분리. `/` 에서는 Header + MobileBottomNav만 숨기고 Footer는 렌더. `/mobile-notice` 에서는 셋 다 숨김
+- **`components/layout/HeaderMinimal.tsx`** — Row 1(로고) + Row 2(네비/언어/로그인) 모두 `w-full max-w-[1440px] mx-auto` 컨테이너로 감쌈
+- **`components/home/ScenarioSelector.tsx`**:
+  - 바깥 `section` max-width `1100px → 1440px`
+  - 그리드 `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4` → `grid-cols-3 lg:grid-cols-6 gap-3`
+  - 버튼 콤팩트화: `min-h [140→110]`, `px-6 py-5 → px-3 py-4`, `rounded-2xl → rounded-xl`, 중앙정렬, 아이콘 `28→26`, 타이틀 `17→13`, 서브타이틀 `12→11`, 질문 텍스트를 버튼에서 제거하고 아래 placeholder로 이동
+  - Placeholder에 선택된 시나리오의 guiding question(이탤릭)을 크게 노출
+
+### 검증
+- 로컬 빌드: ✓ Compiled in 55s, ✓ Generating static pages (473/473) in 6.4s
+
+---
 
 ## [2026-04-10 KST] CW23-S1 — Sprint 1 홈페이지 SSR 버그 긴급 수정
 
