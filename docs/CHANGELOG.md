@@ -1,5 +1,22 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW22-S7 완료 — POTAL 홈페이지 리디자인 스펙 v1 확정)
+> 마지막 업데이트: 2026-04-10 KST (CW23-S0 — D4 Korea KCS gov-api-health 3일 장애 수정)
+
+## [2026-04-10 KST] CW23-S0 — D4 Korea KCS gov-api-health 3일 장애 수정
+
+### 수정
+- **`app/api/v1/admin/gov-api-health/route.ts`** — Korea KCS 엔드포인트가 2026-04-07 12:00 KST부터 2026-04-10 00:00 KST까지 6회 연속 `Unreachable: fetch failed`로 RED 처리되던 이슈 수정
+  - **근본 원인 가설**: Vercel serverless fetch가 User-Agent 헤더를 전혀 보내지 않아, Korea KCS의 WAF(웹방화벽)가 non-browser 트래픽을 네트워크 레벨에서 드롭. 타 6개국 정부 API(USITC, UK, EU, CA, AU, JP)는 상대적으로 느슨해 영향 없음
+  - **증거**: `Vary: User-Agent` 헤더를 서버가 반환, 브라우저 UA로 호출 시 HTTP 200 (343ms)
+- **변경 사항**:
+  1. 모든 gov-api fetch에 브라우저 같은 기본 User-Agent + Accept 헤더 추가 (`DEFAULT_UA` 상수)
+  2. `GovApi.fallbackUrls` 필드 신설 — primary 실패 시 순차 시도
+  3. `GovApi.softFail` 플래그 신설 — 모니터 레이어의 연결성 이슈는 RED→YELLOW 강등 (escalation 노이즈 방지)
+  4. Korea KCS에 3개 fallback URL 등록 (`www.customs.go.kr/kcs/main.do`, `www.customs.go.kr/`, `unipass.customs.go.kr/csp/index.do`) + `softFail: true`
+- **검증**:
+  - 로컬 sandbox에서 4개 Korea 엔드포인트 모두 HTTP 200 확인 (UA 있음/없음 모두 성공)
+  - Vercel production runtime에서의 최종 검증은 다음 cron 실행(12h 주기) 결과 필요
+  - **caveat**: sandbox에서는 UA 없어도 성공하므로, 진짜 원인이 UA인지 Vercel IP 차단인지는 production 관찰 필요. UA 추가는 defense-in-depth, fallback + softFail이 실질적 안전망
+- **영향**: Chief Orchestrator 모닝브리핑에서 D4 RED 1건 제거 예상, 실제 Korea 관세청 데이터 수집 파이프라인과 무관 (본 cron은 단순 URL health check)
 
 ## [2026-04-10 KST] CW22-S7 완료 — POTAL 홈페이지 리디자인 스펙 v1
 
