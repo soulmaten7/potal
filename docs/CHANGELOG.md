@@ -1,5 +1,83 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW31 — "정직한 리셋": demo API가 실제 POTAL 엔진 직접 호출)
+> 마지막 업데이트: 2026-04-10 KST (CW31-HF1 — 정직한 리셋 완전판: HAZMAT + forwarder multi-dest + DevPanel 치환)
+
+## [2026-04-10 KST] CW31-HF1 — "Honest Reset Complete": HAZMAT + forwarder multi-dest + DevPanel
+
+### Fixed — CW31 이 누락했던 스코프 3건 보완
+
+- **exporter 시나리오 HAZMAT 경고 회귀 해소**
+  - `restrictions/rules.ts` 에 HS 8506 (primary lithium cells) 규칙 추가 + 기존 8507 규칙에 `requiredDocuments` 추가
+  - `mapEngineResultToMockShape()` 가 `checkRestrictions(hsCode, destination)` 호출 후 결과를 `restriction.summary`/`restriction.license` 에 surfacing
+  - `isProhibited` → `blocked: true`, `hasRestrictions` → 경고 문구 + required docs/carriers
+  - 케이스 10/11/12 리튬이온 배터리 $250k: IATA DGR UN3090/3091 경고 자동 표시
+- **forwarder 시나리오 단일 목적지 제한 해소**
+  - NonDevPanel `forwarder.destinations` 필드를 `multiselect` (최대 5개) 로 교체
+  - 신규 `MultiCountryPicker.tsx` — tag chip + search 기반 multi-select 컴포넌트
+  - `/api/demo/scenario` 가 forwarder 요청 시 `buildForwarderInputs()` → 목적지별 `Promise.all` 병렬 엔진 호출
+  - `mapForwarderResultsToMockShape()` 신규 — 배치 결과를 MockResult 로 변환 + `comparisonRows` 첨부
+  - NonDevPanel 결과 영역에 "Destination comparison" 테이블 렌더 (cheapest ★ 강조, total 오름차순 정렬)
+  - forwarder 전용 timeout 8s (5s → 8s, 병렬 DB 경합 대비)
+- **DevPanel forwarder 코드 snippet 동적 치환**
+  - `SCENARIO_DEFAULTS.forwarder.destinations = ['US','DE','JP']` 기본값 추가
+  - `renderWorkflowCode()` forwarder 블록: 4개 언어 (curl/python/node/go) snippet 에서 live destinations 배열 regex 치환
+    - curl: `"items":[...]` JSON 배열 전체 재생성 + `candidates=...` 쿼리스트링
+    - python: `for dest in ("...",)` 튜플
+    - node: `['...', '...'].map(to =>` 배열
+    - go: `items := []*potal.LandedCostRequest{...}` slice 전체 재생성
+
+### Added
+- `components/home/MultiCountryPicker.tsx` — 재사용 가능한 multi-select 드롭다운 (search + tag chip + max cap)
+- `MockResult.comparisonRows?: ComparisonRow[]` — forwarder 비교 테이블용 optional 필드
+- `mapForwarderResultsToMockShape()` — `/api/demo/scenario/route.ts` 신규 헬퍼
+- `mock-results.ts` forwarder mock 에 `comparisonRows` 3행 fallback 샘플
+
+### Verified — 21 케이스 매트릭스 (로컬 `npm start`)
+
+| # | 케이스 | src | HS | duty | total | FTA | ms |
+|---|---|---|---|---|---|---|---|
+| 1 | seller KR→US wallet $45 | live | 4202210000 | $0.00 | $50.83 | KORUS | 1467 |
+| 2 | seller CN→US wallet $45 | live | 4202210000 | $11.27 | $62.10 | — | 320 |
+| 3 | seller KR→DE wallet $45 | live | 4202210000 | $0.00 | $54.22 | EU-Korea | 536 |
+| 4 | d2c KR→DE tshirt×500 | live | 610910 | $0.00 | $16,800.00 | EU-Korea | 429 |
+| 5 | d2c KR→US tshirt×500 | live | 610910 | $0.00 | $15,168.50 | KORUS | 233 |
+| 6 | d2c CN→US tshirt×500 | live | 610910 | $3,523.10 | $18,691.60 | — | 224 |
+| 7 | importer DE→KR pumps | live | 8413910000 | $0.00 | $94,190.00 | EU-Korea | 520 |
+| 8 | importer US→KR pumps | live | 8413910000 | $0.00 | $94,190.00 | KORUS | 481 |
+| 9 | importer CN→KR pumps | live | 8413910000 | $0.00 | $94,190.00 | Korea-China | 529 |
+| 10 | exporter KR→US Li-ion ⚠️HAZMAT | live | 850650 | $0.00 | $269,634.04 | KORUS | 547 |
+| 11 | exporter KR→DE Li-ion ⚠️HAZMAT | live | 850650 | $0.00 | $299,000.00 | EU-Korea | 523 |
+| 12 | exporter KR→JP Li-ion ⚠️HAZMAT | live | 850650 | $0.00 | $276,520.00 | RCEP | 968 |
+| 13 | forwarder KR→[US,DE,JP] | live | 620630 | — | see table | — | 630 |
+| 14 | forwarder KR→[US,GB,CA] | live | 8543700000 | — | see table | — | 1195 |
+| 15 | forwarder CN→[KR,JP,SG] | live | 9503000000 | — | see table | — | 258 |
+| 16 | seller CN→US wallet $200 | live | 4202210000 | $50.11 | $269.11 | — | 274 |
+| 17 | seller KR→GB wallet $45 | live | 4202210000 | $0.00 | $54.68 | — | 265 |
+| 18 | d2c KR→FR tshirt×100 | live | 610910 | $0.00 | $3,396.40 | EU-Korea | 389 |
+| 19 | HAZMAT re-test KR→US | live | 850650 | $0.00 | $269,634.04 | KORUS + ⚠️ | 458 |
+| 20 | HAZMAT re-test KR→DE | live | 850650 | $0.00 | $299,000.00 | EU-Korea + ⚠️ | 451 |
+| 21 | HAZMAT re-test KR→JP | live | 850650 | $0.00 | $276,520.00 | RCEP + ⚠️ | 507 |
+
+**Forwarder comparison tables**:
+- Case 13 KR→[US,DE,JP]: ★US $13,001.57 (KORUS) / JP $13,874.60 (RCEP) / DE $14,400.00 (EU-Korea)
+- Case 14 KR→[US,GB,CA]: ★CA $8,490.00 / US $8,672.71 (KORUS) / GB $9,680.00
+- Case 15 CN→[KR,JP,SG]: ★SG $5,525.00 (ACFTA) / KR $5,580.00 (Korea-China) / JP $5,585.00 (RCEP)
+
+**HAZMAT warning (모든 배터리 케이스)**:
+- summary: `"Primary Lithium Cells: Primary lithium batteries (non-rechargeable) are regulated as dangerous goods under IATA DGR and IMDG Code. Hazmat declaration required."`
+- license: `"Requires: Shipper's Declaration for Dangerous Goods (IATA), UN3090 / UN3091 classification"`
+
+**결과 요약**:
+- **21/21 live** (100% real engine)
+- **p50 481ms / p95 1195ms / max 1467ms** — forwarder 8s timeout 대비 6.7배 여유
+- CW31 non-forwarder 15 케이스: **$0.00 회귀** (숫자 완전 동일)
+- HAZMAT 6 케이스: 경고 문구 + required docs 표시 ✓
+- forwarder 3 케이스: cheapest ★ 자동 감지, FTA 국가별 차이 표시 ✓
+
+### Build
+- `npm run build`: ✅ 475/475 pages
+- TypeScript: 변경 파일 에러 0 (기존 테스트 에러 제외)
+
+---
 
 ## [2026-04-10 KST] CW31 — "Honest Reset": connect demo to real cost engine
 

@@ -9,6 +9,17 @@
  * The NonDevPanel always shows a "demo data" notice so users understand.
  */
 
+export interface ComparisonRow {
+  destination: string;
+  hsCode: string;
+  duty: number;
+  taxes: number;
+  shipping: number;
+  fees: number;
+  total: number;
+  ftaName: string | null;
+}
+
 export interface MockResult {
   scenarioId: string;
   hsCode: string;
@@ -30,6 +41,8 @@ export interface MockResult {
   };
   extras?: Record<string, string | number>;
   notes: string[];
+  /** CW31-HF1: forwarder multi-destination comparison table (optional) */
+  comparisonRows?: ComparisonRow[];
 }
 
 export const MOCK_RESULTS: Record<string, MockResult> = {
@@ -175,6 +188,40 @@ export const MOCK_RESULTS: Record<string, MockResult> = {
       'Batch screen: all 3 shipments cleared',
       'Cheapest destination: Germany (Korea-EU FTA applied)',
       'US Section 301 adds ~$1,200 vs baseline',
+    ],
+    // CW31-HF1: fallback comparison rows so the UI renders even when the
+    // engine is unreachable.
+    comparisonRows: [
+      {
+        destination: 'DE',
+        hsCode: '6109.10',
+        duty: 0,
+        taxes: 2280,
+        shipping: 680,
+        fees: 85,
+        total: 13840,
+        ftaName: 'EU-Korea Free Trade Agreement',
+      },
+      {
+        destination: 'JP',
+        hsCode: '6109.10',
+        duty: 486,
+        taxes: 1248,
+        shipping: 680,
+        fees: 85,
+        total: 14960,
+        ftaName: 'Regional Comprehensive Economic Partnership',
+      },
+      {
+        destination: 'US',
+        hsCode: '6109.10',
+        duty: 0,
+        taxes: 840,
+        shipping: 680,
+        fees: 85,
+        total: 15285,
+        ftaName: 'Korea-US Free Trade Agreement',
+      },
     ],
   },
 };

@@ -18,22 +18,27 @@ import { useFeatureGate } from '@/lib/auth/feature-gate';
 import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 import CodeCopyModal from './CodeCopyModal';
 import PartnerLinkSlot from './PartnerLinkSlot';
+import MultiCountryPicker from './MultiCountryPicker';
+
+export type NonDevInputValue = string | number | string[];
 
 export interface NonDevPanelProps {
   scenarioId: string;
   /** CW31: lifted state so DevPanel code snippets see the same inputs. */
-  inputs?: Record<string, string | number>;
-  onInputsChange?: (next: Record<string, string | number>) => void;
+  inputs?: Record<string, NonDevInputValue>;
+  onInputsChange?: (next: Record<string, NonDevInputValue>) => void;
 }
 
 interface FieldDef {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'select';
+  type: 'text' | 'number' | 'select' | 'multiselect';
   placeholder?: string;
   defaultValue?: string | number;
   options?: Array<{ value: string; label: string }>;
   unit?: string;
+  /** CW31-HF1: cap for multiselect fields */
+  max?: number;
 }
 
 // CW31 "Honest Reset": full ISO3166-1 alpha-2 country list (240 countries)
@@ -93,15 +98,12 @@ const SCENARIO_FIELDS: Record<string, FieldDef[]> = {
     { key: 'product', label: 'Product type', type: 'text', placeholder: 'e.g. Cotton T-shirts (batch)' },
     { key: 'from', label: 'Origin', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     {
-      key: 'to',
-      label: 'Destinations',
-      type: 'select',
-      options: [
-        { value: '', label: 'Select destination…' },
-        { value: 'US', label: '🇺🇸 United States' },
-        { value: 'DE', label: '🇩🇪 Germany' },
-        { value: 'JP', label: '🇯🇵 Japan' },
-      ],
+      key: 'destinations',
+      label: 'Destinations (max 5)',
+      type: 'multiselect',
+      options: COUNTRY_OPTIONS,
+      max: 5,
+      unit: 'countries',
     },
     { key: 'value', label: 'Value per shipment', type: 'number', placeholder: '12000', unit: 'USD' },
   ],
@@ -172,16 +174,17 @@ export default function NonDevPanel({
 
   // CW31: if parent lifted state, use it. Otherwise fall back to local state
   // (preserves standalone usage if another page mounts NonDevPanel directly).
-  const [localInputs, setLocalInputs] = useState<Record<string, string | number>>(() => {
-    const init: Record<string, string | number> = {};
+  const [localInputs, setLocalInputs] = useState<Record<string, NonDevInputValue>>(() => {
+    const init: Record<string, NonDevInputValue> = {};
     for (const f of fields) {
-      init[f.key] = f.defaultValue !== undefined ? f.defaultValue : '';
+      if (f.type === 'multiselect') init[f.key] = [];
+      else init[f.key] = f.defaultValue !== undefined ? f.defaultValue : '';
     }
     return init;
   });
   const inputs = inputsProp && Object.keys(inputsProp).length > 0 ? inputsProp : localInputs;
   const setInputs = (
-    updater: (prev: Record<string, string | number>) => Record<string, string | number>
+    updater: (prev: Record<string, NonDevInputValue>) => Record<string, NonDevInputValue>
   ) => {
     const next = updater(inputs);
     if (onInputsChange) onInputsChange(next);
@@ -257,9 +260,16 @@ export default function NonDevPanel({
               <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">
                 {f.label}
               </label>
-              {f.type === 'select' ? (
+              {f.type === 'multiselect' ? (
+                <MultiCountryPicker
+                  selected={Array.isArray(inputs[f.key]) ? (inputs[f.key] as string[]) : []}
+                  options={f.options || []}
+                  max={f.max ?? 5}
+                  onChange={next => setInputs(v => ({ ...v, [f.key]: next }))}
+                />
+              ) : f.type === 'select' ? (
                 <select
-                  value={String(inputs[f.key] ?? '')}
+                  value={typeof inputs[f.key] === 'string' || typeof inputs[f.key] === 'number' ? String(inputs[f.key]) : ''}
                   onChange={e => setInputs(v => ({ ...v, [f.key]: e.target.value }))}
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#F59E0B]"
                 >
@@ -271,7 +281,7 @@ export default function NonDevPanel({
                 <div className="relative">
                   <input
                     type={f.type}
-                    value={String(inputs[f.key] ?? '')}
+                    value={typeof inputs[f.key] === 'string' || typeof inputs[f.key] === 'number' ? String(inputs[f.key]) : ''}
                     onChange={e =>
                       setInputs(v => ({
                         ...v,
@@ -290,15 +300,21 @@ export default function NonDevPanel({
               )}
             </div>
             <div className="pt-5">
-              <CopyBadge onClick={() => openCopyModal('input', f.key, inputs[f.key])} />
+              <CopyBadge onClick={() => {
+                const v = inputs[f.key];
+                const display = Array.isArray(v) ? v.join(',') : v;
+                openCopyModal('input', f.key, display);
+              }} />
             </div>
           </div>
         ))}
 
         {(() => {
           // CW30-HF2: Calculate 버튼 활성화 조건 — 모든 필드 채워져야 활성
+          // CW31-HF1: multiselect 는 배열 길이 > 0 로 판정
           const allFilled = fields.every(f => {
             const v = inputs[f.key];
+            if (f.type === 'multiselect') return Array.isArray(v) && v.length > 0;
             return v !== undefined && v !== '' && v !== null;
           });
           const disabled = loading || !allFilled;
@@ -421,6 +437,62 @@ export default function NonDevPanel({
               </div>
             )}
           </div>
+
+          {/* CW31-HF1: forwarder destination comparison table */}
+          {result.comparisonRows && result.comparisonRows.length > 0 && (
+            <div className="mt-3 rounded-xl border border-slate-200 bg-white p-4">
+              <div className="text-[11px] text-slate-500 mb-3 font-bold uppercase tracking-wide">
+                Destination comparison ({result.comparisonRows.length} routes)
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-[12px]">
+                  <thead>
+                    <tr className="text-left text-slate-500">
+                      <th className="pb-2 font-bold">Destination</th>
+                      <th className="pb-2 font-bold text-right">Duty</th>
+                      <th className="pb-2 font-bold text-right">FTA</th>
+                      <th className="pb-2 font-bold text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...result.comparisonRows]
+                      .sort((a, b) => a.total - b.total)
+                      .map((row, idx) => (
+                        <tr
+                          key={row.destination}
+                          className={`border-t border-slate-100 ${
+                            idx === 0 ? 'bg-emerald-50/50' : ''
+                          }`}
+                        >
+                          <td className="py-2 font-bold">
+                            {idx === 0 && (
+                              <span className="text-emerald-600 mr-1">★</span>
+                            )}
+                            {row.destination}
+                          </td>
+                          <td className="py-2 text-right font-mono">
+                            {fmtCurrency(row.duty, 'USD')}
+                          </td>
+                          <td className="py-2 text-right text-[11px] text-slate-500">
+                            {row.ftaName || '—'}
+                          </td>
+                          <td
+                            className={`py-2 text-right font-mono font-bold ${
+                              idx === 0 ? 'text-emerald-700' : 'text-[#02122c]'
+                            }`}
+                          >
+                            {fmtCurrency(row.total, 'USD')}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="text-[11px] text-slate-400 mt-2">
+                ★ Cheapest route highlighted
+              </div>
+            </div>
+          )}
 
           {result.notes.length > 0 && (
             <ul className="mt-3 space-y-1 text-[11px] text-slate-500">

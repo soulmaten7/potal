@@ -57,11 +57,12 @@ export default function ScenarioPanel({ scenarioId }: ScenarioPanelProps) {
   // CW31 "Honest Reset": lift inputs up so DevPanel code snippets reflect
   // whatever the user typed in NonDevPanel. Keyed by scenarioId so switching
   // scenarios resets the shared state.
+  // CW31-HF1: values can be string | number | string[] (multiselect).
   const [inputsByScenario, setInputsByScenario] = useState<
-    Record<string, Record<string, string | number>>
+    Record<string, Record<string, string | number | string[]>>
   >({});
   const currentInputs = inputsByScenario[scenarioId] || {};
-  const setCurrentInputs = (next: Record<string, string | number>) => {
+  const setCurrentInputs = (next: Record<string, string | number | string[]>) => {
     setInputsByScenario(prev => ({ ...prev, [scenarioId]: next }));
   };
 

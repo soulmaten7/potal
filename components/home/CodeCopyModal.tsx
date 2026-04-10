@@ -26,7 +26,7 @@ export interface CodeCopyModalProps {
   fieldType: 'input' | 'result';
   fieldKey: string;
   fieldValue?: string | number;
-  inputs?: Record<string, string | number | undefined>;
+  inputs?: Record<string, string | number | string[] | undefined>;
 }
 
 type Tab = 'embed' | 'api' | 'link';
@@ -38,10 +38,10 @@ const TABS: Array<{ id: Tab; label: string; icon: string }> = [
   { id: 'link', label: 'Link', icon: '🔗' },
 ];
 
-function buildEmbedCode(scenarioId: string, inputs: Record<string, string | number | undefined>): string {
+function buildEmbedCode(scenarioId: string, inputs: Record<string, string | number | string[] | undefined>): string {
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(inputs)) {
-    if (v !== undefined && v !== '') params.set(k, String(v));
+    if (v !== undefined && v !== '') params.set(k, Array.isArray(v) ? v.join(',') : String(v));
   }
   const qs = params.toString();
   const src = `https://widget.potal.app/${scenarioId}${qs ? '?' + qs : ''}`;
@@ -54,14 +54,14 @@ function buildEmbedCode(scenarioId: string, inputs: Record<string, string | numb
 ></iframe>`;
 }
 
-function buildApiCurl(scenarioId: string, inputs: Record<string, string | number | undefined>): string {
+function buildApiCurl(scenarioId: string, inputs: Record<string, string | number | string[] | undefined>): string {
   const body = JSON.stringify({ scenarioId, inputs }, null, 2);
   return `curl -X POST https://api.potal.app/v1/demo/scenario \\
   -H "Content-Type: application/json" \\
   -d '${body}'`;
 }
 
-function buildApiPython(scenarioId: string, inputs: Record<string, string | number | undefined>): string {
+function buildApiPython(scenarioId: string, inputs: Record<string, string | number | string[] | undefined>): string {
   const body = JSON.stringify({ scenarioId, inputs }, null, 4);
   return `import requests
 
@@ -72,7 +72,7 @@ r = requests.post(
 print(r.json())`;
 }
 
-function buildApiNode(scenarioId: string, inputs: Record<string, string | number | undefined>): string {
+function buildApiNode(scenarioId: string, inputs: Record<string, string | number | string[] | undefined>): string {
   const body = JSON.stringify({ scenarioId, inputs }, null, 2);
   return `const res = await fetch('https://api.potal.app/v1/demo/scenario', {
   method: 'POST',
@@ -82,10 +82,10 @@ function buildApiNode(scenarioId: string, inputs: Record<string, string | number
 console.log(await res.json());`;
 }
 
-function buildShareLink(scenarioId: string, inputs: Record<string, string | number | undefined>): string {
+function buildShareLink(scenarioId: string, inputs: Record<string, string | number | string[] | undefined>): string {
   const params = new URLSearchParams({ type: scenarioId });
   for (const [k, v] of Object.entries(inputs)) {
-    if (v !== undefined && v !== '') params.set(k, String(v));
+    if (v !== undefined && v !== '') params.set(k, Array.isArray(v) ? v.join(',') : String(v));
   }
   return `https://www.potal.app/?${params.toString()}`;
 }

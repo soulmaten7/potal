@@ -312,12 +312,23 @@ const COUNTRY_SPECIFIC: Restriction[] = [
 // ─── Watched Items & Carrier Restrictions ──────────
 
 const WATCHED_AND_CARRIER: Restriction[] = [
+  // Primary cells (lithium primary batteries) — dangerous goods
+  // CW31-HF1: added to surface HAZMAT warnings for non-rechargeable lithium cells
+  {
+    severity: 'watched',
+    hsPrefix: '8506',
+    category: 'Primary Lithium Cells',
+    description: 'Primary lithium batteries (non-rechargeable) are regulated as dangerous goods under IATA DGR and IMDG Code. Hazmat declaration required.',
+    requiredDocuments: ['Shipper\'s Declaration for Dangerous Goods (IATA)', 'UN3090 / UN3091 classification'],
+    carrierRestrictions: ['USPS', 'Royal Mail', 'China Post (air)', 'Singapore Post (air)'],
+  },
   // Lithium batteries — carrier restrictions (IATA DGR)
   {
     severity: 'watched',
     hsPrefix: '8507',
     category: 'Lithium Batteries',
     description: 'Lithium batteries are regulated as dangerous goods. Shipping restrictions apply.',
+    requiredDocuments: ['Shipper\'s Declaration for Dangerous Goods (IATA)', 'UN3480 / UN3481 classification'],
     carrierRestrictions: ['USPS', 'Royal Mail', 'China Post (air)', 'Singapore Post (air)'],
   },
   // Perfumes/fragrances — flammable (carrier restricted)

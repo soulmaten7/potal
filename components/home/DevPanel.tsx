@@ -25,7 +25,7 @@ import LoginRequiredModal from '@/components/modals/LoginRequiredModal';
 export interface DevPanelProps {
   scenarioId: string;
   /** CW31: lifted from ScenarioPanel so code snippets reflect live inputs. */
-  inputs?: Record<string, string | number>;
+  inputs?: Record<string, string | number | string[]>;
 }
 
 export default function DevPanel({ scenarioId, inputs = {} }: DevPanelProps) {

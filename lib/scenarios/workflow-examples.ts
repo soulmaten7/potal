@@ -663,6 +663,8 @@ const SCENARIO_DEFAULTS: Record<
     to: string;
     value: number | string;
     quantity?: number;
+    /** CW31-HF1: forwarder multi-destination default list */
+    destinations?: string[];
   }
 > = {
   seller: { product: 'Handmade leather wallet', from: 'KR', to: 'US', value: 45 },
@@ -690,6 +692,7 @@ const SCENARIO_DEFAULTS: Record<
     from: 'KR',
     to: 'US',
     value: 12000,
+    destinations: ['US', 'DE', 'JP'],
   },
 };
 
@@ -705,7 +708,7 @@ function escapeRegExp(s: string): string {
 export function renderWorkflowCode(
   scenarioId: string,
   lang: Language,
-  inputs: Record<string, string | number | undefined>
+  inputs: Record<string, string | number | string[] | undefined>
 ): string {
   const example = getWorkflowExample(scenarioId);
   if (!example) return '';
@@ -785,6 +788,60 @@ export function renderWorkflowCode(
     code = code.replace(
       new RegExp(`Quantity:\\s*${defaults.quantity}\\b`, 'g'),
       `Quantity: ${quantity}`
+    );
+  }
+
+  // 5. CW31-HF1: forwarder multi-destination array replacement
+  if (scenarioId === 'forwarder' && defaults.destinations) {
+    const raw = inputs.destinations;
+    const destArray = Array.isArray(raw)
+      ? (raw as string[]).filter(Boolean).map(d => String(d).toUpperCase())
+      : [];
+    const liveDests = destArray.length > 0 ? destArray : defaults.destinations;
+    const fromIso = String(from).toUpperCase();
+    const valueStr = String(value);
+
+    // --- curl: items JSON array ---
+    const curlItemsBlock = liveDests
+      .map(
+        d =>
+          `      {"hs":"610910","from":"${fromIso}","to":"${d}","value":${valueStr}}`
+      )
+      .join(',\n');
+    code = code.replace(
+      /"items":\[\n[\s\S]*?\n\s*\]/,
+      `"items":[\n${curlItemsBlock}\n    ]`
+    );
+    // candidates query param
+    code = code.replace(
+      /candidates=[A-Z,]+/,
+      `candidates=${liveDests.join(',')}`
+    );
+
+    // --- python: tuple form ("US", "DE", "JP") ---
+    const pyTuple = liveDests.map(d => `"${d}"`).join(', ');
+    code = code.replace(
+      /for dest in \([^)]*\)/,
+      `for dest in (${pyTuple})`
+    );
+
+    // --- node: array form ['US', 'DE', 'JP'] ---
+    const nodeArr = liveDests.map(d => `'${d}'`).join(', ');
+    code = code.replace(
+      /\[[^\]]*?\]\.map\(to =>/,
+      `[${nodeArr}].map(to =>`
+    );
+
+    // --- go: items slice body ---
+    const goItems = liveDests
+      .map(
+        d =>
+          `\t\t{HS: "610910", From: "${fromIso}", To: "${d}", Value: ${valueStr}},`
+      )
+      .join('\n');
+    code = code.replace(
+      /(items := \[\]\*potal\.LandedCostRequest\{\n)[\s\S]*?(\n\t\})/,
+      `$1${goItems}$2`
     );
   }
 

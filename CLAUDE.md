@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW31 "정직한 리셋": /api/demo/scenario 가 calculateGlobalLandedCostAsync() 직접 호출. 가격 비율 스케일링/live-baseline 삭제, 국가 드롭다운 10→240개, DevPanel 코드 스니펫이 실시간 입력 반영(ScenarioPanel 상태 lift-up), 18/18 케이스 live 엔진 응답 확인 p95 670ms. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW31-HF1 "완전판": forwarder multi-destination (UI multi-select 최대 5개 + 병렬 엔진 호출 + 비교 테이블), HS 8506 primary lithium cells HAZMAT rule 추가, checkRestrictions() 를 mapEngineResultToMockShape 에 편입(restriction.summary/license surfacing), DevPanel forwarder snippet 4개 언어 live destinations 치환, MultiCountryPicker 신규. 21/21 케이스 live p95 1195ms. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
