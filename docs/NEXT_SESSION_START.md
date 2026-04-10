@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW22-S7 완료 — POTAL 홈페이지 리디자인 스펙 v1 확정, docs/HOMEPAGE_REDESIGN_SPEC.md 작성, 12가지 결정 사항 문서화, Phase 1 구현은 CW23+)
+> 마지막 업데이트: 2026-04-10 KST (CW23-S1 완료 — Sprint 1 홈페이지 SSR 버그 2+1건 수정. ChromeGate + DesktopOnlyGuard SSR-safe + Suspense. 다음 세션 첫 액션: 프로덕션(www.potal.app) HTML에서 HeaderMinimal/LiveTicker/ScenarioSelector 마커 확인 후 Sprint 2 착수)
 
 ---
 

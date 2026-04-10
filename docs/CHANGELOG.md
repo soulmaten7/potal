@@ -1,5 +1,37 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW23-S0 — D4 Korea KCS gov-api-health 3일 장애 수정)
+> 마지막 업데이트: 2026-04-10 KST (CW23-S1 — Sprint 1 홈페이지 리디자인 SSR 버그 2+1건 수정, 로컬 빌드 성공)
+
+## [2026-04-10 KST] CW23-S1 — Sprint 1 홈페이지 SSR 버그 긴급 수정
+
+### 배경
+- CW23 Sprint 1 (커밋 `406ed90`, 11:02 KST)이 repo+Vercel에 정상 배포됐으나 `www.potal.app` SSR HTML에 Sprint 1 콘텐츠가 나타나지 않음
+- 터미널2 Claude Code가 HTML 그렙 + 코드 감사로 원인 2건 확정 (Vercel 쪽은 100% 정상, 4개 커밋 모두 READY)
+- 터미널1 Opus(본 세션)가 수정 담당
+
+### 수정 #1 — ChromeGate (홈에서 전역 Header/Footer 숨김)
+- **`app/layout.tsx`** — 기존 `<Header />` / `<Footer />` / `<MobileBottomNav />` 전역 강제 렌더를 경로별 분기로 교체
+- **`components/layout/ChromeGate.tsx`** (신규) — `usePathname()` 기반 client wrapper. `/` 및 `/mobile-notice` 경로에서 null 반환
+- 원인: 기존 layout이 모든 페이지에 `<Header />`를 강제 렌더 → 홈에서 구 Header + 신 HeaderMinimal 2중 헤더 발생
+
+### 수정 #2 — DesktopOnlyGuard SSR-safe 재작성
+- **`components/layout/DesktopOnlyGuard.tsx`** — `ready=false` 초기 상태에서 `null` 반환하던 로직 제거. 서버/데스크톱 클라이언트 모두 children을 그대로 렌더하고, useEffect에서 viewport 검사 시 모바일만 `/mobile-notice`로 router.replace
+- 원인: SSR에서 `!ready` → `null` 반환 → Sprint 1 콘텐츠가 SSR HTML에 부재 → 크롤러/초기 페인트 전부 빈 페이지
+
+### 수정 #3 — Suspense boundary (빌드 추가 버그)
+- **`app/page.tsx`** — `<ScenarioSelector />`를 `<Suspense fallback={null}>`로 감싸고 `Suspense`를 react import에 추가
+- 발생 경위: 수정 #2로 SSR이 children을 실제로 렌더하게 되자, ScenarioSelector 내부 `useSearchParams()` 훅이 Next.js CSR bailout 경고를 일으키며 prerender 실패
+- 참고: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+
+### 검증
+- 로컬 빌드: ✓ Compiled successfully in 17.8s, ✓ Generating static pages (473/473) in 2.7s
+- console.log 없음, TypeScript 오류 없음
+- 프로덕션 반영 확인은 다음 Vercel 배포 후 www.potal.app HTML grep 재실행 예정
+
+### 영향
+- 홈페이지가 서버 사이드에서 HeaderMinimal + LiveTicker + ScenarioSelector 정상 렌더
+- 홈 이외 경로는 기존 Header/Footer 그대로 유지 (기능 회귀 없음)
+
+---
 
 ## [2026-04-10 KST] CW23-S0 — D4 Korea KCS gov-api-health 3일 장애 수정
 

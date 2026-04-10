@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import HeroCalculator from '@/components/home/HeroCalculator';
 import DataSourceTicker from '@/components/home/DataSourceTicker';
@@ -938,7 +938,10 @@ export default function HomePage() {
       <div className="min-h-screen bg-white">
         <HeaderMinimal />
         <LiveTicker />
-        <ScenarioSelector />
+        {/* ScenarioSelector uses useSearchParams → Suspense boundary required for SSR prerender */}
+        <Suspense fallback={null}>
+          <ScenarioSelector />
+        </Suspense>
       </div>
     </DesktopOnlyGuard>
   );

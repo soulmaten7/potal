@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW22-S7 완료: POTAL 홈페이지 리디자인 스펙 v1 확정 — docs/HOMEPAGE_REDESIGN_SPEC.md 작성, 12가지 결정 사항 문서화, Phase 1 구현은 CW23+)
+# 마지막 업데이트: 2026-04-10 KST (CW23-S1 완료: Sprint 1 홈페이지 SSR 버그 2+1건 수정 — ChromeGate 신설 + DesktopOnlyGuard SSR-safe 재작성 + ScenarioSelector Suspense 추가. 로컬 빌드 473 pages ✓, 프로덕션 검증 대기)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

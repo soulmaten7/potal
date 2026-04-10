@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-10 KST (CW23-S0 완료 — D4 Korea KCS gov-api-health RED 수정. Browser UA + fallback chain + softFail 적용. 빌드 성공, 커밋 bd09d7d 푸시 완료. 12시간 후 Cron 재실행에서 프로덕션 검증 예정)
+> 마지막 업데이트: 2026-04-10 KST (CW23-S1 완료 — Sprint 1 홈페이지 SSR 버그 2+1건 수정: (1) app/layout.tsx가 홈에서도 구 Header를 강제 렌더 → ChromeGate client wrapper 신설, (2) DesktopOnlyGuard가 SSR에서 null 반환 → children 기본 렌더 + 모바일만 useEffect redirect, (3) ScenarioSelector의 useSearchParams가 Suspense 없이 SSR prerender 실패 → Suspense fallback=null 추가. 로컬 빌드 ✓ 17.8s, 473 pages 성공. Vercel 배포 후 프로덕션 검증 예정)
 
 ---
 

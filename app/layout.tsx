@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// [핵심 수정 1] 헤더를 이제 layout 폴더에서 가져옵니다.
-import { Header } from "@/components/layout/Header";
-
-// [핵심 수정 2] 푸터도 layout 폴더에서 가져옵니다.
-import { Footer } from "@/components/layout/Footer";
-
-// [핵심 수정 3] 모바일 하단 네비게이션 바
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+// CW23-S1 fix: 홈(/)에서는 Header/Footer/MobileBottomNav를 숨기기 위해
+// ChromeGate client wrapper로 교체. Header/Footer/MobileBottomNav 원본은
+// 그대로 유지되며, ChromeGate가 경로별로 렌더 여부만 결정한다.
+import {
+  ChromeHeader,
+  ChromeFooter,
+  ChromeMobileNav,
+} from "@/components/layout/ChromeGate";
 
 import { GoogleAnalytics } from "@/components/common/GoogleAnalytics";
 import { CrispChat } from "@/components/common/CrispChat";
@@ -194,21 +194,21 @@ export default function RootLayout({
 
               <div className="flex flex-col min-h-screen relative">
 
-                {/* 헤더 */}
-                <Header />
+                {/* 헤더 (홈에서는 ChromeGate가 null 반환) */}
+                <ChromeHeader />
 
                 {/* 메인 컨텐츠 */}
                 <main className="flex-grow w-full animate-fadeIn">
                   {children}
                 </main>
 
-                {/* 푸터 — 데스크톱만 */}
+                {/* 푸터 — 데스크톱만, 홈 제외 */}
                 <div className="hidden md:block">
-                  <Footer />
+                  <ChromeFooter />
                 </div>
 
-                {/* 모바일 하단 네비게이션 바 */}
-                <MobileBottomNav />
+                {/* 모바일 하단 네비게이션 바 (홈 제외) */}
+                <ChromeMobileNav />
 
                 {/* 쿠키 동의 배너 */}
                 <CookieConsent />
