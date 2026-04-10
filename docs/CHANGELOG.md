@@ -1,5 +1,29 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW24-S2 — 시나리오 상세 패널 구현: 좌우 2분할 + workflow examples + demo API)
+> 마지막 업데이트: 2026-04-10 KST (CW25-S3 — CUSTOM Builder: 141기능 체크박스 + 실시간 코드 조립 + feature-catalog)
+
+## [2026-04-10 KST] CW25-S3 — Sprint 3: CUSTOM Builder (141개 기능 체크박스 + 실시간 코드 조립)
+
+### 배경
+Sprint 2 에서 5개 시나리오(seller/d2c/importer/exporter/forwarder) 좌우 2분할 패널을 완성.
+6번째 "CUSTOM ⚙️" 버튼은 placeholder 였음. 이번 스프린트에서 결정 5+6+11 (HOMEPAGE_REDESIGN_SPEC.md 284~333, 559~576) 의 CUSTOM 조립 인터페이스를 실제 구현.
+
+### 신규 파일 (4개)
+- `lib/features/feature-catalog.ts` — features-data.ts에서 141개 CatalogEntry 추출, 카테고리별 그룹 (12개), display order 정렬, `getCategoryGroups()` + `FEATURE_COUNT`
+- `components/custom/CustomBuilder.tsx` — CUSTOM 전용 메인 컨테이너. 좌측 50% 체크박스 그리드(카테고리 섹션 + 검색 + 카운터) + 우측 50% LiveCodeAssembler. [이 조합 저장하기] 버튼 Sprint 4 placeholder
+- `components/custom/FeatureCheckbox.tsx` — 개별 체크박스 라벨. checked 시 amber 하이라이트, API pill, ℹ️ 호버 지연 350ms 설명 툴팁
+- `components/custom/LiveCodeAssembler.tsx` — 선택된 기능 목록 → 4언어 탭(cURL/Python/Node/Go) 실시간 코드 생성. API endpoint 있는 기능만 step 코드에 포함. 복사 버튼 + 카운터 badge
+
+### 수정 파일 (1개)
+- `components/home/ScenarioPanel.tsx` — `CustomPlaceholder` 제거, `CustomBuilder` import + 렌더
+
+### 절대 규칙 준수
+- #1 B2C 미수정, #2 build ✓ 474 pages, #4 console.log 없음 (실행 코드)
+- ⚠️ CUSTOM은 CUSTOM 전용 — 5개 시나리오에 적용하지 않음 (결정 5+6 경고 준수)
+
+### 의도적으로 제외
+- ❌ lib/custom/code-templates.ts (per-feature 정밀 템플릿): 별도 에이전트가 생성 중. LiveCodeAssembler는 자체 inline 생성기로 독립 작동
+- ❌ 조합 저장/로드 (Sprint 4 · CW26 — Supabase user_combos)
+- ❌ 로그인 게이트 (Sprint 5 · CW27)
 
 ## [2026-04-10 KST] CW24-S2 — Sprint 2: 시나리오 상세 패널 구현
 

@@ -1,5 +1,5 @@
 # POTAL Session Context
-> 마지막 업데이트: 2026-04-10 KST (CW24-S2 완료 — Sprint 2 시나리오 상세 패널 구현: ScenarioPanel(좌우 2분할 컨테이너) + NonDevPanel(인터랙티브 데모 + 결과 + 📋버튼) + DevPanel(4언어 탭 + 코드 복사) + CodeCopyModal(Embed/API/Link 3탭) + lib/scenarios/workflow-examples.ts(5시나리오×4언어) + lib/scenarios/mock-results.ts + app/api/demo/scenario demo API. 5개 시나리오 버튼 선택 시 인터랙티브 데모 live, custom 은 Sprint 3 placeholder. 로컬 빌드 ✓ 474 pages)
+> 마지막 업데이트: 2026-04-10 KST (CW25-S3 완료 — Sprint 3 CUSTOM Builder 실제 구현: CustomBuilder(좌우 2분할) + FeatureCheckbox(141개 전부 체크박스, ℹ️ 툴팁) + LiveCodeAssembler(4언어 실시간 코드 생성) + lib/features/feature-catalog.ts(12 카테고리 그룹). ScenarioPanel에서 CustomPlaceholder → CustomBuilder 교체. Sprint 2+3 합쳐 6개 시나리오 전부 live. 로컬 빌드 ✓ 474 pages)
 
 ---
 

@@ -1,5 +1,5 @@
 # 다음 세션 시작 가이드
-> 마지막 업데이트: 2026-04-10 KST (CW24-S2 완료 — Sprint 2 시나리오 상세 패널 구현. 다음 세션 첫 액션: 프로덕션 5개 시나리오 버튼 클릭 검증 + Sprint 3 (CW25) CUSTOM Builder 140개 기능 체크박스 시작 — docs/HOMEPAGE_REDESIGN_SPEC.md 699~705행 참조)
+> 마지막 업데이트: 2026-04-10 KST (CW25-S3 완료 — Sprint 3 CUSTOM Builder 구현. 다음 세션 첫 액션: 프로덕션 CUSTOM 클릭 → 141개 기능 체크박스 + 실시간 코드 조립 검증 + Sprint 4 (CW26) 내 조합 저장/공유 (Supabase user_combos) — docs/HOMEPAGE_REDESIGN_SPEC.md 706~714행 참조)
 
 ---
 

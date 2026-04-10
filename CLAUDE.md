@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW24-S2 완료: 시나리오 상세 패널 — ScenarioPanel/NonDevPanel/DevPanel/CodeCopyModal + workflow-examples 5×4언어 + demo API route + mock fallback. 5개 시나리오 좌우 2분할 인터랙티브 데모 live, 474 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW25-S3 완료: CUSTOM Builder — 141개 기능 체크박스 + LiveCodeAssembler 실시간 4언어 코드 조립 + feature-catalog.ts. 카테고리 12개 그룹, 검색, ℹ️ 툴팁, Sprint 4 저장 버튼 placeholder. 474 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |
