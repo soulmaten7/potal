@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW30-S8 완료 — Phase 1 DONE 🎉: E2E smoke 7/8→8/8(mobile-notice SSR fallback fix), 5/5 live-cached, p95 server ~5ms, docs/PHASE1_COMPLETE.md 생성. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW30-S8 완료 — Phase 1 DONE 🎉: E2E smoke + mobile-notice SSR fallback fix, Cowork 프로덕션 검증 10/10 live-cached 확인, p95 server ~5ms, docs/PHASE1_COMPLETE.md 생성. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

@@ -54,6 +54,9 @@
 - `/api/demo/scenario [forwarder]` → ✓ live-cached total=1007.21
 - `/mobile-notice` → ✓ fixed in Sprint 8 (Suspense fallback 추가)
 
+### Cowork 프로덕션 검증 (2026-04-10)
+**10/10 live-cached 확인** — 5개 시나리오 × 2 run 프로덕션 실측, 전부 `X-Demo-Source: live-cached`. Phase 1 완료 승인.
+
 ---
 
 ## 구현된 스펙 결정
