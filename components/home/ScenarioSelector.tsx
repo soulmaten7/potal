@@ -79,12 +79,21 @@ export function ScenarioSelector({
   const searchParams = useSearchParams();
   const urlType = searchParams.get('type') as ScenarioId | null;
 
-  const [selected, setSelected] = useState<ScenarioId | null>(urlType);
+  // Default to 'seller' when no ?type= query param — CW30 hotfix 1.
+  // Rationale: first-time visitors should see a completed scenario panel
+  // immediately (POTAL for seller) so they grasp the interaction model
+  // before clicking other persona boxes.
+  const [selected, setSelected] = useState<ScenarioId | null>(
+    urlType ?? 'seller'
+  );
 
-  // Sync internal state if URL query changes (e.g. back button)
+  // Sync internal state if URL query changes (e.g. back button, home link click).
+  // When URL has no ?type= param (fresh / or home link), fall back to 'seller'
+  // so the user always sees a completed scenario panel. — CW30 hotfix 1
   useEffect(() => {
-    if (urlType !== selected) {
-      setSelected(urlType);
+    const next = urlType ?? 'seller';
+    if (next !== selected) {
+      setSelected(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlType]);

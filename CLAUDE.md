@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW30-S8 완료 — Phase 1 DONE 🎉: E2E smoke + mobile-notice SSR fallback fix, Cowork 프로덕션 검증 10/10 live-cached 확인, p95 server ~5ms, docs/PHASE1_COMPLETE.md 생성. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW30-HF1: 홈 진입 시 기본 시나리오 seller 자동 선택 — ScenarioSelector 초기값 + URL 동기화 effect에 seller 폴백. URL은 `/` 깨끗 유지. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

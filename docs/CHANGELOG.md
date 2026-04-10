@@ -1,5 +1,34 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW30-S8 완료 — Phase 1 홈페이지 리디자인 전체 완료 🎉)
+> 마지막 업데이트: 2026-04-10 KST (CW30-HF1 — 홈 진입 시 기본 시나리오 seller 자동 선택)
+
+## [2026-04-10 KST] CW30-HF1 — Hotfix: default scenario = seller on fresh home visit
+
+### 배경
+CEO 의도: "홈을 누르거나 POTAL에 처음 들어갔을 때는 Online seller 박스가 선택돼서 해당 POTAL for seller 시나리오가 먼저 표시되어 있는 걸로 하자. 그래야 사람들이 그에 맞춰서 눌러볼 것 같아"
+
+기존 동작: 첫 진입 시 6개 버튼만 표시, 아무 선택 없음 → 빈 공간 허전
+개선: seller 기본 선택 → 즉시 완성된 화면 + live-cached 데모 결과까지 보임 → 다른 박스 클릭 유도
+
+### 수정 파일 (1개)
+- `components/home/ScenarioSelector.tsx`
+  * `useState` 초기값: `urlType` → `urlType ?? 'seller'`
+  * `useEffect` URL 동기화: `const next = urlType ?? 'seller'` 로 폴백 추가
+  * `handleSelect` 미수정 — URL rewrite 는 명시적 클릭에만
+  * URL은 `/` 깨끗 유지 (seller 기본 상태에서 강제 rewrite 없음)
+
+### 동작 검증
+1. 첫 진입 `/` → seller 박스 선택 + POTAL for seller 패널 + live-cached 데모 ✓
+2. Home 링크 `/` → useEffect가 null → seller 복귀 ✓
+3. 직접 `/?type=forwarder` → urlType 우선 → forwarder 선택 ✓
+4. Back 버튼 `/?type=d2c` → `/` → effect가 seller 리셋 ✓
+5. 다른 박스 클릭 → `?type=xxx` URL 업데이트 → UI 동기화 ✓
+
+### 절대 규칙 준수
+- ✅ 파일 수정 1개 (ScenarioSelector.tsx)
+- ✅ URL 더럽히지 않음 (기본 seller 상태는 `/` 유지)
+- ✅ useEffect 안에서 router.replace 호출 없음
+- ✅ console.log 0건, B2C 미수정
+- ✅ `npm run build` ✓ 475 pages
 
 ## [2026-04-10 KST] CW30-S8 — Sprint 8: E2E + mobile guard + Phase 1 complete
 
