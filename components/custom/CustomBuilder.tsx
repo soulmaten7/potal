@@ -56,10 +56,7 @@ export default function CustomBuilder() {
   }, [selected, groups]);
 
   return (
-    <section
-      aria-label="CUSTOM builder — assemble your workflow"
-      className="w-full max-w-[1440px] mx-auto px-8 pt-0 pb-16"
-    >
+    <div aria-label="CUSTOM builder — assemble your workflow">
       {/* CW30-HF3: 내부 타이틀 블록 제거됨 — HF2 의 ScenarioPanel TitleBar
           (⚙️ POTAL for custom — Build your own combo) 가 유일한 헤더 역할.
           instructional hint 는 살려서 grid 바로 위 헬퍼 텍스트로 배치. */}
@@ -206,6 +203,6 @@ export default function CustomBuilder() {
         onClose={closeLoginRequired}
         featureLabel={featureLabel}
       />
-    </section>
+    </div>
   );
 }

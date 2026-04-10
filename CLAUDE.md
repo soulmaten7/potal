@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-10 KST (CW30-HF3: CUSTOM 시나리오 헤더 중복 제거 — CustomBuilder 내부 '⚙️ CUSTOM — Build your own workflow' 타이틀 블록 삭제, 힌트 문구만 살려서 grid 위 헬퍼 텍스트로 이동. HF2 패널 헤더가 CUSTOM의 단일 헤더 역할. 475 pages ✓)
+# 마지막 업데이트: 2026-04-10 KST (CW30-HF4: CUSTOM section 이중 래핑 제거 — CustomBuilder outer <section max-w-[1440px] px-8 pb-16> → 스타일 없는 <div aria-label=...>, 부모 ScenarioPanel의 max-w-[1440px] + px-8 단일 래퍼 사용. CUSTOM 2-column grid가 5개 일반 시나리오와 동일 폭으로 정렬. 475 pages ✓)
 
 ## 터미널 구조 (고정)
 | 터미널 | 모델 | 용도 | 실행 명령어 |

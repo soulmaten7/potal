@@ -1,5 +1,39 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-10 KST (CW30-HF3 — CUSTOM 시나리오 헤더 중복 제거)
+> 마지막 업데이트: 2026-04-10 KST (CW30-HF4 — CUSTOM section 이중 래핑 제거, 1440px 폭 정렬)
+
+## [2026-04-10 KST] CW30-HF4 — Hotfix: remove nested section wrapper, align CUSTOM box with 1440px
+
+### 배경
+HF3 배포 후 CUSTOM 시나리오의 좌우 2-column 박스(`Search features` / `Live code`)가 5개 일반 시나리오의 박스(`Online Seller demo` / `Developer workflow`)보다 좌우로 더 좁고 안쪽으로 들여쓰기 되어 보이는 문제 확인.
+
+### 원인 — section 이중 래핑
+- `ScenarioPanel.tsx` 이 이미 `<section className="w-full max-w-[1440px] mx-auto px-8 pt-4 pb-16">` 로 래핑
+- `CustomBuilder.tsx` 가 내부에서 **한 번 더** `<section className="w-full max-w-[1440px] mx-auto px-8 pt-0 pb-16">` 래핑
+- → CUSTOM 만 `px-8 + px-8 = 좌우 각 64px` 추가 들여쓰기 (총 128px 더 좁음)
+- → `pb-16` 이중 적용으로 하단 여백 과다
+- → 5개 일반 시나리오는 ScenarioPanel 단일 `<section>` 만 사용
+
+### 사용처 확인
+`CustomBuilder` 는 `ScenarioPanel.tsx` 에서만 직접 렌더됨. `app/combos/[slug]/page.tsx` 는 `/?type=custom&combo=...` 로 redirect 만 하고 CustomBuilder 직접 렌더 안 함. → 외부 section 래퍼 제거 안전.
+
+### 수정 파일 (1개)
+- `components/custom/CustomBuilder.tsx`
+  * `<section aria-label="CUSTOM builder — assemble your workflow" className="w-full max-w-[1440px] mx-auto px-8 pt-0 pb-16">` → `<div aria-label="CUSTOM builder — assemble your workflow">`
+  * 닫는 `</section>` → `</div>`
+  * 랜드마크 역할은 부모 ScenarioPanel 의 `<section aria-label="Scenario detail panel">` 이 이미 담당
+
+### 절대 규칙 준수
+- ✅ 수정 파일 1개 (CustomBuilder.tsx)
+- ✅ `ScenarioPanel.tsx` 미수정 (HF2 TitleBar 유지)
+- ✅ `ScenarioSelector.tsx` 미수정 (HF1 + HF2 유지)
+- ✅ `app/combos/[slug]/page.tsx` 미수정
+- ✅ HF1 (seller 기본 선택) + HF2 (압축) + HF3 (single heading) 회귀 없음
+- ✅ B2C 코드 미수정
+- ✅ `console.log` 0건
+- ✅ `npm run build` ✓ 475 pages (Compiled in 22.4s)
+
+### 결과
+CUSTOM 2-column grid 가 5개 일반 시나리오와 동일한 폭으로 렌더링. 부모 ScenarioPanel 의 단일 `<section max-w-[1440px] px-8>` 이 폭/패딩 일괄 담당.
 
 ## [2026-04-10 KST] CW30-HF3 — Hotfix: remove duplicate heading on CUSTOM scenario
 
