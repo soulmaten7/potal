@@ -56,7 +56,7 @@ export default function ScenarioPanel({ scenarioId }: ScenarioPanelProps) {
       {scenario?.isCustom ? (
         <CustomBuilder />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <NonDevPanel key={`nd-${scenarioId}`} scenarioId={scenarioId} />
           <DevPanel key={`dv-${scenarioId}`} scenarioId={scenarioId} />
         </div>

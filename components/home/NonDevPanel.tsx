@@ -209,7 +209,7 @@ export default function NonDevPanel({ scenarioId }: NonDevPanelProps) {
   const closeModal = () => setModal(m => ({ ...m, open: false }));
 
   return (
-    <div className="h-full rounded-2xl border border-slate-200 bg-white overflow-hidden flex flex-col">
+    <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden flex flex-col">
       {/* Header */}
       <div className="px-6 pt-6 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2 mb-1">
