@@ -1,5 +1,54 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-11 KST (CW33 + HF1 + HF2 프로덕션 검증 완료 — "진짜 완료" 판정)
+> 마지막 업데이트: 2026-04-11 KST (CW33-HF3 — input 겹침 + HS hint UI/route forwarding)
+
+## [2026-04-11 KST] CW33-HF3 — Input overlap fix + HS classifier hint forwarding
+
+### Issues resolved
+1. **Input 숫자/unit 라벨 겹침** (5 시나리오 전체) — `pl-3 pr-14` 로 우측 56px 확보
+2. **HS 분류기 단일 텍스트 의존** — UI 에서 `category` + `hsHint` 힌트 추가 + engine 까지 forwarding
+3. **demo route 가 힌트를 전달하지 않음** — `buildEngineInput()` + `buildForwarderInputs()` 가 `productCategory` + `hsCode` 를 `GlobalCostInput` 에 주입 (엔진은 이미 받을 준비 완료)
+
+### S1 — `components/home/NonDevPanel.tsx` input hotfix
+- `className` 의 `px-3` → `pl-3 pr-14` (unit span `absolute right-3` 과 충돌 해소)
+- 5 시나리오 × 모든 숫자 필드 (declared value, unit value, quantity, shipment value, value per shipment) 자동 적용
+
+### S2 — UI advanced HS hints
+- `FieldDef` 인터페이스에 `optional?: boolean` + `helper?: string` 추가
+- 신규 `CATEGORY_OPTIONS` 16 enum: apparel-knit / apparel-woven / leather-goods / footwear / electronics-consumer / electronics-battery / machinery-pumps / machinery-general / food-beverage / cosmetics / toys-games / furniture / chemicals / auto-parts / other / (empty)
+- 신규 `HS_HINT_FIELDS` 배열: `category` (select) + `hsHint` (text, placeholder "e.g. 4202.21 or 610910")
+- `SCENARIO_FIELDS` 5개 시나리오 (seller/d2c/importer/exporter/forwarder) 모두 `...HS_HINT_FIELDS` append
+- 렌더 루프: `renderField(f)` 함수 추출. required 는 위에, optional 은 collapsed `<details>` "Advanced — HS classification hints" 섹션
+- `allFilled` 체크: `fields.filter(f => !f.optional).every(...)` — optional 비어도 Calculate 버튼 active
+- helper 텍스트: label 아래 10px slate-400
+
+### S3 — `app/api/demo/scenario/route.ts` forwarding
+- 신규 `normalizeHsHint(raw)` 헬퍼: 문자열에서 숫자만 남기고 `≥4` 자리 필터, 10 자리 cap — "4202.21" / "4202 21" / "42.02.21.00" 전부 `"420221"` 로 통일
+- `buildEngineInput()` 이 `inputs.category` → `productCategory`, `inputs.hsHint` → `hsCode` 를 `GlobalCostInput` 에 주입
+- `buildForwarderInputs()` 동일 (모든 destination 에 동일 힌트 전달)
+- 엔진의 `classifyWithOverride(productName, hsCode, productCategory)` 3 파라미터가 처음으로 풀가동
+
+### Verification
+- `npm run build`: 475/475 ✓
+- `verify-cw32.mjs`: 28/28 green (no regression)
+- `verify-cw33.mjs`: 23/23 green (154,264 rows intact)
+- 로컬 curl 7 케이스:
+  - `category=leather-goods` → hs 4202210000, total $50.83
+  - `category=apparel-knit` → hs 610910, total $15,168.50
+  - `hsHint="4202.21"` → hs 420221, total $870.42
+  - `hsHint="420221"` (정규화) → **동일 결과** $870.42 ✓
+  - `category=electronics-battery` + CR2032 → hs 850650, restriction "Primary Lithium Cells: ..." (HAZMAT DB hit 보존)
+  - forwarder + `category=apparel-knit` + 3 dest → hs 610910, 3 rows
+
+### Scope
+- **In**: Issue 1 (input 겹침) + Issue 3-A/B (UI category/hsHint + route forwarding)
+- **Out** (CW34 Sprint 1 로 분리): Issue 2 multi-currency — 영향 범위 UI + API schema + engine convert 3층
+- **Out** (이번 HF 미포함): weight_kg / shippingTerms / firmName / buyerVatNumber
+
+### Files
+- `components/home/NonDevPanel.tsx` (S1 + S2)
+- `app/api/demo/scenario/route.ts` (S3)
+
+---
 
 ## [2026-04-11 KST] CW33-HF2 — Canned text + exporter mock removal + verification
 

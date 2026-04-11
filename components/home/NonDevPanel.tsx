@@ -39,6 +39,10 @@ interface FieldDef {
   unit?: string;
   /** CW31-HF1: cap for multiselect fields */
   max?: number;
+  /** CW33-HF3: advanced optional field — rendered inside collapsed section */
+  optional?: boolean;
+  /** CW33-HF3: helper text under the label */
+  helper?: string;
 }
 
 // CW31 "Honest Reset": full ISO3166-1 alpha-2 country list (240 countries)
@@ -54,6 +58,50 @@ const COUNTRY_OPTIONS_WITH_PLACEHOLDER = [
   ...COUNTRY_OPTIONS,
 ];
 
+// CW33-HF3: HS classification category hints. Passed to the engine as
+// `productCategory` and used by the classifier as a disambiguation
+// tie-breaker (e.g. apparel-knit vs apparel-woven → 6109 vs 6205).
+const CATEGORY_OPTIONS = [
+  { value: '', label: 'Not specified' },
+  { value: 'apparel-knit', label: 'Apparel — knitted' },
+  { value: 'apparel-woven', label: 'Apparel — woven' },
+  { value: 'leather-goods', label: 'Leather goods / bags / wallets' },
+  { value: 'footwear', label: 'Footwear' },
+  { value: 'electronics-consumer', label: 'Consumer electronics' },
+  { value: 'electronics-battery', label: 'Batteries & cells' },
+  { value: 'machinery-pumps', label: 'Machinery — pumps' },
+  { value: 'machinery-general', label: 'Machinery — general' },
+  { value: 'food-beverage', label: 'Food & beverage' },
+  { value: 'cosmetics', label: 'Cosmetics / personal care' },
+  { value: 'toys-games', label: 'Toys & games' },
+  { value: 'furniture', label: 'Furniture' },
+  { value: 'chemicals', label: 'Chemicals / industrial' },
+  { value: 'auto-parts', label: 'Auto parts' },
+  { value: 'other', label: 'Other' },
+];
+
+// CW33-HF3: two optional fields appended to every non-custom scenario.
+// Rendered inside a collapsed <details> "Advanced" section and excluded
+// from the Calculate button's "all filled" check.
+const HS_HINT_FIELDS: FieldDef[] = [
+  {
+    key: 'category',
+    label: 'Category (optional)',
+    type: 'select',
+    options: CATEGORY_OPTIONS,
+    optional: true,
+    helper: 'Helps the classifier pick between similar HS codes.',
+  },
+  {
+    key: 'hsHint',
+    label: 'HS code (optional)',
+    type: 'text',
+    placeholder: 'e.g. 4202.21 or 610910',
+    optional: true,
+    helper: 'If you already know the HS, we skip classification.',
+  },
+];
+
 // CW30-HF2: all defaultValue removed. Users start from an empty form and type
 // their own inputs — no need to clear pre-filled values first. Placeholders
 // provide illustrative hints only.
@@ -63,6 +111,7 @@ const SCENARIO_FIELDS: Record<string, FieldDef[]> = {
     { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     { key: 'value', label: 'Declared value', type: 'number', placeholder: '45', unit: 'USD' },
+    ...HS_HINT_FIELDS,
   ],
   d2c: [
     { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Organic cotton T-shirt' },
@@ -70,6 +119,7 @@ const SCENARIO_FIELDS: Record<string, FieldDef[]> = {
     { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     { key: 'value', label: 'Unit value', type: 'number', placeholder: '28', unit: 'USD' },
     { key: 'quantity', label: 'Quantity', type: 'number', placeholder: '500', unit: 'units' },
+    ...HS_HINT_FIELDS,
   ],
   importer: [
     { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Industrial centrifugal pumps' },
@@ -87,12 +137,14 @@ const SCENARIO_FIELDS: Record<string, FieldDef[]> = {
         { value: '40hc', label: '40ft HC' },
       ],
     },
+    ...HS_HINT_FIELDS,
   ],
   exporter: [
     { key: 'product', label: 'Product', type: 'text', placeholder: 'e.g. Lithium-ion battery cells' },
     { key: 'from', label: 'From', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     { key: 'to', label: 'To', type: 'select', options: COUNTRY_OPTIONS_WITH_PLACEHOLDER },
     { key: 'value', label: 'Shipment value', type: 'number', placeholder: '250000', unit: 'USD' },
+    ...HS_HINT_FIELDS,
   ],
   forwarder: [
     { key: 'product', label: 'Product type', type: 'text', placeholder: 'e.g. Cotton T-shirts (batch)' },
@@ -106,6 +158,7 @@ const SCENARIO_FIELDS: Record<string, FieldDef[]> = {
       unit: 'countries',
     },
     { key: 'value', label: 'Value per shipment', type: 'number', placeholder: '12000', unit: 'USD' },
+    ...HS_HINT_FIELDS,
   ],
 };
 
@@ -254,65 +307,92 @@ export default function NonDevPanel({
 
       {/* Inputs */}
       <div className="px-6 py-5 space-y-3">
-        {fields.map(f => (
-          <div key={f.key} className="flex items-center gap-2">
-            <div className="flex-1">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">
-                {f.label}
-              </label>
-              {f.type === 'multiselect' ? (
-                <MultiCountryPicker
-                  selected={Array.isArray(inputs[f.key]) ? (inputs[f.key] as string[]) : []}
-                  options={f.options || []}
-                  max={f.max ?? 5}
-                  onChange={next => setInputs(v => ({ ...v, [f.key]: next }))}
-                />
-              ) : f.type === 'select' ? (
-                <select
-                  value={typeof inputs[f.key] === 'string' || typeof inputs[f.key] === 'number' ? String(inputs[f.key]) : ''}
-                  onChange={e => setInputs(v => ({ ...v, [f.key]: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#F59E0B]"
-                >
-                  {(f.options || []).map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-              ) : (
-                <div className="relative">
-                  <input
-                    type={f.type}
-                    value={typeof inputs[f.key] === 'string' || typeof inputs[f.key] === 'number' ? String(inputs[f.key]) : ''}
-                    onChange={e =>
-                      setInputs(v => ({
-                        ...v,
-                        [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value,
-                      }))
-                    }
-                    placeholder={f.placeholder}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
+        {(() => {
+          const renderField = (f: FieldDef) => (
+            <div key={f.key} className="flex items-center gap-2">
+              <div className="flex-1">
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1">
+                  {f.label}
+                </label>
+                {f.type === 'multiselect' ? (
+                  <MultiCountryPicker
+                    selected={Array.isArray(inputs[f.key]) ? (inputs[f.key] as string[]) : []}
+                    options={f.options || []}
+                    max={f.max ?? 5}
+                    onChange={next => setInputs(v => ({ ...v, [f.key]: next }))}
                   />
-                  {f.unit && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-semibold pointer-events-none">
-                      {f.unit}
-                    </span>
-                  )}
-                </div>
+                ) : f.type === 'select' ? (
+                  <select
+                    value={typeof inputs[f.key] === 'string' || typeof inputs[f.key] === 'number' ? String(inputs[f.key]) : ''}
+                    onChange={e => setInputs(v => ({ ...v, [f.key]: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#F59E0B]"
+                  >
+                    {(f.options || []).map(o => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type={f.type}
+                      value={typeof inputs[f.key] === 'string' || typeof inputs[f.key] === 'number' ? String(inputs[f.key]) : ''}
+                      onChange={e =>
+                        setInputs(v => ({
+                          ...v,
+                          [f.key]: f.type === 'number' ? Number(e.target.value) : e.target.value,
+                        }))
+                      }
+                      placeholder={f.placeholder}
+                      className="w-full pl-3 pr-14 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
+                    />
+                    {f.unit && (
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-semibold pointer-events-none">
+                        {f.unit}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {f.helper && (
+                  <p className="mt-1 text-[10px] text-slate-400 leading-tight">{f.helper}</p>
+                )}
+              </div>
+              <div className="pt-5">
+                <CopyBadge onClick={() => {
+                  const v = inputs[f.key];
+                  const display = Array.isArray(v) ? v.join(',') : v;
+                  openCopyModal('input', f.key, display);
+                }} />
+              </div>
+            </div>
+          );
+
+          const requiredFields = fields.filter(f => !f.optional);
+          const optionalFields = fields.filter(f => f.optional);
+
+          return (
+            <>
+              {requiredFields.map(renderField)}
+
+              {/* CW33-HF3: Advanced HS classification hints, collapsed by default */}
+              {optionalFields.length > 0 && (
+                <details className="pt-2 border-t border-slate-100">
+                  <summary className="text-[11px] font-bold text-slate-500 uppercase tracking-wide cursor-pointer py-2 hover:text-slate-700 select-none">
+                    Advanced — HS classification hints
+                  </summary>
+                  <div className="space-y-3 pt-2">
+                    {optionalFields.map(renderField)}
+                  </div>
+                </details>
               )}
-            </div>
-            <div className="pt-5">
-              <CopyBadge onClick={() => {
-                const v = inputs[f.key];
-                const display = Array.isArray(v) ? v.join(',') : v;
-                openCopyModal('input', f.key, display);
-              }} />
-            </div>
-          </div>
-        ))}
+            </>
+          );
+        })()}
 
         {(() => {
-          // CW30-HF2: Calculate 버튼 활성화 조건 — 모든 필드 채워져야 활성
+          // CW30-HF2: Calculate 버튼 활성화 조건 — required 필드만 채워지면 활성
           // CW31-HF1: multiselect 는 배열 길이 > 0 로 판정
-          const allFilled = fields.every(f => {
+          // CW33-HF3: optional (advanced hint) 필드는 allFilled 체크에서 제외
+          const allFilled = fields.filter(f => !f.optional).every(f => {
             const v = inputs[f.key];
             if (f.type === 'multiselect') return Array.isArray(v) && v.length > 0;
             return v !== undefined && v !== '' && v !== null;

@@ -102,6 +102,18 @@ function toStr(v: unknown): string | undefined {
   return undefined;
 }
 
+/**
+ * CW33-HF3: Normalize an HS code hint from the UI. Users may type
+ * "4202.21", "4202 21", "420221", or "42.02.21.00" — we strip everything
+ * except digits and cap at 10 characters (max HS national code length).
+ */
+function normalizeHsHint(raw: unknown): string | undefined {
+  const s = toStr(raw);
+  if (!s) return undefined;
+  const digits = s.replace(/[^0-9]/g, '').slice(0, 10);
+  return digits.length >= 4 ? digits : undefined;
+}
+
 function buildEngineInput(
   inputs: Record<string, string | number | string[] | undefined>
 ): GlobalCostInput | null {
@@ -110,6 +122,9 @@ function buildEngineInput(
   const to = toStr(inputs.to);
   const unitValue = toNumber(inputs.value);
   const quantity = toNumber(inputs.quantity, 1);
+  // CW33-HF3: optional HS classifier hints from the Advanced section
+  const category = toStr(inputs.category);
+  const hsHint = normalizeHsHint(inputs.hsHint);
 
   if (!from || !to || unitValue <= 0) return null;
 
@@ -123,6 +138,8 @@ function buildEngineInput(
     productName: product,
     quantity,
     shippingType: 'international',
+    productCategory: category,
+    hsCode: hsHint,
   };
 }
 
@@ -157,6 +174,9 @@ function buildForwarderInputs(
   const shipmentValue = toNumber(inputs.value);
   if (!from || destinations.length === 0 || shipmentValue <= 0) return null;
   const productQuantity = toNumber(inputs.quantity, 1);
+  // CW33-HF3: optional classifier hints — applied to every destination
+  const category = toStr(inputs.category);
+  const hsHint = normalizeHsHint(inputs.hsHint);
 
   return destinations.slice(0, 5).map(dest => ({
     price: shipmentValue,
@@ -166,6 +186,8 @@ function buildForwarderInputs(
     productName: product,
     quantity: productQuantity,
     shippingType: 'international' as const,
+    productCategory: category,
+    hsCode: hsHint,
   }));
 }
 
