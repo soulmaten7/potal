@@ -1,7 +1,9 @@
 # 외장하드 (/Volumes/soulmaten/POTAL/) 진행 상황 요약
-> 마지막 업데이트: 2026-03-19 22:00 KST (테스트 16 완료)
+> 마지막 업데이트: 2026-04-11 KST (CW33 Phase A-2 인벤토리 완료. 자세한 CW33-매핑은 docs/EXTERNAL_DRIVE_CW33_INVENTORY.md 참조)
+> 이전: 2026-03-19 22:00 KST (테스트 16 완료)
 > 이 파일은 Cowork(Claude Desktop)이 외장하드 내용을 파악할 수 있도록 정리한 것입니다.
-> 외장하드 총 용량: ~894GB (WDC 상품 데이터 302GB 포함)
+> 외장하드 실측 총 용량: ~983GB (WDC 893GB + regulations/tlc_data/benchmark 90GB)
+> CW33 🔴 19건 매핑: 🟢 12 Ready / 🟡 4 Partial / 🔴 3 Missing / ⚪ WDC 무관
 
 ---
 

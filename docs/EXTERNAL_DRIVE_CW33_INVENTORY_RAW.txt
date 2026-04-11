@@ -1,0 +1,771 @@
+=== CW33 Phase A-2 — External Drive Inventory Raw Output ===
+Date: 2026-04-11 KST
+Root: /Volumes/soulmaten/POTAL/
+
+=== Step 1: Mount & top-level sizes ===
+895G	/Volumes/soulmaten/POTAL/
+Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+/dev/disk4s1   1.8Ti   952Gi   911Gi    52%       1     0  100%   /Volumes/soulmaten
+
+893G	/Volumes/soulmaten/POTAL/wdc-products
+910M	/Volumes/soulmaten/POTAL/regulations
+416M	/Volumes/soulmaten/POTAL/7field_benchmark
+140M	/Volumes/soulmaten/POTAL/hs_national_rules
+138M	/Volumes/soulmaten/POTAL/hs_embeddings
+128M	/Volumes/soulmaten/POTAL/hs-bulk
+100M	/Volumes/soulmaten/POTAL/tlc_data
+ 83M	/Volumes/soulmaten/POTAL/hs_correlation
+ 27M	/Volumes/soulmaten/POTAL/hs_classification_rules
+ 25M	/Volumes/soulmaten/POTAL/benchmark
+ 16M	/Volumes/soulmaten/POTAL/cbp_cross_search_mappings.csv
+ 16M	/Volumes/soulmaten/POTAL/cbp_cross_combined_mappings.csv
+5.8M	/Volumes/soulmaten/POTAL/cbp_cross_hs_mappings.csv
+5.8M	/Volumes/soulmaten/POTAL/category_concordance
+3.4M	/Volumes/soulmaten/POTAL/benchmark_results
+2.3M	/Volumes/soulmaten/POTAL/customs_field_mapping
+2.1M	/Volumes/soulmaten/POTAL/tarifflo_copy
+768K	/Volumes/soulmaten/POTAL/platform_field_mapping
+640K	/Volumes/soulmaten/POTAL/competitor_real_test
+512K	/Volumes/soulmaten/POTAL/field_expansion_benchmark
+512K	/Volumes/soulmaten/POTAL/field_existence_check
+256K	/Volumes/soulmaten/POTAL/WORLDFIRST ACCOUNT.pdf
+256K	/Volumes/soulmaten/POTAL/tarifflo_analysis
+256K	/Volumes/soulmaten/POTAL/analysis
+128K	/Volumes/soulmaten/POTAL/v5_benchmark_summary.md
+128K	/Volumes/soulmaten/POTAL/v5_benchmark_results.json
+128K	/Volumes/soulmaten/POTAL/v3_failure_summary.md
+128K	/Volumes/soulmaten/POTAL/v3_failure_analysis.json
+128K	/Volumes/soulmaten/POTAL/macmap
+128K	/Volumes/soulmaten/POTAL/data_collection.log
+128K	/Volumes/soulmaten/POTAL/cbp_cross_extraction_stats.json
+128K	/Volumes/soulmaten/POTAL/benchmark_test_data.json
+
+=== Step 2: Directory tree (2 levels) ===
+/Volumes/soulmaten/POTAL
+/Volumes/soulmaten/POTAL/7field_benchmark
+/Volumes/soulmaten/POTAL/analysis
+/Volumes/soulmaten/POTAL/benchmark
+/Volumes/soulmaten/POTAL/benchmark_results
+/Volumes/soulmaten/POTAL/benchmark/atlas
+/Volumes/soulmaten/POTAL/benchmark/cble
+/Volumes/soulmaten/POTAL/benchmark/formulas
+/Volumes/soulmaten/POTAL/benchmark/hscodecomp
+/Volumes/soulmaten/POTAL/benchmark/japan_customs
+/Volumes/soulmaten/POTAL/benchmark/korea_customs
+/Volumes/soulmaten/POTAL/benchmark/results
+/Volumes/soulmaten/POTAL/category_concordance
+/Volumes/soulmaten/POTAL/category_concordance/bec
+/Volumes/soulmaten/POTAL/category_concordance/cpc
+/Volumes/soulmaten/POTAL/category_concordance/isic
+/Volumes/soulmaten/POTAL/category_concordance/sitc
+/Volumes/soulmaten/POTAL/competitor_real_test
+/Volumes/soulmaten/POTAL/customs_field_mapping
+/Volumes/soulmaten/POTAL/field_existence_check
+/Volumes/soulmaten/POTAL/field_expansion_benchmark
+/Volumes/soulmaten/POTAL/hs_classification_rules
+/Volumes/soulmaten/POTAL/hs_classification_rules/conflict_patterns
+/Volumes/soulmaten/POTAL/hs_correlation
+/Volumes/soulmaten/POTAL/hs_embeddings
+/Volumes/soulmaten/POTAL/hs_national_rules
+/Volumes/soulmaten/POTAL/hs_national_rules/au
+/Volumes/soulmaten/POTAL/hs_national_rules/ca
+/Volumes/soulmaten/POTAL/hs_national_rules/eu
+/Volumes/soulmaten/POTAL/hs_national_rules/gb
+/Volumes/soulmaten/POTAL/hs_national_rules/jp
+/Volumes/soulmaten/POTAL/hs_national_rules/kr
+/Volumes/soulmaten/POTAL/hs_national_rules/us
+/Volumes/soulmaten/POTAL/hs_national_rules/wco
+/Volumes/soulmaten/POTAL/hs-bulk
+/Volumes/soulmaten/POTAL/hs-bulk/au
+/Volumes/soulmaten/POTAL/hs-bulk/ca
+/Volumes/soulmaten/POTAL/hs-bulk/eu
+/Volumes/soulmaten/POTAL/hs-bulk/jp
+/Volumes/soulmaten/POTAL/hs-bulk/kr
+/Volumes/soulmaten/POTAL/hs-bulk/uk
+/Volumes/soulmaten/POTAL/hs-bulk/us
+/Volumes/soulmaten/POTAL/macmap
+/Volumes/soulmaten/POTAL/platform_field_mapping
+/Volumes/soulmaten/POTAL/regulations
+/Volumes/soulmaten/POTAL/regulations/au
+/Volumes/soulmaten/POTAL/regulations/ca
+/Volumes/soulmaten/POTAL/regulations/eu
+/Volumes/soulmaten/POTAL/regulations/eu_ebti
+/Volumes/soulmaten/POTAL/regulations/eu_ecics
+/Volumes/soulmaten/POTAL/regulations/eu_taric_vat
+/Volumes/soulmaten/POTAL/regulations/fta_psr
+/Volumes/soulmaten/POTAL/regulations/international
+/Volumes/soulmaten/POTAL/regulations/jp
+/Volumes/soulmaten/POTAL/regulations/kr
+/Volumes/soulmaten/POTAL/regulations/regional
+/Volumes/soulmaten/POTAL/regulations/remaining
+/Volumes/soulmaten/POTAL/regulations/uk
+/Volumes/soulmaten/POTAL/regulations/uk_atar
+/Volumes/soulmaten/POTAL/regulations/un_dg
+/Volumes/soulmaten/POTAL/regulations/us
+/Volumes/soulmaten/POTAL/regulations/us_bis
+/Volumes/soulmaten/POTAL/regulations/wto
+/Volumes/soulmaten/POTAL/tarifflo_analysis
+/Volumes/soulmaten/POTAL/tarifflo_copy
+/Volumes/soulmaten/POTAL/tlc_data
+/Volumes/soulmaten/POTAL/tlc_data/ad_cvd
+/Volumes/soulmaten/POTAL/tlc_data/analysis
+/Volumes/soulmaten/POTAL/tlc_data/currency
+/Volumes/soulmaten/POTAL/tlc_data/customs_fees
+/Volumes/soulmaten/POTAL/tlc_data/de_minimis
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate
+/Volumes/soulmaten/POTAL/tlc_data/export_controls
+/Volumes/soulmaten/POTAL/tlc_data/insurance_shipping
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin
+/Volumes/soulmaten/POTAL/tlc_data/sanctions
+/Volumes/soulmaten/POTAL/tlc_data/special_tax
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst
+/Volumes/soulmaten/POTAL/wdc-products
+/Volumes/soulmaten/POTAL/wdc-products/extracted
+/Volumes/soulmaten/POTAL/wdc-products/raw
+/Volumes/soulmaten/POTAL/wdc-products/v2_results
+
+=== Step 3: C-01 FTA search ===
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/fta_psr_5_major.csv
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/fta_psr_5_major.json
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/usmca_chapter4_rules_of_origin.pdf
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/usmca_psr_heading_level.json
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/korus_annex4a_psr.pdf
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/rcep_annex3a_psr.pdf
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/rcep_psr_heading_level.json
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/cptpp_annex3d_psr.pdf
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/cptpp_psr_heading_level.json
+/Volumes/soulmaten/POTAL/tlc_data/rules_of_origin/korus_annex6a_psr.pdf
+/Volumes/soulmaten/POTAL/tlc_data/de_minimis/fta_deminimis_thresholds.json
+
+=== Step 3: C-03 Country data / VAT / de minimis ===
+/Volumes/soulmaten/POTAL/regulations/eu/vat/vat_directive_2006_112.html
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/ecfr_part738_country_chart.xml
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/country_chart_raw.txt
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/commerce_country_chart.csv
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/country_chart_structured.json
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst/eu_27_vat_rates.csv
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst/non_eu_vat_rates.csv
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst/eu_remaining_14_vat_rates.json
+/Volumes/soulmaten/POTAL/tlc_data/special_tax/additional_country_special_taxes.json
+/Volumes/soulmaten/POTAL/tlc_data/de_minimis/country_valuation_deminimis.csv
+/Volumes/soulmaten/POTAL/tlc_data/insurance_shipping/cif_fob_country_matrix.json
+/Volumes/soulmaten/POTAL/tlc_data/analysis/04_de_minimis_structure_analysis.json
+/Volumes/soulmaten/POTAL/tlc_data/analysis/03_vat_gst_structure_analysis.json
+/Volumes/soulmaten/POTAL/competitor_real_test/observation_report.md
+/Volumes/soulmaten/POTAL/7field_benchmark/final_7country_benchmark.json
+
+=== Step 3: C-04/C-11 Sanctions & denied party ===
+/Volumes/soulmaten/POTAL/regulations/us/ofac_sanctions/sdn.csv
+/Volumes/soulmaten/POTAL/regulations/us/ofac_sanctions/sdn_advanced.xml
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/entity_list.csv
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/bis_entity_list_page.html
+/Volumes/soulmaten/POTAL/tlc_data/export_controls/bis_entity_list.json
+/Volumes/soulmaten/POTAL/tlc_data/sanctions/eu_sanctions_list.xml
+/Volumes/soulmaten/POTAL/tlc_data/sanctions/uk_ofsi_sanctions.csv
+/Volumes/soulmaten/POTAL/tlc_data/sanctions/un_sanctions_consolidated.xml
+/Volumes/soulmaten/POTAL/tlc_data/analysis/09_sanctions_structure_analysis.json
+
+=== Step 3: C-05 Section 301/232 ===
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/section_301_hts.csv
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/section_232_hts.csv
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/ieepa_reciprocal_hts.csv
+
+=== Step 3: C-06 US TRQ / HTSUS ===
+/Volumes/soulmaten/POTAL/regulations/us/htsus/hts_2026_rev4.xlsx
+/Volumes/soulmaten/POTAL/regulations/us/htsus/hts_2026_rev4.json
+/Volumes/soulmaten/POTAL/hs-bulk/us/hts_complete.json
+/Volumes/soulmaten/POTAL/hs-bulk/us/us_hts_10digit.csv
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/section_301_hts.csv
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/section_232_hts.csv
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/ieepa_reciprocal_hts.csv
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/us_trq_entries.json
+
+=== Step 3: C-07/C-08 EU VAT + seasonal ===
+/Volumes/soulmaten/POTAL/regulations/eu/customs_code/eu_cn_annex_regulation.html
+/Volumes/soulmaten/POTAL/hs_classification_rules/eu_cn_rules.md
+/Volumes/soulmaten/POTAL/tlc_data/duty_rate/eu_seasonal_tariffs.json
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst/eu_27_vat_rates.csv
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst/non_eu_vat_rates.csv
+/Volumes/soulmaten/POTAL/tlc_data/vat_gst/eu_remaining_14_vat_rates.json
+
+=== Step 3: C-10 Brand origins ===
+
+=== Step 3: C-13 HS Database (v3 engine) ===
+/Volumes/soulmaten/POTAL/regulations/international/wco/hs2022_sections.json
+/Volumes/soulmaten/POTAL/regulations/international/wco/hs2022_chapters.json
+/Volumes/soulmaten/POTAL/hs_correlation/cbp_cross_hs2022.csv
+/Volumes/soulmaten/POTAL/hs_correlation/ebti_hs2022.csv
+/Volumes/soulmaten/POTAL/hs_correlation/hs2017_to_hs2022_map.json
+/Volumes/soulmaten/POTAL/hs_correlation/hs2012_to_hs2022_map.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_raw.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_errors.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_fixes.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_remapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_9field_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_llm_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v2_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v3_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v4_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v5_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v6_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v7_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_v7_9field_mapped.json
+/Volumes/soulmaten/POTAL/7field_benchmark/hscodecomp_layer2_v7_layer1_results.json
+
+=== Step 3: C-13 v3 engine / GRI / notes rules ===
+/Volumes/soulmaten/POTAL/wdc-products/v2_results/upload_chunks/cbp_cross_converted.csv
+/Volumes/soulmaten/POTAL/wdc-products/v2_results/upload_chunks/cbp_chunk_aa
+/Volumes/soulmaten/POTAL/wdc-products/v2_results/upload_chunks/cbp_chunk_ab
+/Volumes/soulmaten/POTAL/wdc-products/v2_results/upload_chunks/cbp_chunk_ac
+/Volumes/soulmaten/POTAL/cbp_cross_hs_mappings.csv
+/Volumes/soulmaten/POTAL/cbp_cross_extraction_stats.json
+/Volumes/soulmaten/POTAL/cbp_cross_search_mappings.csv
+/Volumes/soulmaten/POTAL/cbp_cross_combined_mappings.csv
+/Volumes/soulmaten/POTAL/benchmark/results/cbp_100_results.json
+/Volumes/soulmaten/POTAL/hs_classification_rules/cbp_icp_tariff_classification.pdf
+/Volumes/soulmaten/POTAL/hs_classification_rules/cbp_icp_raw_text.txt
+/Volumes/soulmaten/POTAL/hs_classification_rules/cbp_tariff_classification_guide.pdf
+/Volumes/soulmaten/POTAL/hs_classification_rules/cbp_tariff_classification_text.txt
+/Volumes/soulmaten/POTAL/hs_classification_rules/cbp_classification_guide.md
+/Volumes/soulmaten/POTAL/tlc_data/currency/cbp_quarterly_page.html
+/Volumes/soulmaten/POTAL/hs_correlation/cbp_cross_hs2022.csv
+/Volumes/soulmaten/POTAL/field_expansion_benchmark/cbp_field_comparison.md
+/Volumes/soulmaten/POTAL/field_expansion_benchmark/cbp_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/T28_CBP100_Result.xlsx
+/Volumes/soulmaten/POTAL/regulations/eu_ebti/ebti_full_export.zip
+/Volumes/soulmaten/POTAL/regulations/eu_ebti/ebti_rulings.csv
+/Volumes/soulmaten/POTAL/regulations/eu_ebti/ebti_for_db.csv
+/Volumes/soulmaten/POTAL/hs_correlation/ebti_hs2022.csv
+
+=== Step 3: C-14 Exchange rate ===
+/Volumes/soulmaten/POTAL/tlc_data/currency/ecb_daily_rates.xml
+/Volumes/soulmaten/POTAL/tlc_data/currency/ecb_historical_rates.xml
+
+=== Step 3: C-17 US State Sales Tax ===
+/Volumes/soulmaten/POTAL/regulations/us/sales_tax/us_state_sales_tax_2024.json
+
+=== Step 3: C-19 Shipping rates ===
+/Volumes/soulmaten/POTAL/customs_field_mapping/phase4_190countries_groups.json
+
+=== Step 3: Benchmark assets (ablation/benchmark/WDC/potal) ===
+/Volumes/soulmaten/POTAL/7field_benchmark/field_ablation_test_results.md
+/Volumes/soulmaten/POTAL/7field_benchmark/ablation_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/Amazon_Ablation_Test.xlsx
+/Volumes/soulmaten/POTAL/7field_benchmark/ablation_v2_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/POTAL_Ablation_V2.xlsx
+/Volumes/soulmaten/POTAL/7field_benchmark/ablation_v2_errors.json
+/Volumes/soulmaten/POTAL/7field_benchmark/ablation_v2_fixes.json
+/Volumes/soulmaten/POTAL/benchmark_test_data.json
+/Volumes/soulmaten/POTAL/benchmark/benchmark.log
+/Volumes/soulmaten/POTAL/benchmark/results/BENCHMARK_ANALYSIS_REPORT.md
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1_summary.md
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1_wrong.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1.1_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1.1_summary.md
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1.1_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1.2_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1.2_summary.md
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v1.2_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2_summary.md
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.1_log.txt
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.1_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.1_summary.md
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.1_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.2_log.txt
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.2_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v2.2_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v3.0_log.txt
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v3.0_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v3.0_errors.json
+/Volumes/soulmaten/POTAL/benchmark_results/vector_search_benchmark_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v4.0_results.json
+/Volumes/soulmaten/POTAL/benchmark_results/gri_benchmark_v4.0_errors.json
+/Volumes/soulmaten/POTAL/v5_benchmark_results.json
+/Volumes/soulmaten/POTAL/v5_benchmark_summary.md
+/Volumes/soulmaten/POTAL/tarifflo_copy/benchmark.ts
+/Volumes/soulmaten/POTAL/analysis/POTAL_12_TLC_Competitor_Benchmark.xlsx
+/Volumes/soulmaten/POTAL/competitor_real_test/benchmark_results.json
+/Volumes/soulmaten/POTAL/field_expansion_benchmark/run_benchmark.ts
+/Volumes/soulmaten/POTAL/7field_benchmark/run_benchmark.ts
+/Volumes/soulmaten/POTAL/7field_benchmark/v3_step2_benchmark_611.md
+/Volumes/soulmaten/POTAL/7field_benchmark/benchmark_1000_products.json
+/Volumes/soulmaten/POTAL/7field_benchmark/benchmark_1000_results.json
+/Volumes/soulmaten/POTAL/7field_benchmark/benchmark_1000_summary.json
+/Volumes/soulmaten/POTAL/analysis/POTAL_12_TLC_Competitor_Benchmark.xlsx
+/Volumes/soulmaten/POTAL/7field_benchmark/POTAL_Ablation_V2.xlsx
+/Volumes/soulmaten/POTAL/7field_benchmark/POTAL_V3_Benchmark_350.xlsx
+/Volumes/soulmaten/POTAL/7field_benchmark/POTAL_V3_Benchmark_9field_Complete.xlsx
+/Volumes/soulmaten/POTAL/customs_field_mapping/POTAL_240_Customs_Fields_Raw.xlsx
+/Volumes/soulmaten/POTAL/platform_field_mapping/POTAL_Platform_Product_Fields_Raw.xlsx
+
+=== Step 4: Large files > 10MB (top 50) ===
+371M	/Volumes/soulmaten/POTAL/wdc-products/raw/Product_domain_stats.csv
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_9.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_8.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_76.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_73.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_71.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_68.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_66.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_57.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_53.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_49.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_47.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_38.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_36.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_30.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_27.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_22.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_21.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_18.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_15.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_12.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_11.gz
+187M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_1.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_74.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_72.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_70.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_69.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_67.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_65.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_64.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_63.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_61.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_60.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_6.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_59.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_58.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_56.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_55.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_54.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_52.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_51.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_5.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_48.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_46.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_45.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_44.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_43.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_42.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_41.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_40.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_4.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_39.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_37.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_35.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_34.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_33.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_32.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_3.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_26.gz
+186M	/Volumes/soulmaten/POTAL/wdc-products/raw/part_25.gz
+
+=== Step 5: File type histogram ===
+1899 gz
+ 537 json
+ 165 csv
+  96 htm
+  92 md
+  35 jsonl
+  23 html
+  22 pdf
+  16 txt
+  14 xml
+  14 xlsx
+  11 log
+   9 py
+   5 ts
+   5 sh
+   2 zip
+   1 db
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/upload_chunks/cbp_chunk_ac
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/upload_chunks/cbp_chunk_ab
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/upload_chunks/cbp_chunk_aa
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ai
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ah
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ag
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_af
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ae
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ad
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ac
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_ab
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_10_aa
+   1 /volumes/soulmaten/potal/wdc-products/v2_results/csv_split/chunk_09_ak
+
+=== Step 6: Recently modified (2025-01-01+) — first 100 ===
+/Volumes/soulmaten/POTAL/._WORLDFIRST ACCOUNT.pdf
+/Volumes/soulmaten/POTAL/WORLDFIRST ACCOUNT.pdf
+/Volumes/soulmaten/POTAL/wdc-products/raw/Product_domain_stats.csv
+/Volumes/soulmaten/POTAL/wdc-products/raw/Product_lookup.csv
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_0.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_1.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_2.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_3.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_4.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_5.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_6.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_7.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_8.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_9.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_10.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_11.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_12.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_13.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_14.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_15.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_16.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_17.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_18.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_19.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_20.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_21.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_22.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_23.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_24.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_25.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_26.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_27.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_28.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_29.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_30.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_31.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_32.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_33.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_34.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_35.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_36.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_37.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_38.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_39.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_40.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_41.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_42.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_43.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_44.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_45.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_46.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_47.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_48.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_49.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_50.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_51.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_52.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_53.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_54.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_55.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_56.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_57.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_58.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_59.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_60.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_61.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_62.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_63.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_64.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_65.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_66.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_67.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_68.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_69.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_70.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_71.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_72.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_73.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_74.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_75.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_76.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_77.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_78.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_79.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_80.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_81.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_82.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_83.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_84.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_85.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_86.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_87.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_88.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_89.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_90.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_91.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_92.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_93.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_94.gz
+/Volumes/soulmaten/POTAL/wdc-products/raw/part_95.gz
+
+=== Step 7: v3 HS engine related ===
+/Volumes/soulmaten/POTAL/7field_benchmark/V3_TEST_LOG.md
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_rules.json
+/Volumes/soulmaten/POTAL/7field_benchmark/ai4_codified_rules.json
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_headings.json
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_subheadings.json
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_headings_v2.json
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_subheadings_v2.json
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_headings_v3.json
+/Volumes/soulmaten/POTAL/7field_benchmark/codified_subheadings_v3.json
+/Volumes/soulmaten/POTAL/hs_national_rules/us/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/us/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/us/codified_national_full_final.json
+/Volumes/soulmaten/POTAL/hs_national_rules/eu/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/eu/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/eu/codified_national_full_final.json
+/Volumes/soulmaten/POTAL/hs_national_rules/gb/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/gb/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/gb/codified_national_full_final.json
+/Volumes/soulmaten/POTAL/hs_national_rules/kr/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/kr/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/kr/codified_national_full_final.json
+/Volumes/soulmaten/POTAL/hs_national_rules/jp/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/jp/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/jp/codified_national_full_final.json
+/Volumes/soulmaten/POTAL/hs_national_rules/au/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/au/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/au/codified_national_full_final.json
+/Volumes/soulmaten/POTAL/hs_national_rules/ca/codified_national.json
+/Volumes/soulmaten/POTAL/hs_national_rules/ca/codified_national_v5.json
+/Volumes/soulmaten/POTAL/hs_national_rules/ca/codified_national_full_final.json
+
+=== WDC-products top level ===
+extracted
+raw
+v2_results
+
+492G	/Volumes/soulmaten/POTAL/wdc-products/extracted
+350G	/Volumes/soulmaten/POTAL/wdc-products/raw
+ 51G	/Volumes/soulmaten/POTAL/wdc-products/v2_results
+
+=== hs_classification_rules folder ===
+au_tariff_rules.md
+ca_tariff_rules.md
+cbp_classification_guide.md
+cbp_icp_raw_text.txt
+cbp_icp_tariff_classification.pdf
+cbp_tariff_classification_guide.pdf
+cbp_tariff_classification_text.txt
+chapter_notes.json
+COMPLETE_GRI_REFERENCE.md
+COMPLETE_GRI1_REFERENCE.md
+conflict_patterns
+eu_cn_rules.md
+gri_cases_raw.json
+gri_full_text.md
+gri1_rules_and_cases.md
+gri2_rules_and_cases.md
+gri3_rules_and_cases.md
+gri4_rules_and_cases.md
+gri5_rules_and_cases.md
+gri6_rules_and_cases.md
+jp_tariff_rules.md
+kr_classification_rules.md
+section_notes.json
+subheading_notes.json
+SUMMARY.md
+uk_tariff_rules.md
+us_additional_rules.md
+
+=== hs_national_rules folder ===
+6digit_verification.json
+au
+ca
+codification_summary.json
+eu
+full_codification_summary.json
+gb
+jp
+kr
+us
+validation_5round_results.json
+wco
+
+=== regulations folder ===
+au
+ca
+COLLECTION_LOG.md
+eu
+eu_ebti
+eu_ecics
+eu_taric_vat
+fta_psr
+international
+jp
+kr
+regional
+remaining
+uk
+uk_atar
+un_dg
+us
+us_bis
+wto
+
+=== benchmark folder ===
+atlas
+benchmark.log
+cble
+formulas
+gov_tariff_descriptions.csv
+hs6_from_gov.csv
+hscodecomp
+japan_customs
+korea_customs
+results
+watcher.log
+
+=== benchmark_results folder ===
+gri_benchmark_v1_errors.json
+gri_benchmark_v1_results.json
+gri_benchmark_v1_summary.md
+gri_benchmark_v1_wrong.json
+gri_benchmark_v1.1_errors.json
+gri_benchmark_v1.1_results.json
+gri_benchmark_v1.1_summary.md
+gri_benchmark_v1.2_errors.json
+gri_benchmark_v1.2_results.json
+gri_benchmark_v1.2_summary.md
+gri_benchmark_v2_errors.json
+gri_benchmark_v2_results.json
+gri_benchmark_v2_summary.md
+gri_benchmark_v2.1_errors.json
+gri_benchmark_v2.1_log.txt
+gri_benchmark_v2.1_results.json
+gri_benchmark_v2.1_summary.md
+gri_benchmark_v2.2_errors.json
+gri_benchmark_v2.2_log.txt
+gri_benchmark_v2.2_results.json
+gri_benchmark_v3.0_errors.json
+gri_benchmark_v3.0_log.txt
+gri_benchmark_v3.0_results.json
+gri_benchmark_v4.0_errors.json
+gri_benchmark_v4.0_results.json
+vector_search_benchmark_results.json
+
+=== tlc_data folder ===
+ad_cvd
+analysis
+COLLECTION_SUMMARY.md
+currency
+customs_fees
+de_minimis
+duty_rate
+export_controls
+insurance_shipping
+rules_of_origin
+sanctions
+special_tax
+vat_gst
+
+=== hs-bulk folder ===
+au
+ca
+commodity_duty_rates.json
+duty_rates_merged.csv
+duty_rates_wits.csv
+eu
+jp
+kr
+uk
+us
+
+=== hs_correlation folder ===
+cbp_cross_hs2022.csv
+chapter_expert_rules.json
+conversion_stats.json
+ebti_hs2022.csv
+expert_rules_verification.json
+hs2012_to_hs2022_map.json
+hs2017_to_hs2022_map.json
+split_judgment_records.csv
+
+=== 7field_benchmark folder ===
+36_special_cases_analysis.md
+5of7.json
+6of7.json
+7of7.json
+9field_reference.json
+ablation_results.json
+ablation_v2_errors.json
+ablation_v2_fixes.json
+ablation_v2_results.json
+ai_derived_rules.json
+ai4_all_patterns.json
+ai4_codified_rules.json
+ai4_final_report.md
+ai4_rulings_ch09_spice.json
+ai4_rulings_ch40_rubber.json
+ai4_rulings_ch42_leather.json
+ai4_rulings_ch95_toy.json
+amazon_350_bench_result.json
+Amazon_50_Benchmark_Analysis.xlsx
+amazon_50_products.json
+amazon_9field_bench_result.json
+amazon_9field_complete.json
+Amazon_Ablation_Test.xlsx
+amazon_all_products.json
+amazon_bench_result.json
+analysis_7of7_detailed.json
+baseline_verification.csv
+bench_7of7_results.json
+bench_7of7_summary.json
+benchmark_1000_products.json
+
+=== macmap folder ===
+
+=== customs_field_mapping folder ===
+DONE_PHASE_1.txt
+DONE_PHASE_2.txt
+DONE_PHASE_3.txt
+DONE_PHASE_4.txt
+DONE_PHASE_5.txt
+DONE_PHASE_6.txt
+field_synonym_dictionary.json
+phase1_7countries.json
+phase1_international_standards.json
+phase2_10platforms.json
+phase2_7countries_detail.json
+phase3_43countries.json
+phase3_international_standards.json
+phase4_190countries_groups.json
+phase4_50countries.json
+POTAL_240_Customs_Fields_Raw.xlsx
+translation_mismatches.json
+
+=== category_concordance folder ===
+bec
+cpc
+DOWNLOAD_REPORT.md
+google_taxonomy_full.txt
+google_taxonomy_hs_heading_map.json
+isic
+sitc
+STEP_MAPPING_DESIGN.md
+unspsc_segments_hs_mapping.json
+
+=== tarifflo_copy + tarifflo_analysis ===
+benchmark.ts
+round1_results.json
+round1_summary.md
+round2_results.json
+round2_summary.md
+round3_results.json
+round3_summary.md
+round4_results.json
+round4_summary.md
+round5_results.json
+round5_summary.md
+round6_results.json
+round6_summary.md
+round7_results.json
+round7_summary.md
+tarifflo_classifier.ts
+FINAL_REPORT.md
+
+=== hs_embeddings folder ===
+hs6_embeddings.json

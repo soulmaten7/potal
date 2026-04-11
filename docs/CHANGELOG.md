@@ -1,5 +1,63 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-11 KST (CW33 Phase A — Hardcoding audit: 140 features 전수조사, 🔴 19건 + 🟡 8건 발견, 코드 수정 0)
+> 마지막 업데이트: 2026-04-11 KST (CW33 Phase A-2 — External drive inventory: 983GB 외장하드 스캔, 🔴 19건 중 12건 Ready)
+
+## [2026-04-11 KST] CW33 Phase A-2 — External Drive Inventory (read-only)
+
+### 목적
+CW33-S1 본작업 착수 전, `/Volumes/soulmaten/POTAL/` 외장하드에 이미 다운로드된 CW33 관련 데이터 자산 전수조사. "이미 있는 것 vs 새로 구해야 하는 것" 분리.
+
+### 스캔 결과
+- 실측 총 용량: **983 GB**
+  - `wdc-products/` — **893 GB** (분류기 벤치마크용, CW33 무관)
+  - `regulations/` — 910 MB (미국/EU/WCO/UK/AU/CA/JP/KR 법령 원본)
+  - `tlc_data/` — 100 MB (**2026-03-18 수집 — CW33 core data warehouse**)
+  - `7field_benchmark/` — 416 MB (v3 codified rules + POTAL_Ablation_V2.xlsx)
+  - `hs_national_rules/` — 140 MB (7개국 codified national tariff rules)
+  - `hs_classification_rules/` — 27 MB (GRI + chapter/section notes)
+  - `hs_correlation/` — 83 MB (HS 2012/2017/2022 매핑 + CBP/EBTI 판례)
+  - `hs-bulk/` — 128 MB (2025-03 older HS tariff bulk)
+  - 기타: benchmark/, tarifflo_analysis/, analysis/ 등
+
+### CW33 🔴 Critical 19건 매핑
+| 상태 | 개수 | 주요 내용 |
+|---|---|---|
+| 🟢 **Ready** (즉시 seed 가능) | **12** | OFAC SDN 123MB XML + Section 301/232 + US TRQ + EU VAT + EU seasonal + FTA RoO (KORUS/USMCA/RCEP/CPTPP/EU-UK TCA) + HTSUS 2026 rev4 + v3 codified subheadings/headings + hs_national_rules 7개국 + ECB historical rates + sanctions 4 소스 (OFAC/BIS/EU/UK/UN) + AD/CVD + Country data (240국 VAT/de minimis) + special tax |
+| 🟡 **Stale / Partial** | **4** | US State Sales Tax (2024 버전), HTSUS price break rules 추출 필요, IOSS/OSS threshold 추출 필요, Import restriction (export 쪽만 있음) |
+| 🔴 **Missing** | **3** | Brand origins (코드 파일만), Insurance rate tables, Shipping rates carrier API |
+| ⚪ **Unrelated** | WDC 893GB | 분류기 벤치마크용 상품 corpus, CW33 무관 |
+
+### 핵심 발견
+- **POTAL_Ablation_V2.xlsx** 확보: `/Volumes/soulmaten/POTAL/7field_benchmark/POTAL_Ablation_V2.xlsx` (161KB, 2026-03-20) — CW33 regression 벤치마크 기준점
+- **OFAC SDN full feed**: `sdn_advanced.xml` 123MB + `sdn.csv` 5.5MB + EU 24MB + UK 16MB + UN 2MB — CW33-S4 sanctions 작업 **별도 subscription 불필요**
+- **v3 HS 엔진 codified rules**: `codified_subheadings.json` 1.5MB + `codified_headings.json` + `codified_national_full_final.json` (7개국) — P0.11 HS Database 마이그레이션 core asset
+- **tlc_data/** 2026-03-18 수집: duty_rate/vat_gst/de_minimis/sanctions/ad_cvd/rules_of_origin/currency/export_controls — 4주 이내 수집된 신선한 데이터
+
+### CW33-S 난이도 재평가
+| Sprint | 이전 | 이후 | 이유 |
+|---|---|---|---|
+| CW33-S1 FTA+Country | 6-8일 | 4-5일 | RoO + country data 원본 확보 |
+| CW33-S2 US/EU tax tables | 8-10일 | 5-6일 | Section 301/232/TRQ/EU VAT 전부 Ready |
+| CW33-S3 Classifier + HS DB | 5-7일 | 3-4일 | v3 codified + HTSUS 2026 전부 Ready |
+| CW33-S4 Sanctions sync | 10일 (XL) | 5-6일 (L) | OFAC/BIS/EU/UK/UN 전부 확보, parser 만 작성 |
+| CW33-S5 Exchange rate | 3일 | 3일 | ECB historical 확보 |
+| CW33-S6 P1 items | 8일 | 8일 | brand/insurance/shipping 은 여전히 새로 필요 |
+
+**총 P0 소요**: 29-31일 → **20-24일** (**25-30% 단축**)
+
+### 산출물
+- `docs/EXTERNAL_DRIVE_CW33_INVENTORY.md` — 메인 인벤토리 (19 Critical 매핑, 🟢🟡🔴 분류 상세, TOP 20 대용량 파일, CW33-S 난이도 재평가, 5개 결정 질문)
+- `docs/EXTERNAL_DRIVE_CW33_INVENTORY_RAW.txt` — find 명령어 원본 출력 (771 lines)
+- `docs/EXTERNAL_DRIVE_STATUS.md` — 헤더 날짜 업데이트 (기존 2026-03-19 → 2026-04-11)
+
+### 파일 변경
+- **문서만** — 외장하드 파일 복사/이동/수정 **0건** (read-only 인벤토리)
+
+### 다음 단계
+1. 은태님 5개 결정 질문 확인 (EXTERNAL_DRIVE_CW33_INVENTORY.md §"결정 질문")
+2. CW33-S1 즉시 착수 (CW33-S3 HS DB seed 스크립트는 S1 과 병렬 가능)
+3. US Sales Tax 2026 재수집 (S-01, 선행 블로커)
+
+---
 
 ## [2026-04-11 KST] CW33 Phase A — Hardcoding Audit (read-only)
 
