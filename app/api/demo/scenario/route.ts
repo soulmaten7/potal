@@ -200,16 +200,18 @@ function mapEngineResultToMockShape(
   const dutyRate =
     productValue > 0 ? round2((duty / productValue) * 10000) / 10000 : 0;
 
-  // CW31-HF1: Surface real engine restriction check (hazmat, ECCN, carriers)
-  const hsCode = engineOut.hsClassification?.hsCode || mock.hsCode;
+  // CW31-HF1 + CW33-HF2: Restriction text is ALWAYS engine-derived for live
+  // responses. We do NOT fall back to the scenario mock's canned restriction
+  // string (Bug 1: e.g. "Standard machinery import to Korea" leaked into
+  // cotton t-shirt importer IN→US queries).
+  const hsCode = engineOut.hsClassification?.hsCode || '0000';
   const destCountry =
     engineOut.destinationCountry ||
     (typeof inputs.to === 'string' ? inputs.to.toUpperCase() : 'US');
   const restrictionCheck = checkRestrictions(hsCode, destCountry);
 
   let restrictionBlocked = false;
-  let restrictionSummary =
-    engineOut.additionalTariffNote || mock.restriction.summary;
+  let restrictionSummary: string;
   let restrictionLicense: string | undefined;
 
   if (restrictionCheck.isProhibited) {
@@ -222,21 +224,25 @@ function mapEngineResultToMockShape(
     }
   } else if (restrictionCheck.hasRestrictions) {
     const top = restrictionCheck.restrictions[0];
-    if (top) {
-      restrictionSummary = `${top.category}: ${top.description}`;
-      if (top.requiredDocuments && top.requiredDocuments.length > 0) {
-        restrictionLicense = `Requires: ${top.requiredDocuments.join(', ')}`;
-      } else if (restrictionCheck.restrictedCarriers.length > 0) {
-        restrictionLicense = `Carrier restricted: ${restrictionCheck.restrictedCarriers
-          .slice(0, 3)
-          .join(', ')}`;
-      }
+    restrictionSummary = `${top.category}: ${top.description}`;
+    if (top.requiredDocuments && top.requiredDocuments.length > 0) {
+      restrictionLicense = `Requires: ${top.requiredDocuments.join(', ')}`;
+    } else if (restrictionCheck.restrictedCarriers.length > 0) {
+      restrictionLicense = `Carrier restricted: ${restrictionCheck.restrictedCarriers
+        .slice(0, 3)
+        .join(', ')}`;
     }
+  } else if (engineOut.additionalTariffNote) {
+    // Informational note from the cost engine (e.g. "Section 301 applies")
+    restrictionSummary = engineOut.additionalTariffNote;
+  } else {
+    // No restriction hit. Emit a neutral engine-derived statement instead of
+    // inheriting the scenario mock's canned text.
+    restrictionSummary = `No active import restrictions detected for HS ${hsCode} → ${destCountry}.`;
   }
 
-  // Notes — synthesize from engine outputs, fall back to mock notes
+  // Notes — engine-derived only. No mock fallback.
   const notes: string[] = [];
-  if (engineOut.additionalTariffNote) notes.push(engineOut.additionalTariffNote);
   if (engineOut.ftaApplied?.hasFta && engineOut.ftaApplied.ftaName) {
     notes.push(`${engineOut.ftaApplied.ftaName} applied — preferential rate`);
   }
@@ -248,12 +254,17 @@ function mapEngineResultToMockShape(
   }
   if (engineOut.deMinimisApplied) {
     notes.push(
-      `Under ${engineOut.destinationCountry} de minimis threshold — duty exempt`
+      `Under ${engineOut.destinationCountry} de minimis threshold — duty exempt`,
     );
   }
-  if (notes.length === 0) notes.push(...mock.notes);
+  if (engineOut.additionalTariffNote && !notes.includes(engineOut.additionalTariffNote)) {
+    notes.push(engineOut.additionalTariffNote);
+  }
+  if (notes.length === 0) {
+    notes.push(`POTAL engine: ${hsCode} ${engineOut.ftaApplied?.hasFta ? 'with FTA' : 'no preferential rate'}.`);
+  }
 
-  // Extras — pass FTA + quantity savings if d2c
+  // Extras — FTA name + quantity only, no mock fallback.
   const extras: Record<string, string | number> = {};
   if (engineOut.ftaApplied?.hasFta && engineOut.ftaApplied.ftaName) {
     extras.ftaName = engineOut.ftaApplied.ftaName;
@@ -266,7 +277,8 @@ function mapEngineResultToMockShape(
     hsCode,
     hsDescription:
       engineOut.hsClassification?.description ||
-      (toStr(inputs.product) ?? mock.hsDescription),
+      toStr(inputs.product) ||
+      'Product not classified',
     restriction: {
       blocked: restrictionBlocked,
       summary: restrictionSummary,
@@ -282,7 +294,7 @@ function mapEngineResultToMockShape(
       fees,
       total,
     },
-    extras: Object.keys(extras).length > 0 ? extras : mock.extras,
+    extras: Object.keys(extras).length > 0 ? extras : undefined,
     notes,
   };
 }
@@ -313,7 +325,7 @@ function mapForwarderResultsToMockShape(
     );
     return {
       destination: input.destinationCountry || 'US',
-      hsCode: output.hsClassification?.hsCode || mock.hsCode,
+      hsCode: output.hsClassification?.hsCode || '0000',
       duty,
       taxes,
       shipping,
@@ -451,35 +463,42 @@ export async function POST(req: NextRequest) {
   const inputs: DemoInputs = body.inputs || {};
 
   // Try the real engine. On any failure (bad inputs, timeout, DB outage)
-  // fall back to the bundled mock so the UI never breaks.
+  // fall back to the neutral empty shell (mock-results.ts) so the UI renders
+  // a clear "engine unavailable" placeholder. CW33-HF2: we do NOT return
+  // scenario-specific canned values anymore.
   let result: MockResult = mock;
   let source: 'mock' | 'live' = 'mock';
+  let engineStatus: 'ok' | 'unavailable' | 'not-attempted' = 'not-attempted';
 
   if (scenarioId === 'forwarder') {
     // CW31-HF1: forwarder fires one engine call per destination in parallel.
     const batchInputs = buildForwarderInputs(inputs);
     if (batchInputs) {
+      engineStatus = 'unavailable';
       const batchResults = await Promise.all(
-        batchInputs.map(i => runEngineWithTimeout(i, FORWARDER_TIMEOUT_MS))
+        batchInputs.map(i => runEngineWithTimeout(i, FORWARDER_TIMEOUT_MS)),
       );
       const successes = batchResults
         .map((r, i) => (r ? { input: batchInputs[i], output: r } : null))
         .filter(
           (x): x is { input: GlobalCostInput; output: GlobalLandedCost } =>
-            x !== null
+            x !== null,
         );
       if (successes.length > 0) {
         result = mapForwarderResultsToMockShape(successes, mock, inputs);
         source = 'live';
+        engineStatus = 'ok';
       }
     }
   } else {
     const engineInput = buildEngineInput(inputs);
     if (engineInput) {
+      engineStatus = 'unavailable';
       const engineOut = await runEngineWithTimeout(engineInput);
       if (engineOut) {
         result = mapEngineResultToMockShape(engineOut, mock, inputs);
         source = 'live';
+        engineStatus = 'ok';
       }
     }
   }
@@ -499,8 +518,9 @@ export async function POST(req: NextRequest) {
         'Cache-Control': 'no-store',
         'X-Response-Time': `${Date.now() - startedAt}`,
         'X-Demo-Source': source,
+        'X-Engine-Status': engineStatus,
       },
-    }
+    },
   );
 }
 
