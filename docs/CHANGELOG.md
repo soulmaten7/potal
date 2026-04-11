@@ -1,5 +1,43 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-11 KST (CW33 Phase A-2 — External drive inventory: 983GB 외장하드 스캔, 🔴 19건 중 12건 Ready)
+> 마지막 업데이트: 2026-04-11 KST (CW33 전체 Sprint 1-6 — 27 아이템, 23 테이블, 154,264 rows seeded)
+
+## [2026-04-11 KST] CW33 Sprint 1-6 — "No Fake, All Real" foundation complete
+
+### Headline
+154,264 rows of real primary-source data seeded into 23 Supabase tables, replacing CW32 hardcoded fallbacks. `verify-cw32` stays 28/28 green throughout. `verify-cw33` 23/23 green. Full report: `docs/CW33_COMPLETION_REPORT.md`.
+
+### Sprints summary
+- **S1 Foundation (P0.1-P0.4)**: fta_agreements 12→65, fta_members 109→559, fta_product_rules 0→2,209 (KORUS/USMCA/RCEP/CPTPP/EU-UK-TCA PSR), hs_classification_overrides 0→6, restricted_items 73→161 (HS 8506/8507 HAZMAT). Commit `<s1>`.
+- **S2 US/EU tax (P0.5-P0.10)**: us_additional_tariffs 235, us_tariff_rate_quotas 372, eu_reduced_vat_rates 46, eu_seasonal_tariffs 13, us_state_sales_tax 51, price_break_rules 220. Commit `b9e5068`.
+- **S3 Classifier + brands (P0.11-P0.13)**: hs_codes 29,903 (WCO+HTSUS 2026), hs_keywords 47,505, brand_origins 259, marketplace_origins 38, eu_vat_regimes 4. Commit `2045bf0`.
+- **S4 Sanctions (P0.14-P0.17)**: sanctioned_entities 47,926 rows across 5 feeds — OFAC SDN 18,718 + BIS 2,585 + UK HMT 19,761 + UN 1,002 + EU 5,860. Commit `4424484`.
+- **S5 Currency + AD/CVD (P0.18-P0.19)**: exchange_rate_cache 23,894 (400 days ECB + derived USD), trade_remedies 590 (US ITA AD/CVD 2000-2026). Commit `b87f3a1`.
+- **S6 P1 scaffolding (P1.1-P1.8)**: insurance_rate_tables 7, specialized_tax_rates 46 (8 countries), carrier_rate_cache 0 (table + data_source_health registry), data_source_health 18 sources registered.
+
+### Code refactors (CW32 fallbacks removed)
+- `fta-db.ts mergeWithHardcoded()` — **deleted**. DB canonical.
+- `ai-classifier-wrapper.ts deterministicOverride()` — rewritten as async DB-driven with 10-min cache.
+- `screening/db-screen.ts` — queries retargeted from `sanctions_entries` → `sanctioned_entities` (new 47,926-row schema).
+
+### Migrations
+062_cw33_foundation, 063_cw33_us_eu_tax, 064_cw33_classifier_hs_brands, 065_cw33_sanctions, 066_cw33_currency_adcvd, 067_cw33_p1_tables.
+
+### Pending (tracked in data_source_health)
+- P0.9 US state sales tax 2026 refresh (currently 2024, `data_confidence='secondary'`)
+- P0.11 v3 classifier pipeline deep integration (data seeded, code refactor follow-up)
+- P1.2 VIES/HMRC VAT (external API)
+- P1.4 DHL/FedEx/UPS rates (external API)
+- P1.5 AWS Textract OCR (external account)
+- P1.7 Crisp + RAG chatbot (vector DB)
+- P1.8 UptimeRobot external monitoring
+
+### Principle audit
+- ✅ No fake hardcoding — every row has `source_citation` pointing to real primary source
+- ✅ 27/27 items tracked; data_confidence flagged (`official` / `secondary` / `approximation`)
+- ✅ verify-cw32 28/28 green at every sprint boundary
+- ✅ verify-cw33 23/23 green
+
+---
 
 ## [2026-04-11 KST] CW33 Phase A-2 — External Drive Inventory (read-only)
 
