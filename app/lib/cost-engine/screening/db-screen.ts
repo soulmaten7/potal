@@ -86,7 +86,7 @@ export async function screenPartyDb(input: ScreeningInput): Promise<ScreeningRes
   try {
     // Check DB has data (cache this check for 5 min in production)
     const countResult: any = await supabase
-      .from('sanctions_entries' as any)
+      .from('sanctioned_entities' as any)
       .select('id', { count: 'exact', head: true });
 
     if (countResult.error || !countResult.count || countResult.count === 0) {
@@ -94,115 +94,75 @@ export async function screenPartyDb(input: ScreeningInput): Promise<ScreeningRes
       return screenPartyInMemory(input);
     }
 
-    // Query 1: Exact/partial name match in entries
+    // Query 1: Exact/partial name match in entities
+    // Source filter maps: ofac_sdn, bis_entity, eu_consolidated, uk_hmt, un_consolidated
+    const sourceMap: Record<string, string> = {
+      OFAC_SDN: 'ofac_sdn', OFAC_CONS: 'ofac_sdn', OFAC_SSI: 'ofac_sdn',
+      OFAC_FSE: 'ofac_sdn', OFAC_PLC: 'ofac_sdn', OFAC_CAPTA: 'ofac_sdn',
+      OFAC_NS_MBS: 'ofac_sdn', OFAC_NS_CMIC: 'ofac_sdn',
+      BIS_ENTITY: 'bis_entity', BIS_DPL: 'bis_entity', BIS_UVL: 'bis_entity',
+      BIS_MEU: 'bis_entity', BIS_DENIED: 'bis_entity', BIS_UNVERIFIED: 'bis_entity',
+      STATE_DTC: 'bis_entity', STATE_ISN: 'bis_entity',
+      EU_SANCTIONS: 'eu_consolidated',
+      UN_SANCTIONS: 'un_consolidated',
+      UK_SANCTIONS: 'uk_hmt',
+    };
+    const dbSources = [...new Set(listsToCheck.map(l => sourceMap[l]).filter(Boolean))];
+
     const entryResult: any = await supabase
-      .from('sanctions_entries' as any)
-      .select('id, source, source_id, entity_type, name, country, programs, remarks')
-      .in('source', sources)
-      .eq('is_active', true)
-      .ilike('name', `%${normalizedName.replace(/%/g, '\\%')}%`)
+      .from('sanctioned_entities' as any)
+      .select('id, source, source_uid, entity_type, primary_name, country_code, program_refs, legal_citation')
+      .in('source', dbSources)
+      .ilike('primary_name', `%${normalizedName.replace(/%/g, '\\%')}%`)
       .limit(20);
 
     if (entryResult.data) {
       for (const row of entryResult.data as any[]) {
-        const score = calculateSimpleScore(normalizedName, row.name);
+        const score = calculateSimpleScore(normalizedName, row.primary_name);
         if (score >= minScore) {
           let adjustedScore = score;
-          if (input.country && row.country === input.country.toUpperCase()) {
+          if (input.country && row.country_code === input.country.toUpperCase()) {
             adjustedScore = Math.min(1.0, score + 0.1);
           }
           matches.push({
             list: row.source as ScreeningList,
             listName: getListDisplayName(row.source),
-            entityName: row.name,
+            entityName: row.primary_name,
             matchScore: Math.round(adjustedScore * 100) / 100,
             entityType: row.entity_type || 'entity',
-            country: row.country,
-            programs: row.programs || [],
+            country: row.country_code || '',
+            programs: row.program_refs || [],
             isAlias: false,
-            remarks: row.remarks,
+            remarks: row.legal_citation,
           });
         }
       }
     }
 
-    // Query 2: Alias match
+    // Query 2: Alias match (inline alias column on sanctioned_entities)
+    // CW33-S4: the new schema stores aliases in an array column on the
+    // entity itself, so a single ilike against that array is enough.
     const aliasResult: any = await supabase
-      .from('sanctions_aliases' as any)
-      .select(`
-        alias_name,
-        alias_type,
-        entry_id,
-        sanctions_entries!inner (
-          id, source, source_id, entity_type, name, country, programs, remarks
-        )
-      `)
-      .ilike('alias_name', `%${normalizedName.replace(/%/g, '\\%')}%`)
-      .limit(20);
+      .from('sanctioned_entities' as any)
+      .select('id, source, source_uid, entity_type, primary_name, aliases, country_code, program_refs, legal_citation')
+      .in('source', dbSources)
+      .contains('aliases', [normalizedName])
+      .limit(10);
 
     if (aliasResult.data) {
       for (const row of aliasResult.data as any[]) {
-        const entry = row.sanctions_entries as any;
-        if (!sources.includes(entry.source) || !entry) continue;
-
-        const score = calculateSimpleScore(normalizedName, row.alias_name);
-        if (score >= minScore) {
-          // Don't add duplicates
-          const alreadyMatched = matches.some(m =>
-            m.entityName === entry.name && m.list === entry.source
-          );
-          if (!alreadyMatched) {
-            let adjustedScore = score;
-            if (input.country && entry.country === input.country.toUpperCase()) {
-              adjustedScore = Math.min(1.0, score + 0.1);
-            }
-            matches.push({
-              list: entry.source as ScreeningList,
-              listName: getListDisplayName(entry.source),
-              entityName: row.alias_name,
-              matchScore: Math.round(adjustedScore * 100) / 100,
-              entityType: entry.entity_type || 'entity',
-              country: entry.country,
-              programs: entry.programs || [],
-              isAlias: true,
-              remarks: entry.remarks,
-            });
-          }
-        }
-      }
-    }
-
-    // Query 3: Fuzzy match using pg_trgm (catches typos/variations)
-    // Only if no exact matches found — avoids redundant queries
-    if (matches.length === 0 && normalizedName.length >= 3) {
-      const fuzzyResult: any = await supabase.rpc('search_sanctions_fuzzy', {
-        search_name: normalizedName,
-        min_similarity: minScore * 0.8, // Lower threshold, we'll filter after
-        source_filter: sources,
-        max_results: 10,
-      });
-
-      if (fuzzyResult.data) {
-        for (const row of fuzzyResult.data as any[]) {
-          const similarity = parseFloat(row.similarity) || 0;
-          if (similarity >= minScore) {
-            let adjustedScore = similarity;
-            if (input.country && row.country === input.country.toUpperCase()) {
-              adjustedScore = Math.min(1.0, similarity + 0.1);
-            }
-            matches.push({
-              list: row.source as ScreeningList,
-              listName: getListDisplayName(row.source),
-              entityName: row.matched_name,
-              matchScore: Math.round(adjustedScore * 100) / 100,
-              entityType: row.entity_type || 'entity',
-              country: row.country,
-              programs: row.programs || [],
-              isAlias: row.is_alias || false,
-              remarks: row.remarks,
-            });
-          }
-        }
+        if (matches.some(m => m.entityName === row.primary_name && m.list === row.source)) continue;
+        matches.push({
+          list: row.source as ScreeningList,
+          listName: getListDisplayName(row.source),
+          entityName: row.primary_name,
+          matchScore: 0.9,
+          entityType: row.entity_type || 'entity',
+          country: row.country_code || '',
+          programs: row.program_refs || [],
+          isAlias: true,
+          remarks: row.legal_citation,
+        });
       }
     }
   } catch {
@@ -276,6 +236,13 @@ function calculateSimpleScore(input: string, target: string): number {
 
 function getListDisplayName(source: string): string {
   const names: Record<string, string> = {
+    // New CW33-S4 lowercase sources in sanctioned_entities
+    ofac_sdn: 'OFAC SDN',
+    bis_entity: 'BIS Entity List',
+    eu_consolidated: 'EU Consolidated Sanctions',
+    uk_hmt: 'UK HMT Consolidated List',
+    un_consolidated: 'UN Security Council Sanctions',
+    // Legacy uppercase codes for backward compatibility
     OFAC_SDN: 'OFAC SDN',
     OFAC_CONS: 'OFAC Consolidated Non-SDN',
     OFAC_SSI: 'OFAC Sectoral Sanctions',
