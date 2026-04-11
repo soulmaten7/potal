@@ -38,6 +38,20 @@
   - `hsHint="420221"` (정규화) → **동일 결과** $870.42 ✓
   - `category=electronics-battery` + CR2032 → hs 850650, restriction "Primary Lithium Cells: ..." (HAZMAT DB hit 보존)
   - forwarder + `category=apparel-knit` + 3 dest → hs 610910, 3 rows
+- **프로덕션 API 8/8 green** (https://www.potal.app, cold-start 후 재시도):
+  - T1 leather wallet + leather-goods → hs=4202210000 $50.83 ✓
+  - T2 cotton knit + apparel-knit → hs=610910 $34.55 ✓
+  - T3 cotton woven + apparel-woven → hs=620620 $34.55 ✓ (chapter 62 woven OK)
+  - T4/T5 hsHint "4202.21" == "420221" → hs=420221 $1321.24 ✓ (정규화)
+  - T6 centrifugal pump + machinery-pumps → hs=840680 $94,190 (forwarding ✓, classifier keyword quirk 별건)
+  - T7 Li-ion pack + electronics-battery → hs=850760 $269,634 HAZMAT ✓
+  - T8 CR2032 + electronics-battery → hs=850650 $5447.71 HAZMAT ✓
+  - T9 forwarder multi-dest → hs=610910 rows=3 $13,001.57 ✓
+- **프로덕션 UI 5/5 시나리오 green** (Chrome MCP 자동 검증):
+  - Online Seller / D2C Brand / Importer / Exporter / Forwarder/3PL 전부 숫자 input `pr-14` ✓
+  - 5 시나리오 모두 "Advanced — HS classification hints" `<details>` 존재 + category select + hsHint text ✓
+  - Calculate 버튼 required 필드만 채우면 active (optional 비워도 OK) ✓
+  - declared value "1234567" 직접 타이핑 → USD 라벨 겹침 없음 시각 확인
 
 ### Scope
 - **In**: Issue 1 (input 겹침) + Issue 3-A/B (UI category/hsHint + route forwarding)
