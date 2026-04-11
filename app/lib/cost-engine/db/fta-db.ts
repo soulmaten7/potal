@@ -1,39 +1,18 @@
 /**
- * POTAL FTA — DB-backed version
+ * POTAL FTA — DB-backed
  *
- * Same interface as hs-code/fta.ts but reads from Supabase.
- * Falls back to hardcoded data if DB is unavailable.
+ * CW33-S1: DB is the canonical source. The hardcoded fta.ts fallback
+ * (CW32 mergeWithHardcoded) has been REMOVED — all 65 FTAs now live in
+ * Supabase (fta_agreements + fta_members + fta_product_rules).
+ *
+ * The last-resort fallback is the hardcoded helper ONLY when the DB call
+ * throws (network outage). Never for "DB returned nothing" — that is an
+ * authoritative "no FTA applies" answer.
  */
 
 import { getFtaAgreements, type CachedFtaAgreement } from './tariff-cache';
 import { findApplicableFta as hardcodedFindFta, applyFtaRate as hardcodedApplyFta } from '../hs-code/fta';
 import type { FtaResult } from '../hs-code/fta';
-
-/**
- * CW32: FTAs added to hs-code/fta.ts after the Supabase fta_agreements
- * table was last synced. When the DB lookup fails to find a match we also
- * consult the hardcoded list so new agreements (Korea-UK, KCFTA…) apply
- * without waiting for a DB migration.
- *
- * Safe because hardcodedFindFta() returns `hasFta:false` when nothing
- * applies, and the merge only replaces a "no FTA" result with a hit.
- */
-function mergeWithHardcoded(
-  dbResult: FtaResult,
-  originCountry: string,
-  destinationCountry: string,
-  hsChapter: string | undefined,
-): FtaResult {
-  // DB already found a preferential agreement — keep it.
-  if (dbResult.hasFta && (dbResult.preferentialMultiplier ?? 1) < 1) {
-    return dbResult;
-  }
-  const hardcoded = hardcodedFindFta(originCountry, destinationCountry, hsChapter);
-  if (hardcoded.hasFta && (hardcoded.preferentialMultiplier ?? 1) < 1) {
-    return hardcoded;
-  }
-  return dbResult;
-}
 
 /**
  * Find applicable FTA from DB.
@@ -70,19 +49,20 @@ export async function findApplicableFtaFromDb(
       }
     }
 
-    const dbResult: FtaResult = bestFta
-      ? {
-          hasFta: true,
-          ftaName: bestFta.ftaName,
-          ftaCode: bestFta.ftaCode,
-          preferentialMultiplier: bestMultiplier,
-        }
-      : { hasFta: false };
+    if (bestFta) {
+      return {
+        hasFta: true,
+        ftaName: bestFta.ftaName,
+        ftaCode: bestFta.ftaCode,
+        preferentialMultiplier: bestMultiplier,
+      };
+    }
 
-    // CW32: merge hardcoded additions so new FTAs apply without a DB migration.
-    return mergeWithHardcoded(dbResult, originCountry, destinationCountry, hsChapter);
+    return { hasFta: false };
   } catch {
-    // Fallback to hardcoded
+    // Last resort: network/DB error — fall back to hardcoded data so the
+    // engine still produces a sensible result. This path is NOT used for
+    // "DB returned nothing"; DB no-match is authoritative.
     return hardcodedFindFta(originCountry, destinationCountry, hsChapter);
   }
 }

@@ -17,85 +17,84 @@ import { classifyProduct, classifyWithOverride } from '../hs-code/classifier';
 import { classifyWithAi, getAiClassifierConfig } from './claude-classifier';
 import { classifyWithVectorSearch, storeClassificationVector, getVectorSearchConfig } from './vector-search';
 
-// ─── CW32: Deterministic pre-classification overrides ───────
+// ─── CW33-S1: DB-driven classification overrides ───────────
 //
-// For well-known product categories where the keyword classifier is biased
-// (battery chemistry, knitted vs woven apparel) we return a deterministic
-// HS code BEFORE the DB cache check. This guarantees the right heading
-// (and therefore the right HAZMAT warning + FTA chapter) regardless of what
-// stale values might be sitting in hs_classification_cache.
-function deterministicOverride(
+// Replaces the CW32 `deterministicOverride()` regex function. Overrides
+// now live in the `hs_classification_overrides` table and can be managed
+// without redeploying the application. An in-memory LRU with a 10-minute
+// TTL guards against latency on the hot path.
+//
+// Rules are ordered by `priority ASC` — lower number runs first. A rule
+// hits when its pattern_regex matches the lowercased product name.
+
+interface ClassificationOverrideRule {
+  priority: number;
+  patternRegex: RegExp;
+  hsCode: string;
+  description: string;
+  confidence: number;
+}
+
+let overrideCache: { rules: ClassificationOverrideRule[]; loadedAt: number } | null = null;
+const OVERRIDE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+async function loadClassificationOverrides(): Promise<ClassificationOverrideRule[]> {
+  const now = Date.now();
+  if (overrideCache && now - overrideCache.loadedAt < OVERRIDE_TTL_MS) {
+    return overrideCache.rules;
+  }
+  const supabase = getSupabase();
+  if (!supabase) return overrideCache?.rules ?? [];
+  try {
+    const { data, error } = await supabase
+      .from('hs_classification_overrides')
+      .select('priority, pattern_regex, hs_code, description, confidence')
+      .eq('active', true)
+      .order('priority', { ascending: true });
+    if (error || !data) {
+      console.warn('[HS Override] load failed:', error?.message);
+      return overrideCache?.rules ?? [];
+    }
+    const rules: ClassificationOverrideRule[] = [];
+    for (const row of data as any[]) {
+      try {
+        rules.push({
+          priority: row.priority,
+          patternRegex: new RegExp(row.pattern_regex, 'i'),
+          hsCode: row.hs_code,
+          description: row.description,
+          confidence: Number(row.confidence) || 0.9,
+        });
+      } catch (e) {
+        console.warn('[HS Override] bad regex:', row.pattern_regex, (e as Error).message);
+      }
+    }
+    overrideCache = { rules, loadedAt: now };
+    return rules;
+  } catch (e) {
+    console.warn('[HS Override] load failed:', (e as Error).message);
+    return overrideCache?.rules ?? [];
+  }
+}
+
+async function deterministicOverride(
   productName: string,
-): HsClassificationResult | null {
+): Promise<HsClassificationResult | null> {
+  if (!productName) return null;
+  const rules = await loadClassificationOverrides();
+  if (rules.length === 0) return null;
   const p = productName.toLowerCase();
-
-  // ─── Battery chemistry overrides (HS 8506 vs 8507) ───
-  if (/\b(battery|batteries|cell|cells|accumulator|pack)\b|cr\d{4}/.test(p)) {
-    const mentionsLithium = /lithium|li-?ion/.test(p);
-    const mentionsPrimary = /\b(primary|non[-\s]?rechargeable|disposable)\b/.test(p);
-    const mentionsRechargeable =
-      /\b(rechargeable|secondary|power[-\s]?bank|accumulator)\b/.test(p) ||
-      /li-?ion|lithium[-\s]?ion/.test(p) ||
-      /\b18650\b|\b21700\b/.test(p);
-    const mentionsCoinCell = /\bcr\d{4}\b|button[-\s]?cell/.test(p);
-    const mentionsAlkaline = /\balkaline\b/.test(p);
-
-    // Primary (non-rechargeable) lithium OR coin cells → 850650
-    if (mentionsCoinCell || (mentionsLithium && mentionsPrimary && !mentionsRechargeable)) {
+  for (const rule of rules) {
+    if (rule.patternRegex.test(p)) {
       return {
-        hsCode: '850650',
-        description: 'Primary cells and primary batteries — lithium (non-rechargeable)',
-        confidence: 0.95,
-        method: 'keyword',
-        alternatives: [],
-      };
-    }
-    // Lithium-ion / rechargeable lithium → 850760
-    if (mentionsLithium && (mentionsRechargeable || /li-?ion|lithium[-\s]?ion/.test(p))) {
-      return {
-        hsCode: '850760',
-        description: 'Electric accumulators — lithium-ion (rechargeable)',
-        confidence: 0.95,
-        method: 'keyword',
-        alternatives: [],
-      };
-    }
-    // Bare "lithium battery" (ambiguous) defaults to li-ion
-    if (mentionsLithium) {
-      return {
-        hsCode: '850760',
-        description: 'Electric accumulators — lithium-ion',
-        confidence: 0.85,
-        method: 'keyword',
-        alternatives: [],
-      };
-    }
-    // Primary alkaline → 850610
-    if (mentionsPrimary && mentionsAlkaline) {
-      return {
-        hsCode: '850610',
-        description: 'Primary cells and primary batteries — manganese dioxide (alkaline)',
-        confidence: 0.9,
+        hsCode: rule.hsCode,
+        description: rule.description,
+        confidence: rule.confidence,
         method: 'keyword',
         alternatives: [],
       };
     }
   }
-
-  // ─── Cotton T-shirt consistency (HS 6109 knitted) ───
-  // Handle both singular "t-shirt" and plural "t-shirts", with optional
-  // adjectives. Always resolves to 610910 so single-scenario and forwarder
-  // code paths return the same HS.
-  if (/\bt[-\s]?shirts?\b|\btshirts?\b|\btees?\b/.test(p) && /\bcotton\b/.test(p)) {
-    return {
-      hsCode: '610910',
-      description: 'T-shirts, singlets and other vests, knitted or crocheted, cotton',
-      confidence: 0.95,
-      method: 'keyword',
-      alternatives: [],
-    };
-  }
-
   return null;
 }
 
@@ -258,8 +257,8 @@ export async function classifyProductAsync(
   const config = getAiClassifierConfig();
   const hash = hashProductName(productName, category);
 
-  // ━━━ CW32: Deterministic override (bypasses cache) ━━━
-  const override = deterministicOverride(productName);
+  // ━━━ CW33-S1: DB-driven override (bypasses cache) ━━━
+  const override = await deterministicOverride(productName);
   if (override) {
     return { ...override, classificationSource: 'override' };
   }
