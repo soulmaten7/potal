@@ -108,7 +108,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
       });
     }
 
-    const results = screenParties(inputs);
+    const results = await screenParties(inputs);
     const hasAnyMatch = results.some(r => r.hasMatches);
 
     // Check embargoes for each unique country
@@ -157,7 +157,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     minScore,
   };
 
-  const result = screenParty(input);
+  const result = await screenParty(input);
 
   // Embargo check
   const embargo = input.country ? await checkEmbargo(input.country) : null;

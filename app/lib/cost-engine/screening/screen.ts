@@ -1,9 +1,17 @@
 /**
- * POTAL Denied Party Screening — Core Engine
+ * POTAL Denied Party Screening — In-memory Fallback Engine
  *
- * Screens party names against major sanctions lists using fuzzy matching.
- * In production, this would connect to live OFAC/BIS/EU APIs.
- * Current implementation uses hardcoded high-profile entries + fuzzy matching.
+ * ⚠️ CW33-HF1: This module is NOT the production screening path anymore.
+ * The public `screenParty` / `screenParties` exports in `./index.ts` now
+ * point at `./db-screen.ts`, which queries the 47,926-row
+ * `sanctioned_entities` table in Supabase (OFAC SDN + BIS + EU + UK + UN).
+ *
+ * `db-screen.ts` imports `screenPartyInMemory` from this file as an
+ * **emergency network-outage fallback only**. The 65-entry
+ * SANCTION_ENTRIES below is deliberately small and high-profile — enough
+ * to keep the API returning sensible results during a DB incident.
+ * Do NOT add more rows here; real data belongs in the `sanctioned_entities`
+ * table (see scripts/cw33-s4-seed-sanctions.mjs).
  *
  * Matching algorithm: Normalized Levenshtein distance + token-based matching
  */
@@ -28,6 +36,9 @@ interface SanctionEntry {
   remarks?: string;
 }
 
+// ⚠️ 65 emergency fallback only. Production path = sanctioned_entities DB
+// (47,926 rows). Do NOT add entries here — add them to the DB via
+// scripts/cw33-s4-seed-sanctions.mjs re-runs.
 const SANCTION_ENTRIES: SanctionEntry[] = [
   // OFAC SDN — High-profile entities
   { name: 'HUAWEI TECHNOLOGIES CO LTD', aliases: ['HUAWEI', 'HUAWEI TECH'], list: 'BIS_ENTITY', listName: 'BIS Entity List', entityType: 'entity', country: 'CN', programs: ['EAR'], remarks: 'Entity List, Footnote 4' },

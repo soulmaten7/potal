@@ -310,7 +310,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   // 7. Exporter sanctions screening (standard+)
   if (mode !== 'quick' && exporterName) {
     try {
-      const screenResult = screenParty({ name: exporterName, country: originCountry, minScore: 0.8 });
+      const screenResult = await screenParty({ name: exporterName, country: originCountry, minScore: 0.8 });
       if (screenResult.hasMatches) {
         checks.push({ name: 'exporter_screening', status: 'fail', details: { name: exporterName, matches: screenResult.totalMatches } });
       } else {
@@ -324,7 +324,7 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
   // 8. Buyer sanctions screening (M1 — standard+)
   if (mode !== 'quick' && buyerName) {
     try {
-      const buyerScreen = screenParty({ name: buyerName, country: buyerCountry || destinationCountry, minScore: 0.8 });
+      const buyerScreen = await screenParty({ name: buyerName, country: buyerCountry || destinationCountry, minScore: 0.8 });
       if (buyerScreen.hasMatches) {
         checks.push({ name: 'buyer_screening', status: 'fail', details: { name: buyerName, matches: buyerScreen.totalMatches, message: `Buyer "${buyerName}" matches denied party list` } });
       } else {

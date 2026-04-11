@@ -83,7 +83,7 @@ export const POST = withApiAuth(async (req: NextRequest, _ctx: ApiAuthContext) =
 
   // 3. Sanctions Screening
   if (shipperName) {
-    const screenResult = screenParty({ name: shipperName, country: origin, minScore: 0.8 });
+    const screenResult = await screenParty({ name: shipperName, country: origin, minScore: 0.8 });
     if (screenResult.hasMatches) {
       checklist.push({ item: 'Denied Party Screening', status: 'FAIL', detail: `${screenResult.totalMatches} match(es) found for "${shipperName}"` });
       riskScore += 40;
