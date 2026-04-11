@@ -1,5 +1,71 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-11 KST (CW33 전체 Sprint 1-6 — 27 아이템, 23 테이블, 154,264 rows seeded)
+> 마지막 업데이트: 2026-04-11 KST (CW33 + HF1 + HF2 프로덕션 검증 완료 — "진짜 완료" 판정)
+
+## [2026-04-11 KST] CW33-HF2 — Canned text + exporter mock removal + verification
+
+### Headline
+CW33 Sprint 1-6 완료 후 Chrome MCP 프로덕션 검증에서 발견된 2건 버그 수정 + 9/9 케이스 전수 재검증 완료. CW33 + HF1 + HF2 "No Fake, All Real" 진짜 완료 판정.
+
+### 발견된 버그 (HF2 범위)
+1. **Importer/exporter canned restriction text** — 홈페이지 데모에서 cotton/wallet/LED importer 가 "Standard machinery import to Korea" 를 반환, cotton exporter 가 "Dual-use: ECCN 3A001" 반환 (cotton 은 dual-use 가 아님)
+2. **Exporter mock fallback 동일 응답 버그** — water pump exporter KR→VN 과 LED exporter KR→US 둘 다 `hs=8507.60 / total=$266,450` (Li-ion 코드 + 동일 금액) 반환. 상품/목적지가 달라도 결과가 같음
+
+### 수정 내용
+- **`lib/scenarios/mock-results.ts`** — 완전 재작성. 6개 canned 시나리오 (각 200+ lines) → 1개 공유 `NEUTRAL_EMPTY` shell (33 lines). 256 lines deleted, 33 lines added. 시나리오별 가짜 hsCode/landedCost/restriction 전부 0/빈값으로 정리.
+- **`app/api/demo/scenario/route.ts`** — `restrictionSummary` 우선순위 체인 재설계:
+  1. `checkRestrictions.isProhibited` → blocked
+  2. `checkRestrictions.hasRestrictions` → DB category + description (HAZMAT 등 보존 경로)
+  3. `engineOut.additionalTariffNote` → engine note
+  4. 전부 비면 fallback `"No active import restrictions detected for HS <x> → <y>"`
+- mock fallback 경로에서 `hsCode`/`hsDescription`/`extras`/`notes` 전부 제거. 엔진 실패 시 `0000` / `'Product not classified'` / `undefined` 리턴.
+- forwarder row-level fallback 도 `mock.hsCode → '0000'` 로 중립화.
+- **`X-Engine-Status: ok | unavailable | not-attempted`** 헤더 신설 — cold-start 시 가짜 숫자 대신 정직한 진단 surface.
+
+### 프로덕션 검증 (Chrome MCP on www.potal.app)
+원본 5개 케이스:
+| # | 시나리오 | 결과 | 판정 |
+|---|---------|------|------|
+| 1 | Cotton importer IN→US | cold-start → retry: `live, 610910, $54,255.70`, "No active…" | ✅ |
+| 2 | Cotton exporter KR→US | `live, 610910, KORUS, $16,251.96` | ✅ ECCN 3A001 제거 확인 |
+| 3 | Water pump exporter KR→VN | `live, 840680, Korea-Vietnam FTA, $16,650` | ✅ mock 8507.60/$266,450 제거 |
+| 4 | Li-ion exporter KR→US | `live, 850760, KORUS, $8,672.71`, "Lithium Batteries: …IATA DGR…" | ✅ HAZMAT DB 보존 |
+| 5 | CR2032 exporter KR→US | `live, 850650, KORUS, $5,447.71`, "Primary Lithium Cells: …" | ✅ HAZMAT DB 보존 |
+
+다양성 4개 (importer canned 제거 확인):
+- Cotton importer IN→US 재시도 2회: `610910, $54,255.70` 일관 ✅
+- Leather wallet importer IT→US: `live, 4202210000, $54,199.70` ✅ (이전 "Standard machinery" 제거)
+- Li-ion importer CN→US: `live, 850760, $99,910.30`, "Lithium Batteries: …" ✅
+
+### 잔존 백로그
+- AI classifier cold-start — 첫 콜이 가끔 `engineStatus=unavailable` 로 떨어짐. CW33 이전엔 canned fake 반환했지만 이제 `X-Engine-Status` 헤더로 정직하게 drop. 품질 개선으로 분류.
+- UI 검증 중 3건 신규 발견 (CW33-HF3 스코프):
+  - Issue 1: Declared value input 숫자와 USD suffix 겹침 (`pr-14` 필요, `NonDevPanel.tsx:282`)
+  - Issue 2: Currency 드롭다운 없음 (엔진은 `convertCurrency()` 지원하지만 demo route 가 USD 고정)
+  - Issue 3: HS 분류기 입력이 productName 자유텍스트 1개에만 의존 (엔진은 productCategory/hsCode/weight_kg 지원하지만 UI 가 미사용)
+
+### 커밋
+- `aad1c77` CW33-HF1 fix: wire db-screen to public API — 47,926 rows now actually used
+- `483da23` CW33-HF2 fix: remove canned restriction text + exporter mock fallback
+
+---
+
+## [2026-04-11 KST] CW33-HF1 — Sanctions DB wiring fix
+
+### Headline
+CW33-S4 가 47,926 row `sanctioned_entities` 테이블을 시드했지만 `app/lib/cost-engine/screening/index.ts` 는 여전히 old `./screen.ts` (65-entry 하드코딩) 를 export 중이었음. API 경로는 old path 를 hit 하고 있었고 DB 시드는 orphaned 상태. 발견 경로: 코드 감사 시 index.ts re-export 와 db-screen.ts 의 불일치 확인.
+
+### 수정
+- `app/lib/cost-engine/screening/index.ts` — `screenPartyDb` / `screenPartiesDb` 를 canonical name (`screenParty` / `screenParties`) 으로 re-export. 기존 `./screen.ts` in-memory 구현은 DB 쿼리 실패 시 emergency fallback 으로만 유지.
+- **Breaking change vs CW32**: `screenParty` / `screenParties` 가 **async** 로 변경. 5 call site 전부 await 전환.
+
+### 검증
+- `npm run build` green
+- 수동 샘플링: DB 경로로 실제 OFAC SDN 엔트리 (Russia/Iran 등) 매칭 확인
+
+### 커밋
+- `aad1c77` CW33-HF1 fix: wire db-screen to public API — 47,926 rows now actually used
+
+---
 
 ## [2026-04-11 KST] CW33 Sprint 1-6 — "No Fake, All Real" foundation complete
 
