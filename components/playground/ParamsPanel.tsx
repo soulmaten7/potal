@@ -35,7 +35,7 @@ export function ParamsPanel({
 
   return (
     <div className="flex-1 min-w-0 border-r border-slate-200 flex flex-col overflow-y-auto">
-      {/* Endpoint header */}
+      {/* Endpoint header + inline Test button */}
       <div className="px-6 pt-5 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[11px] font-mono bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">
@@ -43,7 +43,23 @@ export function ParamsPanel({
           </span>
           <span className="text-[14px] font-mono text-slate-600">{endpoint.path}</span>
         </div>
-        <h2 className="text-[18px] font-extrabold text-[#02122c]">{endpoint.name}</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-[18px] font-extrabold text-[#02122c]">{endpoint.name}</h2>
+          <button
+            type="button"
+            onClick={onTest}
+            disabled={!canTest || loading}
+            className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-colors ${
+              loading
+                ? 'bg-slate-300 text-white cursor-wait'
+                : !canTest
+                  ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                  : 'bg-[#F59E0B] text-[#02122c] hover:bg-[#e8930a] cursor-pointer'
+            }`}
+          >
+            {loading ? 'Testing...' : '▶ Test'}
+          </button>
+        </div>
         <p className="text-[13px] text-slate-500 mt-1">{endpoint.description}</p>
       </div>
 
@@ -101,23 +117,7 @@ export function ParamsPanel({
         ))}
       </div>
 
-      {/* Test button */}
-      <div className="px-6 py-4 border-t border-slate-200 bg-white sticky bottom-0">
-        <button
-          type="button"
-          onClick={onTest}
-          disabled={!canTest || loading}
-          className={`w-full py-3 rounded-lg text-[14px] font-bold transition-colors ${
-            loading
-              ? 'bg-slate-300 text-white cursor-wait'
-              : !canTest
-                ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                : 'bg-[#02122c] text-white hover:bg-[#0a1e3d] cursor-pointer'
-          }`}
-        >
-          {loading ? 'Testing…' : '▶ Test Endpoint'}
-        </button>
-      </div>
+      {/* Bottom Test button removed — inline button in header above */}
     </div>
   );
 }

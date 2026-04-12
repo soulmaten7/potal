@@ -104,7 +104,7 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
 
   if (!endpoint) {
     return (
-      <div className="w-[480px] flex-none bg-white border-l border-slate-200 flex items-center justify-center text-slate-400 text-[13px]">
+      <div className="flex-1 min-w-0 bg-white border-l border-slate-200 flex items-center justify-center text-slate-400 text-[13px]">
         Select an endpoint to see code.
       </div>
     );
@@ -124,7 +124,7 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
   };
 
   return (
-    <div className="w-[480px] flex-none bg-white border-l border-slate-200 flex flex-col overflow-hidden">
+    <div className="flex-1 min-w-0 bg-white border-l border-slate-200 flex flex-col overflow-hidden">
       {/* Tabs */}
       <div className="flex border-b border-slate-200">
         {([
