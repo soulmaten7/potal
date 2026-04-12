@@ -64,7 +64,7 @@ export function Sidebar({ scenarioId, endpoints, selectedEndpoint, onSelect }: S
           Forever Free — No usage limits
         </div>
         <a
-          href="mailto:hello@potal.app"
+          href="mailto:contact@potal.app"
           className="block mt-2 text-[11px] text-slate-400 text-center hover:text-slate-600"
         >
           Enterprise? Contact us →
