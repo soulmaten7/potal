@@ -116,17 +116,20 @@ export function ParamsPanel({
             {p.description && (
               <p className="text-[10px] text-slate-400 mb-1.5">{p.description}</p>
             )}
-            {p.options ? (
-              <select
-                value={paramValues[p.key] || p.defaultValue || ''}
-                onChange={e => onParamChange(p.key, e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#F59E0B]"
-              >
-                <option value="">Select…</option>
-                {p.options.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+            {p.type === 'select' && p.options ? (
+              <div className="relative">
+                <select
+                  value={paramValues[p.key] || p.defaultValue || ''}
+                  onChange={e => onParamChange(p.key, e.target.value)}
+                  className="w-full px-3 py-2 pr-8 rounded-lg border border-slate-200 text-[13px] bg-white focus:outline-none focus:border-[#F59E0B] appearance-none"
+                >
+                  <option value="">Select…</option>
+                  {p.options.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[10px]">▼</span>
+              </div>
             ) : (
               <input
                 type={p.type === 'number' ? 'number' : 'text'}

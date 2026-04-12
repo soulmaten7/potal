@@ -6,10 +6,12 @@
  * route.ts — no guesswork.
  */
 
+import { COUNTRY_OPTIONS, CATEGORY_OPTIONS, CURRENCY_OPTIONS } from './dropdown-options';
+
 export interface ParamDef {
   key: string;
   label: string;
-  type: 'string' | 'number';
+  type: 'string' | 'number' | 'select';
   required: boolean;
   placeholder?: string;
   description?: string;
@@ -38,8 +40,8 @@ const SELLER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/classify',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: true, placeholder: 'Handmade leather wallet', description: 'Product description in English' },
-      { key: 'origin', label: 'Origin Country', type: 'string', required: false, placeholder: 'KR', description: 'ISO 3166-1 alpha-2' },
-      { key: 'productCategory', label: 'Category', type: 'string', required: false, placeholder: 'leather-goods', description: 'Optional hint to improve accuracy' },
+      { key: 'origin', label: 'Origin Country', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Manufacturing country' },
+      { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'Optional hint to improve accuracy' },
       { key: 'hsCode', label: 'HS Code Hint', type: 'string', required: false, placeholder: '4202', description: 'If known, skips classification' },
     ],
     exampleResponse: {
@@ -61,7 +63,7 @@ const SELLER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/restrictions',
     params: [
       { key: 'hsCode', label: 'HS Code', type: 'string', required: true, placeholder: '4202210000', description: 'HS code from Classify step' },
-      { key: 'destinationCountry', label: 'Destination', type: 'string', required: true, placeholder: 'US', description: 'Import country ISO code' },
+      { key: 'destinationCountry', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Import country' },
     ],
     exampleResponse: {
       success: true,
@@ -76,11 +78,12 @@ const SELLER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/calculate',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Handmade leather wallet', description: 'For auto HS classification' },
-      { key: 'price', label: 'Price (USD)', type: 'number', required: true, placeholder: '45', description: 'Product price in USD' },
-      { key: 'origin', label: 'Origin', type: 'string', required: false, placeholder: 'KR', description: 'Origin country', defaultValue: 'CN' },
-      { key: 'destinationCountry', label: 'Destination', type: 'string', required: false, placeholder: 'US', description: 'Destination country', defaultValue: 'US' },
-      { key: 'shippingPrice', label: 'Shipping', type: 'number', required: false, placeholder: '0' },
+      { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '45', description: 'Product price in declared currency' },
+      { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Origin country', defaultValue: 'CN' },
+      { key: 'destinationCountry', label: 'Destination', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Destination country', defaultValue: 'US' },
+      { key: 'shippingPrice', label: 'Shipping Cost (USD)', type: 'number', required: false, placeholder: '0', description: 'Estimated shipping cost' },
       { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '4202210000', description: 'Skip auto-classify' },
+      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
     ],
     exampleResponse: {
       success: true,
@@ -115,8 +118,8 @@ const D2C_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/fta/eligibility',
     params: [
       { key: 'hs_code', label: 'HS Code', type: 'string', required: true, placeholder: '610910', description: '4+ digit HS code' },
-      { key: 'origin', label: 'Origin', type: 'string', required: true, placeholder: 'KR', description: 'Exporting country ISO code' },
-      { key: 'destination', label: 'Destination', type: 'string', required: true, placeholder: 'DE', description: 'Importing country ISO code' },
+      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Exporting country' },
+      { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Importing country' },
       { key: 'product_value', label: 'Product Value', type: 'number', required: false, placeholder: '28', description: 'For RVC (regional value content) calculation' },
       { key: 'local_content_percentage', label: 'Local Content %', type: 'number', required: false, placeholder: '60', description: '0-100, for RVC check' },
     ],
@@ -133,8 +136,8 @@ const D2C_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/calculate/ddp-vs-ddu',
     params: [
       { key: 'value', label: 'Product Value (USD)', type: 'number', required: true, placeholder: '28', description: 'Product value' },
-      { key: 'origin', label: 'Origin', type: 'string', required: true, placeholder: 'KR', description: 'Origin country ISO code' },
-      { key: 'destination', label: 'Destination', type: 'string', required: true, placeholder: 'DE', description: 'Destination country ISO code' },
+      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Origin country' },
+      { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Destination country' },
       { key: 'weight_kg', label: 'Weight (kg)', type: 'number', required: false, placeholder: '0.5', description: 'Weight for shipping estimate' },
       { key: 'mode', label: 'Mode', type: 'string', required: false, placeholder: 'compare', description: '"DDP", "DDU", "DAP", or "compare"', defaultValue: 'compare' },
     ],
@@ -156,8 +159,8 @@ const IMPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/classify',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: true, placeholder: 'Industrial centrifugal water pump', description: 'Be specific — include material, function, use case' },
-      { key: 'origin', label: 'Origin', type: 'string', required: false, placeholder: 'DE', description: 'Manufacturing country', defaultValue: 'DE' },
-      { key: 'productCategory', label: 'Category', type: 'string', required: false, placeholder: 'machinery-pumps', description: 'WCO-aligned category hint', defaultValue: 'machinery-pumps' },
+      { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Manufacturing country', defaultValue: 'DE' },
+      { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'WCO-aligned category hint', defaultValue: 'machinery-pumps' },
       { key: 'hsCode', label: 'HS Code Hint', type: 'string', required: false, placeholder: '8413', description: 'If you know the heading, engine skips classification' },
       { key: 'material', label: 'Material', type: 'string', required: false, placeholder: 'stainless steel', description: 'Primary material for subheading accuracy' },
     ],
@@ -174,7 +177,7 @@ const IMPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/restrictions',
     params: [
       { key: 'hsCode', label: 'HS Code', type: 'string', required: true, placeholder: '841370', description: 'HS code from Classify step' },
-      { key: 'destinationCountry', label: 'Destination', type: 'string', required: true, placeholder: 'KR', description: 'Import country', defaultValue: 'KR' },
+      { key: 'destinationCountry', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Import country', defaultValue: 'KR' },
     ],
     exampleResponse: {
       success: true,
@@ -188,8 +191,8 @@ const IMPORTER_ENDPOINTS: EndpointDef[] = [
     method: 'GET',
     path: '/api/v1/fta',
     params: [
-      { key: 'origin', label: 'Origin', type: 'string', required: true, placeholder: 'DE', description: 'Exporting country ISO code' },
-      { key: 'destination', label: 'Destination', type: 'string', required: true, placeholder: 'KR', description: 'Importing country ISO code' },
+      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Exporting country' },
+      { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Importing country' },
       { key: 'hs_code', label: 'HS Code', type: 'string', required: false, placeholder: '8413', description: 'For chapter exclusion check' },
     ],
     exampleResponse: {
@@ -227,10 +230,11 @@ const EXPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/calculate',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Lithium-ion battery cells', description: 'For auto HS classification' },
-      { key: 'price', label: 'Price (USD)', type: 'number', required: true, placeholder: '250000', description: 'Shipment value' },
-      { key: 'origin', label: 'Origin', type: 'string', required: false, placeholder: 'KR', description: 'Your country', defaultValue: 'KR' },
-      { key: 'destinationCountry', label: 'Destination', type: 'string', required: false, placeholder: 'US', description: "Buyer's country", defaultValue: 'US' },
+      { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '250000', description: 'Shipment value in declared currency' },
+      { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Your country', defaultValue: 'KR' },
+      { key: 'destinationCountry', label: 'Destination', type: 'select', required: false, options: COUNTRY_OPTIONS, description: "Buyer's country", defaultValue: 'US' },
       { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '850760', description: 'If known' },
+      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
     ],
     exampleResponse: {
       success: true,
@@ -245,7 +249,7 @@ const EXPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/screening',
     params: [
       { key: 'name', label: 'Party Name', type: 'string', required: true, placeholder: 'Acme Electronics Inc', description: 'Name to screen against sanctions lists' },
-      { key: 'country', label: 'Country', type: 'string', required: false, placeholder: 'US', description: 'ISO code — weights same-country matches higher' },
+      { key: 'country', label: 'Country', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Weights same-country matches higher' },
       { key: 'minScore', label: 'Min Match Score', type: 'number', required: false, placeholder: '0.8', description: '0.5-1.0 (default 0.8)' },
     ],
     exampleResponse: {
@@ -262,7 +266,7 @@ const EXPORTER_ENDPOINTS: EndpointDef[] = [
     params: [
       { key: 'product_name', label: 'Product Name', type: 'string', required: false, placeholder: 'Lithium-ion battery cells', description: 'Product name or HS code required' },
       { key: 'hs_code', label: 'HS Code', type: 'string', required: false, placeholder: '850760', description: 'HS code for ECCN mapping' },
-      { key: 'destination', label: 'Destination', type: 'string', required: false, placeholder: 'US', description: 'For license determination' },
+      { key: 'destination', label: 'Destination', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'For license determination' },
       { key: 'end_use', label: 'End Use', type: 'string', required: false, placeholder: 'consumer electronics', description: 'End-use context' },
     ],
     exampleResponse: {
@@ -326,8 +330,8 @@ const FORWARDER_ENDPOINTS: EndpointDef[] = [
     method: 'POST',
     path: '/api/v1/shipping/estimate',
     params: [
-      { key: 'origin', label: 'Origin', type: 'string', required: true, placeholder: 'KR', description: 'Origin country ISO code' },
-      { key: 'destination', label: 'Destination', type: 'string', required: true, placeholder: 'US', description: 'Destination country ISO code' },
+      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Origin country' },
+      { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Destination country' },
       { key: 'weight_kg', label: 'Weight (kg)', type: 'number', required: true, placeholder: '5', description: 'Package weight' },
       { key: 'length_cm', label: 'Length (cm)', type: 'number', required: false, placeholder: '30' },
       { key: 'width_cm', label: 'Width (cm)', type: 'number', required: false, placeholder: '20' },
@@ -347,8 +351,8 @@ const FORWARDER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/verify/pre-shipment',
     params: [
       { key: 'hs_code', label: 'HS Code', type: 'string', required: true, placeholder: '610910', description: '4+ digit HS code' },
-      { key: 'destination', label: 'Destination', type: 'string', required: true, placeholder: 'US', description: 'Import country' },
-      { key: 'origin', label: 'Origin', type: 'string', required: false, placeholder: 'KR' },
+      { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Import country' },
+      { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS },
       { key: 'declared_value', label: 'Declared Value', type: 'number', required: false, placeholder: '12000', description: 'For de minimis check' },
       { key: 'shipper_name', label: 'Shipper Name', type: 'string', required: false, placeholder: 'POTAL Korea Inc', description: 'For denied party screening' },
     ],
