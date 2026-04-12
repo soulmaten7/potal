@@ -79,11 +79,11 @@ const SELLER_ENDPOINTS: EndpointDef[] = [
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Handmade leather wallet', description: 'For auto HS classification' },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '45', description: 'Product price in declared currency' },
+      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
       { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Origin country', defaultValue: 'CN' },
       { key: 'destinationCountry', label: 'Destination', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Destination country', defaultValue: 'US' },
-      { key: 'shippingPrice', label: 'Shipping Cost (USD)', type: 'number', required: false, placeholder: '0', description: 'Estimated shipping cost' },
+      { key: 'shippingPrice', label: 'Shipping Cost', type: 'number', required: false, placeholder: '0', description: 'Estimated shipping cost in selected currency' },
       { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '4202210000', description: 'Skip auto-classify' },
-      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
     ],
     exampleResponse: {
       success: true,
@@ -208,8 +208,8 @@ const IMPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/calculate/breakdown',
     params: [
       { key: 'value', label: 'Shipment Value (USD)', type: 'number', required: true, placeholder: '85000', description: 'Total product value' },
-      { key: 'shipping', label: 'Shipping Cost', type: 'number', required: false, placeholder: '3200', description: 'Freight cost (USD)' },
-      { key: 'insurance', label: 'Insurance', type: 'number', required: false, placeholder: '850', description: 'Insurance cost (USD)' },
+      { key: 'shipping', label: 'Shipping Cost', type: 'number', required: false, placeholder: '3200', description: 'Estimated shipping cost in selected currency' },
+      { key: 'insurance', label: 'Insurance', type: 'number', required: false, placeholder: '850', description: 'Insurance cost' },
       { key: 'selling_price', label: 'Selling Price', type: 'number', required: false, placeholder: '120000', description: 'For margin calculation' },
     ],
     exampleResponse: {
@@ -231,10 +231,10 @@ const EXPORTER_ENDPOINTS: EndpointDef[] = [
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Lithium-ion battery cells', description: 'For auto HS classification' },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '250000', description: 'Shipment value in declared currency' },
+      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
       { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Your country', defaultValue: 'KR' },
       { key: 'destinationCountry', label: 'Destination', type: 'select', required: false, options: COUNTRY_OPTIONS, description: "Buyer's country", defaultValue: 'US' },
       { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '850760', description: 'If known' },
-      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
     ],
     exampleResponse: {
       success: true,
