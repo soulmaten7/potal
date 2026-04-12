@@ -359,17 +359,26 @@ export const CURRENCY_OPTIONS = [
   { value: "AED", label: "🇦🇪 AED — UAE Dirham" },
 ];
 
-// CW34: Full engine materials (48 from classifier MATERIAL_KEYWORDS + extras), grouped
+// CW34: All engine-codified materials (82 total), grouped by HS chapter alignment
 export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: string }> = [
-  // --- Textiles ---
+  // --- Textiles (28) ---
   { value: 'cotton', label: 'Cotton', group: 'Textiles' },
   { value: 'polyester', label: 'Polyester', group: 'Textiles' },
   { value: 'nylon', label: 'Nylon', group: 'Textiles' },
   { value: 'silk', label: 'Silk', group: 'Textiles' },
   { value: 'wool', label: 'Wool', group: 'Textiles' },
-  { value: 'linen', label: 'Linen', group: 'Textiles' },
+  { value: 'merino', label: 'Merino Wool', group: 'Textiles' },
   { value: 'cashmere', label: 'Cashmere', group: 'Textiles' },
+  { value: 'alpaca', label: 'Alpaca', group: 'Textiles' },
+  { value: 'mohair', label: 'Mohair', group: 'Textiles' },
+  { value: 'angora', label: 'Angora', group: 'Textiles' },
+  { value: 'linen', label: 'Linen', group: 'Textiles' },
   { value: 'rayon', label: 'Rayon', group: 'Textiles' },
+  { value: 'viscose', label: 'Viscose', group: 'Textiles' },
+  { value: 'modal', label: 'Modal', group: 'Textiles' },
+  { value: 'acrylic', label: 'Acrylic', group: 'Textiles' },
+  { value: 'spandex', label: 'Spandex / Elastane', group: 'Textiles' },
+  { value: 'lycra', label: 'Lycra', group: 'Textiles' },
   { value: 'canvas', label: 'Canvas', group: 'Textiles' },
   { value: 'denim', label: 'Denim', group: 'Textiles' },
   { value: 'velvet', label: 'Velvet', group: 'Textiles' },
@@ -378,11 +387,16 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'lace', label: 'Lace', group: 'Textiles' },
   { value: 'synthetic', label: 'Synthetic (general)', group: 'Textiles' },
   { value: 'natural', label: 'Natural fiber (general)', group: 'Textiles' },
-  // --- Leather ---
-  { value: 'leather', label: 'Leather', group: 'Leather' },
+  // --- Leather (7) ---
+  { value: 'leather', label: 'Leather (general)', group: 'Leather' },
   { value: 'suede', label: 'Suede', group: 'Leather' },
+  { value: 'nubuck', label: 'Nubuck', group: 'Leather' },
+  { value: 'calfskin', label: 'Calfskin', group: 'Leather' },
+  { value: 'lambskin', label: 'Lambskin', group: 'Leather' },
+  { value: 'cowhide', label: 'Cowhide', group: 'Leather' },
+  { value: 'pigskin', label: 'Pigskin', group: 'Leather' },
   { value: 'synthetic-leather', label: 'Synthetic Leather (PU/PVC)', group: 'Leather' },
-  // --- Metals ---
+  // --- Metals (13) ---
   { value: 'steel', label: 'Steel', group: 'Metals' },
   { value: 'stainless-steel', label: 'Stainless Steel', group: 'Metals' },
   { value: 'aluminum', label: 'Aluminum', group: 'Metals' },
@@ -396,23 +410,35 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'gold', label: 'Gold', group: 'Metals' },
   { value: 'silver', label: 'Silver', group: 'Metals' },
   { value: 'platinum', label: 'Platinum', group: 'Metals' },
-  // --- Rubber & Plastics ---
+  // --- Rubber & Plastics (5) ---
   { value: 'rubber', label: 'Rubber', group: 'Rubber & Plastics' },
   { value: 'plastic', label: 'Plastic', group: 'Rubber & Plastics' },
+  { value: 'pvc', label: 'PVC', group: 'Rubber & Plastics' },
+  { value: 'eva', label: 'EVA (Ethylene-Vinyl Acetate)', group: 'Rubber & Plastics' },
   { value: 'silicone', label: 'Silicone', group: 'Rubber & Plastics' },
-  // --- Wood & Natural ---
-  { value: 'wood', label: 'Wood', group: 'Wood & Natural' },
+  // --- Wood & Natural (12) ---
+  { value: 'wood', label: 'Wood (general)', group: 'Wood & Natural' },
+  { value: 'oak', label: 'Oak', group: 'Wood & Natural' },
+  { value: 'pine', label: 'Pine', group: 'Wood & Natural' },
+  { value: 'walnut', label: 'Walnut', group: 'Wood & Natural' },
+  { value: 'maple', label: 'Maple', group: 'Wood & Natural' },
+  { value: 'birch', label: 'Birch', group: 'Wood & Natural' },
+  { value: 'teak', label: 'Teak', group: 'Wood & Natural' },
+  { value: 'mahogany', label: 'Mahogany', group: 'Wood & Natural' },
   { value: 'bamboo', label: 'Bamboo', group: 'Wood & Natural' },
+  { value: 'plywood', label: 'Plywood / MDF', group: 'Wood & Natural' },
   { value: 'cork', label: 'Cork', group: 'Wood & Natural' },
   { value: 'rattan', label: 'Rattan', group: 'Wood & Natural' },
   { value: 'paper', label: 'Paper / Cardboard', group: 'Wood & Natural' },
-  // --- Stone & Ceramics ---
+  // --- Stone & Ceramics (7) ---
   { value: 'glass', label: 'Glass', group: 'Stone & Ceramics' },
   { value: 'ceramic', label: 'Ceramic', group: 'Stone & Ceramics' },
   { value: 'porcelain', label: 'Porcelain', group: 'Stone & Ceramics' },
+  { value: 'stoneware', label: 'Stoneware', group: 'Stone & Ceramics' },
+  { value: 'earthenware', label: 'Earthenware', group: 'Stone & Ceramics' },
   { value: 'crystal', label: 'Crystal', group: 'Stone & Ceramics' },
   { value: 'stone', label: 'Stone / Marble / Granite', group: 'Stone & Ceramics' },
-  // --- Specialty ---
+  // --- Specialty (8) ---
   { value: 'lithium-ion', label: 'Lithium-ion (Li-ion)', group: 'Specialty' },
   { value: 'lithium-primary', label: 'Lithium Primary (non-rechargeable)', group: 'Specialty' },
   { value: 'carbon-fiber', label: 'Carbon Fiber', group: 'Specialty' },
@@ -423,7 +449,7 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'pearl', label: 'Pearl', group: 'Specialty' },
 ];
 
-// CW34: Full material → category mapping based on HS chapter assignments
+// CW34: Full material → category mapping (82 materials) based on HS chapters
 export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   // Textiles
   cotton: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw', 'footwear', 'home'],
@@ -431,9 +457,18 @@ export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   nylon: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw', 'footwear', 'bags'],
   silk: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw', 'accessories'],
   wool: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
-  linen: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw', 'home'],
+  merino: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
   cashmere: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
+  alpaca: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
+  mohair: ['apparel-knit', 'apparel-woven', 'textiles-raw'],
+  angora: ['apparel-knit', 'apparel-woven', 'textiles-raw'],
+  linen: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw', 'home'],
   rayon: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
+  viscose: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
+  modal: ['apparel-knit', 'apparel-woven', 'apparel', 'textiles-raw'],
+  acrylic: ['apparel-knit', 'apparel-woven', 'textiles-raw'],
+  spandex: ['apparel-knit', 'apparel-woven', 'textiles-raw', 'sports'],
+  lycra: ['apparel-knit', 'apparel-woven', 'textiles-raw', 'sports'],
   canvas: ['bags', 'footwear', 'apparel-woven', 'textiles-raw'],
   denim: ['apparel-woven', 'apparel', 'bags', 'textiles-raw'],
   velvet: ['apparel-woven', 'apparel', 'home', 'textiles-raw'],
@@ -445,6 +480,11 @@ export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   // Leather
   leather: ['leather-goods', 'footwear', 'apparel-woven', 'bags', 'accessories'],
   suede: ['leather-goods', 'footwear', 'apparel-woven', 'bags'],
+  nubuck: ['leather-goods', 'footwear', 'bags'],
+  calfskin: ['leather-goods', 'footwear', 'bags', 'accessories'],
+  lambskin: ['leather-goods', 'apparel-woven', 'bags'],
+  cowhide: ['leather-goods', 'footwear', 'bags'],
+  pigskin: ['leather-goods', 'bags'],
   'synthetic-leather': ['leather-goods', 'footwear', 'apparel-woven', 'bags'],
   // Metals
   steel: ['machinery-pumps', 'machinery-industrial', 'automotive-parts', 'furniture', 'tools', 'steel'],
@@ -463,10 +503,20 @@ export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   // Rubber & Plastics
   rubber: ['footwear', 'toys', 'automotive-parts', 'machinery-industrial', 'rubber', 'sports'],
   plastic: ['toys', 'automotive-parts', 'machinery-industrial', 'plastics', 'home', 'baby'],
+  pvc: ['plastics', 'footwear', 'home', 'industrial'],
+  eva: ['footwear', 'sports', 'plastics'],
   silicone: ['electronics-consumer', 'home', 'baby', 'cosmetics'],
   // Wood & Natural
   wood: ['furniture', 'toys', 'home', 'wood', 'music', 'stationery'],
+  oak: ['furniture', 'wood', 'home'],
+  pine: ['furniture', 'wood', 'home'],
+  walnut: ['furniture', 'wood', 'home', 'music'],
+  maple: ['furniture', 'wood', 'music'],
+  birch: ['furniture', 'wood', 'home'],
+  teak: ['furniture', 'wood', 'garden', 'ships'],
+  mahogany: ['furniture', 'wood', 'music'],
   bamboo: ['furniture', 'home', 'wood', 'garden'],
+  plywood: ['furniture', 'wood', 'industrial'],
   cork: ['cork', 'beverages', 'home'],
   rattan: ['furniture', 'home', 'straw'],
   paper: ['paper', 'books', 'stationery', 'craft'],
@@ -474,6 +524,8 @@ export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   glass: ['ceramics', 'home', 'glass', 'beverages', 'instruments'],
   ceramic: ['ceramics', 'home', 'furniture'],
   porcelain: ['ceramics', 'home', 'art'],
+  stoneware: ['ceramics', 'home'],
+  earthenware: ['ceramics', 'home'],
   crystal: ['glass', 'home', 'jewelry'],
   stone: ['stone', 'furniture', 'art'],
   // Specialty
