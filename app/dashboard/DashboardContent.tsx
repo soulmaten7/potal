@@ -536,7 +536,7 @@ export default function DashboardContent() {
         background: '#f5f5f5',
         padding: '32px 24px',
       }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ width: '100%', padding: '0 24px' }}>
           {/* Skeleton header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32 }}>
             <div style={{ width: 180, height: 28, borderRadius: 8, background: '#e5e7eb' }} className="animate-pulse" />
@@ -602,7 +602,7 @@ export default function DashboardContent() {
 
       {/* Mobile horizontal tab bar */}
       <style>{`
-        .dashboard-mobile-tabs { display: none; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 12px 16px 0; max-width: 1440; margin: 0 auto; }
+        .dashboard-mobile-tabs { display: none; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 12px 16px 0; width: 100%; }
         .dashboard-mobile-tabs::-webkit-scrollbar { display: none; }
         @media (max-width: 768px) {
           .dashboard-mobile-tabs { display: flex !important; }
@@ -634,7 +634,7 @@ export default function DashboardContent() {
         </div>
       </div>
 
-      <div className="dashboard-layout" style={{ display: 'flex', maxWidth: 1440, margin: '0 auto', padding: '24px 24px', gap: 24 }}>
+      <div className="dashboard-layout" style={{ display: 'flex', width: '100%', padding: '24px', gap: 24 }}>
         {/* Sidebar (desktop) */}
         <div className="dashboard-sidebar" style={{ width: 200, flexShrink: 0 }}>
           <nav role="tablist" aria-label="Dashboard sections" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -760,8 +760,9 @@ export default function DashboardContent() {
                   <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Create New API Key</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                     <div>
-                      <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Name</label>
-                      <input value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} placeholder="e.g. Production Widget" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 14, boxSizing: 'border-box' }} />
+                      <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Name <span style={{ color: '#ef4444' }}>*</span></label>
+                      <input value={newKeyName} onChange={(e) => setNewKeyName(e.target.value)} placeholder="e.g. Production Widget" style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: `1px solid ${!newKeyName.trim() && showCreateKey ? '#fca5a5' : '#e5e7eb'}`, fontSize: 14, boxSizing: 'border-box' }} />
+                      {!newKeyName.trim() && <p style={{ fontSize: 11, color: '#ef4444', marginTop: 4 }}>Name is required</p>}
                     </div>
                     <div>
                       <label style={{ fontSize: 13, fontWeight: 600, color: '#555', display: 'block', marginBottom: 6 }}>Type</label>
@@ -772,7 +773,7 @@ export default function DashboardContent() {
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 10 }}>
-                    <button onClick={handleCreateKey} disabled={loading} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: '#F59E0B', color: '#02122c', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>{loading ? 'Creating...' : 'Create Key'}</button>
+                    <button onClick={handleCreateKey} disabled={loading || !newKeyName.trim()} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: !newKeyName.trim() ? '#e5e7eb' : '#F59E0B', color: !newKeyName.trim() ? '#9ca3af' : '#02122c', fontSize: 14, fontWeight: 700, cursor: !newKeyName.trim() ? 'not-allowed' : 'pointer', opacity: !newKeyName.trim() ? 0.5 : 1 }}>{loading ? 'Creating...' : 'Create Key'}</button>
                     <button onClick={() => setShowCreateKey(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white', color: '#666', fontSize: 14, cursor: 'pointer' }}>Cancel</button>
                   </div>
                 </div>
