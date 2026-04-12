@@ -104,7 +104,7 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
 
   if (!endpoint) {
     return (
-      <div className="w-[480px] flex-none bg-[#0a1628] flex items-center justify-center text-slate-500 text-[13px]">
+      <div className="w-[480px] flex-none bg-white border-l border-slate-200 flex items-center justify-center text-slate-400 text-[13px]">
         Select an endpoint to see code.
       </div>
     );
@@ -124,13 +124,13 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
   };
 
   return (
-    <div className="w-[480px] flex-none bg-[#0a1628] flex flex-col overflow-hidden">
+    <div className="w-[480px] flex-none bg-white border-l border-slate-200 flex flex-col overflow-hidden">
       {/* Tabs */}
-      <div className="flex border-b border-slate-700/50">
+      <div className="flex border-b border-slate-200">
         {([
           { id: 'code', label: 'Code Snippets' },
           { id: 'example', label: 'Example Response' },
-          { id: 'result', label: result ? '✓ Result' : 'Result' },
+          { id: 'result', label: result ? '\u2713 Result' : 'Result' },
         ] as Array<{ id: Tab; label: string }>).map(t => (
           <button
             key={t.id}
@@ -138,8 +138,8 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
             onClick={() => setTab(t.id)}
             className={`px-4 py-3 text-[12px] font-bold transition-colors ${
               tab === t.id
-                ? 'text-white border-b-2 border-[#F59E0B]'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'text-[#02122c] border-b-2 border-[#F59E0B]'
+                : 'text-slate-400 hover:text-slate-600'
             }`}
           >
             {t.label}
@@ -149,7 +149,7 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
 
       {/* Language selector (code tab only) */}
       {tab === 'code' && (
-        <div className="flex gap-1.5 px-4 py-2 border-b border-slate-700/30">
+        <div className="flex gap-1.5 px-4 py-2 border-b border-slate-100">
           {LANG_LABELS.map(l => (
             <button
               key={l.id}
@@ -158,7 +158,7 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
               className={`px-3 py-1.5 rounded text-[11px] font-bold transition-colors ${
                 lang === l.id
                   ? 'bg-[#F59E0B] text-[#02122c]'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
               }`}
             >
               {l.label}
@@ -168,26 +168,26 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-auto">
-        <pre className="p-4 text-[12px] leading-relaxed font-mono text-slate-200 whitespace-pre-wrap break-all">
+      <div className="flex-1 overflow-auto bg-slate-50/50">
+        <pre className="p-4 text-[12px] leading-relaxed font-mono text-slate-700 whitespace-pre-wrap break-all">
           {tab === 'code' && code}
           {tab === 'example' && exampleJson}
-          {tab === 'result' && (resultJson || 'Click "▶ Test Endpoint" to see results here.')}
+          {tab === 'result' && (resultJson || 'Click "\u25B6 Test Endpoint" to see results here.')}
         </pre>
       </div>
 
       {/* Copy button */}
-      <div className="px-4 py-3 border-t border-slate-700/50 flex justify-end">
+      <div className="px-4 py-3 border-t border-slate-200 flex justify-end">
         <button
           type="button"
           onClick={handleCopy}
           className={`px-4 py-2 rounded-lg text-[12px] font-bold transition-colors ${
             copied
               ? 'bg-emerald-500 text-white'
-              : 'bg-white/10 text-white hover:bg-white/20'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
           }`}
         >
-          {copied ? '✓ Copied!' : '📋 Copy'}
+          {copied ? '\u2713 Copied!' : 'Copy'}
         </button>
       </div>
     </div>

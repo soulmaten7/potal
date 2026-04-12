@@ -159,7 +159,7 @@ export function ScenarioSelector() {
   );
 
   return (
-    <section aria-label="Choose your scenario" className="w-full px-8 lg:px-12 pt-10 pb-8">
+    <section aria-label="Choose your scenario" className="w-full px-6 lg:px-12 pt-10 pb-8">
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-[32px] md:text-[40px] font-extrabold text-[#02122c] leading-tight mb-3">

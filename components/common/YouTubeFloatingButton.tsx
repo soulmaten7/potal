@@ -8,10 +8,15 @@
  */
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export function YouTubeFloatingButton() {
+  const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // CW34: Only show on homepage
+  if (pathname !== '/') return null;
 
   const playlists = [
     { icon: '🎯', label: 'Quick Start', url: 'https://youtube.com/@POTAL-Official' },

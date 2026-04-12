@@ -107,7 +107,7 @@ export function Header() {
           : 'bg-white border-slate-200'
       }`}
     >
-      <div className="max-w-[1440px] mx-auto px-3 sm:px-6 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
+      <div className="w-full px-6 lg:px-12 h-[64px] sm:h-[80px] flex items-center justify-between shrink-0">
 
         {/* Logo */}
         <Link
