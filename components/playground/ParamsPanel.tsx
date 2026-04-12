@@ -10,6 +10,10 @@ interface ParamsPanelProps {
   onParamChange: (key: string, val: string) => void;
   onTest: () => void;
   loading: boolean;
+  /** CW34: login state + API key ownership for dynamic placeholder */
+  isLoggedIn?: boolean;
+  keyPrefix?: string | null;
+  keyLoading?: boolean;
 }
 
 export function ParamsPanel({
@@ -20,6 +24,9 @@ export function ParamsPanel({
   onParamChange,
   onTest,
   loading,
+  isLoggedIn = false,
+  keyPrefix = null,
+  keyLoading = false,
 }: ParamsPanelProps) {
   if (!endpoint) {
     return (
@@ -73,9 +80,25 @@ export function ParamsPanel({
           type="text"
           value={apiKey}
           onChange={e => onApiKeyChange(e.target.value)}
-          placeholder="pk_live_your_api_key"
+          placeholder={
+            keyLoading
+              ? 'Loading your API key...'
+              : keyPrefix
+                ? `You have an active key (${keyPrefix}...). Paste your full key here.`
+                : isLoggedIn
+                  ? 'No API key yet — create one in Dashboard'
+                  : 'pk_live_your_api_key (or leave blank for demo mode)'
+          }
           className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] font-mono focus:outline-none focus:border-[#F59E0B] bg-white"
         />
+        {isLoggedIn && !keyPrefix && !keyLoading && (
+          <a
+            href="/dashboard/api-keys"
+            className="inline-block mt-1.5 text-[11px] text-[#F59E0B] hover:underline font-semibold"
+          >
+            Create API Key in Dashboard →
+          </a>
+        )}
       </div>
 
       {/* Params */}

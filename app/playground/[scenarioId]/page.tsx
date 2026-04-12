@@ -13,8 +13,9 @@
  * the center + right panels.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useSupabase } from '@/app/context/SupabaseProvider';
 import { Sidebar } from '@/components/playground/Sidebar';
 import { ParamsPanel } from '@/components/playground/ParamsPanel';
 import { CodePanel } from '@/components/playground/CodePanel';
@@ -23,6 +24,7 @@ import { SCENARIO_ENDPOINTS, type EndpointDef } from '@/lib/playground/scenario-
 export default function PlaygroundPage() {
   const params = useParams();
   const scenarioId = (params?.scenarioId as string) || 'seller';
+  const { session } = useSupabase();
 
   const endpoints = SCENARIO_ENDPOINTS[scenarioId] || SCENARIO_ENDPOINTS.seller;
   const [selectedEndpoint, setSelectedEndpoint] = useState<string>(endpoints[0]?.id || '');
@@ -30,6 +32,37 @@ export default function PlaygroundPage() {
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
   const [result, setResult] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
+
+  // CW34: Fetch user's API key prefix for dynamic placeholder
+  const [keyPrefix, setKeyPrefix] = useState<string | null>(null);
+  const [keyLoading, setKeyLoading] = useState(false);
+
+  useEffect(() => {
+    if (!session?.access_token) {
+      setKeyPrefix(null);
+      return;
+    }
+    let cancelled = false;
+    setKeyLoading(true);
+    fetch('/api/v1/sellers/me', {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then(r => r.json())
+      .then(json => {
+        if (cancelled) return;
+        const keys = json?.data?.keys;
+        if (Array.isArray(keys)) {
+          const active = keys.find(
+            (k: { type: string; isActive: boolean }) =>
+              k.type === 'publishable' && k.isActive,
+          );
+          setKeyPrefix(active?.prefix ?? null);
+        }
+      })
+      .catch(() => { /* ignore — demo mode fallback */ })
+      .finally(() => { if (!cancelled) setKeyLoading(false); });
+    return () => { cancelled = true; };
+  }, [session?.access_token]);
 
   const currentEndpoint: EndpointDef | undefined = endpoints.find(e => e.id === selectedEndpoint);
 
@@ -87,6 +120,9 @@ export default function PlaygroundPage() {
         onParamChange={(key, val) => setParamValues(prev => ({ ...prev, [key]: val }))}
         onTest={handleTest}
         loading={loading}
+        isLoggedIn={!!session}
+        keyPrefix={keyPrefix}
+        keyLoading={keyLoading}
       />
 
       {/* Right — code + results */}
