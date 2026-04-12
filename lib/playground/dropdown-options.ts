@@ -334,7 +334,6 @@ export const CATEGORY_OPTIONS = [
   { value: 'watches', label: 'Watches & Clocks' },
   { value: 'wood', label: 'Wood Products' },
   { value: 'zinc', label: 'Zinc Products' },
-  { value: 'other', label: 'Other' },
 ];
 
 export const CURRENCY_OPTIONS = [
@@ -422,8 +421,6 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'sapphire', label: 'Sapphire', group: 'Specialty' },
   { value: 'emerald', label: 'Emerald', group: 'Specialty' },
   { value: 'pearl', label: 'Pearl', group: 'Specialty' },
-  // --- Other ---
-  { value: 'other', label: 'Other' },
 ];
 
 // CW34: Full material → category mapping based on HS chapter assignments
@@ -488,6 +485,4 @@ export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   sapphire: ['jewelry'],
   emerald: ['jewelry'],
   pearl: ['jewelry', 'accessories'],
-  // Other — show all categories
-  other: [],
 };
