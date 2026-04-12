@@ -69,7 +69,7 @@ export function Footer() {
 
   return (
     <footer className="bg-[#02122c] text-white py-12 mt-auto w-full z-10 relative" role="contentinfo">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6">
+      <div className="w-full px-6 lg:px-12">
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
