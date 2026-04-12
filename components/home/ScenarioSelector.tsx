@@ -92,16 +92,17 @@ export function ScenarioSelector({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlType]);
 
+  // CW34: clicking a scenario navigates to the playground instead of
+  // rendering an inline panel. The old ?type= query param flow is replaced
+  // with /playground/{scenarioId} navigation.
   const handleSelect = useCallback(
     (id: ScenarioId) => {
       setSelected(id);
-      // Update URL without full navigation
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('type', id);
-      router.replace(`/?${params.toString()}`, { scroll: false });
+      // CUSTOM goes to playground too — it'll get its own endpoint list later
+      router.push(`/playground/${id}`);
       onSelect?.(id);
     },
-    [router, searchParams, onSelect]
+    [router, onSelect]
   );
 
   return (
@@ -113,9 +114,6 @@ export function ScenarioSelector({
         {c(SCENARIO_TOP_QUESTION_KEY)}
       </h1>
 
-      {/* 6 scenarios in one row. On narrower viewports (< 1024px) fall back to
-          3 columns × 2 rows so buttons remain legible, but ≥1024px we use 6
-          columns per the user's explicit request. */}
       <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
         {SCENARIOS.map(scenario => (
           <ScenarioButton
@@ -127,13 +125,7 @@ export function ScenarioSelector({
         ))}
       </div>
 
-      {/* Sprint 2 (CW24): 좌우 2분할 시나리오 상세 패널.
-          custom 은 ScenarioPanel 내부에서 placeholder 로 처리. */}
-      {selected && (
-        <div className="mt-10 -mx-8">
-          <ScenarioPanel scenarioId={selected} />
-        </div>
-      )}
+      {/* CW34: inline ScenarioPanel removed — scenarios open in /playground/{id} */}
     </section>
   );
 }

@@ -135,13 +135,10 @@ export function Header() {
         </button>
 
         {/* Desktop Navigation */}
+        {/* CW34: Simplified nav — Help only. Features/Developers/Pricing/Community
+             moved into playground. Dashboard in user menu only. */}
         <nav aria-label="Main navigation" className="hidden md:flex items-center gap-6 text-[#02122c]">
           {[
-            { href: '/features', label: t('nav.features') },
-            { href: '/developers', label: t('nav.developers') },
-            { href: '/pricing', label: t('nav.pricing') },
-            { href: '/dashboard', label: t('nav.dashboard') },
-            { href: '/community', label: t('nav.community') },
             { href: '/help', label: t('nav.help') },
           ].map((link) => (
             <Link
@@ -276,13 +273,8 @@ export function Header() {
       }`}
     >
       <nav className="flex flex-col py-4">
+        {/* CW34: mobile menu simplified to match desktop */}
         {[
-          { href: '/features', label: t('nav.features') },
-          { href: '/tools', label: 'Tools' },
-          { href: '/developers', label: t('nav.developers') },
-          { href: '/pricing', label: t('nav.pricing') },
-          { href: '/dashboard', label: t('nav.dashboard') },
-          { href: '/community', label: t('nav.community') },
           { href: '/help', label: t('nav.help') },
         ].map((link) => (
           <Link

@@ -97,25 +97,12 @@ interface ApiLogEntry {
 
 type TabId = 'overview' | 'keys' | 'widget' | 'usage' | 'countries' | 'platforms' | 'logs' | 'billing' | 'classify' | 'calculator' | 'fta' | 'sanctions' | 'documents' | 'batch' | 'analytics' | 'settings' | 'integrations' | 'team';
 
+// CW34: Dashboard simplified to 3 essential tabs. Remaining tabs hidden
+// (code preserved so tab content still renders if accessed via direct URL).
 const TABS: { id: TabId; labelKey: string; icon: string }[] = [
-  { id: 'overview', labelKey: 'dashboard.tab.overview', icon: '📊' },
   { id: 'keys', labelKey: 'dashboard.tab.keys', icon: '🔑' },
-  { id: 'classify', labelKey: 'dashboard.tab.classify', icon: '🏷️' },
-  { id: 'calculator', labelKey: 'dashboard.tab.calculator', icon: '🧮' },
-  { id: 'fta', labelKey: 'dashboard.tab.fta', icon: '🤝' },
-  { id: 'sanctions', labelKey: 'dashboard.tab.sanctions', icon: '🛡️' },
-  { id: 'documents', labelKey: 'dashboard.tab.documents', icon: '📄' },
-  { id: 'batch', labelKey: 'dashboard.tab.batch', icon: '📦' },
-  { id: 'widget', labelKey: 'dashboard.tab.widget', icon: '🧩' },
-  { id: 'integrations', labelKey: 'dashboard.tab.integrations', icon: '🔌' },
-  { id: 'usage', labelKey: 'dashboard.tab.usage', icon: '📈' },
-  { id: 'countries', labelKey: 'dashboard.tab.countries', icon: '🌍' },
-  { id: 'platforms', labelKey: 'dashboard.tab.platforms', icon: '🤖' },
   { id: 'analytics', labelKey: 'dashboard.tab.analytics', icon: '📉' },
-  { id: 'logs', labelKey: 'dashboard.tab.logs', icon: '📋' },
   { id: 'settings', labelKey: 'dashboard.tab.settings', icon: '⚙️' },
-  { id: 'billing', labelKey: 'dashboard.tab.billing', icon: '💳' },
-  { id: 'team', labelKey: 'dashboard.tab.team', icon: '👥' },
 ];
 
 // Plan display — Forever Free (CW22 pivot)

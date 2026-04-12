@@ -936,7 +936,8 @@ export default function HomePage() {
   return (
     <DesktopOnlyGuard>
       <div className="min-h-screen bg-white">
-        <HeaderMinimal />
+        {/* CW34: HeaderMinimal removed — global Header from ChromeGate now
+            renders on "/" since HIDE_HEADER_ON no longer includes "/" */}
         <LiveTicker />
         {/* ScenarioSelector uses useSearchParams → Suspense boundary required for SSR prerender */}
         <Suspense fallback={null}>

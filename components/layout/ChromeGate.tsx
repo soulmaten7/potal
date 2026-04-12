@@ -1,12 +1,13 @@
 'use client';
 
 /**
- * ChromeGate — CW23-S1 Sprint 1 fix
+ * ChromeGate — CW34 Playground redesign
  *
- * 홈페이지(/)에서 기존 전역 <Header />는 HeaderMinimal과 중복되므로 숨기고,
- * <Footer />는 유지, <MobileBottomNav />는 홈이 데스크톱 전용이므로 숨긴다.
+ * CW23-S1 originally hid the Header on `/` because HomeMinimal had its own.
+ * CW34 unified the Header globally (simplified nav: Help + lang + auth only),
+ * so now the Header renders on ALL pages including `/` and `/playground/*`.
  *
- * 비홈 경로에서는 Header / Footer / MobileBottomNav 모두 기존대로 렌더.
+ * Footer + MobileBottomNav still hidden on `/mobile-notice` and playground.
  */
 
 import { usePathname } from 'next/navigation';
@@ -14,7 +15,8 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { MobileBottomNav } from './MobileBottomNav';
 
-const HIDE_HEADER_ON = new Set<string>(['/', '/mobile-notice']);
+// CW34: Header is shown everywhere (including `/` and `/playground/*`)
+const HIDE_HEADER_ON = new Set<string>(['/mobile-notice']);
 const HIDE_FOOTER_ON = new Set<string>(['/mobile-notice']);
 const HIDE_MOBILE_NAV_ON = new Set<string>(['/', '/mobile-notice']);
 

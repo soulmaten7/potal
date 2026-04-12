@@ -243,8 +243,11 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
 
     const validation = validateFields(validationInput);
 
-    // has_errors → 422 (don't classify)
-    if (validation.overall_status === 'has_errors') {
+    // CW34: In demo/playground mode, skip strict field validation so users
+    // can classify with just a productName. Full validation still runs for
+    // authenticated API calls to maintain data quality.
+    const isDemoMode = req.headers.get('X-Demo-Request') === 'true';
+    if (!isDemoMode && validation.overall_status === 'has_errors') {
       return apiError(
         ApiErrorCode.BAD_REQUEST,
         `Field validation failed. ${validation.error_field_count} field(s) have errors.`,
