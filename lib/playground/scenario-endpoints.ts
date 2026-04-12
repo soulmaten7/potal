@@ -6,7 +6,7 @@
  * route.ts — no guesswork.
  */
 
-import { COUNTRY_OPTIONS, CATEGORY_OPTIONS, CURRENCY_OPTIONS } from './dropdown-options';
+import { COUNTRY_OPTIONS, CATEGORY_OPTIONS, CURRENCY_OPTIONS, MATERIAL_OPTIONS } from './dropdown-options';
 
 export interface ParamDef {
   key: string;
@@ -40,7 +40,7 @@ const SELLER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/classify',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: true, placeholder: 'Handmade leather wallet', description: 'Product description in English' },
-      { key: 'material', label: 'Material', type: 'string', required: true, placeholder: 'cotton, polyester, leather, steel', description: 'Primary material of the product' },
+      { key: 'material', label: 'Material', type: 'select', required: true, options: MATERIAL_OPTIONS, description: 'Primary material of the product' },
       { key: 'origin', label: 'Origin Country', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Manufacturing country' },
       { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'Optional hint to improve accuracy' },
       { key: 'hsCode', label: 'HS Code Hint', type: 'string', required: false, placeholder: '4202', description: 'If known, skips classification' },
