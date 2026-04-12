@@ -1,6 +1,7 @@
 'use client';
 
 import type { EndpointDef } from '@/lib/playground/scenario-endpoints';
+import { CATEGORY_OPTIONS, MATERIAL_TO_CATEGORIES } from '@/lib/playground/dropdown-options';
 import { SearchableSelect } from './SearchableSelect';
 
 interface ParamsPanelProps {
@@ -42,7 +43,7 @@ export function ParamsPanel({
     .every(p => paramValues[p.key]?.trim());
 
   return (
-    <div className="flex-1 min-w-0 border-r border-slate-200 flex flex-col overflow-y-auto">
+    <div className="flex-1 min-w-0 min-h-[calc(100vh-120px)] border-r border-slate-200 flex flex-col overflow-y-auto">
       {/* Endpoint header + inline Test button */}
       <div className="px-6 pt-5 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2 mb-1">
@@ -111,7 +112,6 @@ export function ParamsPanel({
           <div key={p.key}>
             <label className="flex items-center gap-1.5 text-[12px] font-bold text-[#02122c] mb-1">
               {p.label}
-              {p.required && <span className="text-red-500">*</span>}
               <span className="text-[10px] font-mono text-slate-400 ml-auto">{p.type}</span>
             </label>
             {p.description && (
@@ -119,7 +119,16 @@ export function ParamsPanel({
             )}
             {p.type === 'select' && p.options ? (
               <SearchableSelect
-                options={p.options as Array<{ value: string; label: string; group?: string }>}
+                options={(() => {
+                  // CW34: filter category options based on selected material
+                  if (p.key === 'productCategory' && paramValues.material) {
+                    const allowed = MATERIAL_TO_CATEGORIES[paramValues.material];
+                    if (allowed && allowed.length > 0) {
+                      return CATEGORY_OPTIONS.filter(o => allowed.includes(o.value));
+                    }
+                  }
+                  return p.options as Array<{ value: string; label: string; group?: string }>;
+                })()}
                 value={paramValues[p.key] || p.defaultValue || ''}
                 onChange={val => onParamChange(p.key, val)}
                 placeholder={p.placeholder || 'Select…'}
