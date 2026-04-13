@@ -15,7 +15,9 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   const productCategory = typeof body.productCategory === 'string' ? body.productCategory.trim() : undefined;
   const material = typeof body.material === 'string' ? body.material.trim() : undefined;
   const currency = typeof body.currency === 'string' ? body.currency.trim() : undefined;
-  const routes = Array.isArray(body.routes) ? body.routes as Record<string, unknown>[] : [];
+  const routesRaw = Array.isArray(body.routes) ? body.routes as Record<string, unknown>[] : [];
+  // Filter out empty destination rows (Playground UI keeps empty rows for UX)
+  const routes = routesRaw.filter(r => typeof r.destination === 'string' && r.destination.trim() !== '');
 
   if (price <= 0) return apiError(ApiErrorCode.BAD_REQUEST, 'price must be > 0.');
   if (routes.length === 0 || routes.length > 5) return apiError(ApiErrorCode.BAD_REQUEST, 'routes: 1-5 required.');

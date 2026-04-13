@@ -91,10 +91,13 @@ export function ParamsPanel({
   };
 
   const syncRoutes = (rows: RouteRow[]) => {
-    const cleaned = rows
-      .filter(r => r.destination)
-      .map(r => ({ destination: r.destination, shipping: r.shipping ? Number(r.shipping) : 0, currency: r.currency || 'USD' }));
-    onParamChange('routes', cleaned.length > 0 ? JSON.stringify(cleaned) : '');
+    // Keep all rows (including empty) for UI rendering; API-side filters empties
+    const serialized = rows.map(r => ({
+      destination: r.destination,
+      shipping: r.shipping ? Number(r.shipping) : 0,
+      currency: r.currency || 'USD',
+    }));
+    onParamChange('routes', JSON.stringify(serialized));
   };
 
   const updateRoute = (idx: number, field: keyof RouteRow, val: string) => {
