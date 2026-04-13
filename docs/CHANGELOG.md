@@ -1,5 +1,23 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-13 KST (CW34-S1 완료 — Playground 10-field + v3 decision tree)
+> 마지막 업데이트: 2026-04-13 19:00 KST (CW34-S1 HF — Playground 3 endpoint 프로덕션 검증 + defaultValue 버그 수정 + Price/Currency composite 전역 적용)
+
+## [2026-04-13 19:00 KST] CW34-S1 HF — Playground 프로덕션 검증 + 버그 수정
+
+### Verified (Production — Chrome MCP 실측)
+- Classify: wallet → HS 420231 (decision_tree:4202→group3+mat1) ✅
+- Check Restrictions: HS 850760 → Lithium Batteries HAZMAT, carrier restrictions (USPS, Royal Mail, China Post air, Singapore Post air) ✅
+- Calculate Landed Cost: CN→US $45 wallet → totalLandedCost $82.15 (importDuty $0.05 MFN + Additional Tariff $15 Section 301 25% + Sales Tax $4.2 + MPF $2 + Insurance $0.9) ✅
+
+### Fixed
+- **defaultValue 버그**: endpoint의 defaultValue가 paramValues state에 초기화 안 됨 → API body에서 origin/destinationCountry/currency 누락 → importDuty $0, type "domestic" 오류. 3곳 수정: (1) useState 초기값에 defaultValue seed, (2) endpoint 전환 시 defaultValue seed, (3) handleTest body 구성 시 defaultValue fallback
+- **Price + Currency composite 범위**: Classify endpoint에서 price 필드에 통화 드롭다운 안 보이던 문제. 조건을 `endpoint.params.some(pp => pp.key === 'currency')` → `p.key === 'price'`로 단순화하여 모든 endpoint에 적용
+
+### Changed
+- Price + Currency가 별도 row → composite field (숫자 + 통화 드롭다운) 한 줄로 합쳐짐
+- currency param은 endpoint에 존재해도 별도 row로 렌더하지 않음 (filter 처리)
+
+### Regression
+- Build: 475/475 ✅
 
 ## [2026-04-13 KST] CW34-S1 완료
 

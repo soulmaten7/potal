@@ -7,7 +7,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return apiError(ApiErrorCode.BAD_REQUEST, 'Invalid JSON.'); }
 
-  const value = typeof body.value === 'number' ? body.value : 0;
+  const value = typeof body.price === 'number' ? body.price : typeof body.value === 'number' ? body.value : 0;
   const shipping = typeof body.shipping === 'number' ? body.shipping : 0;
   const insurance = typeof body.insurance === 'number' ? body.insurance : 0;
   const sellingPrice = typeof body.selling_price === 'number' ? body.selling_price : undefined;

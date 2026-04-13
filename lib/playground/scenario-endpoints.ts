@@ -110,7 +110,7 @@ const D2C_ENDPOINTS: EndpointDef[] = [
     method: 'POST',
     path: '/api/v1/calculate/compare',
     params: [
-      { key: 'value', label: 'Product Value (USD)', type: 'number', required: true, placeholder: '28', description: 'Product value, must be > 0' },
+      { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value, must be > 0' },
       { key: 'routes', label: 'Routes (JSON)', type: 'string', required: true, placeholder: '[{"shipping":5},{"shipping":8},{"shipping":12}]', description: 'Array of 1-5 route objects with shipping cost' },
     ],
     exampleResponse: {
@@ -128,7 +128,7 @@ const D2C_ENDPOINTS: EndpointDef[] = [
       { key: 'hs_code', label: 'HS Code', type: 'string', required: true, placeholder: '610910', description: '4+ digit HS code' },
       { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Exporting country' },
       { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Importing country' },
-      { key: 'product_value', label: 'Product Value', type: 'number', required: false, placeholder: '28', description: 'For RVC (regional value content) calculation' },
+      { key: 'price', label: 'Price', type: 'number', required: false, placeholder: '28', description: 'For RVC (regional value content) calculation' },
       { key: 'local_content_percentage', label: 'Local Content %', type: 'number', required: false, placeholder: '60', description: '0-100, for RVC check' },
     ],
     exampleResponse: {
@@ -143,7 +143,7 @@ const D2C_ENDPOINTS: EndpointDef[] = [
     method: 'POST',
     path: '/api/v1/calculate/ddp-vs-ddu',
     params: [
-      { key: 'value', label: 'Product Value (USD)', type: 'number', required: true, placeholder: '28', description: 'Product value' },
+      { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value' },
       { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Origin country' },
       { key: 'destination', label: 'Destination', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Destination country' },
       { key: 'weight_kg', label: 'Weight (kg)', type: 'number', required: false, placeholder: '0.5', description: 'Weight for shipping estimate' },
@@ -220,7 +220,7 @@ const IMPORTER_ENDPOINTS: EndpointDef[] = [
     method: 'POST',
     path: '/api/v1/calculate/breakdown',
     params: [
-      { key: 'value', label: 'Shipment Value (USD)', type: 'number', required: true, placeholder: '85000', description: 'Total product value' },
+      { key: 'price', label: 'Shipment Value', type: 'number', required: true, placeholder: '85000', description: 'Total product value' },
       { key: 'shipping', label: 'Shipping Cost', type: 'number', required: false, placeholder: '3200', description: 'Estimated shipping cost in selected currency' },
       { key: 'insurance', label: 'Insurance', type: 'number', required: false, placeholder: '850', description: 'Insurance cost' },
       { key: 'selling_price', label: 'Selling Price', type: 'number', required: false, placeholder: '120000', description: 'For margin calculation' },

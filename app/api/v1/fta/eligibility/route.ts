@@ -34,7 +34,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   if (!destination || destination.length !== 2) return apiError(ApiErrorCode.BAD_REQUEST, 'destination (2-letter ISO) required.');
 
   const ftaId = typeof body.fta_id === 'string' ? body.fta_id.trim() : undefined;
-  const productValue = typeof body.product_value === 'number' ? body.product_value : undefined;
+  const productValue = typeof body.price === 'number' ? body.price : typeof body.product_value === 'number' ? body.product_value : undefined;
   const localContent = typeof body.local_content_percentage === 'number' ? body.local_content_percentage : undefined;
   const inputOrigins = Array.isArray(body.input_origins)
     ? (body.input_origins as string[]).map(s => String(s).toUpperCase())

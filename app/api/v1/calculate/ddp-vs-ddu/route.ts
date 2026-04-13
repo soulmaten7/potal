@@ -26,7 +26,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return apiError(ApiErrorCode.BAD_REQUEST, 'Invalid JSON.'); }
 
-  const value = typeof body.value === 'number' ? body.value : 0;
+  const value = typeof body.price === 'number' ? body.price : typeof body.value === 'number' ? body.value : 0;
   const origin = typeof body.origin === 'string' ? body.origin.toUpperCase() : '';
   const destination = typeof body.destination === 'string' ? body.destination.toUpperCase() : '';
   const dutyRate = typeof body.duty_rate === 'number' ? body.duty_rate : 0;
