@@ -71,9 +71,9 @@ export function ParamsPanel({
   const weightNumValue = paramValues.weight_spec?.replace(/[^0-9.]/g, '') || '';
 
   return (
-    <div className="flex-1 min-w-0 min-h-[calc(100vh-120px)] border-r border-slate-200 flex flex-col">
-      {/* Endpoint header + inline Test button — sticky top */}
-      <div className="px-6 pt-5 pb-4 border-b border-slate-200 flex-shrink-0">
+    <div className="flex-1 min-w-0 border-r border-slate-200 flex flex-col">
+      {/* Endpoint header + inline Test button */}
+      <div className="px-6 pt-5 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-[11px] font-mono bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">
             {endpoint.method}
@@ -100,8 +100,8 @@ export function ParamsPanel({
         <p className="text-[13px] text-slate-500 mt-1">{endpoint.description}</p>
       </div>
 
-      {/* Scrollable area: API Key + Params */}
-      <div className="flex-1 overflow-y-auto min-h-0">
+      {/* API Key + Params — natural height, no scroll */}
+      <div>
         {/* API Key */}
         <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/30">
           <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-1.5">

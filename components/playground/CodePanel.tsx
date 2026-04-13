@@ -167,28 +167,24 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
         </div>
       )}
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto bg-slate-50/50">
+      {/* Content + sticky Copy button */}
+      <div className="flex-1 overflow-auto bg-slate-50/50 relative">
+        <button
+          type="button"
+          onClick={handleCopy}
+          className={`sticky top-2 float-right mr-3 mt-2 z-10 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
+            copied
+              ? 'bg-emerald-500 text-white'
+              : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
+          }`}
+        >
+          {copied ? '\u2713 Copied!' : 'Copy'}
+        </button>
         <pre className="p-4 text-[12px] leading-relaxed font-mono text-slate-700 whitespace-pre-wrap break-all">
           {tab === 'code' && code}
           {tab === 'example' && exampleJson}
           {tab === 'result' && (resultJson || 'Click "\u25B6 Test Endpoint" to see results here.')}
         </pre>
-      </div>
-
-      {/* Copy button */}
-      <div className="px-4 py-3 border-t border-slate-200 flex justify-end">
-        <button
-          type="button"
-          onClick={handleCopy}
-          className={`px-4 py-2 rounded-lg text-[12px] font-bold transition-colors ${
-            copied
-              ? 'bg-emerald-500 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          {copied ? '\u2713 Copied!' : 'Copy'}
-        </button>
       </div>
     </div>
   );
