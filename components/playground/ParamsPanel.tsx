@@ -318,10 +318,9 @@ export function ParamsPanel({
                     <button
                       type="button"
                       onClick={() => setShowHsCalc(true)}
-                      title="HS Code Calculator"
-                      className="px-3 py-2 rounded-lg border border-slate-200 text-[14px] hover:bg-slate-50 hover:border-[#F59E0B]"
+                      className="px-3 py-1.5 rounded-lg border border-blue-200 text-[12px] font-bold text-blue-600 hover:bg-blue-50 whitespace-nowrap"
                     >
-                      🔍
+                      HS Code 계산기
                     </button>
                   )}
                 </div>
