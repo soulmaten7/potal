@@ -41,14 +41,41 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
       const result = await calculateGlobalLandedCostAsync(input);
       const res = result as unknown as Record<string, unknown>;
       const hs = res.hsClassification as Record<string, unknown> | undefined;
+      const hs10 = res.hs10Resolution as Record<string, unknown> | undefined;
+      const lc = res.localCurrency as Record<string, unknown> | undefined;
+      const breakdown = res.breakdown as Array<{ label: string; amount: number; note?: string }> | undefined;
+
+      const importDuty = (res.importDuty as number) ?? 0;
+      const declaredValue = price + shipping;
+
       return {
         destination,
         shipping,
+        // Core costs
         totalLandedCost: (res.totalLandedCost as number) ?? 0,
-        duty: (res.importDuty as number) ?? 0,
+        duty: importDuty,
         tax: (res.vat as number) ?? (res.salesTax as number) ?? 0,
         fees: (res.mpf as number) ?? 0,
+        insurance: (res.insurance as number) ?? 0,
+        brokerageFee: (res.brokerageFee as number) ?? 0,
+        // Rates
+        dutyRate: declaredValue > 0 ? Math.round((importDuty / declaredValue) * 10000) / 10000 : 0,
+        vatRate: (res.vatRate as number) ?? 0,
+        vatLabel: (res.vatLabel as string) || 'VAT',
+        dutyRateSource: (res.dutyRateSource as string) || null,
+        entryType: (res.entryType as string) || null,
+        // De minimis
+        deMinimisApplied: (res.deMinimisApplied as boolean) ?? false,
+        dutyThresholdUsd: (res.dutyThresholdUsd as number) ?? 0,
+        // HS Code
         hsCode: (hs?.hsCode as string) || (res.hsCode as string) || hsCode || '',
+        hsCodePrecision: (hs?.hsCodePrecision as string) || (res.hsCodePrecision as string) || null,
+        hs10Code: (hs10?.hs10Code as string) || (hs10?.hsCode as string) || null,
+        // Breakdown
+        breakdown: breakdown || [],
+        // Local currency
+        localCurrency: lc || null,
+        // FTA
         ftaApplied: res.ftaApplied || null,
         source: 'live',
       };
@@ -60,7 +87,20 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
         duty: 0,
         tax: 0,
         fees: 0,
+        insurance: 0,
+        brokerageFee: 0,
+        dutyRate: 0,
+        vatRate: 0,
+        vatLabel: 'VAT',
+        dutyRateSource: null,
+        entryType: null,
+        deMinimisApplied: false,
+        dutyThresholdUsd: 0,
         hsCode: hsCode || '',
+        hsCodePrecision: null,
+        hs10Code: null,
+        breakdown: [],
+        localCurrency: null,
         ftaApplied: null,
         source: 'error',
       };

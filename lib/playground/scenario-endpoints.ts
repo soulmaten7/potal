@@ -122,11 +122,25 @@ const D2C_ENDPOINTS: EndpointDef[] = [
       data: {
         origin: 'KR',
         routes: [
-          { destination: 'US', shipping: 5, totalLandedCost: 37.5, duty: 0, tax: 2.5, fees: 2, hsCode: '610910', ftaApplied: { hasFta: true, ftaName: 'Korea-US FTA' }, source: 'live' },
-          { destination: 'DE', shipping: 8, totalLandedCost: 42.1, duty: 3.36, tax: 4.8, fees: 0, hsCode: '610910', ftaApplied: { hasFta: true, ftaName: 'EU-Korea FTA' }, source: 'live' },
+          {
+            destination: 'US', shipping: 5, totalLandedCost: 37.81, duty: 0, tax: 2.31, fees: 2, insurance: 0.5, brokerageFee: 0,
+            dutyRate: 0, vatRate: 0.07, vatLabel: 'Sales Tax', dutyRateSource: 'db', entryType: 'informal',
+            deMinimisApplied: false, dutyThresholdUsd: 800,
+            hsCode: '610910', hsCodePrecision: 'HS6', hs10Code: null,
+            breakdown: [{ label: 'Product', amount: 28 }, { label: 'Shipping', amount: 5 }, { label: 'Import Duty', amount: 0, note: 'Duty-free' }, { label: 'Sales Tax', amount: 2.31, note: '7.0%' }],
+            localCurrency: null, ftaApplied: { hasFta: true, ftaName: 'Korea-US Free Trade Agreement' }, source: 'live',
+          },
+          {
+            destination: 'DE', shipping: 8, totalLandedCost: 43.38, duty: 0, tax: 6.84, fees: 0, insurance: 0.54, brokerageFee: 0,
+            dutyRate: 0, vatRate: 0.19, vatLabel: 'VAT', dutyRateSource: 'db', entryType: 'formal',
+            deMinimisApplied: false, dutyThresholdUsd: 150,
+            hsCode: '610910', hsCodePrecision: 'HS6', hs10Code: null,
+            breakdown: [{ label: 'Product', amount: 28 }, { label: 'Shipping', amount: 8 }, { label: 'Import Duty', amount: 0, note: 'Duty-free' }, { label: 'VAT', amount: 6.84, note: '19.0%' }],
+            localCurrency: { total: 40.12, currency: 'EUR', exchangeRate: 0.925 }, ftaApplied: { hasFta: true, ftaName: 'EU-Korea Free Trade Agreement' }, source: 'live',
+          },
         ],
         cheapest_route_index: 0,
-        savings_vs_most_expensive: 4.6,
+        savings_vs_most_expensive: 5.57,
       },
     },
   },
