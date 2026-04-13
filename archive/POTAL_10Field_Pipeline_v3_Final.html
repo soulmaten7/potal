@@ -90,7 +90,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
     10-Field Architecture | "거래처 데이터로 HS 10자리 + 세율까지 한번에" | AI 호출 0회<br>
     131,794행 코드화 (7개국) | 13,849 키워드 | 11개 패턴 유형 | 5회 검수 오류 0건<br>
     7개국 벤치마크 1,183건: **7개국 전부 100%** 확장 + 세율 100% | AI 호출 0회<br>
-    Step 0~6 전체 파이프라인 | 패턴 기반 매칭 | gov_tariff_schedules 131,794행 | 2026-04-03
+    Step 0~6 전체 파이프라인 | 패턴 기반 매칭 | gov_tariff_schedules 131,794행 | 2026-04-13 (CW34: Decision Tree + Voting Fix)
   </div>
 </div>
 
@@ -258,11 +258,18 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: #0f172a; col
     <div class="substep-title">Step 3-2: Subheading 확정 (6자리)</div>
     <div class="substep-detail">
       <strong>데이터:</strong> codified_subheadings.json (5,621개) + MAT_SYN 소재 동의어 | 미분류 865건 → 0건 해결 완료<br>
-      <strong>조건 유형:</strong> product_type 53% | composition 13% | processing 4% | material_detail 3% | weight_spec 1%
+      <strong>조건 유형:</strong> product_type 53% | composition 13% | processing 4% | material_detail 3% | weight_spec 1%<br>
+      <strong>처리 우선순위 (CW34 업데이트):</strong> ① SUBHEADING_SYNONYMS 사전 → ② <strong style="color:#22c55e">checkDecisionTree() WCO EN 규칙</strong> <span class="tag tag-new">CW34</span> → ③ Elimination → ④ Voting (keyword 다중 카운트) <span class="tag tag-new">CW34 fix</span>
     </div>
     <div class="substep-io">
       <div><div class="io-label">매칭 예시</div>composition="95% Cotton" → 610910 | processing="roasted" → ".21" | weight_spec="300g/m²" → 무게 기준</div>
       <div><div class="io-label">사용 필드</div><strong>composition</strong> + <strong>weight_spec</strong> + <strong>price</strong> + <strong>description</strong> + <strong>material</strong></div>
+    </div>
+    <div class="substep-detail" style="margin-top:6px; border-left:3px solid #22c55e; padding-left:8px;">
+      <strong style="color:#22c55e">CW34 추가: Decision Tree (heading 4202)</strong><br>
+      WCO Explanatory Notes 기준 <strong>article type</strong>(Group 1 대형컨테이너/Group 2 핸드백/Group 3 주머니용품) + <strong>material surface</strong>(leather→x1/plastic·textile→x2/other→x9) 2축 규칙.<br>
+      wallet→<strong>420231</strong> ✅ | handbag→420221 ✅ | briefcase→420211 ✅ | card holder→420231 ✅ | coin purse(nylon)→420232 ✅ | tote(canvas)→420222 ✅ | suitcase(plastic)→420212 ✅ | passport holder→420231 ✅ (8/8)<br>
+      <strong>Voting engine fix:</strong> keyword vote `break` 제거 → 매칭 키워드 수만큼 다중 투표 + `seen` Set 중복방지. description 필드 활용도 대폭 향상.
     </div>
   </div>
 
