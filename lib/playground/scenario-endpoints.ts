@@ -110,12 +110,24 @@ const D2C_ENDPOINTS: EndpointDef[] = [
     method: 'POST',
     path: '/api/v1/calculate/compare',
     params: [
-      { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value, must be > 0' },
-      { key: 'routes', label: 'Routes (JSON)', type: 'string', required: true, placeholder: '[{"shipping":5},{"shipping":8},{"shipping":12}]', description: 'Array of 1-5 route objects with shipping cost' },
+      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Manufacturing / shipping country' },
+      { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '610910', description: 'Product HS code (leave blank to auto-classify)' },
+      { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Cotton T-shirt', description: 'For auto HS classification when HS Code is blank' },
+      { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value' },
+      { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
+      { key: 'routes', label: 'Routes (JSON)', type: 'string', required: true, placeholder: '[{"destination":"US","shipping":5},{"destination":"DE","shipping":8},{"destination":"JP","shipping":12}]', description: 'Array of {destination, shipping} — max 5 countries' },
     ],
     exampleResponse: {
       success: true,
-      data: { routes: [{ totalLandedCost: 37.5, duty: 0, vat: 5.32 }, { totalLandedCost: 42.1, duty: 3.36, vat: 4.8 }], cheapest_route_index: 0, savings_vs_most_expensive: 4.6 },
+      data: {
+        origin: 'KR',
+        routes: [
+          { destination: 'US', shipping: 5, totalLandedCost: 37.5, duty: 0, tax: 2.5, fees: 2, hsCode: '610910', ftaApplied: { hasFta: true, ftaName: 'Korea-US FTA' }, source: 'live' },
+          { destination: 'DE', shipping: 8, totalLandedCost: 42.1, duty: 3.36, tax: 4.8, fees: 0, hsCode: '610910', ftaApplied: { hasFta: true, ftaName: 'EU-Korea FTA' }, source: 'live' },
+        ],
+        cheapest_route_index: 0,
+        savings_vs_most_expensive: 4.6,
+      },
     },
   },
   {
