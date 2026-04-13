@@ -125,6 +125,11 @@ function buildEngineInput(
   // CW33-HF3: optional HS classifier hints from the Advanced section
   const category = toStr(inputs.category);
   const hsHint = normalizeHsHint(inputs.hsHint);
+  // CW34-S1: material field — enrich productName for classifier keyword matching
+  const material = toStr(inputs.material);
+  const enrichedProduct = material && product && !product.toLowerCase().includes(material.toLowerCase())
+    ? `${material} ${product}`
+    : product;
 
   if (!from || !to || unitValue <= 0) return null;
 
@@ -135,7 +140,7 @@ function buildEngineInput(
     shippingPrice: 0, // engine auto-estimates when zero
     origin: from.toUpperCase(),
     destinationCountry: to.toUpperCase(),
-    productName: product,
+    productName: enrichedProduct,
     quantity,
     shippingType: 'international',
     productCategory: category,
@@ -154,6 +159,11 @@ function buildForwarderInputs(
 ): GlobalCostInput[] | null {
   const product = toStr(inputs.product);
   const from = toStr(inputs.from);
+  // CW34-S1: material field — enrich productName for classifier keyword matching
+  const material = toStr(inputs.material);
+  const enrichedProduct = material && product && !product.toLowerCase().includes(material.toLowerCase())
+    ? `${material} ${product}`
+    : product;
 
   // Accept destinations | to (array) | to (string). First match wins.
   const rawDest = inputs.destinations;
@@ -183,7 +193,7 @@ function buildForwarderInputs(
     shippingPrice: 0,
     origin: from.toUpperCase(),
     destinationCountry: dest,
-    productName: product,
+    productName: enrichedProduct,
     quantity: productQuantity,
     shippingType: 'international' as const,
     productCategory: category,
