@@ -90,6 +90,10 @@ export default function PlaygroundPage() {
       for (const p of currentEndpoint.params) {
         const val = paramValues[p.key] || p.defaultValue || '';
         if (val === undefined || val === '') continue;
+        // Parse JSON string fields (e.g. routes) into actual arrays/objects
+        if (p.key === 'routes' || p.key === 'items') {
+          try { body[p.key] = JSON.parse(val as string); continue; } catch { /* send as string */ }
+        }
         body[p.key] = p.type === 'number' ? Number(val) : val;
       }
 

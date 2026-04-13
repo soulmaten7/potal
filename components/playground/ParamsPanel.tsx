@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import type { EndpointDef } from '@/lib/playground/scenario-endpoints';
-import { CATEGORY_OPTIONS, MATERIAL_TO_CATEGORIES } from '@/lib/playground/dropdown-options';
+import { CATEGORY_OPTIONS, MATERIAL_TO_CATEGORIES, COUNTRY_OPTIONS } from '@/lib/playground/dropdown-options';
 import { SearchableSelect } from './SearchableSelect';
+import { HsCodeCalculator } from './HsCodeCalculator';
 
 const WEIGHT_UNITS = ['g', 'kg', 'lb', 'oz', 'mm', 'cm', 'ml', 'L'] as const;
 const PRICE_CURRENCIES = ['USD', 'EUR', 'GBP', 'KRW', 'JPY', 'CNY', 'CAD', 'AUD'] as const;
@@ -34,6 +35,7 @@ export function ParamsPanel({
   keyPrefix = null,
   keyLoading = false,
 }: ParamsPanelProps) {
+  const [showHsCalc, setShowHsCalc] = useState(false);
   const [weightUnit, setWeightUnit] = useState<string>('g');
   const [priceCurrency, setPriceCurrency] = useState<string>(
     endpoint?.params.find(p => p.key === 'currency')?.defaultValue || 'USD'
@@ -71,6 +73,49 @@ export function ParamsPanel({
   };
 
   const weightNumValue = paramValues.weight_spec?.replace(/[^0-9.]/g, '') || '';
+
+  // Routes builder state for Compare Countries
+  const parseRoutes = (): Array<{ destination: string; shipping: string }> => {
+    try {
+      const parsed = JSON.parse(paramValues.routes || '[]');
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((r: Record<string, unknown>) => ({
+          destination: String(r.destination || ''),
+          shipping: String(r.shipping ?? ''),
+        }));
+      }
+    } catch { /* ignore */ }
+    return [{ destination: '', shipping: '' }];
+  };
+
+  const syncRoutes = (rows: Array<{ destination: string; shipping: string }>) => {
+    const cleaned = rows
+      .filter(r => r.destination)
+      .map(r => ({ destination: r.destination, shipping: r.shipping ? Number(r.shipping) : 0 }));
+    onParamChange('routes', cleaned.length > 0 ? JSON.stringify(cleaned) : '');
+  };
+
+  const updateRoute = (idx: number, field: 'destination' | 'shipping', val: string) => {
+    const rows = parseRoutes();
+    rows[idx] = { ...rows[idx], [field]: val };
+    syncRoutes(rows);
+  };
+
+  const addRoute = () => {
+    const rows = parseRoutes();
+    if (rows.length < 5) {
+      rows.push({ destination: '', shipping: '' });
+      syncRoutes(rows);
+    }
+  };
+
+  const removeRoute = (idx: number) => {
+    const rows = parseRoutes();
+    if (rows.length > 1) {
+      rows.splice(idx, 1);
+      syncRoutes(rows);
+    }
+  };
 
   return (
     <div className="flex-1 min-w-0 border-r border-slate-200 flex flex-col">
@@ -190,6 +235,48 @@ export function ParamsPanel({
                   </select>
                 </div>
 
+              /* Routes builder: dynamic destination rows */
+              ) : p.key === 'routes' ? (
+                <div className="space-y-2">
+                  {parseRoutes().map((row, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <div className="flex-1">
+                        <SearchableSelect
+                          options={COUNTRY_OPTIONS}
+                          value={row.destination}
+                          onChange={val => updateRoute(idx, 'destination', val)}
+                          placeholder="Select country"
+                        />
+                      </div>
+                      <input
+                        type="number"
+                        value={row.shipping}
+                        onChange={e => updateRoute(idx, 'shipping', e.target.value)}
+                        placeholder="Shipping"
+                        className="w-[100px] px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
+                      />
+                      {parseRoutes().length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeRoute(idx)}
+                          className="w-7 h-7 flex items-center justify-center rounded text-slate-400 hover:text-red-500 hover:bg-red-50 text-[14px]"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  {parseRoutes().length < 5 && (
+                    <button
+                      type="button"
+                      onClick={addRoute}
+                      className="text-[12px] font-bold text-[#F59E0B] hover:text-[#e8930a] mt-1"
+                    >
+                      + Add Destination
+                    </button>
+                  )}
+                </div>
+
               ) : p.type === 'select' && p.options ? (
                 <SearchableSelect
                   options={(() => {
@@ -207,18 +294,38 @@ export function ParamsPanel({
                   placeholder={p.placeholder || 'Select…'}
                 />
               ) : (
-                <input
-                  type={p.type === 'number' ? 'number' : 'text'}
-                  value={paramValues[p.key] || ''}
-                  onChange={e => onParamChange(p.key, e.target.value)}
-                  placeholder={p.placeholder}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
-                />
+                <div className={p.key === 'hsCode' ? 'flex gap-2' : ''}>
+                  <input
+                    type={p.type === 'number' ? 'number' : 'text'}
+                    value={paramValues[p.key] || ''}
+                    onChange={e => onParamChange(p.key, e.target.value)}
+                    placeholder={p.placeholder}
+                    className={`${p.key === 'hsCode' ? 'flex-1' : 'w-full'} px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]`}
+                  />
+                  {p.key === 'hsCode' && (
+                    <button
+                      type="button"
+                      onClick={() => setShowHsCalc(true)}
+                      title="HS Code Calculator"
+                      className="px-3 py-2 rounded-lg border border-slate-200 text-[14px] hover:bg-slate-50 hover:border-[#F59E0B]"
+                    >
+                      🔍
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           ))}
         </div>
       </div>
+
+      {/* HS Code Calculator modal */}
+      {showHsCalc && (
+        <HsCodeCalculator
+          onResult={hsCode => onParamChange('hsCode', hsCode)}
+          onClose={() => setShowHsCalc(false)}
+        />
+      )}
     </div>
   );
 }

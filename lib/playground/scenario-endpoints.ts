@@ -110,12 +110,12 @@ const D2C_ENDPOINTS: EndpointDef[] = [
     method: 'POST',
     path: '/api/v1/calculate/compare',
     params: [
-      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Manufacturing / shipping country' },
-      { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '610910', description: 'Product HS code (leave blank to auto-classify)' },
+      { key: 'origin', label: 'Origin', type: 'select', required: true, options: COUNTRY_OPTIONS, description: 'Where are you shipping from?' },
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Cotton T-shirt', description: 'For auto HS classification when HS Code is blank' },
+      { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '610910', description: 'Product HS code (leave blank to auto-classify)' },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value' },
       { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
-      { key: 'routes', label: 'Routes (JSON)', type: 'string', required: true, placeholder: '[{"destination":"US","shipping":5},{"destination":"DE","shipping":8},{"destination":"JP","shipping":12}]', description: 'Array of {destination, shipping} — max 5 countries' },
+      { key: 'routes', label: 'Destinations', type: 'string', required: true, description: 'Countries to compare — add up to 5 destinations' },
     ],
     exampleResponse: {
       success: true,
