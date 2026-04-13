@@ -385,9 +385,13 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'satin', label: 'Satin', group: 'Textiles' },
   { value: 'chiffon', label: 'Chiffon', group: 'Textiles' },
   { value: 'lace', label: 'Lace', group: 'Textiles' },
+  { value: 'aramid', label: 'Aramid (Kevlar)', group: 'Textiles' },
+  { value: 'flax', label: 'Flax', group: 'Textiles' },
+  { value: 'hemp', label: 'Hemp', group: 'Textiles' },
+  { value: 'jute', label: 'Jute', group: 'Textiles' },
   { value: 'synthetic', label: 'Synthetic (general)', group: 'Textiles' },
   { value: 'natural', label: 'Natural fiber (general)', group: 'Textiles' },
-  // --- Leather (7) ---
+  // --- Leather ---
   { value: 'leather', label: 'Leather (general)', group: 'Leather' },
   { value: 'suede', label: 'Suede', group: 'Leather' },
   { value: 'nubuck', label: 'Nubuck', group: 'Leather' },
@@ -395,8 +399,10 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'lambskin', label: 'Lambskin', group: 'Leather' },
   { value: 'cowhide', label: 'Cowhide', group: 'Leather' },
   { value: 'pigskin', label: 'Pigskin', group: 'Leather' },
+  { value: 'sheepskin', label: 'Sheepskin', group: 'Leather' },
+  { value: 'fur', label: 'Fur', group: 'Leather' },
   { value: 'synthetic-leather', label: 'Synthetic Leather (PU/PVC)', group: 'Leather' },
-  // --- Metals (13) ---
+  // --- Metals ---
   { value: 'steel', label: 'Steel', group: 'Metals' },
   { value: 'stainless-steel', label: 'Stainless Steel', group: 'Metals' },
   { value: 'aluminum', label: 'Aluminum', group: 'Metals' },
@@ -410,13 +416,28 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'gold', label: 'Gold', group: 'Metals' },
   { value: 'silver', label: 'Silver', group: 'Metals' },
   { value: 'platinum', label: 'Platinum', group: 'Metals' },
-  // --- Rubber & Plastics (5) ---
+  { value: 'brass', label: 'Brass', group: 'Metals' },
+  { value: 'bronze', label: 'Bronze', group: 'Metals' },
+  { value: 'chromium', label: 'Chromium', group: 'Metals' },
+  { value: 'cobalt', label: 'Cobalt', group: 'Metals' },
+  { value: 'manganese', label: 'Manganese', group: 'Metals' },
+  { value: 'palladium', label: 'Palladium', group: 'Metals' },
+  { value: 'tungsten', label: 'Tungsten', group: 'Metals' },
+  // --- Rubber & Plastics ---
   { value: 'rubber', label: 'Rubber', group: 'Rubber & Plastics' },
   { value: 'plastic', label: 'Plastic', group: 'Rubber & Plastics' },
   { value: 'pvc', label: 'PVC', group: 'Rubber & Plastics' },
   { value: 'eva', label: 'EVA (Ethylene-Vinyl Acetate)', group: 'Rubber & Plastics' },
   { value: 'silicone', label: 'Silicone', group: 'Rubber & Plastics' },
-  // --- Wood & Natural (12) ---
+  { value: 'epoxy', label: 'Epoxy / Resin', group: 'Rubber & Plastics' },
+  { value: 'fiberglass', label: 'Fiberglass', group: 'Rubber & Plastics' },
+  { value: 'latex', label: 'Latex', group: 'Rubber & Plastics' },
+  { value: 'neoprene', label: 'Neoprene', group: 'Rubber & Plastics' },
+  { value: 'polycarbonate', label: 'Polycarbonate', group: 'Rubber & Plastics' },
+  { value: 'polyethylene', label: 'Polyethylene (PE)', group: 'Rubber & Plastics' },
+  { value: 'polypropylene', label: 'Polypropylene (PP)', group: 'Rubber & Plastics' },
+  { value: 'polyurethane', label: 'Polyurethane (PU)', group: 'Rubber & Plastics' },
+  // --- Wood & Natural ---
   { value: 'wood', label: 'Wood (general)', group: 'Wood & Natural' },
   { value: 'oak', label: 'Oak', group: 'Wood & Natural' },
   { value: 'pine', label: 'Pine', group: 'Wood & Natural' },
@@ -430,7 +451,8 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'cork', label: 'Cork', group: 'Wood & Natural' },
   { value: 'rattan', label: 'Rattan', group: 'Wood & Natural' },
   { value: 'paper', label: 'Paper / Cardboard', group: 'Wood & Natural' },
-  // --- Stone & Ceramics (7) ---
+  { value: 'cellulose', label: 'Cellulose', group: 'Wood & Natural' },
+  // --- Stone & Ceramics ---
   { value: 'glass', label: 'Glass', group: 'Stone & Ceramics' },
   { value: 'ceramic', label: 'Ceramic', group: 'Stone & Ceramics' },
   { value: 'porcelain', label: 'Porcelain', group: 'Stone & Ceramics' },
@@ -438,7 +460,8 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'earthenware', label: 'Earthenware', group: 'Stone & Ceramics' },
   { value: 'crystal', label: 'Crystal', group: 'Stone & Ceramics' },
   { value: 'stone', label: 'Stone / Marble / Granite', group: 'Stone & Ceramics' },
-  // --- Specialty (8) ---
+  { value: 'cement', label: 'Cement / Concrete', group: 'Stone & Ceramics' },
+  // --- Specialty ---
   { value: 'lithium-ion', label: 'Lithium-ion (Li-ion)', group: 'Specialty' },
   { value: 'lithium-primary', label: 'Lithium Primary (non-rechargeable)', group: 'Specialty' },
   { value: 'carbon-fiber', label: 'Carbon Fiber', group: 'Specialty' },
@@ -447,6 +470,7 @@ export const MATERIAL_OPTIONS: Array<{ value: string; label: string; group?: str
   { value: 'sapphire', label: 'Sapphire', group: 'Specialty' },
   { value: 'emerald', label: 'Emerald', group: 'Specialty' },
   { value: 'pearl', label: 'Pearl', group: 'Specialty' },
+  { value: 'graphite', label: 'Graphite', group: 'Specialty' },
 ];
 
 // CW34: Full material → category mapping (82 materials) based on HS chapters
@@ -537,4 +561,29 @@ export const MATERIAL_TO_CATEGORIES: Record<string, string[]> = {
   sapphire: ['jewelry'],
   emerald: ['jewelry'],
   pearl: ['jewelry', 'accessories'],
+  graphite: ['industrial', 'electronics', 'machinery-industrial'],
+  // New from external drive keyword_index (24 materials)
+  aramid: ['textiles-raw', 'automotive-parts', 'machinery-industrial'],
+  flax: ['textiles-raw', 'apparel-woven'],
+  hemp: ['textiles-raw', 'apparel-woven'],
+  jute: ['textiles-raw', 'bags', 'straw'],
+  sheepskin: ['leather-goods', 'footwear', 'apparel-woven'],
+  fur: ['fur', 'apparel-woven', 'accessories'],
+  brass: ['machinery-industrial', 'home', 'instruments', 'metals'],
+  bronze: ['machinery-industrial', 'art', 'metals'],
+  chromium: ['machinery-industrial', 'metals'],
+  cobalt: ['machinery-industrial', 'electronics', 'metals'],
+  manganese: ['machinery-industrial', 'metals'],
+  palladium: ['jewelry', 'electronics', 'metals'],
+  tungsten: ['machinery-industrial', 'tools', 'metals'],
+  epoxy: ['chemicals', 'industrial', 'plastics'],
+  fiberglass: ['automotive-parts', 'machinery-industrial', 'plastics'],
+  latex: ['rubber', 'home', 'cosmetics'],
+  neoprene: ['sports', 'footwear', 'rubber'],
+  polycarbonate: ['plastics', 'electronics-consumer', 'automotive-parts'],
+  polyethylene: ['plastics', 'industrial'],
+  polypropylene: ['plastics', 'industrial', 'home'],
+  polyurethane: ['plastics', 'footwear', 'furniture'],
+  cellulose: ['paper', 'textiles-raw', 'chemicals'],
+  cement: ['stone', 'industrial', 'minerals'],
 };
