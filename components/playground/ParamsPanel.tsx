@@ -330,6 +330,28 @@ export function ParamsPanel({
               )}
             </div>
           ))}
+
+          {/* Response Fields — read-only field reference */}
+          {endpoint.responseFields && endpoint.responseFields.length > 0 && (
+            <div className="mt-6 pt-5 border-t border-slate-200">
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-3">
+                Response Fields
+              </div>
+              <div className="space-y-2">
+                {endpoint.responseFields.map(f => (
+                  <div key={f.key} className="flex items-start gap-2 py-1.5">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[12px] font-semibold text-[#02122c]">{f.label}</span>
+                        <span className="text-[10px] font-mono text-slate-400 ml-auto">{f.type}</span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{f.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

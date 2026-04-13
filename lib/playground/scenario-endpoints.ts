@@ -19,6 +19,13 @@ export interface ParamDef {
   options?: Array<{ value: string; label: string }>;
 }
 
+export interface ResponseFieldDef {
+  key: string;
+  label: string;
+  type: string;
+  description: string;
+}
+
 export interface EndpointDef {
   id: string;
   name: string;
@@ -26,6 +33,7 @@ export interface EndpointDef {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
   path: string;
   params: ParamDef[];
+  responseFields?: ResponseFieldDef[];
   exampleResponse: unknown;
 }
 
@@ -116,6 +124,24 @@ const D2C_ENDPOINTS: EndpointDef[] = [
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value' },
       { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
       { key: 'routes', label: 'Destinations', type: 'string', required: true, description: 'Countries to compare — add up to 5 destinations' },
+    ],
+    responseFields: [
+      { key: 'totalLandedCost', label: 'Total Landed Cost', type: 'number', description: 'Final cost including all duties, taxes, fees, shipping' },
+      { key: 'duty', label: 'Import Duty', type: 'number', description: 'Calculated duty amount' },
+      { key: 'dutyRate', label: 'Duty Rate', type: 'number', description: 'Applied duty rate (e.g. 0.12 = 12%)' },
+      { key: 'tax', label: 'Tax', type: 'number', description: 'VAT / GST / Sales Tax amount' },
+      { key: 'vatRate', label: 'Tax Rate', type: 'number', description: 'Applied tax rate (e.g. 0.19 = 19%)' },
+      { key: 'vatLabel', label: 'Tax Label', type: 'string', description: 'Tax name (VAT, GST, Sales Tax, JCT, etc.)' },
+      { key: 'fees', label: 'Processing Fees', type: 'number', description: 'Customs processing fee (MPF, DTA, etc.)' },
+      { key: 'insurance', label: 'Insurance', type: 'number', description: 'CIF insurance estimate' },
+      { key: 'hsCode', label: 'HS Code (input)', type: 'string', description: '6-digit input HS code' },
+      { key: 'hs10Code', label: 'HS Code (local)', type: 'string', description: 'Destination country 10-digit code' },
+      { key: 'deMinimisApplied', label: 'De Minimis', type: 'boolean', description: 'Whether duty exemption threshold applies' },
+      { key: 'dutyThresholdUsd', label: 'Duty Threshold', type: 'number', description: 'De minimis threshold in USD' },
+      { key: 'breakdown', label: 'Cost Breakdown', type: 'array', description: 'Line-by-line cost items with labels and amounts' },
+      { key: 'localCurrency', label: 'Local Currency', type: 'object', description: 'Total in destination currency with live exchange rate' },
+      { key: 'ftaApplied', label: 'FTA Applied', type: 'object', description: 'Free trade agreement details if applicable' },
+      { key: 'entryType', label: 'Entry Type', type: 'string', description: 'formal (>$2,500) or informal' },
     ],
     exampleResponse: {
       success: true,
