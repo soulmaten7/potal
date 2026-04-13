@@ -124,7 +124,7 @@ export function CodePanel({ endpoint, paramValues, apiKey, result }: CodePanelPr
   };
 
   return (
-    <div className="flex-1 min-w-0 bg-white border-l border-slate-200 flex flex-col overflow-hidden">
+    <div className="flex-1 min-w-0 bg-white border-l border-slate-200 flex flex-col">
       {/* Tabs */}
       <div className="flex border-b border-slate-200">
         {([

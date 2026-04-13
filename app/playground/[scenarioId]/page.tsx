@@ -98,7 +98,7 @@ export default function PlaygroundPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-80px)] w-full overflow-hidden bg-white">
+    <div className="flex min-h-[calc(100vh-80px)] w-full bg-white">
       {/* Left sidebar */}
       <Sidebar
         scenarioId={scenarioId}
