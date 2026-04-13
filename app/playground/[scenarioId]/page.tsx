@@ -29,7 +29,16 @@ export default function PlaygroundPage() {
   const endpoints = SCENARIO_ENDPOINTS[scenarioId] || SCENARIO_ENDPOINTS.seller;
   const [selectedEndpoint, setSelectedEndpoint] = useState<string>(endpoints[0]?.id || '');
   const [apiKey, setApiKey] = useState('');
-  const [paramValues, setParamValues] = useState<Record<string, string>>({});
+  // Seed initial paramValues with defaultValue from the first endpoint
+  const [paramValues, setParamValues] = useState<Record<string, string>>(() => {
+    const ep = endpoints[0];
+    if (!ep) return {};
+    const defaults: Record<string, string> = {};
+    for (const p of ep.params) {
+      if (p.defaultValue) defaults[p.key] = p.defaultValue;
+    }
+    return defaults;
+  });
   const [result, setResult] = useState<unknown>(null);
   const [loading, setLoading] = useState(false);
 
@@ -76,9 +85,10 @@ export default function PlaygroundPage() {
       else headers['X-Demo-Request'] = 'true';
 
       // Build body from paramValues using the endpoint's param definitions
+      // Fall back to defaultValue so pre-filled dropdowns are always sent
       const body: Record<string, unknown> = {};
       for (const p of currentEndpoint.params) {
-        const val = paramValues[p.key];
+        const val = paramValues[p.key] || p.defaultValue || '';
         if (val === undefined || val === '') continue;
         body[p.key] = p.type === 'number' ? Number(val) : val;
       }
@@ -107,7 +117,15 @@ export default function PlaygroundPage() {
         onSelect={id => {
           setSelectedEndpoint(id);
           setResult(null);
-          setParamValues({});
+          // Seed paramValues with defaultValue so defaults are sent to API
+          const ep = endpoints.find(e => e.id === id);
+          const defaults: Record<string, string> = {};
+          if (ep) {
+            for (const p of ep.params) {
+              if (p.defaultValue) defaults[p.key] = p.defaultValue;
+            }
+          }
+          setParamValues(defaults);
         }}
       />
 
