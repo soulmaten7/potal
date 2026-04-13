@@ -17,10 +17,11 @@ interface ParamsPanelProps {
   onParamChange: (key: string, val: string) => void;
   onTest: () => void;
   loading: boolean;
-  /** CW34: login state + API key ownership for dynamic placeholder */
   isLoggedIn?: boolean;
   keyPrefix?: string | null;
   keyLoading?: boolean;
+  result?: unknown;
+  endpointId?: string;
 }
 
 export function ParamsPanel({
@@ -34,6 +35,8 @@ export function ParamsPanel({
   isLoggedIn = false,
   keyPrefix = null,
   keyLoading = false,
+  result,
+  endpointId,
 }: ParamsPanelProps) {
   const [showHsCalc, setShowHsCalc] = useState(false);
   const [weightUnit, setWeightUnit] = useState<string>('g');
@@ -331,27 +334,13 @@ export function ParamsPanel({
             </div>
           ))}
 
-          {/* Response Fields — read-only field reference */}
-          {endpoint.responseFields && endpoint.responseFields.length > 0 && (
-            <div className="mt-6 pt-5 border-t border-slate-200">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-3">
-                Response Fields
-              </div>
-              <div className="space-y-2">
-                {endpoint.responseFields.map(f => (
-                  <div key={f.key} className="flex items-start gap-2 py-1.5">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[12px] font-semibold text-[#02122c]">{f.label}</span>
-                        <span className="text-[10px] font-mono text-slate-400 ml-auto">{f.type}</span>
-                      </div>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{f.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* Compare Countries 결과 카드 */}
+          {(() => {
+            if (endpointId !== 'compare' || !result) return null;
+            const r = result as Record<string, unknown>;
+            if (!r.success || !r.data) return null;
+            return <CompareResultCards data={r.data as CompareData} />;
+          })()}
         </div>
       </div>
 
@@ -362,6 +351,126 @@ export function ParamsPanel({
           onClose={() => setShowHsCalc(false)}
         />
       )}
+    </div>
+  );
+}
+
+// ═══ Compare Countries Result Cards ═══
+
+interface CompareRoute {
+  destination: string;
+  shipping: number;
+  totalLandedCost: number;
+  duty: number;
+  tax: number;
+  fees: number;
+  insurance?: number;
+  dutyRate?: number;
+  vatRate?: number;
+  vatLabel?: string;
+  entryType?: string;
+  deMinimisApplied?: boolean;
+  dutyThresholdUsd?: number;
+  hsCode: string;
+  hsCodePrecision?: string;
+  hs10Code?: string | null;
+  breakdown?: Array<{ label: string; amount: number; note?: string }>;
+  localCurrency?: { totalLandedCost: number; exchangeRate: number; currency: string } | null;
+  ftaApplied?: { hasFta: boolean; ftaName?: string; ftaCode?: string; preferentialMultiplier?: number } | null;
+  source: string;
+}
+
+interface CompareData {
+  origin: string;
+  routes: CompareRoute[];
+  cheapest_route_index: number;
+  savings_vs_most_expensive: number;
+}
+
+function CompareResultCards({ data }: { data: CompareData }) {
+  const { routes, cheapest_route_index, savings_vs_most_expensive } = data;
+  const sorted = [...routes].sort((a, b) => a.totalLandedCost - b.totalLandedCost);
+  const mostExpensiveIdx = routes.reduce((mx, r, i) => r.totalLandedCost > routes[mx].totalLandedCost ? i : mx, 0);
+
+  const getCountryLabel = (code: string) => {
+    const opt = COUNTRY_OPTIONS.find(o => o.value === code);
+    return opt ? opt.label : code;
+  };
+
+  return (
+    <div className="mt-6 pt-5 border-t border-slate-200">
+      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-3">Results</div>
+
+      {savings_vs_most_expensive > 0 && routes.length > 1 && (
+        <div className="mb-4 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-200 text-[12px] text-emerald-700 font-medium">
+          You save <span className="font-bold">${savings_vs_most_expensive.toFixed(2)}</span> by shipping to{' '}
+          <span className="font-bold">{routes[cheapest_route_index]?.destination}</span> instead of{' '}
+          <span className="font-bold">{routes[mostExpensiveIdx]?.destination}</span>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {sorted.map((route) => {
+          const origIdx = routes.indexOf(route);
+          const isCheapest = origIdx === cheapest_route_index && routes.length > 1;
+          const isMostExpensive = origIdx === mostExpensiveIdx && routes.length > 1 && mostExpensiveIdx !== cheapest_route_index;
+          const cardBorder = isCheapest
+            ? 'border-emerald-300 bg-emerald-50/30'
+            : isMostExpensive ? 'border-red-200 bg-red-50/20' : 'border-slate-200 bg-white';
+
+          return (
+            <div key={route.destination} className={`rounded-lg border p-4 ${cardBorder}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[13px] font-bold text-[#02122c]">{getCountryLabel(route.destination)}</span>
+                {isCheapest && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Cheapest</span>}
+                {isMostExpensive && <span className="text-[10px] font-bold text-red-500 bg-red-100 px-2 py-0.5 rounded-full">Most Expensive</span>}
+              </div>
+
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-[20px] font-extrabold text-[#02122c]">${route.totalLandedCost.toFixed(2)}</span>
+                {route.localCurrency && (
+                  <span className="text-[13px] text-slate-500">
+                    ({route.localCurrency.currency} {route.localCurrency.totalLandedCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
+                  </span>
+                )}
+              </div>
+
+              {route.breakdown && route.breakdown.length > 0 && (
+                <div className="mb-3 space-y-1">
+                  {route.breakdown.map((item, i) => (
+                    <div key={i} className="flex items-center text-[12px]">
+                      <span className="text-slate-600 flex-1">{item.label}</span>
+                      <span className="font-mono text-[#02122c] font-medium w-[70px] text-right">${item.amount.toFixed(2)}</span>
+                      {item.note && <span className="text-[10px] text-slate-400 ml-2 w-[120px] truncate">{item.note}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-slate-100 space-y-1 text-[11px] text-slate-500">
+                <div>HS: <span className="font-mono font-medium text-slate-700">{route.hs10Code || route.hsCode}</span>
+                  {route.hsCodePrecision && <span className="ml-1 text-slate-400">({route.hsCodePrecision})</span>}
+                </div>
+                {route.ftaApplied?.hasFta && (
+                  <div>FTA: <span className="font-medium text-emerald-600">{route.ftaApplied.ftaCode || route.ftaApplied.ftaName}</span>
+                    {route.ftaApplied.preferentialMultiplier === 0 ? ' (duty-free)'
+                      : route.ftaApplied.preferentialMultiplier !== undefined ? ` (${((1 - route.ftaApplied.preferentialMultiplier) * 100).toFixed(0)}% reduction)` : ''}
+                  </div>
+                )}
+                <div>
+                  {route.entryType && <>Entry: {route.entryType}</>}
+                  {route.dutyThresholdUsd !== undefined && route.dutyThresholdUsd > 0 && (
+                    <> | De minimis: ≤${route.dutyThresholdUsd}{route.deMinimisApplied ? ' (applied)' : ''}</>
+                  )}
+                </div>
+                {route.localCurrency && (
+                  <div>Rate: {route.localCurrency.currency} 1 = ${(1 / route.localCurrency.exchangeRate).toFixed(4)} USD</div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -145,6 +145,8 @@ export default function PlaygroundPage() {
         isLoggedIn={!!session}
         keyPrefix={keyPrefix}
         keyLoading={keyLoading}
+        result={result}
+        endpointId={selectedEndpoint}
       />
 
       {/* Right — code + results */}
