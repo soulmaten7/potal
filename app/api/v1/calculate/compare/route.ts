@@ -24,7 +24,6 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   const results = await Promise.all(routes.map(async (r) => {
     const destination = typeof r.destination === 'string' ? r.destination.toUpperCase() : 'US';
     const shipping = typeof r.shipping === 'number' ? r.shipping : 0;
-
     const input: GlobalCostInput = {
       price,
       shippingPrice: shipping,

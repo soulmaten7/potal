@@ -75,27 +75,29 @@ export function ParamsPanel({
   const weightNumValue = paramValues.weight_spec?.replace(/[^0-9.]/g, '') || '';
 
   // Routes builder state for Compare Countries
-  const parseRoutes = (): Array<{ destination: string; shipping: string }> => {
+  type RouteRow = { destination: string; shipping: string; currency: string };
+  const parseRoutes = (): RouteRow[] => {
     try {
       const parsed = JSON.parse(paramValues.routes || '[]');
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed.map((r: Record<string, unknown>) => ({
           destination: String(r.destination || ''),
           shipping: String(r.shipping ?? ''),
+          currency: String(r.currency || priceCurrency || 'USD'),
         }));
       }
     } catch { /* ignore */ }
-    return [{ destination: '', shipping: '' }];
+    return [{ destination: '', shipping: '', currency: priceCurrency || 'USD' }];
   };
 
-  const syncRoutes = (rows: Array<{ destination: string; shipping: string }>) => {
+  const syncRoutes = (rows: RouteRow[]) => {
     const cleaned = rows
       .filter(r => r.destination)
-      .map(r => ({ destination: r.destination, shipping: r.shipping ? Number(r.shipping) : 0 }));
+      .map(r => ({ destination: r.destination, shipping: r.shipping ? Number(r.shipping) : 0, currency: r.currency || 'USD' }));
     onParamChange('routes', cleaned.length > 0 ? JSON.stringify(cleaned) : '');
   };
 
-  const updateRoute = (idx: number, field: 'destination' | 'shipping', val: string) => {
+  const updateRoute = (idx: number, field: keyof RouteRow, val: string) => {
     const rows = parseRoutes();
     rows[idx] = { ...rows[idx], [field]: val };
     syncRoutes(rows);
@@ -104,7 +106,7 @@ export function ParamsPanel({
   const addRoute = () => {
     const rows = parseRoutes();
     if (rows.length < 5) {
-      rows.push({ destination: '', shipping: '' });
+      rows.push({ destination: '', shipping: '', currency: priceCurrency || 'USD' });
       syncRoutes(rows);
     }
   };
@@ -237,24 +239,34 @@ export function ParamsPanel({
 
               /* Routes builder: dynamic destination rows */
               ) : p.key === 'routes' ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {parseRoutes().map((row, idx) => (
-                    <div key={idx} className="flex gap-2 items-center">
-                      <div className="flex-1">
+                    <div key={idx} className="flex flex-wrap gap-2 items-center p-2 rounded-lg bg-slate-50 border border-slate-100">
+                      <div className="flex-1 min-w-[140px]">
                         <SearchableSelect
                           options={COUNTRY_OPTIONS}
                           value={row.destination}
                           onChange={val => updateRoute(idx, 'destination', val)}
-                          placeholder="Select country"
+                          placeholder="Country"
                         />
                       </div>
-                      <input
-                        type="number"
-                        value={row.shipping}
-                        onChange={e => updateRoute(idx, 'shipping', e.target.value)}
-                        placeholder="Shipping"
-                        className="w-[100px] px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
-                      />
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] text-slate-400 font-bold uppercase">Shipping</span>
+                        <input
+                          type="number"
+                          value={row.shipping}
+                          onChange={e => updateRoute(idx, 'shipping', e.target.value)}
+                          placeholder="0"
+                          className="w-[72px] px-2 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B] bg-white"
+                        />
+                        <select
+                          value={row.currency}
+                          onChange={e => updateRoute(idx, 'currency', e.target.value)}
+                          className="w-[68px] px-1 py-2 rounded-lg border border-slate-200 text-[12px] bg-white focus:outline-none focus:border-[#F59E0B]"
+                        >
+                          {PRICE_CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
                       {parseRoutes().length > 1 && (
                         <button
                           type="button"
