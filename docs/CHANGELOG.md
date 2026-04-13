@@ -1,5 +1,36 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW34-S1 — Playground Material/Category 전면 확장)
+> 마지막 업데이트: 2026-04-13 KST (CW34-S1 완료 — Playground 10-field + v3 decision tree)
+
+## [2026-04-13 KST] CW34-S1 완료
+
+### Features
+- Playground 10-field UI: Classify endpoint에 v3 파이프라인 10개 필드 전부 노출 (HS Code Hint 제거)
+- Weight + unit composite field (g/kg/lb/oz/mm/cm/ml/L)
+- Price + currency composite field (USD/EUR/GBP/KRW/JPY/CNY/CAD/AUD)
+- Copy 버튼 sticky top-right 배치
+
+### Fixed
+- Key name mismatch: origin→origin_country, productCategory→category (v3 파이프라인에 데이터 전달 안 되던 버그)
+- Playground 레이아웃: h-[calc(100vh-80px)]→min-h, 자연 높이 성장
+- Voting engine keyword vote: break 제거→다중 키워드 카운트 + seen Set 중복방지
+
+### Added
+- checkDecisionTree() 함수 (step4-subheading.ts): heading 4202에 WCO EN 기준 규칙
+  - Group 1 (42021x): trunk, suitcase, briefcase 등 대형 컨테이너
+  - Group 2 (42022x): handbag, tote, shoulder bag 등
+  - Group 3 (42023x): wallet, card holder, passport holder 등 주머니/핸드백 용품
+  - Material surface: leather(x1), plastic/textile(x2), other(x9)
+  - 8/8 테스트 통과, wallet→420231 해결
+- Rule 12: 오류 발생 시 하드코딩 금지, 근본 원인 진단 우선 — (a)데이터부족 (b)코드화오류 (c)데이터미사용 (CLAUDE.md)
+- Rule 13: Subheading Decision Tree 패턴 — checkDecisionTree()로 WCO EN 기준 규칙화 (CLAUDE.md)
+- docs/EXTERNAL_DRIVE_FILES.md: 외장하드 전체 파일 리스트 (3,074 파일)
+- 외장하드 파일 관리 가이드라인 (CLAUDE.md)
+
+### Regression
+- Build: 475/475 ✅
+- verify-cw32: 28/28 ✅
+- verify-cw33: 23/23 ✅
+- Decision tree: 8/8 ✅
 
 ## [2026-04-14 KST] CW34-S1 — Playground UX 리뉴얼: Material/Category 전면 확장
 
