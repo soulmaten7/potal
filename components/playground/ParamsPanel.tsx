@@ -171,8 +171,8 @@ export function ParamsPanel({
                   </select>
                 </div>
 
-              /* Composite: price = number + currency select (any endpoint with both price + currency params) */
-              ) : p.key === 'price' && endpoint.params.some(pp => pp.key === 'currency') ? (
+              /* Composite: price = number + currency select (all endpoints with price field) */
+              ) : p.key === 'price' ? (
                 <div className="flex gap-2">
                   <input
                     type="number"
