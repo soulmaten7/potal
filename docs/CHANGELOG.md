@@ -1,5 +1,44 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-11 KST (CW33-HF3 — input 겹침 + HS hint UI/route forwarding)
+> 마지막 업데이트: 2026-04-14 KST (CW34-S1 — Playground Material/Category 전면 확장)
+
+## [2026-04-14 KST] CW34-S1 — Playground UX 리뉴얼: Material/Category 전면 확장
+
+### 배경 (Cowork 대화 기반)
+- Classify 테스트 시 "material is required for accurate classification" 에러 → Playground에 material 필드 누락 확인
+- 은태님: "Product Name/Material/Category가 순서대로 있어야 하고, Material을 정하면 Category 범위가 줄어야 한다"
+- 은태님: "* 표시가 2개에만 있으면 나머지 안 중요한가 생각하니 없애는게 맞아"
+- 은태님: "Material 26개, Category 16개가 전부야? 더 있어?" → 엔진 전수조사 → 43+ material, 67 category 발견
+- 은태님: "예외적 케이스는 왜 데이터화 못하냐. 모든 데이터를 다 갖고왔는데 분류가 안된다는게 말이 안 된다" → 외장하드까지 전수조사
+- 은태님: "Other가 필요한가?" → DB에 category "other" HS코드 0개 확인 → Other 제거
+
+### 주요 변경
+1. **Seller Classify Material 필수 필드** — scenario-endpoints.ts에 material param 추가, string→select 전환
+2. **필드 순서 변경** — Product Name → Material → Category → Origin Country → HS Code Hint
+3. **Material→Category 연동** — MATERIAL_TO_CATEGORIES 매핑으로 material 선택 시 관련 category만 필터링
+4. **Required * 제거** — UI 별표 삭제, canTest 내부 로직 유지
+5. **센터 패널 min-height** — min-h-[calc(100vh-120px)] 추가
+
+### Material/Category 확장 히스토리
+- MATERIAL_OPTIONS: 26 → 54 → 82 → **106** (4단계 확장)
+  - 1차: 26개 기본 소재
+  - 2차: +28개 엔진 classifier 기반 (merino, alpaca, viscose, modal 등)
+  - 3차: +28개 heading-subdivider + step0-input 기반 (calfskin, cowhide, lambskin 등)
+  - 4차: +24개 외장하드 keyword_index 기반 (aramid, flax, hemp, jute, sheepskin, fur, brass, bronze 등)
+- CATEGORY_OPTIONS: 16 → 73 (엔진 67 categories + 6 compound)
+- MATERIAL_TO_CATEGORIES: 106 entries, 전부 ≥1 category 매핑
+- "Other" 옵션 제거 (Material + Category 모두) — DB에 category "other" HS코드 0개
+
+### 검증
+- 엔진 48 MATERIAL_KEYWORDS + 82 keyword_index unique 전부 드롭다운에 포함
+- 외장하드 keyword_index 기반 최종 24개 material 추가 (aramid, flax, hemp, jute, sheepskin, fur, brass, bronze, chromium, cobalt, manganese, palladium, tungsten, epoxy, fiberglass, latex, neoprene, polycarbonate, polyethylene, polypropylene, polyurethane, cellulose, cement/concrete, graphite)
+- Gap 0: Material 106 + Category 73 = 엔진 100% 커버
+
+### 파일 변경
+- lib/playground/dropdown-options.ts — MATERIAL_OPTIONS 106개, CATEGORY_OPTIONS 73개, MATERIAL_TO_CATEGORIES 106 매핑
+- lib/playground/scenario-endpoints.ts — Classify params 순서 + material type select
+- components/playground/ParamsPanel.tsx — * 제거 + min-height + material→category 필터링 로직
+
+---
 
 ## [2026-04-11 KST] CW33-HF3 — Input overlap fix + HS classifier hint forwarding
 
