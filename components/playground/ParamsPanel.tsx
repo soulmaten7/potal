@@ -121,7 +121,7 @@ export function ParamsPanel({
               <SearchableSelect
                 options={(() => {
                   // CW34: filter category options based on selected material
-                  if (p.key === 'productCategory' && paramValues.material) {
+                  if ((p.key === 'productCategory' || p.key === 'category') && paramValues.material) {
                     const allowed = MATERIAL_TO_CATEGORIES[paramValues.material];
                     if (allowed && allowed.length > 0) {
                       return CATEGORY_OPTIONS.filter(o => allowed.includes(o.value));

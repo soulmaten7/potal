@@ -1,5 +1,20 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-05 17:30 KST (CW22-S — Data Ticker + i18n + Auto-Import Pipeline)
+> 마지막 업데이트: 2026-04-13 KST (CW34-S1 Option A — v3 Pipeline Integration)
+
+## [2026-04-13 KST] CW34-S1 Option A — v3 Pipeline Integration
+
+### 추가
+- 🎯 **v3 Pipeline Stage 2** — `classifyWithOverrideAsync()` 5-단계 폴백 체인에 Stage 2 삽입: DB override → DB cache → vector search → **v3 pipeline** → keyword → LLM → fallback
+- 📝 **Material 필드 전파** — GlobalCostInput에 `productMaterial` 추가, demo route에서 UI material → engine으로 전달
+- 🔄 **v3 Input 매핑** — ClassifyInputV3(product_name, material, origin_country, destination_country, category) 호출
+- 📊 **confidence≥0.7 필터** — v3 결과가 0.7 이상 confidence면 사용, 아니면 keyword 단계로 fallback
+- ✅ **HsClassificationResult 확장** — method: 'v3_pipeline' 추가
+
+### 수정
+- 🔧 **app/lib/cost-engine/ai-classifier/ai-classifier-wrapper.ts** — classifyWithOverrideAsync() 함수 signature 확장 + 7-param 폴백 체인 재구성
+- 🔧 **app/lib/cost-engine/GlobalCostEngine.ts:349** — classify 호출 시 productMaterial, originCountry, destination country 전달
+- 🔧 **app/api/demo/scenario/route.ts** — buildEngineInput()/buildForwarderInputs() material 필드 추가
+- 🔧 **app/lib/cost-engine/hs-code/types.ts** — HsClassificationResult method union에 'v3_pipeline' 타입 추가
 
 ## [2026-04-05 17:30 KST] CW22-S — Data Ticker + i18n + Auto-Import Pipeline
 

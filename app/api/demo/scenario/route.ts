@@ -144,6 +144,7 @@ function buildEngineInput(
     quantity,
     shippingType: 'international',
     productCategory: category,
+    productMaterial: material,
     hsCode: hsHint,
   };
 }
@@ -197,6 +198,7 @@ function buildForwarderInputs(
     quantity: productQuantity,
     shippingType: 'international' as const,
     productCategory: category,
+    productMaterial: material,
     hsCode: hsHint,
   }));
 }

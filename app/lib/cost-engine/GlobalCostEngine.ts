@@ -95,6 +95,7 @@ function detectOriginForGlobal(input: CostInput): string {
 export interface GlobalCostInput extends CostInput {
   productName?: string;
   productCategory?: string;
+  productMaterial?: string;
   hsCode?: string;
   /** Insurance rate override (0.01 = 1%). Default: auto-calculated based on CIF */
   insuranceRate?: number;
@@ -342,7 +343,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   let originCountry = detectOriginForGlobal(input);
   const declaredValue = productPrice + shippingCost;
 
-  // HS Code Classification — AI-powered async (DB 캐시 → 키워드 → AI 폴백)
+  // HS Code Classification — AI-powered async (DB 캐시 → v3 pipeline → 키워드 → AI 폴백)
   let hsResult: HsClassificationResult | undefined;
   let classificationSource: string | undefined;
   if (input.productName || input.hsCode) {
@@ -350,6 +351,10 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
       input.productName || '',
       input.hsCode,
       input.productCategory,
+      undefined, // sellerId
+      input.productMaterial,
+      originCountry,
+      profile.code,
     );
     hsResult = asyncResult;
     classificationSource = asyncResult.classificationSource;

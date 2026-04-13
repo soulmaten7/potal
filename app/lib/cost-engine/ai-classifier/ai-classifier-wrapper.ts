@@ -16,6 +16,8 @@ import type { HsClassificationResult } from '../hs-code/types';
 import { classifyProduct, classifyWithOverride } from '../hs-code/classifier';
 import { classifyWithAi, getAiClassifierConfig } from './claude-classifier';
 import { classifyWithVectorSearch, storeClassificationVector, getVectorSearchConfig } from './vector-search';
+import { classifyV3 } from '../gri-classifier/steps/v3/pipeline-v3';
+import type { ClassifyInputV3 } from '../gri-classifier/types';
 
 // ─── CW33-S1: DB-driven classification overrides ───────────
 //
@@ -327,16 +329,27 @@ export async function classifyProductAsync(
 }
 
 /**
- * 비동기 분류 (HS Code 오버라이드 지원)
+ * 비동기 분류 (HS Code 오버라이드 지원, v3 pipeline 통합)
  *
  * 셀러가 직접 HS Code를 입력하면 그대로 사용,
- * 아니면 AI 폴백 체인으로 분류
+ * 아니면 Stage 2 (v3 pipeline) → AI 폴백 체인으로 분류
+ *
+ * @param productName - 상품명 (필수)
+ * @param hsCodeOverride - HS Code 직접 입력 (선택)
+ * @param category - 카테고리 힌트 (선택)
+ * @param sellerId - 셀러 ID (선택)
+ * @param material - 재질 (Stage 2: v3 pipeline용)
+ * @param originCountry - 원산지 국가코드 (Stage 2: v3 pipeline용)
+ * @param destinationCountry - 목적지 국가코드 (Stage 2: v3 pipeline용)
  */
 export async function classifyWithOverrideAsync(
   productName: string,
   hsCodeOverride?: string,
   category?: string,
   sellerId?: string,
+  material?: string,
+  originCountry?: string,
+  destinationCountry?: string,
 ): Promise<HsClassificationResult & { classificationSource: string }> {
   // 셀러가 직접 HS Code 제공 → 그대로 사용
   if (hsCodeOverride) {
@@ -344,6 +357,103 @@ export async function classifyWithOverrideAsync(
     return { ...result, classificationSource: 'manual' };
   }
 
-  // AI 폴백 체인으로 분류
-  return classifyProductAsync(productName, category, sellerId);
+  const config = getAiClassifierConfig();
+  const hash = hashProductName(productName, category);
+
+  // ━━━ CW33-S1: DB-driven override (bypasses cache) ━━━
+  const override = await deterministicOverride(productName);
+  if (override) {
+    return { ...override, classificationSource: 'override' };
+  }
+
+  // ━━━ Stage 0: DB Cache ━━━
+  const cached = await getFromCache(hash, config.maxCacheAgeDays);
+  if (cached) {
+    return { ...cached, classificationSource: 'cache' };
+  }
+
+  // ━━━ Stage 1: Vector Search (cosine similarity, pgvector) ━━━
+  const vectorConfig = getVectorSearchConfig();
+  if (vectorConfig.enabled) {
+    try {
+      const vectorResult = await classifyWithVectorSearch(productName, category);
+      if (vectorResult && vectorResult.confidence >= vectorConfig.minSimilarity) {
+        await saveToCache(productName, hash, vectorResult, category);
+        return { ...vectorResult, classificationSource: 'vector' };
+      }
+    } catch {
+      // Vector search failed — continue to v3 pipeline
+    }
+  }
+
+  // ━━━ Stage 2: v3 Pipeline (codified rules + 5,621 subheadings) ━━━
+  if (material && originCountry) {
+    try {
+      const v3Input: ClassifyInputV3 = {
+        product_name: productName,
+        material: material,
+        origin_country: originCountry,
+        destination_country: destinationCountry,
+        category: category,
+      };
+      const v3Result = await classifyV3(v3Input);
+      if (v3Result.final_hs_code && v3Result.confidence >= 0.7) {
+        const hsResult: HsClassificationResult = {
+          hsCode: v3Result.final_hs_code,
+          description: v3Result.hs_code_precision === 'HS10'
+            ? `[HS10] ${v3Result.confirmed_hs6 || ''}`
+            : v3Result.confirmed_hs6 || '',
+          confidence: v3Result.confidence,
+          method: 'v3_pipeline',
+          alternatives: [],
+        };
+        await saveToCache(productName, hash, hsResult, category);
+        return { ...hsResult, classificationSource: 'v3-pipeline' };
+      }
+    } catch {
+      // v3 pipeline failed — continue to keyword matching
+    }
+  }
+
+  // ━━━ Stage 3: Keyword Matching ━━━
+  const keywordResult = classifyProduct(productName, category);
+
+  if (keywordResult.confidence >= config.minConfidenceThreshold) {
+    await saveToCache(productName, hash, keywordResult, category);
+    return { ...keywordResult, classificationSource: 'keyword' };
+  }
+
+  // ━━━ Stage 4: LLM Fallback ━━━
+  if (config.enabled) {
+    const aiResult = await classifyWithAi(productName, category);
+
+    if (aiResult) {
+      await saveToCache(productName, hash, aiResult.result, category);
+
+      await logApiCall(
+        aiResult.meta.provider,
+        productName,
+        aiResult.meta.tokensUsed,
+        aiResult.meta.estimatedCostUsd,
+        true,
+        sellerId,
+      );
+
+      // Store AI result as new vector for future similarity matches
+      void storeClassificationVector(
+        productName,
+        aiResult.result.hsCode,
+        category,
+        'ai_classified',
+        aiResult.result.confidence,
+      );
+
+      return { ...aiResult.result, classificationSource: 'ai' };
+    }
+
+    await logApiCall('ai_failed', productName, 0, 0, false, sellerId);
+  }
+
+  // ━━━ Stage 5: Fallback — keyword result as-is ━━━
+  return { ...keywordResult, classificationSource: 'keyword_fallback' };
 }

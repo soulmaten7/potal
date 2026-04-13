@@ -19,10 +19,10 @@
     },
     {
       "name": "EU TARIC",
-      "shortLabel": "CN 2026 — Eff. Jan 1",
-      "publication": "Combined Nomenclature 2026",
+      "shortLabel": "CN 2026 + Recent Amendment",
+      "publication": "CN 2026 + Amendment",
       "effectiveDate": "2026-01-01",
-      "reference": "OJ L 2025/2782",
+      "reference": "EU Customs Tariff (TARIC)",
       "sourceUrl": "https://ec.europa.eu/taxation_customs/dds2/taric/"
     },
     {
@@ -74,10 +74,10 @@
     },
     {
       "name": "Section 301/232",
-      "shortLabel": "2026-06689 — 2026-04-07",
-      "publication": "Trade — Oil Country Tubular Goods From Austria, Taiwan, and United A",
-      "effectiveDate": "2026-04-07",
-      "reference": "2026-06689",
+      "shortLabel": "2026-07073 — 2026-04-13",
+      "publication": "Trade — Certain Screen Protectors, Application Systems for Use There",
+      "effectiveDate": "2026-04-13",
+      "reference": "2026-07073",
       "sourceUrl": "https://www.federalregister.gov/"
     },
     {
@@ -95,5 +95,5 @@
       "sourceUrl": "https://rtais.wto.org/"
     }
   ],
-  "lastAutoUpdate": "2026-04-10T02:19:31.695Z"
+  "lastAutoUpdate": "2026-04-13T05:49:20.028Z"
 }

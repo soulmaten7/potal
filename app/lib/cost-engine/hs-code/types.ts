@@ -51,7 +51,7 @@ export interface HsClassificationResult {
   /** Confidence score (0-1) */
   confidence: number;
   /** How it was classified */
-  method: 'keyword' | 'category' | 'ai' | 'manual';
+  method: 'keyword' | 'category' | 'ai' | 'manual' | 'v3_pipeline';
   /** Alternative matches */
   alternatives?: { hsCode: string; description: string; confidence: number }[];
   /** AI-detected country of origin (ISO 2-letter code, e.g. "CN", "US", "DE") */
