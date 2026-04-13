@@ -34,6 +34,7 @@
 9. **유료 플랜 재도입 금지** — Forever Free 구조 유지 (CW22 CEO 확정). Enterprise Contact Us만 허용
 10. **HS Code 벤치마크 오류 시 `archive/benchmarks/POTAL_Ablation_V2.xlsx` 대조 필수**
 11. **CW 넘버링 규칙 (CW31 신설)** — 작업은 `CW{주차}-{종류}{번호}` 포맷으로 라벨링. 종류: `S`=Sprint (계획된 중대 작업), `HF`=Hotfix (이미 배포된 코드의 긴급 수정). 별도 종류 없이 `CW31`처럼만 쓰면 해당 주차의 주요 작업(Sprint/Hotfix 구분이 애매하거나 근본 재작업일 때). 커밋 메시지/세션 문서/Notion Task Board 모두 같은 라벨 사용. 근거: CW30-HF4 다음 작업이 "CW31-?"인지 "CW31-HF5"인지 애매했음 — "정직한 리셋"은 Hotfix가 아닌 근본 재작업이므로 그냥 `CW31`.
+12. **오류 발생 시 하드코딩 금지 — 근본 원인 진단 우선 (CW34 신설)** — 하드코딩(synonym 수동 추가, 키워드 직접 삽입, 특정 값 if문 분기 등)은 근본적인 해결책이 절대 아님. 오류 발생 시 반드시 아래 3가지 원인 중 어디에 해당하는지 먼저 진단: (a) **데이터 부족** — 원본 소스 자체에 해당 데이터가 없음 (b) **코드화/매핑 오류** — 원본에는 있는데 변환/코드화 과정에서 누락 또는 잘못 매핑됨 (c) **데이터 미사용** — 코드화된 데이터는 있는데 파이프라인이 해당 데이터를 읽지 않음. 진단 결과에 따라 원본 데이터 보강 / 변환 로직 수정 / 파이프라인 연결 수정으로 해결. POTAL은 정답이 있는 시스템 — 계산법이 존재하고, 올바른 입력이 들어가면 정확한 결과가 나옴. 입력 경로를 추적해서 어디서 끊겼는지 찾는 것이 핵심.
 
 ---
 
@@ -95,6 +96,14 @@ potal/
 | `docs/DIVISION_STATUS.md` | 16개 Division 상세 | Division 작업 시 |
 | `app/features/features-guides.ts` | 140개 기능 가이드 데이터 | Features 작업 시 |
 | `docs/HOMEPAGE_REDESIGN_SPEC.md` | 홈페이지 리디자인 스펙 v1 (12 결정) | **CW23+ 홈페이지 작업 시 최우선 필독** |
+| `docs/EXTERNAL_DRIVE_FILES.md` | 외장하드 전체 파일 리스트 + 용도 설명 | 데이터 import, 벤치마크, v3 파이프라인 작업 시 |
+
+### 외장하드 파일 관리 규칙 (CW34 신설)
+- **`docs/EXTERNAL_DRIVE_FILES.md`** 에 외장하드(`/Volumes/soulmaten/POTAL/`) 전체 파일 리스트 유지
+- 외장하드에 파일을 새로 저장하거나 import할 때 **반드시 이 리스트 업데이트**
+- 파일명만으로도 용도를 유추할 수 있도록 간단한 설명 포함 (예: `keyword_index.json — 171개 material/form 키워드, v3 subheading scoring용`)
+- 새 세션에서 "이 데이터 어디있지?" 질문이 나오면 이 파일부터 확인
+- **근거**: CW34에서 keyword_index.json, master_classification_engine.json 등 외장하드 데이터가 프로젝트에 미연결된 채 방치된 것을 발견. 파일 목록이 없어서 존재 여부 파악에 시간 소모
 
 ---
 

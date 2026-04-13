@@ -106,6 +106,50 @@ function hasMat(mats: string[], group: string): boolean {
   return mats.some(m => syns.some(s => fuzzy(m, s)));
 }
 
+// ═══ DECISION TREE — WCO Explanatory Notes 분류 기준 코드화 ═══
+function checkDecisionTree(
+  input: NormalizedInputV3,
+  heading: string,
+  subheadings: { code: string; description: string }[],
+): Step4Output | null {
+  const nameLower = input.product_name.toLowerCase();
+  const allText = [nameLower, ...input.category_tokens, ...input.description_tokens].join(' ');
+  const subCodes = new Set(subheadings.map(s => s.code));
+
+  // ── Heading 4202: Article type + Material surface ──
+  if (heading === '4202') {
+    // Group 1: 42021x — large containers (trunks, suitcases, briefcases)
+    const group1 = /\b(trunk|suitcase|suit-case|vanity.?case|executive.?case|brief.?case|briefcase|school.?satchel|attache|luggage|travel.?bag|duffle|duffel)\b/;
+    // Group 2: 42022x — handbags
+    const group2 = /\b(handbag|hand.?bag|shoulder.?bag|tote.?bag|tote|cross.?body|hobo.?bag|clutch.?bag|evening.?bag)\b/;
+    // Group 3: 42023x — pocket/handbag articles (wallets, purses, key-cases, etc.)
+    const group3 = /\b(wallet|billfold|card.?holder|card.?case|coin.?purse|key.?case|key.?holder|cigarette.?case|spectacle.?case|glasses.?case|eyeglass|sunglasses.?case|tobacco.?pouch|change.?purse|money.?clip|passport.?holder|passport.?cover|id.?holder|badge.?holder|makeup.?bag|cosmetic.?bag|cosmetic.?case|pencil.?case|pen.?case|phone.?case|phone.?pouch|small.?pouch|purse)\b/;
+
+    let group = 0;
+    if (group1.test(allText)) group = 1;
+    else if (group2.test(allText)) group = 2;
+    else if (group3.test(allText)) group = 3;
+    else return null;
+
+    // Material surface: 1=leather, 2=plastics/textile, 9=other
+    const matLower = [input.material_primary, ...input.material_keywords].join(' ').toLowerCase();
+    let matSuffix = '9';
+    if (/\bleather\b|\bcalfskin\b|\bcowhide\b|\bsuede\b|\bnubuck\b|\bpatent\b/.test(matLower)) {
+      matSuffix = '1';
+    } else if (/\bplastic\b|\bnylon\b|\bcanvas\b|\btextile\b|\bfabric\b|\bpolyester\b|\bcotton\b/.test(matLower)) {
+      matSuffix = '2';
+    }
+
+    const targetCode = `4202${group}${matSuffix}`;
+    if (subCodes.has(targetCode)) {
+      const sh = subheadings.find(s => s.code === targetCode)!;
+      return { confirmed_hs6: targetCode, hs6_description: sh.description, confidence: 1.0, matched_by: `decision_tree:4202→group${group}+mat${matSuffix}` };
+    }
+  }
+
+  return null;
+}
+
 // ═══ SYNONYM DICTIONARY LOOKUP ═══
 function checkSynonymDict(input: NormalizedInputV3, subheadings: {code:string;description:string}[]): Step4Output | null {
   const nameWords = input.product_name.toLowerCase().split(/[\s\-,\/]+/).filter(w => w.length > 1);
@@ -265,10 +309,13 @@ function runVoting(input: NormalizedInputV3, subs: {code:string;description:stri
     // origin vote
     if (dl.includes('cold-water') && COLD.has(input.origin_country)) votes++;
     if ((dl.includes('excluding cold-water')||(!dl.includes('cold-water')&&(dl.includes('shrimp')||dl.includes('prawn')))) && !COLD.has(input.origin_country)) votes++;
-    // keyword vote (no votes for n.e.c.)
+    // keyword vote (no votes for n.e.c.) — multi-match: each unique input word can score
     if (!isNEC(s.description)) {
       const dlWords = dl.split(/[\s;,()]+/);
-      for (const w of allWords) { if (dlWords.some(dw => fuzzy(w,dw))) { votes++; break; } }
+      const seen = new Set<string>();
+      for (const w of allWords) {
+        if (!seen.has(w) && dlWords.some(dw => fuzzy(w, dw))) { votes++; seen.add(w); }
+      }
     }
 
     return { code: s.code, description: s.description, votes };
@@ -284,9 +331,13 @@ export function selectSubheading(
   if (subheadings.length === 0) return { confirmed_hs6: confirmedHeading+'00', hs6_description: '', confidence: 0, matched_by: 'none' };
   if (subheadings.length === 1) return { confirmed_hs6: subheadings[0].code, hs6_description: subheadings[0].description, confidence: 1.0, matched_by: 'single' };
 
-  // ═══ PRIORITY: Synonym dictionary lookup ═══
+  // ═══ PRIORITY 1: Synonym dictionary lookup ═══
   const synMatch = checkSynonymDict(input, subheadings);
   if (synMatch) return synMatch;
+
+  // ═══ PRIORITY 2: Decision tree (WCO Explanatory Notes) ═══
+  const treeMatch = checkDecisionTree(input, confirmedHeading, subheadings);
+  if (treeMatch) return treeMatch;
 
   const tag = HEADING_METHOD_TAGS[confirmedHeading] || { method: 'both' as const, similarity: 0.5 };
   const log: string[] = [`tag:${tag.method}(${tag.similarity})`];
