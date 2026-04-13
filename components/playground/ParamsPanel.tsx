@@ -134,7 +134,7 @@ export function ParamsPanel({
         </div>
 
         {/* Params */}
-        <div className="px-6 py-4 space-y-4">
+        <div className="px-6 py-4 pb-16 space-y-4">
           <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">
             Parameters
           </div>
