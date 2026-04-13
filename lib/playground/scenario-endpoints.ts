@@ -79,6 +79,8 @@ const SELLER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/calculate',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Handmade leather wallet', description: 'For auto HS classification' },
+      { key: 'material', label: 'Material', type: 'select', required: false, options: MATERIAL_OPTIONS, description: 'Primary material of the product' },
+      { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'Optional hint to improve accuracy' },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '45', description: 'Product price in declared currency' },
       { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
       { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Origin country', defaultValue: 'CN' },
@@ -160,10 +162,10 @@ const IMPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/classify',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: true, placeholder: 'Industrial centrifugal water pump', description: 'Be specific — include material, function, use case' },
-      { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Manufacturing country', defaultValue: 'DE' },
+      { key: 'material', label: 'Material', type: 'select', required: true, options: MATERIAL_OPTIONS, description: 'Primary material of the product' },
       { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'WCO-aligned category hint', defaultValue: 'machinery-pumps' },
+      { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Manufacturing country', defaultValue: 'DE' },
       { key: 'hsCode', label: 'HS Code Hint', type: 'string', required: false, placeholder: '8413', description: 'If you know the heading, engine skips classification' },
-      { key: 'material', label: 'Material', type: 'string', required: false, placeholder: 'stainless steel', description: 'Primary material for subheading accuracy' },
     ],
     exampleResponse: {
       success: true,
@@ -231,6 +233,8 @@ const EXPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/calculate',
     params: [
       { key: 'productName', label: 'Product Name', type: 'string', required: false, placeholder: 'Lithium-ion battery cells', description: 'For auto HS classification' },
+      { key: 'material', label: 'Material', type: 'select', required: false, options: MATERIAL_OPTIONS, description: 'Primary material of the product' },
+      { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'Optional hint to improve accuracy' },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '250000', description: 'Shipment value in declared currency' },
       { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
       { key: 'origin', label: 'Origin', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'Your country', defaultValue: 'KR' },
@@ -266,6 +270,8 @@ const EXPORTER_ENDPOINTS: EndpointDef[] = [
     path: '/api/v1/export-controls/classify',
     params: [
       { key: 'product_name', label: 'Product Name', type: 'string', required: false, placeholder: 'Lithium-ion battery cells', description: 'Product name or HS code required' },
+      { key: 'material', label: 'Material', type: 'select', required: false, options: MATERIAL_OPTIONS, description: 'Primary material of the product' },
+      { key: 'productCategory', label: 'Category', type: 'select', required: false, options: CATEGORY_OPTIONS, description: 'Optional hint to improve accuracy' },
       { key: 'hs_code', label: 'HS Code', type: 'string', required: false, placeholder: '850760', description: 'HS code for ECCN mapping' },
       { key: 'destination', label: 'Destination', type: 'select', required: false, options: COUNTRY_OPTIONS, description: 'For license determination' },
       { key: 'end_use', label: 'End Use', type: 'string', required: false, placeholder: 'consumer electronics', description: 'End-use context' },
