@@ -1,5 +1,27 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-13 19:00 KST (CW34-S1 HF — Playground 3 endpoint 프로덕션 검증 + defaultValue 버그 수정 + Price/Currency composite 전역 적용)
+> 마지막 업데이트: 2026-04-14 KST (CW34-S1 HF2 — Compare Countries Enhancement + API 응답 확장)
+
+## [2026-04-14 KST] CW34-S1 HF2 — Compare Countries Enhancement
+
+### Fixed
+- '+ Add Destination' 버튼 미작동 버그 수정 (syncRoutes가 빈 destination row 즉시 필터링 → UI state 유지, API-side 필터링)
+- HS Code Calculator 돋보기 아이콘 → "HS Code Calculator" 텍스트 버튼
+- exampleResponse 프로덕션 실측값 반영 (hsCodePrecision HS10, hs10Code 6109100004, dutyRateSource precomputed_mfn)
+
+### Features
+- Compare Countries API 응답 14개 상세 내역 필드 추가: dutyRate, vatRate, vatLabel, deMinimisApplied, dutyThresholdUsd, hs10Code, hsCodePrecision, breakdown[], localCurrency, insurance, brokerageFee, entryType, dutyRateSource, source
+- D2C Compare params 확장: origin, productName, hsCode, currency 추가 + routes에 destination 포함
+- compare/route.ts: buildBreakdown(random) → calculateGlobalLandedCostAsync(real engine) 병렬 호출
+- HsCodeCalculator.tsx 10필드 팝업 (v3 Classify 동일 필드 + Material→Category 연동)
+- Destinations 행 UI: 국가 드롭다운 + Shipping 라벨 + 금액 + 통화 select + 동적 추가/삭제
+
+### Refactored
+- value/product_value key → 'price' 통일 (D2C Compare, FTA Eligibility, DDP vs DDU, Importer Breakdown)
+- 4개 API route에 body.price primary + body.value fallback 하위호환
+
+### Verified
+- 3개국 실측: KR→US $37.81 (KORUS FTA) / KR→DE $43.38 (EU-KR FTA) / KR→JP $44.60 (RCEP)
+- Build 475/475, verify-cw32 28/28, verify-cw33 23/23
 
 ## [2026-04-13 19:00 KST] CW34-S1 HF — Playground 프로덕션 검증 + 버그 수정
 
