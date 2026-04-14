@@ -1,0 +1,680 @@
+{
+  "source": "jp_tariff_rules.md",
+  "compiled_at": "2026-04-14T10:57:39.147Z",
+  "total_rules": 89,
+  "chapters_covered": 7,
+  "chapters": {
+    "22": {
+      "title": "Beverages (飲料)",
+      "subdivision_axes": [],
+      "code_count": 33,
+      "codes": [
+        {
+          "code": "2201.10.000",
+          "hs6": "220110",
+          "description": "Mineral waters and aerated waters",
+          "duty_rate": "3.2%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2201.90.000",
+          "hs6": "220190",
+          "description": "Other (non-mineral) waters",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2202.10.100",
+          "hs6": "220210",
+          "description": "Waters with added sugar",
+          "duty_rate": "22.4%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2202.10.200",
+          "hs6": "220210",
+          "description": "Other sweetened waters",
+          "duty_rate": "16%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2202.91.100",
+          "hs6": "220291",
+          "description": "Non-alcoholic beer, with added sugar",
+          "duty_rate": "22.4%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2202.91.200",
+          "hs6": "220291",
+          "description": "Non-alcoholic beer, other",
+          "duty_rate": "16%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2203.00.000",
+          "hs6": "220300",
+          "description": "Beer from malt",
+          "duty_rate": "¥6.40/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.10.000",
+          "hs6": "220410",
+          "description": "Sparkling wine (Champagne etc.)",
+          "duty_rate": "¥201.60/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.21.010",
+          "hs6": "220421",
+          "description": "Still wine ≤2L containers, fortified",
+          "duty_rate": "¥123.20/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.21.020",
+          "hs6": "220421",
+          "description": "Still wine ≤2L containers, other",
+          "duty_rate": "21.3% or ¥156.80/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.22.000",
+          "hs6": "220422",
+          "description": "Wine >2L to ≤10L containers",
+          "duty_rate": "21.3% or ¥156.80/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.29.010",
+          "hs6": "220429",
+          "description": "Wine in containers ≤150L",
+          "duty_rate": "21.3% or ¥156.80/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.29.090",
+          "hs6": "220429",
+          "description": "Wine in containers >150L",
+          "duty_rate": "¥64/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.30.111",
+          "hs6": "220430",
+          "description": "Grape must <1% vol, with sugar, sucrose ≤10%",
+          "duty_rate": "27%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.30.119",
+          "hs6": "220430",
+          "description": "Grape must <1% vol, with sugar, sucrose >10%",
+          "duty_rate": "35% or ¥27/kg",
+          "subdivision_logic": "KG"
+        },
+        {
+          "code": "2204.30.191",
+          "hs6": "220430",
+          "description": "Grape must <1% vol, no sugar, sucrose ≤10%",
+          "duty_rate": "22.5%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.30.199",
+          "hs6": "220430",
+          "description": "Grape must <1% vol, no sugar, sucrose >10%",
+          "duty_rate": "30%",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2204.30.200",
+          "hs6": "220430",
+          "description": "Grape must, other",
+          "duty_rate": "¥64/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2206.00.100",
+          "hs6": "220600",
+          "description": "Fermented beverages <1% vol",
+          "duty_rate": "35% or ¥27/kg",
+          "subdivision_logic": "KG"
+        },
+        {
+          "code": "2206.00.210",
+          "hs6": "220600",
+          "description": "Saké (清酒 Seishu and 濁酒 Dakushu)",
+          "duty_rate": "¥70.40/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2206.00.221",
+          "hs6": "220600",
+          "description": "Fermented beverage mixtures",
+          "duty_rate": "¥30.80/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2206.00.223",
+          "hs6": "220600",
+          "description": "Sparkling malt beverages (specified)",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2206.00.229",
+          "hs6": "220600",
+          "description": "Other fermented beverages (cider, perry, mead)",
+          "duty_rate": "Free / ¥32.30/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.121",
+          "hs6": "220710",
+          "description": "Ethyl alcohol ≥90% vol, for industrial alcohol",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.122",
+          "hs6": "220710",
+          "description": "Ethyl alcohol ≥90% vol, for ethyl acetate",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.123",
+          "hs6": "220710",
+          "description": "Ethyl alcohol ≥90% vol, for ethylamine",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.130",
+          "hs6": "220710",
+          "description": "Ethyl alcohol ≥90% vol, for distilling",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.191",
+          "hs6": "220710",
+          "description": "Ethyl alcohol ≥90% vol, from biomass",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.199",
+          "hs6": "220710",
+          "description": "Ethyl alcohol ≥90% vol, other",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2207.10.290",
+          "hs6": "220710",
+          "description": "Other ethyl alcohol, other uses",
+          "duty_rate": "¥44.80/L",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2208.30.000",
+          "hs6": "220830",
+          "description": "Whiskies",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2208.70.000",
+          "hs6": "220870",
+          "description": "Liqueurs and cordials",
+          "duty_rate": "Free",
+          "subdivision_logic": "L"
+        },
+        {
+          "code": "2209.00.000",
+          "hs6": "220900",
+          "description": "Vinegar and acetic acid substitutes",
+          "duty_rate": "8%",
+          "subdivision_logic": "L"
+        }
+      ]
+    },
+    "27": {
+      "title": "Mineral Fuels (鉱物性燃料)",
+      "subdivision_axes": [],
+      "code_count": 12,
+      "codes": [
+        {
+          "code": "2701.11.000",
+          "hs6": "270111",
+          "description": "Anthracite coal",
+          "duty_rate": null,
+          "subdivision_logic": "No subdivision"
+        },
+        {
+          "code": "2701.12.011",
+          "hs6": "270112",
+          "description": "Bituminous coking coal, heavy type, ash ≤8%",
+          "duty_rate": null,
+          "subdivision_logic": "Ash content + process type"
+        },
+        {
+          "code": "2701.12.019",
+          "hs6": "270112",
+          "description": "Bituminous coal, other, ash ≤8%",
+          "duty_rate": null,
+          "subdivision_logic": "Residual at ash criterion"
+        },
+        {
+          "code": "2701.12.091",
+          "hs6": "270112",
+          "description": "Coking coal, heavy type, ash >8%",
+          "duty_rate": null,
+          "subdivision_logic": "Ash threshold flip"
+        },
+        {
+          "code": "2701.19.010",
+          "hs6": "270119",
+          "description": "Other coal, ash ≤8%",
+          "duty_rate": null,
+          "subdivision_logic": "Simple binary split"
+        },
+        {
+          "code": "2701.19.090",
+          "hs6": "270119",
+          "description": "Other coal, ash >8%",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "2709.10.100",
+          "hs6": "270910",
+          "description": "Crude petroleum for cracking at pyrolytic furnaces",
+          "duty_rate": null,
+          "subdivision_logic": "End-use"
+        },
+        {
+          "code": "2709.10.900",
+          "hs6": "270910",
+          "description": "Other crude petroleum oils",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "2710.11.111",
+          "hs6": "271011",
+          "description": "Tripropylene petroleum spirits",
+          "duty_rate": null,
+          "subdivision_logic": "Chemical composition"
+        },
+        {
+          "code": "2710.11.119",
+          "hs6": "271011",
+          "description": "Other petroleum spirits with mixed alkylenes",
+          "duty_rate": null,
+          "subdivision_logic": "Composition variant"
+        },
+        {
+          "code": "2710.11.131",
+          "hs6": "271011",
+          "description": "Aviation fuel, specific gravity ≤0.8017",
+          "duty_rate": "Specific gravity",
+          "subdivision_logic": null
+        },
+        {
+          "code": "2710.11.137",
+          "hs6": "271011",
+          "description": "Motor vehicle fuel oils",
+          "duty_rate": null,
+          "subdivision_logic": "End-use"
+        }
+      ]
+    },
+    "62": {
+      "title": "Apparel (衣類)",
+      "subdivision_axes": [],
+      "code_count": 4,
+      "codes": [
+        {
+          "code": "6203.49.210",
+          "hs6": "620349",
+          "description": "Men's trousers, of artificial fibres",
+          "duty_rate": "Free",
+          "subdivision_logic": null
+        },
+        {
+          "code": "6203.49.290",
+          "hs6": "620349",
+          "description": "Men's trousers, other synthetic",
+          "duty_rate": "Free",
+          "subdivision_logic": null
+        },
+        {
+          "code": "6206.30.220",
+          "hs6": "620630",
+          "description": "Women's blouses, cotton, non-furskin",
+          "duty_rate": "9% (temp: 7.4%)",
+          "subdivision_logic": null
+        },
+        {
+          "code": "6209.90.221",
+          "hs6": "620990",
+          "description": "Babies' garments, accessories, other materials",
+          "duty_rate": "9% (temp: 7.4%)",
+          "subdivision_logic": null
+        }
+      ]
+    },
+    "84": {
+      "title": "Industrial Machinery (産業機械)",
+      "subdivision_axes": [],
+      "code_count": 14,
+      "codes": [
+        {
+          "code": "8401.10.000",
+          "hs6": "840110",
+          "description": "Nuclear reactors",
+          "duty_rate": null,
+          "subdivision_logic": "No subdivision"
+        },
+        {
+          "code": "8413.30.010",
+          "hs6": "841330",
+          "description": "Gear/vane/screw fuel pumps (excl. oil hydraulic)",
+          "duty_rate": null,
+          "subdivision_logic": "Pump type"
+        },
+        {
+          "code": "8413.30.020",
+          "hs6": "841330",
+          "description": "Other fuel pumps",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "8413.50.010",
+          "hs6": "841350",
+          "description": "Oil hydraulic positive displacement pumps",
+          "duty_rate": null,
+          "subdivision_logic": "Application type"
+        },
+        {
+          "code": "8413.50.090",
+          "hs6": "841350",
+          "description": "Other reciprocating pumps",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "8413.60.011",
+          "hs6": "841360",
+          "description": "Oil hydraulic rotary pumps, power-assisted steering",
+          "duty_rate": "Specific application",
+          "subdivision_logic": null
+        },
+        {
+          "code": "8413.60.019",
+          "hs6": "841360",
+          "description": "Oil hydraulic rotary pumps, other",
+          "duty_rate": null,
+          "subdivision_logic": "Application variant"
+        },
+        {
+          "code": "8413.60.091",
+          "hs6": "841360",
+          "description": "Gear/vane/screw rotary pumps",
+          "duty_rate": null,
+          "subdivision_logic": "Pump mechanism"
+        },
+        {
+          "code": "8413.60.099",
+          "hs6": "841360",
+          "description": "Other rotary positive displacement pumps",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "8414.51.010",
+          "hs6": "841451",
+          "description": "Electric fans ≤125W (excl. battery-powered)",
+          "duty_rate": null,
+          "subdivision_logic": "Power source"
+        },
+        {
+          "code": "8414.51.020",
+          "hs6": "841451",
+          "description": "Ventilation fans ≤125W, diameter ≤50cm",
+          "duty_rate": null,
+          "subdivision_logic": "Size specification"
+        },
+        {
+          "code": "8414.51.090",
+          "hs6": "841451",
+          "description": "Other fans ≤125W",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "8415.10.010",
+          "hs6": "841510",
+          "description": "Fixed A/C units, cooling ≤3kW",
+          "duty_rate": null,
+          "subdivision_logic": "Capacity threshold"
+        },
+        {
+          "code": "8415.10.090",
+          "hs6": "841510",
+          "description": "Other fixed A/C units",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        }
+      ]
+    },
+    "87": {
+      "title": "Vehicles (車両)",
+      "subdivision_axes": [],
+      "code_count": 12,
+      "codes": [
+        {
+          "code": "8703.21.000",
+          "hs6": "870321",
+          "description": "Cars, SI engine, ≤1,000cc",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8703.22.000",
+          "hs6": "870322",
+          "description": "Cars, SI engine, 1,000–1,500cc",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8703.23.000",
+          "hs6": "870323",
+          "description": "Cars, SI engine, 1,500–3,000cc",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8703.24.000",
+          "hs6": "870324",
+          "description": "Cars, SI engine, >3,000cc",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8703.31.000",
+          "hs6": "870331",
+          "description": "Cars, CI diesel, ≤1,500cc",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8703.32.000",
+          "hs6": "870332",
+          "description": "Cars, CI diesel, 1,500–2,500cc",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8704.21.000",
+          "hs6": "870421",
+          "description": "Trucks (diesel), GVW ≤5t",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8704.22.000",
+          "hs6": "870422",
+          "description": "Trucks (diesel), GVW 5–20t",
+          "duty_rate": "Free",
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "8708.30.010",
+          "hs6": "870830",
+          "description": "Mounted brake linings (vehicle parts)",
+          "duty_rate": "Free",
+          "subdivision_logic": "Part type"
+        },
+        {
+          "code": "8708.30.090",
+          "hs6": "870830",
+          "description": "Other brake parts",
+          "duty_rate": "Free",
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "8708.70.010",
+          "hs6": "870870",
+          "description": "Road wheels for tractors (87.01)",
+          "duty_rate": "Free",
+          "subdivision_logic": "Vehicle type"
+        },
+        {
+          "code": "8708.70.090",
+          "hs6": "870870",
+          "description": "Road wheels, other vehicles",
+          "duty_rate": "Free",
+          "subdivision_logic": "Residual"
+        }
+      ]
+    },
+    "01": {
+      "title": "Live Animals (生動物)",
+      "subdivision_axes": [],
+      "code_count": 6,
+      "codes": [
+        {
+          "code": "0101.21.100",
+          "hs6": "010121",
+          "description": "Light-breed horses, for purposes other than racing",
+          "duty_rate": null,
+          "subdivision_logic": "Breed type + purpose"
+        },
+        {
+          "code": "0101.21.200",
+          "hs6": "010121",
+          "description": "Heavy-breed and other horses",
+          "duty_rate": null,
+          "subdivision_logic": "Breed grouping"
+        },
+        {
+          "code": "0101.29.210",
+          "hs6": "010129",
+          "description": "Horses NEC, for racing purposes",
+          "duty_rate": null,
+          "subdivision_logic": "Purpose distinguishes"
+        },
+        {
+          "code": "0101.29.290",
+          "hs6": "010129",
+          "description": "Horses NEC, other purposes",
+          "duty_rate": null,
+          "subdivision_logic": "Residual"
+        },
+        {
+          "code": "0102.21.000",
+          "hs6": "010221",
+          "description": "Purebred cattle for breeding",
+          "duty_rate": null,
+          "subdivision_logic": "No national subdivision"
+        },
+        {
+          "code": "0103.30.000",
+          "hs6": "010330",
+          "description": "Wild boar",
+          "duty_rate": null,
+          "subdivision_logic": "No national subdivision"
+        }
+      ]
+    },
+    "02": {
+      "title": "Meat (食肉)",
+      "subdivision_axes": [],
+      "code_count": 8,
+      "codes": [
+        {
+          "code": "0201.10.000",
+          "hs6": "020110",
+          "description": "Bovine carcasses, fresh/chilled",
+          "duty_rate": "38.5%",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0201.20.000",
+          "hs6": "020120",
+          "description": "Bovine cuts with bone, fresh/chilled",
+          "duty_rate": "38.5%",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0201.30.010",
+          "hs6": "020130",
+          "description": "Boneless loin (fresh/chilled)",
+          "duty_rate": "38.5%",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0201.30.020",
+          "hs6": "020130",
+          "description": "Chuck, clod, round (boneless, fresh/chilled)",
+          "duty_rate": "38.5%",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0201.30.030",
+          "hs6": "020130",
+          "description": "Brisket and plate (boneless, fresh/chilled)",
+          "duty_rate": "38.5%",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0201.30.090",
+          "hs6": "020130",
+          "description": "Other boneless cuts (fresh/chilled)",
+          "duty_rate": "38.5%",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0203.11.010",
+          "hs6": "020311",
+          "description": "Wild boar carcasses (fresh/chilled)",
+          "duty_rate": "Free",
+          "subdivision_logic": null
+        },
+        {
+          "code": "0203.11.020",
+          "hs6": "020311",
+          "description": "Other swine carcasses (fresh/chilled)",
+          "duty_rate": "Specific rate",
+          "subdivision_logic": null
+        }
+      ]
+    }
+  }
+}

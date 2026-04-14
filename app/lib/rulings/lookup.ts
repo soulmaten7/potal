@@ -145,17 +145,39 @@ const COVERED_JURISDICTIONS = new Set(['EU', 'US']);
 
 export interface DataAvailability {
   jurisdiction: string;
-  status: 'has_rulings_data' | 'no_rulings_data';
+  status: 'has_rulings_data' | 'no_rulings_data' | 'no_rulings_data_with_classification_guidance';
   warning?: string;
+  classificationGuidance?: Record<string, unknown>;
 }
 
 /**
  * Check if a jurisdiction has rulings data.
- * Returns warning for CN, JP, KR, AU, etc. where we have 0 rulings.
+ * Returns warning for CN, KR, AU, etc. where we have 0 rulings.
+ * For JP: includes classification guidance from jp_tariff_rules.md.
  */
-export function checkDataAvailability(jurisdiction: string | null | undefined): DataAvailability | undefined {
+export function checkDataAvailability(
+  jurisdiction: string | null | undefined,
+  hsCode?: string
+): DataAvailability | undefined {
   if (!jurisdiction) return undefined;
-  if (COVERED_JURISDICTIONS.has(jurisdiction)) return undefined; // has data, no warning
+  if (COVERED_JURISDICTIONS.has(jurisdiction)) return undefined;
+
+  // CW36-JP1: JP has classification guidance even without rulings
+  if (jurisdiction === 'JP' && hsCode) {
+    try {
+      const { lookupJpGuidance } = require('@/app/lib/rulings/jp-rules-loader');
+      const guidance = lookupJpGuidance(hsCode);
+      if (guidance) {
+        return {
+          jurisdiction,
+          status: 'no_rulings_data_with_classification_guidance',
+          warning: `POTAL does not have JP customs rulings yet, but Japan tariff classification guidance is available for HS ${hsCode.slice(0, 4)} (Chapter ${guidance.chapter}: ${guidance.chapterTitle}).`,
+          classificationGuidance: guidance as unknown as Record<string, unknown>,
+        };
+      }
+    } catch { /* jp-rules-loader not available, fall through */ }
+  }
+
   return {
     jurisdiction,
     status: 'no_rulings_data',

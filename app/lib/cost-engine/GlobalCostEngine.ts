@@ -438,9 +438,9 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
           }
         }
       }
-      // CW36-CN1: Check data availability for this jurisdiction
+      // CW36-CN1/JP1: Check data availability for this jurisdiction
       if (!rulingMatch) {
-        dataAvailability = checkDataAvailability(destJurisdiction) ?? undefined;
+        dataAvailability = checkDataAvailability(destJurisdiction, hsResult.hsCode) ?? undefined;
       }
     } catch { /* ruling lookup failure is non-critical */ }
   }

@@ -1,5 +1,18 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW36-CN1 Data availability warnings)
+> 마지막 업데이트: 2026-04-14 KST (CW36-JP1 JP tariff classification rules)
+
+## [2026-04-14 KST] CW36-JP1 — JP Tariff Classification Rules
+
+### Added
+- `config/jp_classification_rules.json`: 89 codes, 7 chapters (Ch 01/02/22/27/62/84/87)
+- `app/lib/rulings/jp-rules-loader.ts`: lookupJpGuidance() — chapter/heading/hs6 매칭
+- JP destination: `dataAvailability.classificationGuidance` with matched codes + subdivision axes
+- `scripts/warehouse/parse-jp-rules.mjs`: MD→JSON parser
+- `scripts/verify-cw36-jp1.mjs`: 12/12 green
+
+### Changed
+- `lookup.ts`: checkDataAvailability() JP branch — `no_rulings_data_with_classification_guidance`
+- JP vs CN 차별화: JP=guidance 제공, CN=warning only
 
 ## [2026-04-14 KST] CW36-CN1 — Data Availability Warnings
 
