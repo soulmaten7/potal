@@ -1,5 +1,19 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW34-S3 Data Warehouse Sprint 완료 — 645,591 rows customs_rulings Supabase live)
+> 마지막 업데이트: 2026-04-14 KST (CW34-S4 Runtime Integration — customs_rulings → 5 endpoints)
+
+## [2026-04-14 KST] CW34-S4 — Runtime Integration
+
+### Added
+- `app/lib/rulings/lookup.ts` — customs_rulings 조회 + 10-field scoring
+- `app/lib/rulings/conditional-evaluator.ts` — conditional rules DSL 런타임 평가
+- `GlobalCostInput` 10-field 확장 (material/materialComposition/productForm/intendedUse)
+- `GlobalCostEngine` ruling lookup 삽입 (conditional outcome → duty override)
+- `GlobalLandedCost.rulingMatch` 출력 필드 추가
+- `/api/v1/restrictions` ruling HAZMAT notes 보강
+- `scripts/verify-cw34-s4.mjs` 22 tests
+
+### Performance
+- Ruling lookup p50: 49.4ms, p95: 206.3ms
 
 ## [2026-04-14 KST] CW34-S3 — Data Warehouse Sprint (Customs Rulings)
 

@@ -61,10 +61,24 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     return apiError(ApiErrorCode.INTERNAL_ERROR, 'Restriction check failed. Please try again.');
   }
 
+  // CW34-S4: Enrich with customs rulings HAZMAT/restriction notes
+  let rulingNotes: string[] = [];
+  try {
+    const { lookupRulings } = await import('@/app/lib/rulings/lookup');
+    const hs6 = hsCode.replace(/\D/g, '').slice(0, 6);
+    const rulings = await lookupRulings({ hs6, jurisdiction: destinationCountry, limit: 3 });
+    for (const r of rulings) {
+      if (r.productName && /\b(HAZMAT|hazardous|dangerous|restricted|prohibited|license|permit)\b/i.test(r.productName)) {
+        rulingNotes.push(`Ruling ${r.rulingId}: ${r.productName.slice(0, 120)}`);
+      }
+    }
+  } catch { /* non-critical */ }
+
   return apiSuccess({
     ...result,
     ...(productName ? { productName } : {}),
     autoClassified: !body.hsCode && !!productName,
+    ...(rulingNotes.length > 0 ? { rulingNotes } : {}),
   }, {
     sellerId: context.sellerId,
     plan: context.planId,

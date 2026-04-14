@@ -115,6 +115,14 @@ export interface GlobalCostInput extends CostInput {
   buyerVatNumber?: string;
   /** Seller plan ID for guarantee tier determination */
   planId?: string;
+  /** CW34-S4: 10-field material (e.g. "cotton", "steel") */
+  material?: string;
+  /** CW34-S4: Material composition percentages */
+  materialComposition?: Record<string, number>;
+  /** CW34-S4: Product form (e.g. "knitted", "woven", "molded") */
+  productForm?: string;
+  /** CW34-S4: Intended use (e.g. "clothing", "industrial") */
+  intendedUse?: string;
 }
 
 // ─── 15-Item Detailed Cost Breakdown ────────────────
@@ -190,6 +198,8 @@ export interface GlobalLandedCost extends LandedCost {
   rateTypeResolved?: string;
   /** Confidence score of the duty rate (1.0=agr, 0.9=min, 0.8=ntlc, 0.7=mfn/hardcoded) */
   dutyConfidenceScore?: number;
+  /** CW34-S4: Matching customs ruling precedent (classification reference, not duty source) */
+  rulingMatch?: { rulingId: string; source: string; confidenceScore: number; matchScore: number; conditionalApplied?: string };
   /** Insurance cost (CIF component) */
   insurance?: number;
   /** Brokerage fee estimate */
@@ -388,6 +398,45 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     }
   }
 
+  // ━━━ CW34-S4: Ruling Lookup (classification precedent, NOT duty rate) ━━━
+  let rulingMatch: { rulingId: string; source: string; confidenceScore: number; matchScore: number; conditionalApplied?: string } | undefined;
+  let rulingConditionalDutyOverride: number | null = null;
+  if (hsResult && hsResult.hsCode !== '9999' && !isDomestic) {
+    try {
+      const { lookupRulings } = await import('@/app/lib/rulings/lookup');
+      const { evaluateConditionalRules } = await import('@/app/lib/rulings/conditional-evaluator');
+      const hs6 = hsResult.hsCode.substring(0, 6);
+      const destJurisdiction = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE'].includes(profile.code) ? 'EU' : profile.code;
+      const rulings = await lookupRulings({
+        hsCode: hsResult.hsCode,
+        hs6,
+        jurisdiction: destJurisdiction,
+        material: (input as GlobalCostInput).material as string | undefined,
+        productForm: (input as GlobalCostInput).productForm as string | undefined,
+        intendedUse: (input as GlobalCostInput).intendedUse as string | undefined,
+        limit: 3,
+      });
+      if (rulings.length > 0) {
+        const top = rulings[0];
+        rulingMatch = { rulingId: top.rulingId, source: top.source, confidenceScore: top.confidenceScore, matchScore: top.matchScore };
+        // CEO Decision 2: only conditional_rules outcomes provide duty rates
+        if (top.conditionalRules) {
+          const evalResult = evaluateConditionalRules(top.conditionalRules, {
+            material: (input as GlobalCostInput).material as string | undefined,
+            materialComposition: (input as GlobalCostInput).materialComposition as Record<string, number> | undefined,
+            productForm: (input as GlobalCostInput).productForm as string | undefined,
+            weightKg: input.weight_kg,
+            priceUsd: productPrice,
+          });
+          if (evalResult.matched && evalResult.adValorem != null) {
+            rulingConditionalDutyOverride = evalResult.adValorem / 100; // percentage → decimal
+            rulingMatch.conditionalApplied = evalResult.reason;
+          }
+        }
+      }
+    } catch { /* ruling lookup failure is non-critical */ }
+  }
+
   // Determine Duty Rate — Precomputed → MacMap 4단계 폴백 → 정부 API → DB → 하드코딩
   let dutyRate = profile.avgDutyRate;
   let dutyNote = `~${(profile.avgDutyRate * 100).toFixed(1)}% avg`;
@@ -520,6 +569,14 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
       dutyNote += ` → ${(ftaCalc.rate * 100).toFixed(1)}% (${ftaCalc.fta.ftaCode})`;
       dutyRate = ftaCalc.rate;
     }
+  }
+
+  // CW34-S4: Ruling conditional override (CEO Decision 2: only conditional outcomes)
+  if (rulingConditionalDutyOverride !== null) {
+    dutyRate = rulingConditionalDutyOverride;
+    dutyRateSource = `ruling_conditional`;
+    dutyNote = `HS ${hsResult?.hsCode || '?'} (${(dutyRate * 100).toFixed(1)}%) [ruling:${rulingMatch?.rulingId}]`;
+    dutyConfidenceScore = rulingMatch?.confidenceScore ?? 0.8;
   }
 
   // Save base duty rate BEFORE additional tariffs (for accurate breakdown)
@@ -1124,6 +1181,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     dutyRateSource: richDutyRate?.source || dutyRateSource,
     rateTypeResolved: resolvedDutyType,
     dutyConfidenceScore,
+    rulingMatch: rulingMatch || undefined,
     tariffOptimization,
     insurance: round(insurance),
     brokerageFee: round(brokerageFee),
