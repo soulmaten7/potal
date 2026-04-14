@@ -1,5 +1,20 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW34-S4.5 FTA Eligibility 10-Field Integration)
+> 마지막 업데이트: 2026-04-14 KST (CW34-S5 Pending Data Acquisition — 3소스 조사 + CEO 결정 대기)
+
+## [2026-04-14 KST] CW34-S5 — Pending Data Acquisition
+
+### Research (코드 수정 0건)
+- WCO EN: €450/년 디지털, API 없음, derivative 미확인 → **공개 소스 대체 권장**
+- China GACC: 공개 DB 없음, robots.txt 무응답, IP 차단 → **보류 + warning**
+- Japan 税関: robots.txt 공개, CC-BY 4.0, PDF only → **CW36+ 보류**
+- 저작권 체크리스트 10개 소스 정리
+
+### Documents
+- `docs/CW34_S5_WCO_EN_EVALUATION.md`
+- `docs/CW34_S5_CN_RULINGS_EVALUATION.md`
+- `docs/CW34_S5_JP_RULINGS_EVALUATION.md`
+- `docs/DATA_COPYRIGHT_CHECKLIST.md`
+- `docs/CW34_S5_PENDING_DATA_MASTER_REPORT.md`
 
 ## [2026-04-14 KST] CW34-S4.5 — FTA Eligibility 10-Field Integration
 
