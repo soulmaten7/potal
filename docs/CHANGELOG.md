@@ -1,5 +1,13 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW34-S5 Pending Data Acquisition — 3소스 조사 + CEO 결정 대기)
+> 마지막 업데이트: 2026-04-14 KST (CW36-CN1 Data availability warnings)
+
+## [2026-04-14 KST] CW36-CN1 — Data Availability Warnings
+
+### Added
+- `lookup.ts`: `checkDataAvailability()` — jurisdiction에 ruling 데이터 유무 자동 판별
+- `GlobalCostEngine`: `dataAvailability` output field — warning text + status
+- Covered: EU, US (has data) / CN, JP, KR, AU, SG 등 (no_rulings_data warning)
+- `verify-cw36-cn-warning.mjs`: 9/9 green
 
 ## [2026-04-14 KST] CW34-S5 — Pending Data Acquisition
 

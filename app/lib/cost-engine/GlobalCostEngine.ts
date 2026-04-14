@@ -200,6 +200,8 @@ export interface GlobalLandedCost extends LandedCost {
   dutyConfidenceScore?: number;
   /** CW34-S4: Matching customs ruling precedent (classification reference, not duty source) */
   rulingMatch?: { rulingId: string; source: string; confidenceScore: number; matchScore: number; conditionalApplied?: string };
+  /** CW36-CN1: Data availability warning for jurisdictions without rulings */
+  dataAvailability?: { jurisdiction: string; status: string; warning?: string };
   /** Insurance cost (CIF component) */
   insurance?: number;
   /** Brokerage fee estimate */
@@ -399,11 +401,13 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
   }
 
   // ━━━ CW34-S4: Ruling Lookup (classification precedent, NOT duty rate) ━━━
+  // ━━━ CW36-CN1: Data availability warning for jurisdictions without rulings ━━━
   let rulingMatch: { rulingId: string; source: string; confidenceScore: number; matchScore: number; conditionalApplied?: string } | undefined;
   let rulingConditionalDutyOverride: number | null = null;
+  let dataAvailability: { jurisdiction: string; status: string; warning?: string } | undefined;
   if (hsResult && hsResult.hsCode !== '9999' && !isDomestic) {
     try {
-      const { lookupRulings } = await import('@/app/lib/rulings/lookup');
+      const { lookupRulings, checkDataAvailability } = await import('@/app/lib/rulings/lookup');
       const { evaluateConditionalRules } = await import('@/app/lib/rulings/conditional-evaluator');
       const hs6 = hsResult.hsCode.substring(0, 6);
       const destJurisdiction = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE'].includes(profile.code) ? 'EU' : profile.code;
@@ -433,6 +437,10 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
             rulingMatch.conditionalApplied = evalResult.reason;
           }
         }
+      }
+      // CW36-CN1: Check data availability for this jurisdiction
+      if (!rulingMatch) {
+        dataAvailability = checkDataAvailability(destJurisdiction) ?? undefined;
       }
     } catch { /* ruling lookup failure is non-critical */ }
   }
@@ -1182,6 +1190,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     rateTypeResolved: resolvedDutyType,
     dutyConfidenceScore,
     rulingMatch: rulingMatch || undefined,
+    dataAvailability: dataAvailability || undefined,
     tariffOptimization,
     insurance: round(insurance),
     brokerageFee: round(brokerageFee),

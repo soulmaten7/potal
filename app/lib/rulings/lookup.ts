@@ -138,6 +138,31 @@ export async function lookupRulings(q: RulingQuery): Promise<RulingMatch[]> {
   }
 }
 
+// ─── CW36-CN1: Data availability for jurisdictions without rulings ───
+
+/** Jurisdictions with rulings data in customs_rulings table */
+const COVERED_JURISDICTIONS = new Set(['EU', 'US']);
+
+export interface DataAvailability {
+  jurisdiction: string;
+  status: 'has_rulings_data' | 'no_rulings_data';
+  warning?: string;
+}
+
+/**
+ * Check if a jurisdiction has rulings data.
+ * Returns warning for CN, JP, KR, AU, etc. where we have 0 rulings.
+ */
+export function checkDataAvailability(jurisdiction: string | null | undefined): DataAvailability | undefined {
+  if (!jurisdiction) return undefined;
+  if (COVERED_JURISDICTIONS.has(jurisdiction)) return undefined; // has data, no warning
+  return {
+    jurisdiction,
+    status: 'no_rulings_data',
+    warning: `POTAL does not currently have customs rulings data for ${jurisdiction} imports. Calculation uses general tariff schedules only. Manual review recommended for ${jurisdiction}-bound shipments.`,
+  };
+}
+
 /**
  * Quick count of rulings matching an HS6 code.
  * Used for classification confidence boost.
