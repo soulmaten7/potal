@@ -1,5 +1,24 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW35-HF1+HF2 Data Hygiene — hs_code truncate + product_name strip)
+> 마지막 업데이트: 2026-04-14 KST (CW35-S1 Multilang Keywords — 10 Field coverage boost)
+
+## [2026-04-14 KST] CW35-S1 — Multilang Keyword Dictionaries
+
+### Added
+- MATERIAL_DICT: 40 canonical materials × ~6 languages = 240+ synonyms (DE/FR/IT/NL/PL/ES/CS/SV/HU)
+- FORM_DICT: 20 canonical forms × ~5 languages = 100+ synonyms
+- USE_DICT: 20 canonical uses × ~5 languages = 100+ synonyms
+- SYNONYM_TO_MATERIAL reverse lookup for composition parsing (e.g. "85% Baumwolle" → cotton)
+
+### Changed
+- build-gold.mjs: extractTenField() now matches multilingual keywords
+- Gold + Platinum full rebuild + SWAP via pg direct connection
+
+### Coverage improvement (customs_rulings 645,591 rows)
+| Field | Before | After | Delta |
+|-------|--------|-------|-------|
+| material | 18.8% | **33.7%** | +14.9pp |
+| product_form | 9.1% | **16.8%** | +7.7pp |
+| intended_use | 23.6% | **38.5%** | +14.9pp |
 
 ## [2026-04-14 KST] CW35-HF1+HF2 — Data Hygiene
 

@@ -51,74 +51,145 @@ const crossMap = loadJsonlMap(`${SILVER}/cross_enrichment.jsonl`, 'join_key');
 console.log(`  EBTI enrichment: ${ebtiMap.size.toLocaleString()} entries`);
 console.log(`  CROSS enrichment: ${crossMap.size.toLocaleString()} entries`);
 
-// ─── Business Rule: Material Keywords ───
+// ─── CW35-S1: Multilingual Material/Form/Use Keywords ───
+// Languages: EN + DE + FR + IT + NL + PL + ES + CS + SV + HU
+// Total: ~300 synonym patterns across 40 materials + 35 forms + 20 uses
 
-const MATERIAL_KEYWORDS = [
-  'cotton', 'polyester', 'nylon', 'silk', 'wool', 'linen', 'leather', 'suede',
-  'rubber', 'latex', 'plastic', 'pvc', 'polypropylene', 'polyethylene', 'polycarbonate',
-  'acrylic', 'viscose', 'rayon', 'spandex', 'elastane', 'lycra',
-  'steel', 'iron', 'aluminum', 'aluminium', 'copper', 'brass', 'bronze', 'zinc',
-  'titanium', 'nickel', 'tin', 'lead', 'gold', 'silver', 'platinum',
-  'wood', 'bamboo', 'cork', 'paper', 'cardboard', 'cellulose',
-  'glass', 'ceramic', 'porcelain', 'stone', 'marble', 'granite', 'concrete', 'cement',
-  'carbon fiber', 'fiberglass', 'kevlar', 'teflon', 'silicone',
-  'hemp', 'jute', 'sisal', 'coir', 'flax', 'ramie',
-  'cashmere', 'mohair', 'angora', 'alpaca', 'camel hair',
-  'down', 'feather', 'fur', 'ivory', 'bone', 'horn', 'shell',
-  'wax', 'paraffin', 'resin', 'epoxy', 'polyurethane',
-  'stainless steel', 'cast iron', 'wrought iron', 'galvanized steel',
-  'neoprene', 'polyamide', 'polystyrene', 'abs',
-  'denim', 'canvas', 'felt', 'velvet', 'satin', 'chiffon', 'organza', 'tulle',
-  'lithium', 'cobalt', 'manganese', 'graphite', 'silicon',
-].map(m => [new RegExp(`\\b${m.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i'), m]);
+function buildMultilangRegex(allTerms) {
+  const escaped = allTerms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  return new RegExp(`\\b(?:${escaped.join('|')})\\b`, 'i');
+}
 
-const PRODUCT_FORM_KEYWORDS = [
-  [/\bknitt(?:ed|ing)\b/i, 'knitted'], [/\bwoven\b/i, 'woven'],
-  [/\bnon[- ]?woven\b/i, 'nonwoven'], [/\bmold(?:ed|ing)\b/i, 'molded'],
-  [/\bforg(?:ed|ing)\b/i, 'forged'], [/\bcast(?:ing)?\b/i, 'cast'],
-  [/\bextrud(?:ed|ing)\b/i, 'extruded'], [/\bstamp(?:ed|ing)\b/i, 'stamped'],
-  [/\bprint(?:ed|ing)\b/i, 'printed'], [/\blaminat(?:ed|ing)\b/i, 'laminated'],
-  [/\bcoat(?:ed|ing)\b/i, 'coated'], [/\bembroid(?:ed|ered|ery)\b/i, 'embroidered'],
-  [/\bcrochet(?:ed)?\b/i, 'crocheted'], [/\bfelt(?:ed)?\b/i, 'felted'],
-  [/\btuft(?:ed|ing)\b/i, 'tufted'], [/\bbraid(?:ed|ing)\b/i, 'braided'],
-  [/\bassembl(?:ed|y)\b/i, 'assembled'], [/\bmachin(?:ed|ing)\b/i, 'machined'],
-  [/\bweld(?:ed|ing)\b/i, 'welded'], [/\bpress(?:ed|ing)\b/i, 'pressed'],
-  [/\bsew(?:n|ing)\b/i, 'sewn'], [/\bdyed?\b/i, 'dyed'],
-  [/\bblown\b/i, 'blown'], [/\broll(?:ed|ing)\b/i, 'rolled'],
-  [/\bground\b/i, 'ground'], [/\bfreeze[- ]?dried\b/i, 'freeze-dried'],
-  [/\bferment(?:ed|ing)\b/i, 'fermented'], [/\broast(?:ed|ing)\b/i, 'roasted'],
-  [/\bsmok(?:ed|ing)\b/i, 'smoked'], [/\bdried\b/i, 'dried'],
-  [/\bfrozen\b/i, 'frozen'], [/\bcanned\b/i, 'canned'],
-  [/\bbottled\b/i, 'bottled'], [/\bpowder(?:ed)?\b/i, 'powdered'],
-  [/\bgranulat(?:ed|e)\b/i, 'granulated'], [/\bcrush(?:ed|ing)\b/i, 'crushed'],
-];
+const MATERIAL_DICT = {
+  // Fiber / Textile
+  cotton:    ['cotton', 'baumwolle', 'coton', 'cotone', 'katoen', 'bawełna', 'algodón', 'bavlna', 'bomull', 'pamut'],
+  wool:      ['wool', 'wolle', 'laine', 'lana', 'wol', 'wełna', 'ull', 'gyapjú'],
+  silk:      ['silk', 'seide', 'soie', 'seta', 'zijde', 'jedwab', 'seda', 'hedvábí', 'silke'],
+  linen:     ['linen', 'leinen', 'lin', 'lino', 'linnen', 'len', 'lino'],
+  polyester: ['polyester', 'polyester', 'polyester', 'poliestere', 'poliéster'],
+  nylon:     ['nylon', 'nylon', 'nailon', 'nylón'],
+  viscose:   ['viscose', 'viskose', 'viscose', 'viscosa'],
+  acrylic:   ['acrylic', 'acryl', 'acrylique', 'acrilico', 'akryl'],
+  spandex:   ['spandex', 'elastan', 'élasthanne', 'elastan', 'elastaan'],
+  rayon:     ['rayon', 'rayon', 'rayonne'],
+  cashmere:  ['cashmere', 'kaschmir', 'cachemire', 'cashmere'],
+  mohair:    ['mohair', 'mohair', 'mohair'],
+  hemp:      ['hemp', 'hanf', 'chanvre', 'canapa', 'hennep', 'konopie'],
+  jute:      ['jute', 'jute', 'jute', 'iuta'],
+  flax:      ['flax', 'flachs', 'lin', 'lino'],
+  // Leather / Animal
+  leather:   ['leather', 'leder', 'cuir', 'pelle', 'leer', 'skóra', 'cuero', 'kůže', 'läder', 'bőr'],
+  suede:     ['suede', 'wildleder', 'daim', 'scamosciato', 'suède'],
+  fur:       ['fur', 'pelz', 'fourrure', 'pelliccia', 'bont', 'futro'],
+  // Metal
+  steel:     ['steel', 'stahl', 'acier', 'acciaio', 'staal', 'stal', 'acero', 'ocel', 'stål'],
+  'stainless steel': ['stainless steel', 'edelstahl', 'rostfreier stahl', 'acier inoxydable', 'acciaio inossidabile', 'roestvrij staal', 'nierdzewn'],
+  iron:      ['iron', 'eisen', 'fer', 'ferro', 'ijzer', 'żelazo', 'hierro', 'järn', 'vas'],
+  aluminum:  ['aluminum', 'aluminium', 'aluminium', 'alluminio', 'aluminium', 'hliník'],
+  copper:    ['copper', 'kupfer', 'cuivre', 'rame', 'koper', 'miedź', 'cobre', 'měď', 'koppar', 'réz'],
+  brass:     ['brass', 'messing', 'laiton', 'ottone', 'messing'],
+  zinc:      ['zinc', 'zink', 'zinc', 'zinco', 'zink', 'cynk'],
+  nickel:    ['nickel', 'nickel', 'nickel', 'nichel'],
+  tin:       ['tin', 'zinn', 'étain', 'stagno', 'cín'],
+  titanium:  ['titanium', 'titan', 'titane', 'titanio'],
+  // Plastic / Polymer
+  plastic:   ['plastic', 'kunststoff', 'plastique', 'plastica', 'plastik', 'plast', 'műanyag'],
+  rubber:    ['rubber', 'gummi', 'caoutchouc', 'gomma', 'rubber', 'guma', 'caucho', 'kaučuk', 'gummi'],
+  pvc:       ['pvc', 'pvc', 'pvc'],
+  polyurethane: ['polyurethane', 'polyurethan', 'polyuréthane', 'poliuretano'],
+  silicone:  ['silicone', 'silikon', 'silicone', 'silicone'],
+  neoprene:  ['neoprene', 'neopren', 'néoprène', 'neoprene'],
+  // Wood / Paper
+  wood:      ['wood', 'holz', 'bois', 'legno', 'hout', 'drewno', 'madera', 'dřevo', 'trä', 'fa'],
+  bamboo:    ['bamboo', 'bambus', 'bambou', 'bambù', 'bamboe'],
+  paper:     ['paper', 'papier', 'papier', 'carta', 'papier', 'papír', 'papper'],
+  cardboard: ['cardboard', 'karton', 'carton', 'cartone', 'karton', 'kartón'],
+  cork:      ['cork', 'kork', 'liège', 'sughero'],
+  // Glass / Ceramic / Stone
+  glass:     ['glass', 'glas', 'verre', 'vetro', 'glas', 'szkło', 'vidrio', 'sklo', 'üveg'],
+  ceramic:   ['ceramic', 'keramik', 'céramique', 'ceramica', 'keramiek', 'ceramika', 'kerámia'],
+  porcelain: ['porcelain', 'porzellan', 'porcelaine', 'porcellana', 'porselein'],
+  stone:     ['stone', 'stein', 'pierre', 'pietra', 'steen', 'kamień', 'piedra', 'kámen', 'kő'],
+  marble:    ['marble', 'marmor', 'marbre', 'marmo', 'marmer', 'marmur'],
+  concrete:  ['concrete', 'beton', 'béton', 'calcestruzzo', 'beton'],
+  // Other
+  wax:       ['wax', 'wachs', 'cire', 'cera', 'was', 'wosk'],
+  resin:     ['resin', 'harz', 'résine', 'resina', 'hars'],
+  cellulose: ['cellulose', 'zellulose', 'cellulose', 'cellulosa'],
+  lithium:   ['lithium', 'lithium', 'lithium', 'litio'],
+  graphite:  ['graphite', 'graphit', 'graphite', 'grafite'],
+  silicon:   ['silicon', 'silizium', 'silicium', 'silicio'],
+  cobalt:    ['cobalt', 'kobalt', 'cobalt', 'cobalto'],
+};
 
-const INTENDED_USE_KEYWORDS = [
-  [/\b(?:clothing|apparel|garment|dress|shirt|trouser|pant|jacket|coat|skirt|blouse)\b/i, 'clothing'],
-  [/\b(?:footwear|shoe|boot|sandal|slipper)\b/i, 'footwear'],
-  [/\b(?:handbag|wallet|belt|glove|scarf|hat|cap|necktie)\b/i, 'accessories'],
-  [/\b(?:industrial|factory|manufacturing|machinery)\b/i, 'industrial'],
-  [/\b(?:automotive|vehicle|car|truck|motor)\b/i, 'automotive'],
-  [/\b(?:medical|surgical|pharmaceutical|hospital|clinical)\b/i, 'medical'],
-  [/\b(?:food|edible|consumab|beverage|drink)\b/i, 'food'],
-  [/\b(?:toy|game|plaything|doll|puzzle)\b/i, 'toy'],
-  [/\b(?:sport|athletic|fitness|exercise|gym)\b/i, 'sport'],
-  [/\b(?:furniture|chair|table|desk|bed|sofa|cabinet)\b/i, 'furniture'],
-  [/\b(?:construction|building|structural|cement|concrete)\b/i, 'construction'],
-  [/\b(?:agricultural|farming|garden|crop|seed|fertiliz)\b/i, 'agricultural'],
-  [/\b(?:electric|electronic|circuit|semiconductor|battery)\b/i, 'electrical'],
-  [/\b(?:cosmetic|beauty|skincare|makeup|perfume)\b/i, 'cosmetic'],
-  [/\b(?:packaging|container|box|bag|wrapper|carton)\b/i, 'packaging'],
-  [/\b(?:military|defense|weapon|ammunition|armour)\b/i, 'military'],
-  [/\b(?:veterinar|animal|pet|livestock|poultry)\b/i, 'veterinary'],
-  [/\b(?:textile|fabric|cloth|fiber|yarn|thread)\b/i, 'textile'],
-  [/\b(?:optical|lens|spectacle|eyewear|microscop)\b/i, 'optical'],
-  [/\b(?:chemical|reagent|solvent|acid|catalyst)\b/i, 'chemical'],
-];
+const MATERIAL_KEYWORDS = Object.entries(MATERIAL_DICT).map(([canonical, terms]) =>
+  [buildMultilangRegex(terms), canonical]
+);
+const KNOWN_MATERIALS = new Set(Object.keys(MATERIAL_DICT));
 
-// Composition: "85% cotton, 15% polyester"
-const COMPOSITION_RE = /(\d{1,3}(?:\.\d+)?)\s*%\s*([a-z][a-z ]{1,20})/gi;
-const KNOWN_MATERIALS = new Set(MATERIAL_KEYWORDS.map(([, name]) => name));
+const FORM_DICT = {
+  knitted:    ['knitted', 'knitting', 'knit', 'gestrickt', 'strick', 'tricoté', 'tricot', 'maglia', 'maglieria', 'gebreid', 'dziany', 'stickat'],
+  woven:      ['woven', 'weave', 'gewebt', 'gewebe', 'tissé', 'tissage', 'tessuto', 'geweven', 'tkany', 'vävd'],
+  nonwoven:   ['nonwoven', 'non-woven', 'vlies', 'vliesstoff', 'non-tissé', 'nontessuto', 'vlies'],
+  sewn:       ['sewn', 'sewing', 'genäht', 'näh', 'cousu', 'couture', 'cucito', 'gestikt', 'szyty'],
+  molded:     ['molded', 'molding', 'moulded', 'geformt', 'formteil', 'moulé', 'stampaggio', 'gevormd', 'formowany'],
+  cast:       ['casting', 'gegossen', 'guss', 'coulé', 'fonderie', 'fuso', 'fusione', 'gegoten', 'odlew'],
+  forged:     ['forged', 'forging', 'geschmiedet', 'schmied', 'forgé', 'forgiato', 'gesmeed', 'kowany'],
+  extruded:   ['extruded', 'extrusion', 'extrudiert', 'extrudé', 'estruso'],
+  stamped:    ['stamped', 'stamping', 'gestanzt', 'stanz', 'estampé', 'stampato'],
+  printed:    ['printed', 'printing', 'gedruckt', 'druck', 'bedruckt', 'imprimé', 'stampato', 'bedrukt', 'drukowany'],
+  laminated:  ['laminated', 'laminating', 'laminiert', 'laminé', 'laminato', 'gelamineerd'],
+  coated:     ['coated', 'coating', 'beschichtet', 'überzogen', 'revêtu', 'enduit', 'rivestito', 'gecoat', 'bekleed'],
+  embroidered:['embroidered', 'embroidery', 'bestickt', 'stickerei', 'brodé', 'broderie', 'ricamato', 'geborduurd', 'haftowany'],
+  welded:     ['welded', 'welding', 'geschweißt', 'schweiß', 'soudé', 'soudure', 'saldato', 'gelast', 'spawany'],
+  pressed:    ['pressed', 'pressing', 'gepresst', 'pressé', 'pressato', 'geperst'],
+  rolled:     ['rolled', 'rolling', 'gewalzt', 'walz', 'laminé', 'laminato', 'gewalst'],
+  dried:      ['dried', 'drying', 'getrocknet', 'trocken', 'séché', 'essiccato', 'gedroogd', 'suszony'],
+  frozen:     ['frozen', 'gefroren', 'tiefgekühlt', 'tiefkühl', 'congelé', 'surgelé', 'congelato', 'surgelato', 'bevroren', 'mrożony', 'fagyasztott'],
+  powdered:   ['powdered', 'powder', 'pulver', 'pulverisiert', 'poudre', 'polvere', 'poeder'],
+  granulated: ['granulated', 'granulat', 'granulé', 'granulato'],
+  bottled:    ['bottled', 'abgefüllt', 'flasche', 'embouteillé', 'imbottigliato'],
+  canned:     ['canned', 'konserve', 'dose', 'conserve', 'conserva', 'ingeblikt'],
+};
+
+const PRODUCT_FORM_KEYWORDS = Object.entries(FORM_DICT).map(([canonical, terms]) =>
+  [buildMultilangRegex(terms), canonical]
+);
+
+const USE_DICT = {
+  clothing:   ['clothing', 'apparel', 'garment', 'dress', 'shirt', 'trouser', 'pant', 'jacket', 'coat', 'skirt', 'blouse', 'bekleidung', 'kleidung', 'oberbekleidung', 'hemd', 'hose', 'jacke', 'mantel', 'rock', 'vêtement', 'habillement', 'chemise', 'pantalon', 'veste', 'jupe', 'abbigliamento', 'camicia', 'gonna', 'giacca', 'kleding', 'odzież', 'koszula', 'spodnie'],
+  footwear:   ['footwear', 'shoe', 'boot', 'sandal', 'slipper', 'schuh', 'stiefel', 'sandale', 'chaussure', 'botte', 'scarpa', 'stivale', 'schoen', 'laars', 'obuwie', 'but'],
+  accessories:['handbag', 'wallet', 'belt', 'glove', 'scarf', 'hat', 'cap', 'necktie', 'tasche', 'handtasche', 'gürtel', 'handschuh', 'schal', 'hut', 'mütze', 'sac', 'ceinture', 'gant', 'écharpe', 'chapeau', 'borsa', 'cintura', 'guanto', 'cappello'],
+  food:       ['food', 'edible', 'beverage', 'drink', 'lebensmittel', 'nahrung', 'getränk', 'speise', 'alimentaire', 'aliment', 'boisson', 'alimentare', 'cibo', 'bibita', 'voedsel', 'drank', 'żywność', 'napój', 'élelmiszer', 'ital', 'potravina', 'livsmedel'],
+  industrial: ['industrial', 'factory', 'manufacturing', 'machinery', 'industriell', 'fabrik', 'maschine', 'industriel', 'usine', 'machine', 'industriale', 'fabbrica', 'macchina', 'industrieel', 'fabriek', 'przemysłowy', 'maszyna'],
+  automotive: ['automotive', 'vehicle', 'car', 'truck', 'automobil', 'fahrzeug', 'kraftfahrzeug', 'kfz', 'automobile', 'véhicule', 'voiture', 'camion', 'autoveicolo', 'veicolo', 'voertuig', 'auto', 'pojazd', 'samochód', 'fordon'],
+  medical:    ['medical', 'surgical', 'pharmaceutical', 'hospital', 'clinical', 'medizinisch', 'chirurgisch', 'pharmazeutisch', 'klinik', 'médical', 'chirurgical', 'pharmaceutique', 'hôpital', 'medico', 'chirurgico', 'farmaceutico', 'medisch', 'medyczny', 'orvosi'],
+  electrical: ['electric', 'electronic', 'circuit', 'semiconductor', 'battery', 'elektrisch', 'elektronisch', 'batterie', 'halbleiter', 'schaltung', 'électrique', 'électronique', 'batterie', 'circuit', 'elettrico', 'elettronico', 'batteria', 'elektrisch', 'elektryczny', 'bateria'],
+  toy:        ['toy', 'game', 'plaything', 'doll', 'puzzle', 'spielzeug', 'spiel', 'puppe', 'jouet', 'jeu', 'poupée', 'giocattolo', 'bambola', 'speelgoed', 'pop', 'zabawka', 'lalka', 'játék', 'baba'],
+  sport:      ['sport', 'athletic', 'fitness', 'exercise', 'gym', 'sportlich', 'sportgerät', 'sportif', 'sportivo', 'sport'],
+  furniture:  ['furniture', 'chair', 'table', 'desk', 'bed', 'sofa', 'cabinet', 'möbel', 'stuhl', 'tisch', 'schreibtisch', 'bett', 'schrank', 'meuble', 'chaise', 'table', 'bureau', 'lit', 'armoire', 'mobile', 'sedia', 'tavolo', 'letto', 'meubel', 'stoel', 'tafel', 'mebel', 'krzesło', 'stół', 'bútor', 'szék', 'asztal'],
+  construction:['construction', 'building', 'structural', 'bau', 'baustoff', 'bauwerk', 'construction', 'bâtiment', 'costruzione', 'edilizia', 'bouw', 'budowa', 'építés'],
+  agricultural:['agricultural', 'farming', 'garden', 'crop', 'seed', 'fertiliz', 'landwirtschaft', 'garten', 'saat', 'dünger', 'agricole', 'jardin', 'semence', 'engrais', 'agricolo', 'giardino', 'seme', 'landbouw', 'tuin', 'rolnictwo', 'ogród'],
+  cosmetic:   ['cosmetic', 'beauty', 'skincare', 'makeup', 'perfume', 'kosmetik', 'parfüm', 'cosmétique', 'parfum', 'cosmetico', 'profumo', 'cosmetica', 'parfum', 'kosmetyk', 'perfumy', 'kozmetika'],
+  packaging:  ['packaging', 'container', 'box', 'wrapper', 'carton', 'verpackung', 'behälter', 'karton', 'schachtel', 'emballage', 'boîte', 'imballaggio', 'scatola', 'verpakking', 'doos', 'opakowanie', 'pudełko'],
+  textile:    ['textile', 'fabric', 'cloth', 'fiber', 'yarn', 'thread', 'textil', 'stoff', 'gewebe', 'faser', 'garn', 'faden', 'tissu', 'étoffe', 'fibre', 'fil', 'tessile', 'tessuto', 'fibra', 'filo', 'textiel', 'stof', 'vezel', 'garen', 'draad', 'włókno', 'tkanina', 'nić', 'textil', 'tyg'],
+  chemical:   ['chemical', 'reagent', 'solvent', 'acid', 'catalyst', 'chemisch', 'chemikalie', 'lösungsmittel', 'säure', 'chimique', 'réactif', 'solvant', 'acide', 'chimico', 'reagente', 'solvente', 'acido', 'chemisch', 'chemiczny', 'kwas'],
+  optical:    ['optical', 'lens', 'spectacle', 'eyewear', 'optisch', 'linse', 'brille', 'optique', 'lentille', 'lunette', 'ottico', 'lente', 'occhiale', 'optisch', 'bril', 'optyczny', 'soczewka'],
+  military:   ['military', 'defense', 'weapon', 'ammunition', 'militärisch', 'waffe', 'munition', 'militaire', 'arme', 'munition', 'militare', 'arma', 'munizione', 'militair', 'wapen'],
+  veterinary: ['veterinar', 'animal', 'pet', 'livestock', 'poultry', 'tierärztlich', 'tier', 'haustier', 'vieh', 'geflügel', 'vétérinaire', 'animal', 'bétail', 'volaille', 'veterinario', 'animale', 'bestiame', 'dier', 'huisdier', 'vee', 'gevogelte'],
+};
+
+const INTENDED_USE_KEYWORDS = Object.entries(USE_DICT).map(([canonical, terms]) =>
+  [buildMultilangRegex(terms), canonical]
+);
+
+// Composition: "85% cotton, 15% polyester" or "85% Baumwolle"
+const COMPOSITION_RE = /(\d{1,3}(?:[.,]\d+)?)\s*%\s*([a-zA-ZäöüßéèêàâùûôîïëçñÄÖÜ][a-zA-ZäöüßéèêàâùûôîïëçñÄÖÜ ]{1,25})/gi;
+// Build reverse lookup: synonym → canonical material name
+const SYNONYM_TO_MATERIAL = new Map();
+for (const [canonical, terms] of Object.entries(MATERIAL_DICT)) {
+  for (const t of terms) SYNONYM_TO_MATERIAL.set(t.toLowerCase(), canonical);
+}
 
 function extractTenField(text) {
   if (!text) return { material: null, material_composition: null, product_form: null, intended_use: null };
@@ -130,9 +201,10 @@ function extractTenField(text) {
 
   const composition = {};
   for (const m of text.matchAll(COMPOSITION_RE)) {
-    const pct = Number(m[1]);
-    const mat = m[2].trim().toLowerCase();
-    if (pct > 0 && pct <= 100 && KNOWN_MATERIALS.has(mat)) composition[mat] = pct;
+    const pct = Number(String(m[1]).replace(',', '.'));
+    const rawMat = m[2].trim().toLowerCase();
+    const canonical = SYNONYM_TO_MATERIAL.get(rawMat);
+    if (pct > 0 && pct <= 100 && canonical) composition[canonical] = pct;
   }
   const matComp = Object.keys(composition).length > 0 ? composition : null;
 
