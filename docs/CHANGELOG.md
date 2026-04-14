@@ -1,5 +1,47 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW36-FTA-Enrichment)
+> 마지막 업데이트: 2026-04-14 KST (CW37 Architecture Decision — 아키텍처 전면 리뉴얼 방향 확정)
+
+## [2026-04-14 KST] CW37 Architecture Decision — Architecture Redesign
+
+### Decided (CEO: 은태님)
+아키텍처 전면 리뉴얼 방향 확정. 코드 수정 0 — 다음 CW37 sprint 에서 단계적 구현.
+
+**핵심 결정 8가지**:
+1. **페르소나 재정의**: 6개 (Online Seller / D2C / Importer / Exporter / Forwarder / Custom) → **2개 (수출/수입)** 마케팅 진입만
+2. **모듈 묶음 폐지**: Cost/Compliance/etc. mega API 구조 포기 → **RapidAPI 식 세분화된 endpoint 단위 유지**
+3. **Endpoint 정리**: 15+ → **8 API + 4 Guides = 12개**
+   - 🛠️ Compute (6): classify / calculate / apply-fta / check-restrictions / compare / generate-document
+   - 🔍 Screening (2): screen-parties / eccn-lookup
+   - 📚 Guides (4): customs-filing / incoterms / section-301 / anti-dumping
+4. **Lookup 6개 흡수**: duty-rate / exchange-rate / de-minimis / fta-finder / restricted-item / hs-search → Compute 응답에 포함
+5. **HsCodeCalculator 전면 embed**: HS Code input 필드 제거, 모든 endpoint 에 Calculator 컴포넌트 embed
+6. **Forever Free 완전 일관**: Layer 3 Enterprise paywall 폐지, Enterprise = Contact Us rate limit 조정만
+7. **Disclaimer 법적 패턴**: 모든 정보 페이지 상단 "참고용" 명시 → sanctions/ECCN/customs filing 법적 안전
+8. **RapidAPI UX 패턴**: 좌측 endpoint 리스트 + 중앙 Parameters/Run/Result + 우측 Code Snippet
+
+### Backlog (CW37 Phase 1-7)
+- Phase 1: 현재 상태 감사 (1~2h)
+- Phase 2: Endpoint 정리 + Result 풍부화 (5~7h)
+- Phase 3: UI 리뉴얼 RapidAPI 패턴 (5~7h)
+- Phase 4: Screening endpoints 신설 (2~3h)
+- Phase 5: Guides 페이지 신설 (3~4h)
+- Phase 6: LLM-friendly Schema 정리 (8~12h, 장기)
+- Phase 7: OpenAPI 3.0 Spec + Swagger UI (5~7h, 장기)
+
+### Deliverables
+- `docs/CW37_ARCHITECTURE_DECISION.md` (ADR)
+- `docs/COMMAND_CW37_S1_AUDIT.md` (명령어)
+- `docs/COMMAND_CW37_S2_ENDPOINT_CONSOLIDATION.md`
+- `docs/COMMAND_CW37_S3_UI_RENEWAL.md`
+- `docs/COMMAND_CW37_S4_SCREENING_ENDPOINTS.md`
+- `docs/COMMAND_CW37_S5_GUIDES_PAGES.md`
+
+### 참조
+- Rule 9 (Forever Free 유지) ✓
+- Rule 12 (하드코딩 금지) ✓
+- Rule 13 (Decision Tree 패턴) ✓
+
+---
 
 ## [2026-04-14 KST] CW36-FTA-Enrichment — Integrate 5 sources into FTA Eligibility
 
