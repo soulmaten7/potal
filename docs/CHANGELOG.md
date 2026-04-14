@@ -1,5 +1,25 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-15 KST (CW37-S2 Endpoint Consolidation — 6 Lookup absorbed)
+> 마지막 업데이트: 2026-04-15 KST (CW37-S5 Guides Pages — 13 new pages, 488 total)
+
+## [2026-04-15 KST] CW37-S5 — Guides Pages
+
+### Added (13 pages)
+- `/guides` — index page with 4 guide cards
+- `/guides/customs-filing` — index + 8 country pages (KR/US/EU/GB/JP/CN/AU/CA)
+  - Each: export + import sections, required docs, procedure steps, official links
+- `/guides/incoterms-2020` — all 11 Incoterms 2020 with overview table + detailed sections
+- `/guides/section-301` — US-China additional tariffs (Lists 1-4, rates, key sectors)
+- `/guides/anti-dumping` — AD/CVD guide with 8 notable active cases
+- `components/guides/DisclaimerBanner.tsx` — reusable Disclaimer + UpdateDate + ExternalLink
+- SEO: title + description + Open Graph metadata on all pages
+- All pages: disclaimer banner + "Last updated" footer
+
+### Architecture
+- `/guides/customs-filing/[country]/page.tsx` — dynamic SSG route with `generateStaticParams`
+- Country data: `app/guides/customs-filing/data.ts` (8 countries × 6 fields each)
+- Build: 475 → 488 pages (+13)
+
+## [2026-04-15 KST] CW37-S2
 
 ## [2026-04-15 KST] CW37-S2 — Endpoint Consolidation
 
