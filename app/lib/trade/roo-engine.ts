@@ -24,10 +24,19 @@ export interface RoOInput {
   nonOriginatingMaterialValue?: number;
   materials?: Array<{ hsCode: string; origin: string; value: number }>;
   inputOrigins?: string[];  // C4: countries where inputs originate
+  // CW34-S4.5: 10-field integration
+  material?: string;
+  materialComposition?: Record<string, number>;
+  productForm?: string;
+  intendedUse?: string;
+  originatingContentPct?: number;  // 0-100, user-provided originating %
 }
+
+export type EligibilityVerdict = 'eligible' | 'ineligible' | 'indeterminate';
 
 export interface RoOResult {
   eligible: boolean;
+  verdict: EligibilityVerdict;
   criteriaMetList: OriginCriteria[];
   criteriaFailed: OriginCriteria[];
   rvcPercentage?: number;
@@ -42,6 +51,9 @@ export interface RoOResult {
   method: string;
   details: string;
   warnings: string[];
+  // CW34-S4.5
+  dbRule?: { id: string; fta_code: string; rule_type: string; rule_text: string } | null;
+  tenFieldEvidence?: Record<string, unknown>;
 }
 
 // ─── FTA Configuration ──────────────────────────────
@@ -136,6 +148,52 @@ function getRvcThreshold(config: FtaConfig, hsChapter: string): number {
   return config.chapterRvc?.[hsChapter] ?? config.defaultRvc;
 }
 
+// ─── CW34-S4.5: DB Product Rule Lookup ────────────────
+/**
+ * Find matching fta_product_rules row for given HS + FTA.
+ * hs_scope can be: "0101-0106" (range), "6109" (prefix), "61" (chapter).
+ * We match by checking if the HS6 falls within the scope range.
+ */
+async function findDbProductRule(hs6: string, ftaCode: string): Promise<Record<string, unknown> | null> {
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) return null;
+    const sb = createClient(url, key);
+
+    // Try specific scope levels: subheading → heading → chapter
+    const heading = hs6.slice(0, 4);
+    const chapter = hs6.slice(0, 2);
+
+    // Check for exact or range matches
+    const { data } = await sb
+      .from('fta_product_rules')
+      .select('*')
+      .eq('fta_code', ftaCode)
+      .limit(50);
+
+    if (!data || data.length === 0) return null;
+
+    // Find best match: hs_scope that contains our HS code
+    for (const rule of data) {
+      const scope = String(rule.hs_scope || '');
+      // Range: "0101-0106"
+      if (scope.includes('-')) {
+        const [from, to] = scope.split('-').map(s => s.trim());
+        if (heading >= from && heading <= to) return rule;
+      }
+      // Prefix: "6109" or "61"
+      else if (heading.startsWith(scope) || chapter === scope) {
+        return rule;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Main RoO Evaluation ────────────────────────────
 
 export function evaluateRoO(input: RoOInput): RoOResult {
@@ -151,6 +209,7 @@ export function evaluateRoO(input: RoOInput): RoOResult {
   if (!fta) {
     return {
       eligible: false,
+      verdict: 'ineligible' as EligibilityVerdict,
       criteriaMetList: [],
       criteriaFailed: [],
       savingsIfEligible: 0,
@@ -164,6 +223,7 @@ export function evaluateRoO(input: RoOInput): RoOResult {
   if (fta.config.status !== 'active') {
     return {
       eligible: false,
+      verdict: 'ineligible' as EligibilityVerdict,
       criteriaMetList: [],
       criteriaFailed: [],
       savingsIfEligible: 0,
@@ -176,6 +236,7 @@ export function evaluateRoO(input: RoOInput): RoOResult {
   if (fta.config.effectiveDate && new Date() < new Date(fta.config.effectiveDate)) {
     return {
       eligible: false,
+      verdict: 'ineligible' as EligibilityVerdict,
       criteriaMetList: [],
       criteriaFailed: [],
       savingsIfEligible: 0,
@@ -313,16 +374,47 @@ export function evaluateRoO(input: RoOInput): RoOResult {
   // ─── Cumulation flag ───
   const cumulationApplied = !!(inputOrigins && inputOrigins.some(o => fta.config.members.includes(o) && o !== origin));
 
+  // ─── CW34-S4.5: originatingContentPct shortcut for RVC ───
+  if (input.originatingContentPct !== undefined && rvcPercentage === undefined) {
+    rvcPercentage = input.originatingContentPct;
+    if (rvcPercentage >= requiredRvc) {
+      criteriaMetList.push('RVC');
+    } else {
+      criteriaFailed.push('RVC');
+    }
+  }
+
   // ─── Eligibility determination ───
   const eligible = criteriaMetList.length > 0;
+
+  // CW34-S4.5: Three-state verdict (Rule 12 — no fake "eligible")
+  let verdict: EligibilityVerdict;
+  if (criteriaMetList.length > 0) {
+    verdict = 'eligible';
+  } else if (criteriaFailed.length > 0) {
+    verdict = 'ineligible';
+  } else {
+    // No criteria evaluated (insufficient input) → indeterminate
+    verdict = 'indeterminate';
+    warnings.push('Insufficient data to determine eligibility. Provide productValue, materials, or originatingContentPct.');
+  }
 
   // M4: Savings calculation (estimated MFN vs FTA)
   const mfnDutyEstimate = productValue ? Math.round(productValue * 0.08 * 100) / 100 : 0; // ~8% avg MFN
   const ftaDutyEstimate = productValue ? Math.round(productValue * 0.02 * 100) / 100 : 0; // ~2% avg FTA
   const savingsIfEligible = eligible ? Math.round((mfnDutyEstimate - ftaDutyEstimate) * 100) / 100 : 0;
 
+  // CW34-S4.5: 10-field evidence
+  const tenFieldEvidence: Record<string, unknown> = {};
+  if (input.material) tenFieldEvidence.material = input.material;
+  if (input.materialComposition) tenFieldEvidence.materialComposition = input.materialComposition;
+  if (input.productForm) tenFieldEvidence.productForm = input.productForm;
+  if (input.intendedUse) tenFieldEvidence.intendedUse = input.intendedUse;
+  if (input.originatingContentPct !== undefined) tenFieldEvidence.originatingContentPct = input.originatingContentPct;
+
   return {
     eligible,
+    verdict,
     criteriaMetList,
     criteriaFailed,
     rvcPercentage,
@@ -335,9 +427,12 @@ export function evaluateRoO(input: RoOInput): RoOResult {
     mfnDutyEstimate,
     ftaDutyEstimate,
     method: criteriaMetList.length > 0 ? criteriaMetList[0] : 'none',
-    details: eligible
+    details: verdict === 'eligible'
       ? `FTA "${fta.key}" origin criteria met: ${criteriaMetList.join(', ')}. Preferential rate applies. Estimated savings: $${savingsIfEligible}.`
-      : `No origin criteria met under FTA "${fta.key}" (required RVC: ${requiredRvc}%${rvcPercentage !== undefined ? `, actual: ${rvcPercentage}%` : ''}). MFN rate applies.`,
+      : verdict === 'ineligible'
+      ? `Not eligible under FTA "${fta.key}" (required RVC: ${requiredRvc}%${rvcPercentage !== undefined ? `, actual: ${rvcPercentage}%` : ''}). MFN rate applies.`
+      : `Eligibility under FTA "${fta.key}" cannot be determined. Provide additional data (originatingContentPct, materials, productValue).`,
     warnings,
+    tenFieldEvidence: Object.keys(tenFieldEvidence).length > 0 ? tenFieldEvidence : undefined,
   };
 }

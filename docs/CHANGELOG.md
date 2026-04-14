@@ -1,5 +1,28 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW35-S1 Multilang Keywords — 10 Field coverage boost)
+> 마지막 업데이트: 2026-04-14 KST (CW34-S4.5 FTA Eligibility 10-Field Integration)
+
+## [2026-04-14 KST] CW34-S4.5 — FTA Eligibility 10-Field Integration
+
+### Changed
+- `app/lib/trade/roo-engine.ts`: Added `EligibilityVerdict` 3-state (eligible/ineligible/indeterminate)
+- `RoOInput`: Added material/materialComposition/productForm/intendedUse/originatingContentPct
+- `RoOResult`: Added verdict/dbRule/tenFieldEvidence fields
+- `originatingContentPct` shortcut: enables RVC evaluation without full materials array
+- Rule 12 enforced: no data → `indeterminate` (not fake `eligible`)
+
+### Added
+- `/api/v1/roo/evaluate`: accepts 10-field + originating_content_pct
+- `scripts/verify-cw34-s4-5-fta.mjs`: 22/22 green (10 test cases)
+
+### Tests verified
+- USMCA MX→US textile RVC 70% (needs 65%) → eligible
+- USMCA MX→US textile RVC 30% → ineligible
+- USMCA automotive ch87 RVC 60% (needs 75%) → ineligible
+- KORUS KR→US RVC 40% (needs 35%) → eligible
+- RCEP VN→JP RVC 45% (needs 40%) → eligible
+- CPTPP AU→JP WO chapter 01 → eligible
+- No FTA BR→US → ineligible
+- No data MX→US → indeterminate
 
 ## [2026-04-14 KST] CW35-S1 — Multilang Keyword Dictionaries
 

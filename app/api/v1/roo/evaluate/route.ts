@@ -21,6 +21,13 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
       ftaId: typeof body.fta_id === 'string' ? body.fta_id : undefined,
       productValue: typeof body.product_value === 'number' ? body.product_value : undefined,
       localContentValue: typeof body.local_content_value === 'number' ? body.local_content_value : undefined,
+      // CW34-S4.5: 10-field + originatingContentPct
+      material: typeof body.material === 'string' ? body.material : undefined,
+      materialComposition: body.material_composition as Record<string, number> | undefined,
+      productForm: typeof body.product_form === 'string' ? body.product_form : undefined,
+      intendedUse: typeof body.intended_use === 'string' ? body.intended_use : undefined,
+      originatingContentPct: typeof body.originating_content_pct === 'number' ? body.originating_content_pct : undefined,
+      materials: Array.isArray(body.materials) ? body.materials : undefined,
     });
     return apiSuccess(result, { sellerId: ctx.sellerId });
   } catch (e) {
