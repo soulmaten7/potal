@@ -1,5 +1,14 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-15 KST (CW37-S3 UI Renewal — RapidAPI workspace, 489 pages)
+> 마지막 업데이트: 2026-04-15 KST (CW37-S4 Screening — sanctions + ECCN endpoints, 491 pages)
+
+## [2026-04-15 KST] CW37-S4 — Screening Endpoints
+
+### Added
+- `/api/v1/screen-parties`: sanctions screening wrapper with `sourceCoverage`, `dataLastUpdated`, `disclaimer`
+- `/api/v1/eccn-lookup`: BIS CCL full-text search (658 ECCN entries from external drive CSV)
+- `eccn_entries` Supabase table (658 rows, FTS index, RLS enabled)
+- Both endpoints: `disclaimer` field for legal safety
+- Build: 489 → 491 pages
 
 ## [2026-04-15 KST] CW37-S3 — UI Renewal (RapidAPI Pattern)
 
