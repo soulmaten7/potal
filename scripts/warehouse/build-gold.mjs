@@ -356,9 +356,11 @@ for await (const line of rl) {
 
   // rule_split: find extra HS codes in full text
   const extraHs = findExtraHsCodes(fullText || rec.full_description || '', rec.hs6);
-  const allHsCodes = [rec.hs_code, ...extraHs];
+  const primaryHs = (rec.hs_code || '').slice(0, 10); // CW35-HF1: cap at 10 digits
+  const allHsCodes = [primaryHs, ...extraHs];
 
-  for (const hsCode of allHsCodes) {
+  for (const hsCodeRaw of allHsCodes) {
+    const hsCode = hsCodeRaw.slice(0, 10); // enforce 10-digit max
     const hs6 = hsCode.slice(0, 6);
     const chapter = Number(hs6.slice(0, 2)) || rec.chapter;
 

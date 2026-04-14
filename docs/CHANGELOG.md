@@ -1,5 +1,14 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW34-S4 Runtime Integration — customs_rulings → 5 endpoints)
+> 마지막 업데이트: 2026-04-14 KST (CW35-HF1+HF2 Data Hygiene — hs_code truncate + product_name strip)
+
+## [2026-04-14 KST] CW35-HF1+HF2 — Data Hygiene
+
+### Fixed
+- **HF1**: customs_rulings.hs_code LEFT(10) truncate (~25K rows, EU TARIC extended suffix 제거)
+- **HF2**: customs_rulings.product_name ruling_ref suffix strip (~7K rows, `; NY/HQ XXXXX` pattern)
+- build-gold.mjs: `.slice(0, 10)` cap 2곳 (다음 Gold build 시 재발 방지)
+- build-silver.mjs: `stripRulingRef()` 함수 추가 (다음 Silver build 시 재발 방지)
+- 런타임 영향 없음 (hs6 primary key 정상 유지, rulingMatch hit 유지)
 
 ## [2026-04-14 KST] CW34-S4 — Runtime Integration
 

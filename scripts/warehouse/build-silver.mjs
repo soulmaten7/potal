@@ -91,6 +91,11 @@ function normalizeHs(raw) {
   return m ? m[1] : digits.slice(0, 10);
 }
 
+// Strip ruling reference suffixes: "; NY N026477 affirmed" → removed
+function stripRulingRef(text) {
+  return text.replace(/;\s*(NY|HQ)\s+[A-Z]?\d{5,}.*$/i, '').trim();
+}
+
 // hs6 padding: 5→6 digits
 function padHs6(raw) {
   let s = String(raw || '').trim();
@@ -145,7 +150,7 @@ async function buildUnified() {
       source: canonicalSource,
       country_code: countryCode,
       jurisdiction: countryCode === 'US' ? 'US' : 'EU',
-      product_name: nfkc(obj.product_description || '').replace(/[\r\n]+/g, ' ').trim(),
+      product_name: stripRulingRef(nfkc(obj.product_description || '').replace(/[\r\n]+/g, ' ').trim()),
       full_description: nfkc(obj.full_description || obj.product_description || '').replace(/[\r\n]+/g, ' ').trim(),
       hs6,
       hs_code: hsCodeFull,
