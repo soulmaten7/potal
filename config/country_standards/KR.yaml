@@ -1,0 +1,56 @@
+# KR — South Korea
+# Source: 관세청 (Korea Customs Service) 품목분류 사전심사
+country: KR
+language: ko
+hs_digit_length: 10
+
+decimal_separator: "."
+thousand_separator: ","
+
+date_format: "YYYY-MM-DD"
+date_alt_formats:
+  - "YYYY.MM.DD"
+  - "YYYY년 MM월 DD일"
+  - "YYYY/MM/DD"
+
+currency: KRW
+currency_position: suffix
+currency_symbols: ["₩", "원", "KRW", "won"]
+
+unit_weight:
+  - { raw: "kg", normalized: "kg", factor: 1 }
+  - { raw: "킬로그램", normalized: "kg", factor: 1 }
+  - { raw: "g", normalized: "kg", factor: 0.001 }
+  - { raw: "그램", normalized: "kg", factor: 0.001 }
+  - { raw: "t", normalized: "kg", factor: 1000 }
+  - { raw: "톤", normalized: "kg", factor: 1000 }
+
+unit_piece:
+  - { raw: "개", normalized: "piece" }
+  - { raw: "piece", normalized: "piece" }
+  - { raw: "EA", normalized: "piece" }
+  - { raw: "ea", normalized: "piece" }
+  - { raw: "켤레", normalized: "pair" }
+  - { raw: "다스", normalized: "dozen" }
+
+unit_volume:
+  - { raw: "리터", normalized: "liter" }
+  - { raw: "l", normalized: "liter" }
+  - { raw: "L", normalized: "liter" }
+  - { raw: "ml", normalized: "liter", factor: 0.001 }
+  - { raw: "밀리리터", normalized: "liter", factor: 0.001 }
+
+duty_keywords:
+  ad_valorem: ["%", "퍼센트"]
+  specific: ["원/kg", "원/개", "per kg"]
+  compound: ["더하여", "plus", "및"]
+  alternate_greater: ["높은 것", "이상"]
+  alternate_lesser: ["낮은 것", "이하"]
+
+legacy:
+  hs_version:
+    - { version: "HS2012", valid_from: "2012-01-01", valid_until: "2016-12-31" }
+    - { version: "HS2017", valid_from: "2017-01-01", valid_until: "2021-12-31" }
+    - { version: "HS2022", valid_from: "2022-01-01", valid_until: null }
+
+ocr_corrections: []

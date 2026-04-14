@@ -1,0 +1,64 @@
+# DE — Germany (largest EBTI source)
+# Source: EU EBTI rulings issued by German customs
+country: DE
+language: de
+hs_digit_length: 10
+
+decimal_separator: ","
+thousand_separator: "."
+
+date_format: "DD.MM.YYYY"
+date_alt_formats:
+  - "DD/MM/YYYY"
+  - "D. MMMM YYYY"
+  - "DD-MM-YYYY"
+
+currency: EUR
+currency_position: suffix
+currency_symbols: ["€", "EUR", "Euro", "euro"]
+
+unit_weight:
+  - { raw: "kg", normalized: "kg", factor: 1 }
+  - { raw: "kilogramm", normalized: "kg", factor: 1 }
+  - { raw: "kilo", normalized: "kg", factor: 1 }
+  - { raw: "tonne", normalized: "kg", factor: 1000 }
+  - { raw: "t", normalized: "kg", factor: 1000 }
+  - { raw: "100 kg", normalized: "kg", factor: 100 }
+  - { raw: "g", normalized: "kg", factor: 0.001 }
+  - { raw: "gramm", normalized: "kg", factor: 0.001 }
+
+unit_piece:
+  - { raw: "stück", normalized: "piece" }
+  - { raw: "st.", normalized: "piece" }
+  - { raw: "st", normalized: "piece" }
+  - { raw: "piece", normalized: "piece" }
+  - { raw: "paar", normalized: "pair" }
+
+unit_volume:
+  - { raw: "liter", normalized: "liter" }
+  - { raw: "l", normalized: "liter" }
+  - { raw: "ml", normalized: "liter", factor: 0.001 }
+  - { raw: "hl", normalized: "liter", factor: 100 }
+  - { raw: "hektoliter", normalized: "liter", factor: 100 }
+
+duty_keywords:
+  ad_valorem: ["prozent", "%", "v.h.", "vom hundert", "v. h."]
+  specific: ["je kg", "je stück", "EUR/kg", "euro/kg", "je 100 kg"]
+  compound: ["zuzüglich", "plus", "und"]
+  alternate_greater: ["mindestens", "höher", "jedoch nicht weniger als"]
+  alternate_lesser: ["höchstens", "niedriger", "jedoch nicht mehr als"]
+
+legacy:
+  currency:
+    - { raw: "DM", normalized: "EUR", factor: 0.51129, valid_until: "1998-12-31" }
+    - { raw: "Deutsche Mark", normalized: "EUR", factor: 0.51129, valid_until: "1998-12-31" }
+  hs_version:
+    - { version: "HS2012", valid_from: "2012-01-01", valid_until: "2016-12-31" }
+    - { version: "HS2017", valid_from: "2017-01-01", valid_until: "2021-12-31" }
+    - { version: "HS2022", valid_from: "2022-01-01", valid_until: null }
+
+ocr_corrections:
+  - { pattern: "l0%", replace: "10%" }
+  - { pattern: "O%", replace: "0%" }
+  - { pattern: "€uro", replace: "Euro" }
+  - { pattern: "Eur0", replace: "Euro" }

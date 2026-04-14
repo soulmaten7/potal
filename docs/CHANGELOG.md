@@ -1,5 +1,28 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW34-S1 HF2 — Compare Countries Enhancement + API 응답 확장)
+> 마지막 업데이트: 2026-04-14 KST (CW34-S3 Data Warehouse Sprint 완료 — 645,591 rows customs_rulings Supabase live)
+
+## [2026-04-14 KST] CW34-S3 — Data Warehouse Sprint (Customs Rulings)
+
+### Added
+- **Medallion Architecture**: Bronze→Silver→Gold→Platinum 4-layer data pipeline
+- **Supabase `customs_rulings` table**: 645,591 rows live (migration 068)
+- **Bronze ingestion**: `ingest-bronze.mjs` — SHA256 idempotent copy (3 sources, 681.7MB)
+- **Silver normalization**: `build-silver.mjs` — NFKC, date ISO, HS asterisk strip, CRLF→LF
+- **Gold business rules**: `build-gold.mjs` — rule_split (+73K), 10 Field extraction, status/confidence/HS version
+- **Platinum load**: `load-platinum.mjs` — batch insert 500/batch, staging→swap
+- **Cron**: `/api/cron/rulings-update-monitor` 주 1회 EBTI/CROSS 변경 감지 + Telegram 알람
+- **Country Standards YAML**: US/DE/GB/JP/KR/CN 6개국 (config/country_standards/)
+- **10 Field Schema**: `docs/10_FIELD_SCHEMA.md` 명세서
+- **npm scripts**: `warehouse:refresh/bronze/silver/gold/platinum` 5개
+
+### Data sources
+- EBTI raw (269,730 rulings, 15 cols, EU 17개국)
+- CBP CROSS batches (39,430 rulings, 19 keys, full text)
+- Unified JSONL (575,172 merged records)
+
+### Performance
+- p50: 44-56ms, p95: 63-147ms (5 query patterns)
+- 10 Field: material 18.8%, product_form 9.1%, intended_use 23.6%
 
 ## [2026-04-14 KST] CW34-S1 HF2 — Compare Countries Enhancement
 

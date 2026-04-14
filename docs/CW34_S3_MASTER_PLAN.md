@@ -348,11 +348,14 @@ api/cron/
 
 | 지표 | 현재 | CW34-S3 완료 후 목표 |
 |------|------|---------------------|
-| 판례 Supabase row 수 | 0 | ≥1,200,000 |
+| 판례 Supabase row 수 | 0 | ≥600,000 (S2.5 실측 575K 반영, rule_split 후) |
 | HS 매핑률 (non-null) | N/A | ≥99% |
-| duty_rate 추출률 | N/A | ≥95% |
+| material 커버리지 | N/A | ≥70% (키워드 사전 매칭) |
+| product_form 커버리지 | N/A | ≥35% |
+| intended_use 커버리지 | N/A | ≥15% |
 | conditional_rules 추출률 | 0 | ≥80% (조건부 판례에서) |
 | null rate (manual review 1000 샘플) | N/A | ≤0.1% |
+| ~~duty_rate 추출률~~ | ~~N/A~~ | **S3 범위 제외 → S4 런타임에서 tariff DB JOIN** |
 | 쿼리 p50 응답 (hs + country) | N/A | <50ms |
 | 쿼리 p95 응답 | N/A | <200ms |
 | 외장하드 Bronze immutable 검증 | N/A | ✅ hash 일치 |
@@ -386,13 +389,77 @@ api/cron/
 |--------|------|------|--------|
 | CW34-S1 | Playground 10-field UI + v3 분류 | ✅ (c428fcc 이전) | — |
 | CW34-S2 | Specific Duty Parser (Steps 1-6) | 🟡 Steps 4-6 완료 / Steps 1-3 pending | 1 |
-| CW34-S2.5 | EBTI/CROSS 스키마 감사 | ⬜ pending | 1 |
+| CW34-S2.5 | EBTI/CROSS 스키마 감사 | ✅ 완료 (`docs/CW34_S3_DATA_SHAPE_REPORT.md`) | 1 |
 | **CW34-S3** | **Data Warehouse (판례)** | **⬜ pending** | **7** |
 | CW34-S4 | 런타임 통합 | ⬜ pending | 1 |
 | CW34-S4.5 | FTA Eligibility 10-field | ⬜ pending | 1 |
 | CW34-S5 | Pending data acquisition | ⬜ pending | 1 |
 
 **이 마스터 플랜의 역할**: 위 13개 파일 전체의 상위 설계 문서. 개별 명령어 파일은 이 문서를 참조해서 "실행 순서, 선행조건, 스키마 규격, 10 Field, country standards" 를 찾을 수 있어야 함.
+
+---
+
+## ✅ CEO 결정 (2026-04-14 KST) — 불일치 3건 해결
+
+**결정 1 — Row 수 목표 하향**: `≥1,200,000` → **`≥600,000`** (실측 575K + rule_split 후 600-650K 현실적)
+
+**결정 2 — duty_rate 컬럼 부재**: **S3 범위 제외**. S4 런타임에서 HS 코드로 `duty_rates_live` + `macmap_ntlc_rates` + `gov_tariff_schedules` 조회. Ruling 은 HS 분류 판정이지 관세율 아니며, rate는 시점에 따라 변하므로 Gold 에 baked-in 하면 stale. CW34-S2 `resolveDutyRate()` 가 이미 조회 파이프라인 완성. **예외**: `conditional_rules` outcome 에 포함된 rate (예: "cotton ≥50% 면 10%") 는 ruling 자체의 판정이므로 보존. `duty_rate_ad_valorem`/`duty_per_unit_amount` 컬럼은 conditional outcome 전용.
+
+**결정 3 — 10 Field 채움 방식**: **키워드 사전 매칭 (LLM 금지)**. Rule 12 는 하드코딩 금지지 사전 매칭 금지 아님 (CW34-S1 MATERIAL_TO_CATEGORIES 106개 proven). 외장하드 `keyword_index.json` 171개 + MATERIAL_TO_CATEGORIES 106개 조합. 미커버 rows 는 `null` + `confidence_score` 차감 + `needs_manual_review: true`. 런타임 엔진은 10 Field null 이면 HS 단독 fallback. LLM 금지 이유: (a) non-deterministic 재현성 상실, (b) 175만건 호출 비용, (c) POTAL 은 정답 있는 시스템. 목표 커버리지: material ≥70%, product_form ≥35%, intended_use ≥15%.
+
+---
+
+## ⚠️ S2.5 실측 결과 vs 마스터 플랜 불일치 사항
+
+> 아래는 CW34-S2.5 실측 감사(`docs/CW34_S3_DATA_SHAPE_REPORT.md`, 2026-04-14)에서 확인된 사항 중
+> 이 마스터 플랜의 가정과 다른 점들. **위 CEO 결정 3건으로 해결됨.**
+
+### 불일치 1: 예상 row 수 — 1.2M vs 575K
+- **플랜**: "1.2M+ 고아 판례 데이터"
+- **실측**: `unified_rulings.jsonl` = **575,172건** (EBTI 231,727 + CROSS 343,445)
+- EBTI raw (`ebti_rulings.csv`)는 2.6M 라인이지만 실 레코드 ~231K (멀티라인 CSV)
+- rule_split (카테고리 3)으로 복수 HS → 독립 row 생성 시 증가 예상되나, 1.2M 도달하려면 row 당 평균 2배 split 필요 — 현실적으로 **~600K-800K** 수준
+- **조치**: 성공 지표 "≥1,200,000" → "≥550,000 (rule_split 후 ≥700,000 목표)" 수정 검토
+
+### 불일치 2: ebti_hs2022.csv 없음
+- **플랜**: 예상 파일 4개 (rulings, for_db, hs2022, full_export.zip)
+- **실측**: **3개만 존재** — `ebti_hs2022.csv` 없음
+- **조치**: Bronze 인제스트 대상에서 제거
+
+### 불일치 3: duty_rate 컬럼 부재
+- **플랜**: "duty_rate 추출률 ≥95%"
+- **실측**: `ebti_for_db.csv`, `unified_rulings.jsonl`, `cbp_cross_hs_mappings.csv` **모두 duty_rate 컬럼 없음**
+- EBTI raw `CLASSIFICATION_JUSTIFICATION` 텍스트에 duty 언급 가능하나 구조화 필드 아님
+- CROSS batch 에도 duty 정보 없음 (tariff number 만)
+- **조치**: duty_rate 추출은 S3 범위 제외 또는 별도 소스(tariff schedule DB)와 JOIN 검토
+
+### 불일치 4: unified_rulings.jsonl 위치
+- **플랜**: `/Volumes/soulmaten/POTAL/unified_rulings.jsonl`
+- **실측**: **`/Volumes/soulmaten/POTAL/7field_benchmark/unified_rulings.jsonl`**
+- **조치**: Bronze 인제스트 경로 수정
+
+### 불일치 5: 10 Field 중 대부분이 원본에 없음
+- **플랜**: material, material_composition, product_form, intended_use, weight_kg, price_usd
+- **실측**: unified에 `material`, `processing` 있지만 **대부분 빈값**. composition/form/use/weight/price는 **어떤 원본에도 구조화 필드로 없음**
+- **조치**: LLM 없이 deterministic으로 채우려면 키워드 사전 매칭 필요. 범위 축소 또는 "LLM 없음" 원칙 예외 검토
+
+### 불일치 6: EBTI for_db country 전부 "EU"
+- **실측**: country 컬럼 전부 `EU`. 개별 발행국(DE, GB, FR)은 `ruling_ref` prefix에서만 복원 가능
+- **조치**: Silver에서 `ruling_ref` 앞 2자리 추출 → `issuing_country`. 단, "발행국"이지 "적용 대상국"은 아님 (EBTI는 EU 전체 적용)
+
+### 불일치 7: CROSS batch tariffs 채움률 매우 낮음
+- **실측**: batch_001 5,000건 중 504건만 tariffs 존재 (10%)
+- 나머지 90%는 `tariffs: []`
+- **이미 해결**: `cbp_cross_hs_mappings.csv` (23,612건) + `cbp_cross_search_mappings.csv` (120,572건)에 HS 매핑 완료 → 이것이 Silver 입력
+- **조치**: CROSS raw batch는 full_text 보강용으로만 사용, HS 매핑은 CSV에서
+
+### 불일치 8: HS 코드 별표 패딩
+- **실측**: EBTI hs_code = `7326909890************` (10자리 숫자 + 별표 패딩)
+- **조치**: Silver에서 정규식 `/^(\d{8,10})\*+$/` → 숫자만 추출
+
+### 불일치 9: EBTI for_db 인코딩 CRLF
+- **실측**: UTF-8이지만 `^M` (CRLF) 줄바꿈 존재
+- **조치**: Silver에서 CRLF → LF 정규화
 
 ---
 
@@ -403,8 +470,9 @@ api/cron/
 - 10 Field 원형: `components/playground/HsCodeCalculator.tsx` (CW34-S1)
 - Cron 인프라: `vercel.json` (24 tasks 중 하나로 추가)
 - 외장하드 파일 목록: `docs/EXTERNAL_DRIVE_FILES.md`
+- S2.5 실측 리포트: `docs/CW34_S3_DATA_SHAPE_REPORT.md`
 - Rule 12 원인 진단: (a) 데이터 부족 / (b) 매핑 오류 / (c) 데이터 미사용
 
 ---
 
-**Next action**: 터미널1 에서 `COMMAND_CW34_S2_COMPLETE_DUTY_PARSER.md` 실행. 병렬로 터미널2 에서 `COMMAND_CW34_S2_5_EBTI_SCHEMA_VERIFY.md` 실행. 두 개 끝나면 다음 세션에서 파일 3-9 작성.
+**Next action**: 명령어 파일 3-9 작성 (불일치 사항 반영). S3-A Infrastructure 부터 시작.

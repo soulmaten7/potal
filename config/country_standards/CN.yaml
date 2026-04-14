@@ -1,0 +1,66 @@
+# CN — China
+# Source: 海关总署 (General Administration of Customs) 预归类决定
+country: CN
+language: zh
+hs_digit_length: 10
+
+decimal_separator: "."
+thousand_separator: ","
+
+date_format: "YYYY-MM-DD"
+date_alt_formats:
+  - "YYYY年MM月DD日"
+  - "YYYY/MM/DD"
+
+currency: CNY
+currency_position: prefix
+currency_symbols: ["¥", "元", "CNY", "RMB", "人民币"]
+
+unit_weight:
+  - { raw: "kg", normalized: "kg", factor: 1 }
+  - { raw: "千克", normalized: "kg", factor: 1 }
+  - { raw: "公斤", normalized: "kg", factor: 1 }
+  - { raw: "g", normalized: "kg", factor: 0.001 }
+  - { raw: "克", normalized: "kg", factor: 0.001 }
+  - { raw: "t", normalized: "kg", factor: 1000 }
+  - { raw: "吨", normalized: "kg", factor: 1000 }
+
+unit_piece:
+  - { raw: "个", normalized: "piece" }
+  - { raw: "件", normalized: "piece" }
+  - { raw: "只", normalized: "piece" }
+  - { raw: "台", normalized: "piece" }
+  - { raw: "双", normalized: "pair" }
+  - { raw: "打", normalized: "dozen" }
+
+unit_volume:
+  - { raw: "升", normalized: "liter" }
+  - { raw: "l", normalized: "liter" }
+  - { raw: "L", normalized: "liter" }
+  - { raw: "毫升", normalized: "liter", factor: 0.001 }
+  - { raw: "ml", normalized: "liter", factor: 0.001 }
+
+duty_keywords:
+  ad_valorem: ["%", "百分之"]
+  specific: ["元/千克", "元/个", "元/升"]
+  compound: ["加", "另加"]
+  alternate_greater: ["从高征收", "较高者"]
+  alternate_lesser: ["从低征收", "较低者"]
+
+legacy:
+  hs_version:
+    - { version: "HS2012", valid_from: "2012-01-01", valid_until: "2016-12-31" }
+    - { version: "HS2017", valid_from: "2017-01-01", valid_until: "2021-12-31" }
+    - { version: "HS2022", valid_from: "2022-01-01", valid_until: null }
+
+ocr_corrections:
+  - { pattern: "０", replace: "0" }
+  - { pattern: "１", replace: "1" }
+  - { pattern: "２", replace: "2" }
+  - { pattern: "３", replace: "3" }
+  - { pattern: "４", replace: "4" }
+  - { pattern: "５", replace: "5" }
+  - { pattern: "６", replace: "6" }
+  - { pattern: "７", replace: "7" }
+  - { pattern: "８", replace: "8" }
+  - { pattern: "９", replace: "9" }

@@ -1,0 +1,62 @@
+# US — United States customs ruling standards
+# Source: CBP CROSS rulings
+country: US
+language: en
+hs_digit_length: 10
+
+decimal_separator: "."
+thousand_separator: ","
+
+date_format: "MM/DD/YYYY"
+date_alt_formats:
+  - "YYYY-MM-DD"
+  - "Month DD, YYYY"
+  - "MM-DD-YYYY"
+
+currency: USD
+currency_position: prefix
+currency_symbols: ["$", "USD", "US$"]
+
+unit_weight:
+  - { raw: "kg", normalized: "kg", factor: 1 }
+  - { raw: "kilogram", normalized: "kg", factor: 1 }
+  - { raw: "lb", normalized: "kg", factor: 0.453592 }
+  - { raw: "lbs", normalized: "kg", factor: 0.453592 }
+  - { raw: "pound", normalized: "kg", factor: 0.453592 }
+  - { raw: "oz", normalized: "kg", factor: 0.0283495 }
+  - { raw: "ounce", normalized: "kg", factor: 0.0283495 }
+  - { raw: "ton", normalized: "kg", factor: 907.185 }
+  - { raw: "short ton", normalized: "kg", factor: 907.185 }
+  - { raw: "metric ton", normalized: "kg", factor: 1000 }
+
+unit_piece:
+  - { raw: "piece", normalized: "piece" }
+  - { raw: "pcs", normalized: "piece" }
+  - { raw: "each", normalized: "piece" }
+  - { raw: "unit", normalized: "piece" }
+  - { raw: "doz", normalized: "dozen" }
+  - { raw: "dozen", normalized: "dozen" }
+
+unit_volume:
+  - { raw: "liter", normalized: "liter" }
+  - { raw: "litre", normalized: "liter" }
+  - { raw: "l", normalized: "liter" }
+  - { raw: "gal", normalized: "liter", factor: 3.78541 }
+  - { raw: "gallon", normalized: "liter", factor: 3.78541 }
+
+duty_keywords:
+  ad_valorem: ["percent", "%", "ad val", "ad valorem"]
+  specific: ["per kg", "per kilogram", "per lb", "per piece", "per dozen", "cents/kg", "$/kg"]
+  compound: ["plus", "in addition to", "and"]
+  alternate_greater: ["but not less than", "whichever is higher", "the higher of"]
+  alternate_lesser: ["but not more than", "whichever is lower", "the lower of"]
+
+legacy:
+  hs_version:
+    - { version: "HS2012", valid_from: "2012-01-01", valid_until: "2016-12-31" }
+    - { version: "HS2017", valid_from: "2017-01-01", valid_until: "2021-12-31" }
+    - { version: "HS2022", valid_from: "2022-01-01", valid_until: null }
+
+ocr_corrections:
+  - { pattern: "l0%", replace: "10%" }
+  - { pattern: "O%", replace: "0%" }

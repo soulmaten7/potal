@@ -1,0 +1,59 @@
+# GB — United Kingdom
+# Source: EBTI rulings issued by HMRC (pre-Brexit EU BTI + post-Brexit UK BTI)
+country: GB
+language: en
+hs_digit_length: 10
+
+decimal_separator: "."
+thousand_separator: ","
+
+date_format: "DD/MM/YYYY"
+date_alt_formats:
+  - "DD.MM.YYYY"
+  - "D Month YYYY"
+  - "YYYY-MM-DD"
+
+currency: GBP
+currency_position: prefix
+currency_symbols: ["£", "GBP", "pound", "sterling"]
+
+unit_weight:
+  - { raw: "kg", normalized: "kg", factor: 1 }
+  - { raw: "kilogram", normalized: "kg", factor: 1 }
+  - { raw: "tonne", normalized: "kg", factor: 1000 }
+  - { raw: "t", normalized: "kg", factor: 1000 }
+  - { raw: "100 kg", normalized: "kg", factor: 100 }
+  - { raw: "g", normalized: "kg", factor: 0.001 }
+  - { raw: "lb", normalized: "kg", factor: 0.453592 }
+  - { raw: "oz", normalized: "kg", factor: 0.0283495 }
+
+unit_piece:
+  - { raw: "piece", normalized: "piece" }
+  - { raw: "pcs", normalized: "piece" }
+  - { raw: "each", normalized: "piece" }
+  - { raw: "pair", normalized: "pair" }
+  - { raw: "dozen", normalized: "dozen" }
+
+unit_volume:
+  - { raw: "liter", normalized: "liter" }
+  - { raw: "litre", normalized: "liter" }
+  - { raw: "l", normalized: "liter" }
+  - { raw: "ml", normalized: "liter", factor: 0.001 }
+  - { raw: "hl", normalized: "liter", factor: 100 }
+
+duty_keywords:
+  ad_valorem: ["percent", "%", "ad val", "ad valorem"]
+  specific: ["per kg", "per kilogram", "per piece", "GBP/kg", "per 100 kg"]
+  compound: ["plus", "in addition to", "and"]
+  alternate_greater: ["but not less than", "whichever is higher"]
+  alternate_lesser: ["but not more than", "whichever is lower"]
+
+legacy:
+  hs_version:
+    - { version: "HS2012", valid_from: "2012-01-01", valid_until: "2016-12-31" }
+    - { version: "HS2017", valid_from: "2017-01-01", valid_until: "2021-12-31" }
+    - { version: "HS2022", valid_from: "2022-01-01", valid_until: null }
+
+ocr_corrections:
+  - { pattern: "l0%", replace: "10%" }
+  - { pattern: "O%", replace: "0%" }

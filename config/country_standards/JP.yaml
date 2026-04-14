@@ -1,0 +1,65 @@
+# JP — Japan
+# Source: 日本税関 事前教示制度 (Advance Ruling System)
+country: JP
+language: ja
+hs_digit_length: 9
+
+decimal_separator: "."
+thousand_separator: ","
+
+date_format: "YYYY/MM/DD"
+date_alt_formats:
+  - "YYYY年MM月DD日"
+  - "YYYY-MM-DD"
+  - "令和YY年MM月DD日"
+
+currency: JPY
+currency_position: suffix
+currency_symbols: ["¥", "円", "JPY", "yen"]
+
+unit_weight:
+  - { raw: "kg", normalized: "kg", factor: 1 }
+  - { raw: "キログラム", normalized: "kg", factor: 1 }
+  - { raw: "g", normalized: "kg", factor: 0.001 }
+  - { raw: "グラム", normalized: "kg", factor: 0.001 }
+  - { raw: "t", normalized: "kg", factor: 1000 }
+  - { raw: "トン", normalized: "kg", factor: 1000 }
+
+unit_piece:
+  - { raw: "個", normalized: "piece" }
+  - { raw: "piece", normalized: "piece" }
+  - { raw: "枚", normalized: "piece" }
+  - { raw: "本", normalized: "piece" }
+  - { raw: "足", normalized: "pair" }
+  - { raw: "ダース", normalized: "dozen" }
+
+unit_volume:
+  - { raw: "リットル", normalized: "liter" }
+  - { raw: "l", normalized: "liter" }
+  - { raw: "ml", normalized: "liter", factor: 0.001 }
+  - { raw: "ミリリットル", normalized: "liter", factor: 0.001 }
+
+duty_keywords:
+  ad_valorem: ["％", "%", "パーセント"]
+  specific: ["円/kg", "円/個", "per kg"]
+  compound: ["加えて", "plus"]
+  alternate_greater: ["いずれか高い方", "以上"]
+  alternate_lesser: ["いずれか低い方", "以下"]
+
+legacy:
+  hs_version:
+    - { version: "HS2012", valid_from: "2012-01-01", valid_until: "2016-12-31" }
+    - { version: "HS2017", valid_from: "2017-01-01", valid_until: "2021-12-31" }
+    - { version: "HS2022", valid_from: "2022-01-01", valid_until: null }
+
+ocr_corrections:
+  - { pattern: "０", replace: "0" }
+  - { pattern: "１", replace: "1" }
+  - { pattern: "２", replace: "2" }
+  - { pattern: "３", replace: "3" }
+  - { pattern: "４", replace: "4" }
+  - { pattern: "５", replace: "5" }
+  - { pattern: "６", replace: "6" }
+  - { pattern: "７", replace: "7" }
+  - { pattern: "８", replace: "8" }
+  - { pattern: "９", replace: "9" }
