@@ -255,7 +255,7 @@ export async function classifyProductAsync(
   productName: string,
   category?: string,
   sellerId?: string,
-): Promise<HsClassificationResult & { classificationSource: string }> {
+): Promise<HsClassificationResult & { classificationSource: string; chapterTreeHint?: unknown }> {
   const config = getAiClassifierConfig();
   const hash = hashProductName(productName, category);
 

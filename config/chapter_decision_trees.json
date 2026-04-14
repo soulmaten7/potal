@@ -1,0 +1,3617 @@
+{
+  "source": "chapter_notes.json + subheading_notes.json",
+  "compiled_at": "2026-04-14T11:06:37.135Z",
+  "total_chapters": 91,
+  "total_rules": 87,
+  "chapters": {
+    "10": {
+      "chapter": "10",
+      "description": "CEREALS",
+      "noteLength": 3741,
+      "rules": [],
+      "materialHints": [
+        "cereal"
+      ],
+      "formHints": [
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "1006",
+        "1008",
+        "1005"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. The term 'durum wheat' means wheat of the species Triticum durum and the hybrids derived from the inter-specific crossing of Triticum durum which have the same number (28) of chromosomes as that species.\r\n\r\n### Additional chapter notes\r\n\r\n1. The following terms have the meanings hereunder assigned to them:\r\n\r\n   - (a) ‘round grain rice’ (codes 1006 10 30, 1006 20 11, 1006 20 92, 1006 30 21, 1006 30 42, 1006 30 61 and 1006 30 92): rice, the grains of which are of a length not exceeding 5.2 mm ",
+      "hasSubheadingRules": true
+    },
+    "11": {
+      "chapter": "11",
+      "description": "PRODUCTS OF THE MILLING INDUSTRY; MALT; STARCHES; INULIN; WHEAT GLUTEN",
+      "noteLength": 4087,
+      "rules": [],
+      "materialHints": [
+        "vegetable",
+        "mineral",
+        "pharmaceutical",
+        "fish",
+        "cereal"
+      ],
+      "formHints": [
+        "woven",
+        "raw",
+        "processed",
+        "dried",
+        "canned",
+        "powder",
+        "tube",
+        "wire",
+        "bar",
+        "rolled"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "0901",
+        "1901",
+        "1904",
+        "2001",
+        "2302",
+        "1104",
+        "1101",
+        "1103",
+        "1106",
+        "0713",
+        "0714",
+        "0801"
+      ],
+      "ruleCount": 0
+    },
+    "12": {
+      "chapter": "12",
+      "description": "OIL SEEDS AND OLEAGINOUS FRUITS; MISCELLANEOUS GRAINS, SEEDS AND FRUIT; INDUSTRIAL OR MEDICINAL PLANTS; STRAW AND FODDER",
+      "noteLength": 2457,
+      "rules": [],
+      "materialHints": [
+        "cotton",
+        "wood",
+        "vegetable",
+        "fruit",
+        "cereal"
+      ],
+      "formHints": [
+        "bar",
+        "cast"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "1207",
+        "0801",
+        "1208",
+        "2304",
+        "1209",
+        "1201",
+        "1211",
+        "3808",
+        "1212",
+        "2102",
+        "3002",
+        "3101",
+        "1205"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. For the purposes of subheading 1205 10, the expression 'low erucic acid rape or colza seeds' means rape or colza seeds yielding a fixed oil which has an erucic acid content of less than 2% by weight and yielding a solid component which contains less than 30 micromoles of glucosinolates per gram.\r\n\r\n### Additional chapter note\r\n\r\n1. Oil seeds and oleaginous fruits shall be classified in the appropriate subheadings for seed or for sowing provided that:\r\n\r\n   - the goods comply with The Oil and ",
+      "hasSubheadingRules": true
+    },
+    "13": {
+      "chapter": "13",
+      "description": "LAC; GUMS, RESINS AND OTHER VEGETABLE SAPS AND EXTRACTS",
+      "noteLength": 1496,
+      "rules": [],
+      "materialHints": [
+        "rubber",
+        "tin",
+        "vegetable"
+      ],
+      "formHints": [
+        "raw",
+        "bar"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "1302",
+        "1704",
+        "1901",
+        "2101",
+        "2914",
+        "2939",
+        "3003",
+        "3822",
+        "3201",
+        "4001"
+      ],
+      "ruleCount": 0
+    },
+    "14": {
+      "chapter": "14",
+      "description": "VEGETABLE PLAITING MATERIALS; VEGETABLE PRODUCTS NOT ELSEWHERE SPECIFIED OR INCLUDED",
+      "noteLength": 801,
+      "rules": [],
+      "materialHints": [
+        "wool",
+        "wood",
+        "textile",
+        "vegetable"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "1401",
+        "4404",
+        "1404",
+        "4405",
+        "9603"
+      ],
+      "ruleCount": 0
+    },
+    "15": {
+      "chapter": "15",
+      "description": "ANIMAL, VEGETABLE OR MICROBIAL FATS AND OILS AND THEIR CLEAVAGE PRODUCTS; PREPARED EDIBLE FATS; ANIMAL OR VEGETABLE WAXES",
+      "noteLength": 7585,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "virgin olive oils which have the characteristics of olive oils of category 2 as set out in the UK equivalent of Annex I to Delegated Regulation (EU) 2022/2104.(EEC) No 2568/91",
+          "action": "classify_in_chapter",
+          "chapter": "15"
+        }
+      ],
+      "materialHints": [
+        "cotton",
+        "wool",
+        "tin",
+        "lead",
+        "vegetable",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "food"
+      ],
+      "crossRefHeadings": [
+        "0209",
+        "1804",
+        "0405",
+        "2301",
+        "2304",
+        "4002",
+        "1509",
+        "1510",
+        "1518",
+        "1522",
+        "2106"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. For the purposes of subheading 1509 30, virgin olive oil has a free acidity expressed as oleic acid not exceeding 2,0 g/ 100 g and can be distinguished from the other virgin olive oil categories according to the characteristics indicated in the Codex Alimentarius Standard 33-1981.\r\n\r\n2. For the purposes of subheadings 1514 11 and 1514 19, the expression ‘low-erucic-acid rape or colza oil’ means the fixed oil which has an erucic acid content of less than 2% by weight.\r\n\r\n### Additional chapter",
+      "hasSubheadingRules": true
+    },
+    "16": {
+      "chapter": "16",
+      "description": "PREPARATIONS OF MEAT, OF FISH, OF CRUSTACEANS, MOLLUSCS OR OTHER AQUATIC INVERTEBRATES, OR OF INSECTS",
+      "noteLength": 2817,
+      "rules": [],
+      "materialHints": [
+        "meat",
+        "fish"
+      ],
+      "formHints": [
+        "processed",
+        "canned",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "food",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "0504",
+        "1902",
+        "2103",
+        "1601",
+        "1602",
+        "1604"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. For the purposes of subheading 1602 10, the expression 'homogenised preparations' means preparations of meat, meat offal, blood or insects, finely homogenised, put up for retail sale as food suitable for infants or young children or for dietetic purposes, in containers of a net weight content not exceeding 250 g.\r\n\r\n    For the application of this definition, no account is to be taken of small quantities of any ingredients which may have been added to the preparation for seasoning, preservati",
+      "hasSubheadingRules": true
+    },
+    "17": {
+      "chapter": "17",
+      "description": "SUGARS AND SUGAR CONFECTIONERY",
+      "noteLength": 4649,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "only cane sugar obtained without centrifugation, whose content of sucrose by weight, in the dry state, corresponds to a polarimeter reading of 69 or more but less than 93°",
+          "action": "classify_in_chapter",
+          "chapter": "17"
+        },
+        {
+          "type": "exclude",
+          "condition": "or other products of heading 2940; or - c. medicaments or other products of Chapter 30.",
+          "redirectHeadings": [
+            "2940"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "chemical",
+        "dairy"
+      ],
+      "formHints": [
+        "raw",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "agriculture"
+      ],
+      "crossRefHeadings": [
+        "1806",
+        "2940",
+        "1701",
+        "1704"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheadings 1701 12, 1701 13 and 1701 14, 'raw sugar' means sugar whose content of sucrose by weight, in the dry state, corresponds to a polarimeter reading of less than 99.5°.\r\n\r\n2. Subheading 1701 13 covers only cane sugar obtained without centrifugation, whose content of sucrose by weight, in the dry state, corresponds to a polarimeter reading of 69 or more but less than 93°. The product contains only natural anhedral microcrystals, of irregular shape, not visible to th",
+      "hasSubheadingRules": true
+    },
+    "18": {
+      "chapter": "18",
+      "description": "COCOA AND COCOA PREPARATIONS",
+      "noteLength": 919,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "sugar confectionery containing cocoa and, subject to Note 1 to this chapter, other food preparations containing cocoa",
+          "action": "classify_in_chapter",
+          "chapter": "18"
+        },
+        {
+          "type": "exclude",
+          "condition": "Food preparations containing more than 20 % by weight of sausage, meat, meat offal, blood, insects, fish or crustaceans, molluscs or other aquatic invertebrates, or any combination thereof (Chapter 16",
+          "redirectHeadings": [
+            "0403"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "meat",
+        "fish",
+        "dairy"
+      ],
+      "formHints": [],
+      "useHints": [
+        "food",
+        "agriculture"
+      ],
+      "crossRefHeadings": [
+        "0403",
+        "1806"
+      ],
+      "ruleCount": 2
+    },
+    "19": {
+      "chapter": "19",
+      "description": "PREPARATIONS OF CEREALS, FLOUR, STARCH OR MILK; PASTRYCOOKS' PRODUCTS",
+      "noteLength": 2738,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "products having a water content of not more than 12% by weight and a fat content of not more than 35% by weight (fillings and coatings are not to be taken into consideration in determining these conte",
+          "action": "classify_in_chapter",
+          "chapter": "19"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "vegetable",
+        "meat",
+        "fish",
+        "dairy",
+        "cereal"
+      ],
+      "formHints": [
+        "processed",
+        "dried",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "food",
+        "agriculture"
+      ],
+      "crossRefHeadings": [
+        "1902",
+        "2309",
+        "1901",
+        "0712",
+        "1105",
+        "1106",
+        "1904",
+        "1806",
+        "1905",
+        "0401",
+        "2106"
+      ],
+      "ruleCount": 1
+    },
+    "20": {
+      "chapter": "20",
+      "description": "PREPARATIONS OF VEGETABLES, FRUIT, NUTS OR OTHER PARTS OF PLANTS",
+      "noteLength": 9419,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "Poppadoms (also known as papads) made predominantly from Urid flour",
+          "action": "classify_in_chapter",
+          "chapter": "20"
+        },
+        {
+          "type": "exclude",
+          "condition": "vegetables, fruit or nuts, prepared or preserved by the processes specified in Chapter 7, Chapter 8 or Chapter 11; - (b) vegetable fats and oils (Chapter 15) - (c) food preparations containing more th",
+          "redirectHeadings": [
+            "1905",
+            "2104"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "vegetable",
+        "meat",
+        "fish",
+        "fruit"
+      ],
+      "formHints": [
+        "processed",
+        "frozen",
+        "dried",
+        "canned",
+        "liquid",
+        "powder",
+        "tube",
+        "bar"
+      ],
+      "useHints": [
+        "food",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "1905",
+        "2104",
+        "1704",
+        "1806",
+        "1105",
+        "2002",
+        "2007",
+        "2009",
+        "2005",
+        "2001",
+        "0714",
+        "1212"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheading 2005 10, the expression ‘homogenised vegetables’ means preparations of vegetables, finely homogenised, put up for retail sale as food suitable for infants or young children or for dietetic purposes, in containers of a net weight content not exceeding 250 g. For the application of this definition, no account is to be taken of small quantities of any ingredients which may have been added to the preparation for seasoning, preservation or other purposes. These prepa",
+      "hasSubheadingRules": true
+    },
+    "21": {
+      "chapter": "21",
+      "description": "MISCELLANEOUS EDIBLE PREPARATIONS",
+      "noteLength": 3188,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "starch breakdown products",
+          "action": "classify_in_chapter",
+          "chapter": "21"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "vegetable",
+        "meat",
+        "fish",
+        "fruit"
+      ],
+      "formHints": [
+        "processed",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "food",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "0712",
+        "0901",
+        "0902",
+        "0904",
+        "2103",
+        "2404",
+        "3003",
+        "3507",
+        "2101",
+        "2104",
+        "2106"
+      ],
+      "ruleCount": 1
+    },
+    "22": {
+      "chapter": "22",
+      "description": "BEVERAGES, SPIRITS AND VINEGAR",
+      "noteLength": 10233,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "waters, including mineral waters and aerated waters, containing added sugar or other sweetening matter or flavoured, providing they are for direct consumption as a beverage",
+          "action": "classify_in_chapter",
+          "chapter": "22"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "mineral"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "agriculture",
+        "transport",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "2209",
+        "2103",
+        "2501",
+        "2853",
+        "2915",
+        "3003",
+        "2202",
+        "2203",
+        "2208",
+        "2204",
+        "2205",
+        "2207",
+        "0504"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. For the purposes of subheading 2204 10, the expression 'sparkling wine' means wine which, when kept at a temperature of 20°C in closed containers, has an excess pressure of not less than 3 bar.\r\n\r\n### Additional chapter notes\r\n\r\n1. Subheading 2202 10 00 covers waters, including mineral waters and aerated waters, containing added sugar or other sweetening matter or flavoured, providing they are for direct consumption as a beverage.\r\n\r\n2. For the purposes of heading 2204 and 2205 and code 2206 ",
+      "hasSubheadingRules": true
+    },
+    "23": {
+      "chapter": "23",
+      "description": "RESIDUES AND WASTE FROM THE FOOD INDUSTRIES; PREPARED ANIMAL FODDER",
+      "noteLength": 4591,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "products of a kind used in animal feeding, not elsewhere specified or included, obtained by processing vegetable or animal materials to such an extent that they have lost the essential characteristics",
+          "action": "classify_in_chapter",
+          "chapter": "23"
+        }
+      ],
+      "materialHints": [
+        "vegetable",
+        "dairy"
+      ],
+      "formHints": [
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "2309",
+        "2306",
+        "0401"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. For the purposes of subheading 2306 41, the expression 'low erucic acid rape or colza seeds' means seeds as defined in subheading note 1 to Chapter 12.\r\n\r\n### Additional chapter notes\r\n\r\n1. Codes 2303 10 11 and 2303 10 19 include only residues from the manufacture of starch from maize and do not cover blends of such residues with products derived from other plants or products derived from maize otherwise than in the course of the production of starch by the wet process. Their starch content s",
+      "hasSubheadingRules": true
+    },
+    "24": {
+      "chapter": "24",
+      "description": "TOBACCO AND MANUFACTURED TOBACCO SUBSTITUTES; PRODUCTS, WHETHER OR NOT CONTAINING NICOTINE, INTENDED FOR INHALATION WITHOUT COMBUSTION; OTHER NICOTINE CONTAINING PRODUCTS INTENDED FOR THE INTAKE OF NICOTINE INTO THE HUMAN BODY",
+      "noteLength": 1270,
+      "rules": [],
+      "materialHints": [
+        "fruit"
+      ],
+      "formHints": [
+        "liquid",
+        "tube",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "2404",
+        "2403"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. For the purposes of subheading 2403 11, the expression ‘water-pipe tobacco’ means tobacco intended for smoking in a water pipe and which consists of a mixture of tobacco and glycerol, whether or not containing aromatic oils and extracts, molasses or sugar, and whether or not flavoured with fruit.\r\n\r\n    However, tobacco free products intended for smoking in a water pipe are excluded from this subheading.\r\n\r\n### Additional Chapter Note\r\n\r\n1. Code 2404 12 00 90 includes disposable electronic ci",
+      "hasSubheadingRules": true
+    },
+    "25": {
+      "chapter": "25",
+      "description": "SALT; SULPHUR; EARTHS AND STONE; PLASTERING MATERIALS, LIME AND CEMENT",
+      "noteLength": 3942,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "weighing not less than 2.5g each, of sodium chloride or of magnesium oxide, of heading 3824; optical elements of sodium chloride or of magnesium oxide (heading 9001); - ij. billiard chalks (heading 95",
+          "redirectHeadings": [
+            "3824",
+            "9001",
+            "9504",
+            "9609"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "iron",
+        "tin",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "2802",
+        "2821",
+        "3816",
+        "6801",
+        "6802",
+        "6803",
+        "7102",
+        "3824",
+        "9001",
+        "9504",
+        "9609",
+        "2517",
+        "2530"
+      ],
+      "ruleCount": 1
+    },
+    "26": {
+      "chapter": "26",
+      "description": "ORES, SLAG AND ASH",
+      "noteLength": 2300,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "slag or similar industrial waste prepared as macadam (heading 2517); (b) natural magnesium carbonate (magnesite), whether or not calcined (heading 2519); (c) sludges from the storage tanks of petroleu",
+          "redirectHeadings": [
+            "2517",
+            "2519",
+            "2710",
+            "6806",
+            "7112",
+            "8549"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "wool",
+        "iron",
+        "copper",
+        "nickel",
+        "tin",
+        "lead",
+        "mineral",
+        "chemical"
+      ],
+      "formHints": [
+        "processed",
+        "bar"
+      ],
+      "useHints": [
+        "industrial"
+      ],
+      "crossRefHeadings": [
+        "2517",
+        "2519",
+        "2710",
+        "6806",
+        "7112",
+        "8549",
+        "2601",
+        "2844",
+        "2620",
+        "2621"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. For the purposes of subheading 2620 21, 'leaded gasoline sludges and leaded anti-knock compound sludges' mean sludges obtained from storage tanks of leaded gasoline and leaded anti-knock compounds (for example, tetraethyl lead), and consisting essentially of lead, lead compounds and iron oxide.\r\n\r\n2. Slag, ash and residues containing arsenic, mercury, thallium or their mixtures, of a kind used for the extraction of arsenic or those metals or for the manufacture of their chemical compounds, ar",
+      "hasSubheadingRules": true
+    },
+    "27": {
+      "chapter": "27",
+      "description": "MINERAL FUELS, MINERAL OILS AND PRODUCTS OF THEIR DISTILLATION; BITUMINOUS SUBSTANCES; MINERAL WAXES",
+      "noteLength": 10595,
+      "rules": [],
+      "materialHints": [
+        "tin",
+        "vegetable",
+        "mineral",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "2711",
+        "3003",
+        "3301",
+        "2710",
+        "2701",
+        "2712"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. For the purposes of subheading 2701 11, 'anthracite' means coal having a volatile matter limit (on a dry, mineral-matter-free basis) not exceeding 14%.\r\n\r\n2. For the purposes of subheading 2701 12, 'bituminous coal' means coal having a volatile matter limit (on a dry, mineral-matter-free basis) exceeding 14% and a calorific value limit (on a moist, mineral-matter-free basis) equal to or greater than 5.833 Kcal/kg.\r\n\r\n3. For the purposes of subheadings 2707 10, 2707 20, 2707 30 and 2707 40, th",
+      "hasSubheadingRules": true
+    },
+    "28": {
+      "chapter": "28",
+      "description": "INORGANIC CHEMICALS; ORGANIC OR INORGANIC COMPOUNDS OF PRECIOUS METALS, OF RARE-EARTH METALS, OF RADIOACTIVE ELEMENTS OR OF ISOTOPES",
+      "noteLength": 6161,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "copper phosphide (phosphor copper) containing more than 15 % by weight of phosphorus",
+          "action": "classify_in_chapter",
+          "chapter": "28"
+        },
+        {
+          "type": "exclude",
+          "condition": "sodium chloride or magnesium oxide, whether or not pure, or other products of Section V; (b) organo-inorganic compounds other than those mentioned in note 2 above; (c) products mentioned in note 2, 3,",
+          "redirectHeadings": [
+            "3206",
+            "3207",
+            "3801",
+            "3813",
+            "3824",
+            "3824",
+            "7102",
+            "9001"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "glass",
+        "ceramic",
+        "copper",
+        "tin",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "2831",
+        "2836",
+        "2837",
+        "2842",
+        "2843",
+        "2849",
+        "2811",
+        "2812",
+        "2813",
+        "2847",
+        "2853",
+        "3206",
+        "3207",
+        "3801",
+        "3813",
+        "3824",
+        "7102",
+        "9001",
+        "2844",
+        "3818",
+        "2852"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheading 2852 10, the expression ‘chemically defined’ means all organic or inorganic compounds of mercury meeting the requirements of paragraphs (a) to (e) of note 1 to Chapter 28 or paragraphs (a) to (h) of note 1 to Chapter 29.\r\n\r\n### Additional chapter note\r\n1. Unless provided otherwise, the salts specified in subheadings include acid salts and basic salts.",
+      "hasSubheadingRules": true
+    },
+    "29": {
+      "chapter": "29",
+      "description": "ORGANIC CHEMICALS",
+      "noteLength": 7589,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "a reference to compound derivatives, such as sulphohalogenated, nitrohalogenated, nitrosulphonated or nitrosulphohalogenated derivatives",
+          "action": "classify_in_chapter",
+          "chapter": "29"
+        },
+        {
+          "type": "exclude",
+          "condition": "for use as fuels, or liquid or liquefied-gas fuels in containers of a kind used for filling or refilling cigarette or similar lighters and of a capacity not exceeding 300 cm<sup>3</sup> (heading 3606)",
+          "redirectHeadings": [
+            "3606",
+            "3813",
+            "3824",
+            "9001"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "lead",
+        "vegetable",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "2936",
+        "2940",
+        "2941",
+        "1504",
+        "1520",
+        "2207",
+        "2711",
+        "3002",
+        "3102",
+        "3203",
+        "3204",
+        "3212",
+        "3507",
+        "3606",
+        "3813",
+        "3824",
+        "9001",
+        "2904",
+        "2929",
+        "2911",
+        "2905",
+        "2942",
+        "2930",
+        "2931",
+        "2937"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. Within any one heading of this chapter, derivatives of a chemical compound (or group of chemical compounds) are to be classified in the same subheading as that compound (or group of compounds), provided that they are not more specifically covered by any other subheading and that there is no residual subheading named 'Other' in the series of subheadings concerned.\r\n\r\n2. Note 3 to chapter 29 does not apply to the subheadings of this chapter.",
+      "hasSubheadingRules": true
+    },
+    "30": {
+      "chapter": "30",
+      "description": "PHARMACEUTICAL PRODUCTS",
+      "noteLength": 6250,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "herbal medicinal preparations and preparations based on the following active substances: vitamins, minerals, essential amino-acids or fatty acids, in packings for retail sale",
+          "action": "classify_in_chapter",
+          "chapter": "30"
+        },
+        {
+          "type": "exclude",
+          "condition": "foods or beverages (such as dietetic, diabetic or fortified foods, food supplements, tonic beverages and mineral waters), other than nutritional preparations for intravenous administration (Section IV",
+          "redirectHeadings": [
+            "2404",
+            "2520",
+            "3301",
+            "3303",
+            "3401",
+            "3407",
+            "3502",
+            "3822"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "vegetable",
+        "mineral",
+        "chemical",
+        "pharmaceutical"
+      ],
+      "formHints": [
+        "processed",
+        "powder",
+        "sheet",
+        "tube",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "food",
+        "construction",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "2404",
+        "2520",
+        "3301",
+        "3303",
+        "3401",
+        "3407",
+        "3502",
+        "3822",
+        "3002",
+        "2937",
+        "3003",
+        "1302",
+        "3006",
+        "3004"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheadings 3002 13 and 3002 14, the following are to be treated:\r\n\r\n    - (a) as unmixed products, pure products, whether or not containing impurities;\r\n    \r\n    - (b) as products which have been mixed:\r\n    \r\n        - (1) the products mentioned in (a) above dissolved in water or in other solvents;\r\n        \r\n        - (2) the products mentioned in (a) and (b) (1) above with an added stabiliser necessary for their preservation or transport; and\r\n        \r\n        - (3) ",
+      "hasSubheadingRules": true
+    },
+    "31": {
+      "chapter": "31",
+      "description": "FERTILISERS",
+      "noteLength": 3672,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": ", 3(a), 4(a) or 5 below); or c. cultured potassium chloride crystals (other than optical elements) weighing not less than 2.5g each, of heading 3824; optical elements of potassium chloride (heading 90",
+          "redirectHeadings": [
+            "3824",
+            "9001"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "0511",
+        "3824",
+        "9001",
+        "3102",
+        "3105",
+        "3103",
+        "2510",
+        "3104"
+      ],
+      "ruleCount": 1
+    },
+    "32": {
+      "chapter": "32",
+      "description": "TANNING OR DYEING EXTRACTS; TANNINS AND THEIR DERIVATIVES; DYES, PIGMENTS AND OTHER COLOURING MATTER; PAINTS AND VARNISHES; PUTTY AND OTHER MASTICS; INKS",
+      "noteLength": 2129,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "mixtures of stabilised diazonium salts and couplers for the production of azo dyes",
+          "action": "classify_in_chapter",
+          "chapter": "32"
+        }
+      ],
+      "materialHints": [
+        "glass",
+        "tin",
+        "chemical"
+      ],
+      "formHints": [
+        "liquid",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "3203",
+        "3206",
+        "3207",
+        "3212",
+        "2936",
+        "2715",
+        "3204",
+        "2530",
+        "3208",
+        "3901"
+      ],
+      "ruleCount": 1
+    },
+    "33": {
+      "chapter": "33",
+      "description": "ESSENTIAL OILS AND RESINOIDS; PERFUMERY, COSMETIC OR TOILET PREPARATIONS",
+      "noteLength": 1122,
+      "rules": [],
+      "materialHints": [
+        "wood",
+        "paper",
+        "tin",
+        "vegetable"
+      ],
+      "formHints": [
+        "woven",
+        "bar"
+      ],
+      "useHints": [
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "1301",
+        "3401",
+        "3805",
+        "3302",
+        "3301",
+        "3307"
+      ],
+      "ruleCount": 0
+    },
+    "34": {
+      "chapter": "34",
+      "description": "SOAP, ORGANIC SURFACE-ACTIVE AGENTS, WASHING PREPARATIONS, LUBRICATING PREPARATIONS, ARTIFICIAL WAXES, PREPARED WAXES, POLISHING OR SCOURING PREPARATIONS, CANDLES AND SIMILAR ARTICLES, MODELLING PASTES, 'DENTAL WAXES' AND DENTAL PREPARATIONS WITH A BASIS OF PLASTER",
+      "noteLength": 2390,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "soap soluble in water",
+          "action": "classify_in_chapter",
+          "chapter": "34"
+        }
+      ],
+      "materialHints": [
+        "vegetable",
+        "mineral",
+        "chemical"
+      ],
+      "formHints": [
+        "processed",
+        "liquid",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "medical",
+        "food"
+      ],
+      "crossRefHeadings": [
+        "1517",
+        "3305",
+        "3401",
+        "3405",
+        "3402",
+        "3403",
+        "3404",
+        "1516",
+        "1521",
+        "2712"
+      ],
+      "ruleCount": 1
+    },
+    "35": {
+      "chapter": "35",
+      "description": "ALBUMINOIDAL SUBSTANCES; MODIFIED STARCHES; GLUES; ENZYMES",
+      "noteLength": 1713,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "concentrated milk proteins with a protein content of more than 85% by weight, calculated on the dry matter",
+          "action": "classify_in_chapter",
+          "chapter": "35"
+        },
+        {
+          "type": "exclude",
+          "condition": ", medicaments or other products of Chapter 30; c. enzymatic preparations for pre-tanning (heading 3202); d. enzymatic soaking or washing preparations and other products of Chapter 34; e. hardened prot",
+          "redirectHeadings": [
+            "3202",
+            "3913"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "dairy"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "2102",
+        "3202",
+        "3913",
+        "3505",
+        "1702"
+      ],
+      "ruleCount": 2
+    },
+    "36": {
+      "chapter": "36",
+      "description": "EXPLOSIVES; PYROTECHNIC PRODUCTS; MATCHES; PYROPHORIC ALLOYS; CERTAIN COMBUSTIBLE PREPARATIONS",
+      "noteLength": 684,
+      "rules": [],
+      "materialHints": [
+        "chemical"
+      ],
+      "formHints": [
+        "processed",
+        "liquid"
+      ],
+      "useHints": [
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "3606"
+      ],
+      "ruleCount": 0
+    },
+    "37": {
+      "chapter": "37",
+      "description": "PHOTOGRAPHIC OR CINEMATOGRAPHIC GOODS",
+      "noteLength": 751,
+      "rules": [],
+      "materialHints": [
+        "tin"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 0
+    },
+    "38": {
+      "chapter": "38",
+      "description": "MISCELLANEOUS CHEMICAL PRODUCTS",
+      "noteLength": 8410,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "pre-treatment waste, scourings and unstabilised sludge",
+          "action": "classify_in_chapter",
+          "chapter": "38"
+        },
+        {
+          "type": "exclude",
+          "condition": "or 3(c) below; - b. mixtures of chemicals with foodstuffs or other substances with nutritive value, of a kind used in the preparation of human foodstuffs (generally, heading 2106). - c. products of he",
+          "redirectHeadings": [
+            "2106",
+            "2404",
+            "2620",
+            "3003",
+            "2620",
+            "7112"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "rubber",
+        "plastic",
+        "glass",
+        "ceramic",
+        "wood",
+        "paper",
+        "tin",
+        "textile",
+        "vegetable",
+        "mineral",
+        "chemical",
+        "pharmaceutical"
+      ],
+      "formHints": [
+        "woven",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "industrial",
+        "medical",
+        "food",
+        "agriculture",
+        "construction",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "3801",
+        "3808",
+        "3813",
+        "2106",
+        "2404",
+        "2620",
+        "3003",
+        "7112",
+        "3822",
+        "3824",
+        "9612",
+        "3825",
+        "2710",
+        "3826",
+        "0504"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. Subheadings 3808 52 and 3808 59 cover only goods of heading 3808, containing one or more of the following substances: alachlor (ISO); aldicarb (ISO); aldrin (ISO); azinphos-methyl (ISO); binapacryl (ISO); camphechlor (ISO) (toxaphene); captafol (ISO); carbofuran (ISO); chlordane (ISO); chlordimeform (ISO); chlorobenzilate (ISO); DDT (ISO) (clofenotane (INN), 1,1,1-trichloro-2,2-bis(p-chlorophenyl)ethane); dieldrin (ISO, INN); 4,6-dinitro-o-cresol (DNOC (ISO)) or its salts; dinoseb (ISO), its ",
+      "hasSubheadingRules": true
+    },
+    "39": {
+      "chapter": "39",
+      "description": "PLASTICS AND ARTICLES THEREOF",
+      "noteLength": 11656,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "vulcanised fibre",
+          "action": "classify_in_chapter",
+          "chapter": "39"
+        },
+        {
+          "type": "exclude",
+          "condition": "lubricating preparations of heading 2710 or 3403; (b) waxes of heading 2712 or 3404; (c) separate chemically defined organic compounds (Chapter 29); (d) heparin or its salts (heading 3001); (e) soluti",
+          "redirectHeadings": [
+            "2710",
+            "2712",
+            "3001",
+            "3901",
+            "3208",
+            "3212",
+            "3402",
+            "3806",
+            "3811",
+            "3819",
+            "3822",
+            "4201",
+            "4202",
+            "4814",
+            "7117"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "rubber",
+        "plastic",
+        "wood",
+        "paper",
+        "tin",
+        "textile",
+        "mineral",
+        "chemical"
+      ],
+      "formHints": [
+        "knitted",
+        "woven",
+        "raw",
+        "processed",
+        "liquid",
+        "powder",
+        "sheet",
+        "tube",
+        "bar",
+        "cast"
+      ],
+      "useHints": [
+        "industrial",
+        "construction",
+        "transport",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "3901",
+        "2710",
+        "2712",
+        "3001",
+        "3208",
+        "3212",
+        "3402",
+        "3806",
+        "3811",
+        "3819",
+        "3822",
+        "4201",
+        "4202",
+        "4814",
+        "7117",
+        "3911",
+        "3910",
+        "3909",
+        "3915",
+        "3917",
+        "3918",
+        "3920",
+        "3925",
+        "5903"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. Within any one heading of this chapter, polymers (including copolymers) and chemically modified polymers are to be classified according to the following provisions:\r\n\r\n    (a) where there is a subheading named ‘Other’ in the same series:\r\n\r\n    (1) the designation in a subheading of a polymer by the prefix ‘poly’ (for example, polyethylene and polyamide-6,6) means that the constituent monomer unit or monomer units of the named polymer taken together must contribute 95 % or more by weight of t",
+      "hasSubheadingRules": true
+    },
+    "40": {
+      "chapter": "40",
+      "description": "RUBBER AND ARTICLES THEREOF",
+      "noteLength": 5709,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "conveyor or transmission belts or belting of textile fabric impregnated, coated, covered or laminated with rubber or made from textile yarn or cord impregnated, coated, covered or sheathed with rubber",
+          "action": "classify_in_chapter",
+          "chapter": "40"
+        },
+        {
+          "type": "exclude",
+          "condition": "; b. footwear or parts thereof of Chapter 64; c. headgear or parts thereof (including bathing caps) of Chapter 65; d. mechanical or electrical appliances or parts thereof of Section XVI (including ele",
+          "redirectHeadings": [
+            "4011"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "rubber",
+        "plastic",
+        "tin",
+        "textile",
+        "mineral"
+      ],
+      "formHints": [
+        "knitted",
+        "woven",
+        "raw",
+        "liquid",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "4011",
+        "4001",
+        "4002",
+        "4004",
+        "4008",
+        "4010",
+        "5906"
+      ],
+      "ruleCount": 2
+    },
+    "41": {
+      "chapter": "41",
+      "description": "RAW HIDES AND SKINS (OTHER THAN FURSKINS) AND LEATHER",
+      "noteLength": 1304,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "hides and skins that have been retanned, coloured or fat-liquored (stuffed) prior to drying",
+          "action": "classify_in_chapter",
+          "chapter": "41"
+        },
+        {
+          "type": "exclude",
+          "condition": ", of equine animals, of sheep or lambs (except Astrakhan, Broadtail, Caracul, Persian or similar lambs, Indian, Chinese, Mongolian or Tibetan lambs), of goats or kids (except Yemen, Mongolian or Tibet",
+          "redirectHeadings": [],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "wool",
+        "leather"
+      ],
+      "formHints": [
+        "raw"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "0511",
+        "0505",
+        "4101",
+        "4104",
+        "4115"
+      ],
+      "ruleCount": 2
+    },
+    "42": {
+      "chapter": "42",
+      "description": "ARTICLES OF LEATHER; SADDLERY AND HARNESS; TRAVEL GOODS, HANDBAGS AND SIMILAR CONTAINERS; ARTICLES OF ANIMAL GUT (OTHER THAN SILKWORM GUT)",
+      "noteLength": 2870,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "chamois (including combination chamois) leather, patent leather, patent laminated leather and metallised leather",
+          "action": "classify_in_chapter",
+          "chapter": "42"
+        },
+        {
+          "type": "exclude",
+          "condition": ", lined with fur skin or artificial fur or to which fur skin or artificial fur is attached on the outside except as mere trimming (heading 4303 or 4304); c. made up articles of netting (heading 5608);",
+          "redirectHeadings": [
+            "4303",
+            "5608",
+            "6602",
+            "7117",
+            "9209",
+            "9606"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "leather",
+        "plastic",
+        "tin"
+      ],
+      "formHints": [
+        "sheet"
+      ],
+      "useHints": [
+        "clothing",
+        "medical",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "3006",
+        "4303",
+        "5608",
+        "6602",
+        "7117",
+        "9209",
+        "9606",
+        "4202",
+        "3923",
+        "4602",
+        "4203",
+        "9113"
+      ],
+      "ruleCount": 2
+    },
+    "43": {
+      "chapter": "43",
+      "description": "FURSKINS AND ARTIFICIAL FUR; MANUFACTURES THEREOF",
+      "noteLength": 1569,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "fur skins and parts thereof, assembled with the addition of other materials, and fur skins and parts thereof, sewn together in the form of garments or parts or accessories of garments or in the form o",
+          "action": "classify_in_chapter",
+          "chapter": "43"
+        },
+        {
+          "type": "exclude",
+          "condition": "bird skins or parts of bird skins, with their feathers or down (heading 0505 or 6701); (b) raw hides or skins, with the hair or wool on, of Chapter 41 (see Note 1 (c) to that Chapter); (c) gloves, mit",
+          "redirectHeadings": [
+            "0505",
+            "4203"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "wool",
+        "leather",
+        "tin"
+      ],
+      "formHints": [
+        "knitted",
+        "woven",
+        "raw"
+      ],
+      "useHints": [
+        "clothing"
+      ],
+      "crossRefHeadings": [
+        "4301",
+        "0505",
+        "4203",
+        "4303",
+        "5801"
+      ],
+      "ruleCount": 2
+    },
+    "44": {
+      "chapter": "44",
+      "description": "WOOD AND ARTICLES OF WOOD; WOOD CHARCOAL",
+      "noteLength": 5059,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "; ij. goods of heading 6808; k. imitation jewellery of heading 7117; l. goods of Section XVI or XVII (for example, machine parts, cases, covers, cabinets for machines and apparatus and wheelwrights' w",
+          "redirectHeadings": [
+            "6808",
+            "7117",
+            "9305",
+            "9603"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "wood",
+        "tin",
+        "chemical"
+      ],
+      "formHints": [
+        "powder",
+        "tube",
+        "bar"
+      ],
+      "useHints": [
+        "industrial",
+        "construction"
+      ],
+      "crossRefHeadings": [
+        "1211",
+        "1401",
+        "1404",
+        "3802",
+        "4202",
+        "6808",
+        "7117",
+        "9305",
+        "9603",
+        "4410",
+        "4409",
+        "4417",
+        "4401",
+        "4407",
+        "4405"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. For the purposes of subheading 4401 31, the expression 'wood pellets' means by-products, such as cutter shavings, sawdust or chips, of the mechanical wood-processing industry, furniture-making industry or other wood-transformation activities, which have been agglomerated either directly by compression or by the addition of a binder in a proportion not exceeding 3% by weight. Such pellets are cylindrical, with a diameter not exceeding 25mm and a length not exceeding 100mm.\r\n\r\n2. For the purpos",
+      "hasSubheadingRules": true
+    },
+    "45": {
+      "chapter": "45",
+      "description": "CORK AND ARTICLES OF CORK",
+      "noteLength": 224,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": ".",
+          "redirectHeadings": [],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 1
+    },
+    "46": {
+      "chapter": "46",
+      "description": "MANUFACTURES OF STRAW, OF ESPARTO OR OF OTHER PLAITING MATERIALS; BASKETWARE AND WICKERWORK",
+      "noteLength": 1400,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "straw, osier or willow, bamboos, rattans, rushes, reeds, strips of wood, strips of other vegetable material (for example, strips of bark, narrow leaves and raffia or other strips obtained from broad l",
+          "action": "classify_in_chapter",
+          "chapter": "46"
+        },
+        {
+          "type": "exclude",
+          "condition": ".",
+          "redirectHeadings": [],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "leather",
+        "plastic",
+        "wood",
+        "paper",
+        "tin",
+        "textile",
+        "vegetable"
+      ],
+      "formHints": [
+        "woven",
+        "raw",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "4814",
+        "5607",
+        "4601"
+      ],
+      "ruleCount": 2
+    },
+    "47": {
+      "chapter": "47",
+      "description": "PULP OF WOOD OR OF OTHER FIBROUS CELLULOSIC MATERIAL; RECOVERED (WASTE AND SCRAP) PAPER OR PAPERBOARD",
+      "noteLength": 413,
+      "rules": [],
+      "materialHints": [
+        "wood",
+        "chemical"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [
+        "4702"
+      ],
+      "ruleCount": 0
+    },
+    "48": {
+      "chapter": "48",
+      "description": "PAPER AND PAPERBOARD; ARTICLES OF PAPER PULP, OF PAPER OR OF PAPERBOARD",
+      "noteLength": 11459,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "references to paperboard (irrespective of thickness or weight per m<sup>2</sup>)",
+          "action": "classify_in_chapter",
+          "chapter": "48"
+        },
+        {
+          "type": "exclude",
+          "condition": "; - ij. articles of Chapter 46 (manufactures of plaiting material); - k. paper yarn or textile articles of paper yarn (Section XI); - l. articles of Chapter 64 or 65; - m. abrasive paper or paperboard",
+          "redirectHeadings": [
+            "6805",
+            "6814",
+            "9209"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "plastic",
+        "wood",
+        "paper",
+        "tin",
+        "textile",
+        "chemical"
+      ],
+      "formHints": [
+        "woven",
+        "raw",
+        "processed",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "industrial"
+      ],
+      "crossRefHeadings": [
+        "3212",
+        "3401",
+        "3405",
+        "3701",
+        "3822",
+        "4814",
+        "4202",
+        "6805",
+        "6814",
+        "9209",
+        "4801",
+        "4803",
+        "4802",
+        "4823",
+        "4820",
+        "4804",
+        "4805",
+        "4810"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheading 4804.11 and 4804.19, 'kraftliner' means machine-finished or machineglazed paper and paperboard, of which not less than 80% by weight of the total fibre content consists of wood fibres obtained by the chemical sulphate or soda processes, in rolls, weighing more than 115g/ m<sup>2</sup> and having a minimum Mullen bursting strength as indicated in the following table or the linearly interpolated or extrapolated equivalent for any other weight.\r\n\r\n    | Weight (g/m",
+      "hasSubheadingRules": true
+    },
+    "49": {
+      "chapter": "49",
+      "description": "PRINTED BOOKS, NEWSPAPERS, PICTURES AND OTHER PRODUCTS OF THE PRINTING INDUSTRY; MANUSCRIPTS, TYPESCRIPTS AND PLANS",
+      "noteLength": 2169,
+      "rules": [],
+      "materialHints": [
+        "paper",
+        "tin"
+      ],
+      "formHints": [
+        "raw",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "industrial"
+      ],
+      "crossRefHeadings": [
+        "9023",
+        "9702",
+        "9704",
+        "4901",
+        "4911",
+        "4903"
+      ],
+      "ruleCount": 0
+    },
+    "51": {
+      "chapter": "51",
+      "description": "WOOL, FINE OR COARSE ANIMAL HAIR; HORSEHAIR YARN AND WOVEN FABRIC",
+      "noteLength": 498,
+      "rules": [],
+      "materialHints": [
+        "wool"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [
+        "0502",
+        "0511"
+      ],
+      "ruleCount": 0
+    },
+    "53": {
+      "chapter": "53",
+      "description": "OTHER VEGETABLE TEXTILE FIBRES; PAPER YARN AND WOVEN FABRICS OF PAPER YARN",
+      "noteLength": 1093,
+      "rules": [],
+      "materialHints": [
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "tube"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 0
+    },
+    "54": {
+      "chapter": "54",
+      "description": "MAN-MADE FILAMENTS; STRIP AND THE LIKE OF MAN-MADE TEXTILE MATERIALS",
+      "noteLength": 1273,
+      "rules": [],
+      "materialHints": [
+        "textile",
+        "chemical"
+      ],
+      "formHints": [
+        "processed",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "5404"
+      ],
+      "ruleCount": 0
+    },
+    "55": {
+      "chapter": "55",
+      "description": "MAN-MADE STAPLE FIBRES",
+      "noteLength": 618,
+      "rules": [],
+      "materialHints": [
+        "tin"
+      ],
+      "formHints": [
+        "raw"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "5503"
+      ],
+      "ruleCount": 0
+    },
+    "56": {
+      "chapter": "56",
+      "description": "WADDING, FELT AND NONWOVENS; SPECIAL YARNS; TWINE, CORDAGE, ROPES AND CABLES AND ARTICLES THEREOF",
+      "noteLength": 2755,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "needleloom felt and fabrics consisting of a web of textile fibres the cohesion of which has been enhanced by a stitch-bonding process using fibres from the web itself",
+          "action": "classify_in_chapter",
+          "chapter": "56"
+        },
+        {
+          "type": "exclude",
+          "condition": "and tampons, napkins (diapers) and napkin liners and similar articles, of heading 9619.",
+          "redirectHeadings": [
+            "9619"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "rubber",
+        "plastic",
+        "glass",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "woven",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "3401",
+        "3405",
+        "3809",
+        "5811",
+        "6805",
+        "6814",
+        "9619",
+        "5603",
+        "5604",
+        "5404"
+      ],
+      "ruleCount": 2
+    },
+    "57": {
+      "chapter": "57",
+      "description": "CARPETS AND OTHER TEXTILE FLOOR COVERINGS",
+      "noteLength": 371,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "articles having the characteristics of textile floor coverings but intended for use for other purposes",
+          "action": "classify_in_chapter",
+          "chapter": "57"
+        }
+      ],
+      "materialHints": [
+        "textile"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 1
+    },
+    "58": {
+      "chapter": "58",
+      "description": "SPECIAL WOVEN FABRICS; TUFTED TEXTILE FABRICS; LACE; TAPESTRIES; TRIMMINGS; EMBROIDERY",
+      "noteLength": 1705,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "woven weft pile fabrics which have not yet had the floats cut, at which stage they have no pile standing up",
+          "action": "classify_in_chapter",
+          "chapter": "58"
+        }
+      ],
+      "materialHints": [
+        "glass",
+        "textile"
+      ],
+      "formHints": [
+        "woven",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "clothing"
+      ],
+      "crossRefHeadings": [
+        "5801",
+        "5803",
+        "5804",
+        "5608",
+        "5806",
+        "5808",
+        "5810",
+        "5805",
+        "5809"
+      ],
+      "ruleCount": 1
+    },
+    "59": {
+      "chapter": "59",
+      "description": "IMPREGNATED, COATED, COVERED OR LAMINATED TEXTILE FABRICS; TEXTILE ARTICLES OF A KIND SUITABLE FOR INDUSTRIAL USE",
+      "noteLength": 6747,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "the woven fabrics of Chapter 50 to Chapter 55 and heading 5803 and 5806, the braids and ornamental trimmings in the piece of heading 5808 and the knitted or crocheted fabrics of heading 6002 to 6006",
+          "action": "classify_in_chapter",
+          "chapter": "59"
+        }
+      ],
+      "materialHints": [
+        "leather",
+        "rubber",
+        "plastic",
+        "wood",
+        "paper",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "knitted",
+        "woven",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "clothing",
+        "industrial",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "5803",
+        "5808",
+        "6002",
+        "5903",
+        "5811",
+        "5604",
+        "5905",
+        "4814",
+        "5907",
+        "5906",
+        "4408",
+        "6805",
+        "6814",
+        "5910",
+        "4010",
+        "5911",
+        "5908"
+      ],
+      "ruleCount": 1
+    },
+    "60": {
+      "chapter": "60",
+      "description": "KNITTED OR CROCHETED FABRICS",
+      "noteLength": 1170,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "fabrics made of metal thread and of a kind used in apparel, as furnishing fabrics or for similar purposes",
+          "action": "classify_in_chapter",
+          "chapter": "60"
+        }
+      ],
+      "materialHints": [
+        "textile"
+      ],
+      "formHints": [
+        "knitted"
+      ],
+      "useHints": [
+        "clothing"
+      ],
+      "crossRefHeadings": [
+        "5804",
+        "5807",
+        "6001",
+        "6005"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "Subheading 6005 35 covers fabrics of polyethylene monofilament or of polyester multifilament, weighing not less than 30 g/m<sup>2</sup> and not more than 55 g/m<sup>2</sup>, having a mesh size of not less than 20 holes/cm<sup>2</sup> and not more than 100 holes/cm<sup>2</sup>, and impregnated or coated with alpha-cypermethrin (ISO), chlorfenapyr (ISO), deltamethrin (INN, ISO), lambda-cyhalothrin (ISO), permethrin (ISO) or pirimiphos-methyl (ISO).",
+      "hasSubheadingRules": true
+    },
+    "61": {
+      "chapter": "61",
+      "description": "ARTICLES OF APPAREL AND CLOTHING ACCESSORIES, KNITTED OR CROCHETED",
+      "noteLength": 9021,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "made up knitted or crocheted articles",
+          "action": "classify_in_chapter",
+          "chapter": "61"
+        }
+      ],
+      "materialHints": [
+        "silk",
+        "rubber",
+        "plastic",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "knitted",
+        "raw",
+        "bar"
+      ],
+      "useHints": [
+        "clothing",
+        "medical",
+        "construction"
+      ],
+      "crossRefHeadings": [
+        "6212",
+        "6309",
+        "9021",
+        "6103",
+        "6107",
+        "6112",
+        "6105",
+        "6109",
+        "6111",
+        "6113",
+        "5903"
+      ],
+      "ruleCount": 1
+    },
+    "62": {
+      "chapter": "62",
+      "description": "ARTICLES OF APPAREL AND CLOTHING ACCESSORIES, NOT KNITTED OR CROCHETED",
+      "noteLength": 8774,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "made-up articles of any textile fabric other than wadding, excluding knitted or crocheted articles (other than those of heading 6212)",
+          "action": "classify_in_chapter",
+          "chapter": "62"
+        }
+      ],
+      "materialHints": [
+        "silk",
+        "rubber",
+        "plastic",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "knitted"
+      ],
+      "useHints": [
+        "clothing",
+        "medical",
+        "construction"
+      ],
+      "crossRefHeadings": [
+        "6212",
+        "6309",
+        "9021",
+        "6203",
+        "6207",
+        "6211",
+        "6205",
+        "6209",
+        "6210",
+        "6213",
+        "6214",
+        "5903"
+      ],
+      "ruleCount": 1
+    },
+    "63": {
+      "chapter": "63",
+      "description": "OTHER MADE-UP TEXTILE ARTICLES; SETS; WORN CLOTHING AND WORN TEXTILE ARTICLES; RAGS",
+      "noteLength": 1179,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "made up articles, of any textile fabric",
+          "action": "classify_in_chapter",
+          "chapter": "63"
+        }
+      ],
+      "materialHints": [
+        "textile"
+      ],
+      "formHints": [
+        "knitted"
+      ],
+      "useHints": [
+        "clothing",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "6309",
+        "5701",
+        "5805",
+        "6304"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. Subheading 6304 20 covers articles made from warp knit fabrics, impregnated or coated with alphacypermethrin (ISO), chlorfenapyr (ISO), deltamethrin (INN, ISO), lambda-cyhalothrin (ISO), permethrin (ISO) or pirimiphos-methyl (ISO).",
+      "hasSubheadingRules": true
+    },
+    "64": {
+      "chapter": "64",
+      "description": "FOOTWEAR, GAITERS AND THE LIKE; PARTS OF SUCH ARTICLES",
+      "noteLength": 3339,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "without applied soles. These products are classified according to their constituent material; b. footwear of textile material, without an outer sole glued, sewn or otherwise affixed or applied to the ",
+          "redirectHeadings": [
+            "6309",
+            "6812",
+            "9021"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "leather",
+        "rubber",
+        "plastic",
+        "paper",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "woven",
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "6309",
+        "6812",
+        "9021",
+        "6406",
+        "9606",
+        "4107"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. For the purposes of subheadings 6402 12, 6402 19, 6403 12, 6403 19 and 6404 11, the expression 'sports footwear' applies only to:\r\n\r\n    a. footwear which is designed for a sporting activity and has, or has provision for the attachment of, spikes, sprigs, stops, clips, bars or the like;\r\n\r\n    b. skating boots, ski-boots and cross-country ski footwear, snowboard boots, wrestling boots, boxing boots and cycling shoes.\r\n\r\n### Additional chapter notes\r\n\r\n1. Within the meaning of Note 4 (a), 'rei",
+      "hasSubheadingRules": true
+    },
+    "66": {
+      "chapter": "66",
+      "description": "UMBRELLAS, SUN UMBRELLAS, WALKING STICKS, SEAT-STICKS, WHIPS, RIDING-CROPS AND PARTS THEREOF",
+      "noteLength": 593,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": ".",
+          "redirectHeadings": [],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "textile"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [
+        "9017",
+        "6603",
+        "6601"
+      ],
+      "ruleCount": 1
+    },
+    "67": {
+      "chapter": "67",
+      "description": "PREPARED FEATHERS AND DOWN AND ARTICLES MADE OF FEATHERS OR OF DOWN; ARTIFICIAL FLOWERS; ARTICLES OF HUMAN HAIR",
+      "noteLength": 1158,
+      "rules": [],
+      "materialHints": [
+        "glass",
+        "wood",
+        "tin",
+        "textile",
+        "fruit"
+      ],
+      "formHints": [
+        "powder"
+      ],
+      "useHints": [
+        "clothing"
+      ],
+      "crossRefHeadings": [
+        "5911",
+        "6701",
+        "9404",
+        "6702"
+      ],
+      "ruleCount": 0
+    },
+    "68": {
+      "chapter": "68",
+      "description": "ARTICLES OF STONE, PLASTER, CEMENT, ASBESTOS, MICA OR SIMILAR MATERIALS",
+      "noteLength": 1641,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "; c. coated, impregnated or covered textile fabric of Chapter 56 or 59 (for example, fabric coated or covered with mica powder, bituminised or asphalted fabric); d. articles of Chapter 71; e. tools or",
+          "redirectHeadings": [
+            "8442",
+            "8546",
+            "8547",
+            "9018",
+            "9602",
+            "9606",
+            "9609",
+            "9610",
+            "9620"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "paper",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "raw",
+        "powder"
+      ],
+      "useHints": [
+        "construction"
+      ],
+      "crossRefHeadings": [
+        "4810",
+        "8442",
+        "8546",
+        "8547",
+        "9018",
+        "9602",
+        "9606",
+        "9609",
+        "9610",
+        "9620",
+        "6802",
+        "2515"
+      ],
+      "ruleCount": 1
+    },
+    "69": {
+      "chapter": "69",
+      "description": "CERAMIC PRODUCTS",
+      "noteLength": 1753,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "ceramic products which have been fired after shaping",
+          "action": "classify_in_chapter",
+          "chapter": "69"
+        },
+        {
+          "type": "exclude",
+          "condition": "; - d. cermets of heading 8113; - e. articles of Chapter 82; - f. electrical insulators (heading 8546) or fittings of insulating material of heading 8547; - g. artificial teeth (heading 9021); - h. ar",
+          "redirectHeadings": [
+            "8113",
+            "8546",
+            "8547",
+            "9021",
+            "9606",
+            "9614"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "ceramic",
+        "tin"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "tube",
+        "bar"
+      ],
+      "useHints": [
+        "construction"
+      ],
+      "crossRefHeadings": [
+        "6904",
+        "6901",
+        "2844",
+        "6804",
+        "8113",
+        "8546",
+        "8547",
+        "9021",
+        "9606",
+        "9614"
+      ],
+      "ruleCount": 2
+    },
+    "70": {
+      "chapter": "70",
+      "description": "GLASS AND GLASSWARE",
+      "noteLength": 2937,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "fused quartz and other fused silica",
+          "action": "classify_in_chapter",
+          "chapter": "70"
+        },
+        {
+          "type": "exclude",
+          "condition": "; - b. articles of Chapter 71 (for example, imitation jewellery); - c. optical fibre cables of heading 8544, electrical insulators (heading 8546) or fittings of insulating material of heading 8547; - ",
+          "redirectHeadings": [
+            "8544",
+            "8546",
+            "8547",
+            "9405"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "wool",
+        "glass",
+        "tin",
+        "lead",
+        "mineral",
+        "chemical"
+      ],
+      "formHints": [
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "3207",
+        "8544",
+        "8546",
+        "8547",
+        "9405",
+        "7003",
+        "7006",
+        "7019",
+        "6806"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheadings 7013 22, 7013 33, 7013 41 and 7013 91, the expression 'lead crystal' means only glass having a minimum lead monoxide (PbO) content by weight of 24%.",
+      "hasSubheadingRules": true
+    },
+    "71": {
+      "chapter": "71",
+      "description": "NATURAL OR CULTURED PEARLS, PRECIOUS OR SEMI-PRECIOUS STONES, PRECIOUS METALS, METALS CLAD WITH PRECIOUS METAL, AND ARTICLES THEREOF; IMITATION JEWELLERY; COIN",
+      "noteLength": 6784,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "a reference to alloys treated as alloys of precious metal or of the particular metal in accordance with the rules in note 5 above, but not to metal clad with precious metal or to base metal or non-met",
+          "action": "classify_in_chapter",
+          "chapter": "71"
+        },
+        {
+          "type": "exclude",
+          "condition": "; d. supported catalysts (heading 3815); e. articles of heading 4202 or 4203 referred to in note 3(B) to Chapter 42; f. articles of heading 4303 or 4304; g. goods of Section XI (textiles and textile a",
+          "redirectHeadings": [
+            "3815",
+            "4202",
+            "4303",
+            "6804",
+            "8522",
+            "9703",
+            "9705",
+            "9706"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "powder",
+        "sheet",
+        "bar"
+      ],
+      "useHints": [
+        "industrial",
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "7116",
+        "2843",
+        "3815",
+        "4202",
+        "4303",
+        "6804",
+        "8522",
+        "9703",
+        "9705",
+        "9706",
+        "7112",
+        "7113",
+        "7114",
+        "7117",
+        "9606",
+        "9615",
+        "7110"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheadings 7106 10, 7108 11, 7110 11, 7110 21, 7110 31 and 7110 41, the expressions 'powder' and 'in powder form' mean products of which 90% or more by weight passes through a sieve having a mesh aperture of 0.5 mm.\r\n\r\n2. Notwithstanding the provisions of chapter note 4(B), for the purposes of subheadings 7110 11 and 7110 19, the expression 'platinum' does not include iridium, osmium, palladium, rhodium or ruthenium.\r\n\r\n3. For the classification of alloys in subheadings o",
+      "hasSubheadingRules": true
+    },
+    "72": {
+      "chapter": "72",
+      "description": "IRON AND STEEL",
+      "noteLength": 11859,
+      "rules": [],
+      "materialHints": [
+        "iron",
+        "copper",
+        "aluminium",
+        "nickel",
+        "tin",
+        "lead",
+        "chemical"
+      ],
+      "formHints": [
+        "powder",
+        "sheet",
+        "wire",
+        "bar",
+        "cast",
+        "rolled"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "7203",
+        "7301",
+        "7304",
+        "7202"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. In this chapter, the following expressions have the meanings hereby assigned to them:\r\n\r\n    a. alloy pig iron\r\n\r\n    Pig iron containing, by weight, one or more of the following elements in the specified proportions:\r\n\r\n    - more than 0.2% of chromium\r\n\r\n    - more than 0.3% of copper\r\n\r\n    - more than 0.3% of nickel\r\n\r\n    - more than 0.1% of any of the following elements: aluminium, molybdenum, titanium, tungsten (wolfram), vanadium.\r\n\r\n    b. non-alloy free-cutting steel\r\n\r\n    Non-allo",
+      "hasSubheadingRules": true
+    },
+    "73": {
+      "chapter": "73",
+      "description": "ARTICLES OF IRON OR STEEL",
+      "noteLength": 413,
+      "rules": [],
+      "materialHints": [
+        "iron",
+        "tin",
+        "chemical"
+      ],
+      "formHints": [
+        "wire",
+        "bar",
+        "cast"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 0
+    },
+    "74": {
+      "chapter": "74",
+      "description": "COPPER AND ARTICLES THEREOF",
+      "noteLength": 3273,
+      "rules": [],
+      "materialHints": [
+        "copper",
+        "zinc",
+        "nickel",
+        "tin",
+        "lead"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [
+        "2853"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "In this chapter, the following expressions have the meanings hereby assigned to them:\r\n\r\na. Copper-zinc base alloys (brasses):\r\n\r\nAlloys of copper and zinc, with or without other elements. When other elements are present:\r\n\r\n- zinc predominates by weight over each of such other elements,\r\n- any nickel content by weight is less than 5% (see copper-nickel-zinc alloys (nickel silvers)), and\r\n- any tin content by weight is less than 3% (see copper-tin alloys (bronzes)).\r\n\r\nb. Copper-tin base alloys ",
+      "hasSubheadingRules": true
+    },
+    "75": {
+      "chapter": "75",
+      "description": "NICKEL AND ARTICLES THEREOF",
+      "noteLength": 1233,
+      "rules": [],
+      "materialHints": [
+        "iron",
+        "nickel",
+        "tin"
+      ],
+      "formHints": [
+        "wire",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "7508"
+      ],
+      "ruleCount": 0,
+      "subheadingNote": "1. In this chapter, the following expressions have the meanings hereby assigned to them:\r\n\r\n    a. nickel, not alloyed:\r\n\r\n    Metal containing by weight at least 99% of nickel plus cobalt, provided that:\r\n\r\n    (i) the cobalt content by weight does not exceed 1.5%, and\r\n    (ii) the content by weight of any other element does not exceed the limit specified in the following table:\r\n\r\n\r\n    | Element | Limiting content % by weight |\r\n    |-|-|\r\n    | Fe (Iron) | 0.5 |\r\n    | O (Oxygen) | 0.4 |\r\n ",
+      "hasSubheadingRules": true
+    },
+    "76": {
+      "chapter": "76",
+      "description": "ALUMINIUM AND ARTICLES THEREOF",
+      "noteLength": 4731,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "products, whether or not in coils, of any cross-sectional shape, of which no cross sectional dimension exceeds 6 mm",
+          "action": "classify_in_chapter",
+          "chapter": "76"
+        }
+      ],
+      "materialHints": [
+        "iron",
+        "copper",
+        "aluminium",
+        "tin",
+        "mineral"
+      ],
+      "formHints": [
+        "sheet",
+        "wire",
+        "bar",
+        "rolled"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "7616"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. In this chapter, the following expressions have the meanings hereby assigned to them:\r\n\r\n    a. Aluminium, not alloyed:\r\n\r\n    Metal containing by weight at least 99% of aluminium, provided that the content by weight of any other element does not exceed the limit specified in the following table:\r\n\r\n    **Other elements**\r\n\r\n    | Element                                                    | Limiting content % by weight                                                                           ",
+      "hasSubheadingRules": true
+    },
+    "78": {
+      "chapter": "78",
+      "description": "LEAD AND ARTICLES THEREOF",
+      "noteLength": 1472,
+      "rules": [],
+      "materialHints": [
+        "iron",
+        "copper",
+        "zinc",
+        "tin",
+        "lead"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 0,
+      "subheadingNote": "1. In this chapter, the expression `refined lead' means:\r\n\r\n    Metal containing by weight at least 99.9% of lead, provided that the content by weight of any other element does not exceed the limit specified in the following table:\r\n\r\n    **Other elements**\r\n\r\n    | Element                       | Element name | Limiting content % by weight |\r\n    |-------------------------------|--------------|------------------------------|\r\n    | Ag                            | Silver       | 0.02            ",
+      "hasSubheadingRules": true
+    },
+    "79": {
+      "chapter": "79",
+      "description": "ZINC AND ARTICLES THEREOF",
+      "noteLength": 685,
+      "rules": [],
+      "materialHints": [
+        "zinc",
+        "tin"
+      ],
+      "formHints": [
+        "powder"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 0,
+      "subheadingNote": "In this chapter, the following expressions have the meanings hereby assigned to them:\r\n\r\n- a. Zinc, not alloyed:\r\n\r\n    Metal containing by weight at least 97.5% of zinc.\r\n\r\n- b. Zinc alloys:\r\n\r\n    Metallic substances in which zinc predominates by weight over each of the other elements, provided that the total content by weight of such other elements exceeds 2.5%.\r\n\r\n- c. Zinc dust:\r\n\r\n    Dust obtained by condensation of zinc vapour, consisting of spherical particles which are finer than zinc ",
+      "hasSubheadingRules": true
+    },
+    "80": {
+      "chapter": "80",
+      "description": "TIN AND ARTICLES THEREOF",
+      "noteLength": 890,
+      "rules": [],
+      "materialHints": [
+        "copper",
+        "tin"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [],
+      "ruleCount": 0,
+      "subheadingNote": "In this chapter, the following expressions have the meanings hereby assigned to them: \r\n\r\na. Tin, not alloyed:\r\n\r\nMetal containing by weight at least 99% of tin, provided that the content by weight of any bismuth or copper is less than the limit specified in the following table:\r\n\r\n**Other elements**\r\n\r\n| Element | Element name | Limiting content % by weight |\r\n|---------|--------------|------------------------------|\r\n| Bi      | Bismuth      | 0.1                          |\r\n| Cu      | Copper",
+      "hasSubheadingRules": true
+    },
+    "82": {
+      "chapter": "82",
+      "description": "TOOLS, IMPLEMENTS, CUTLERY, SPOONS AND FORKS, OF BASE METAL; PARTS THEREOF OF BASE METAL",
+      "noteLength": 1261,
+      "rules": [],
+      "materialHints": [
+        "tin"
+      ],
+      "formHints": [
+        "sheet"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "8209",
+        "8466",
+        "8510",
+        "8211",
+        "8215"
+      ],
+      "ruleCount": 0
+    },
+    "83": {
+      "chapter": "83",
+      "description": "MISCELLANEOUS ARTICLES OF BASE METAL",
+      "noteLength": 643,
+      "rules": [],
+      "materialHints": [
+        "iron"
+      ],
+      "formHints": [
+        "cast"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "7312",
+        "8302"
+      ],
+      "ruleCount": 0
+    },
+    "84": {
+      "chapter": "84",
+      "description": "NUCLEAR REACTORS, BOILERS, MACHINERY AND MECHANICAL APPLIANCES; PARTS THEREOF",
+      "noteLength": 11172,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "machines for making rope or cable (for example, stranding, twisting or cabling machines) from metal wire, textile yarn or any other material or from a combination of such materials",
+          "action": "classify_in_chapter",
+          "chapter": "84"
+        },
+        {
+          "type": "exclude",
+          "condition": "of ceramic material and ceramic parts of machinery or appliances of any material (Chapter 69); c. laboratory glassware (heading 7017); machinery, appliances or other articles for technical uses or par",
+          "redirectHeadings": [
+            "7017",
+            "7019",
+            "7321",
+            "8508",
+            "8509",
+            "8525",
+            "9603"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "rubber",
+        "plastic",
+        "glass",
+        "ceramic",
+        "wood",
+        "iron",
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "liquid",
+        "tube",
+        "wire",
+        "bar"
+      ],
+      "useHints": [
+        "industrial",
+        "construction",
+        "transport",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "7017",
+        "7019",
+        "7321",
+        "8508",
+        "8509",
+        "8525",
+        "9603",
+        "8401",
+        "8486",
+        "8425",
+        "8419",
+        "8436",
+        "8437",
+        "8438",
+        "8451",
+        "8422",
+        "8452",
+        "8472",
+        "8424",
+        "8443",
+        "8456",
+        "8457",
+        "8462",
+        "8471",
+        "8482",
+        "7326",
+        "8479",
+        "8470",
+        "8485",
+        "8465",
+        "8481"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheading 8465 20, the term “machining centres” applies only to machine-tools for working wood, cork, bone, hard rubber, hard plastics or similar hard materials, which can carry out different types of machining operations by automatic tool change from a magazine or the like in conformity with a machining programme.\r\n\r\n2. For the purposes of subheading 8471 49, the term ‘systems’ means automatic data-processing machines whose units satisfy the conditions laid down in note ",
+      "hasSubheadingRules": true
+    },
+    "85": {
+      "chapter": "85",
+      "description": "ELECTRICAL MACHINERY AND EQUIPMENT AND PARTS THEREOF; SOUND RECORDERS AND REPRODUCERS, TELEVISION IMAGE AND SOUND RECORDERS AND REPRODUCERS, AND PARTS AND ACCESSORIES OF SUCH ARTICLES",
+      "noteLength": 17588,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "those presented with ancillary components which contribute to the accumulator's function of storing and supplying energy or protect it from damage, such as electrical connectors, temperature control d",
+          "action": "classify_in_chapter",
+          "chapter": "85"
+        }
+      ],
+      "materialHints": [
+        "glass",
+        "ceramic",
+        "iron",
+        "tin",
+        "lead",
+        "vegetable",
+        "chemical",
+        "fruit"
+      ],
+      "formHints": [
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "clothing",
+        "industrial",
+        "medical",
+        "food",
+        "construction"
+      ],
+      "crossRefHeadings": [
+        "7011",
+        "8486",
+        "9018",
+        "8511",
+        "8504",
+        "8507",
+        "8509",
+        "8414",
+        "8421",
+        "8422",
+        "8450",
+        "8420",
+        "8452",
+        "8467",
+        "8516",
+        "8517",
+        "8523",
+        "8524",
+        "8534",
+        "8542",
+        "8536",
+        "8537",
+        "8543",
+        "8539",
+        "8541",
+        "8532",
+        "8525",
+        "8527"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "1. Subheading 8525 81 covers only high-speed television cameras, digital cameras and video camera recorders having one or more of the following characteristics:\r\n\r\n    - writing speed exceeding 0.5 mm per microsecond;\r\n\r\n    - time resolution 50 nanoseconds or less;\r\n\r\n    - frame rate exceeding 225,000 frames per second\r\n\r\n2. In respect of subheading 8525 82, radiation-hardened or radiation-tolerant television cameras, digital cameras and video camera recorders are designed or shielded to enabl",
+      "hasSubheadingRules": true
+    },
+    "86": {
+      "chapter": "86",
+      "description": "RAILWAY OR TRAMWAY LOCOMOTIVES, ROLLING STOCK AND PARTS THEREOF; RAILWAY OR TRAMWAY TRACK FIXTURES AND FITTINGS AND PARTS THEREOF; MECHANICAL (INCLUDING ELECTROMECHANICAL) TRAFFIC SIGNALLING EQUIPMENT OF ALL KINDS",
+      "noteLength": 1242,
+      "rules": [],
+      "materialHints": [
+        "wood",
+        "iron",
+        "tin"
+      ],
+      "formHints": [],
+      "useHints": [
+        "construction",
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "4406",
+        "7302",
+        "8530",
+        "8607",
+        "8608"
+      ],
+      "ruleCount": 0
+    },
+    "87": {
+      "chapter": "87",
+      "description": "VEHICLES OTHER THAN RAILWAY OR TRAMWAY ROLLING STOCK, AND PARTS AND ACCESSORIES THEREOF",
+      "noteLength": 1780,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "all children's bicycles",
+          "action": "classify_in_chapter",
+          "chapter": "87"
+        }
+      ],
+      "materialHints": [
+        "tin"
+      ],
+      "formHints": [],
+      "useHints": [
+        "industrial",
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "8701",
+        "8702",
+        "8706",
+        "8712",
+        "9503",
+        "8708",
+        "8713"
+      ],
+      "ruleCount": 1,
+      "subheadingNote": "Subheading 8708 22 covers:\r\n\r\n   - a. front windscreens (windshields), rear windows and other windows, framed; and \r\n\r\n   - b. front windscreens (windshields), rear windows and other windows, whether or not framed, incorporating heating devices or other electrical or electronic devices\r\n\r\n   when suitable for use solely or principally with the motor vehicles of heading 8701 to 8705.\r\n\r\n### Additional chapter notes\r\n\r\n1. Code 8703 10 18 includes mobility scooters which typically include a separat",
+      "hasSubheadingRules": true
+    },
+    "89": {
+      "chapter": "89",
+      "description": "SHIPS, BOATS AND FLOATING STRUCTURES",
+      "noteLength": 1258,
+      "rules": [],
+      "materialHints": [
+        "tin",
+        "fish"
+      ],
+      "formHints": [],
+      "useHints": [
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "8906",
+        "8908"
+      ],
+      "ruleCount": 0
+    },
+    "90": {
+      "chapter": "90",
+      "description": "OPTICAL, PHOTOGRAPHIC, CINEMATOGRAPHIC, MEASURING, CHECKING, PRECISION, MEDICAL OR SURGICAL INSTRUMENTS AND APPARATUS; PARTS AND ACCESSORIES THEREOF",
+      "noteLength": 7943,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "(Section XI); c. refractory goods of heading 6903; ceramic wares for laboratory, chemical or other technical uses, of heading 6909; d. glass mirrors, not optically worked, of heading 7009, or mirrors ",
+          "redirectHeadings": [
+            "6903",
+            "6909",
+            "7009",
+            "8306",
+            "7007",
+            "9021",
+            "8413",
+            "8423",
+            "8425",
+            "8441",
+            "8466",
+            "8470",
+            "8481",
+            "8486",
+            "8512",
+            "8513",
+            "8519",
+            "8522",
+            "8525",
+            "8526",
+            "8536",
+            "8537",
+            "8539",
+            "8544",
+            "9405",
+            "9620",
+            "3923"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "leather",
+        "rubber",
+        "plastic",
+        "glass",
+        "ceramic",
+        "paper",
+        "tin",
+        "textile",
+        "chemical"
+      ],
+      "formHints": [
+        "raw",
+        "liquid",
+        "bar",
+        "rolled"
+      ],
+      "useHints": [
+        "industrial",
+        "medical",
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "4016",
+        "4205",
+        "5911",
+        "6903",
+        "6909",
+        "7009",
+        "8306",
+        "7007",
+        "9021",
+        "8413",
+        "8423",
+        "8425",
+        "8441",
+        "8466",
+        "8470",
+        "8481",
+        "8486",
+        "8512",
+        "8513",
+        "8519",
+        "8522",
+        "8525",
+        "8526",
+        "8536",
+        "8537",
+        "8539",
+        "8544",
+        "9405",
+        "9620",
+        "3923",
+        "8487",
+        "9010",
+        "9033",
+        "9005",
+        "9013",
+        "9031",
+        "9032",
+        "8540"
+      ],
+      "ruleCount": 1
+    },
+    "91": {
+      "chapter": "91",
+      "description": "CLOCKS AND WATCHES AND PARTS THEREOF",
+      "noteLength": 1881,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "only watches with case wholly of precious metal or of metal clad with precious metal, or of the same materials combined with natural or cultured pearls, or precious or semi-precious stones (natural, s",
+          "action": "classify_in_chapter",
+          "chapter": "91"
+        },
+        {
+          "type": "exclude",
+          "condition": "clock or watch glasses or weights (classified according to their constituent material); (b) watch chains (heading 7113 or 7117, as the case may be); (c) parts of general use defined in note 2 to Secti",
+          "redirectHeadings": [
+            "7113",
+            "7115",
+            "9114",
+            "7326",
+            "8412",
+            "8482"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "plastic",
+        "glass"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [
+        "7113",
+        "7115",
+        "9114",
+        "7326",
+        "8412",
+        "8482",
+        "9101",
+        "7101",
+        "9102"
+      ],
+      "ruleCount": 2
+    },
+    "92": {
+      "chapter": "92",
+      "description": "MUSICAL INSTRUMENTS; PARTS AND ACCESSORIES OF SUCH ARTICLES",
+      "noteLength": 1138,
+      "rules": [],
+      "materialHints": [
+        "plastic"
+      ],
+      "formHints": [],
+      "useHints": [],
+      "crossRefHeadings": [
+        "9503",
+        "9603",
+        "9620",
+        "9705",
+        "9202",
+        "9209"
+      ],
+      "ruleCount": 0
+    },
+    "93": {
+      "chapter": "93",
+      "description": "ARMS AND AMMUNITION; PARTS AND ACCESSORIES THEREOF",
+      "noteLength": 772,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "; b. parts of general use, as defined in note 2 to Section XV, of base metal (Section XV), or similar goods of plastics (Chapter 39); c. armoured fighting vehicles (heading 8710); d. telescopic sights",
+          "redirectHeadings": [
+            "8710",
+            "9705"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "plastic",
+        "tin"
+      ],
+      "formHints": [],
+      "useHints": [
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "8710",
+        "9705",
+        "9306",
+        "8526"
+      ],
+      "ruleCount": 1
+    },
+    "94": {
+      "chapter": "94",
+      "description": "FURNITURE; BEDDING, MATTRESSES, MATTRESS SUPPORTS, CUSHIONS AND SIMILAR STUFFED FURNISHINGS; LUMINAIRES AND LIGHTING FITTINGS, NOT ELSEWHERE SPECIFIED OR INCLUDED; ILLUMINATED SIGNS, ILLUMINATED NAMEPLATES AND THE LIKE; PREFABRICATED BUILDINGS",
+      "noteLength": 3241,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": ") of heading 7009; c. articles of Chapter 71; d. parts of general use as defined in note 2 to Section XV, of base metal (Section XV), or similar goods of plastics (Chapter 39), or safes of heading 830",
+          "redirectHeadings": [
+            "7009",
+            "8303",
+            "8418",
+            "8452",
+            "8518",
+            "8518",
+            "8519",
+            "8522",
+            "8525",
+            "8529",
+            "8714",
+            "9018",
+            "9018",
+            "9503",
+            "9504",
+            "9505",
+            "9620"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "plastic",
+        "glass",
+        "iron",
+        "tin"
+      ],
+      "formHints": [
+        "powder",
+        "sheet"
+      ],
+      "useHints": [
+        "industrial",
+        "construction",
+        "transport",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "7009",
+        "8303",
+        "8418",
+        "8452",
+        "8518",
+        "8519",
+        "8522",
+        "8525",
+        "8529",
+        "8714",
+        "9018",
+        "9503",
+        "9504",
+        "9505",
+        "9620",
+        "9401",
+        "9404",
+        "9406"
+      ],
+      "ruleCount": 1
+    },
+    "95": {
+      "chapter": "95",
+      "description": "TOYS, GAMES AND SPORTS REQUISITES; PARTS AND ACCESSORIES THEREOF",
+      "noteLength": 5619,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "articles in which natural or cultured pearls, precious or semi-precious stones (natural, synthetic or reconstructed), precious metal or metal clad with precious metal constitute only minor constituent",
+          "action": "classify_in_chapter",
+          "chapter": "95"
+        },
+        {
+          "type": "exclude",
+          "condition": "; f. textile flags or bunting, or sails for boats, sailboards or land craft, of Chapter 63; g. sports footwear (other than skating boots with ice or roller skates attached) of Chapter 64, or sports he",
+          "redirectHeadings": [
+            "6602",
+            "6603",
+            "7018",
+            "8306",
+            "8413",
+            "8421",
+            "8501",
+            "8504",
+            "8523",
+            "8526",
+            "8543",
+            "8712",
+            "8806",
+            "9004",
+            "9208",
+            "9405",
+            "9620"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "plastic",
+        "glass",
+        "wood",
+        "tin",
+        "textile",
+        "fish"
+      ],
+      "formHints": [
+        "liquid",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "clothing",
+        "industrial",
+        "construction",
+        "transport",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "3406",
+        "3604",
+        "4206",
+        "4202",
+        "6602",
+        "6603",
+        "7018",
+        "8306",
+        "8413",
+        "8421",
+        "8501",
+        "8504",
+        "8523",
+        "8526",
+        "8543",
+        "8712",
+        "8806",
+        "9004",
+        "9208",
+        "9405",
+        "9620",
+        "9503",
+        "9508",
+        "9504"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. Subheading 9504 50 covers:\r\n\r\n    a. video game consoles from which the image is reproduced on a television receiver, a monitor or other external screen or surface; or\r\n    \r\n    b. video game machines having a self-contained video screen, whether or not portable.\r\n    \r\n    This subheading does not cover video game consoles or machines operated by coins, banknotes, bankcards, tokens or by any other means of payment (subheading 9504 30).",
+      "hasSubheadingRules": true
+    },
+    "96": {
+      "chapter": "96",
+      "description": "MISCELLANEOUS MANUFACTURED ARTICLES",
+      "noteLength": 3088,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "unmounted knots and tufts of animal hair, vegetable fibre or other material, which are ready for incorporation without division in brooms or brushes, or which require only such further minor processes",
+          "action": "classify_in_chapter",
+          "chapter": "96"
+        },
+        {
+          "type": "exclude",
+          "condition": "; c. imitation jewellery (heading 7117); d. parts of general use, as defined in note 2 to Section XV, of base metal (Section XV), or similar goods of plastics (Chapter 39); e. cutlery or other article",
+          "redirectHeadings": [
+            "7117",
+            "9601",
+            "9003",
+            "9017",
+            "9018"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "plastic",
+        "paper",
+        "tin",
+        "vegetable",
+        "mineral"
+      ],
+      "formHints": [
+        "woven",
+        "raw",
+        "processed",
+        "bar"
+      ],
+      "useHints": [
+        "medical"
+      ],
+      "crossRefHeadings": [
+        "7117",
+        "9601",
+        "9003",
+        "9017",
+        "9018",
+        "9602",
+        "9603"
+      ],
+      "ruleCount": 2
+    },
+    "97": {
+      "chapter": "97",
+      "description": "WORKS OF ART, COLLECTORS' PIECES AND ANTIQUES",
+      "noteLength": 3765,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "or the like, of heading 4907; b. theatrical scenery, studio back-cloths or the like, of painted canvas (heading 5907) except if they may be classified in heading 9706; or c. pearls, natural or culture",
+          "redirectHeadings": [
+            "4907",
+            "5907",
+            "9706",
+            "7101"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "paper",
+        "tin"
+      ],
+      "formHints": [
+        "raw",
+        "canned",
+        "sheet",
+        "bar",
+        "cast"
+      ],
+      "useHints": [
+        "transport"
+      ],
+      "crossRefHeadings": [
+        "4907",
+        "5907",
+        "9706",
+        "7101",
+        "9701",
+        "9702",
+        "9703",
+        "9705"
+      ],
+      "ruleCount": 1
+    },
+    "01": {
+      "chapter": "01",
+      "description": "LIVE ANIMALS",
+      "noteLength": 384,
+      "rules": [],
+      "materialHints": [
+        "fish"
+      ],
+      "formHints": [
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "0301",
+        "3002",
+        "9508"
+      ],
+      "ruleCount": 0
+    },
+    "02": {
+      "chapter": "02",
+      "description": "MEAT AND EDIBLE MEAT OFFAL",
+      "noteLength": 18476,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "cuts of middles containing tissue of loin and belly in natural proportion to the entire middles",
+          "action": "classify_in_chapter",
+          "chapter": "02"
+        },
+        {
+          "type": "exclude",
+          "condition": "products of the kinds described in headings 0201 to 0208 or 0210, unfit or unsuitable for human consumption;",
+          "redirectHeadings": [],
+          "action": "exclude_from_chapter"
+        },
+        {
+          "type": "exclude",
+          "condition": "edible, non-living insects (heading 0410);",
+          "redirectHeadings": [
+            "0410"
+          ],
+          "action": "exclude_from_chapter"
+        },
+        {
+          "type": "exclude",
+          "condition": "guts, bladders or stomachs of animals (heading 0504) or animal blood (heading 0511 or 3002); or",
+          "redirectHeadings": [
+            "0504",
+            "0511"
+          ],
+          "action": "exclude_from_chapter"
+        },
+        {
+          "type": "exclude",
+          "condition": "animal fat, other than products of heading 0209 (Chapter 15).",
+          "redirectHeadings": [
+            "0209"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "meat"
+      ],
+      "formHints": [
+        "raw",
+        "dried",
+        "bar"
+      ],
+      "useHints": [
+        "food"
+      ],
+      "crossRefHeadings": [
+        "0410",
+        "0504",
+        "0511",
+        "0209",
+        "0204",
+        "0210"
+      ],
+      "ruleCount": 5
+    },
+    "03": {
+      "chapter": "03",
+      "description": "FISH AND CRUSTACEANS, MOLLUSCS AND OTHER AQUATIC INVERTEBRATES",
+      "noteLength": 2538,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "‘loins’, i.e",
+          "action": "classify_in_chapter",
+          "chapter": "03"
+        },
+        {
+          "type": "exclude",
+          "condition": "mammals of heading 0106; - (b) meat of mammals of heading 0106 (heading 0208 or 0210); - (c) fish (including livers, roes and milt thereof) or crustaceans, molluscs or other aquatic invertebrates, dea",
+          "redirectHeadings": [
+            "0106",
+            "0106",
+            "0208",
+            "2301",
+            "1604"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "meat",
+        "fish"
+      ],
+      "formHints": [
+        "processed",
+        "frozen",
+        "bar"
+      ],
+      "useHints": [
+        "industrial"
+      ],
+      "crossRefHeadings": [
+        "0106",
+        "0208",
+        "2301",
+        "1604",
+        "0309"
+      ],
+      "ruleCount": 2
+    },
+    "04": {
+      "chapter": "04",
+      "description": "DAIRY PRODUCE; BIRDS' EGGS; NATURAL HONEY; EDIBLE PRODUCTS OF ANIMAL ORIGIN, NOT ELSEWHERE SPECIFIED OR INCLUDED",
+      "noteLength": 6460,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "dairy permeates, which are milk products characterised by a high content of lactose and obtained by removing milk fats and milk proteins from milk, whey, cream and/or sweet buttermilk, and/or from sim",
+          "action": "classify_in_chapter",
+          "chapter": "04"
+        },
+        {
+          "type": "exclude",
+          "condition": "non-living insects, unfit for human consumption (heading 0511); - (b) products obtained from whey, containing by weight more than 95 % lactose, expressed as anhydrous lactose calculated on the dry mat",
+          "redirectHeadings": [
+            "0511",
+            "1702",
+            "1901",
+            "3502",
+            "3504"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "mineral",
+        "chemical",
+        "meat",
+        "dairy",
+        "fruit",
+        "cereal"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "frozen",
+        "dried",
+        "canned",
+        "liquid",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "food"
+      ],
+      "crossRefHeadings": [
+        "0403",
+        "0405",
+        "0406",
+        "0511",
+        "1702",
+        "1901",
+        "3502",
+        "3504",
+        "0410",
+        "0404",
+        "0401"
+      ],
+      "ruleCount": 2,
+      "subheadingNote": "1. For the purposes of subheading 0404 10, the expression ‘modified whey’ means products consisting of whey constituents, that is, whey from which all or part of the lactose, proteins or minerals have been removed, whey to which natural whey constituents have been added, and products obtained by mixing natural whey constituents.\r\n\r\n2. For the purposes of subheading 0405 10, the term ‘butter’ does not include dehydrated butter or ghee (subheading 0405 90).\r\n\r\n### Additional chapter notes\r\n\r\n1. Fo",
+      "hasSubheadingRules": true
+    },
+    "05": {
+      "chapter": "05",
+      "description": "PRODUCTS OF ANIMAL ORIGIN, NOT ELSEWHERE SPECIFIED OR INCLUDED",
+      "noteLength": 1133,
+      "rules": [
+        {
+          "type": "exclude",
+          "condition": "edible products (other than guts, bladders and stomachs of animals, whole and pieces thereof, and animal blood, liquid or dried); - (b) hides or skins (including fur skins), other than goods of headin",
+          "redirectHeadings": [
+            "0505",
+            "0511",
+            "9603"
+          ],
+          "action": "exclude_from_chapter"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "textile"
+      ],
+      "formHints": [
+        "raw",
+        "processed",
+        "dried",
+        "liquid",
+        "bar"
+      ],
+      "useHints": [
+        "food"
+      ],
+      "crossRefHeadings": [
+        "0505",
+        "0511",
+        "9603",
+        "0501"
+      ],
+      "ruleCount": 1
+    },
+    "06": {
+      "chapter": "06",
+      "description": "LIVE TREES AND OTHER PLANTS; BULBS, ROOTS AND THE LIKE; CUT FLOWERS AND ORNAMENTAL FOLIAGE",
+      "noteLength": 688,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "only live trees and goods (including seedling vegetables) of a kind commonly supplied by nursery gardeners or florists for planting or for ornamental use; nevertheless, it does not include potatoes, o",
+          "action": "classify_in_chapter",
+          "chapter": "06"
+        }
+      ],
+      "materialHints": [
+        "tin",
+        "vegetable"
+      ],
+      "formHints": [
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "0601",
+        "0603",
+        "9701"
+      ],
+      "ruleCount": 1
+    },
+    "07": {
+      "chapter": "07",
+      "description": "EDIBLE VEGETABLES AND CERTAIN ROOTS AND TUBERS",
+      "noteLength": 1899,
+      "rules": [
+        {
+          "type": "include",
+          "condition": "edible mushrooms, truffles, olives, capers, marrows, pumpkins, aubergines, sweet-corn (Zea mays var",
+          "action": "classify_in_chapter",
+          "chapter": "07"
+        }
+      ],
+      "materialHints": [
+        "vegetable",
+        "fruit",
+        "cereal"
+      ],
+      "formHints": [
+        "dried",
+        "powder",
+        "bar"
+      ],
+      "useHints": [
+        "food",
+        "packaging"
+      ],
+      "crossRefHeadings": [
+        "1214",
+        "0709",
+        "0712",
+        "0701",
+        "0713",
+        "1102",
+        "1105",
+        "1106",
+        "0904",
+        "0711"
+      ],
+      "ruleCount": 1
+    },
+    "08": {
+      "chapter": "08",
+      "description": "EDIBLE FRUIT AND NUTS; PEEL OF CITRUS FRUIT OR MELONS",
+      "noteLength": 1691,
+      "rules": [],
+      "materialHints": [
+        "vegetable",
+        "fruit"
+      ],
+      "formHints": [
+        "dried",
+        "bar"
+      ],
+      "useHints": [
+        "food"
+      ],
+      "crossRefHeadings": [
+        "0812"
+      ],
+      "ruleCount": 0
+    },
+    "09": {
+      "chapter": "09",
+      "description": "COFFEE, TEA, MATÉ AND SPICES",
+      "noteLength": 1180,
+      "rules": [],
+      "materialHints": [
+        "tin"
+      ],
+      "formHints": [
+        "tube",
+        "bar"
+      ],
+      "useHints": [],
+      "crossRefHeadings": [
+        "0904",
+        "0910",
+        "2103",
+        "1211"
+      ],
+      "ruleCount": 0
+    }
+  }
+}

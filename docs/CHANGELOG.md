@@ -1,5 +1,25 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW36-JP1 JP tariff classification rules)
+> 마지막 업데이트: 2026-04-14 KST (CW36-WCO1 Chapter Decision Trees)
+
+## [2026-04-14 KST] CW36-WCO1 — Auto-Generated Chapter Decision Trees
+
+### Added
+- `config/chapter_decision_trees.json`: 91/96 chapters, 87 include/exclude rules
+- `app/lib/classifier/chapter-tree-evaluator.ts`: evaluateChapterTree() + findBestChapter()
+- `scripts/classifier/extract-decision-trees.mjs`: chapter_notes.json → JSON extraction
+- `scripts/verify-cw36-wco1.mjs`: 17/17 green
+
+### Coverage
+- Material hints: 90 chapters (textile/metal/plastic/food/chemical/mineral)
+- Form hints: 75 chapters (knitted/woven/raw/processed/frozen/dried)
+- Use hints: 58 chapters (industrial/medical/food/transport/clothing)
+- Subheading rules: 35 chapters
+- Cross-ref headings: 85 chapters
+
+### Engine Integration
+- GlobalCostEngine: post-classification chapter tree validation
+- classificationSource '+chapter_tree_warning' when exclude rule matches
+- No override — hints only, voting engine priority preserved
 
 ## [2026-04-14 KST] CW36-JP1 — JP Tariff Classification Rules
 

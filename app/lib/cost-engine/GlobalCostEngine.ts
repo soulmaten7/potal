@@ -377,6 +377,24 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     if (!input.origin && asyncResult.countryOfOrigin) {
       originCountry = asyncResult.countryOfOrigin;
     }
+
+    // ━━━ CW36-WCO1: Chapter decision tree validation ━━━
+    if (hsResult && hsResult.hsCode !== '9999') {
+      try {
+        const { evaluateChapterTree } = await import('@/app/lib/classifier/chapter-tree-evaluator');
+        const chapterHint = evaluateChapterTree(
+          hsResult.hsCode.slice(0, 2),
+          input.productName || '',
+          (input as GlobalCostInput).material,
+          (input as GlobalCostInput).productForm,
+          (input as GlobalCostInput).intendedUse,
+        );
+        if (chapterHint && chapterHint.excludeWarnings.length > 0) {
+          // Product might be misclassified — add warning but don't override
+          classificationSource = (classificationSource || '') + '+chapter_tree_warning';
+        }
+      } catch { /* non-critical */ }
+    }
   }
 
   const isDomestic = originCountry === profile.code;
