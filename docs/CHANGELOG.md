@@ -1,5 +1,17 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW37 Architecture Decision — 아키텍처 전면 리뉴얼 방향 확정)
+> 마지막 업데이트: 2026-04-15 KST (CW36-SYNC — classification rules → Supabase)
+
+## [2026-04-15 KST] CW36-SYNC — Classification Rules to Supabase
+
+### Added
+- Migration 069: 4 tables (hs_chapter_rules, hs_section_notes, hs_subheading_notes, jp_classification_rules)
+- `seed-classification-rules.mjs`: JSON → DB seeder (91 + 21 + 37 + 89 = 238 rows)
+- `jp-rules-loader.ts`: `lookupJpGuidanceAsync()` DB-first + local JSON fallback
+
+### Architecture
+- DB = single source of truth (seed from external drive / JSON files)
+- Local JSON = build-time snapshot for sync runtime (chapter-tree-evaluator)
+- Backward compatible: existing sync loaders still work
 
 ## [2026-04-14 KST] CW37 Architecture Decision — Architecture Redesign
 
