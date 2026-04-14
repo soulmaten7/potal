@@ -74,8 +74,16 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     }
   } catch { /* non-critical */ }
 
+  // CW37-S2: Structured fields for Lookup absorption
+  const categories = (result.restrictions || []).map((r: unknown) => (r as Record<string, string>).type || (r as Record<string, string>).category).filter(Boolean);
+  const permits = (result.restrictions || []).map((r: unknown) => (r as Record<string, string>).license_info || (r as Record<string, string>).permit).filter(Boolean);
+
   return apiSuccess({
     ...result,
+    // CW37-S2: Simple boolean + structured arrays (restricted-item Lookup absorbed)
+    restricted: result.hasRestrictions || false,
+    categories: [...new Set(categories)],
+    permits,
     ...(productName ? { productName } : {}),
     autoClassified: !body.hsCode && !!productName,
     ...(rulingNotes.length > 0 ? { rulingNotes } : {}),

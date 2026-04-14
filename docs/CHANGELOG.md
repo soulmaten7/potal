@@ -1,5 +1,22 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-15 KST (CW36-SYNC — classification rules → Supabase)
+> 마지막 업데이트: 2026-04-15 KST (CW37-S2 Endpoint Consolidation — 6 Lookup absorbed)
+
+## [2026-04-15 KST] CW37-S2 — Endpoint Consolidation
+
+### Changed
+- `/api/v1/calculate`: added `dutyInfo`, `exchangeRateInfo`, `deMinimisInfo`, `ftaSavings` (absorbs duty-rate + exchange-rate + de-minimis + fta-finder Lookups)
+- `/api/v1/roo/evaluate`: auto-detect mode — `applicableFTAs[]` + `recommended` when no `fta_id` (absorbs fta-finder)
+- `/api/v1/restrictions`: added `restricted` boolean + `categories[]` + `permits[]` (absorbs restricted-item)
+
+### Deprecated (sunset 2027-01-31)
+- `/api/v1/exchange-rate` → use `calculate.exchangeRateInfo`
+- `/api/v1/de-minimis/check` → use `calculate.deMinimisInfo`
+- Headers: `X-API-Deprecated: true` + `X-API-Replacement` + `X-API-Sunset`
+- Body: `_deprecation` field with replacement + sunsetDate
+
+### Added
+- `app/lib/api-auth/deprecation.ts`: deprecation utility (getDeprecation, addDeprecationHeaders, deprecationField)
+- `scripts/verify-cw37-s2-consolidation.mjs`
 
 ## [2026-04-15 KST] CW36-SYNC — Classification Rules to Supabase
 

@@ -22,7 +22,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   const currency = data?.currency || 'USD';
   const isBelowThreshold = value <= threshold;
 
-  return apiSuccess({
+  const response = apiSuccess({
     destination,
     threshold: { amount: threshold, currency },
     value, is_below_threshold: isBelowThreshold,
@@ -31,5 +31,9 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
     notes: isBelowThreshold
       ? `Value is below ${destination} de minimis threshold of ${currency} ${threshold}. No duty applies.`
       : `Value exceeds ${destination} de minimis threshold. Duties and taxes apply.`,
+    _deprecation: { deprecated: true, replacement: '/api/v1/calculate', sunsetDate: '2027-01-31', message: 'De minimis check is now included in calculate response as deMinimisInfo.' },
   }, { sellerId: ctx.sellerId });
+  response.headers.set('X-API-Deprecated', 'true');
+  response.headers.set('X-API-Replacement', '/api/v1/calculate');
+  return response;
 });

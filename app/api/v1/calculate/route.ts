@@ -327,9 +327,37 @@ const _calculateHandler = async (req: NextRequest, context: ApiAuthContext): Pro
       };
     }
 
+    // CW37-S2: Structured lookup-absorption fields (Lookup 6개 흡수)
+    const lookupAbsorbed = {
+      dutyInfo: {
+        rate: resultObj.importDuty && priceNum > 0 ? Math.round((resultObj.importDuty as number) / priceNum * 10000) / 100 : 0,
+        amount: (resultObj.importDuty as number) || 0,
+        source: resultObj.dutyRateSource || 'unknown',
+        rateType: resultObj.rateTypeResolved || 'ad_valorem',
+        confidence: resultObj.dutyConfidenceScore ?? 0,
+      },
+      exchangeRateInfo: resultObj.localCurrency ? {
+        fromCurrency: 'USD',
+        toCurrency: (resultObj.localCurrency as Record<string, unknown>)?.currency || resultObj.destinationCurrency,
+        rate: (resultObj.localCurrency as Record<string, unknown>)?.rate || 1,
+        lastUpdated: resultObj.exchangeRateTimestamp || null,
+      } : undefined,
+      deMinimisInfo: {
+        threshold: resultObj.dutyThresholdUsd ?? null,
+        applied: resultObj.deMinimisApplied ?? false,
+        dutyWaived: resultObj.deMinimisApplied ? (resultObj.importDuty as number) || 0 : 0,
+      },
+      ftaSavings: resultObj.ftaApplied ? {
+        applied: !!(resultObj.ftaApplied as Record<string, unknown>)?.hasFta,
+        agreement: (resultObj.ftaApplied as Record<string, unknown>)?.ftaName || null,
+        savingsAmount: resultObj.tariffOptimization ? (resultObj.tariffOptimization as Record<string, unknown>)?.savingsVsMfn || 0 : 0,
+      } : undefined,
+    };
+
     // 18. Return enriched response
     return apiSuccess({
       ...resultObj,
+      ...lookupAbsorbed,
       fta_utilization: ftaUtilization,
       rate_lock: rateLock,
       de_minimis_detail: deMinimisDetail,

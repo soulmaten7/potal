@@ -29,7 +29,7 @@ export const GET = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => 
     const toRate = rates.rates[to] || null;
     const directRate = fromRate && toRate ? Math.round((toRate / fromRate) * 1000000) / 1000000 : null;
 
-    return apiSuccess({
+    const response = apiSuccess({
       from,
       to,
       amount,
@@ -38,7 +38,13 @@ export const GET = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => 
       source: rates.source || 'ECB + Fed',
       updatedAt: rates.lastUpdated || new Date().toISOString().split('T')[0],
       supportedCurrencies: Object.keys(rates.rates).length,
+      // CW37-S2: Deprecation notice
+      _deprecation: { deprecated: true, replacement: '/api/v1/calculate', sunsetDate: '2027-01-31', message: 'Exchange rate is now included in calculate response as exchangeRateInfo.' },
     }, { sellerId: ctx.sellerId, plan: ctx.planId });
+    response.headers.set('X-API-Deprecated', 'true');
+    response.headers.set('X-API-Replacement', '/api/v1/calculate');
+    response.headers.set('X-API-Sunset', '2027-01-31');
+    return response;
   } catch (err) {
     return apiError(
       ApiErrorCode.INTERNAL_ERROR,
