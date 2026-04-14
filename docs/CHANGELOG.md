@@ -1,5 +1,18 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-15 KST (CW37-S5 Guides Pages — 13 new pages, 488 total)
+> 마지막 업데이트: 2026-04-15 KST (CW37-S3 UI Renewal — RapidAPI workspace, 489 pages)
+
+## [2026-04-15 KST] CW37-S3 — UI Renewal (RapidAPI Pattern)
+
+### Added
+- `/workspace/[direction]` — 3-panel layout (export/import entry)
+  - Left: `EndpointSidebar` — 12 endpoints (6 Compute + 2 Screening + 4 Guides)
+  - Center: `EndpointPanel` — Parameters input + Run button + JSON result
+  - Right: `CodeSnippetPanel` — 7 language tabs (curl/Python/Node.js/PHP/Go/Ruby/Java)
+- `/workspace` root → redirects to `/workspace/export`
+- Each endpoint has field definitions with types, placeholders, required flags
+- Guide endpoints open in new tab (link to /guides/ pages)
+- Code snippets generate in real-time based on current parameters
+- Build: 488 → 489 pages
 
 ## [2026-04-15 KST] CW37-S5 — Guides Pages
 
