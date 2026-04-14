@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
-import { evaluateRoO } from '@/app/lib/trade/roo-engine';
+import { evaluateRoOEnriched } from '@/app/lib/trade/roo-engine';
 
 export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) => {
   let body: Record<string, unknown>;
@@ -16,7 +16,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   }
 
   try {
-    const result = evaluateRoO({
+    const result = await evaluateRoOEnriched({
       hs6, origin, destination,
       ftaId: typeof body.fta_id === 'string' ? body.fta_id : undefined,
       productValue: typeof body.product_value === 'number' ? body.product_value : undefined,

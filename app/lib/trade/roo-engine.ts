@@ -54,6 +54,11 @@ export interface RoOResult {
   // CW34-S4.5
   dbRule?: { id: string; fta_code: string; rule_type: string; rule_text: string } | null;
   tenFieldEvidence?: Record<string, unknown>;
+  // CW36-FTA-Enrichment
+  rulingPrecedents?: Array<{ rulingId: string; source: string; hsCode: string; productName: string; confidenceScore: number }>;
+  classificationGuidance?: Record<string, unknown>;
+  chapterValidation?: { passed: boolean; warnings: string[] };
+  dataAvailability?: { jurisdiction: string; status: string; warning?: string };
 }
 
 // ─── FTA Configuration ──────────────────────────────
@@ -435,4 +440,71 @@ export function evaluateRoO(input: RoOInput): RoOResult {
     warnings,
     tenFieldEvidence: Object.keys(tenFieldEvidence).length > 0 ? tenFieldEvidence : undefined,
   };
+}
+
+// ─── CW36-FTA-Enrichment: Async enrichment wrapper ────────────
+
+/**
+ * evaluateRoO + async enrichment from rulings/JP rules/chapter trees.
+ * Backward compatible — all new fields are optional additions.
+ */
+export async function evaluateRoOEnriched(input: RoOInput): Promise<RoOResult> {
+  const result = evaluateRoO(input);
+
+  const EU_MEMBERS = ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE'];
+  const destJurisdiction = EU_MEMBERS.includes(input.destination) ? 'EU' : input.destination;
+
+  // 1. Ruling precedents
+  try {
+    const { lookupRulings } = await import('@/app/lib/rulings/lookup');
+    const rulings = await lookupRulings({
+      hs6: input.hs6.slice(0, 6),
+      jurisdiction: destJurisdiction,
+      material: input.material,
+      limit: 3,
+    });
+    if (rulings.length > 0) {
+      result.rulingPrecedents = rulings.map(r => ({
+        rulingId: r.rulingId,
+        source: r.source,
+        hsCode: r.hsCode,
+        productName: r.productName.slice(0, 100),
+        confidenceScore: r.confidenceScore,
+      }));
+    }
+  } catch { /* non-critical */ }
+
+  // 2. JP classification guidance
+  if (input.destination === 'JP') {
+    try {
+      const { lookupJpGuidance } = await import('@/app/lib/rulings/jp-rules-loader');
+      const guidance = lookupJpGuidance(input.hs6);
+      if (guidance) {
+        result.classificationGuidance = guidance as unknown as Record<string, unknown>;
+      }
+    } catch { /* non-critical */ }
+  }
+
+  // 3. Chapter tree validation
+  try {
+    const { evaluateChapterTree } = await import('@/app/lib/classifier/chapter-tree-evaluator');
+    const hint = evaluateChapterTree(input.hs6.slice(0, 2), '', input.material, input.productForm, input.intendedUse);
+    if (hint) {
+      result.chapterValidation = {
+        passed: hint.excludeWarnings.length === 0,
+        warnings: hint.excludeWarnings,
+      };
+    }
+  } catch { /* non-critical */ }
+
+  // 4. Data availability for non-EU/US jurisdictions
+  try {
+    const { checkDataAvailability } = await import('@/app/lib/rulings/lookup');
+    const da = checkDataAvailability(destJurisdiction, input.hs6);
+    if (da) {
+      result.dataAvailability = da;
+    }
+  } catch { /* non-critical */ }
+
+  return result;
 }

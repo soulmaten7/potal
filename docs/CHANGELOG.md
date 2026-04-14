@@ -1,5 +1,16 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-14 KST (CW36-WCO1 Chapter Decision Trees)
+> 마지막 업데이트: 2026-04-14 KST (CW36-FTA-Enrichment)
+
+## [2026-04-14 KST] CW36-FTA-Enrichment — Integrate 5 sources into FTA Eligibility
+
+### Added
+- `evaluateRoOEnriched()`: async wrapper with 4 enrichment sources
+- `rulingPrecedents`: max 3 from customs_rulings (645K) matching HS+jurisdiction
+- `classificationGuidance`: JP destination → jp_classification_rules.json
+- `chapterValidation`: chapter tree exclude warning check
+- `dataAvailability`: non-EU/US jurisdiction warning
+- `/api/v1/roo/evaluate`: now uses enriched evaluator (backward compatible)
+- `verify-cw36-fta-enrichment.mjs`
 
 ## [2026-04-14 KST] CW36-WCO1 — Auto-Generated Chapter Decision Trees
 
