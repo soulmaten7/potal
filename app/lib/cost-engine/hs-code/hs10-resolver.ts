@@ -20,7 +20,7 @@ export interface Hs10Resolution {
   /** Final HS code (10-digit for 7 countries, 6-digit for others) */
   hsCode: string;
   /** Precision level */
-  hsCodePrecision: 'HS10' | 'HS6';
+  hsCodePrecision: 'HS10' | 'HS9' | 'HS8' | 'HS6';
   /** How the code was determined */
   classificationMethod:
     | 'cache_hit'
@@ -55,6 +55,15 @@ const EU_MEMBERS = new Set([
   'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
   'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE',
 ]);
+
+/** Determine precision label from national HS code length */
+function codePrecision(code: string): 'HS10' | 'HS9' | 'HS8' | 'HS6' {
+  const len = code.replace(/\D/g, '').length;
+  if (len >= 10) return 'HS10';
+  if (len === 9) return 'HS9';
+  if (len >= 7) return 'HS8';
+  return 'HS6';
+}
 
 function isHs10Country(country: string): boolean {
   return HS10_COUNTRIES.has(country) || EU_MEMBERS.has(country);
@@ -121,10 +130,14 @@ async function getCandidates(
 
     if (error || !data) return [];
 
+    // Country-specific min code length: AU/CA=8, JP=9, US/KR/GB/EU=10
+    const minLen = lookupCountry === 'AU' || lookupCountry === 'CA' ? 8
+      : lookupCountry === 'JP' ? 9 : 10;
+
     return data
       .filter((r: Record<string, unknown>) => {
         const code = String(r.hs_code);
-        return code.length >= 10 && /^\d+$/.test(code);
+        return code.length >= minLen && /^\d+$/.test(code);
       })
       .map((r: Record<string, unknown>) => ({
         hs10: String(r.hs_code),
@@ -356,7 +369,7 @@ export async function resolveHs10(
     // Only one candidate — use it directly
     const result: Hs10Resolution = {
       hsCode: candidates[0].hs10,
-      hsCodePrecision: 'HS10',
+      hsCodePrecision: codePrecision(candidates[0].hs10),
       classificationMethod: 'first_candidate',
       description: candidates[0].description,
       candidates,
@@ -372,7 +385,7 @@ export async function resolveHs10(
   if (priceBreakMatch) {
     const result: Hs10Resolution = {
       hsCode: priceBreakMatch.hs10,
-      hsCodePrecision: 'HS10',
+      hsCodePrecision: codePrecision(priceBreakMatch.hs10),
       classificationMethod: 'price_break',
       description: priceBreakMatch.description,
       candidates,
@@ -388,7 +401,7 @@ export async function resolveHs10(
   if (divergenceMatch) {
     const result: Hs10Resolution = {
       hsCode: divergenceMatch.hs10,
-      hsCodePrecision: 'HS10',
+      hsCodePrecision: codePrecision(divergenceMatch.hs10),
       classificationMethod: 'divergence_rule',
       description: divergenceMatch.description,
       candidates,
@@ -409,7 +422,7 @@ export async function resolveHs10(
   if (candidates[0].score >= 15) {
     const result: Hs10Resolution = {
       hsCode: candidates[0].hs10,
-      hsCodePrecision: 'HS10',
+      hsCodePrecision: codePrecision(candidates[0].hs10),
       classificationMethod: 'keyword_match',
       description: candidates[0].description,
       candidates: candidates.slice(0, 5),
@@ -432,7 +445,7 @@ export async function resolveHs10(
 
   const result: Hs10Resolution = {
     hsCode: best.hs10,
-    hsCodePrecision: 'HS10',
+    hsCodePrecision: codePrecision(best.hs10),
     classificationMethod: 'first_candidate',
     description: best.description,
     candidates: candidates.slice(0, 5),

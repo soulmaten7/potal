@@ -115,6 +115,7 @@ const D2C_ENDPOINTS: EndpointDef[] = [
       { key: 'hsCode', label: 'HS Code', type: 'string', required: false, placeholder: '610910', description: 'Product HS code (leave blank to auto-classify)' },
       { key: 'price', label: 'Price', type: 'number', required: true, placeholder: '28', description: 'Product value' },
       { key: 'currency', label: 'Currency', type: 'select', required: false, options: CURRENCY_OPTIONS, defaultValue: 'USD', description: 'Currency for declared value' },
+      { key: 'weight_kg', label: 'Weight (kg)', type: 'number', required: false, placeholder: '2', description: 'For weight-based (specific) duty calculation' },
       { key: 'routes', label: 'Destinations', type: 'string', required: true, description: 'Countries to compare — add up to 5 destinations' },
     ],
     exampleResponse: {

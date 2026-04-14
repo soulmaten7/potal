@@ -15,6 +15,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
   const productCategory = typeof body.productCategory === 'string' ? body.productCategory.trim() : undefined;
   const material = typeof body.material === 'string' ? body.material.trim() : undefined;
   const currency = typeof body.currency === 'string' ? body.currency.trim() : undefined;
+  const weightKg = typeof body.weight_kg === 'number' && body.weight_kg > 0 ? body.weight_kg : undefined;
   const routesRaw = Array.isArray(body.routes) ? body.routes as Record<string, unknown>[] : [];
   // Filter out empty destination rows (Playground UI keeps empty rows for UX)
   const routes = routesRaw.filter(r => typeof r.destination === 'string' && r.destination.trim() !== '');
@@ -35,6 +36,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
       productName,
       productCategory,
       shippingType: 'international' as const,
+      weight_kg: weightKg,
     };
 
     try {

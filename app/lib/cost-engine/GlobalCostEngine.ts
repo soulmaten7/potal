@@ -226,7 +226,7 @@ export interface GlobalLandedCost extends LandedCost {
   /** HS 10-digit resolution result (7 countries) */
   hs10Resolution?: Hs10Resolution;
   /** HS code precision: 'HS10' (7 countries with gov schedule) or 'HS6' (233 countries) */
-  hsCodePrecision?: 'HS10' | 'HS6';
+  hsCodePrecision?: 'HS10' | 'HS9' | 'HS8' | 'HS6';
   /** AI-detected origin country ISO code (when seller didn't provide origin) */
   detectedOriginCountry?: string;
   /** Accuracy guarantee level based on data quality */
@@ -378,7 +378,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
         productPrice,
       );
       // If HS10 resolved with a duty rate, use it
-      if (hs10Result.dutyRate !== undefined && hs10Result.hsCodePrecision === 'HS10') {
+      if (hs10Result.dutyRate !== undefined && hs10Result.hsCodePrecision !== 'HS6') {
         // Will be used as additional context below
       }
     } catch {
