@@ -65,6 +65,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
         vatRate: (res.vatRate as number) ?? 0,
         vatLabel: (res.vatLabel as string) || 'VAT',
         dutyRateSource: (res.dutyRateSource as string) || null,
+        rateTypeResolved: (res.rateTypeResolved as string) || 'ad_valorem',
         entryType: (res.entryType as string) || null,
         // De minimis
         deMinimisApplied: (res.deMinimisApplied as boolean) ?? false,
@@ -95,6 +96,7 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
         vatRate: 0,
         vatLabel: 'VAT',
         dutyRateSource: null,
+        rateTypeResolved: 'ad_valorem',
         entryType: null,
         deMinimisApplied: false,
         dutyThresholdUsd: 0,

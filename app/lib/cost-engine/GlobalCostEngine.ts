@@ -184,8 +184,10 @@ export interface GlobalLandedCost extends LandedCost {
   additionalTariffNote?: string;
   /** How the HS code was classified: 'cache' | 'keyword' | 'ai' | 'manual' | 'keyword_fallback' */
   classificationSource?: string;
-  /** Where the duty rate came from: 'agr' | 'min' | 'ntlc' | 'mfn' | 'live_db' | 'external_api' | 'db' | 'hardcoded' */
+  /** Where the duty rate came from: 'agr' | 'min' | 'ntlc' | 'mfn' | 'live_db' | 'external_api' | 'db' | 'hardcoded' | 'macmap_ntlc' */
   dutyRateSource?: string;
+  /** Resolved rate type from DB: ad_valorem | specific | compound */
+  rateTypeResolved?: string;
   /** Confidence score of the duty rate (1.0=agr, 0.9=min, 0.8=ntlc, 0.7=mfn/hardcoded) */
   dutyConfidenceScore?: number;
   /** Insurance cost (CIF component) */
@@ -522,6 +524,15 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
 
   // Save base duty rate BEFORE additional tariffs (for accurate breakdown)
   const baseDutyRate = dutyRate;
+
+  // Rich duty rate lookup for specific/compound duty support
+  let richDutyRate: import('./db/duty-rates-db').RichDutyRate | null = null;
+  if (!isDomestic && hsResult && hsResult.hsCode !== '9999') {
+    try {
+      const { getRichDutyRate } = await import('./db/duty-rates-db');
+      richDutyRate = await getRichDutyRate(hsResult.hsCode, profile.code, originCountry);
+    } catch { /* non-critical */ }
+  }
 
   // Trade Remedies: AD/CVD/Safeguard additional duties
   let tradeRemedyResult: TradeRemedyResult | undefined;
@@ -1015,8 +1026,18 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
 
   // ━━━ S-Grade: Duty Type Calculation ━━━
   const weightKg = input.weight_kg ?? 0;
-  const dutyType: DutyType = 'ad_valorem'; // Default; specific/compound/mixed from tariff schedule data
-  const dutyCalc = calculateDutyByType(dutyType, declaredValue, baseDutyRate, weightKg, 0);
+  // Use rich rate from macmap_ntlc_rates if available (rate_type + nav_duty_text)
+  let resolvedDutyType: DutyType = 'ad_valorem';
+  let specificRatePerKg = 0;
+  if (richDutyRate && richDutyRate.rateType !== 'ad_valorem') {
+    resolvedDutyType = richDutyRate.rateType as DutyType;
+    // Parse nav_duty_text for specific rate (simple pattern: "X currency/unit")
+    if (richDutyRate.navDutyText && weightKg > 0) {
+      const parsed = parseSpecificRate(richDutyRate.navDutyText);
+      if (parsed) specificRatePerKg = parsed;
+    }
+  }
+  const dutyCalc = calculateDutyByType(resolvedDutyType, declaredValue, baseDutyRate, weightKg, specificRatePerKg);
 
   // ━━━ S-Grade: Additional fees ━━━
   const hmf = getHarborMaintenanceFee(profile.code, declaredValue, isDomestic);
@@ -1035,7 +1056,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     mpf, countryCode: profile.code, insurance, shippingCost,
     brokerageFee: effectiveBrokerFee, hmf, docFee,
     totalLandedCost: totalWithAllFees, isDomestic, deMinimisApplied,
-    dutyType, dutyBasis: dutyCalc.basis,
+    dutyType: resolvedDutyType, dutyBasis: dutyCalc.basis,
   });
 
   // ━━━ S-Grade: Incoterms Comparison ━━━
@@ -1100,7 +1121,8 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     ftaApplied: ftaResult,
     additionalTariffNote,
     classificationSource,
-    dutyRateSource,
+    dutyRateSource: richDutyRate?.source || dutyRateSource,
+    rateTypeResolved: resolvedDutyType,
     dutyConfidenceScore,
     tariffOptimization,
     insurance: round(insurance),
@@ -1157,8 +1179,7 @@ async function calculateWithProfileAsync(input: GlobalCostInput, profile: Countr
     detailedCostBreakdown,
     incotermsComparison,
     rateOptimization,
-    dutyType,
-    weightBasedDuty: weightKg > 0 ? round(dutyCalc.duty) : undefined,
+    dutyType: resolvedDutyType,
   };
 }
 
@@ -1563,6 +1584,33 @@ function getDocumentationFee(countryCode: string, isDomestic: boolean): number {
     US: 35, CA: 25, GB: 20, AU: 30, JP: 40, KR: 25, DE: 25, FR: 25, CN: 20, IN: 15, BR: 30,
   };
   return fees[countryCode] ?? 15;
+}
+
+// ─── Nav Duty Text Parser ───────────────────────────
+
+/**
+ * Parse nav_duty_text into a per-kg USD rate.
+ * Patterns: "361 yen/kg", "$1.220/kg", "15 Euro per 100 kg", "EUR 12.5/kg"
+ * Returns per-1-kg rate in the original currency (not yet USD-converted).
+ * Returns null if unparsable.
+ */
+function parseSpecificRate(text: string): number | null {
+  const t = text.toLowerCase().replace(/,/g, '').trim();
+  // Pattern: "<number> <currency>/<unit>" or "<number> <currency> per <unit>"
+  const m = t.match(/(\d+(?:\.\d+)?)\s*(?:eur|euro|€|usd|\$|jpy|¥|yen|gbp|£|krw|₩|cny|rmb|aud|cad)?\s*(?:per|\/)\s*(?:(\d+)\s*)?(?:kg|kilogram)/);
+  if (m) {
+    const amount = Number(m[1]);
+    const divisor = m[2] ? Number(m[2]) : 1; // "per 100 kg" → divisor=100
+    return amount / divisor;
+  }
+  // Pattern: "<currency> <number>/kg"
+  const m2 = t.match(/(?:eur|euro|€|usd|\$|jpy|¥|yen|gbp|£|krw|₩|cny|rmb|aud|cad)\s*(\d+(?:\.\d+)?)\s*\/\s*(?:(\d+)\s*)?kg/);
+  if (m2) {
+    const amount = Number(m2[1]);
+    const divisor = m2[2] ? Number(m2[2]) : 1;
+    return amount / divisor;
+  }
+  return null;
 }
 
 // ─── Duty Type Calculation ──────────────────────────
