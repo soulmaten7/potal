@@ -33,7 +33,7 @@ const ENDPOINT_FIELDS: Record<string, FieldDef[]> = {
   'apply-fta': [
     { key: 'fta_id', label: 'FTA Agreement (optional)', type: 'text', placeholder: 'USMCA (leave empty for auto-detect)' },
     { key: 'originating_content_pct', label: 'Originating Content %', type: 'number', placeholder: '70' },
-    { key: 'product_value', label: 'Product Value (USD)', type: 'number', placeholder: '500' },
+    // product_value removed — Calculator's price+currency provides this
   ],
   'check-restrictions': [
     // destination from Calculator; no extra fields
@@ -50,8 +50,7 @@ const ENDPOINT_FIELDS: Record<string, FieldDef[]> = {
     ]},
     { key: 'shipper_name', label: 'Shipper Name', type: 'text', required: true, placeholder: 'Acme Corp' },
     { key: 'consignee_name', label: 'Consignee Name', type: 'text', required: true, placeholder: 'Global Trade Ltd' },
-    { key: 'origin', label: 'Origin', type: 'text', placeholder: 'KR' },
-    { key: 'destination', label: 'Destination', type: 'text', placeholder: 'US' },
+    // origin, destination removed — Calculator's originCountry + destinationCountry provides these
   ],
   'screen-parties': [
     { key: 'name', label: 'Party Name', type: 'text', required: true, placeholder: 'e.g. Huawei Technologies' },
@@ -110,8 +109,14 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
         if (calcFields.originCountry) params.origin = calcFields.originCountry;
         if (calcFields.destinationCountry) params.destinationCountry = calcFields.destinationCountry;
         if (calcFields.hsCode) params.hsCode = calcFields.hsCode;
-        if (calcFields.weightSpec) params.weight_kg = Number(calcFields.weightSpec) || undefined;
-        if (calcFields.price) params.price = Number(calcFields.price) || undefined;
+        if (calcFields.weightSpec) {
+          params.weight_kg = Number(calcFields.weightSpec) || undefined;
+          if (calcFields.weightUnit) params.weight_unit = calcFields.weightUnit;
+        }
+        if (calcFields.price) {
+          params.price = Number(calcFields.price) || undefined;
+          if (calcFields.currency) params.currency = calcFields.currency;
+        }
         if (calcFields.processing) params.productForm = calcFields.processing;
         if (calcFields.composition) params.composition = calcFields.composition;
         if (calcFields.description) params.description = calcFields.description;
@@ -119,6 +124,13 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
         if (endpointId === 'apply-fta') {
           params.hs_code = params.hsCode || calcFields.hsCode || '';
           params.destination = params.destinationCountry;
+          // product_value from Calculator's price
+          if (calcFields.price) params.product_value = Number(calcFields.price) || undefined;
+        }
+        // generate-document maps Calculator countries to origin/destination keys
+        if (endpointId === 'generate-document') {
+          if (calcFields.originCountry) params.origin = calcFields.originCountry;
+          if (calcFields.destinationCountry) params.destination = calcFields.destinationCountry;
         }
       }
       // From scenario-specific fields
@@ -157,8 +169,14 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
       if (calcFields.originCountry) merged.origin = calcFields.originCountry;
       if (calcFields.destinationCountry) merged.destinationCountry = calcFields.destinationCountry;
       if (calcFields.hsCode) merged.hsCode = calcFields.hsCode;
-      if (calcFields.weightSpec) merged.weight_kg = Number(calcFields.weightSpec) || undefined;
-      if (calcFields.price) merged.price = Number(calcFields.price) || undefined;
+      if (calcFields.weightSpec) {
+        merged.weight_kg = Number(calcFields.weightSpec) || undefined;
+        if (calcFields.weightUnit) merged.weight_unit = calcFields.weightUnit;
+      }
+      if (calcFields.price) {
+        merged.price = Number(calcFields.price) || undefined;
+        if (calcFields.currency) merged.currency = calcFields.currency;
+      }
     }
     for (const f of fields) { const v = values[f.key]; if (v) merged[f.key] = f.type === 'number' ? Number(v) : v; }
     return merged;

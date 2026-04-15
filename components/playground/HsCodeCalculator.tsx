@@ -8,9 +8,31 @@ export interface HsCalcFields {
   productName: string; material: string; category: string;
   originCountry: string; destinationCountry: string;
   description: string; processing: string; composition: string;
-  weightSpec: string; price: string;
+  weightSpec: string; weightUnit: string;
+  price: string; currency: string;
   hsCode?: string;
 }
+
+const WEIGHT_UNITS = [
+  { value: 'kg', label: 'kg' },
+  { value: 'g', label: 'g' },
+  { value: 'lb', label: 'lb' },
+  { value: 'oz', label: 'oz' },
+  { value: 't', label: 't' },
+];
+
+const CURRENCY_OPTIONS = [
+  { value: 'USD', label: 'USD' },
+  { value: 'EUR', label: 'EUR' },
+  { value: 'GBP', label: 'GBP' },
+  { value: 'JPY', label: 'JPY' },
+  { value: 'KRW', label: 'KRW' },
+  { value: 'CNY', label: 'CNY' },
+  { value: 'CAD', label: 'CAD' },
+  { value: 'AUD', label: 'AUD' },
+  { value: 'HKD', label: 'HKD' },
+  { value: 'SGD', label: 'SGD' },
+];
 
 interface HsCodeCalculatorProps {
   onResult: (hsCode: string) => void;
@@ -30,7 +52,9 @@ export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButt
   const [processing, setProcessing] = useState('');
   const [composition, setComposition] = useState('');
   const [weightSpec, setWeightSpec] = useState('');
+  const [weightUnit, setWeightUnit] = useState('kg');
   const [price, setPrice] = useState('');
+  const [currency, setCurrency] = useState('USD');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ hsCode: string; description: string; confidence: number } | null>(null);
   const [error, setError] = useState('');
@@ -53,8 +77,8 @@ export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButt
       if (description) body.description = description;
       if (processing) body.processing = processing;
       if (composition) body.composition = composition;
-      if (weightSpec) body.weight_spec = weightSpec;
-      if (price) body.price = Number(price);
+      if (weightSpec) { body.weight_spec = weightSpec; body.weight_unit = weightUnit; }
+      if (price) { body.price = Number(price); body.currency = currency; }
 
       const res = await fetch('/api/v1/classify', {
         method: 'POST',
@@ -87,7 +111,7 @@ export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButt
 
   // Notify parent of field changes
   const notifyFields = () => {
-    if (onFieldsChange) onFieldsChange({ productName, material, category, originCountry, destinationCountry, description, processing, composition, weightSpec, price, hsCode: result?.hsCode });
+    if (onFieldsChange) onFieldsChange({ productName, material, category, originCountry, destinationCountry, description, processing, composition, weightSpec, weightUnit, price, currency, hsCode: result?.hsCode });
   };
 
   // CW37-Gap4: Embedded mode — full 10-field with collapsible advanced
@@ -127,15 +151,33 @@ export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButt
               <input type="text" value={destinationCountry} onChange={e => { setDestinationCountry(e.target.value.toUpperCase()); setTimeout(notifyFields, 0); }} placeholder="US" maxLength={2} className={inputCls} />
             </div>
           </div>
-          {/* Row 4: Weight + Price */}
+          {/* Row 4: Weight (value + unit) + Price (value + currency) */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>Weight (kg)</label>
-              <input type="text" value={weightSpec} onChange={update(setWeightSpec)} placeholder="0.2" className={inputCls} />
+              <label className={labelCls}>Weight</label>
+              <div className="flex gap-2">
+                <input type="text" value={weightSpec} onChange={update(setWeightSpec)} placeholder="0.2" className={`${inputCls} flex-1`} />
+                <select
+                  value={weightUnit}
+                  onChange={e => { setWeightUnit(e.target.value); setTimeout(notifyFields, 0); }}
+                  className="px-2 py-2 border border-slate-200 rounded-md text-sm bg-white w-20"
+                >
+                  {WEIGHT_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
+                </select>
+              </div>
             </div>
             <div>
-              <label className={labelCls}>Price (USD)</label>
-              <input type="text" value={price} onChange={update(setPrice)} placeholder="50" className={inputCls} />
+              <label className={labelCls}>Price</label>
+              <div className="flex gap-2">
+                <input type="text" value={price} onChange={update(setPrice)} placeholder="50" className={`${inputCls} flex-1`} />
+                <select
+                  value={currency}
+                  onChange={e => { setCurrency(e.target.value); setTimeout(notifyFields, 0); }}
+                  className="px-2 py-2 border border-slate-200 rounded-md text-sm bg-white w-20"
+                >
+                  {CURRENCY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                </select>
+              </div>
             </div>
           </div>
           {/* Advanced: collapsible */}
@@ -292,26 +334,44 @@ export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButt
               />
             </div>
             <div>
-              <label className="block text-[12px] font-bold text-[#02122c] mb-1">Weight / Spec</label>
-              <input
-                type="text"
-                value={weightSpec}
-                onChange={e => setWeightSpec(e.target.value)}
-                placeholder="120g"
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
-              />
+              <label className="block text-[12px] font-bold text-[#02122c] mb-1">Weight</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={weightSpec}
+                  onChange={e => setWeightSpec(e.target.value)}
+                  placeholder="120"
+                  className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
+                />
+                <select
+                  value={weightUnit}
+                  onChange={e => setWeightUnit(e.target.value)}
+                  className="px-2 py-2 rounded-lg border border-slate-200 text-[13px] bg-white w-20 focus:outline-none focus:border-[#F59E0B]"
+                >
+                  {WEIGHT_UNITS.map(u => <option key={u.value} value={u.value}>{u.label}</option>)}
+                </select>
+              </div>
             </div>
           </div>
-          {/* 10. Price */}
+          {/* 10. Price (value + currency) */}
           <div>
             <label className="block text-[12px] font-bold text-[#02122c] mb-1">Price</label>
-            <input
-              type="number"
-              value={price}
-              onChange={e => setPrice(e.target.value)}
-              placeholder="45"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
-            />
+            <div className="flex gap-2">
+              <input
+                type="number"
+                value={price}
+                onChange={e => setPrice(e.target.value)}
+                placeholder="45"
+                className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-[13px] focus:outline-none focus:border-[#F59E0B]"
+              />
+              <select
+                value={currency}
+                onChange={e => setCurrency(e.target.value)}
+                className="px-2 py-2 rounded-lg border border-slate-200 text-[13px] bg-white w-20 focus:outline-none focus:border-[#F59E0B]"
+              >
+                {CURRENCY_OPTIONS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+              </select>
+            </div>
           </div>
         </div>
 
