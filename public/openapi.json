@@ -1,0 +1,332 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "POTAL API",
+    "version": "1.0.0",
+    "description": "Global trade automation API — HS classification, landed cost calculation, FTA eligibility, sanctions screening, ECCN lookup, and trade document generation. Forever Free.",
+    "contact": { "name": "POTAL Support", "url": "https://www.potal.app", "email": "contact@potal.app" },
+    "license": { "name": "Forever Free", "url": "https://www.potal.app/terms" }
+  },
+  "servers": [{ "url": "https://www.potal.app/api/v1", "description": "Production" }],
+  "security": [{ "ApiKeyAuth": [] }, { "DemoBypass": [] }],
+  "tags": [
+    { "name": "Compute", "description": "Core trade calculation endpoints" },
+    { "name": "Screening", "description": "Sanctions and export control screening" },
+    { "name": "Guides", "description": "Trade compliance information pages (not API endpoints)" }
+  ],
+  "paths": {
+    "/classify": {
+      "post": {
+        "tags": ["Compute"],
+        "summary": "Classify a product to get its HS code",
+        "description": "AI-powered HS code classification using product name, material, and other attributes. Returns top classification with alternatives and confidence score.",
+        "operationId": "classifyProduct",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassifyRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Classification result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassifyResponse" } } } }
+        }
+      }
+    },
+    "/calculate": {
+      "post": {
+        "tags": ["Compute"],
+        "summary": "Calculate total landed cost",
+        "description": "Calculates import duty, VAT/GST, fees, and total landed cost for a product shipment. Includes FTA optimization, trade remedies (AD/CVD), Section 301, and de minimis evaluation.",
+        "operationId": "calculateLandedCost",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalculateRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Landed cost breakdown", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalculateResponse" } } } }
+        }
+      }
+    },
+    "/roo/evaluate": {
+      "post": {
+        "tags": ["Compute"],
+        "summary": "Evaluate FTA eligibility (Rules of Origin)",
+        "description": "Determines if a product qualifies for preferential FTA rates based on origin criteria (WO, RVC, CTH, CTSH). Auto-detect mode finds all applicable FTAs when fta_id is omitted.",
+        "operationId": "evaluateFtaEligibility",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RooEvaluateRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Eligibility result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RooEvaluateResponse" } } } }
+        }
+      }
+    },
+    "/restrictions": {
+      "post": {
+        "tags": ["Compute"],
+        "summary": "Check import restrictions for an HS code",
+        "description": "Checks if a product is prohibited, restricted, or requires special permits/licenses for import into the destination country. Includes HAZMAT warnings.",
+        "operationId": "checkRestrictions",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RestrictionsRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Restriction check result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RestrictionsResponse" } } } }
+        }
+      }
+    },
+    "/countries/compare": {
+      "post": {
+        "tags": ["Compute"],
+        "summary": "Compare trade data across countries",
+        "description": "Compare VAT rates, de minimis thresholds, and FTA counts for 2-10 countries.",
+        "operationId": "compareCountries",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompareRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Country comparison", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompareResponse" } } } }
+        }
+      }
+    },
+    "/customs-docs/generate": {
+      "post": {
+        "tags": ["Compute"],
+        "summary": "Generate trade documents",
+        "description": "Generate commercial invoice, packing list, certificate of origin, or customs declaration PDF.",
+        "operationId": "generateDocument",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenerateDocumentRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Generated document", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenerateDocumentResponse" } } } }
+        }
+      }
+    },
+    "/screen-parties": {
+      "post": {
+        "tags": ["Screening"],
+        "summary": "Screen parties against sanctions lists",
+        "description": "Fuzzy-match a company or individual name against 47,926 sanctions entries (OFAC SDN, BIS Entity List, EU/UK/UN sanctions).",
+        "operationId": "screenParties",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScreenPartiesRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "Screening result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScreenPartiesResponse" } } } }
+        }
+      }
+    },
+    "/eccn-lookup": {
+      "post": {
+        "tags": ["Screening"],
+        "summary": "Look up ECCN export control classification",
+        "description": "Search the BIS Commerce Control List (658 ECCN entries) by keyword to find applicable export control classifications.",
+        "operationId": "eccnLookup",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EccnLookupRequest" } } }
+        },
+        "responses": {
+          "200": { "description": "ECCN matches", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EccnLookupResponse" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "X-API-Key", "description": "API key (pk_live_... or sk_live_...). Get yours at /dashboard/api-keys" },
+      "DemoBypass": { "type": "apiKey", "in": "header", "name": "X-Demo-Request", "description": "Set to 'true' for demo access (10 req/min, no API key needed)" }
+    },
+    "schemas": {
+      "CommonMetadata": {
+        "type": "object",
+        "properties": {
+          "disclaimer": { "type": "string", "example": "For informational use only." },
+          "apiVersion": { "type": "string", "example": "v1" },
+          "responseGeneratedAt": { "type": "string", "format": "date-time" },
+          "confidenceScore": { "type": "number", "minimum": 0, "maximum": 1 },
+          "availableEnums": { "type": "object", "additionalProperties": { "type": "array", "items": { "type": "string" } } }
+        }
+      },
+      "ClassifyRequest": {
+        "type": "object",
+        "required": ["productName"],
+        "properties": {
+          "productName": { "type": "string", "example": "cotton knitted t-shirt" },
+          "material": { "type": "string", "example": "cotton" },
+          "category": { "type": "string", "example": "apparel-knit" },
+          "origin_country": { "type": "string", "example": "KR" },
+          "destination_country": { "type": "string", "example": "US" },
+          "description": { "type": "string" },
+          "processing": { "type": "string" },
+          "composition": { "type": "string" },
+          "weight_spec": { "type": "string" },
+          "price": { "type": "number" }
+        }
+      },
+      "ClassifyResponse": {
+        "type": "object",
+        "properties": {
+          "hsCode": { "type": "string", "example": "610910" },
+          "description": { "type": "string" },
+          "confidence": { "type": "number" },
+          "method": { "type": "string", "enum": ["override", "cache", "vector", "keyword", "ai", "v3-pipeline", "keyword_fallback"] },
+          "alternatives": { "type": "array", "items": { "type": "object" } },
+          "ruling_reference": { "type": "string" },
+          "_metadata": { "$ref": "#/components/schemas/CommonMetadata" }
+        }
+      },
+      "CalculateRequest": {
+        "type": "object",
+        "required": ["price"],
+        "properties": {
+          "price": { "type": "number", "example": 50 },
+          "origin": { "type": "string", "example": "KR" },
+          "destinationCountry": { "type": "string", "example": "US" },
+          "hsCode": { "type": "string", "example": "6109100010" },
+          "productName": { "type": "string" },
+          "material": { "type": "string" },
+          "weight_kg": { "type": "number" },
+          "shippingPrice": { "type": "number" },
+          "shippingTerms": { "type": "string", "enum": ["DDP", "DDU", "CIF", "FOB", "EXW"] }
+        }
+      },
+      "CalculateResponse": {
+        "type": "object",
+        "properties": {
+          "totalLandedCost": { "type": "number" },
+          "importDuty": { "type": "number" },
+          "vat": { "type": "number" },
+          "dutyRateSource": { "type": "string", "enum": ["precomputed_mfn", "macmap_ntlc", "live_db", "external_api", "db", "ruling_conditional", "hardcoded"] },
+          "rulingMatch": { "type": "object", "properties": { "rulingId": { "type": "string" }, "source": { "type": "string" }, "confidenceScore": { "type": "number" } } },
+          "dataAvailability": { "type": "object" },
+          "dutyInfo": { "type": "object", "properties": { "rate": { "type": "number" }, "amount": { "type": "number" }, "source": { "type": "string" } } },
+          "exchangeRateInfo": { "type": "object" },
+          "deMinimisInfo": { "type": "object" },
+          "ftaSavings": { "type": "object" },
+          "_metadata": { "$ref": "#/components/schemas/CommonMetadata" }
+        }
+      },
+      "RooEvaluateRequest": {
+        "type": "object",
+        "required": ["hs_code", "origin", "destination"],
+        "properties": {
+          "hs_code": { "type": "string", "example": "610910" },
+          "origin": { "type": "string", "example": "MX" },
+          "destination": { "type": "string", "example": "US" },
+          "fta_id": { "type": "string", "example": "USMCA", "description": "Omit for auto-detect mode" },
+          "originating_content_pct": { "type": "number", "example": 70 },
+          "material": { "type": "string" },
+          "product_form": { "type": "string" }
+        }
+      },
+      "RooEvaluateResponse": {
+        "type": "object",
+        "properties": {
+          "verdict": { "type": "string", "enum": ["eligible", "ineligible", "indeterminate"] },
+          "eligible": { "type": "boolean" },
+          "criteriaMetList": { "type": "array", "items": { "type": "string", "enum": ["WO", "PE", "RVC", "CTH", "CC", "CTSH"] } },
+          "requiredRvc": { "type": "number" },
+          "rvcPercentage": { "type": "number" },
+          "applicableFTAs": { "type": "array", "items": { "type": "object" } },
+          "recommended": { "type": "object" },
+          "rulingPrecedents": { "type": "array", "items": { "type": "object" } },
+          "_metadata": { "$ref": "#/components/schemas/CommonMetadata" }
+        }
+      },
+      "RestrictionsRequest": {
+        "type": "object",
+        "required": ["destinationCountry"],
+        "properties": {
+          "hsCode": { "type": "string", "example": "850760" },
+          "productName": { "type": "string" },
+          "destinationCountry": { "type": "string", "example": "US" }
+        }
+      },
+      "RestrictionsResponse": {
+        "type": "object",
+        "properties": {
+          "restricted": { "type": "boolean" },
+          "hasRestrictions": { "type": "boolean" },
+          "isProhibited": { "type": "boolean" },
+          "restrictions": { "type": "array", "items": { "type": "object" } },
+          "categories": { "type": "array", "items": { "type": "string" } },
+          "rulingNotes": { "type": "array", "items": { "type": "string" } },
+          "_metadata": { "$ref": "#/components/schemas/CommonMetadata" }
+        }
+      },
+      "CompareRequest": {
+        "type": "object",
+        "required": ["countries"],
+        "properties": {
+          "countries": { "type": "array", "items": { "type": "string" }, "example": ["US", "DE", "JP"], "minItems": 2, "maxItems": 10 }
+        }
+      },
+      "CompareResponse": {
+        "type": "object",
+        "properties": {
+          "comparison": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "GenerateDocumentRequest": {
+        "type": "object",
+        "required": ["documentType"],
+        "properties": {
+          "documentType": { "type": "string", "enum": ["commercial_invoice", "packing_list", "certificate_of_origin", "customs_declaration"] },
+          "shipper_name": { "type": "string" },
+          "consignee_name": { "type": "string" },
+          "origin": { "type": "string" },
+          "destination": { "type": "string" }
+        }
+      },
+      "GenerateDocumentResponse": {
+        "type": "object",
+        "properties": {
+          "document": { "type": "object" },
+          "generated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ScreenPartiesRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string", "example": "Huawei Technologies" },
+          "country": { "type": "string", "example": "CN" },
+          "threshold": { "type": "number", "default": 0.8, "minimum": 0, "maximum": 1 }
+        }
+      },
+      "ScreenPartiesResponse": {
+        "type": "object",
+        "properties": {
+          "matches": { "type": "array", "items": { "type": "object" } },
+          "totalMatches": { "type": "integer" },
+          "disclaimer": { "type": "string" },
+          "sourceCoverage": { "type": "object" },
+          "dataLastUpdated": { "type": "string", "format": "date-time" }
+        }
+      },
+      "EccnLookupRequest": {
+        "type": "object",
+        "required": ["keyword"],
+        "properties": {
+          "keyword": { "type": "string", "example": "encryption" },
+          "category": { "type": "string", "example": "5" },
+          "productDescription": { "type": "string" }
+        }
+      },
+      "EccnLookupResponse": {
+        "type": "object",
+        "properties": {
+          "matches": { "type": "array", "items": { "type": "object" } },
+          "totalMatches": { "type": "integer" },
+          "totalEccnEntries": { "type": "integer" },
+          "disclaimer": { "type": "string" }
+        }
+      }
+    }
+  }
+}
