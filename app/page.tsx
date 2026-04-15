@@ -936,10 +936,57 @@ export default function HomePage() {
   return (
     <DesktopOnlyGuard>
       <div className="min-h-screen bg-white">
-        {/* CW34: HeaderMinimal removed — global Header from ChromeGate now
-            renders on "/" since HIDE_HEADER_ON no longer includes "/" */}
         <LiveTicker />
-        <ScenarioSelector />
+
+        {/* CW37-Gap3: Simplified home — 2 buttons (Export/Import) */}
+        <div className="flex flex-col items-center justify-center py-24 px-4">
+          <h1 className="text-3xl font-extrabold text-[#02122c] mb-3 text-center">
+            Cross-Border Trade, Made Simple
+          </h1>
+          <p className="text-slate-500 text-center mb-10 max-w-md">
+            HS classification, landed cost, FTA eligibility, sanctions screening — all in one place. Forever Free.
+          </p>
+
+          <div className="flex gap-6">
+            <Link
+              href="/workspace/export"
+              className="flex flex-col items-center justify-center w-44 h-36 rounded-xl border-2 border-blue-200 bg-blue-50 hover:border-blue-500 hover:shadow-lg transition-all group"
+            >
+              <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">&#128230;</span>
+              <span className="text-lg font-bold text-blue-800">Export</span>
+              <span className="text-xs text-blue-500 mt-1">I sell / ship abroad</span>
+            </Link>
+
+            <Link
+              href="/workspace/import"
+              className="flex flex-col items-center justify-center w-44 h-36 rounded-xl border-2 border-emerald-200 bg-emerald-50 hover:border-emerald-500 hover:shadow-lg transition-all group"
+            >
+              <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">&#128229;</span>
+              <span className="text-lg font-bold text-emerald-800">Import</span>
+              <span className="text-xs text-emerald-500 mt-1">I buy / receive from abroad</span>
+            </Link>
+          </div>
+
+          <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-slate-400">
+            <span>Forever Free</span>
+            <span>8 API Endpoints</span>
+            <span>240 Countries</span>
+            <span>645K Rulings</span>
+            <span>47K Sanctions</span>
+          </div>
+
+          <div className="mt-8 flex gap-4">
+            <Link href="/api-docs" className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-2">
+              API Documentation
+            </Link>
+            <Link href="/guides" className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-2">
+              Trade Guides
+            </Link>
+            <Link href="/workspace/export" className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-2">
+              Workspace
+            </Link>
+          </div>
+        </div>
       </div>
     </DesktopOnlyGuard>
   );
