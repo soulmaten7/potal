@@ -6,10 +6,11 @@ import { SearchableSelect } from './SearchableSelect';
 
 interface HsCodeCalculatorProps {
   onResult: (hsCode: string) => void;
-  onClose: () => void;
+  onClose?: () => void;
+  embedded?: boolean;
 }
 
-export function HsCodeCalculator({ onResult, onClose }: HsCodeCalculatorProps) {
+export function HsCodeCalculator({ onResult, onClose, embedded }: HsCodeCalculatorProps) {
   const [productName, setProductName] = useState('');
   const [material, setMaterial] = useState('');
   const [category, setCategory] = useState('');
@@ -70,9 +71,64 @@ export function HsCodeCalculator({ onResult, onClose }: HsCodeCalculatorProps) {
   const handleUse = () => {
     if (result) {
       onResult(result.hsCode);
-      onClose();
+      if (onClose) onClose();
     }
   };
+
+  // CW37-Gap2: Embedded mode — compact inline rendering
+  if (embedded) {
+    return (
+      <div className="border border-slate-200 rounded-lg bg-white">
+        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 rounded-t-lg">
+          <h3 className="text-sm font-semibold text-slate-700">HS Code Calculator</h3>
+          <p className="text-xs text-slate-400 mt-0.5">Classify your product to get the HS code automatically</p>
+        </div>
+        <div className="p-4 space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">Product Name *</label>
+            <input type="text" value={productName} onChange={e => setProductName(e.target.value)} placeholder="e.g. cotton knitted t-shirt" className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Material</label>
+              <SearchableSelect options={MATERIAL_OPTIONS} value={material} onChange={val => { setMaterial(val); setCategory(''); }} placeholder="Select" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Category</label>
+              <SearchableSelect options={filteredCategories} value={category} onChange={setCategory} placeholder="Select" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Origin</label>
+              <input type="text" value={originCountry} onChange={e => setOriginCountry(e.target.value.toUpperCase())} placeholder="KR" maxLength={2} className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1">Destination</label>
+              <input type="text" value={destinationCountry} onChange={e => setDestinationCountry(e.target.value.toUpperCase())} placeholder="US" maxLength={2} className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm" />
+            </div>
+          </div>
+          <button onClick={handleClassify} disabled={loading || !productName.trim()} className="w-full py-2 bg-amber-500 text-white rounded-md text-sm font-semibold hover:bg-amber-600 disabled:opacity-50">
+            {loading ? 'Classifying...' : 'Classify'}
+          </button>
+          {error && <p className="text-xs text-red-500">{error}</p>}
+          {result && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-md">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-emerald-600 font-semibold">HS Code: </span>
+                  <span className="font-mono font-bold text-emerald-800">{result.hsCode}</span>
+                  <span className="text-xs text-emerald-500 ml-2">({Math.round(result.confidence * 100)}%)</span>
+                </div>
+                <button onClick={handleUse} className="text-xs px-3 py-1 bg-emerald-600 text-white rounded font-semibold">Use This</button>
+              </div>
+              {result.description && <p className="text-xs text-emerald-600 mt-1">{result.description}</p>}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>

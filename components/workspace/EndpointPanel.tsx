@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { ENDPOINTS } from './EndpointSidebar';
+import { HsCodeCalculator } from '@/components/playground/HsCodeCalculator';
 
 interface FieldDef {
   key: string;
@@ -135,6 +136,19 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
         </div>
         <h2 className="text-lg font-semibold mt-1">{endpoint.label}</h2>
       </div>
+
+      {/* CW37-Gap2: HsCodeCalculator embed for compute endpoints */}
+      {endpoint.group === 'compute' && (
+        <div className="p-4 border-b border-slate-200">
+          <HsCodeCalculator
+            embedded
+            onResult={(hsCode) => {
+              const hsKey = fields.find(f => f.key === 'hsCode' || f.key === 'hs_code')?.key;
+              if (hsKey) updateField(hsKey, hsCode);
+            }}
+          />
+        </div>
+      )}
 
       {/* Parameters */}
       <div className="p-4 border-b border-slate-200">
