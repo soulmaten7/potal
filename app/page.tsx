@@ -948,25 +948,83 @@ export default function HomePage() {
             HS classification, landed cost, FTA eligibility, sanctions screening — all in one place.
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full max-w-2xl">
+          {/* CW38-HF3: Expanded boxes with workflow info embedded */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 w-full max-w-5xl">
             <Link
               href="/workspace/export"
-              className="flex flex-col items-center justify-center py-14 px-8 rounded-2xl border-2 border-blue-200 bg-gradient-to-b from-blue-50 to-white hover:border-blue-500 hover:shadow-2xl hover:scale-[1.03] transition-all duration-200 group cursor-pointer"
+              className="flex flex-col py-10 px-8 rounded-2xl border-2 border-blue-200 bg-gradient-to-b from-blue-50 to-white hover:border-blue-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
             >
-              <span className="text-7xl mb-4 group-hover:scale-110 transition-transform duration-200">&#128230;</span>
-              <span className="text-3xl font-black text-blue-800 mb-2">Export</span>
-              <span className="text-base text-blue-500">I sell or ship abroad</span>
-              <span className="mt-4 text-sm font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">Get Started &#8594;</span>
+              {/* Header */}
+              <div className="flex flex-col items-center text-center mb-6">
+                <span className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-200">&#128230;</span>
+                <span className="text-3xl font-black text-blue-800 mb-1">Export</span>
+                <span className="text-sm text-blue-500">I sell or ship abroad</span>
+              </div>
+
+              {/* Typical workflow */}
+              <div className="border-t border-blue-100 pt-5 mb-5">
+                <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-3">Typical workflow</p>
+                <ul className="space-y-2 text-[15px] text-slate-700">
+                  <li className="flex items-start gap-2"><span className="text-blue-500 font-bold">1.</span><span>Classify Product</span></li>
+                  <li className="flex items-start gap-2"><span className="text-blue-500 font-bold">2.</span><span>Apply FTA / RoO</span></li>
+                  <li className="flex items-start gap-2"><span className="text-blue-500 font-bold">3.</span><span>Generate Document</span></li>
+                </ul>
+              </div>
+
+              {/* Also useful */}
+              <div className="mb-5">
+                <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-3">Also useful</p>
+                <ul className="space-y-1.5 text-sm text-slate-600">
+                  <li className="flex items-start gap-2"><span className="text-blue-400">&#8226;</span><span>Screen Parties</span></li>
+                  <li className="flex items-start gap-2"><span className="text-blue-400">&#8226;</span><span>ECCN Lookup</span></li>
+                </ul>
+              </div>
+
+              {/* CTA */}
+              <div className="mt-auto pt-2">
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
+                  Start Export &#8594;
+                </span>
+              </div>
             </Link>
 
             <Link
               href="/workspace/import"
-              className="flex flex-col items-center justify-center py-14 px-8 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white hover:border-emerald-500 hover:shadow-2xl hover:scale-[1.03] transition-all duration-200 group cursor-pointer"
+              className="flex flex-col py-10 px-8 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white hover:border-emerald-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
             >
-              <span className="text-7xl mb-4 group-hover:scale-110 transition-transform duration-200">&#128229;</span>
-              <span className="text-3xl font-black text-emerald-800 mb-2">Import</span>
-              <span className="text-base text-emerald-500">I buy or receive from abroad</span>
-              <span className="mt-4 text-sm font-semibold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">Get Started &#8594;</span>
+              {/* Header */}
+              <div className="flex flex-col items-center text-center mb-6">
+                <span className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-200">&#128229;</span>
+                <span className="text-3xl font-black text-emerald-800 mb-1">Import</span>
+                <span className="text-sm text-emerald-500">I buy or receive from abroad</span>
+              </div>
+
+              {/* Typical workflow */}
+              <div className="border-t border-emerald-100 pt-5 mb-5">
+                <p className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider mb-3">Typical workflow</p>
+                <ul className="space-y-2 text-[15px] text-slate-700">
+                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">1.</span><span>Classify Product</span></li>
+                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">2.</span><span>Calculate Landed Cost</span></li>
+                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">3.</span><span>Check Restrictions</span></li>
+                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">4.</span><span>Compare Countries</span></li>
+                </ul>
+              </div>
+
+              {/* Also useful */}
+              <div className="mb-5">
+                <p className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider mb-3">Also useful</p>
+                <ul className="space-y-1.5 text-sm text-slate-600">
+                  <li className="flex items-start gap-2"><span className="text-emerald-400">&#8226;</span><span>Apply FTA</span></li>
+                  <li className="flex items-start gap-2"><span className="text-emerald-400">&#8226;</span><span>Generate Document</span></li>
+                </ul>
+              </div>
+
+              {/* CTA */}
+              <div className="mt-auto pt-2">
+                <span className="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">
+                  Start Import &#8594;
+                </span>
+              </div>
             </Link>
           </div>
 
