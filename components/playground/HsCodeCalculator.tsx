@@ -4,13 +4,22 @@ import { useState } from 'react';
 import { MATERIAL_OPTIONS, CATEGORY_OPTIONS, MATERIAL_TO_CATEGORIES, COUNTRY_OPTIONS } from '@/lib/playground/dropdown-options';
 import { SearchableSelect } from './SearchableSelect';
 
+export interface HsCalcFields {
+  productName: string; material: string; category: string;
+  originCountry: string; destinationCountry: string;
+  description: string; processing: string; composition: string;
+  weightSpec: string; price: string;
+  hsCode?: string;
+}
+
 interface HsCodeCalculatorProps {
   onResult: (hsCode: string) => void;
   onClose?: () => void;
   embedded?: boolean;
+  onFieldsChange?: (fields: HsCalcFields) => void;
 }
 
-export function HsCodeCalculator({ onResult, onClose, embedded }: HsCodeCalculatorProps) {
+export function HsCodeCalculator({ onResult, onClose, embedded, onFieldsChange }: HsCodeCalculatorProps) {
   const [productName, setProductName] = useState('');
   const [material, setMaterial] = useState('');
   const [category, setCategory] = useState('');
@@ -75,41 +84,86 @@ export function HsCodeCalculator({ onResult, onClose, embedded }: HsCodeCalculat
     }
   };
 
-  // CW37-Gap2: Embedded mode — compact inline rendering
+  // Notify parent of field changes
+  const notifyFields = () => {
+    if (onFieldsChange) onFieldsChange({ productName, material, category, originCountry, destinationCountry, description, processing, composition, weightSpec, price, hsCode: result?.hsCode });
+  };
+
+  // CW37-Gap4: Embedded mode — full 10-field with collapsible advanced
   if (embedded) {
+    const inputCls = "w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:border-blue-400 focus:outline-none";
+    const labelCls = "block text-xs font-semibold text-slate-600 mb-1";
+    const update = (setter: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => { setter(e.target.value); setTimeout(notifyFields, 0); };
+    const updateSelect = (setter: (v: string) => void, extra?: () => void) => (val: string) => { setter(val); extra?.(); setTimeout(notifyFields, 0); };
+
     return (
       <div className="border border-slate-200 rounded-lg bg-white">
         <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 rounded-t-lg">
-          <h3 className="text-sm font-semibold text-slate-700">HS Code Calculator</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Classify your product to get the HS code automatically</p>
+          <h3 className="text-sm font-semibold text-slate-700">Product Details (10 Fields)</h3>
+          <p className="text-xs text-slate-400 mt-0.5">Fill in product info — HS code is classified automatically</p>
         </div>
         <div className="p-4 space-y-3">
+          {/* Row 1: Product Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">Product Name *</label>
-            <input type="text" value={productName} onChange={e => setProductName(e.target.value)} placeholder="e.g. cotton knitted t-shirt" className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm" />
+            <label className={labelCls}>Product Name *</label>
+            <input type="text" value={productName} onChange={update(setProductName)} placeholder="e.g. cotton knitted t-shirt" className={inputCls} />
           </div>
+          {/* Row 2: Material + Category */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Material</label>
-              <SearchableSelect options={MATERIAL_OPTIONS} value={material} onChange={val => { setMaterial(val); setCategory(''); }} placeholder="Select" />
+              <label className={labelCls}>Material</label>
+              <SearchableSelect options={MATERIAL_OPTIONS} value={material} onChange={updateSelect(setMaterial, () => setCategory(''))} placeholder="Select" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Category</label>
-              <SearchableSelect options={filteredCategories} value={category} onChange={setCategory} placeholder="Select" />
+              <label className={labelCls}>Category</label>
+              <SearchableSelect options={filteredCategories} value={category} onChange={updateSelect(setCategory)} placeholder="Select" />
             </div>
           </div>
+          {/* Row 3: Origin + Destination */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Origin</label>
-              <input type="text" value={originCountry} onChange={e => setOriginCountry(e.target.value.toUpperCase())} placeholder="KR" maxLength={2} className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm" />
+              <label className={labelCls}>Origin Country</label>
+              <input type="text" value={originCountry} onChange={e => { setOriginCountry(e.target.value.toUpperCase()); setTimeout(notifyFields, 0); }} placeholder="KR" maxLength={2} className={inputCls} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">Destination</label>
-              <input type="text" value={destinationCountry} onChange={e => setDestinationCountry(e.target.value.toUpperCase())} placeholder="US" maxLength={2} className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm" />
+              <label className={labelCls}>Destination Country</label>
+              <input type="text" value={destinationCountry} onChange={e => { setDestinationCountry(e.target.value.toUpperCase()); setTimeout(notifyFields, 0); }} placeholder="US" maxLength={2} className={inputCls} />
             </div>
           </div>
-          <button onClick={handleClassify} disabled={loading || !productName.trim()} className="w-full py-2 bg-amber-500 text-white rounded-md text-sm font-semibold hover:bg-amber-600 disabled:opacity-50">
-            {loading ? 'Classifying...' : 'Classify'}
+          {/* Row 4: Weight + Price */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelCls}>Weight (kg)</label>
+              <input type="text" value={weightSpec} onChange={update(setWeightSpec)} placeholder="0.2" className={inputCls} />
+            </div>
+            <div>
+              <label className={labelCls}>Price (USD)</label>
+              <input type="text" value={price} onChange={update(setPrice)} placeholder="50" className={inputCls} />
+            </div>
+          </div>
+          {/* Advanced: collapsible */}
+          <details className="text-sm">
+            <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 py-1">Advanced — description, processing, composition</summary>
+            <div className="space-y-3 mt-2">
+              <div>
+                <label className={labelCls}>Description</label>
+                <input type="text" value={description} onChange={update(setDescription)} placeholder="Detailed product description" className={inputCls} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Processing</label>
+                  <input type="text" value={processing} onChange={update(setProcessing)} placeholder="knitted, woven, molded" className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>Composition</label>
+                  <input type="text" value={composition} onChange={update(setComposition)} placeholder="80% cotton, 20% polyester" className={inputCls} />
+                </div>
+              </div>
+            </div>
+          </details>
+          {/* Classify button */}
+          <button onClick={handleClassify} disabled={loading || !productName.trim()} className="w-full py-2.5 bg-amber-500 text-white rounded-md text-sm font-semibold hover:bg-amber-600 disabled:opacity-50">
+            {loading ? 'Classifying...' : 'Classify Product'}
           </button>
           {error && <p className="text-xs text-red-500">{error}</p>}
           {result && (

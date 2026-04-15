@@ -14,35 +14,29 @@ interface FieldDef {
   defaultValue?: string;
 }
 
+// CW37-Gap4: Compute endpoints have NO duplicate fields — HsCodeCalculator provides
+// productName, material, category, origin, destination, weight, price, composition, processing
+// Parameters section shows only scenario-specific extra fields
 const ENDPOINT_FIELDS: Record<string, FieldDef[]> = {
   classify: [
-    { key: 'productName', label: 'Product Name', type: 'text', required: true, placeholder: 'e.g. cotton knitted t-shirt' },
-    { key: 'material', label: 'Material', type: 'text', placeholder: 'e.g. cotton, leather, steel' },
-    { key: 'category', label: 'Category', type: 'text', placeholder: 'e.g. apparel-knit' },
-    { key: 'origin', label: 'Origin Country', type: 'text', placeholder: 'e.g. KR' },
-    { key: 'destination_country', label: 'Destination Country', type: 'text', placeholder: 'e.g. US' },
+    // All fields from HsCodeCalculator — no extra params needed
   ],
   calculate: [
-    { key: 'productName', label: 'Product Name', type: 'text', placeholder: 'e.g. cotton t-shirt' },
-    { key: 'hsCode', label: 'HS Code', type: 'text', placeholder: 'e.g. 6109100010' },
-    { key: 'price', label: 'Product Price (USD)', type: 'number', required: true, placeholder: '50' },
-    { key: 'origin', label: 'Origin Country', type: 'text', required: true, placeholder: 'KR' },
-    { key: 'destinationCountry', label: 'Destination Country', type: 'text', required: true, placeholder: 'US' },
-    { key: 'weight_kg', label: 'Weight (kg)', type: 'number', placeholder: '0.2' },
-    { key: 'material', label: 'Material', type: 'text', placeholder: 'cotton' },
+    { key: 'shippingPrice', label: 'Shipping Cost (USD)', type: 'number', placeholder: '15' },
+    { key: 'shippingTerms', label: 'Incoterms', type: 'select', options: [
+      { value: 'DDP', label: 'DDP (Delivered Duty Paid)' },
+      { value: 'DDU', label: 'DDU (Delivered Duty Unpaid)' },
+      { value: 'CIF', label: 'CIF' }, { value: 'FOB', label: 'FOB' }, { value: 'EXW', label: 'EXW' },
+    ]},
+    { key: 'quantity', label: 'Quantity', type: 'number', placeholder: '1' },
   ],
   'apply-fta': [
-    { key: 'hs_code', label: 'HS Code', type: 'text', required: true, placeholder: '610910' },
-    { key: 'origin', label: 'Origin Country', type: 'text', required: true, placeholder: 'MX' },
-    { key: 'destination', label: 'Destination Country', type: 'text', required: true, placeholder: 'US' },
     { key: 'fta_id', label: 'FTA Agreement (optional)', type: 'text', placeholder: 'USMCA (leave empty for auto-detect)' },
     { key: 'originating_content_pct', label: 'Originating Content %', type: 'number', placeholder: '70' },
-    { key: 'material', label: 'Material', type: 'text', placeholder: 'cotton' },
+    { key: 'product_value', label: 'Product Value (USD)', type: 'number', placeholder: '500' },
   ],
   'check-restrictions': [
-    { key: 'hsCode', label: 'HS Code', type: 'text', placeholder: '850760' },
-    { key: 'productName', label: 'Product Name (if no HS)', type: 'text', placeholder: 'lithium battery' },
-    { key: 'destinationCountry', label: 'Destination Country', type: 'text', required: true, placeholder: 'US' },
+    // destination from Calculator; no extra fields
   ],
   compare: [
     { key: 'countries', label: 'Countries (comma-separated)', type: 'text', required: true, placeholder: 'US, DE, JP' },
@@ -79,6 +73,7 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
   const endpoint = ENDPOINTS.find(e => e.id === endpointId);
   const fields = ENDPOINT_FIELDS[endpointId] || [];
   const [values, setValues] = useState<Record<string, string>>({});
+  const [calcFields, setCalcFields] = useState<Record<string, string>>({});
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +99,28 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
     setError(null);
     setResult(null);
     try {
+      // CW37-Gap4: Merge HsCodeCalculator fields + scenario-specific params
       const params: Record<string, unknown> = {};
+      // From Calculator (10 fields)
+      if (endpoint.group === 'compute') {
+        if (calcFields.productName) params.productName = calcFields.productName;
+        if (calcFields.material) params.material = calcFields.material;
+        if (calcFields.category) params.category = calcFields.category;
+        if (calcFields.originCountry) params.origin = calcFields.originCountry;
+        if (calcFields.destinationCountry) params.destinationCountry = calcFields.destinationCountry;
+        if (calcFields.hsCode) params.hsCode = calcFields.hsCode;
+        if (calcFields.weightSpec) params.weight_kg = Number(calcFields.weightSpec) || undefined;
+        if (calcFields.price) params.price = Number(calcFields.price) || undefined;
+        if (calcFields.processing) params.productForm = calcFields.processing;
+        if (calcFields.composition) params.composition = calcFields.composition;
+        if (calcFields.description) params.description = calcFields.description;
+        // apply-fta uses hs_code not hsCode
+        if (endpointId === 'apply-fta') {
+          params.hs_code = params.hsCode || calcFields.hsCode || '';
+          params.destination = params.destinationCountry;
+        }
+      }
+      // From scenario-specific fields
       for (const f of fields) {
         const v = values[f.key];
         if (!v) continue;
@@ -112,10 +128,12 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
         else if (f.key === 'countries') params[f.key] = v.split(',').map(s => s.trim()).filter(Boolean);
         else params[f.key] = v;
       }
+      const allParams = { ...params };
+      onParamsChange(allParams);
       const res = await fetch(endpoint.path, {
         method: endpoint.method,
         headers: { 'X-Demo-Request': 'true', 'Content-Type': 'application/json' },
-        body: endpoint.method === 'POST' ? JSON.stringify(params) : undefined,
+        body: endpoint.method === 'POST' ? JSON.stringify(allParams) : undefined,
       });
       const json = await res.json();
       setResult(json);
@@ -137,14 +155,16 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
         <h2 className="text-lg font-semibold mt-1">{endpoint.label}</h2>
       </div>
 
-      {/* CW37-Gap2: HsCodeCalculator embed for compute endpoints */}
+      {/* CW37-Gap4: HsCodeCalculator 10-field embed for compute endpoints */}
       {endpoint.group === 'compute' && (
         <div className="p-4 border-b border-slate-200">
           <HsCodeCalculator
             embedded
             onResult={(hsCode) => {
-              const hsKey = fields.find(f => f.key === 'hsCode' || f.key === 'hs_code')?.key;
-              if (hsKey) updateField(hsKey, hsCode);
+              setCalcFields(prev => ({ ...prev, hsCode }));
+            }}
+            onFieldsChange={(f) => {
+              setCalcFields(f as unknown as Record<string, string>);
             }}
           />
         </div>
