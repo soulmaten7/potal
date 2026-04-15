@@ -67,9 +67,10 @@ const ENDPOINT_FIELDS: Record<string, FieldDef[]> = {
 interface Props {
   endpointId: string;
   onParamsChange: (params: Record<string, unknown>) => void;
+  onResult?: (result: Record<string, unknown> | null) => void;
 }
 
-export function EndpointPanel({ endpointId, onParamsChange }: Props) {
+export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
   const endpoint = ENDPOINTS.find(e => e.id === endpointId);
   const fields = ENDPOINT_FIELDS[endpointId] || [];
   const [values, setValues] = useState<Record<string, string>>({});
@@ -137,6 +138,7 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
       });
       const json = await res.json();
       setResult(json);
+      if (onResult) onResult(json);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Request failed');
     } finally {

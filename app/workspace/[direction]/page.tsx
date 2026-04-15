@@ -14,6 +14,7 @@ export default function WorkspacePage() {
 
   const [selectedEndpoint, setSelectedEndpoint] = useState(isExport ? 'classify' : 'calculate');
   const [currentParams, setCurrentParams] = useState<Record<string, unknown>>({});
+  const [apiResult, setApiResult] = useState<Record<string, unknown> | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const endpoint = ENDPOINTS.find(e => e.id === selectedEndpoint);
@@ -27,6 +28,7 @@ export default function WorkspacePage() {
     }
     setSelectedEndpoint(id);
     setCurrentParams({});
+    setApiResult(null);
   };
 
   return (
@@ -46,6 +48,7 @@ export default function WorkspacePage() {
           <EndpointPanel
             endpointId={selectedEndpoint}
             onParamsChange={setCurrentParams}
+            onResult={setApiResult}
           />
         </div>
 
@@ -55,6 +58,7 @@ export default function WorkspacePage() {
             endpointPath={endpoint?.path || ''}
             method={endpoint?.method || 'POST'}
             params={currentParams}
+            result={apiResult}
           />
         </div>
       </div>
