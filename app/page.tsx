@@ -938,51 +938,53 @@ export default function HomePage() {
       <div className="min-h-screen bg-white">
         <LiveTicker />
 
-        {/* CW37-Gap3: Simplified home — 2 buttons (Export/Import) */}
-        <div className="flex flex-col items-center justify-center py-24 px-4">
-          <h1 className="text-3xl font-extrabold text-[#02122c] mb-3 text-center">
-            Cross-Border Trade, Made Simple
+        {/* CW37-Gap3+: Simplified home — 2 big CTA buttons */}
+        <div className="flex flex-col items-center justify-center py-20 sm:py-32 px-4">
+          <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-4">Free forever &middot; No credit card</p>
+          <h1 className="text-4xl sm:text-5xl font-black text-[#02122c] mb-4 text-center leading-tight">
+            Cross-Border Trade,<br />Made Simple
           </h1>
-          <p className="text-slate-500 text-center mb-10 max-w-md">
-            HS classification, landed cost, FTA eligibility, sanctions screening — all in one place. Forever Free.
+          <p className="text-slate-500 text-center mb-14 max-w-lg text-lg">
+            HS classification, landed cost, FTA eligibility, sanctions screening — all in one place.
           </p>
 
-          <div className="flex gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 w-full max-w-2xl">
             <Link
               href="/workspace/export"
-              className="flex flex-col items-center justify-center w-44 h-36 rounded-xl border-2 border-blue-200 bg-blue-50 hover:border-blue-500 hover:shadow-lg transition-all group"
+              className="flex flex-col items-center justify-center py-14 px-8 rounded-2xl border-2 border-blue-200 bg-gradient-to-b from-blue-50 to-white hover:border-blue-500 hover:shadow-2xl hover:scale-[1.03] transition-all duration-200 group cursor-pointer"
             >
-              <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">&#128230;</span>
-              <span className="text-lg font-bold text-blue-800">Export</span>
-              <span className="text-xs text-blue-500 mt-1">I sell / ship abroad</span>
+              <span className="text-7xl mb-4 group-hover:scale-110 transition-transform duration-200">&#128230;</span>
+              <span className="text-3xl font-black text-blue-800 mb-2">Export</span>
+              <span className="text-base text-blue-500">I sell or ship abroad</span>
+              <span className="mt-4 text-sm font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">Get Started &#8594;</span>
             </Link>
 
             <Link
               href="/workspace/import"
-              className="flex flex-col items-center justify-center w-44 h-36 rounded-xl border-2 border-emerald-200 bg-emerald-50 hover:border-emerald-500 hover:shadow-lg transition-all group"
+              className="flex flex-col items-center justify-center py-14 px-8 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white hover:border-emerald-500 hover:shadow-2xl hover:scale-[1.03] transition-all duration-200 group cursor-pointer"
             >
-              <span className="text-4xl mb-2 group-hover:scale-110 transition-transform">&#128229;</span>
-              <span className="text-lg font-bold text-emerald-800">Import</span>
-              <span className="text-xs text-emerald-500 mt-1">I buy / receive from abroad</span>
+              <span className="text-7xl mb-4 group-hover:scale-110 transition-transform duration-200">&#128229;</span>
+              <span className="text-3xl font-black text-emerald-800 mb-2">Import</span>
+              <span className="text-base text-emerald-500">I buy or receive from abroad</span>
+              <span className="mt-4 text-sm font-semibold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity">Get Started &#8594;</span>
             </Link>
           </div>
 
-          <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-slate-400">
-            <span>Forever Free</span>
-            <span>8 API Endpoints</span>
-            <span>240 Countries</span>
-            <span>645K Rulings</span>
-            <span>47K Sanctions</span>
+          <div className="mt-16 flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-slate-400">
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>8 API Endpoints</span>
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>240 Countries</span>
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>645K Rulings</span>
+            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>47K Sanctions</span>
           </div>
 
-          <div className="mt-8 flex gap-4">
-            <Link href="/api-docs" className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-2">
-              API Documentation
+          <div className="mt-10 flex gap-6">
+            <Link href="/api-docs" className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+              API Docs
             </Link>
-            <Link href="/guides" className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-2">
-              Trade Guides
+            <Link href="/guides" className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+              Guides
             </Link>
-            <Link href="/workspace/export" className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-2">
+            <Link href="/workspace/export" className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
               Workspace
             </Link>
           </div>
