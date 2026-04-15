@@ -155,24 +155,21 @@ export function EndpointPanel({ endpointId, onParamsChange }: Props) {
         <h2 className="text-lg font-semibold mt-1">{endpoint.label}</h2>
       </div>
 
-      {/* CW37-Gap4: HsCodeCalculator 10-field embed for compute endpoints */}
-      {endpoint.group === 'compute' && (
-        <div className="p-4 border-b border-slate-200">
-          <HsCodeCalculator
-            embedded
-            onResult={(hsCode) => {
-              setCalcFields(prev => ({ ...prev, hsCode }));
-            }}
-            onFieldsChange={(f) => {
-              setCalcFields(f as unknown as Record<string, string>);
-            }}
-          />
-        </div>
-      )}
-
-      {/* Parameters */}
+      {/* Parameters — single unified section (RapidAPI pattern) */}
       <div className="p-4 border-b border-slate-200">
         <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Parameters</h3>
+
+        {/* CW37-Gap6: Product Details (10 fields) inline for Compute endpoints */}
+        {endpoint.group === 'compute' && (
+          <div className="mb-4">
+            <HsCodeCalculator
+              embedded
+              hideClassifyButton={endpointId !== 'classify'}
+              onResult={(hsCode) => { setCalcFields(prev => ({ ...prev, hsCode })); }}
+              onFieldsChange={(f) => { setCalcFields(f as unknown as Record<string, string>); }}
+            />
+          </div>
+        )}
         <div className="space-y-3">
           {fields.map(f => (
             <div key={f.key}>

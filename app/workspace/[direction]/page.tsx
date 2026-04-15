@@ -30,8 +30,8 @@ export default function WorkspacePage() {
   };
 
   return (
-    <div className="flex h-screen bg-white">
-      {/* Sidebar */}
+    <div className="flex h-screen bg-white overflow-hidden">
+      {/* Sidebar — fixed 280px */}
       <EndpointSidebar
         selected={selectedEndpoint}
         onSelect={handleSelect}
@@ -39,19 +39,24 @@ export default function WorkspacePage() {
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      {/* Center Panel */}
-      <EndpointPanel
-        endpointId={selectedEndpoint}
-        onParamsChange={setCurrentParams}
-      />
+      {/* Center + Right — equal split */}
+      <div className="flex flex-1 min-w-0">
+        {/* Center Panel — Parameters + Result */}
+        <div className="flex-1 min-w-0 overflow-y-auto">
+          <EndpointPanel
+            endpointId={selectedEndpoint}
+            onParamsChange={setCurrentParams}
+          />
+        </div>
 
-      {/* Right Panel — Code Snippet */}
-      <div className="hidden lg:block">
-        <CodeSnippetPanel
-          endpointPath={endpoint?.path || ''}
-          method={endpoint?.method || 'POST'}
-          params={currentParams}
-        />
+        {/* Right Panel — Code Snippet (equal width to center on lg+) */}
+        <div className="hidden lg:flex lg:flex-1 min-w-0">
+          <CodeSnippetPanel
+            endpointPath={endpoint?.path || ''}
+            method={endpoint?.method || 'POST'}
+            params={currentParams}
+          />
+        </div>
       </div>
     </div>
   );

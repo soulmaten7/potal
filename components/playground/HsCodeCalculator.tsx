@@ -16,10 +16,11 @@ interface HsCodeCalculatorProps {
   onResult: (hsCode: string) => void;
   onClose?: () => void;
   embedded?: boolean;
+  hideClassifyButton?: boolean;
   onFieldsChange?: (fields: HsCalcFields) => void;
 }
 
-export function HsCodeCalculator({ onResult, onClose, embedded, onFieldsChange }: HsCodeCalculatorProps) {
+export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButton, onFieldsChange }: HsCodeCalculatorProps) {
   const [productName, setProductName] = useState('');
   const [material, setMaterial] = useState('');
   const [category, setCategory] = useState('');
@@ -97,12 +98,8 @@ export function HsCodeCalculator({ onResult, onClose, embedded, onFieldsChange }
     const updateSelect = (setter: (v: string) => void, extra?: () => void) => (val: string) => { setter(val); extra?.(); setTimeout(notifyFields, 0); };
 
     return (
-      <div className="border border-slate-200 rounded-lg bg-white">
-        <div className="px-4 py-3 border-b border-slate-100 bg-slate-50 rounded-t-lg">
-          <h3 className="text-sm font-semibold text-slate-700">Product Details (10 Fields)</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Fill in product info — HS code is classified automatically</p>
-        </div>
-        <div className="p-4 space-y-3">
+      <div>
+        <div className="space-y-3">
           {/* Row 1: Product Name */}
           <div>
             <label className={labelCls}>Product Name *</label>
@@ -142,8 +139,7 @@ export function HsCodeCalculator({ onResult, onClose, embedded, onFieldsChange }
             </div>
           </div>
           {/* Advanced: collapsible */}
-          <details className="text-sm">
-            <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 py-1">Advanced — description, processing, composition</summary>
+          <details className="text-sm" open>
             <div className="space-y-3 mt-2">
               <div>
                 <label className={labelCls}>Description</label>
@@ -161,10 +157,12 @@ export function HsCodeCalculator({ onResult, onClose, embedded, onFieldsChange }
               </div>
             </div>
           </details>
-          {/* Classify button */}
-          <button onClick={handleClassify} disabled={loading || !productName.trim()} className="w-full py-2.5 bg-amber-500 text-white rounded-md text-sm font-semibold hover:bg-amber-600 disabled:opacity-50">
-            {loading ? 'Classifying...' : 'Classify Product'}
-          </button>
+          {/* Classify button (hidden when parent Run is the unified CTA) */}
+          {!hideClassifyButton && (
+            <button onClick={handleClassify} disabled={loading || !productName.trim()} className="w-full py-2.5 bg-amber-500 text-white rounded-md text-sm font-semibold hover:bg-amber-600 disabled:opacity-50">
+              {loading ? 'Classifying...' : 'Classify Product'}
+            </button>
+          )}
           {error && <p className="text-xs text-red-500">{error}</p>}
           {result && (
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-md">

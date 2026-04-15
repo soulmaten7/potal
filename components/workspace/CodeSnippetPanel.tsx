@@ -1,8 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const LANGUAGES = ['curl', 'Python', 'Node.js', 'PHP', 'Go', 'Ruby', 'Java'] as const;
+const LANGUAGES = [
+  { id: 'curl', label: 'curl', syntax: 'bash' },
+  { id: 'Python', label: 'Python', syntax: 'python' },
+  { id: 'Node.js', label: 'Node.js', syntax: 'javascript' },
+  { id: 'PHP', label: 'PHP', syntax: 'php' },
+  { id: 'Go', label: 'Go', syntax: 'go' },
+  { id: 'Ruby', label: 'Ruby', syntax: 'ruby' },
+  { id: 'Java', label: 'Java', syntax: 'java' },
+] as const;
 
 interface Props {
   endpointPath: string;
@@ -10,34 +20,35 @@ interface Props {
   params: Record<string, unknown>;
 }
 
-function generateSnippet(lang: string, path: string, method: string, params: Record<string, unknown>): string {
+function generateSnippet(langId: string, path: string, method: string, params: Record<string, unknown>): string {
   const url = `https://www.potal.app${path}`;
   const body = JSON.stringify(params, null, 2);
 
-  switch (lang) {
+  switch (langId) {
     case 'curl':
-      return `curl -X ${method} ${url} \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '${body}'`;
+      return `curl -X ${method} \\\n  ${url} \\\n  -H "X-API-Key: YOUR_API_KEY" \\\n  -H "Content-Type: application/json" \\\n  -d '${body}'`;
     case 'Python':
-      return `import requests\n\nresponse = requests.${method.toLowerCase()}(\n    "${url}",\n    headers={"X-API-Key": "YOUR_API_KEY"},\n    json=${body.replace(/"/g, "'").replace(/null/g, "None").replace(/true/g, "True").replace(/false/g, "False")}\n)\nprint(response.json())`;
+      return `import requests\n\nresponse = requests.post(\n    "${url}",\n    headers={\n        "X-API-Key": "YOUR_API_KEY"\n    },\n    json=${body.replace(/"/g, "'").replace(/null/g, "None").replace(/true/g, "True").replace(/false/g, "False")}\n)\n\nprint(response.json())`;
     case 'Node.js':
-      return `const response = await fetch("${url}", {\n  method: "${method}",\n  headers: {\n    "X-API-Key": "YOUR_API_KEY",\n    "Content-Type": "application/json"\n  },\n  body: JSON.stringify(${body})\n});\nconst data = await response.json();\nconsole.log(data);`;
+      return `const response = await fetch(\n  "${url}",\n  {\n    method: "${method}",\n    headers: {\n      "X-API-Key": "YOUR_API_KEY",\n      "Content-Type": "application/json"\n    },\n    body: JSON.stringify(${body})\n  }\n);\n\nconst data = await response.json();\nconsole.log(data);`;
     case 'PHP':
-      return `$response = Http::withHeaders([\n    'X-API-Key' => 'YOUR_API_KEY'\n])->${method.toLowerCase()}('${url}', ${body.replace(/"/g, "'")});\n\n$data = $response->json();`;
+      return `<?php\n$response = Http::withHeaders([\n    'X-API-Key' => 'YOUR_API_KEY'\n])->post(\n    '${url}',\n    ${body.replace(/"/g, "'")}\n);\n\n$data = $response->json();`;
     case 'Go':
-      return `resp, err := http.Post("${url}", "application/json", bytes.NewBuffer([]byte(\`${body}\`)))\nif err != nil { log.Fatal(err) }\ndefer resp.Body.Close()`;
+      return `package main\n\nimport (\n    "bytes"\n    "fmt"\n    "net/http"\n    "io"\n)\n\nfunc main() {\n    body := []byte(\`${body}\`)\n    req, _ := http.NewRequest(\n        "${method}",\n        "${url}",\n        bytes.NewBuffer(body),\n    )\n    req.Header.Set("X-API-Key", "YOUR_API_KEY")\n    req.Header.Set("Content-Type", "application/json")\n\n    resp, _ := http.DefaultClient.Do(req)\n    defer resp.Body.Close()\n    data, _ := io.ReadAll(resp.Body)\n    fmt.Println(string(data))\n}`;
     case 'Ruby':
-      return `require 'net/http'\nrequire 'json'\n\nuri = URI("${url}")\nhttp = Net::HTTP.new(uri.host, uri.port)\nhttp.use_ssl = true\nreq = Net::HTTP::Post.new(uri)\nreq['X-API-Key'] = 'YOUR_API_KEY'\nreq.body = ${body}.to_json\nres = http.request(req)\nputs JSON.parse(res.body)`;
+      return `require 'net/http'\nrequire 'json'\nrequire 'uri'\n\nuri = URI("${url}")\nhttp = Net::HTTP.new(uri.host, uri.port)\nhttp.use_ssl = true\n\nreq = Net::HTTP::Post.new(uri)\nreq['X-API-Key'] = 'YOUR_API_KEY'\nreq['Content-Type'] = 'application/json'\nreq.body = ${body}.to_json\n\nres = http.request(req)\nputs JSON.parse(res.body)`;
     case 'Java':
-      return `HttpClient client = HttpClient.newHttpClient();\nHttpRequest request = HttpRequest.newBuilder()\n    .uri(URI.create("${url}"))\n    .header("X-API-Key", "YOUR_API_KEY")\n    .header("Content-Type", "application/json")\n    .POST(BodyPublishers.ofString("${body.replace(/"/g, '\\"')}"))\n    .build();\nHttpResponse<String> response = client.send(request, BodyHandlers.ofString());`;
+      return `import java.net.http.*;\nimport java.net.URI;\n\nvar client = HttpClient.newHttpClient();\nvar request = HttpRequest.newBuilder()\n    .uri(URI.create("${url}"))\n    .header("X-API-Key", "YOUR_API_KEY")\n    .header("Content-Type", "application/json")\n    .POST(HttpRequest.BodyPublishers\n        .ofString(${JSON.stringify(body)}))\n    .build();\n\nvar response = client.send(\n    request,\n    HttpResponse.BodyHandlers.ofString()\n);\nSystem.out.println(response.body());`;
     default:
       return '';
   }
 }
 
 export function CodeSnippetPanel({ endpointPath, method, params }: Props) {
-  const [lang, setLang] = useState<string>('curl');
+  const [langId, setLangId] = useState('curl');
   const [copied, setCopied] = useState(false);
-  const snippet = generateSnippet(lang, endpointPath, method, params);
+  const lang = LANGUAGES.find(l => l.id === langId) || LANGUAGES[0];
+  const snippet = generateSnippet(langId, endpointPath, method, params);
 
   const copy = () => {
     navigator.clipboard.writeText(snippet);
@@ -46,25 +57,36 @@ export function CodeSnippetPanel({ endpointPath, method, params }: Props) {
   };
 
   return (
-    <div className="border-l border-slate-200 bg-slate-900 text-slate-100 flex flex-col w-80 flex-shrink-0">
-      <div className="flex items-center gap-1 px-3 py-2 border-b border-slate-700 overflow-x-auto">
+    <div className="border-l border-slate-200 bg-[#1e1e2e] text-slate-100 flex flex-col w-full min-w-0">
+      {/* Language tabs */}
+      <div className="flex items-center gap-1 px-3 py-2 border-b border-slate-700/50 overflow-x-auto flex-shrink-0">
         {LANGUAGES.map(l => (
           <button
-            key={l}
-            onClick={() => setLang(l)}
-            className={`text-xs px-2 py-1 rounded whitespace-nowrap ${lang === l ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}
+            key={l.id}
+            onClick={() => setLangId(l.id)}
+            className={`text-xs px-2.5 py-1 rounded whitespace-nowrap transition-colors ${langId === l.id ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
           >
-            {l}
+            {l.label}
           </button>
         ))}
-      </div>
-      <div className="flex-1 overflow-auto p-3">
-        <pre className="text-xs font-mono whitespace-pre-wrap break-all leading-relaxed">{snippet}</pre>
-      </div>
-      <div className="p-2 border-t border-slate-700">
-        <button onClick={copy} className="w-full text-xs py-1.5 rounded bg-slate-700 hover:bg-slate-600 text-slate-300">
-          {copied ? 'Copied!' : 'Copy Code'}
+        <div className="flex-1" />
+        <button onClick={copy} className="text-xs px-2.5 py-1 rounded text-slate-400 hover:text-white hover:bg-slate-700 whitespace-nowrap">
+          {copied ? '\u2713 Copied' : 'Copy'}
         </button>
+      </div>
+
+      {/* Code with syntax highlighting */}
+      <div className="flex-1 overflow-auto min-w-0">
+        <SyntaxHighlighter
+          language={lang.syntax}
+          style={oneDark}
+          showLineNumbers
+          lineNumberStyle={{ color: '#4a4a5a', fontSize: 11, minWidth: '2em', paddingRight: 12 }}
+          customStyle={{ margin: 0, padding: 16, background: 'transparent', fontSize: 12, lineHeight: 1.6 }}
+          wrapLongLines
+        >
+          {snippet}
+        </SyntaxHighlighter>
       </div>
     </div>
   );
