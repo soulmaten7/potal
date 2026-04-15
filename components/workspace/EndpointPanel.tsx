@@ -201,7 +201,7 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
           <div className="mb-4">
             <HsCodeCalculator
               embedded
-              hideClassifyButton={endpointId !== 'classify'}
+              hideClassifyButton={true}
               onResult={(hsCode) => { setCalcFields(prev => ({ ...prev, hsCode })); }}
               onFieldsChange={(f) => { setCalcFields(f as unknown as Record<string, string>); }}
             />

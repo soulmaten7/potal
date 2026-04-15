@@ -140,6 +140,9 @@ export function HsCodeCalculator({ onResult, onClose, embedded, hideClassifyButt
           </div>
           {/* Advanced: collapsible */}
           <details className="text-sm" open>
+            <summary className="cursor-pointer text-slate-600 hover:text-slate-900 font-medium select-none">
+              Advanced details
+            </summary>
             <div className="space-y-3 mt-2">
               <div>
                 <label className={labelCls}>Description</label>
