@@ -369,6 +369,19 @@ const _calculateHandler = async (req: NextRequest, context: ApiAuthContext): Pro
       restrictions: restrictions.restricted ? restrictions : undefined,
       shipping_estimate: shippingEstimate,
       ddp_quote: ddpTotal,
+      // CW37-S6: LLM-friendly metadata
+      _metadata: {
+        disclaimer: 'For informational use only. POTAL provides trade compliance data and calculations but does not constitute legal, tax, or customs brokerage advice. Verify critical decisions with licensed professionals.',
+        apiVersion: 'v1',
+        responseGeneratedAt: new Date().toISOString(),
+        confidenceScore: resultObj.confidenceScore ?? null,
+        dutyRateSource: resultObj.dutyRateSource || 'unknown',
+        availableEnums: {
+          dutyRateSource: ['precomputed_mfn', 'macmap_ntlc', 'live_db', 'external_api', 'db', 'ruling_conditional', 'hardcoded'],
+          rateType: ['ad_valorem', 'specific', 'compound', 'mixed'],
+          incoterms: ['EXW', 'FCA', 'CPT', 'CIP', 'DAP', 'DPU', 'DDP', 'FAS', 'FOB', 'CFR', 'CIF'],
+        },
+      },
     }, {
       sellerId: context.sellerId,
       plan: context.planId,

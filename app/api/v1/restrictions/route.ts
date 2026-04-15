@@ -87,6 +87,15 @@ export const POST = withApiAuth(async (req: NextRequest, context: ApiAuthContext
     ...(productName ? { productName } : {}),
     autoClassified: !body.hsCode && !!productName,
     ...(rulingNotes.length > 0 ? { rulingNotes } : {}),
+    // CW37-S6: LLM-friendly metadata
+    _metadata: {
+      disclaimer: 'For informational use only. Import restrictions change frequently. Verify with the destination country customs authority before shipping.',
+      apiVersion: 'v1',
+      responseGeneratedAt: new Date().toISOString(),
+      availableEnums: {
+        restrictionType: ['PROHIBITED', 'LICENSE_REQUIRED', 'QUOTA', 'HAZMAT', 'CONTROLLED', 'SANCTIONS'],
+      },
+    },
   }, {
     sellerId: context.sellerId,
     plan: context.planId,

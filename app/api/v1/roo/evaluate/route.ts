@@ -42,11 +42,13 @@ export const POST = withApiAuth(async (req: NextRequest, ctx: ApiAuthContext) =>
       }
       // Also run enriched for the best match
       const result = await evaluateRoOEnriched({ ...baseInput, ftaId: undefined });
-      return apiSuccess({ ...result, applicableFTAs, recommended: applicableFTAs.find(f => f.verdict === 'eligible') || applicableFTAs[0] || null }, { sellerId: ctx.sellerId });
+      const llmMeta = { _metadata: { disclaimer: 'For informational use only. FTA eligibility requires verification with customs authorities. Rules of origin are complex and product-specific.', apiVersion: 'v1', responseGeneratedAt: new Date().toISOString(), availableEnums: { verdict: ['eligible', 'ineligible', 'indeterminate'], originCriteria: ['WO', 'PE', 'RVC', 'CTH', 'CC', 'CTSH'] } } };
+      return apiSuccess({ ...result, applicableFTAs, recommended: applicableFTAs.find(f => f.verdict === 'eligible') || applicableFTAs[0] || null, ...llmMeta }, { sellerId: ctx.sellerId });
     }
 
     const result = await evaluateRoOEnriched({ ...baseInput, ftaId });
-    return apiSuccess(result, { sellerId: ctx.sellerId });
+    const llmMeta = { _metadata: { disclaimer: 'For informational use only. FTA eligibility requires verification with customs authorities.', apiVersion: 'v1', responseGeneratedAt: new Date().toISOString(), availableEnums: { verdict: ['eligible', 'ineligible', 'indeterminate'] } } };
+    return apiSuccess({ ...result, ...llmMeta }, { sellerId: ctx.sellerId });
   } catch (e) {
     return apiError(ApiErrorCode.INTERNAL_ERROR, e instanceof Error ? e.message : 'RoO evaluation failed.');
   }

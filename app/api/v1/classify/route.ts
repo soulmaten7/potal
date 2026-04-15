@@ -15,7 +15,24 @@ import { NextRequest } from 'next/server';
 import { withApiAuth, type ApiAuthContext } from '@/app/lib/api-auth';
 import { classifyProductAsync, calculateConfidenceScore, recordClassificationAudit, validateProductDescription, buildReasoningChain, buildMultiDimensionalConfidence, getChapterNote, lookupRulingReference } from '@/app/lib/cost-engine/ai-classifier';
 import { classifyWithVision } from '@/app/lib/cost-engine/ai-classifier';
-import { apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+import { apiSuccess as _apiSuccess, apiError, ApiErrorCode } from '@/app/lib/api-auth/response';
+
+// CW37-S6: LLM-friendly wrapper for classify responses
+function apiSuccess(data: Record<string, unknown>, meta?: Record<string, unknown>) {
+  return _apiSuccess({
+    ...data,
+    _metadata: {
+      disclaimer: 'For informational use only. HS code classification is an estimate. Official classification requires a binding ruling from customs authorities.',
+      apiVersion: 'v1',
+      responseGeneratedAt: new Date().toISOString(),
+      confidenceScore: data.confidence ?? data.confidenceScore ?? null,
+      classificationMethod: data.method ?? data.classificationMethod ?? null,
+      availableEnums: {
+        classificationMethod: ['override', 'cache', 'vector', 'keyword', 'ai', 'v3-pipeline', 'keyword_fallback'],
+      },
+    },
+  }, meta);
+}
 import { resolveHs10 } from '@/app/lib/cost-engine/hs-code/hs10-resolver';
 import { classifyWithGRI } from '@/app/lib/cost-engine/gri-classifier';
 import { classifyV3 } from '@/app/lib/cost-engine/gri-classifier/steps/v3/pipeline-v3';
