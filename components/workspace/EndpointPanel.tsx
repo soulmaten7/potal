@@ -146,10 +146,33 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
     }
   };
 
+  const [centerTab, setCenterTab] = useState<'params' | 'headers' | 'body' | 'auth'>('params');
+
+  // Build merged body for Body tab preview
+  const bodyPreview = (() => {
+    const merged: Record<string, unknown> = {};
+    if (endpoint.group === 'compute') {
+      if (calcFields.productName) merged.productName = calcFields.productName;
+      if (calcFields.material) merged.material = calcFields.material;
+      if (calcFields.originCountry) merged.origin = calcFields.originCountry;
+      if (calcFields.destinationCountry) merged.destinationCountry = calcFields.destinationCountry;
+      if (calcFields.hsCode) merged.hsCode = calcFields.hsCode;
+      if (calcFields.weightSpec) merged.weight_kg = Number(calcFields.weightSpec) || undefined;
+      if (calcFields.price) merged.price = Number(calcFields.price) || undefined;
+    }
+    for (const f of fields) { const v = values[f.key]; if (v) merged[f.key] = f.type === 'number' ? Number(v) : v; }
+    return merged;
+  })();
+
   return (
     <div className="flex-1 overflow-y-auto">
-      {/* Header */}
+      {/* Header: Breadcrumb + method + path */}
       <div className="p-4 border-b border-slate-200 bg-white">
+        <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-2">
+          <span>Home</span><span>/</span>
+          <span>{endpoint.group === 'compute' ? 'Compute' : endpoint.group === 'screening' ? 'Screening' : 'Guides'}</span><span>/</span>
+          <span className="text-slate-600 font-medium">{endpoint.label}</span>
+        </div>
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono px-2 py-1 rounded bg-green-50 text-green-700">{endpoint.method}</span>
           <span className="font-mono text-sm text-slate-600">{endpoint.path}</span>
@@ -157,9 +180,21 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
         <h2 className="text-lg font-semibold mt-1">{endpoint.label}</h2>
       </div>
 
-      {/* Parameters — single unified section (RapidAPI pattern) */}
+      {/* CW38: 5-tab bar (RapidAPI pattern) */}
+      <div className="flex border-b border-slate-200 bg-white px-4 flex-shrink-0">
+        {(['params', 'headers', 'body', 'auth'] as const).map(tab => (
+          <button key={tab} onClick={() => setCenterTab(tab)}
+            className={`px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors ${
+              centerTab === tab ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-400 hover:text-slate-600'
+            }`}>
+            {tab === 'params' ? `Params` : tab === 'headers' ? 'Headers (3)' : tab === 'body' ? 'Body' : 'Auth'}
+          </button>
+        ))}
+      </div>
+
+      {/* ═══ Params tab ═══ */}
+      {centerTab === 'params' && (
       <div className="p-4 border-b border-slate-200">
-        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Parameters</h3>
 
         {/* CW37-Gap6: Product Details (10 fields) inline for Compute endpoints */}
         {endpoint.group === 'compute' && (
@@ -207,6 +242,43 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
           {loading ? 'Running...' : 'Run'}
         </button>
       </div>
+      )}
+
+      {/* ═══ Headers tab ═══ */}
+      {centerTab === 'headers' && (
+        <div className="p-4 border-b border-slate-200">
+          <table className="w-full text-sm">
+            <thead><tr className="text-left text-xs text-slate-400"><th className="pb-2">Header</th><th className="pb-2">Value</th></tr></thead>
+            <tbody>
+              <tr className="border-t border-slate-100"><td className="py-2 font-mono text-slate-600">X-API-Key</td><td className="py-2"><input type="text" defaultValue="YOUR_API_KEY" className="w-full px-2 py-1 border border-slate-200 rounded text-sm font-mono" /></td></tr>
+              <tr className="border-t border-slate-100"><td className="py-2 font-mono text-slate-600">Content-Type</td><td className="py-2 text-slate-400 font-mono">application/json</td></tr>
+              <tr className="border-t border-slate-100"><td className="py-2 font-mono text-slate-600">Accept</td><td className="py-2 text-slate-400 font-mono">application/json</td></tr>
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ═══ Body tab ═══ */}
+      {centerTab === 'body' && (
+        <div className="p-4 border-b border-slate-200">
+          <p className="text-xs text-slate-400 mb-2">Auto-generated from Parameters. Read-only.</p>
+          <pre className="bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm font-mono text-slate-700 overflow-auto max-h-[400px]">
+            {JSON.stringify(bodyPreview, null, 2)}
+          </pre>
+        </div>
+      )}
+
+      {/* ═══ Auth tab ═══ */}
+      {centerTab === 'auth' && (
+        <div className="p-4 border-b border-slate-200">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="text-sm font-semibold text-blue-800 mb-2">API Key Authentication</h4>
+            <p className="text-sm text-blue-700 mb-3">POTAL uses API Key authentication. Include your key in the <code className="bg-blue-100 px-1 rounded">X-API-Key</code> header.</p>
+            <p className="text-sm text-blue-600">No API key yet? <a href="/dashboard/api-keys" className="underline font-semibold">Get your free API key</a></p>
+            <p className="text-xs text-blue-400 mt-2">Demo mode: Add <code className="bg-blue-100 px-1 rounded">X-Demo-Request: true</code> header (10 req/min, no key needed)</p>
+          </div>
+        </div>
+      )}
 
       {/* Result */}
       {error && (
