@@ -26,7 +26,7 @@ const Code = ({ children }: { children: string }) => (
 // Post 1: Total Landed Cost API (B2B rewrite)
 // ═══════════════════════════════════════════════════════════════
 const TotalLandedCostContent = () => (
-  <div className="prose prose-lg dark:prose-invert max-w-4xl mx-auto px-4 py-8">
+  <div className="prose prose-lg dark:prose-invert max-w-7xl mx-auto px-4 py-8">
     <p>
       Cross-border commerce adds hidden costs that break checkout flows. Import duties, VAT/GST,
       customs processing fees, and trade remedies can add 15-40% to the product price. If your
@@ -153,7 +153,7 @@ print(result.total_landed_cost)  # 32.45`}</Code>
 // Post 2: HS Code Classification API (B2B rewrite)
 // ═══════════════════════════════════════════════════════════════
 const HsCodeGuideContent = () => (
-  <div className="prose prose-lg dark:prose-invert max-w-4xl mx-auto px-4 py-8">
+  <div className="prose prose-lg dark:prose-invert max-w-7xl mx-auto px-4 py-8">
     <p>
       HS Codes (Harmonized System codes) are the backbone of international trade. Every product
       crossing a border must be classified with an HS Code, which determines the duty rate
@@ -268,7 +268,7 @@ const HsCodeGuideContent = () => (
 // Post 3: De Minimis API (B2B rewrite)
 // ═══════════════════════════════════════════════════════════════
 const DeMinimisContent = () => (
-  <div className="prose prose-lg dark:prose-invert max-w-4xl mx-auto px-4 py-8">
+  <div className="prose prose-lg dark:prose-invert max-w-7xl mx-auto px-4 py-8">
     <p>
       De minimis thresholds determine whether imported goods are exempt from customs duties
       and taxes. POTAL&apos;s API automatically detects and applies de minimis rules for all 240
@@ -381,7 +381,7 @@ const DeMinimisContent = () => (
 // Post 4: API Quick Start Guide (NEW)
 // ═══════════════════════════════════════════════════════════════
 const ApiQuickstartContent = () => (
-  <div className="prose prose-lg dark:prose-invert max-w-4xl mx-auto px-4 py-8">
+  <div className="prose prose-lg dark:prose-invert max-w-7xl mx-auto px-4 py-8">
     <p>
       Get up and running with the POTAL Landed Cost API in under 5 minutes. This guide covers
       API key setup, your first API call, SDK installation, and production best practices.
@@ -530,7 +530,7 @@ print(result.breakdown)`}</Code>
 // Post 5: POTAL vs Avalara vs Zonos (NEW)
 // ═══════════════════════════════════════════════════════════════
 const ComparisonContent = () => (
-  <div className="prose prose-lg dark:prose-invert max-w-4xl mx-auto px-4 py-8">
+  <div className="prose prose-lg dark:prose-invert max-w-7xl mx-auto px-4 py-8">
     <p>
       Choosing a customs duty API for cross-border commerce? This comparison covers
       POTAL, Avalara, and Zonos &mdash; their approaches, data coverage, pricing,
@@ -662,7 +662,7 @@ const ComparisonContent = () => (
 // Post 6: 9 Fields vs AI Guessing (NEW)
 // ═══════════════════════════════════════════════════════════════
 const NineFieldScienceContent = () => (
-  <div className="prose prose-lg dark:prose-invert max-w-4xl mx-auto px-4 py-8">
+  <div className="prose prose-lg dark:prose-invert max-w-7xl mx-auto px-4 py-8">
     <p>
       Most HS Code classification tools send a product name to an LLM and return whatever the
       model generates. This approach typically achieves 24-46% accuracy at the 6-digit level.

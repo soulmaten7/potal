@@ -313,7 +313,7 @@ export default function QuickStartPage() {
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 760, margin: '0 auto', padding: '32px 20px 60px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '32px 20px 60px' }}>
         {/* Tab Selector */}
         <div style={{
           display: 'flex', gap: 10, marginBottom: 32,

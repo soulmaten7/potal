@@ -121,7 +121,7 @@ function HelpContent() {
         </div>
 
         {/* 3. Accordion List */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
             {filteredItems.length > 0 ? (
               filteredItems.map((item, idx) => {
@@ -153,7 +153,7 @@ function HelpContent() {
 
       {/* 4. Embedded Contact Form Section */}
       <div ref={formRef} style={{ marginTop: '40px', padding: '32px 24px 0' }}>
-        <div className="max-w-[800px] mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#02122c', marginBottom: '8px' }}>{t('help.contactTitle')}</h2>
             <p style={{ fontSize: '14px', color: '#94a3b8' }}>

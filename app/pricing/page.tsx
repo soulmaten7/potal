@@ -105,7 +105,7 @@ export default function PricingPage() {
     <div className="min-h-screen bg-slate-50">
       {/* Hero */}
       <section className="bg-[#02122c] text-white py-16 sm:py-24">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <div className="inline-block bg-emerald-500/15 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold mb-6 uppercase tracking-wider">
             {t('pricing.badge.noCreditCard')}
           </div>
@@ -146,7 +146,7 @@ export default function PricingPage() {
       </section>
 
       {/* Single Plan Card */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8 relative z-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 -mt-8 relative z-10">
         <div className="bg-white rounded-2xl border-2 border-emerald-500 shadow-xl p-8 sm:p-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
@@ -188,7 +188,7 @@ export default function PricingPage() {
       </section>
 
       {/* Feature List by Category */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
           {t('pricing.allFeatures.title').replace('{count}', String(FEATURES.length))}
         </h2>
@@ -232,7 +232,7 @@ export default function PricingPage() {
 
       {/* Competitor Comparison */}
       <section className="bg-white border-t border-b border-slate-200 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
             {t('pricing.comparison.title')}
           </h2>
@@ -271,7 +271,7 @@ export default function PricingPage() {
       </section>
 
       {/* Enterprise Section */}
-      <section id="enterprise" className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+      <section id="enterprise" className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-[#02122c] mb-4">
@@ -306,7 +306,7 @@ export default function PricingPage() {
 
       {/* FAQ */}
       <section className="bg-white border-t border-slate-200 py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">
             {t('pricing.faq.title')}
           </h2>
@@ -339,7 +339,7 @@ export default function PricingPage() {
 
       {/* CTA */}
       <section className="bg-[#02122c] py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
             {t('pricing.cta.title')}
           </h2>

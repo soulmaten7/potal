@@ -57,7 +57,7 @@ export default function PartnersPage() {
       </div>
 
       {/* 2. Platform Integrations */}
-      <div style={{ padding: '0 20px', maxWidth: '600px', margin: '0 auto' }}>
+      <div style={{ padding: '0 20px', maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{ marginBottom: '32px' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>
             E-Commerce Platforms

@@ -148,7 +148,7 @@ export default function CurlReferencePage() {
   const categories = [...new Set(ENDPOINTS.map(e => e.category))];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">cURL Reference</h1>
       <p className="text-gray-600 mb-8">Copy-paste ready cURL commands for every POTAL API endpoint. Replace <code className="bg-gray-100 px-1 rounded">YOUR_API_KEY</code> with your actual API key from the dashboard.</p>
 

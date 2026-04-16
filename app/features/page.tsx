@@ -68,7 +68,7 @@ export default function FeaturesPage() {
     <div className="min-h-screen bg-slate-50">
       {/* Hero */}
       <section className="bg-[#02122c] text-white py-16 sm:py-24">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
             {t('features.hero.title').replace('{count}', String(FEATURES.length))}
           </h1>
@@ -93,7 +93,7 @@ export default function FeaturesPage() {
 
       {/* Filters */}
       <section className="sticky top-[64px] sm:top-[80px] z-40 bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
           {/* Search box */}
           <div className="relative mb-3">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +142,7 @@ export default function FeaturesPage() {
       </section>
 
       {/* Feature Grid */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((feature) => {
             const icon = CATEGORY_ICONS[feature.category];
@@ -215,7 +215,7 @@ export default function FeaturesPage() {
 
       {/* Competitor Comparison */}
       <section className="bg-white border-t border-slate-200 py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-[#02122c] mb-2">{t('features.comparison.title')}</h2>
           <p className="text-center text-slate-500 mb-10">{t('features.comparison.subtitle')}</p>
 
@@ -257,7 +257,7 @@ export default function FeaturesPage() {
 
       {/* CTA */}
       <section className="bg-[#02122c] py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
             {t('features.cta.title').replace('{count}', String(FEATURES.length))}
           </h2>

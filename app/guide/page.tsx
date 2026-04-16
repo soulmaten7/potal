@@ -255,7 +255,7 @@ export default function GuidePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#e5e7eb' }}>
       {/* Header */}
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px 24px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '48px 24px 24px' }}>
         <a href="/" style={{ color: '#F59E0B', textDecoration: 'none', fontSize: 14 }}>← Back to POTAL</a>
 
         <h1 style={{ fontSize: 36, fontWeight: 800, color: '#fff', marginTop: 24, marginBottom: 8 }}>
@@ -295,7 +295,7 @@ export default function GuidePage() {
       </div>
 
       {/* Field Cards */}
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 24px 80px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 24px 80px' }}>
         {FIELDS.map((field, idx) => {
           const isOpen = activeField === field.id;
           return (

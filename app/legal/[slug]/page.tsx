@@ -177,14 +177,14 @@ export default function LegalPage({ params }: { params: Promise<{ slug: string }
     <div style={{ backgroundColor: '#ffffff' }} className="min-h-screen pb-28">
       {/* Header */}
       <div style={{ padding: '80px 24px 32px' }}>
-        <div className="max-w-[800px] mx-auto">
+        <div className="max-w-7xl mx-auto">
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#02122c', marginBottom: '4px' }}>{doc.title}</h1>
           <p style={{ fontSize: '13px', color: '#94a3b8' }}>Last updated: {doc.lastUpdated}</p>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-[800px] mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6">
         <div style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '24px' }} className="space-y-6">
           {doc.sections.map((section, idx) => (
             <div key={idx}>

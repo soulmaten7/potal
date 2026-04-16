@@ -81,7 +81,7 @@ export default async function TariffPage({ params }: PageProps) {
     };
 
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -151,7 +151,7 @@ export default async function TariffPage({ params }: PageProps) {
     );
   } catch {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+      <div className="max-w-7xl mx-auto px-4 py-12 text-center">
         <div className="bg-[#02122c] rounded-2xl p-12">
           <h1 className="text-2xl font-bold text-white mb-3">Unable to load tariff data</h1>
           <p className="text-slate-400 mb-6">Please try again later.</p>
