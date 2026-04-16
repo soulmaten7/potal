@@ -1,7 +1,116 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-15 KST (CW37-S4 Screening — sanctions + ECCN endpoints, 491 pages)
+> 마지막 업데이트: 2026-04-16 KST (CW38 RapidAPI Full Alignment + HF1~HF5, 494 pages)
 
-## [2026-04-15 KST] CW37-S4 — Screening Endpoints
+## [2026-04-16 KST] CW38-HF5 — 박스 시각 개선 + 절대 규칙 14/15 추가
+
+### Changed (app/page.tsx)
+- Export/Import 박스 제목: `text-2xl` → `text-3xl` (아이콘과 시각 균형)
+- CTA 버튼 스타일링: 텍스트 링크 → 솔리드 버튼
+  - `bg-blue-600/emerald-600 text-white rounded-lg px-4 py-2 shadow-sm`
+  - `group-hover:bg-blue-700/emerald-700 group-hover:shadow-md`
+- 우측 workflow 영역 `justify-center gap-5` 적용 (Export 3-step 과 Import 4-step 시각 균형)
+
+### Added (CLAUDE.md 절대 규칙)
+- **규칙 14 (CW38 신설)**: 모바일 반응형 불필요 — POTAL 데스크톱 전용 플랫폼
+  - UI 작업 시 모바일 breakpoint (sm:/md:) 고려 금지
+  - 모바일 검증 권고 금지
+  - 은태님 CEO 확정
+- **규칙 15 (CW38 신설)**: 전문가적 견해 + 객관적 판단 원칙
+  - 모든 답변은 해당 분야 최고 전문가 관점 + 객관적 판단
+  - Pros/Cons 균형, "맞아요" 반사 동조 금지
+  - 업계 표준 근거 인용, 과도한 엔지니어링 경고
+  - CEO 프로덕트 감각 우선 존중
+
+Commit: `0c88ce2`
+
+## [2026-04-16 KST] CW38-HF4 — Home Hero 타이트닝 + 박스 가로 레이아웃
+
+### Changed (app/page.tsx)
+- Hero padding: `py-20 sm:py-32` → `py-12 sm:py-16` (256px → 128px, 50% 감소)
+- H1: `<br />` 제거 → "Cross-Border Trade, Made Simple" 1줄 표시
+- H1 font-size: `lg:text-6xl` 추가 (대형 화면 강조)
+- Subtitle: `max-w-lg (512px)` → `max-w-3xl (768px)` 1줄 유도
+- 박스 container: `max-w-5xl` → `max-w-6xl` (1024px → 1152px)
+- 박스 내부 레이아웃: 세로 스택 → **가로 2열** (`flex flex-row` desktop / `flex-col` mobile fallback)
+  - 좌 40%: Header (icon + title + subtitle) + CTA (하단)
+  - 우 60%: Typical workflow + Also useful
+- 박스 높이 ~450px → ~260px (40% 감소, 첫 뷰포트 완전 노출)
+
+Commit: `ca3dd77`
+
+## [2026-04-16 KST] CW38-HF3 — Home 박스 확장 + Workflow 임베드
+
+### Changed (app/page.tsx)
+- Export/Import 박스에 workflow 정보 직접 노출
+  - Export: `Classify → Apply FTA → Generate Document` + `Screen Parties / ECCN Lookup`
+  - Import: `Classify → Calculate → Restrictions → Compare` + `Apply FTA / Generate Document`
+- 별도 Guide 페이지 생성 **X** (Home 이 단일 진실의 원천)
+- Sidebar 배지 추가 **X** (대부분 🔄 이라 가치 낮음)
+
+### Design 근거
+- POTAL 비개발자 타겟 → Home 에서 workflow 바로 보여줘야 함
+- Dead guide page 리스크 제거
+- 결정 시점에 필요 정보 = 이상적 UX
+
+Commit: `03cf2cb`
+
+## [2026-04-16 KST] CW38-HF2 — Unit/Currency Selectors 복구 + Params 중복 제거
+
+### Changed (components/playground/HsCodeCalculator.tsx)
+- Weight 필드: 단일 `Weight (kg)` → **Weight value + unit 드롭다운** (kg/g/lb/oz/t)
+- Price 필드: 단일 `Price (USD)` → **Price value + currency 드롭다운**
+  - USD/EUR/GBP/JPY/KRW/CNY/CAD/AUD/HKD/SGD (10종)
+- `HsCalcFields` 인터페이스에 `weightUnit`, `currency` 필드 추가
+- embedded 모드 + 모달 모드 양쪽 동일 적용
+- CW34-S1 composite field 가 CW37 workspace 리뉴얼에서 누락된 것 복구
+
+### Changed (components/workspace/EndpointPanel.tsx)
+- `apply-fta` endpoint: `product_value` 필드 제거 (Calculator 의 `price` 가 대체)
+- `generate-document` endpoint: `origin`, `destination` 필드 제거 (Calculator 가 대체)
+- `run()` 함수 자동 매핑:
+  - `apply-fta.product_value = calcFields.price`
+  - `generate-document.origin/destination = calcFields.originCountry/destinationCountry`
+- Body tab preview 에 `weight_unit`, `currency` 반영
+
+Commit: `d8100b9`
+
+## [2026-04-16 KST] CW38-HF1 — Advanced details + Classify 버튼 중복 제거
+
+### Changed (components/playground/HsCodeCalculator.tsx)
+- `<details>` 에 `<summary>Advanced details</summary>` 명시
+- 브라우저 로케일 무관 고정 표시 (한글 "세부정보" / 영문 "Details" 기본값 제거)
+
+### Changed (components/workspace/EndpointPanel.tsx)
+- `hideClassifyButton={endpointId !== 'classify'}` → `hideClassifyButton={true}` 강제
+- workspace 에서 amber "Classify Product" 버튼 항상 숨김
+- 메인 blue "Run" 버튼 1개로 통일
+
+Commit: `de99484`
+
+## [2026-04-16 KST] CW38 — RapidAPI Full Alignment
+
+### Added
+- `httpsnippet` 라이브러리 도입 (Kong 유지관리, RapidAPI 도 계열 사용)
+- Code Snippets: 7 언어 → **28 조합** (12 Targets × 3~5 Clients)
+  - Shell (cURL / HTTPie / Wget)
+  - JavaScript (Fetch / XHR / jQuery / Axios)
+  - Node.js (Fetch / HTTP / Axios / Request / Unirest)
+  - Python (Requests / http.client)
+  - Java (OkHttp / Unirest / AsyncHttp / NetHttp)
+  - PHP (cURL / HTTP v1 / HTTP v2)
+  - Go / Ruby / C# / Kotlin / Swift / C 각 1
+- 중앙 5탭 구조: App / Params / Headers(3) / Body / Authorizations
+- Breadcrumb: Home > Compute/Screening/Guides > Endpoint Name
+- Results tab auto-flow (Run → Results 탭 자동 전환)
+
+### Strategy
+- CEO 통찰 반영: "우리 차별점 = Parameters 경험 / API 제공은 업계 표준 따라가면 됨"
+- 업계 1등 (RapidAPI) 패턴 완전 복사 — 개발자 학습 비용 0
+- Parameters 섹션에만 POTAL 고유 (HsCodeCalculator 10-field + AI classify)
+
+### Build
+- 491 → 494 pages
+- Commit: `5296c19`
 
 ### Added
 - `/api/v1/screen-parties`: sanctions screening wrapper with `sourceCoverage`, `dataLastUpdated`, `disclaimer`
