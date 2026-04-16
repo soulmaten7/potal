@@ -156,10 +156,34 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
       }
       const allParams = { ...params };
       onParamsChange(allParams);
+
+      // CW38-HF7: generate-document requires nested { doc_type, shipment } structure
+      let bodyPayload = allParams;
+      if (endpointId === 'generate-document') {
+        bodyPayload = {
+          doc_type: allParams.documentType || 'commercial_invoice',
+          shipment: {
+            shipper: { name: allParams.shipper_name || 'Exporter Co', country: allParams.origin || '' },
+            consignee: { name: allParams.consignee_name || 'Importer Inc', country: allParams.destinationCountry || allParams.destination || '' },
+            destination: allParams.destinationCountry || allParams.destination || '',
+            items: [{
+              hs_code: allParams.hsCode || '',
+              description: allParams.productName || '',
+              value: Number(allParams.price) || 50,
+              quantity: 1,
+              weight: Number(allParams.weight_kg) || 0.5,
+              origin: allParams.origin || '',
+            }],
+            incoterms: 'DDP',
+            currency: allParams.currency || 'USD',
+          },
+        };
+      }
+
       const res = await fetch(endpoint.path, {
         method: endpoint.method,
         headers: { 'X-Demo-Request': 'true', 'Content-Type': 'application/json' },
-        body: endpoint.method === 'POST' ? JSON.stringify(allParams) : undefined,
+        body: endpoint.method === 'POST' ? JSON.stringify(bodyPayload) : undefined,
       });
       const json = await res.json();
       setResult(json);
@@ -192,6 +216,19 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
       }
     }
     for (const f of fields) { const v = values[f.key]; if (v) merged[f.key] = f.type === 'number' ? Number(v) : v; }
+    // CW38-HF7: Show nested structure for generate-document
+    if (endpointId === 'generate-document') {
+      return {
+        doc_type: merged.documentType || 'commercial_invoice',
+        shipment: {
+          shipper: { name: merged.shipper_name || '' },
+          consignee: { name: merged.consignee_name || '' },
+          destination: merged.destinationCountry || '',
+          items: [{ hs_code: merged.hsCode || '', description: merged.productName || '', value: merged.price || 0, quantity: 1, weight: merged.weight_kg || 0, origin: merged.origin || '' }],
+          currency: merged.currency || 'USD',
+        },
+      };
+    }
     return merged;
   })();
 
