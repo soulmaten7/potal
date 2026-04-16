@@ -958,18 +958,18 @@ export default function HomePage() {
               <div className="flex flex-col justify-between sm:w-2/5 sm:border-r sm:border-blue-100 sm:pr-5 pb-4 sm:pb-0 border-b sm:border-b-0 border-blue-100">
                 <div>
                   <span className="block text-5xl mb-2 group-hover:scale-110 transition-transform duration-200">&#128230;</span>
-                  <span className="block text-2xl font-black text-blue-800 mb-1">Export</span>
+                  <span className="block text-3xl font-black text-blue-800 mb-1">Export</span>
                   <span className="block text-[13px] text-blue-500">I sell or ship abroad</span>
                 </div>
                 <div className="mt-4">
-                  <span className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-sm group-hover:bg-blue-700 group-hover:shadow-md transition-all">
                     Start Export &#8594;
                   </span>
                 </div>
               </div>
 
-              {/* Right: Workflow + Also useful */}
-              <div className="flex-1 flex flex-col gap-4">
+              {/* Right: Workflow + Also useful (vertically centered for balance with 3-step) */}
+              <div className="flex-1 flex flex-col justify-center gap-5">
                 <div>
                   <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider mb-2">Typical workflow</p>
                   <ul className="space-y-1 text-[14px] text-slate-700">
@@ -996,18 +996,18 @@ export default function HomePage() {
               <div className="flex flex-col justify-between sm:w-2/5 sm:border-r sm:border-emerald-100 sm:pr-5 pb-4 sm:pb-0 border-b sm:border-b-0 border-emerald-100">
                 <div>
                   <span className="block text-5xl mb-2 group-hover:scale-110 transition-transform duration-200">&#128229;</span>
-                  <span className="block text-2xl font-black text-emerald-800 mb-1">Import</span>
+                  <span className="block text-3xl font-black text-emerald-800 mb-1">Import</span>
                   <span className="block text-[13px] text-emerald-500">I buy or receive from abroad</span>
                 </div>
                 <div className="mt-4">
-                  <span className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold shadow-sm group-hover:bg-emerald-700 group-hover:shadow-md transition-all">
                     Start Import &#8594;
                   </span>
                 </div>
               </div>
 
-              {/* Right: Workflow + Also useful */}
-              <div className="flex-1 flex flex-col gap-4">
+              {/* Right: Workflow + Also useful (vertically centered) */}
+              <div className="flex-1 flex flex-col justify-center gap-5">
                 <div>
                   <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">Typical workflow</p>
                   <ul className="space-y-1 text-[14px] text-slate-700">
