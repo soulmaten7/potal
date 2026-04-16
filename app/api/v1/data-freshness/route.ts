@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { MASTER_DATA_REGISTRY, type DataSource } from '@/app/lib/data-management/master-data-registry';
 
-let cache: { data: DataFreshness[]; timestamp: number } | null = null;
+let cache: { data: FreshnessResult[]; timestamp: number } | null = null;
 const CACHE_TTL = 5 * 60 * 1000;
 
-interface DataFreshness {
+interface FreshnessResult {
   name: string;
+  shortLabel: string;
+  category: string;
   lastUpdated: string | null;
   source: string;
+  sourceUrl: string;
+  announcementUrl?: string;
+  updateFrequency: string;
+  automationLevel: string;
+  coverage: string;
+  publisher: string;
 }
 
 function getSupabase() {
@@ -17,54 +26,59 @@ function getSupabase() {
   return createClient(url, key);
 }
 
-interface SourceQuery {
-  name: string;
-  table: string;
-  column: string;
-  filter?: { column: string; op: 'eq' | 'ilike' | 'neq'; value: string };
-}
+// Table → timestamp column mapping
+const TIMESTAMP_COLUMNS: Record<string, string> = {
+  exchange_rate_history: 'created_at',
+  fta_agreements: 'updated_at',
+  sanctioned_entities: 'created_at',
+  customs_rulings: 'updated_at',
+  trade_remedies: 'created_at',
+  country_regulatory_notes: 'created_at',
+  precomputed_landed_costs: 'last_updated',
+  hs_codes: 'created_at',
+  vat_gst_rates: 'created_at',
+  restricted_items: 'created_at',
+  eccn_entries: 'created_at',
+  duty_rates_live: 'updated_at',
+};
 
-const SOURCE_QUERIES: SourceQuery[] = [
-  { name: 'USITC', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'US' } },
-  { name: 'UK Trade Tariff', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'GB' } },
-  { name: 'EU TARIC', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'DE' } },
-  { name: 'Canada CBSA', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'CA' } },
-  { name: 'Australia ABF', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'AU' } },
-  { name: 'Korea KCS', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'KR' } },
-  { name: 'Japan Customs', table: 'precomputed_landed_costs', column: 'last_updated', filter: { column: 'destination_country', op: 'eq', value: 'JP' } },
-  { name: 'MacMap MFN', table: 'precomputed_landed_costs', column: 'last_updated' },
-  { name: 'Exchange Rates', table: 'exchange_rate_history', column: 'created_at' },
-  { name: 'Section 301/232', table: 'country_regulatory_notes', column: 'created_at', filter: { column: 'category', op: 'neq', value: '__shannon_probe__' } },
-  { name: 'Trade Remedies', table: 'country_regulatory_notes', column: 'created_at', filter: { column: 'category', op: 'eq', value: 'trade' } },
-  { name: 'FTA Agreements', table: 'fta_agreements', column: 'updated_at' },
-];
-
-async function fetchFreshness(): Promise<DataFreshness[]> {
+async function fetchFreshness(): Promise<FreshnessResult[]> {
   const sb = getSupabase();
   if (!sb) return [];
 
-  const results: DataFreshness[] = [];
+  const results: FreshnessResult[] = [];
 
-  for (const src of SOURCE_QUERIES) {
+  for (const src of MASTER_DATA_REGISTRY) {
+    const primaryTable = src.tables[0];
+    if (!primaryTable) continue;
+
+    const col = TIMESTAMP_COLUMNS[primaryTable] || 'created_at';
+    let lastUpdated: string | null = null;
+
     try {
-      let query = sb.from(src.table).select(src.column).order(src.column, { ascending: false }).limit(1);
-
-      if (src.filter) {
-        if (src.filter.op === 'eq') query = query.eq(src.filter.column, src.filter.value);
-        else if (src.filter.op === 'ilike') query = query.ilike(src.filter.column, src.filter.value);
-        else if (src.filter.op === 'neq') query = query.neq(src.filter.column, src.filter.value);
+      const { data } = await sb
+        .from(primaryTable)
+        .select(col)
+        .order(col, { ascending: false })
+        .limit(1);
+      if (data?.[0]) {
+        lastUpdated = (data[0] as unknown as Record<string, string>)[col] || null;
       }
+    } catch { /* table may not exist */ }
 
-      const { data, error } = await query;
-      if (error || !data || data.length === 0) {
-        results.push({ name: src.name, lastUpdated: null, source: src.table });
-      } else {
-        const row = data[0] as unknown as Record<string, string>;
-        results.push({ name: src.name, lastUpdated: row[src.column] || null, source: src.table });
-      }
-    } catch {
-      results.push({ name: src.name, lastUpdated: null, source: src.table });
-    }
+    results.push({
+      name: src.name,
+      shortLabel: src.shortLabel,
+      category: src.category,
+      lastUpdated,
+      source: primaryTable,
+      sourceUrl: src.sourceUrl,
+      announcementUrl: src.announcementUrl,
+      updateFrequency: src.updateFrequency,
+      automationLevel: src.automationLevel,
+      coverage: src.coverage,
+      publisher: src.publisher,
+    });
   }
 
   return results;
@@ -72,14 +86,14 @@ async function fetchFreshness(): Promise<DataFreshness[]> {
 
 export async function GET() {
   if (cache && Date.now() - cache.timestamp < CACHE_TTL) {
-    return NextResponse.json({ sources: cache.data, cached: true, ttl: CACHE_TTL });
+    return NextResponse.json({ sources: cache.data, cached: true, ttl: CACHE_TTL, totalSources: cache.data.length });
   }
 
   const freshness = await fetchFreshness();
   cache = { data: freshness, timestamp: Date.now() };
 
   return NextResponse.json(
-    { sources: freshness, cached: false, ttl: CACHE_TTL },
+    { sources: freshness, cached: false, ttl: CACHE_TTL, totalSources: freshness.length },
     { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600' } },
   );
 }

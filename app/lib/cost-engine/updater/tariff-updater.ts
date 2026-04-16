@@ -75,7 +75,9 @@ async function upsertDutyRate(
   source: string
 ): Promise<boolean> {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/live_duty_rate_cache`, {
+    // CW38: Fixed table name live_duty_rate_cache → duty_rates_live
+    // and aligned column schema to match what GlobalCostEngine reads
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/duty_rates_live`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
@@ -85,10 +87,13 @@ async function upsertDutyRate(
       },
       body: JSON.stringify({
         hs_code: hsCode,
-        destination_country: destinationCountry,
-        duty_rate: dutyRate,
-        source,
-        updated_at: new Date().toISOString(),
+        destination_country: destinationCountry.toUpperCase(),
+        mfn_rate: dutyRate,
+        additional_tariff: 0,
+        anti_dumping_rate: 0,
+        source_api: source,
+        effective_date: new Date().toISOString().split('T')[0],
+        invalidated_at: null,
       }),
     });
     return res.ok;
