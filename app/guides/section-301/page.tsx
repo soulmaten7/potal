@@ -16,7 +16,7 @@ const LISTS = [
 
 export default function Section301GuidePage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Section 301 Tariffs Guide</h1>
       <p className="text-slate-600 mb-4">US additional tariffs on goods of Chinese origin under Section 301 of the Trade Act of 1974.</p>
 

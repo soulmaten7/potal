@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <article style={{ backgroundColor: "#ffffff", color: "#02122c" }} className="min-h-screen py-12 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h1 style={{ fontSize: "32px", fontWeight: 800, marginBottom: "8px" }}>
           Privacy Policy
         </h1>

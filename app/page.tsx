@@ -949,7 +949,7 @@ export default function HomePage() {
           </p>
 
           {/* CW38-HF4: Horizontal internal layout for boxes — fits in one viewport */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 w-full max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 w-full max-w-7xl">
             <Link
               href="/workspace/export"
               className="flex flex-col sm:flex-row gap-5 sm:gap-6 py-7 px-7 rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:border-blue-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
