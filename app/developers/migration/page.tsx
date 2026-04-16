@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 
 const accent = '#E8640A';
-const cardStyle: React.CSSProperties = { background: 'rgba(0,0,0,0.25)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.08)' };
 
 interface MigrationGuide {
   from: string;
@@ -82,68 +81,65 @@ export default function MigrationPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a1e3d 0%, #1a365d 100%)', color: 'white', padding: '80px 20px' }}>
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(232,100,10,0.2)', color: accent, padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, marginBottom: 12 }}>DEVELOPER DOCS</div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>Migration Guide</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 32, fontSize: 15 }}>Step-by-step guides to migrate from competitors or manual processes to POTAL.</p>
+    <div className="min-h-screen bg-white py-16 px-5">
+      <div className="max-w-7xl mx-auto">
+        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style={{ background: 'rgba(232,100,10,0.1)', color: accent }}>DEVELOPER DOCS</span>
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Migration Guide</h1>
+        <p className="text-slate-500 mb-8 text-[15px]">Step-by-step guides to migrate from competitors or manual processes to POTAL.</p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="flex flex-col gap-3">
           {GUIDES.map(g => {
             const isOpen = expanded === g.from;
             return (
-              <div key={g.from} style={{ ...cardStyle, overflow: 'hidden' }}>
-                <button onClick={() => setExpanded(isOpen ? null : g.from)} style={{
-                  width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px',
-                  background: 'none', border: 'none', cursor: 'pointer', color: 'white',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <span style={{ fontSize: 16, fontWeight: 700 }}>From {g.from}</span>
-                    <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, background: 'rgba(34,197,94,0.15)', color: '#4ade80' }}>{g.time}</span>
+              <div key={g.from} className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+                <button onClick={() => setExpanded(isOpen ? null : g.from)} className="w-full flex justify-between items-center px-5 py-4 text-left hover:bg-slate-50 transition-colors" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-base font-bold text-slate-800">From {g.from}</span>
+                    <span className="text-[11px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 font-semibold">{g.time}</span>
                   </div>
-                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'none' }}>&#9660;</span>
+                  <span className="text-sm text-slate-400 transition-transform" style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}>&#9660;</span>
                 </button>
 
                 {isOpen && (
-                  <div style={{ padding: '0 20px 20px' }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>Key Differences</div>
-                    <div style={{ overflowX: 'auto', marginBottom: 20 }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                  <div className="px-5 pb-5">
+                    <div className="text-[13px] font-bold text-slate-500 mb-3">Key Differences</div>
+                    <div className="overflow-x-auto mb-5">
+                      <table className="w-full text-[13px]" style={{ borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                            <th style={{ textAlign: 'left', padding: '8px 12px', color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>Aspect</th>
-                            <th style={{ textAlign: 'left', padding: '8px 12px', color: '#f87171', fontSize: 11 }}>{g.from}</th>
-                            <th style={{ textAlign: 'left', padding: '8px 12px', color: '#4ade80', fontSize: 11 }}>POTAL</th>
+                          <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <th className="text-left px-3 py-2 text-[11px] text-slate-400 font-semibold">Aspect</th>
+                            <th className="text-left px-3 py-2 text-[11px] text-red-400 font-semibold">{g.from}</th>
+                            <th className="text-left px-3 py-2 text-[11px] text-emerald-500 font-semibold">POTAL</th>
                           </tr>
                         </thead>
                         <tbody>
                           {g.differences.map((d, i) => (
-                            <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                              <td style={{ padding: '8px 12px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>{d.aspect}</td>
-                              <td style={{ padding: '8px 12px', color: 'rgba(255,255,255,0.45)' }}>{d.theirs}</td>
-                              <td style={{ padding: '8px 12px', color: 'rgba(255,255,255,0.8)' }}>{d.potal}</td>
+                            <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                              <td className="px-3 py-2 text-slate-600 font-semibold">{d.aspect}</td>
+                              <td className="px-3 py-2 text-slate-400">{d.theirs}</td>
+                              <td className="px-3 py-2 text-slate-700">{d.potal}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
 
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>API Mapping</div>
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                    <div className="text-[13px] font-bold text-slate-500 mb-3">API Mapping</div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs" style={{ borderCollapse: 'collapse' }}>
                         <thead>
-                          <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                            <th style={{ textAlign: 'left', padding: '8px 12px', color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>{g.from}</th>
-                            <th style={{ textAlign: 'center', padding: '8px', color: 'rgba(255,255,255,0.25)' }}>&rarr;</th>
-                            <th style={{ textAlign: 'left', padding: '8px 12px', color: accent, fontSize: 11 }}>POTAL</th>
+                          <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                            <th className="text-left px-3 py-2 text-[11px] text-slate-400 font-semibold">{g.from}</th>
+                            <th className="text-center px-2 py-2 text-slate-300">&rarr;</th>
+                            <th className="text-left px-3 py-2 text-[11px] font-semibold" style={{ color: accent }}>POTAL</th>
                           </tr>
                         </thead>
                         <tbody>
                           {g.mappings.map((m, i) => (
-                            <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                              <td style={{ padding: '8px 12px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.45)', fontSize: 11 }}>{m.theirs}</td>
-                              <td style={{ textAlign: 'center', color: 'rgba(255,255,255,0.2)' }}>&rarr;</td>
-                              <td style={{ padding: '8px 12px', fontFamily: 'monospace', color: accent, fontSize: 11 }}>{m.potal}</td>
+                            <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                              <td className="px-3 py-2 font-mono text-slate-400 text-[11px]">{m.theirs}</td>
+                              <td className="text-center text-slate-300">&rarr;</td>
+                              <td className="px-3 py-2 font-mono text-[11px]" style={{ color: accent }}>{m.potal}</td>
                             </tr>
                           ))}
                         </tbody>

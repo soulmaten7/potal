@@ -3,11 +3,6 @@
 import React, { useState } from 'react';
 
 const accent = '#E8640A';
-const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '12px 14px', background: 'rgba(0,0,0,0.35)',
-  border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, color: 'white',
-  fontSize: 14, outline: 'none', boxSizing: 'border-box',
-};
 
 interface EndpointOption { label: string; method: 'GET' | 'POST'; path: string; defaultBody: string }
 
@@ -24,7 +19,7 @@ const ENDPOINTS: EndpointOption[] = [
   { label: 'Type 86 Check', method: 'POST', path: '/api/v1/customs/type86', defaultBody: JSON.stringify({ declaredValue: 450, originCountry: 'CN' }, null, 2) },
 ];
 
-const methodColor: Record<string, string> = { GET: '#4ade80', POST: '#60a5fa' };
+const methodBg: Record<string, string> = { GET: 'bg-emerald-50 text-emerald-700', POST: 'bg-blue-50 text-blue-700' };
 
 export default function SandboxPage() {
   const [selected, setSelected] = useState(0);
@@ -70,23 +65,19 @@ export default function SandboxPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a1e3d 0%, #1a365d 100%)', color: 'white', padding: '80px 20px' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(232,100,10,0.2)', color: accent, padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, marginBottom: 12 }}>DEVELOPER TOOLS</div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>API Sandbox</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 32, fontSize: 15 }}>Test any POTAL API endpoint in real-time. No API key needed for demo mode.</p>
+    <div className="min-h-screen bg-white py-16 px-5">
+      <div className="max-w-7xl mx-auto">
+        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style={{ background: 'rgba(232,100,10,0.1)', color: accent }}>DEVELOPER TOOLS</span>
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">API Sandbox</h1>
+        <p className="text-slate-500 mb-8 text-[15px]">Test any POTAL API endpoint in real-time. No API key needed for demo mode.</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: 20 }}>
+        <div className="grid gap-5" style={{ gridTemplateColumns: '240px 1fr' }}>
           {/* Left: Endpoint list */}
-          <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.08)', padding: 8, maxHeight: 500, overflowY: 'auto' }}>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-2 max-h-[500px] overflow-y-auto">
             {ENDPOINTS.map((e, i) => (
-              <button key={i} onClick={() => handleSelect(i)} style={{
-                width: '100%', display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
-                background: selected === i ? 'rgba(232,100,10,0.15)' : 'transparent', border: 'none',
-                borderRadius: 8, cursor: 'pointer', color: 'white', textAlign: 'left', marginBottom: 2,
-              }}>
-                <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 3, fontWeight: 700, fontFamily: 'monospace', background: `${methodColor[e.method]}20`, color: methodColor[e.method] }}>{e.method}</span>
-                <span style={{ fontSize: 12, color: selected === i ? 'white' : 'rgba(255,255,255,0.6)' }}>{e.label}</span>
+              <button key={i} onClick={() => handleSelect(i)} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-left mb-0.5 transition-colors" style={{ background: selected === i ? 'rgba(232,100,10,0.08)' : 'transparent', border: 'none', cursor: 'pointer' }}>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold font-mono ${methodBg[e.method]}`}>{e.method}</span>
+                <span className="text-xs" style={{ color: selected === i ? '#1e293b' : '#64748b' }}>{e.label}</span>
               </button>
             ))}
           </div>
@@ -94,39 +85,39 @@ export default function SandboxPage() {
           {/* Right: Request/Response */}
           <div>
             {/* URL bar */}
-            <div style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'center' }}>
-              <span style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, fontWeight: 700, fontFamily: 'monospace', background: `${methodColor[ep.method]}20`, color: methodColor[ep.method] }}>{ep.method}</span>
-              <div style={{ flex: 1, padding: '10px 14px', background: 'rgba(0,0,0,0.3)', borderRadius: 8, fontFamily: 'monospace', fontSize: 13, color: accent, border: '1px solid rgba(255,255,255,0.1)' }}>
+            <div className="flex gap-3 mb-4 items-center">
+              <span className={`text-[11px] px-3 py-1 rounded-md font-bold font-mono ${methodBg[ep.method]}`}>{ep.method}</span>
+              <div className="flex-1 px-4 py-2.5 rounded-lg font-mono text-[13px] border border-slate-200 bg-slate-50" style={{ color: accent }}>
                 {ep.path}
               </div>
-              <button onClick={handleSend} disabled={loading} style={{ padding: '10px 24px', background: loading ? 'rgba(232,100,10,0.5)' : accent, color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: loading ? 'default' : 'pointer', whiteSpace: 'nowrap' }}>
+              <button onClick={handleSend} disabled={loading} className="px-6 py-2.5 rounded-lg font-bold text-[13px] text-white whitespace-nowrap transition-colors" style={{ background: loading ? 'rgba(232,100,10,0.5)' : accent, border: 'none', cursor: loading ? 'default' : 'pointer' }}>
                 {loading ? 'Sending...' : 'Send'}
               </button>
             </div>
 
             {/* Request body */}
             {ep.method === 'POST' && (
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', marginBottom: 6 }}>Request Body</div>
-                <textarea value={body} onChange={e => setBody(e.target.value)} rows={8} style={{ ...inputStyle, fontFamily: 'monospace', fontSize: 12, resize: 'vertical' }} />
+              <div className="mb-4">
+                <div className="text-[11px] font-semibold text-slate-400 uppercase mb-2">Request Body</div>
+                <textarea value={body} onChange={e => setBody(e.target.value)} rows={8} className="w-full px-4 py-3 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 text-sm font-mono outline-none resize-y" style={{ boxSizing: 'border-box' }} />
               </div>
             )}
 
             {/* Response */}
             {response && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' }}>Response</span>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex gap-2 items-center">
+                    <span className="text-[11px] font-semibold text-slate-400 uppercase">Response</span>
                     {statusCode !== null && (
-                      <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, fontWeight: 700, background: statusCode >= 200 && statusCode < 300 ? 'rgba(34,197,94,0.15)' : 'rgba(239,68,68,0.15)', color: statusCode >= 200 && statusCode < 300 ? '#4ade80' : '#f87171' }}>
+                      <span className={`text-[11px] px-2 py-0.5 rounded font-bold ${statusCode >= 200 && statusCode < 300 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
                         {statusCode}
                       </span>
                     )}
                   </div>
-                  {responseTime !== null && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{responseTime}ms</span>}
+                  {responseTime !== null && <span className="text-[11px] text-slate-400">{responseTime}ms</span>}
                 </div>
-                <pre style={{ background: '#0d1117', borderRadius: 10, padding: 16, fontSize: 11, fontFamily: 'monospace', color: '#e6edf3', overflowX: 'auto', maxHeight: 400, overflowY: 'auto', margin: 0, border: '1px solid rgba(255,255,255,0.08)', lineHeight: 1.5 }}>
+                <pre className="rounded-xl p-4 text-[11px] font-mono overflow-x-auto max-h-[400px] overflow-y-auto m-0 leading-relaxed" style={{ background: '#0d1117', color: '#e6edf3', border: '1px solid #e2e8f0' }}>
                   {response}
                 </pre>
               </div>

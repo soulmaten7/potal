@@ -7,8 +7,12 @@ const accent = '#E8640A';
 interface Change { type: 'Added' | 'Changed' | 'Fixed' | 'Deprecated'; text: string }
 interface Version { version: string; date: string; changes: Change[] }
 
-const typeColor: Record<string, string> = { Added: '#4ade80', Changed: '#60a5fa', Fixed: '#facc15', Deprecated: '#f87171' };
-const typeBg: Record<string, string> = { Added: 'rgba(34,197,94,0.15)', Changed: 'rgba(96,165,250,0.15)', Fixed: 'rgba(250,204,21,0.15)', Deprecated: 'rgba(248,113,113,0.15)' };
+const typeStyle: Record<string, string> = {
+  Added: 'bg-emerald-50 text-emerald-600',
+  Changed: 'bg-blue-50 text-blue-600',
+  Fixed: 'bg-amber-50 text-amber-600',
+  Deprecated: 'bg-red-50 text-red-500',
+};
 
 const VERSIONS: Version[] = [
   { version: 'v2.4.0', date: 'April 2026', changes: [
@@ -50,30 +54,30 @@ const VERSIONS: Version[] = [
 
 export default function ApiChangelogPage() {
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a1e3d 0%, #1a365d 100%)', color: 'white', padding: '80px 20px' }}>
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(232,100,10,0.2)', color: accent, padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, marginBottom: 12 }}>DEVELOPER DOCS</div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>API Changelog</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 32, fontSize: 15 }}>Track all API changes, new features, and deprecations.</p>
+    <div className="min-h-screen bg-white py-16 px-5">
+      <div className="max-w-7xl mx-auto">
+        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style={{ background: 'rgba(232,100,10,0.1)', color: accent }}>DEVELOPER DOCS</span>
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">API Changelog</h1>
+        <p className="text-slate-500 mb-10 text-[15px]">Track all API changes, new features, and deprecations.</p>
 
-        <div style={{ position: 'relative', paddingLeft: 32 }}>
-          <div style={{ position: 'absolute', left: 7, top: 0, bottom: 0, width: 2, background: 'rgba(255,255,255,0.08)' }} />
+        <div className="relative pl-8">
+          <div className="absolute left-[7px] top-0 bottom-0 w-0.5 bg-slate-200" />
 
           {VERSIONS.map((v, vi) => (
-            <div key={v.version} style={{ marginBottom: 32, position: 'relative' }}>
-              <div style={{ position: 'absolute', left: -32, top: 4, width: 16, height: 16, borderRadius: '50%', background: vi === 0 ? accent : 'rgba(255,255,255,0.15)', border: `2px solid ${vi === 0 ? accent : 'rgba(255,255,255,0.2)'}` }} />
+            <div key={v.version} className="mb-8 relative">
+              <div className="absolute -left-8 top-1 w-4 h-4 rounded-full border-2" style={{ background: vi === 0 ? accent : '#f1f5f9', borderColor: vi === 0 ? accent : '#e2e8f0' }} />
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                <span style={{ fontSize: 20, fontWeight: 800, color: vi === 0 ? accent : 'rgba(255,255,255,0.9)' }}>{v.version}</span>
-                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>{v.date}</span>
-                {vi === 0 && <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: 'rgba(34,197,94,0.15)', color: '#4ade80', fontWeight: 700 }}>LATEST</span>}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xl font-extrabold" style={{ color: vi === 0 ? accent : '#1e293b' }}>{v.version}</span>
+                <span className="text-[13px] text-slate-400">{v.date}</span>
+                {vi === 0 && <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-600 font-bold">LATEST</span>}
               </div>
 
-              <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+              <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
                 {v.changes.map((c, ci) => (
-                  <div key={ci} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 16px', borderBottom: ci < v.changes.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, background: typeBg[c.type], color: typeColor[c.type], fontWeight: 700, flexShrink: 0, marginTop: 2 }}>{c.type}</span>
-                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>{c.text}</span>
+                  <div key={ci} className="flex items-start gap-3 px-4 py-3" style={{ borderBottom: ci < v.changes.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded font-bold flex-shrink-0 mt-0.5 ${typeStyle[c.type]}`}>{c.type}</span>
+                    <span className="text-[13px] text-slate-600 leading-relaxed">{c.text}</span>
                   </div>
                 ))}
               </div>

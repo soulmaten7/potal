@@ -40,54 +40,51 @@ const CATEGORIES: Category[] = [
   ]},
 ];
 
-const methodColor: Record<string, string> = { GET: '#4ade80', POST: '#60a5fa' };
+const methodBg: Record<string, string> = { GET: 'bg-emerald-50 text-emerald-700', POST: 'bg-blue-50 text-blue-700' };
 
 export default function OpenApiPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a1e3d 0%, #1a365d 100%)', color: 'white', padding: '80px 20px' }}>
-      <div style={{ maxWidth: 900, margin: '0 auto' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(232,100,10,0.2)', color: accent, padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, marginBottom: 12 }}>DEVELOPER DOCS</div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>API Reference</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 32, fontSize: 15 }}>155+ API endpoints organized by category. All endpoints accept JSON and return JSON.</p>
+    <div className="min-h-screen bg-white py-16 px-5">
+      <div className="max-w-7xl mx-auto">
+        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style={{ background: 'rgba(232,100,10,0.1)', color: accent }}>DEVELOPER DOCS</span>
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">API Reference</h1>
+        <p className="text-slate-500 mb-10 text-[15px]">155+ API endpoints organized by category. All endpoints accept JSON and return JSON.</p>
 
         {CATEGORIES.map(cat => (
-          <div key={cat.name} style={{ marginBottom: 24 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12, color: 'rgba(255,255,255,0.8)' }}>{cat.name}</h2>
-            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden' }}>
+          <div key={cat.name} className="mb-8">
+            <h2 className="text-lg font-bold text-slate-800 mb-3">{cat.name}</h2>
+            <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
               {cat.endpoints.map((ep, i) => {
                 const key = `${ep.method}${ep.path}`;
                 const isOpen = expanded === key;
                 return (
                   <div key={key}>
-                    <button onClick={() => setExpanded(isOpen ? null : key)} style={{
-                      width: '100%', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px',
-                      background: 'none', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.04)', cursor: 'pointer', color: 'white', textAlign: 'left',
-                    }}>
-                      <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 700, fontFamily: 'monospace', background: `${methodColor[ep.method]}20`, color: methodColor[ep.method], flexShrink: 0 }}>{ep.method}</span>
-                      <span style={{ fontFamily: 'monospace', fontSize: 13, color: accent, flex: 1 }}>{ep.path}</span>
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ep.description}</span>
+                    <button onClick={() => setExpanded(isOpen ? null : key)} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors" style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-bold font-mono ${methodBg[ep.method]}`}>{ep.method}</span>
+                      <span className="font-mono text-[13px] flex-1" style={{ color: accent }}>{ep.path}</span>
+                      <span className="text-xs text-slate-400 max-w-[250px] overflow-hidden text-ellipsis whitespace-nowrap">{ep.description}</span>
                     </button>
                     {isOpen && (
-                      <div style={{ padding: '12px 16px 16px', borderBottom: i < cat.endpoints.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 10 }}>{ep.description}</div>
+                      <div className="px-4 py-3 bg-slate-50" style={{ borderBottom: i < cat.endpoints.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+                        <div className="text-[13px] text-slate-600 mb-3">{ep.description}</div>
                         {ep.params && (
-                          <div style={{ marginBottom: 10 }}>
-                            <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>Parameters: </span>
-                            <span style={{ fontSize: 12, fontFamily: 'monospace', color: 'rgba(255,255,255,0.55)' }}>{ep.params}</span>
+                          <div className="mb-3">
+                            <span className="text-[11px] font-semibold text-slate-400">Parameters: </span>
+                            <span className="text-xs font-mono text-slate-500">{ep.params}</span>
                           </div>
                         )}
                         {ep.requestExample && (
-                          <div style={{ marginBottom: 8 }}>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>Request</div>
-                            <pre style={{ background: '#0d1117', borderRadius: 8, padding: 12, fontSize: 11, fontFamily: 'monospace', color: '#e6edf3', overflowX: 'auto', margin: 0 }}>{ep.requestExample}</pre>
+                          <div className="mb-2">
+                            <div className="text-[11px] font-semibold text-slate-400 mb-1">Request</div>
+                            <pre className="bg-[#0d1117] rounded-lg p-3 text-[11px] font-mono text-[#e6edf3] overflow-x-auto m-0">{ep.requestExample}</pre>
                           </div>
                         )}
                         {ep.responseExample && (
                           <div>
-                            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>Response</div>
-                            <pre style={{ background: '#0d1117', borderRadius: 8, padding: 12, fontSize: 11, fontFamily: 'monospace', color: '#e6edf3', overflowX: 'auto', margin: 0 }}>{ep.responseExample}</pre>
+                            <div className="text-[11px] font-semibold text-slate-400 mb-1">Response</div>
+                            <pre className="bg-[#0d1117] rounded-lg p-3 text-[11px] font-mono text-[#e6edf3] overflow-x-auto m-0">{ep.responseExample}</pre>
                           </div>
                         )}
                       </div>

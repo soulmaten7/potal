@@ -7,14 +7,14 @@ const accent = '#E8640A';
 function CodeBlock({ code, lang }: { code: string; lang: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div style={{ position: 'relative', background: '#0d1117', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', marginBottom: 14 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>{lang}</span>
-        <button onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000); }} style={{ fontSize: 11, padding: '3px 10px', background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 6, color: copied ? '#4ade80' : 'rgba(255,255,255,0.5)', cursor: 'pointer' }}>
+    <div className="relative rounded-xl border border-slate-200 overflow-hidden mb-4">
+      <div className="flex justify-between items-center px-4 py-2 bg-slate-50 border-b border-slate-200">
+        <span className="text-[11px] text-slate-400 font-semibold">{lang}</span>
+        <button onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000); }} className="text-[11px] px-3 py-1 rounded-md font-medium transition-colors" style={{ background: copied ? '#dcfce7' : '#f1f5f9', color: copied ? '#16a34a' : '#64748b', border: 'none', cursor: 'pointer' }}>
           {copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
-      <pre style={{ padding: '14px', margin: 0, fontSize: 12, fontFamily: 'monospace', color: '#e6edf3', overflowX: 'auto', lineHeight: 1.6 }}>{code}</pre>
+      <pre className="p-4 m-0 text-xs font-mono leading-relaxed overflow-x-auto" style={{ background: '#0d1117', color: '#e6edf3' }}>{code}</pre>
     </div>
   );
 }
@@ -97,43 +97,43 @@ export default function SdkPage() {
   const [tab, setTab] = useState<typeof TABS[number]>('JavaScript');
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #0a1e3d 0%, #1a365d 100%)', color: 'white', padding: '80px 20px' }}>
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <div style={{ display: 'inline-block', background: 'rgba(232,100,10,0.2)', color: accent, padding: '4px 12px', borderRadius: 12, fontSize: 11, fontWeight: 700, marginBottom: 12 }}>DEVELOPER DOCS</div>
-        <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 8 }}>SDK & Integration Guide</h1>
-        <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 32, fontSize: 15 }}>Get started with POTAL in your preferred language. All SDKs are free and open source.</p>
+    <div className="min-h-screen bg-white py-16 px-5">
+      <div className="max-w-7xl mx-auto">
+        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-3" style={{ background: 'rgba(232,100,10,0.1)', color: accent }}>DEVELOPER DOCS</span>
+        <h1 className="text-3xl font-extrabold text-slate-900 mb-2">SDK & Integration Guide</h1>
+        <p className="text-slate-500 mb-8 text-[15px]">Get started with POTAL in your preferred language. All SDKs are free and open source.</p>
 
-        <div style={{ display: 'flex', gap: 6, marginBottom: 24 }}>
+        <div className="flex gap-2 mb-8">
           {TABS.map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{ padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', background: tab === t ? accent : 'rgba(255,255,255,0.08)', color: tab === t ? 'white' : 'rgba(255,255,255,0.5)' }}>{t}</button>
+            <button key={t} onClick={() => setTab(t)} className="px-5 py-2 rounded-lg text-[13px] font-semibold transition-colors" style={{ background: tab === t ? accent : '#f1f5f9', color: tab === t ? 'white' : '#64748b', border: 'none', cursor: 'pointer' }}>{t}</button>
           ))}
         </div>
 
         {tab === 'JavaScript' && (
           <>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Installation</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Installation</h3>
             <CodeBlock code={JS_INSTALL} lang="bash" />
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Initialization</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Initialization</h3>
             <CodeBlock code={JS_INIT} lang="javascript" />
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Examples</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Examples</h3>
             <CodeBlock code={JS_EXAMPLES} lang="javascript" />
           </>
         )}
 
         {tab === 'Python' && (
           <>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Installation</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Installation</h3>
             <CodeBlock code={PY_INSTALL} lang="bash" />
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Initialization</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Initialization</h3>
             <CodeBlock code={PY_INIT} lang="python" />
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Examples</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Examples</h3>
             <CodeBlock code={PY_EXAMPLES} lang="python" />
           </>
         )}
 
         {tab === 'cURL' && (
           <>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 10 }}>Examples</h3>
+            <h3 className="text-base font-bold text-slate-800 mb-3">Examples</h3>
             <CodeBlock code={CURL_EXAMPLES} lang="bash" />
           </>
         )}
