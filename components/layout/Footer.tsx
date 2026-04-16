@@ -72,7 +72,7 @@ export function Footer() {
       <div className="w-full px-6 lg:px-12">
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
 
           {/* Brand */}
           <div className="flex flex-col gap-4">
@@ -102,20 +102,6 @@ export function Footer() {
               <p className="text-xs text-slate-600 mt-1">{t('footer.newsletter.description')}</p>
               <NewsletterForm t={t} />
             </div>
-          </div>
-
-          {/* Product */}
-          <div className="flex flex-col gap-3">
-            <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">{t('footer.product')}</h4>
-            <Link href="/developers" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              {t('nav.developers')}
-            </Link>
-            <Link href="/pricing" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              {t('nav.pricing')}
-            </Link>
-            <Link href="/dashboard" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              {t('nav.dashboard')}
-            </Link>
           </div>
 
           {/* Resources */}
