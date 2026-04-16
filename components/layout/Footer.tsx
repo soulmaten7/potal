@@ -110,12 +110,6 @@ export function Footer() {
             <Link href="/developers" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('nav.developers')}
             </Link>
-            <Link href="/developers/docs" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              {t('footer.documentation')}
-            </Link>
-            <Link href="/developers/playground" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              {t('footer.widgetPlayground')}
-            </Link>
             <Link href="/pricing" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('nav.pricing')}
             </Link>
@@ -129,9 +123,6 @@ export function Footer() {
             <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">{t('footer.resources')}</h4>
             <Link href="/help" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('footer.helpCenter')}
-            </Link>
-            <Link href="/widget/demo" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
-              {t('footer.widgetDemo')}
             </Link>
             <Link href="/contact" className="text-sm text-slate-300 hover:text-[#F59E0B] transition-colors cursor-pointer">
               {t('footer.contact')}
