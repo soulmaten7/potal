@@ -112,6 +112,7 @@ export function Header() {
         {/* Logo */}
         <Link
           href="/"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className="hover:opacity-90 focus:outline-none cursor-pointer flex items-center"
           aria-label="POTAL home"
         >
