@@ -1,19 +1,17 @@
 'use client';
 
 /**
- * LiveTicker — CW23 홈페이지 리디자인 Sprint 1
+ * LiveTicker — CW38-HF20: 진짜 API 연결
+ *
+ * /api/v1/data-freshness 에서 12개 데이터 소스의 실제 업데이트 시각을 가져와서
+ * 2줄 marquee 티커로 표시. 5분마다 API 재조회, 30초마다 상대시간 갱신.
  *
  * 결정 2 (HOMEPAGE_REDESIGN_SPEC.md): 2줄 티커, 풀네임 병기, Live indicator
- *
- * 각 줄은 독립적으로 좌→우로 천천히 흐르고, 풀세트가 끝나면 반복(marquee).
- * Pulse 애니메이션 "●" 초록 점으로 Operational Transparency 구현.
- *
- * 상대 시간 ("14 min ago")은 마운트 후 클라이언트에서 계산하여 SSR mismatch 방지.
  */
 
 import { useEffect, useState } from 'react';
 import {
-  LIVE_SOURCES,
+  apiToLiveSources,
   formatRelativeTime,
   getTickerRows,
   type LiveSource,
@@ -21,13 +19,16 @@ import {
 
 function TickerItem({ source, now }: { source: LiveSource; now: Date }) {
   const relative = formatRelativeTime(source.lastUpdatedAt, now);
+  const isStale = !source.lastUpdatedAt;
   return (
     <span className="inline-flex items-center gap-2 whitespace-nowrap mr-10 text-[12px] text-slate-600">
       <span
         aria-hidden="true"
-        className="inline-block w-[7px] h-[7px] rounded-full bg-emerald-500 live-pulse"
+        className={`inline-block w-[7px] h-[7px] rounded-full ${isStale ? 'bg-slate-400' : 'bg-emerald-500 live-pulse'}`}
       />
-      <span className="font-semibold text-emerald-700">Live</span>
+      <span className={`font-semibold ${isStale ? 'text-slate-500' : 'text-emerald-700'}`}>
+        {isStale ? 'Pending' : 'Live'}
+      </span>
       <span className="text-slate-400">·</span>
       <span className="font-semibold text-slate-700">{source.abbr}</span>
       <span className="text-slate-500">({source.fullName})</span>
@@ -38,7 +39,6 @@ function TickerItem({ source, now }: { source: LiveSource; now: Date }) {
 }
 
 function TickerRow({ items, now, reverse = false }: { items: LiveSource[]; now: Date; reverse?: boolean }) {
-  // Duplicate the list so the marquee loop is seamless.
   const loop = [...items, ...items];
   return (
     <div className="overflow-hidden border-b border-slate-100 py-2">
@@ -56,18 +56,40 @@ function TickerRow({ items, now, reverse = false }: { items: LiveSource[]; now: 
 
 export function LiveTicker() {
   const [now, setNow] = useState<Date | null>(null);
+  const [sources, setSources] = useState<LiveSource[]>([]);
 
-  // Set initial time on mount (avoids SSR/CSR mismatch), then tick every 30s.
   useEffect(() => {
     setNow(new Date());
-    const id = setInterval(() => setNow(new Date()), 30_000);
-    return () => clearInterval(id);
+
+    // Tick relative times every 30s
+    const timeId = setInterval(() => setNow(new Date()), 30_000);
+
+    // Fetch real data from API
+    async function fetchFreshness() {
+      try {
+        const res = await fetch('/api/v1/data-freshness');
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json.sources && json.sources.length > 0) {
+          setSources(apiToLiveSources(json.sources));
+        }
+      } catch {
+        // Keep previous data on failure
+      }
+    }
+
+    fetchFreshness();
+    // Re-fetch from API every 5 minutes (matches API cache TTL)
+    const fetchId = setInterval(fetchFreshness, 5 * 60 * 1000);
+
+    return () => {
+      clearInterval(timeId);
+      clearInterval(fetchId);
+    };
   }, []);
 
-  const [row1, row2] = getTickerRows(LIVE_SOURCES);
-
-  // Render a neutral placeholder until hydration to prevent mismatched relative times.
-  if (!now) {
+  // Loading placeholder
+  if (!now || sources.length === 0) {
     return (
       <div
         aria-label="Live data sources ticker"
@@ -78,6 +100,8 @@ export function LiveTicker() {
       </div>
     );
   }
+
+  const [row1, row2] = getTickerRows(sources);
 
   return (
     <div

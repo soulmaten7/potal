@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import HeroCalculator from '@/components/home/HeroCalculator';
-import DataSourceTicker from '@/components/home/DataSourceTicker';
+// DataSourceTicker removed in CW38-HF20 — LiveTicker now uses real API data
 import { useI18n } from '@/app/context/I18nProvider';
 // CW23 Sprint 1 imports
 import HeaderMinimal from '@/components/layout/HeaderMinimal';
@@ -412,8 +412,7 @@ function HomePageLegacyCW22() {
       background: '#fafafa',
       color: '#1a1a1a',
     }}>
-      {/* ═══════════════════ DATA SOURCE TICKER ═══════════════════════ */}
-      <DataSourceTicker />
+      {/* ═══════════════════ DATA SOURCE TICKER (removed CW38-HF20) ═══════════════════════ */}
 
       {/* ═══════════════════ HERO ═══════════════════ */}
       <section style={{
