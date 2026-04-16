@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DisclaimerBanner, UpdateDate } from '@/components/guides/DisclaimerBanner';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Incoterms 2020 Guide | POTAL',
@@ -24,6 +25,7 @@ const INCOTERMS = [
 export default function IncotermsGuidePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Incoterms 2020' }]} />
       <h1 className="text-2xl font-bold mb-4">Incoterms 2020 Guide</h1>
 
       <DisclaimerBanner>

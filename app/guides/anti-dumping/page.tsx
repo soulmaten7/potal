@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { DisclaimerBanner, UpdateDate, ExternalLink } from '@/components/guides/DisclaimerBanner';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Anti-Dumping & Countervailing Duties Guide | POTAL',
@@ -21,6 +22,7 @@ const NOTABLE_CASES = [
 export default function AntiDumpingGuidePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Anti-Dumping & CVD' }]} />
       <h1 className="text-2xl font-bold mb-4">Anti-Dumping &amp; Countervailing Duties Guide</h1>
 
       <DisclaimerBanner>

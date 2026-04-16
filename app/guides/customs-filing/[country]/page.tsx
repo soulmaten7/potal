@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FILING_GUIDES, COUNTRY_CODES } from '../data';
 import { DisclaimerBanner, UpdateDate, ExternalLink } from '@/components/guides/DisclaimerBanner';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export function generateStaticParams() {
   return COUNTRY_CODES.map(code => ({ country: code }));
@@ -25,6 +26,7 @@ export default async function CountryFilingPage({ params }: { params: Promise<{ 
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Customs Filing', href: '/guides/customs-filing' }, { label: g.name }]} />
       <h1 className="text-2xl font-bold mb-4">{g.flag} {g.name} Customs Filing Guide</h1>
 
       <DisclaimerBanner>

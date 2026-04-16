@@ -5,6 +5,7 @@ import { ENDPOINTS } from './EndpointSidebar';
 import { HsCodeCalculator } from '@/components/playground/HsCodeCalculator';
 import { COUNTRY_OPTIONS } from '@/lib/playground/dropdown-options';
 import { EXAMPLE_RESPONSES, type ExampleResponse } from '@/lib/workspace/example-responses';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 interface FieldDef {
   key: string;
@@ -237,11 +238,12 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
     <div className="flex-1 overflow-y-auto">
       {/* Header: Breadcrumb + method + path */}
       <div className="p-4 border-b border-slate-200 bg-white">
-        <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-2">
-          <span>Home</span><span>/</span>
-          <span>{endpoint.group === 'compute' ? 'Compute' : endpoint.group === 'screening' ? 'Screening' : 'Guides'}</span><span>/</span>
-          <span className="text-slate-600 font-medium">{endpoint.label}</span>
-        </div>
+        <Breadcrumb items={[
+          { label: 'Home', href: '/' },
+          { label: 'Workspace', href: '/workspace/export' },
+          { label: endpoint.group === 'compute' ? 'Compute' : endpoint.group === 'screening' ? 'Screening' : 'Guides' },
+          { label: endpoint.label },
+        ]} />
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono px-2 py-1 rounded bg-green-50 text-green-700">{endpoint.method}</span>
           <span className="font-mono text-sm text-slate-600">{endpoint.path}</span>

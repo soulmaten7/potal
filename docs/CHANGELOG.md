@@ -1,5 +1,77 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-16 KST (CW38 RapidAPI Full Alignment + HF1~HF7, 494 pages)
+> 마지막 업데이트: 2026-04-16 KST
+
+## [2026-04-16 KST] CW38-HF11 — Breadcrumb Navigation (Guides + Workspace)
+
+### Added (components/ui/Breadcrumb.tsx — 신규)
+- 재사용 가능 Breadcrumb 컴포넌트 (`light` / `dark` variant)
+- 각 segment 클릭 시 해당 위치로 이동, 마지막 segment는 현재 페이지 (비링크)
+
+### Changed (Guides 6개 페이지 — 3-4단계 depth)
+- `app/guides/page.tsx`: `Home / Trade Guides`
+- `app/guides/customs-filing/page.tsx`: `Home / Guides / Customs Filing Guide`
+- `app/guides/customs-filing/[country]/page.tsx`: `Home / Guides / Customs Filing / {국가명}`
+- `app/guides/incoterms-2020/page.tsx`: `Home / Guides / Incoterms 2020`
+- `app/guides/section-301/page.tsx`: `Home / Guides / Section 301 Tariffs`
+- `app/guides/anti-dumping/page.tsx`: `Home / Guides / Anti-Dumping & CVD`
+
+### Changed (Workspace EndpointPanel)
+- 기존 inline breadcrumb spans → 공유 `Breadcrumb` 컴포넌트로 교체
+- `Home / Workspace / {Group} / {Endpoint}`
+
+### Not applied (전문가 판단으로 제외)
+- Privacy, FAQ: 2단계 breadcrumb은 노이즈 (헤더 Home 링크와 중복)
+- Developers 8개 sub-pages: dark hero 안 배치 어색, 헤더 네비로 충분
+
+### Also (CLAUDE.md 헤더 정리)
+- CLAUDE.md 헤더: CW32~CW38 전체 이력 (수천 자) → 날짜 1줄 + "변경 이력은 docs/CHANGELOG.md 참조"
+- 문서 업데이트 규칙: "날짜 + 핵심 변경사항 1줄" → "날짜만 수정" 으로 변경
+- 이력 데이터 손실 없음 (CHANGELOG.md에 전부 존재 확인 완료)
+
+## [2026-04-16 KST] CW38-HF10 — 전 페이지 폭 확장 max-w-7xl
+
+### Changed (9개 페이지 max-w-6xl → max-w-7xl = 1280px)
+- `app/guides/page.tsx`
+- `app/guides/customs-filing/page.tsx`
+- `app/guides/customs-filing/[country]/page.tsx`
+- `app/guides/incoterms-2020/page.tsx`
+- `app/guides/section-301/page.tsx`
+- `app/guides/anti-dumping/page.tsx`
+- `app/privacy/page.tsx`
+- `app/faq/page.tsx`
+- `app/page.tsx` (Export/Import 박스 container)
+
+Commit: `a9c5b7a`
+
+## [2026-04-16 KST] CW38-HF9 — Swagger UI 제거, /api-docs → Workspace redirect
+
+### Removed
+- `app/api-docs/page.tsx`: Swagger UI 전체 제거 → `redirect('/workspace/export')`
+- Swagger UI는 Workspace와 중복 (같은 endpoint를 두 곳에서 제공)
+- `openapi.json`은 `/openapi.json`에 유지 (LLM/Postman/개발자 도구용)
+
+### Changed (app/page.tsx)
+- Home 하단 네비: "API Docs" 링크 제거 (Guides + Workspace만 유지)
+
+Commit: `2d50483`
+
+## [2026-04-16 KST] CW38-HF8 — Example Responses + Home 네비 버튼
+
+### Added (lib/workspace/example-responses.ts — 신규)
+- 8개 endpoint × 2-3 success + 1 error = 26개 pre-populated example responses
+- `ExampleResponse` interface: name, summary, status (200/400), value (JSON)
+- Endpoints: classify, calculate, apply-fta, check-restrictions, compare, generate-document, screen-parties, eccn-lookup
+
+### Added (components/workspace/EndpointPanel.tsx)
+- `ExampleResponsesPanel`: Run 전 Response 영역에 200/400 grouped tabs + Copy 버튼
+- `ExampleResponsesCollapsed`: Run 후 `<details>` collapsed 참고용
+- `CopyJsonButton`: JSON clipboard 복사 sub-component
+
+### Changed (app/page.tsx)
+- Home 하단 네비: 텍스트 링크 → 스타일 버튼 (`border border-slate-200 rounded-lg`)
+- "API Docs" + "Guides" + "Workspace" → 버튼 스타일
+
+Commit: `b9134ee`
 
 ## [2026-04-16 KST] CW38-HF7 — Generate Document shipment object mapping
 

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { FILING_GUIDES } from './data';
 import { DisclaimerBanner } from '@/components/guides/DisclaimerBanner';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Customs Filing Guide by Country | POTAL',
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 export default function CustomsFilingIndex() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Customs Filing Guide' }]} />
       <h1 className="text-2xl font-bold mb-4">Customs Filing Guide</h1>
       <DisclaimerBanner>
         This is informational content only. POTAL does not perform customs declarations on your behalf.

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export const metadata: Metadata = {
   title: 'Trade Guides | POTAL',
@@ -17,6 +18,7 @@ const GUIDES = [
 export default function GuidesIndexPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Trade Guides' }]} />
       <h1 className="text-2xl font-bold mb-2">Trade Guides</h1>
       <p className="text-slate-500 mb-6">Free reference guides for international trade compliance. Informational only.</p>
 
