@@ -24,7 +24,7 @@ export default async function CountryFilingPage({ params }: { params: Promise<{ 
   if (!g) notFound();
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">{g.flag} {g.name} Customs Filing Guide</h1>
 
       <DisclaimerBanner>

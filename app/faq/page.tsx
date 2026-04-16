@@ -80,7 +80,7 @@ export default function FAQPage() {
   }, [search, activeCategory]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-6xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Knowledge Base</h1>
       <p className="text-gray-600 mb-8">Find answers to common questions about POTAL, HS codes, tariffs, and trade compliance.</p>
 

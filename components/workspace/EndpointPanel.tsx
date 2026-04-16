@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ENDPOINTS } from './EndpointSidebar';
 import { HsCodeCalculator } from '@/components/playground/HsCodeCalculator';
+import { COUNTRY_OPTIONS } from '@/lib/playground/dropdown-options';
 
 interface FieldDef {
   key: string;
@@ -54,12 +55,24 @@ const ENDPOINT_FIELDS: Record<string, FieldDef[]> = {
   ],
   'screen-parties': [
     { key: 'name', label: 'Party Name', type: 'text', required: true, placeholder: 'e.g. Huawei Technologies' },
-    { key: 'country', label: 'Country', type: 'text', placeholder: 'CN' },
+    { key: 'country', label: 'Country', type: 'country' },
+    { key: 'threshold', label: 'Match Threshold', type: 'number', placeholder: '0.8 (default)' },
   ],
   'eccn-lookup': [
     { key: 'productName', label: 'Product Name', type: 'text', required: true, placeholder: 'e.g. night vision goggles' },
-    { key: 'category', label: 'Category', type: 'text', placeholder: 'e.g. optics, electronics' },
-    { key: 'destination', label: 'Destination Country', type: 'text', placeholder: 'IR' },
+    { key: 'category', label: 'ECCN Category', type: 'select', options: [
+      { value: '0', label: '0 — Nuclear & Miscellaneous' },
+      { value: '1', label: '1 — Materials, Chemicals' },
+      { value: '2', label: '2 — Materials Processing' },
+      { value: '3', label: '3 — Electronics' },
+      { value: '4', label: '4 — Computers' },
+      { value: '5', label: '5 — Telecommunications & Security' },
+      { value: '6', label: '6 — Sensors & Lasers' },
+      { value: '7', label: '7 — Navigation & Avionics' },
+      { value: '8', label: '8 — Marine' },
+      { value: '9', label: '9 — Aerospace & Propulsion' },
+    ]},
+    { key: 'destination', label: 'Destination Country', type: 'country' },
   ],
 };
 
@@ -239,6 +252,24 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
                 >
                   <option value="">Select...</option>
                   {f.options?.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
+              ) : f.type === 'country' ? (
+                <select
+                  value={values[f.key] || ''}
+                  onChange={e => updateField(f.key, e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm"
+                >
+                  <option value="">Select country...</option>
+                  <optgroup label="Popular">
+                    {COUNTRY_OPTIONS.filter(c => c.group === 'popular').map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="All Countries">
+                    {COUNTRY_OPTIONS.filter(c => !c.group).map(c => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </optgroup>
                 </select>
               ) : (
                 <input

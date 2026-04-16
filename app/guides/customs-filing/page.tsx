@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function CustomsFilingIndex() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Customs Filing Guide</h1>
       <DisclaimerBanner>
         This is informational content only. POTAL does not perform customs declarations on your behalf.
