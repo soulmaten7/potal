@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DisclaimerBanner, UpdateDate, ExternalLink } from '@/components/guides/DisclaimerBanner';
+import { DisclaimerBanner, ExternalLink, LiveDataFreshness } from '@/components/guides/DisclaimerBanner';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export const metadata: Metadata = {
@@ -87,7 +87,7 @@ export default function Section301GuidePage() {
         </ul>
       </section>
 
-      <UpdateDate date="2026-04-15" />
+      <LiveDataFreshness sourceNames={['USITC', 'Section 301/232']} label="Data Sources" />
     </div>
   );
 }

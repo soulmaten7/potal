@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { FILING_GUIDES } from './data';
-import { DisclaimerBanner } from '@/components/guides/DisclaimerBanner';
+import { DisclaimerBanner, LiveDataFreshness } from '@/components/guides/DisclaimerBanner';
 import { Breadcrumb } from '@/components/ui/Breadcrumb';
 
 export const metadata: Metadata = {
@@ -37,6 +37,8 @@ export default function CustomsFilingIndex() {
           </Link>
         ))}
       </div>
+
+      <LiveDataFreshness sourceNames={['USITC', 'UK Trade Tariff', 'EU TARIC', 'Canada CBSA', 'Australia ABF', 'Korea KCS', 'Japan Customs']} label="Data Sources" />
     </div>
   );
 }
