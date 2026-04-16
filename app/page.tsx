@@ -938,97 +938,97 @@ export default function HomePage() {
       <div className="min-h-screen bg-white">
         <LiveTicker />
 
-        {/* CW37-Gap3+: Simplified home — 2 big CTA buttons */}
-        <div className="flex flex-col items-center justify-center py-20 sm:py-32 px-4">
-          <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-4">Free forever &middot; No credit card</p>
-          <h1 className="text-4xl sm:text-5xl font-black text-[#02122c] mb-4 text-center leading-tight">
-            Cross-Border Trade,<br />Made Simple
+        {/* CW38-HF4: Tighter hero + horizontal box layout */}
+        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
+          <p className="text-sm font-semibold text-blue-600 tracking-widest uppercase mb-3">Free forever &middot; No credit card</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#02122c] mb-4 text-center leading-tight">
+            Cross-Border Trade, Made Simple
           </h1>
-          <p className="text-slate-500 text-center mb-14 max-w-lg text-lg">
+          <p className="text-slate-500 text-center mb-10 max-w-3xl text-lg">
             HS classification, landed cost, FTA eligibility, sanctions screening — all in one place.
           </p>
 
-          {/* CW38-HF3: Expanded boxes with workflow info embedded */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 w-full max-w-5xl">
+          {/* CW38-HF4: Horizontal internal layout for boxes — fits in one viewport */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 w-full max-w-6xl">
             <Link
               href="/workspace/export"
-              className="flex flex-col py-10 px-8 rounded-2xl border-2 border-blue-200 bg-gradient-to-b from-blue-50 to-white hover:border-blue-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
+              className="flex flex-col sm:flex-row gap-5 sm:gap-6 py-7 px-7 rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:border-blue-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
             >
-              {/* Header */}
-              <div className="flex flex-col items-center text-center mb-6">
-                <span className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-200">&#128230;</span>
-                <span className="text-3xl font-black text-blue-800 mb-1">Export</span>
-                <span className="text-sm text-blue-500">I sell or ship abroad</span>
+              {/* Left: Header + CTA */}
+              <div className="flex flex-col justify-between sm:w-2/5 sm:border-r sm:border-blue-100 sm:pr-5 pb-4 sm:pb-0 border-b sm:border-b-0 border-blue-100">
+                <div>
+                  <span className="block text-5xl mb-2 group-hover:scale-110 transition-transform duration-200">&#128230;</span>
+                  <span className="block text-2xl font-black text-blue-800 mb-1">Export</span>
+                  <span className="block text-[13px] text-blue-500">I sell or ship abroad</span>
+                </div>
+                <div className="mt-4">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
+                    Start Export &#8594;
+                  </span>
+                </div>
               </div>
 
-              {/* Typical workflow */}
-              <div className="border-t border-blue-100 pt-5 mb-5">
-                <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-3">Typical workflow</p>
-                <ul className="space-y-2 text-[15px] text-slate-700">
-                  <li className="flex items-start gap-2"><span className="text-blue-500 font-bold">1.</span><span>Classify Product</span></li>
-                  <li className="flex items-start gap-2"><span className="text-blue-500 font-bold">2.</span><span>Apply FTA / RoO</span></li>
-                  <li className="flex items-start gap-2"><span className="text-blue-500 font-bold">3.</span><span>Generate Document</span></li>
-                </ul>
-              </div>
-
-              {/* Also useful */}
-              <div className="mb-5">
-                <p className="text-[11px] font-bold text-blue-700 uppercase tracking-wider mb-3">Also useful</p>
-                <ul className="space-y-1.5 text-sm text-slate-600">
-                  <li className="flex items-start gap-2"><span className="text-blue-400">&#8226;</span><span>Screen Parties</span></li>
-                  <li className="flex items-start gap-2"><span className="text-blue-400">&#8226;</span><span>ECCN Lookup</span></li>
-                </ul>
-              </div>
-
-              {/* CTA */}
-              <div className="mt-auto pt-2">
-                <span className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 group-hover:text-blue-700 transition-colors">
-                  Start Export &#8594;
-                </span>
+              {/* Right: Workflow + Also useful */}
+              <div className="flex-1 flex flex-col gap-4">
+                <div>
+                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider mb-2">Typical workflow</p>
+                  <ul className="space-y-1 text-[14px] text-slate-700">
+                    <li className="flex items-start gap-1.5"><span className="text-blue-500 font-bold">1.</span><span>Classify Product</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-blue-500 font-bold">2.</span><span>Apply FTA / RoO</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-blue-500 font-bold">3.</span><span>Generate Document</span></li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-blue-700 uppercase tracking-wider mb-2">Also useful</p>
+                  <ul className="space-y-1 text-[13px] text-slate-600">
+                    <li className="flex items-start gap-1.5"><span className="text-blue-400">&#8226;</span><span>Screen Parties</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-blue-400">&#8226;</span><span>ECCN Lookup</span></li>
+                  </ul>
+                </div>
               </div>
             </Link>
 
             <Link
               href="/workspace/import"
-              className="flex flex-col py-10 px-8 rounded-2xl border-2 border-emerald-200 bg-gradient-to-b from-emerald-50 to-white hover:border-emerald-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
+              className="flex flex-col sm:flex-row gap-5 sm:gap-6 py-7 px-7 rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-white hover:border-emerald-500 hover:shadow-2xl hover:scale-[1.02] transition-all duration-200 group cursor-pointer"
             >
-              {/* Header */}
-              <div className="flex flex-col items-center text-center mb-6">
-                <span className="text-6xl mb-3 group-hover:scale-110 transition-transform duration-200">&#128229;</span>
-                <span className="text-3xl font-black text-emerald-800 mb-1">Import</span>
-                <span className="text-sm text-emerald-500">I buy or receive from abroad</span>
+              {/* Left: Header + CTA */}
+              <div className="flex flex-col justify-between sm:w-2/5 sm:border-r sm:border-emerald-100 sm:pr-5 pb-4 sm:pb-0 border-b sm:border-b-0 border-emerald-100">
+                <div>
+                  <span className="block text-5xl mb-2 group-hover:scale-110 transition-transform duration-200">&#128229;</span>
+                  <span className="block text-2xl font-black text-emerald-800 mb-1">Import</span>
+                  <span className="block text-[13px] text-emerald-500">I buy or receive from abroad</span>
+                </div>
+                <div className="mt-4">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">
+                    Start Import &#8594;
+                  </span>
+                </div>
               </div>
 
-              {/* Typical workflow */}
-              <div className="border-t border-emerald-100 pt-5 mb-5">
-                <p className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider mb-3">Typical workflow</p>
-                <ul className="space-y-2 text-[15px] text-slate-700">
-                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">1.</span><span>Classify Product</span></li>
-                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">2.</span><span>Calculate Landed Cost</span></li>
-                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">3.</span><span>Check Restrictions</span></li>
-                  <li className="flex items-start gap-2"><span className="text-emerald-500 font-bold">4.</span><span>Compare Countries</span></li>
-                </ul>
-              </div>
-
-              {/* Also useful */}
-              <div className="mb-5">
-                <p className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider mb-3">Also useful</p>
-                <ul className="space-y-1.5 text-sm text-slate-600">
-                  <li className="flex items-start gap-2"><span className="text-emerald-400">&#8226;</span><span>Apply FTA</span></li>
-                  <li className="flex items-start gap-2"><span className="text-emerald-400">&#8226;</span><span>Generate Document</span></li>
-                </ul>
-              </div>
-
-              {/* CTA */}
-              <div className="mt-auto pt-2">
-                <span className="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors">
-                  Start Import &#8594;
-                </span>
+              {/* Right: Workflow + Also useful */}
+              <div className="flex-1 flex flex-col gap-4">
+                <div>
+                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">Typical workflow</p>
+                  <ul className="space-y-1 text-[14px] text-slate-700">
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 font-bold">1.</span><span>Classify Product</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 font-bold">2.</span><span>Calculate Landed Cost</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 font-bold">3.</span><span>Check Restrictions</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-500 font-bold">4.</span><span>Compare Countries</span></li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider mb-2">Also useful</p>
+                  <ul className="space-y-1 text-[13px] text-slate-600">
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400">&#8226;</span><span>Apply FTA</span></li>
+                    <li className="flex items-start gap-1.5"><span className="text-emerald-400">&#8226;</span><span>Generate Document</span></li>
+                  </ul>
+                </div>
               </div>
             </Link>
           </div>
 
-          <div className="mt-16 flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-slate-400">
+          <div className="mt-10 flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-slate-400">
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>8 API Endpoints</span>
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>240 Countries</span>
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>645K Rulings</span>
