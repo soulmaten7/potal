@@ -1036,9 +1036,6 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 flex gap-3">
-            <Link href="/api-docs" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
-              API Docs
-            </Link>
             <Link href="/guides" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
               Guides
             </Link>
