@@ -1,5 +1,5 @@
 # CLAUDE.md — POTAL 프로젝트 Claude Code 지침
-# 마지막 업데이트: 2026-04-16
+# 마지막 업데이트: 2026-04-17
 # 변경 이력은 docs/CHANGELOG.md 참조
 
 ## 터미널 구조 (고정)

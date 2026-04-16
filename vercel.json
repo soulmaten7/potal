@@ -99,6 +99,18 @@
     {
       "path": "/api/cron/rulings-update-monitor",
       "schedule": "0 6 * * 1"
+    },
+    {
+      "path": "/api/v1/cron/vat-rate-monitor",
+      "schedule": "0 9 1 * *"
+    },
+    {
+      "path": "/api/v1/cron/de-minimis-monitor",
+      "schedule": "0 8 * * 1"
+    },
+    {
+      "path": "/api/v1/cron/us-tax-monitor",
+      "schedule": "0 10 1 * *"
     }
   ]
 }

@@ -1,5 +1,31 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-13 KST (CW34-S1 Option A — v3 Pipeline Integration)
+> 마지막 업데이트: 2026-04-17 KST (CW38 Data Infrastructure + Ghost Table Fix)
+
+## [2026-04-17 KST] CW38 — Data Infrastructure & Auto-Update Foundation
+
+### 추가
+- 📊 **Master Data Registry** — `master-data-registry.ts` 32개 데이터 소스 메타데이터 (출처 URL, 공지 페이지, 갱신 주기, 자동화 레벨) (b3d905d)
+- 🌍 **country_profiles 240개국 전체 시드** — `070_cw38_country_profiles_full_seed.sql` 53개국 → 240개국 DB 관리 전환 (b3d905d)
+- 📄 **/data-sources 페이지 신설** — 32 sources × 11 categories, Registry 기반 동적 렌더링 (b3d905d)
+- 📋 **데이터 감사 보고서** — `DATA_SOURCE_AUDIT_REPORT.md` 42개 소스 전수 감사, `DATA_FLOW_TRACE_REPORT.md` 5개 API 흐름 추적
+
+### 수정
+- 🔧 **Cron↔Engine 단절 수정** — `tariff-updater.ts:78` 테이블명 `live_duty_rate_cache` → `duty_rates_live` + 컬럼 스키마 정렬 (b3d905d)
+- 🔧 **duty_rates_live UNIQUE constraint** — `(hs_code, destination_country)` 추가, upsert 정상 동작 (b3d905d)
+- 🔧 **data-freshness API 리팩토링** — 하드코딩 12개 소스 → Registry 기반 32개 동적 소스 (b3d905d)
+- 🔧 **Footer 4-column 구조** — Brand|Resources|Legal|Connect, YouTube+Discord 아이콘 추가
+- 🔧 **LiveTicker 실시간 연동** — fake timestamps 제거, `/api/v1/data-freshness` API 연결
+
+### 발견 & 문서화
+- 🔍 **Ghost Table 5개 분석**: duty_rates_live(P0 수정), live_duty_rate_cache(P0 수정), fta_rates_live(P1 보류), fta_country_pairs(정상), hs_code_mappings(미사용)
+- 🔍 **Landed Cost 4-stage waterfall** 전체 문서화: precomputed → MacMap(245M) → Gov API → static → hardcoded
+- 🔍 **자동 갱신 커버리지**: 32개 소스 중 auto_cron 5개, auto_monitor 10개, manual 10개+ → 다음 단계에서 파이프라인 확장
+
+### 수치 변경
+- country_profiles: 53 → 240 (100% 커버리지)
+- data-freshness 소스: 12 하드코딩 → 32 Registry
+- 총 데이터 소스: 42개 감사 완료, 32개 Registry 등록
+- 빌드: 495 pages
 
 ## [2026-04-13 KST] CW34-S1 Option A — v3 Pipeline Integration
 
