@@ -1,5 +1,45 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-16 KST (CW38 RapidAPI Full Alignment + HF1~HF5, 494 pages)
+> 마지막 업데이트: 2026-04-16 KST (CW38 RapidAPI Full Alignment + HF1~HF7, 494 pages)
+
+## [2026-04-16 KST] CW38-HF7 — Generate Document shipment object mapping
+
+### Fixed (components/workspace/EndpointPanel.tsx)
+- `run()` 함수에서 `generate-document` endpoint 호출 시 flat params → nested shipment object 변환 추가
+  - `{ doc_type, shipment: { shipper: { name, country }, consignee: { name, country }, destination, items: [{ hs_code, description, value, quantity, weight, origin }], incoterms, currency } }`
+- `bodyPreview` 에서도 동일한 nested 구조 표시 (Body tab에서 실제 전송 구조 확인 가능)
+- 이전: flat `{ documentType, shipper_name, consignee_name }` → API 400 "shipment object required" 에러
+
+### Verified (Chrome MCP 8/8 API 전수 검증)
+1. Classify Product: HS 420231 ✅
+2. Calculate Landed Cost: $68.77 ✅
+3. Apply FTA/RoO: 6 FTAs ✅
+4. Check Restrictions: HAZMAT ✅
+5. Compare Countries: 3 results ✅
+6. Generate Document: 200 OK ✅ (HF7 fix)
+7. Screen Parties: 20 matches ✅
+8. ECCN Lookup: ECCN returned ✅
+
+Commit: `46702f6`
+
+## [2026-04-16 KST] CW38-HF6 — Screening dropdowns + 8 pages 폭 감사
+
+### Changed (components/workspace/EndpointPanel.tsx)
+- `screen-parties` endpoint: `country` 필드 `type: 'text'` → `type: 'country'` (240개국 dropdown with Popular group)
+- `eccn-lookup` endpoint: `category` 필드 `type: 'text'` → `type: 'select'` (ECCN 0-9 카테고리), `destination` 필드 추가 `type: 'country'`
+- 신규 `type: 'country'` 렌더러: `<select>` with `<optgroup>` (Popular 10개 + All Countries)
+- `COUNTRY_OPTIONS` import 추가 (`lib/playground/dropdown-options.ts`)
+
+### Changed (8 pages 폭 통일 → max-w-6xl = 1152px)
+- `app/guides/page.tsx`: max-w-4xl → max-w-6xl
+- `app/guides/customs-filing/page.tsx`: max-w-4xl → max-w-6xl
+- `app/guides/customs-filing/[country]/page.tsx`: max-w-3xl → max-w-6xl
+- `app/guides/incoterms-2020/page.tsx`: max-w-5xl → max-w-6xl
+- `app/guides/section-301/page.tsx`: max-w-4xl → max-w-6xl
+- `app/guides/anti-dumping/page.tsx`: max-w-4xl → max-w-6xl
+- `app/privacy/page.tsx`: max-w-4xl → max-w-6xl
+- `app/faq/page.tsx`: max-w-4xl → max-w-6xl
+
+Commit: (CW38-HF6 commit)
 
 ## [2026-04-16 KST] CW38-HF5 — 박스 시각 개선 + 절대 규칙 14/15 추가
 

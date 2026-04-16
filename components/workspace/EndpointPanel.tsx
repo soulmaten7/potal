@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { ENDPOINTS } from './EndpointSidebar';
 import { HsCodeCalculator } from '@/components/playground/HsCodeCalculator';
 import { COUNTRY_OPTIONS } from '@/lib/playground/dropdown-options';
+import { EXAMPLE_RESPONSES, type ExampleResponse } from '@/lib/workspace/example-responses';
 
 interface FieldDef {
   key: string;
@@ -366,18 +367,147 @@ export function EndpointPanel({ endpointId, onParamsChange, onResult }: Props) {
         </div>
       )}
 
-      {/* Result */}
+      {/* ═══ Response Area ═══ */}
       {error && (
         <div className="p-4 bg-red-50 text-red-700 text-sm">{error}</div>
       )}
-      {result && (
-        <div className="p-4">
-          <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-2">Response</h3>
+      {result ? (
+        /* Live result from API call */
+        <div className="p-4 border-t border-slate-200">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Response</h3>
+            <CopyJsonButton json={result} />
+          </div>
           <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg text-xs overflow-auto max-h-[500px] font-mono">
             {JSON.stringify(result, null, 2)}
           </pre>
+          {/* Collapsed examples for reference after run */}
+          <ExampleResponsesCollapsed endpointId={endpointId} />
         </div>
+      ) : (
+        /* Before run: show examples in Response area */
+        <ExampleResponsesPanel endpointId={endpointId} />
       )}
     </div>
+  );
+}
+
+/* ─── Copy JSON Button ─── */
+function CopyJsonButton({ json }: { json: unknown }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(JSON.stringify(json, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button onClick={handleCopy} className="text-[11px] px-2 py-1 rounded border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors font-medium">
+      {copied ? '✓ Copied' : 'Copy'}
+    </button>
+  );
+}
+
+/* ─── Example Responses Panel (shown before Run) ─── */
+function ExampleResponsesPanel({ endpointId }: { endpointId: string }) {
+  const examples = EXAMPLE_RESPONSES[endpointId];
+  const [selected, setSelected] = useState(0);
+  if (!examples || examples.length === 0) return null;
+
+  const successExamples = examples.filter((e: ExampleResponse) => e.status === 200);
+  const errorExamples = examples.filter((e: ExampleResponse) => e.status === 400);
+  const ex = examples[selected];
+
+  return (
+    <div className="border-t border-slate-200 p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Example Responses</h3>
+        <CopyJsonButton json={ex.value} />
+      </div>
+
+      {/* Status code groups */}
+      <div className="flex flex-wrap gap-4 mb-3">
+        {successExamples.length > 0 && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-green-100 text-green-700">200</span>
+            <div className="flex gap-1">
+              {successExamples.map((e: ExampleResponse) => {
+                const idx = examples.indexOf(e);
+                return (
+                  <button key={e.name} onClick={() => setSelected(idx)}
+                    className={`px-2 py-0.5 text-[11px] rounded font-medium transition-colors ${
+                      selected === idx ? 'bg-green-600 text-white' : 'bg-green-50 text-green-700 hover:bg-green-100'
+                    }`}>
+                    {e.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        {errorExamples.length > 0 && (
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-red-100 text-red-700">400</span>
+            <div className="flex gap-1">
+              {errorExamples.map((e: ExampleResponse) => {
+                const idx = examples.indexOf(e);
+                return (
+                  <button key={e.name} onClick={() => setSelected(idx)}
+                    className={`px-2 py-0.5 text-[11px] rounded font-medium transition-colors ${
+                      selected === idx ? 'bg-red-600 text-white' : 'bg-red-50 text-red-700 hover:bg-red-100'
+                    }`}>
+                    {e.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Selected example */}
+      <p className="text-[12px] text-slate-500 mb-2">{ex.summary}</p>
+      <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg text-[12px] overflow-auto max-h-[500px] font-mono">
+        {JSON.stringify(ex.value, null, 2)}
+      </pre>
+    </div>
+  );
+}
+
+/* ─── Collapsed Examples (shown after Run for reference) ─── */
+function ExampleResponsesCollapsed({ endpointId }: { endpointId: string }) {
+  const examples = EXAMPLE_RESPONSES[endpointId];
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(0);
+  if (!examples || examples.length === 0) return null;
+
+  const ex = examples[selected];
+
+  return (
+    <details open={open} onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)} className="mt-4">
+      <summary className="text-[12px] text-slate-400 cursor-pointer hover:text-slate-600 select-none">
+        Example Responses ({examples.length})
+      </summary>
+      <div className="mt-2">
+        <div className="flex gap-1 flex-wrap mb-2">
+          {examples.map((e: ExampleResponse, i: number) => (
+            <button key={e.name} onClick={() => setSelected(i)}
+              className={`px-2 py-0.5 text-[11px] rounded font-medium transition-colors ${
+                selected === i
+                  ? (e.status === 200 ? 'bg-green-600 text-white' : 'bg-red-600 text-white')
+                  : (e.status === 200 ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-red-50 text-red-700 hover:bg-red-100')
+              }`}>
+              {e.status} {e.name}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center justify-between mb-1">
+          <p className="text-[11px] text-slate-400">{ex.summary}</p>
+          <CopyJsonButton json={ex.value} />
+        </div>
+        <pre className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-[11px] font-mono text-slate-600 overflow-auto max-h-[300px]">
+          {JSON.stringify(ex.value, null, 2)}
+        </pre>
+      </div>
+    </details>
   );
 }

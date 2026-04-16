@@ -1035,14 +1035,14 @@ export default function HomePage() {
             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>47K Sanctions</span>
           </div>
 
-          <div className="mt-10 flex gap-6">
-            <Link href="/api-docs" className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+          <div className="mt-10 flex gap-3">
+            <Link href="/api-docs" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
               API Docs
             </Link>
-            <Link href="/guides" className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+            <Link href="/guides" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
               Guides
             </Link>
-            <Link href="/workspace/export" className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+            <Link href="/workspace/export" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
               Workspace
             </Link>
           </div>
