@@ -23,7 +23,10 @@ export default function AntiDumpingGuidePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Anti-Dumping & CVD' }]} />
-      <h1 className="text-2xl font-bold mb-4">Anti-Dumping &amp; Countervailing Duties Guide</h1>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <h1 className="text-2xl font-bold">Anti-Dumping &amp; Countervailing Duties Guide</h1>
+        <LiveDataFreshness sourceNames={['USITC', 'Trade Remedies']} />
+      </div>
 
       <DisclaimerBanner>
         This guide provides general information about trade remedy duties. AD/CVD rates are firm-specific and
@@ -102,7 +105,6 @@ export default function AntiDumpingGuidePage() {
         </ul>
       </section>
 
-      <LiveDataFreshness sourceNames={['USITC', 'Trade Remedies']} label="Data Sources" />
     </div>
   );
 }

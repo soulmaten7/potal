@@ -14,7 +14,10 @@ export default function CustomsFilingIndex() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Customs Filing Guide' }]} />
-      <h1 className="text-2xl font-bold mb-4">Customs Filing Guide</h1>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <h1 className="text-2xl font-bold">Customs Filing Guide</h1>
+        <LiveDataFreshness sourceNames={['USITC', 'UK Trade Tariff', 'EU TARIC', 'Canada CBSA', 'Australia ABF', 'Korea KCS', 'Japan Customs']} />
+      </div>
       <DisclaimerBanner>
         This is informational content only. POTAL does not perform customs declarations on your behalf.
         Please use the official government systems or a licensed customs broker for actual filings.
@@ -38,7 +41,6 @@ export default function CustomsFilingIndex() {
         ))}
       </div>
 
-      <LiveDataFreshness sourceNames={['USITC', 'UK Trade Tariff', 'EU TARIC', 'Canada CBSA', 'Australia ABF', 'Korea KCS', 'Japan Customs']} label="Data Sources" />
     </div>
   );
 }

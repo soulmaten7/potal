@@ -21,8 +21,18 @@ export function UpdateDate({ date }: { date: string }) {
   );
 }
 
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 /** Live data freshness indicator — fetches from /api/v1/data-freshness */
-export function LiveDataFreshness({ sourceNames, label }: { sourceNames: string[]; label?: string }) {
+export function LiveDataFreshness({ sourceNames }: { sourceNames: string[]; label?: string }) {
   const [freshness, setFreshness] = useState<{ name: string; lastUpdated: string | null }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,31 +48,22 @@ export function LiveDataFreshness({ sourceNames, label }: { sourceNames: string[
       .finally(() => setLoading(false));
   }, [sourceNames]);
 
-  if (loading) return null;
-  if (freshness.length === 0) return null;
+  if (loading || freshness.length === 0) return null;
 
-  function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 60) return `${mins} min ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  }
+  // Find the most recent update across all sources
+  const latest = freshness
+    .filter(s => s.lastUpdated)
+    .sort((a, b) => new Date(b.lastUpdated!).getTime() - new Date(a.lastUpdated!).getTime())[0];
 
   return (
-    <div className="mt-8 border-t border-slate-100 pt-4">
-      {label && <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">{label}</p>}
-      <div className="flex flex-wrap gap-x-6 gap-y-1">
-        {freshness.map(s => (
-          <div key={s.name} className="flex items-center gap-1.5 text-xs text-slate-400">
-            <span className={`w-1.5 h-1.5 rounded-full ${s.lastUpdated ? 'bg-emerald-400' : 'bg-slate-300'}`} />
-            <span className="font-medium text-slate-500">{s.name}</span>
-            <span>{s.lastUpdated ? timeAgo(s.lastUpdated) : 'N/A'}</span>
-          </div>
-        ))}
-      </div>
+    <div className="flex flex-wrap items-center gap-3">
+      {freshness.map(s => (
+        <div key={s.name} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200">
+          <span className={`w-2 h-2 rounded-full ${s.lastUpdated ? 'bg-emerald-400' : 'bg-slate-300'}`} />
+          <span className="text-sm font-semibold text-slate-600">{s.name}</span>
+          <span className="text-sm text-slate-400">{s.lastUpdated ? timeAgo(s.lastUpdated) : 'N/A'}</span>
+        </div>
+      ))}
     </div>
   );
 }

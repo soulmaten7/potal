@@ -19,8 +19,13 @@ export default function Section301GuidePage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Guides', href: '/guides' }, { label: 'Section 301 Tariffs' }]} />
-      <h1 className="text-2xl font-bold mb-4">Section 301 Tariffs Guide</h1>
-      <p className="text-slate-600 mb-4">US additional tariffs on goods of Chinese origin under Section 301 of the Trade Act of 1974.</p>
+      <div className="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-2xl font-bold">Section 301 Tariffs Guide</h1>
+          <p className="text-slate-600 mt-1">US additional tariffs on goods of Chinese origin under Section 301 of the Trade Act of 1974.</p>
+        </div>
+        <LiveDataFreshness sourceNames={['USITC', 'Section 301/232']} />
+      </div>
 
       <DisclaimerBanner>
         This guide summarizes publicly available information about Section 301 tariffs.
@@ -87,7 +92,6 @@ export default function Section301GuidePage() {
         </ul>
       </section>
 
-      <LiveDataFreshness sourceNames={['USITC', 'Section 301/232']} label="Data Sources" />
     </div>
   );
 }
