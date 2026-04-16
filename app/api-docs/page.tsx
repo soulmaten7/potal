@@ -15,9 +15,16 @@ export default function ApiDocsPage() {
           <p className="text-sm text-slate-500 mt-1">
             Interactive API reference — 8 endpoints for global trade automation. Forever Free.
           </p>
-          <div className="flex gap-3 mt-3">
+          <div className="flex gap-3 mt-3 flex-wrap">
             <a href="/openapi.json" target="_blank" className="text-xs px-3 py-1.5 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200">
               OpenAPI JSON
+            </a>
+            <a
+              href="/api/v1/postman"
+              download="potal-api.postman_collection.json"
+              className="text-xs px-3 py-1.5 rounded-md bg-orange-50 text-orange-700 hover:bg-orange-100 font-semibold"
+            >
+              ↓ Postman Collection
             </a>
             <a href="/workspace/export" className="text-xs px-3 py-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100">
               Try in Workspace

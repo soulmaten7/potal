@@ -26,7 +26,80 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassifyRequest" } } }
         },
         "responses": {
-          "200": { "description": "Classification result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClassifyResponse" } } } }
+          "200": {
+            "description": "Classification result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ClassifyResponse" },
+                "examples": {
+                  "Success": {
+                    "summary": "Cotton T-Shirt classified successfully",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "hsCode": "610910",
+                        "description": "T-shirts, singlets and other vests, knitted or crocheted, of cotton",
+                        "confidence": 0.94,
+                        "method": "v3-pipeline",
+                        "alternatives": [
+                          { "hsCode": "611020", "description": "Pullovers of cotton", "confidence": 0.42 }
+                        ],
+                        "ruling_reference": "HQ 953567"
+                      },
+                      "_metadata": {
+                        "disclaimer": "For informational use only. Verify with official customs authority.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z",
+                        "confidenceScore": 0.94
+                      }
+                    }
+                  },
+                  "LowConfidence": {
+                    "summary": "Ambiguous product — low confidence classification",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "hsCode": "392690",
+                        "description": "Other articles of plastics",
+                        "confidence": 0.38,
+                        "method": "keyword_fallback",
+                        "alternatives": [
+                          { "hsCode": "481840", "description": "Sanitary articles of paper", "confidence": 0.31 },
+                          { "hsCode": "630790", "description": "Other made-up articles", "confidence": 0.22 }
+                        ]
+                      },
+                      "_metadata": {
+                        "disclaimer": "Low confidence result. Provide material/category/description for better accuracy.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z",
+                        "confidenceScore": 0.38
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingProductName": {
+                    "summary": "productName field is required",
+                    "value": {
+                      "success": false,
+                      "error": {
+                        "code": "VALIDATION_ERROR",
+                        "message": "productName is required",
+                        "field": "productName"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -41,7 +114,95 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalculateRequest" } } }
         },
         "responses": {
-          "200": { "description": "Landed cost breakdown", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalculateResponse" } } } }
+          "200": {
+            "description": "Landed cost breakdown",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CalculateResponse" },
+                "examples": {
+                  "Success": {
+                    "summary": "CN→US cotton T-shirt $50 (duty applied)",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "totalLandedCost": 82.15,
+                        "importDuty": 8.25,
+                        "vat": 5.40,
+                        "shippingCost": 8.50,
+                        "dutyRateSource": "precomputed_mfn",
+                        "dutyInfo": { "rate": 0.165, "amount": 8.25, "source": "HTSUS 2026" },
+                        "exchangeRateInfo": { "currency": "USD", "source": "direct" },
+                        "deMinimisInfo": { "applied": false, "threshold": 800, "reason": "Value exceeds US $800 de minimis" },
+                        "ftaSavings": { "applicable": false, "ftas": [] }
+                      },
+                      "_metadata": {
+                        "disclaimer": "For informational use only. Actual duties may vary based on classification and valuation.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "DeMinimisApplied": {
+                    "summary": "Low value shipment under de minimis threshold",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "totalLandedCost": 58.49,
+                        "importDuty": 0,
+                        "vat": 5.00,
+                        "shippingCost": 3.49,
+                        "dutyRateSource": "precomputed_mfn",
+                        "dutyInfo": { "rate": 0, "amount": 0, "source": "De minimis" },
+                        "deMinimisInfo": { "applied": true, "threshold": 150, "reason": "EUR 150 EU de minimis (applies to duties, not VAT)" },
+                        "ftaSavings": { "applicable": false }
+                      },
+                      "_metadata": {
+                        "disclaimer": "For informational use only.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "FtaSavings": {
+                    "summary": "KR→US with KORUS FTA (duty-free)",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "totalLandedCost": 58.50,
+                        "importDuty": 0,
+                        "vat": 0,
+                        "shippingCost": 8.50,
+                        "dutyRateSource": "live_db",
+                        "dutyInfo": { "rate": 0, "amount": 0, "source": "KORUS FTA (eligible)" },
+                        "ftaSavings": { "applicable": true, "appliedFta": "KORUS", "savings": 8.25, "originalDutyRate": 0.165 }
+                      },
+                      "_metadata": {
+                        "disclaimer": "FTA eligibility requires valid Certificate of Origin. Verify with customs authority.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingPrice": {
+                    "summary": "price field is required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "price is required and must be a positive number", "field": "price" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -56,7 +217,97 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RooEvaluateRequest" } } }
         },
         "responses": {
-          "200": { "description": "Eligibility result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RooEvaluateResponse" } } } }
+          "200": {
+            "description": "Eligibility result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RooEvaluateResponse" },
+                "examples": {
+                  "Eligible": {
+                    "summary": "MX→US USMCA eligible (RVC 70% exceeds 60% threshold)",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "verdict": "eligible",
+                        "eligible": true,
+                        "criteriaMetList": ["RVC", "CTH"],
+                        "requiredRvc": 60,
+                        "rvcPercentage": 70,
+                        "originatingContentPct": 70,
+                        "applicableFTAs": [
+                          { "fta_id": "USMCA", "eligible": true, "duty_saving_pct": 16.5 }
+                        ],
+                        "recommended": { "fta_id": "USMCA", "criterion": "RVC", "note": "Qualifies under regional value content rule" }
+                      },
+                      "_metadata": {
+                        "disclaimer": "Non-binding advisory. Valid Certificate of Origin required for actual FTA benefit.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "Ineligible": {
+                    "summary": "Low RVC — does not meet threshold",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "verdict": "ineligible",
+                        "eligible": false,
+                        "criteriaMetList": [],
+                        "requiredRvc": 60,
+                        "rvcPercentage": 35,
+                        "originatingContentPct": 35,
+                        "applicableFTAs": [
+                          { "fta_id": "USMCA", "eligible": false, "reason": "RVC 35% below required 60%" }
+                        ]
+                      },
+                      "_metadata": {
+                        "disclaimer": "Non-binding advisory.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "Indeterminate": {
+                    "summary": "Insufficient data to determine eligibility",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "verdict": "indeterminate",
+                        "eligible": null,
+                        "criteriaMetList": [],
+                        "requiredRvc": 60,
+                        "rvcPercentage": null,
+                        "applicableFTAs": [],
+                        "dataAvailability": { "jurisdiction": "JP", "rulingsAvailable": false, "warning": "No ruling precedents for this HS code in target jurisdiction" }
+                      },
+                      "_metadata": {
+                        "disclaimer": "Indeterminate result — provide originating_content_pct or consult customs authority.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingHsCode": {
+                    "summary": "hs_code, origin, and destination are required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "hs_code, origin, and destination are required" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -71,7 +322,107 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RestrictionsRequest" } } }
         },
         "responses": {
-          "200": { "description": "Restriction check result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RestrictionsResponse" } } } }
+          "200": {
+            "description": "Restriction check result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RestrictionsResponse" },
+                "examples": {
+                  "Restricted": {
+                    "summary": "Lithium-ion battery HAZMAT — restricted",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "restricted": true,
+                        "hasRestrictions": true,
+                        "isProhibited": false,
+                        "restrictions": [
+                          {
+                            "type": "HAZMAT",
+                            "severity": "warning",
+                            "summary": "Lithium Batteries: IATA DGR Class 9 UN3480/UN3481. Air transport requires packaging per IATA DGR; ground OK.",
+                            "permitRequired": true,
+                            "authority": "IATA / DOT"
+                          }
+                        ],
+                        "categories": ["HAZMAT", "dangerous_goods"],
+                        "rulingNotes": [
+                          "UN3480 (lithium-ion batteries shipped alone): Packing Instruction 965",
+                          "UN3481 (batteries in equipment): Packing Instruction 967"
+                        ]
+                      },
+                      "_metadata": {
+                        "disclaimer": "For informational use only. Verify current HAZMAT regulations with shipping carrier.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "Clear": {
+                    "summary": "Generic cotton T-shirt — no restrictions",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "restricted": false,
+                        "hasRestrictions": false,
+                        "isProhibited": false,
+                        "restrictions": [],
+                        "categories": [],
+                        "rulingNotes": []
+                      },
+                      "_metadata": {
+                        "disclaimer": "No active import restrictions detected for HS 610910 → US.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "Prohibited": {
+                    "summary": "Prohibited item (e.g. narcotics, weapons)",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "restricted": true,
+                        "hasRestrictions": true,
+                        "isProhibited": true,
+                        "restrictions": [
+                          {
+                            "type": "PROHIBITED",
+                            "severity": "critical",
+                            "summary": "Import of this item is prohibited under destination country law.",
+                            "authority": "CBP (U.S. Customs and Border Protection)"
+                          }
+                        ],
+                        "categories": ["prohibited"],
+                        "rulingNotes": []
+                      },
+                      "_metadata": {
+                        "disclaimer": "Consult customs authority before shipping.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingDestination": {
+                    "summary": "destinationCountry is required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "destinationCountry is required (ISO-2 code)", "field": "destinationCountry" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -86,7 +437,65 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompareRequest" } } }
         },
         "responses": {
-          "200": { "description": "Country comparison", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CompareResponse" } } } }
+          "200": {
+            "description": "Country comparison",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CompareResponse" },
+                "examples": {
+                  "Success": {
+                    "summary": "Compare US / DE / JP for cotton T-shirt $50",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comparison": [
+                          {
+                            "country": "US", "currency": "USD",
+                            "totalLandedCost": 82.15, "importDuty": 8.25, "vat": 5.40,
+                            "vatRate": 0.085, "deMinimisThreshold": 800, "deMinimisApplied": false,
+                            "hsCodePrecision": 10
+                          },
+                          {
+                            "country": "DE", "currency": "EUR",
+                            "totalLandedCost": 76.30, "importDuty": 6.00, "vat": 11.57,
+                            "vatRate": 0.19, "deMinimisThreshold": 150, "deMinimisApplied": false,
+                            "hsCodePrecision": 10
+                          },
+                          {
+                            "country": "JP", "currency": "JPY",
+                            "totalLandedCost": 8920, "importDuty": 540, "vat": 880,
+                            "vatRate": 0.10, "deMinimisThreshold": 10000, "deMinimisApplied": true,
+                            "hsCodePrecision": 9
+                          }
+                        ]
+                      },
+                      "_metadata": {
+                        "disclaimer": "For informational use only.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "TooFewCountries": {
+                    "summary": "At least 2 countries required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "countries array must contain 2-10 ISO-2 country codes", "field": "countries" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -101,7 +510,77 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenerateDocumentRequest" } } }
         },
         "responses": {
-          "200": { "description": "Generated document", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenerateDocumentResponse" } } } }
+          "200": {
+            "description": "Generated document",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenerateDocumentResponse" },
+                "examples": {
+                  "CommercialInvoice": {
+                    "summary": "Commercial invoice generated",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "document": {
+                          "type": "commercial_invoice",
+                          "shipper": { "name": "Acme Corp", "country": "KR", "address": "..." },
+                          "consignee": { "name": "Global Trade Ltd", "country": "US", "address": "..." },
+                          "items": [ { "hsCode": "610910", "description": "Cotton T-shirt", "quantity": 100, "unitValue": 5.00, "totalValue": 500.00 } ],
+                          "totals": { "invoiceValue": 500.00, "currency": "USD", "incoterms": "DDP" },
+                          "downloadUrl": "https://www.potal.app/api/v1/customs-docs/download/abc123"
+                        },
+                        "generated_at": "2026-04-16T11:05:00Z"
+                      },
+                      "_metadata": {
+                        "disclaimer": "Document is for reference. Buyer must verify with their customs broker.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "CertificateOfOrigin": {
+                    "summary": "Certificate of Origin generated (KORUS FTA)",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "document": {
+                          "type": "certificate_of_origin",
+                          "fta": "KORUS",
+                          "exporter": { "name": "Acme Corp", "country": "KR" },
+                          "producer": { "name": "Acme Corp", "country": "KR" },
+                          "importer": { "name": "Global Trade Ltd", "country": "US" },
+                          "items": [ { "hsCode": "610910", "description": "Cotton T-shirt", "origin_criterion": "RVC", "rvc_pct": 72 } ],
+                          "downloadUrl": "https://www.potal.app/api/v1/customs-docs/download/def456"
+                        },
+                        "generated_at": "2026-04-16T11:05:00Z"
+                      },
+                      "_metadata": {
+                        "disclaimer": "Certificate must be signed by authorized exporter before use.",
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingDocumentType": {
+                    "summary": "documentType is required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "documentType is required (one of: commercial_invoice, packing_list, certificate_of_origin, customs_declaration)", "field": "documentType" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -116,7 +595,91 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScreenPartiesRequest" } } }
         },
         "responses": {
-          "200": { "description": "Screening result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ScreenPartiesResponse" } } } }
+          "200": {
+            "description": "Screening result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScreenPartiesResponse" },
+                "examples": {
+                  "Match": {
+                    "summary": "Huawei Technologies found on BIS Entity List",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "matches": [
+                          {
+                            "name": "Huawei Technologies Co., Ltd.",
+                            "matchScore": 0.95,
+                            "type": "company",
+                            "source": "BIS Entity List",
+                            "dateListed": "2019-05-15",
+                            "country": "CN",
+                            "restrictions": "License required (presumption of denial)",
+                            "aliases": ["HUAWEI", "华为技术有限公司"],
+                            "programs": ["China-related"]
+                          }
+                        ],
+                        "totalMatches": 1
+                      },
+                      "sourceCoverage": {
+                        "OFAC_SDN": 18718,
+                        "BIS_Entity": 2585,
+                        "UK_Sanctions": 19761,
+                        "UN_Sanctions": 1002,
+                        "EU_Sanctions": 5860
+                      },
+                      "dataLastUpdated": "2026-04-16T06:00:00Z",
+                      "disclaimer": "For informational use only. Verify match with the list owner (OFAC, BIS, etc.) before acting.",
+                      "_metadata": {
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z",
+                        "confidenceScore": 0.95
+                      }
+                    }
+                  },
+                  "NoMatch": {
+                    "summary": "Common name — no sanctions match",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "matches": [],
+                        "totalMatches": 0
+                      },
+                      "sourceCoverage": {
+                        "OFAC_SDN": 18718,
+                        "BIS_Entity": 2585,
+                        "UK_Sanctions": 19761,
+                        "UN_Sanctions": 1002,
+                        "EU_Sanctions": 5860
+                      },
+                      "dataLastUpdated": "2026-04-16T06:00:00Z",
+                      "disclaimer": "No match above threshold. Threshold 0.8. Low-confidence matches not shown.",
+                      "_metadata": {
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingName": {
+                    "summary": "name is required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "name is required", "field": "name" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -131,7 +694,81 @@
           "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EccnLookupRequest" } } }
         },
         "responses": {
-          "200": { "description": "ECCN matches", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EccnLookupResponse" } } } }
+          "200": {
+            "description": "ECCN matches",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EccnLookupResponse" },
+                "examples": {
+                  "Success": {
+                    "summary": "Keyword 'encryption' — ECCN 5A002 matches",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "matches": [
+                          {
+                            "eccn": "5A002.a",
+                            "description": "Information security commodities designed or modified to use cryptographic techniques for data encryption.",
+                            "category": "Cat 5 Part 2 — Information Security",
+                            "controlReason": ["NS", "AT", "EI"],
+                            "controlReasonExplanation": {
+                              "NS": "National Security",
+                              "AT": "Anti-Terrorism",
+                              "EI": "Encryption Item"
+                            },
+                            "licenseRequired": { "CN": true, "RU": true, "KR": false, "JP": false },
+                            "exceptions": ["ENC", "TSU"]
+                          }
+                        ],
+                        "totalMatches": 1,
+                        "totalEccnEntries": 658
+                      },
+                      "dataLastUpdated": "2025-12-15T00:00:00Z",
+                      "disclaimer": "For informational use only. Final ECCN determination requires BIS CCATS or attorney review.",
+                      "_metadata": {
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  },
+                  "NoMatch": {
+                    "summary": "Keyword with no ECCN match (likely EAR99)",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "matches": [],
+                        "totalMatches": 0,
+                        "totalEccnEntries": 658,
+                        "suggestion": "No specific ECCN match. Item may be EAR99 (subject to EAR but not on CCL). Verify with BIS."
+                      },
+                      "dataLastUpdated": "2025-12-15T00:00:00Z",
+                      "disclaimer": "EAR99 classification requires self-determination. Consult BIS for binding ruling.",
+                      "_metadata": {
+                        "apiVersion": "v1",
+                        "responseGeneratedAt": "2026-04-16T11:05:00Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "MissingKeyword": {
+                    "summary": "keyword is required",
+                    "value": {
+                      "success": false,
+                      "error": { "code": "VALIDATION_ERROR", "message": "keyword is required", "field": "keyword" }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

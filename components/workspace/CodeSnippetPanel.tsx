@@ -55,15 +55,59 @@ async function generateSnippet(
 
 // ─── Component ───
 
+interface OpenApiExamples {
+  [status: string]: { [name: string]: { summary?: string; value: unknown } };
+}
+
 export function CodeSnippetPanel({ endpointPath, method, params, result }: Props) {
   const [targetId, setTargetId] = useState('shell');
   const [clientId, setClientId] = useState('curl');
   const [activeTab, setActiveTab] = useState<TabId>('code');
   const [copied, setCopied] = useState(false);
   const [snippet, setSnippet] = useState('// Select a target and client');
+  const [openApiExamples, setOpenApiExamples] = useState<OpenApiExamples>({});
+  const [selectedStatus, setSelectedStatus] = useState('200');
+  const [selectedExample, setSelectedExample] = useState('');
 
   const target = TARGETS.find(t => t.id === targetId) || TARGETS[0];
   const clients = target.clients;
+
+  // Fetch OpenAPI spec + extract examples for current endpoint
+  useEffect(() => {
+    fetch('/openapi.json').then(r => r.json()).then((spec: Record<string, unknown>) => {
+      const pathKey = endpointPath.replace('/api/v1', '');
+      const paths = spec.paths as Record<string, Record<string, Record<string, unknown>>>;
+      const op = paths?.[pathKey]?.[method.toLowerCase()];
+      if (!op) { setOpenApiExamples({}); return; }
+      const responses = op.responses as Record<string, { content?: { [mime: string]: { examples?: { [name: string]: { summary?: string; value: unknown } } } } }>;
+      const byStatus: OpenApiExamples = {};
+      for (const [status, resp] of Object.entries(responses || {})) {
+        const examples = resp?.content?.['application/json']?.examples;
+        if (examples) byStatus[status] = examples;
+      }
+      setOpenApiExamples(byStatus);
+      const statuses = Object.keys(byStatus);
+      if (statuses.length > 0) {
+        const firstStatus = statuses.includes('200') ? '200' : statuses[0];
+        setSelectedStatus(firstStatus);
+        const names = Object.keys(byStatus[firstStatus] || {});
+        if (names.length > 0) setSelectedExample(names[0]);
+      }
+    }).catch(() => setOpenApiExamples({}));
+  }, [endpointPath, method]);
+
+  // When status changes, reset example to first available
+  useEffect(() => {
+    const names = Object.keys(openApiExamples[selectedStatus] || {});
+    if (names.length > 0 && !names.includes(selectedExample)) setSelectedExample(names[0]);
+  }, [selectedStatus, openApiExamples, selectedExample]);
+
+  const currentExampleValue = openApiExamples[selectedStatus]?.[selectedExample]?.value;
+  const currentExampleJson = currentExampleValue
+    ? JSON.stringify(currentExampleValue, null, 2)
+    : '{\n  "info": "No example available for this endpoint/status."\n}';
+  const availableStatuses = Object.keys(openApiExamples);
+  const availableExamples = Object.keys(openApiExamples[selectedStatus] || {});
 
   // Reset client when target changes
   useEffect(() => { setClientId(clients[0].id); }, [targetId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -145,27 +189,59 @@ export function CodeSnippetPanel({ endpointPath, method, params, result }: Props
         </div>
       )}
 
-      {/* ═══ Example Responses ═══ */}
+      {/* ═══ Example Responses (CW38-S6: driven by OpenAPI spec) ═══ */}
       {activeTab === 'example' && (
         <div className="flex-1 overflow-auto p-4">
           <div className="flex items-center gap-3 mb-4 flex-wrap">
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-slate-400 font-semibold">Status</span>
-              <select className="text-[13px] px-2 py-1 rounded border border-slate-200 bg-white"><option>200</option><option>400</option><option>401</option><option>500</option></select>
+              <select
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value)}
+                className="text-[13px] px-2 py-1 rounded border border-slate-200 bg-white"
+                disabled={availableStatuses.length === 0}
+              >
+                {availableStatuses.length === 0 ? (
+                  <option>—</option>
+                ) : availableStatuses.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-slate-400 font-semibold">Media Type</span>
-              <select className="text-[13px] px-2 py-1 rounded border border-slate-200 bg-white"><option>application/json</option></select>
+              <select className="text-[13px] px-2 py-1 rounded border border-slate-200 bg-white" disabled>
+                <option>application/json</option>
+              </select>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-[11px] text-slate-400 font-semibold">Example</span>
-              <select className="text-[13px] px-2 py-1 rounded border border-slate-200 bg-white"><option>Success</option><option>Validation Error</option><option>Unauthorized</option></select>
+              <select
+                value={selectedExample}
+                onChange={e => setSelectedExample(e.target.value)}
+                className="text-[13px] px-2 py-1 rounded border border-slate-200 bg-white"
+                disabled={availableExamples.length === 0}
+              >
+                {availableExamples.length === 0 ? (
+                  <option>—</option>
+                ) : availableExamples.map(n => (
+                  <option key={n} value={n}>
+                    {openApiExamples[selectedStatus]?.[n]?.summary || n}
+                  </option>
+                ))}
+              </select>
             </div>
+            {currentExampleValue != null && (
+              <button
+                onClick={() => copy(currentExampleJson)}
+                className="ml-auto text-[11px] px-2.5 py-1 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-600"
+              >
+                {copied ? 'Copied ✓' : 'Copy'}
+              </button>
+            )}
           </div>
           <SyntaxHighlighter language="json" style={oneLight} showLineNumbers
             lineNumberStyle={{ color: '#c0c0c0', fontSize: 12 }}
             customStyle={{ margin: 0, padding: 16, background: '#fafafa', fontSize: 13, lineHeight: 1.6, borderRadius: 8, border: '1px solid #e5e7eb' }}>
-            {`{\n  "success": true,\n  "data": {\n    "hsCode": "610910",\n    "description": "T-shirts, singlets and other vests, knitted, of cotton",\n    "confidence": 0.94,\n    "alternatives": [\n      { "hsCode": "610990", "confidence": 0.72 },\n      { "hsCode": "611020", "confidence": 0.41 }\n    ],\n    "rulingMatch": { "rulingId": "H305865", "source": "cbp_cross", "confidenceScore": 0.9 }\n  },\n  "_metadata": {\n    "disclaimer": "For informational use only.",\n    "apiVersion": "v1",\n    "responseGeneratedAt": "${new Date().toISOString()}"\n  }\n}`}
+            {currentExampleJson}
           </SyntaxHighlighter>
         </div>
       )}
