@@ -1,6 +1,15 @@
 # POTAL Development Changelog
 > 마지막 업데이트: 2026-04-17 KST
 
+## 2026-04-17 — CW38-HF1: 홈 Data Sources 중복 제거 + TrustStrip 신설 (06cf52b)
+
+- REMOVE: `<CategoryStatBar />` + `<DataSourcesSection />` from `app/page.tsx`
+  (6개 카테고리를 두 번 표시 — un-scannable, 데이터 인프라 SaaS 업계 비표준)
+- ADD: `components/home/TrustStrip.tsx` — 한 줄 신뢰 지표 + /data-sources CTA
+- DELETE: `components/home/CategoryStatBar.tsx` + `DataSourcesSection.tsx` (미사용)
+- KEEP: `lib/home/category-stats.ts` (TrustStrip CATEGORY_GROUPS import 사용)
+- Build: 498 pages 유지
+
 ## 2026-04-17 — CW38 Post-Deploy: Agent Org v7 + Notion/Pipeline 후속 정리
 
 ### Agent Organization v7 재설계 (archive/html-charts/POTAL_AI_Agent_Org_v7.html 신규)

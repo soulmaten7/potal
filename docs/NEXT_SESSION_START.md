@@ -1,7 +1,14 @@
 # 다음 세션 시작점
 > 마지막 업데이트: 2026-04-17 22:30 KST
 
-## 이전 세션 (CW38 Post-Deploy — Agent Org v7 + 후속 정리)
+## 이전 세션 (CW38-HF1 — 홈 Data Sources 중복 제거 + TrustStrip 신설)
+- REMOVE: `<CategoryStatBar />` + `<DataSourcesSection />` from `app/page.tsx` (6개 카테고리 두 번 표시 문제)
+- ADD: `<TrustStrip />` — 한 줄 신뢰 지표 + /data-sources CTA (Stripe/Plaid/Segment 패턴)
+- DELETE: `components/home/CategoryStatBar.tsx` + `components/home/DataSourcesSection.tsx` (미사용)
+- KEEP: `lib/home/category-stats.ts` (TrustStrip이 CATEGORY_GROUPS import)
+- 빌드: 498 pages 유지. 커밋: 06cf52b
+
+## 그 이전 세션 (CW38 Post-Deploy — Agent Org v7 + 후속 정리)
 - NEW: `archive/html-charts/POTAL_AI_Agent_Org_v7.html` — 15 Div/57 Agent/Excel Log 7파일 프레이밍 전면 교체
 - 핵심 변경: D16 Secretary(비서실) 카드 신설 · 16 Division/59 Agents · 170 Data Sources · Notion Command Center
 - REPLACE: "엑셀 로그 체계(v6)" 섹션 → "Notion Command Center" (2026-03-31 엑셀 로깅 폐지 반영)
