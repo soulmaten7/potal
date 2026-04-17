@@ -481,9 +481,9 @@ export const COUNTRY_DATA: Record<string, CountryTaxProfile> = {
   IN: {
     code: 'IN', name: 'India', region: 'Asia Pacific',
     vatRate: 0.18, vatLabel: 'GST', avgDutyRate: 0.20,
-    deMinimis: 0, deMinimsCurrency: 'INR', deMinimisUsd: 0,
+    deMinimis: 50000, deMinimsCurrency: 'INR', deMinimisUsd: 600, // Updated: 2026-04-17 from Supabase — INR 50,000 per 2025 CBIC increase
     currency: 'INR', hasFtaWithChina: false,
-    notes: 'No de minimis. IGST on all imports. BCD varies widely.'
+    notes: 'IGST on all imports. BCD varies widely. De minimis INR 50,000 for personal/gift imports (2025).'
   },
   TH: {
     code: 'TH', name: 'Thailand', region: 'Asia Pacific',

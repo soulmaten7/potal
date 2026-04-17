@@ -45,7 +45,7 @@ const DE_MINIMIS_THRESHOLDS: Record<string, { value: number; currency: string; n
   NZ: { value: 1000, currency: 'NZD', notes: 'GST applies to all imported goods.' },
   MX: { value: 50, currency: 'USD', notes: 'Equivalent in MXN.' },
   BR: { value: 50, currency: 'USD', notes: 'ICMS may still apply.' },
-  IN: { value: 0, currency: 'INR', notes: 'No de minimis exemption for customs duty.' },
+  IN: { value: 50000, currency: 'INR', notes: 'INR 50,000 for personal/gift imports per 2025 CBIC increase. Commercial imports may have no effective de minimis.' }, // Updated: 2026-04-17 from Supabase
   DEFAULT: { value: 0, currency: 'USD', notes: 'No de minimis data. Customs duty likely applies.' },
 };
 
