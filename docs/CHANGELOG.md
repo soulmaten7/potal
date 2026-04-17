@@ -1,6 +1,15 @@
 # POTAL Development Changelog
 > 마지막 업데이트: 2026-04-17 KST
 
+## 2026-04-17 — CW38-HF2: TrustStrip 타이포 + 소스 카운트 수정 (62a7f88)
+
+- FIX: "645K rulings customs rulings" → "645K customs rulings" (단어 중복 제거)
+- FIX: TOTAL_SOURCES MASTER_DATA_REGISTRY.length(31) → CATEGORY_GROUPS 6그룹 합계(24)
+  (Tariff 10 + Tax 6 + Sanctions 3 + Trade Remedies 1 + FTA 1 + Rulings 3 = 24)
+- CLEAN: category-stats.ts 주석 — 삭제된 CategoryStatBar/DataSourcesSection 참조 → TrustStrip으로 교체
+- Chrome MCP 프로덕션 검증으로 두 버그 확인 후 근본원인 수정
+- Build: 498 pages 유지
+
 ## 2026-04-17 — CW38-HF1: 홈 Data Sources 중복 제거 + TrustStrip 신설 (06cf52b)
 
 - REMOVE: `<CategoryStatBar />` + `<DataSourcesSection />` from `app/page.tsx`

@@ -1,7 +1,13 @@
 # 다음 세션 시작점
-> 마지막 업데이트: 2026-04-17 22:30 KST
+> 마지막 업데이트: 2026-04-17 KST
 
-## 이전 세션 (CW38-HF1 — 홈 Data Sources 중복 제거 + TrustStrip 신설)
+## 이전 세션 (CW38-HF2 — TrustStrip 타이포 + 소스 카운트 수정)
+- FIX: "645K rulings customs rulings" → "645K customs rulings" (Chrome MCP로 프로덕션 확인 후 수정)
+- FIX: 소스 카운트 31 → 24 (MASTER_DATA_REGISTRY 전체 길이 → CATEGORY_GROUPS 6그룹 합산)
+- CLEAN: category-stats.ts 주석 — 삭제된 CategoryStatBar/DataSourcesSection → TrustStrip으로 교체
+- 커밋: 62a7f88. 498 pages 유지.
+
+## 그 이전 세션 (CW38-HF1 — 홈 Data Sources 중복 제거 + TrustStrip 신설)
 - REMOVE: `<CategoryStatBar />` + `<DataSourcesSection />` from `app/page.tsx` (6개 카테고리 두 번 표시 문제)
 - ADD: `<TrustStrip />` — 한 줄 신뢰 지표 + /data-sources CTA (Stripe/Plaid/Segment 패턴)
 - DELETE: `components/home/CategoryStatBar.tsx` + `components/home/DataSourcesSection.tsx` (미사용)
