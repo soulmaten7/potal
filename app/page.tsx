@@ -8,8 +8,11 @@ import { useI18n } from '@/app/context/I18nProvider';
 // CW23 Sprint 1 imports
 import HeaderMinimal from '@/components/layout/HeaderMinimal';
 import DesktopOnlyGuard from '@/components/layout/DesktopOnlyGuard';
-import LiveTicker from '@/components/ticker/LiveTicker';
+// CW38 Ticker Redesign: <LiveTicker /> 홈페이지에서 제거됨. 컴포넌트는 /data-sources 등에서 재활용 가능.
+// import LiveTicker from '@/components/ticker/LiveTicker';
 import ScenarioSelector from '@/components/home/ScenarioSelector';
+import CategoryStatBar from '@/components/home/CategoryStatBar';
+import DataSourcesSection from '@/components/home/DataSourcesSection';
 
 // ─── Animated Counter ─────────────────────────────
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -935,7 +938,9 @@ export default function HomePage() {
   return (
     <DesktopOnlyGuard>
       <div className="min-h-screen bg-white">
-        <LiveTicker />
+        {/* CW38 Ticker Redesign: <LiveTicker /> 제거됨.
+            권위자 피드백: 데이터 인프라 SaaS 카테고리(Stripe/Plaid/Zonos/Avalara)에서
+            홈페이지 상단 marquee 티커는 쓰이지 않음. 정적 카테고리 stat 바 + Data Sources 섹션으로 대체. */}
 
         {/* CW38-HF4: Tighter hero + horizontal box layout */}
         <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4">
@@ -1027,12 +1032,9 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="mt-10 flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-slate-400">
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>8 API Endpoints</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>240 Countries</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>645K Rulings</span>
-            <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>47K Sanctions</span>
-          </div>
+          {/* CW38 Ticker Redesign: 기존 4-stat 바(8 API / 240 Countries / 645K Rulings / 47K Sanctions) 를
+              6-카테고리 stat 바로 확장 + 실제 DB freshness timestamp 표시 */}
+          <CategoryStatBar />
 
           <div className="mt-10 flex gap-3">
             <Link href="/guides" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
@@ -1043,6 +1045,9 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
+
+        {/* CW38 Ticker Redesign: Hero 아래 Data Sources 섹션 — 6개 카테고리 상세 카드 */}
+        <DataSourcesSection />
       </div>
     </DesktopOnlyGuard>
   );

@@ -1,6 +1,41 @@
 # POTAL Development Changelog
 > 마지막 업데이트: 2026-04-17 KST
 
+## 2026-04-17 — CW38: Ticker Redesign (홈페이지 상단 marquee 티커 제거 + 6-카테고리 stat)
+
+### 근거 (Authority Review)
+- 데이터 인프라 SaaS 카테고리(Stripe/Plaid/Zonos/Avalara/Descartes/Segment)에서
+  홈페이지 상단 marquee 티커는 쓰이지 않음 — 티커는 Bloomberg/Reuters 등 뉴스/금융 추적 사이트 패턴
+- 기존 `<LiveTicker />` 는 (1) 카테고리 오인 (뉴스 사이트처럼 보임) (2) 스캔 불가 (3) 프라임 공간 낭비
+- 대안: 정적 6-카테고리 stat 바 + Data Sources 섹션 (Stripe/Plaid 스타일)
+
+### 변경
+- REMOVE: `<LiveTicker />` 렌더링을 `app/page.tsx` 최상단에서 제거
+  - 컴포넌트 파일(`components/ticker/LiveTicker.tsx`)은 재사용 위해 보존
+  - import 라인은 주석 처리 (되돌리기 용이하게)
+- REPLACE: 기존 4-stat 바 (8 API / 240 Countries / 645K Rulings / 47K Sanctions) →
+  `<CategoryStatBar />` 6-카테고리 + 실제 DB freshness timestamp
+- ADD: `<DataSourcesSection />` — Hero 아래 6개 카테고리 상세 카드 섹션,
+  각 카드 클릭 → `/data-sources`
+- ADD: `lib/home/category-stats.ts` — 6개 카테고리 그루핑 + freshness 집계 헬퍼
+- ADD: `components/home/CategoryStatBar.tsx` — 컴팩트 6-pill stat 바
+- ADD: `components/home/DataSourcesSection.tsx` — 6개 카테고리 상세 카드
+
+### 6개 카테고리 (master-data-registry 32개 소스 → 상위 6개로 그루핑)
+1. Tariff Schedules (10 sources, 240 countries)
+2. Tax & VAT (6 sources, 241 jurisdictions)
+3. Sanctions (3 sources, 96K entities)
+4. Trade Remedies (1 source, 590 AD/CVD orders)
+5. FTA Agreements (1 source, 1.3K agreements)
+6. Customs Rulings (3 sources, 645K rulings)
+
+### 검증
+- TypeScript 타입체크 통과 (새 파일 3개 에러 없음; 기존 `app/lib/tests/s-grade-verification.test.ts` 34건은 pre-existing)
+- 데이터 소스: `/api/v1/data-freshness` API 재사용 (변경 없음)
+- 빌드: 샌드박스 환경에선 SWC 바이너리 미설치로 실행 불가 — Mac에서 검증 필요
+
+---
+
 ## 2026-04-17 — CW38: Data Infrastructure + Auto-Update Pipeline (Phase 1~3)
 
 ### Phase 1 — DB 전환 + Ghost Table Fix (b3d905d)

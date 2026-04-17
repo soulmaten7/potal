@@ -1,5 +1,14 @@
 # 다음 세션 시작점
-> 마지막 업데이트: 2026-04-17 17:55 KST
+> 마지막 업데이트: 2026-04-17 20:00 KST
+
+## 이전 세션 (CW38 Ticker Redesign — 홈페이지 상단 marquee 티커 제거)
+- 권위자 리뷰: 데이터 인프라 SaaS 카테고리(Stripe/Plaid/Zonos/Avalara/Descartes/Segment)에서 홈 상단 티커 쓰는 곳 없음
+- REMOVE: `<LiveTicker />` `app/page.tsx` 에서 제거 (컴포넌트는 `components/ticker/LiveTicker.tsx` 재사용 위해 보존)
+- REPLACE: 기존 4-stat 바 → 6-카테고리 `<CategoryStatBar />` + 실제 DB freshness timestamp
+- ADD: Hero 아래 `<DataSourcesSection />` — 6개 카테고리 상세 카드 → /data-sources 링크
+- 6개 카테고리: Tariff(10)/Tax(6)/Sanctions(3)/Trade Remedies(1)/FTA(1)/Rulings(3) = master-data-registry 32개 소스 그루핑
+- 신규 파일 3개: `lib/home/category-stats.ts` + `components/home/CategoryStatBar.tsx` + `components/home/DataSourcesSection.tsx`
+- TS 타입체크 통과. 빌드 검증은 Mac에서 필요 (샌드박스 Linux ARM64 SWC 바이너리 미설치)
 
 ## 이전 세션 (CW38 — Phase 1~7 완료, 데이터 인프라 완성)
 - Phase 1: DB 전환 + Ghost Table Fix (b3d905d)
