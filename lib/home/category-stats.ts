@@ -7,8 +7,8 @@
  *   - /api/v1/data-freshness 응답을 받아 카테고리별 "가장 최신 업데이트" 계산
  *
  * 사용처:
- *   - components/home/CategoryStatBar.tsx (Hero 아래 컴팩트 6-pill 바)
- *   - components/home/DataSourcesSection.tsx (6개 상세 카드 섹션)
+ *   - components/home/TrustStrip.tsx (Hero 아래 한 줄 Trust Strip — CW38-HF1)
+ *   - app/data-sources/page.tsx (전용 /data-sources 페이지)
  */
 
 import { MASTER_DATA_REGISTRY, type DataCategory } from '@/app/lib/data-management/master-data-registry';

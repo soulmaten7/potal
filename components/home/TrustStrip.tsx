@@ -6,15 +6,18 @@
  */
 
 import Link from 'next/link';
-import { CATEGORY_GROUPS } from '@/lib/home/category-stats';
-import { MASTER_DATA_REGISTRY } from '@/app/lib/data-management/master-data-registry';
+import { CATEGORY_GROUPS, sourcesInGroup } from '@/lib/home/category-stats';
 
-// 전체 소스 수 — MASTER_DATA_REGISTRY 기준 (빌드 타임 상수)
-const TOTAL_SOURCES = MASTER_DATA_REGISTRY.length;
+// 전체 소스 수 — CATEGORY_GROUPS 6그룹에 포함된 실제 소스 합계 (빌드 타임 상수)
+// MASTER_DATA_REGISTRY.length 전체가 아니라, Trust Strip 이 다루는 6개 카테고리만 카운트
+const TOTAL_SOURCES = CATEGORY_GROUPS.reduce(
+  (sum, g) => sum + sourcesInGroup(g).length,
+  0,
+);
 
 // 카테고리별 핵심 지표 — CATEGORY_GROUPS.headline 에서 추출
 const TARIFF_COUNTRIES = '240 countries';
-const RULINGS_COUNT = '645K rulings';
+const RULINGS_COUNT = '645K';
 
 // 대표 publisher 목록 — 6개 그룹 keyPublishers 중 주요 6개
 const KEY_PUBLISHERS = ['USITC', 'EU TARIC', 'OFAC', 'WCO', 'WTO', 'HMRC'];
