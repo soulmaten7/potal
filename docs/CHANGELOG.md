@@ -1,5 +1,36 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-16 KST
+> 마지막 업데이트: 2026-04-17 KST
+
+## 2026-04-17 — CW38: Data Infrastructure + Auto-Update Pipeline (Phase 1~3)
+
+### Phase 1 — DB 전환 + Ghost Table Fix (b3d905d)
+- FIX: tariff-updater.ts Cron↔Engine disconnect (live_duty_rate_cache → duty_rates_live)
+- ADD: 070_cw38_country_profiles_full_seed.sql (53 → 240 countries)
+- ADD: master-data-registry.ts (32 sources, update URLs, frequencies)
+- ADD: DATA_SOURCE_AUDIT_REPORT.md (42 sources analyzed)
+- ADD: DATA_FLOW_TRACE_REPORT.md (5 API flow + ghost table analysis)
+- ADD: CW38_GHOST_TABLE_FIX.md
+
+### Phase 2 — Auto-Update Pipeline (cf705a1)
+- ADD: vat-rate-monitor cron (monthly, OECD API, 5 sources)
+- ADD: de-minimis-monitor cron (weekly, 5 government sites)
+- ADD: us-tax-monitor cron (monthly, Tax Foundation hash compare)
+- ADD: country-profile-sync.ts (cascading update utility)
+- MOD: vercel.json 25 → 28 crons
+- Build: 498 pages
+
+### Phase 3 — DB 실제 상태 진단
+- ADD: CW38_DB_REALITY_CHECK_COMMANDS.md
+- 결과: 핵심 3/4 테이블 OK (country_profiles 240, fta_agreements 65, sanctioned_entities 47,926)
+- 결과: 엔진이 MacMap DB(macmap_ntlc)에서 관세율 실제 읽는 것 확인
+- 결과: 기존 cron 5개 전부 green (exchange-rate/sdn/federal-register/update-tariffs/taric-rss)
+- 결과: duty_rates_live 0 rows — tariff-updater 테이블명 수정 완료, 다음 cron에서 채워질 예정
+
+### 자동화 현황 (팩트 기반)
+- 검증 완료 자동 업데이트: 5개 (환율, SDN, Federal Register, TARIC RSS, update-tariffs)
+- 구축 완료 미검증: 3개 (VAT, de minimis, US tax — 스케줄 첫 실행 대기)
+- DB 있지만 수동: 4개 (MacMap, FTA, 추가관세, 무역구제)
+- 하드코딩 전용: 4개 (restrictions, shipping, IOSS, section301)
 
 ## [2026-04-16 KST] CW38-HF11 — Breadcrumb Navigation (Guides + Workspace)
 
