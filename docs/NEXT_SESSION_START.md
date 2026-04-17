@@ -1,7 +1,12 @@
 # 다음 세션 시작점
 > 마지막 업데이트: 2026-04-17 KST
 
-## 이전 세션 (CW38-HF2 — TrustStrip 타이포 + 소스 카운트 수정)
+## 이전 세션 (CW38-HF3 — TrustStrip 한 줄 강제)
+- FIX: metrics row `whitespace-nowrap` 추가 (span 2줄 wrap 방지)
+- FIX: container `max-w-5xl` → `max-w-7xl` (Hero 폭 일치, CTA 공간 확보)
+- 커밋: 2a7d216. 498 pages 유지.
+
+## 그 이전 세션 (CW38-HF2 — TrustStrip 타이포 + 소스 카운트 수정)
 - FIX: "645K rulings customs rulings" → "645K customs rulings" (Chrome MCP로 프로덕션 확인 후 수정)
 - FIX: 소스 카운트 31 → 24 (MASTER_DATA_REGISTRY 전체 길이 → CATEGORY_GROUPS 6그룹 합산)
 - CLEAN: category-stats.ts 주석 — 삭제된 CategoryStatBar/DataSourcesSection → TrustStrip으로 교체

@@ -1,6 +1,12 @@
 # POTAL Development Changelog
 > 마지막 업데이트: 2026-04-17 KST
 
+## 2026-04-17 — CW38-HF3: TrustStrip 한 줄 강제 (2a7d216)
+
+- ADD: `whitespace-nowrap` to metrics row — span wrap 방지
+- FIX: container `max-w-5xl` → `max-w-7xl` — Hero 폭과 일치, CTA 공간 확보
+- Build: 498 pages 유지
+
 ## 2026-04-17 — CW38-HF2: TrustStrip 타이포 + 소스 카운트 수정 (62a7f88)
 
 - FIX: "645K rulings customs rulings" → "645K customs rulings" (단어 중복 제거)
