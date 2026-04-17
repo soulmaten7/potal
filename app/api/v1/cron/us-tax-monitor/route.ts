@@ -17,7 +17,7 @@ function getSupabase() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '');
 }
 
-const TAX_FOUNDATION_URL = 'https://taxfoundation.org/data/all/state/2026-sales-taxes/';
+const TAX_FOUNDATION_URL = 'https://taxfoundation.org/data/all/state/sales-tax-rates/';
 
 async function simpleHash(text: string): Promise<string> {
   const data = new TextEncoder().encode(text);
