@@ -1,20 +1,24 @@
 # 다음 세션 시작점
-> 마지막 업데이트: 2026-04-17 KST
+> 마지막 업데이트: 2026-04-17 17:55 KST
 
-## 이전 세션 (CW38 — Phase 1~5 완료)
+## 이전 세션 (CW38 — Phase 1~7 완료, 데이터 인프라 완성)
 - Phase 1: DB 전환 + Ghost Table Fix (b3d905d)
 - Phase 2: Auto-Update Pipeline — VAT/de minimis/US tax cron 3개 (cf705a1)
 - Phase 3: DB 진단 — 핵심 테이블 OK, cron 5개 green, MacMap DB 실사용 확인 (0ce9ee7)
-- Phase 4: us-tax-monitor URL 수정 (48dcdac)
-- Phase 5: Auto Command Runner 브릿지 + Scheduled Tasks 6개 연결 (8fa6c76)
-- **전체 자동화 체인 검증 완료**: Scheduled task → Mac .md 파일 생성 → launchd 10분 감지 → Claude Code 자동 실행
+- Phase 4-5: 27개국 데이터 수집 + source-registry.json (104.9KB) + CLAUDE.md Rule 16
+- Phase 6: 하드코딩↔DB 동기화 실행 — IN de minimis 불일치 2건 수정 (8e66bd1)
+- Phase 7: Data Master List 170개 + Scheduled Task 3개 프롬프트 전면 재작성
+- **수동/미연결 0개 달성** — 모든 데이터 소스에 갱신 경로 연결됨
 
-## 자동화 현황 (팩트 기반)
-- **검증 완료 자동 업데이트 (5개)**: 환율, SDN, Federal Register, TARIC RSS, update-tariffs
-- **구축 완료 미검증 (3개)**: VAT, de minimis, US tax — 스케줄 첫 실행 대기
-- **Scheduled task 연동 (6개)**: annual/quarterly/semiannual + 일회성 3개 → auto-commands 패턴
-- **하드코딩 전용 (4개)**: restrictions, shipping-rates, IOSS, section301
-- **정적 분류 데이터 (7개+)**: codified JSON, HS descriptions 등
+## 데이터 인프라 최종 현황
+- **Supabase 107 테이블** + Static Files 41 + Hardcoded Constants 15 + External APIs 14 = 총 170개
+- **자동 갱신 체인**: Scheduled Task → auto-commands/ .md → launchd → Claude Code → DB 비교 → 코드 수정 → build → push
+- **하드코딩 15개 전부 DB와 중복** → Scheduled Task가 불일치 시 코드 직접 수정 + 빌드 + 푸시
+- 마스터 리스트: `docs/POTAL_DATA_MASTER_LIST.md`
+
+## 다음 작업: 홈페이지 LiveTicker
+- CW38 원래 목표였던 티커 디자인/구현
+- 데이터 인프라가 완성되었으므로 실제 데이터로 티커 표시 가능
 
 ## Auto Command Runner 구조
 ```
@@ -47,3 +51,8 @@ Scheduled task (Cowork) → ~/potal/docs/auto-commands/ 에 .md 파일 생성
 - docs/CW38_DB_REALITY_CHECK_COMMANDS.md
 - docs/CW38_PHASE2_CRON_VERIFY_COMMANDS.md
 - docs/AUTO_COMMAND_RUNNER_SETUP.md
+
+---
+## [Auto-saved] Compaction at 2026-04-17 17:43 KST
+컨텍스트 압축 발생. 이전 대화가 요약됨.
+압축 전 마지막 작업 내용은 session-context.md 및 엑셀 로그 참조.

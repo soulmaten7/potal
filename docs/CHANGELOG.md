@@ -32,7 +32,14 @@
 - DB 있지만 수동: 4개 (MacMap, FTA, 추가관세, 무역구제)
 - 하드코딩 전용: 4개 (restrictions, shipping, IOSS, section301)
 
-### Phase 6 — 하드코딩 ↔ DB 동기화 (87ebc8a)
+### Phase 4-5 — 27개국 데이터 수집 + Source Registry
+- ADD: data-acquisition/ 27개국 × 6 datasets JSON (MFN, FTA, VAT, de minimis, restrictions, AD/CVD)
+- ADD: data-acquisition/source-registry.json (104.9KB) — 27개국 데이터 소스 URL 매핑
+- ADD: data-acquisition/refresh-guide.md — 국가별 갱신 가이드
+- ADD: docs/auto-commands/build-source-registry.md — source registry 빌드 명령어
+- ADD: CLAUDE.md Rule 16 — 데이터 관련 작업 전 기존 상태 확인 필수
+
+### Phase 6 — 하드코딩 ↔ DB 동기화 (87ebc8a → 8e66bd1)
 - SYNC: country-data.ts COUNTRY_DATA — VAT 40개국 전수 검증 → 전부 일치
 - FIX: IN de minimis 0 INR → 50,000 INR ($600 USD) — 2025 CBIC 인상 반영
   - app/lib/cost-engine/country-data.ts (COUNTRY_DATA.IN)
@@ -40,6 +47,17 @@
 - VERIFY: de-minimis-tracker.ts 13개국 — 환율 차이 범위 내, US 예외 처리 정상
 - VERIFY: eu-vat-rates.ts — DB 국가레벨 vs 코드 챕터레벨, 다른 granularity (수정 불필요)
 - VERIFY: export-controls.ts — DB 미연결 상태 확인 (별도 연결 작업 필요, 이번 동기화 범위 외)
+
+### Phase 7 — Data Master List + Scheduled Task 완성
+- ADD: docs/POTAL_DATA_MASTER_LIST.md — POTAL 전체 데이터 소스 마스터 리스트 (170개)
+  - Supabase 107 테이블 + Static Files 41 + Hardcoded Constants 15 + External APIs 14
+- ADD: docs/auto-commands/sync-hardcoded-with-db.md — 하드코딩↔DB 동기화 명령어
+- MOD: Scheduled Task 3개 프롬프트 전면 재작성 (Claude Code가 DB 비교 → 코드 수정 → build → push)
+  - potal-annual-data-refresh: MacMap + 관세 스케줄 + HS + 8개 코드 파일 동기화
+  - potal-quarterly-fta-check: FTA 변경 + 3개 코드 파일 동기화
+  - potal-semiannual-hardcoded-check: VAT/면세/세금/수출통제 + 8개 코드 파일 동기화
+- 미연결 2개(export_control_chart, eccn_entries) → semiannual task에 포함 완료
+- 결과: **수동/미연결 0개 달성** — 모든 데이터 소스에 갱신 경로 연결됨
 
 ## [2026-04-16 KST] CW38-HF11 — Breadcrumb Navigation (Guides + Workspace)
 
