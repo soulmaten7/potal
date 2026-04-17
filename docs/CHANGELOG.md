@@ -32,6 +32,15 @@
 - DB 있지만 수동: 4개 (MacMap, FTA, 추가관세, 무역구제)
 - 하드코딩 전용: 4개 (restrictions, shipping, IOSS, section301)
 
+### Phase 6 — 하드코딩 ↔ DB 동기화 (87ebc8a)
+- SYNC: country-data.ts COUNTRY_DATA — VAT 40개국 전수 검증 → 전부 일치
+- FIX: IN de minimis 0 INR → 50,000 INR ($600 USD) — 2025 CBIC 인상 반영
+  - app/lib/cost-engine/country-data.ts (COUNTRY_DATA.IN)
+  - app/lib/customs/de-minimis-tracker.ts (DE_MINIMIS_THRESHOLDS.IN)
+- VERIFY: de-minimis-tracker.ts 13개국 — 환율 차이 범위 내, US 예외 처리 정상
+- VERIFY: eu-vat-rates.ts — DB 국가레벨 vs 코드 챕터레벨, 다른 granularity (수정 불필요)
+- VERIFY: export-controls.ts — DB 미연결 상태 확인 (별도 연결 작업 필요, 이번 동기화 범위 외)
+
 ## [2026-04-16 KST] CW38-HF11 — Breadcrumb Navigation (Guides + Workspace)
 
 ### Added (components/ui/Breadcrumb.tsx — 신규)
