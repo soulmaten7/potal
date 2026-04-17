@@ -1,7 +1,18 @@
 # 다음 세션 시작점
-> 마지막 업데이트: 2026-04-17 20:00 KST
+> 마지막 업데이트: 2026-04-17 22:30 KST
 
-## 이전 세션 (CW38 Ticker Redesign — 홈페이지 상단 marquee 티커 제거)
+## 이전 세션 (CW38 Post-Deploy — Agent Org v7 + 후속 정리)
+- NEW: `archive/html-charts/POTAL_AI_Agent_Org_v7.html` — 15 Div/57 Agent/Excel Log 7파일 프레이밍 전면 교체
+- 핵심 변경: D16 Secretary(비서실) 카드 신설 · 16 Division/59 Agents · 170 Data Sources · Notion Command Center
+- REPLACE: "엑셀 로그 체계(v6)" 섹션 → "Notion Command Center" (2026-03-31 엑셀 로깅 폐지 반영)
+- ADD: "Scheduled Tasks 아키텍처(v7·CW22-K)" 섹션 — potal-daily-health-check(9AM) + d16-secretary-inbox-check(매시간)
+- UPDATE: D4(Auto Command Runner/170 sources) + D5(CW38 티커 제거/Data Sources 섹션/데스크톱 전용) 반영
+- UPDATE: Phase 1 모닝브리핑 Desc에 POTAL/Chrome/Gmail/Notion MCP 매핑 명시 + Phase별 명령어 D16 카드 추가
+- Notion Task Board: "CW23 Sprint 1: LiveTicker.tsx 구현" cancel(CW38에서 반대방향 결정으로 obsolete)
+- 점검 후 무수정 확정: 10Field_Pipeline_v3 HTML(CW34, CW38 orthogonal) · 기존 Scheduled Task 프롬프트(이미 16 Div/D16 반영)
+- 후속: .claude/skills/morning-briefing/SKILL.md 내 "v6" → "v7" 텍스트만 잔존(read-only 경로, 내용 자체는 최신)
+
+## 그 이전 세션 (CW38 Ticker Redesign — 홈페이지 상단 marquee 티커 제거)
 - 권위자 리뷰: 데이터 인프라 SaaS 카테고리(Stripe/Plaid/Zonos/Avalara/Descartes/Segment)에서 홈 상단 티커 쓰는 곳 없음
 - REMOVE: `<LiveTicker />` `app/page.tsx` 에서 제거 (컴포넌트는 `components/ticker/LiveTicker.tsx` 재사용 위해 보존)
 - REPLACE: 기존 4-stat 바 → 6-카테고리 `<CategoryStatBar />` + 실제 DB freshness timestamp

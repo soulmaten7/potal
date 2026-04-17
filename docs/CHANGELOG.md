@@ -1,6 +1,30 @@
 # POTAL Development Changelog
 > 마지막 업데이트: 2026-04-17 KST
 
+## 2026-04-17 — CW38 Post-Deploy: Agent Org v7 + Notion/Pipeline 후속 정리
+
+### Agent Organization v7 재설계 (archive/html-charts/POTAL_AI_Agent_Org_v7.html 신규)
+- REPLACE: v6(15 Div · 57 Agents · Excel Log 7파일) → v7(16 Div · 59 Agents · 170 Data Sources · Notion Command Center)
+- ADD: D16 Secretary (비서실) 카드 — Gmail + Crisp 인바운드 감지·분류·CEO 직접 보고 (단독 실행 금지)
+- UPDATE: D4 Data Pipeline 카드 — POTAL_DATA_MASTER_LIST.md 170 sources + Auto Command Runner 반영
+- UPDATE: D5 Product & Web 카드 — CW38 티커 제거 + Data Sources 섹션 + 데스크톱 전용 반영
+- REPLACE: "엑셀 로그 체계(v6 신규)" 섹션 → "Notion Command Center" 섹션 (2026-03-31 엑셀 로깅 전면 폐지 반영)
+- ADD: "Scheduled Tasks 아키텍처(v7·CW22-K)" 섹션 — potal-daily-health-check(매일 9AM) + d16-secretary-inbox-check(매시간) + 수동 모닝브리핑
+- UPDATE: Phase 1 모닝브리핑 Desc, 24/7 루프 "15→16 Division 스캔", 월간 루틴 "16 Division 월간 성과"
+- UPDATE: Phase별 명령어 D16 카드 신설, Morning Brief 노트에 POTAL/Chrome/Gmail/Notion MCP 명시
+- UPDATE: 헤더/푸터 — 16 Divisions · 59 Agents · 170 Data Sources · Notion Command Center 표기
+- KEEP: v6 원본(POTAL_AI_Agent_Org_v6.html) 아카이브 유지 (이력 추적용)
+
+### Notion Task Board 정리
+- CANCEL: "CW23 Sprint 1: LiveTicker.tsx 구현" — CW38에서 반대 방향(티커 제거) 결정으로 obsolete 처리
+
+### 점검 결과 (업데이트 불필요 확인)
+- archive/POTAL_10Field_Pipeline_v3_Final.html — CW34 파이프라인 내용, CW38과 orthogonal → 수정 없음
+- Scheduled Task 프롬프트 — 이미 16 Division + D16 Secretary 반영됨 → v6→v7 참조만 후속 갱신
+- .claude/skills/morning-briefing/SKILL.md — 16 Division 준수 (read-only 경로라 v6 참조 1곳만 잔존, 내용 최신)
+
+---
+
 ## 2026-04-17 — CW38: Ticker Redesign (홈페이지 상단 marquee 티커 제거 + 6-카테고리 stat)
 
 ### 근거 (Authority Review)
