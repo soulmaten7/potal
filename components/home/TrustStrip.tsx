@@ -28,11 +28,11 @@ export default function TrustStrip() {
 
   return (
     <div className="w-full bg-slate-50 border-y border-slate-100 py-6">
-      <div className="max-w-5xl mx-auto px-8 flex items-center justify-between gap-8">
+      <div className="max-w-7xl mx-auto px-8 flex items-center justify-between gap-8">
 
         {/* 메인 지표 */}
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 text-slate-700">
+          <div className="flex items-center gap-2 text-slate-700 whitespace-nowrap">
             <span className="text-sm font-semibold">{TOTAL_SOURCES} authoritative sources</span>
             <span className="text-slate-300">·</span>
             <span className="text-sm font-semibold">{TARIFF_COUNTRIES}</span>
