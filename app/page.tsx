@@ -11,8 +11,7 @@ import DesktopOnlyGuard from '@/components/layout/DesktopOnlyGuard';
 // CW38 Ticker Redesign: <LiveTicker /> 홈페이지에서 제거됨. 컴포넌트는 /data-sources 등에서 재활용 가능.
 // import LiveTicker from '@/components/ticker/LiveTicker';
 import ScenarioSelector from '@/components/home/ScenarioSelector';
-import CategoryStatBar from '@/components/home/CategoryStatBar';
-import DataSourcesSection from '@/components/home/DataSourcesSection';
+import TrustStrip from '@/components/home/TrustStrip';
 
 // ─── Animated Counter ─────────────────────────────
 function AnimatedNumber({ target, suffix = '' }: { target: number; suffix?: string }) {
@@ -1032,9 +1031,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* CW38 Ticker Redesign: 기존 4-stat 바(8 API / 240 Countries / 645K Rulings / 47K Sanctions) 를
-              6-카테고리 stat 바로 확장 + 실제 DB freshness timestamp 표시 */}
-          <CategoryStatBar />
+          <TrustStrip />
 
           <div className="mt-10 flex gap-3">
             <Link href="/guides" className="px-5 py-2.5 text-sm font-semibold rounded-lg border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:text-blue-600 hover:shadow-sm transition-all">
@@ -1046,8 +1043,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* CW38 Ticker Redesign: Hero 아래 Data Sources 섹션 — 6개 카테고리 상세 카드 */}
-        <DataSourcesSection />
       </div>
     </DesktopOnlyGuard>
   );
