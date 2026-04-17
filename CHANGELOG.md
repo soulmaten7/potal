@@ -1,7 +1,22 @@
 # POTAL Development Changelog
-> 마지막 업데이트: 2026-04-17 KST (CW38 Data Infrastructure + Ghost Table Fix)
+> 마지막 업데이트: 2026-04-17 KST (CW38 Phase 1~5 완료 — Data Infrastructure + Auto-Update Pipeline + DB 진단 + Scheduled Tasks + Auto Command Runner)
 
 ## [2026-04-17 KST] CW38 — Data Infrastructure & Auto-Update Foundation
+
+### Phase 4 — Scheduled Tasks + Auto Command Runner (8fa6c76)
+- ADD: `scripts/auto-command-runner.sh` — Mac launchd → Claude Code 자동 실행 브릿지
+- ADD: `scripts/com.potal.auto-command-runner.plist` — 10분 간격 launchd 에이전트
+- ADD: `docs/AUTO_COMMAND_RUNNER_SETUP.md` — 설치 가이드
+- ADD: `docs/CW38_PHASE2_CRON_VERIFY_COMMANDS.md` — Phase 2 cron 검증 명령어
+- SETUP: 6개 Scheduled task (annual/quarterly/semiannual/일회성 3개) auto-commands 패턴 연결
+- VERIFIED: Scheduled task → Mac 파일 생성 → launchd 감지 → Claude Code 자동 실행 전체 체인 검증 완료
+
+### Phase 3 — DB 실제 상태 진단 (0ce9ee7)
+- ADD: `docs/CW38_DB_REALITY_CHECK_COMMANDS.md`
+- 결과: 핵심 3/4 테이블 OK (country_profiles 240, fta_agreements 65, sanctioned_entities 47,926)
+- 결과: 엔진이 MacMap DB(macmap_ntlc)에서 관세율 실제 읽는 것 확인
+- 결과: 기존 cron 5개 전부 green (exchange-rate/sdn/federal-register/update-tariffs/taric-rss)
+- FIX: us-tax-monitor URL 수정 (48dcdac)
 
 ### 추가
 - 📊 **Master Data Registry** — `master-data-registry.ts` 32개 데이터 소스 메타데이터 (출처 URL, 공지 페이지, 갱신 주기, 자동화 레벨) (b3d905d)
