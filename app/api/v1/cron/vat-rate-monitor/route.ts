@@ -36,7 +36,12 @@ export async function GET(req: NextRequest) {
 
   for (const source of VAT_MONITOR_URLS) {
     try {
-      const res = await fetch(source.url, { method: 'HEAD', signal: AbortSignal.timeout(10000) });
+      const res = await fetch(source.url, {
+        method: 'HEAD',
+        signal: AbortSignal.timeout(10000),
+        redirect: 'follow',
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; POTAL-VAT-Monitor/1.0)' },
+      });
       const lastModified = res.headers.get('last-modified');
       if (lastModified) {
         // Compare with stored hash/date in health_check_logs

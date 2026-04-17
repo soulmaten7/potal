@@ -19,11 +19,11 @@ function getSupabase() {
 
 // Key countries where de minimis changes have high impact
 const DE_MINIMIS_SOURCES = [
-  { country: 'US', url: 'https://www.cbp.gov/trade/trade-enforcement/tpea', label: 'US CBP TPEA' },
-  { country: 'EU', url: 'https://taxation-customs.ec.europa.eu/customs-4/customs-procedures-import-and-export-0/customs-procedures/low-value-consignment-relief_en', label: 'EU Low-Value Relief' },
-  { country: 'GB', url: 'https://www.gov.uk/guidance/check-if-you-can-pay-a-reduced-amount-of-customs-duty', label: 'UK HMRC Low-Value' },
-  { country: 'AU', url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/importing/how-to-import/low-value-goods', label: 'AU ABF Low-Value' },
-  { country: 'CA', url: 'https://www.cbsa-asfc.gc.ca/publications/dm-md/d8/d8-2-16-eng.html', label: 'CA CBSA D8-2-16' },
+  { country: 'US', url: 'https://www.cbp.gov/trade/basic-import-export/e-commerce/faqs', label: 'US CBP E-Commerce FAQ' },
+  { country: 'EU', url: 'https://taxation-customs.ec.europa.eu/customs/customs-procedures-import-and-export/customs-operations/customs-formalities-low-value-consignments_en', label: 'EU Low-Value Consignments' },
+  { country: 'GB', url: 'https://www.gov.uk/goods-sent-from-abroad', label: 'UK HMRC Goods from Abroad' },
+  { country: 'AU', url: 'https://www.abf.gov.au/importing-exporting-and-manufacturing/importing/cost-of-importing-goods/gst-and-other-taxes/gst-on-low-value-goods', label: 'AU ABF Low-Value GST' },
+  { country: 'CA', url: 'https://www.cbsa-asfc.gc.ca/services/cusma-aceum/lvs-efv-eng.html', label: 'CA CBSA Low-Value Shipments' },
 ];
 
 export async function GET(req: NextRequest) {
@@ -35,7 +35,12 @@ export async function GET(req: NextRequest) {
 
   for (const source of DE_MINIMIS_SOURCES) {
     try {
-      const res = await fetch(source.url, { method: 'HEAD', signal: AbortSignal.timeout(10000) });
+      const res = await fetch(source.url, {
+        method: 'HEAD',
+        signal: AbortSignal.timeout(10000),
+        redirect: 'follow',
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; POTAL-DeMinimis-Monitor/1.0)' },
+      });
       results.push({ country: source.country, label: source.label, reachable: res.ok, lastModified: res.headers.get('last-modified') || undefined });
     } catch {
       results.push({ country: source.country, label: source.label, reachable: false });
